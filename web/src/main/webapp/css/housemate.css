@@ -1,0 +1,10 @@
+h3 {
+    color: #5A5A5A !important;
+    margin-top: 20px !important;
+    border-top: 1px solid #888888;
+}
+
+.panel h3:first-of-type, .modal h3 {
+    margin-top: 0 !important;
+    border-top: none;
+}

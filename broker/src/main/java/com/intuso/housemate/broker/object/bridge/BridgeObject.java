@@ -1,0 +1,113 @@
+package com.intuso.housemate.broker.object.bridge;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.intuso.housemate.broker.client.DisconnectListener;
+import com.intuso.housemate.broker.client.RemoteClient;
+import com.intuso.housemate.broker.comms.ClientPayload;
+import com.intuso.housemate.core.HousemateException;
+import com.intuso.housemate.core.comms.Message;
+import com.intuso.housemate.core.comms.Receiver;
+import com.intuso.housemate.core.object.HousemateObject;
+import com.intuso.housemate.core.object.HousemateObjectWrappable;
+import com.intuso.housemate.core.object.ObjectListener;
+import com.intuso.housemate.core.object.BaseObject;
+import com.intuso.housemate.core.object.connection.ClientWrappable;
+import com.intuso.listeners.ListenerRegistration;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: tomc
+ * Date: 26/05/12
+ * Time: 10:18
+ * To change this template use File | Settings | File Templates.
+ */
+public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
+            SWBL extends HousemateObjectWrappable<?>,
+            SWR extends BridgeObject<? extends SWBL, ?, ?, ?, ?>,
+            PBO extends BridgeObject<WBL, SWBL, SWR, PBO, L>,
+            L extends ObjectListener>
+        extends HousemateObject<BrokerBridgeResources, WBL, SWBL, SWR, L> implements BaseObject<L>,DisconnectListener {
+
+    private final List<RemoteClient> loadedByClients = Lists.newArrayList();
+    private final Map<RemoteClient, ListenerRegistration<DisconnectListener>> clientListeners= Maps.newHashMap();
+
+    protected BridgeObject(BrokerBridgeResources resources, WBL wrappable) {
+        super(resources, wrappable);
+    }
+
+    protected void sendMessage(String type, Message.Payload payload, RemoteClient client) throws HousemateException {
+        getResources().getComms().sendMessageToClient(getPath(), type, payload, client);
+    }
+
+    protected <MV extends Message.Payload> void broadcastMessage(String type, MV content) {
+        for(RemoteClient client : loadedByClients) {
+            try {
+                sendMessage(type, content, client);
+            } catch(HousemateException e) {
+                getLog().e("Failed to broadcast message to client");
+                getLog().e(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    protected List<ListenerRegistration<?>> registerListeners() {
+        List<ListenerRegistration<?>> result = super.registerListeners();
+        result.add(addMessageListener(LOAD_REQUEST, new Receiver<ClientPayload<LoadRequest>>() {
+            @Override
+            public void messageReceived(Message<ClientPayload<LoadRequest>> message) throws HousemateException {
+                if(message.getPayload().getClient().getType() != ClientWrappable.Type.PROXY)
+                    getLog().e("Client requesting an object is not of type " + ClientWrappable.Type.PROXY);
+                else {
+                    BridgeObject<?, ?, ?, ?, ?> subWrapper = getWrapper(message.getPayload().getOriginal().getSubWrapperName());
+                    if(subWrapper != null)
+                        sendMessage(LOAD_RESPONSE, subWrapper.getWrappableTree(
+                                message.getPayload().getOriginal(), message.getPayload().getClient()), message.getPayload().getClient());
+                    else
+                        getLog().w("Load request received from " + Arrays.toString(message.getRoute().toArray(new String[message.getRoute().size()])) + " for non-existant object \"" + message.getPayload().getOriginal().getSubWrapperName() + "\"");
+                }
+            }
+        }));
+        return result;
+    }
+
+    private HousemateObjectWrappable getWrappableTree(LoadRequest loadRequest, RemoteClient client) {
+        if(!matchesFilter(loadRequest))
+            return null;
+        HousemateObjectWrappable result = getWrappable().clone();
+        for(BridgeObject<?, ?, ?, ?, ?> subWrapper : getWrappers()) {
+            HousemateObjectWrappable child = subWrapper.getWrappableTree(loadRequest, client);
+            if(child != null)
+                result.addWrappable(child);
+        }
+        clientListeners.put(client, client.addDisconnectListener(this));
+        loadedByClients.add(client);
+        return result;
+    }
+
+    protected boolean matchesFilter(LoadRequest loadRequest) {
+        return true;
+    }
+
+    protected void addLoadedBy(BridgeObject<?, ?, ?, ?, ?> element) {
+        element.loadedByClients.addAll(loadedByClients);
+        for(BridgeObject<?, ?, ?, ?, ?> child : element.getWrappers())
+            addLoadedBy(child);
+    }
+
+    protected final PBO getThis() {
+        return (PBO)this;
+    }
+
+    @Override
+    public void disconnected(RemoteClient client) {
+        if(clientListeners.containsKey(client))
+            clientListeners.remove(client).removeListener();
+        loadedByClients.remove(client);
+    }
+}

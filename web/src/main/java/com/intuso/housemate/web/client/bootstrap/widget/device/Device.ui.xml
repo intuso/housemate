@@ -1,0 +1,23 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
+    <g:FlowPanel>
+        <b:Row>
+            <b:Column size="8">
+                <b:Heading size="3">General</b:Heading>
+                <b:ButtonGroup>
+                    <h:command.PerformButton ui:field="startButton">Start</h:command.PerformButton>
+                    <h:command.PerformButton ui:field="stopButton">Stop</h:command.PerformButton>
+                    <h:command.PerformButton ui:field="removeButton">Remove</h:command.PerformButton>
+                </b:ButtonGroup>
+                <b:Heading size="3">Commands</b:Heading>
+                <h:command.CommandList ui:field="commandList"/>
+                <b:Heading size="3">Values</b:Heading>
+                <h:value.ValueList ui:field="valueList"/>
+                <b:Heading size="3">Properties</b:Heading>
+                <h:property.PropertyList ui:field="propertyList"/>
+            </b:Column>
+        </b:Row>
+    </g:FlowPanel>
+</ui:UiBinder>

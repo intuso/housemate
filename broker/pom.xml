@@ -1,0 +1,184 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.intuso.housemate</groupId>
+        <artifactId>housemate</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+	<artifactId>broker</artifactId>
+    <packaging>jar</packaging>
+    <name>Housemate Broker</name>
+	<description>Broker for the Housemate framework</description>
+
+    <dependencies>
+
+        <!-- Housemate API -->
+		<dependency>
+			<groupId>com.intuso.housemate</groupId>
+			<artifactId>core</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>clientcomms</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+	<build>
+		<plugins>
+
+            <!-- Use Java 1.6 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+            <!-- Make a wrapper that will install it as a service on different platforms -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-empty-directory</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="${basedir}/target/jsw/housemate-broker/logs"/>
+                                <mkdir dir="${basedir}/target/jsw/housemate-broker/tmp"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <configurationDirectory>conf</configurationDirectory>
+                    <assembleDirectory>${project.build.directory}/jsw/housemate-broker</assembleDirectory>
+                    <target>${project.build.directory}</target>
+                    <repositoryLayout>flat</repositoryLayout>
+                    <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+                    <defaultJvmSettings>
+                        <initialMemorySize>256M</initialMemorySize>
+                        <maxMemorySize>512M</maxMemorySize>
+                        <extraArguments>
+                            <extraArgument>-Djava.library.path=lib</extraArgument>
+                            <extraArgument>-Dfile.encoding=UTF-8</extraArgument>
+                        </extraArguments>
+                    </defaultJvmSettings>
+                    <daemons>
+                        <daemon>
+                            <id>housemate-broker</id>
+                            <mainClass>com.intuso.housemate.broker.App</mainClass>
+                            <platforms>
+                                <platform>jsw</platform>
+                            </platforms>
+                            <generatorConfigurations>
+                                <generatorConfiguration>
+                                    <generator>jsw</generator>
+                                    <includes>
+                                        <include>linux-x86-32</include>
+                                        <include>linux-x86-64</include>
+                                        <include>macosx-universal-32</include>
+                                        <include>solaris-x86-32</include>
+                                        <include>windows-x86-32</include>
+                                    </includes>
+                                    <configuration>
+                                        <property>
+                                            <name>configuration.directory.in.classpath.first</name>
+                                            <value>conf</value>
+                                        </property>
+                                        <property>
+                                            <name>wrapper.logfile</name>
+                                            <value>logs/wrapper.log</value>
+                                        </property>
+                                    </configuration>
+                                </generatorConfiguration>
+                            </generatorConfigurations>
+                        </daemon>
+                    </daemons>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-jsw-scripts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>generate-daemons</goal>
+                            <goal>create-repository</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- SS: This zips up the jsw directory -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-5</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>${basedir}/jsw.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <!-- this is used for inheritance merges -->
+                        <phase>package</phase>
+                        <!-- append to the packaging phase. -->
+                        <goals>
+                            <goal>single</goal>
+                            <!-- goals == mojos -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Package all dependencies into the one jar and make it executable -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.intuso.housemate.broker.App</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-my-jar-with-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+		</plugins>
+	</build>
+</project>

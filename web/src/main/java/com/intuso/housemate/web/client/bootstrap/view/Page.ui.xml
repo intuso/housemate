@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <g:FlowPanel>
+        <b:Navbar inverse="true" position="TOP" addStyleNames="top-navs">
+            <b:Brand>Housemate</b:Brand>
+            <b:Nav alignment="RIGHT">
+                <b:NavLink ui:field="accountButton">Account</b:NavLink>
+                <b:NavLink ui:field="logoutButton">Logout</b:NavLink>
+            </b:Nav>
+        </b:Navbar>
+        <b:Container addStyleNames="main-container">
+            <b:Breadcrumbs hideOn="PHONE" divider=">" ui:field="allBreadcrumbs"/>
+            <b:Breadcrumbs showOn="PHONE" divider=">" ui:field="recentBreadcrumbs"/>
+            <g:SimplePanel ui:field="container"/>
+        </b:Container>
+    </g:FlowPanel>
+</ui:UiBinder>

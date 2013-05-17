@@ -1,0 +1,17 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
+    <g:FlowPanel>
+        <b:Row>
+            <b:Column size="8">
+                <b:Heading size="3">Satisfied</b:Heading>
+                <b:Icon type="THUMBS_UP" ui:field="satisfiedIcon"/>
+                <b:Heading size="3">Child conditions</b:Heading>
+                <h:list.ObjectNavs ui:field="conditionList"/>
+                <b:Heading size="3">Properties</b:Heading>
+                <h:property.PropertyList ui:field="propertyList"/>
+            </b:Column>
+        </b:Row>
+    </g:FlowPanel>
+</ui:UiBinder>

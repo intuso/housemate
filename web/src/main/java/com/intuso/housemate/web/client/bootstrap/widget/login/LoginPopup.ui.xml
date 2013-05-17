@@ -1,0 +1,22 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
+    <g:SimplePanel>
+        <b:Modal backdrop="STATIC" ui:field="modal" animation="true">
+            <b:Form>
+                <b:ControlGroup>
+                    <b:ControlLabel>Username</b:ControlLabel>
+                    <b:TextBox ui:field="username" placeholder="Username"/>
+                </b:ControlGroup>
+                <b:ControlGroup>
+                    <b:ControlLabel>Password</b:ControlLabel>
+                    <b:PasswordTextBox ui:field="password" placeholder="Password"/>
+                </b:ControlGroup>
+            </b:Form>
+            <b:Alert ui:field="message" type="ERROR" visible="false" close="false"></b:Alert>
+            <b:ModalFooter>
+                <b:Button ui:field="loginButton" type="PRIMARY">Login</b:Button>
+            </b:ModalFooter>
+        </b:Modal>
+    </g:SimplePanel>
+</ui:UiBinder>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.6.4//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.6.4/distro-source/core/src/gwt-module.dtd">
+<module rename-to='Housemate'>
+    <!-- Inherit the core Web Toolkit stuff.                        -->
+    <inherits name='com.google.gwt.user.User'/>
+    <inherits name='com.google.gwt.activity.Activity'/>
+    <inherits name='com.google.gwt.place.Place'/>
+    <inherits name='com.google.gwt.user.theme.chrome.Chrome'/>
+
+    <!-- Other module inherits                                      -->
+    <inherits name='com.intuso.housemate.Core'/>
+    <inherits name='com.github.gwtbootstrap.Bootstrap'/>
+
+    <source path="client"></source>
+
+    <!-- Specify the app entry point class.                         -->
+    <entry-point class='com.intuso.housemate.web.client.Housemate'/>
+
+    <!-- specify the implementation of ClientFactory to use -->
+    <replace-with class="com.intuso.housemate.web.client.bootstrap.BootstrapClientFactory">
+        <when-type-is class="com.intuso.housemate.web.client.ClientFactory"/>
+    </replace-with>
+</module>
