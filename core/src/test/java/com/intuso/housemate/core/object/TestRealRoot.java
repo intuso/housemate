@@ -6,6 +6,7 @@ import com.intuso.housemate.real.RealRootObject;
 import com.intuso.housemate.real.impl.type.BooleanType;
 import com.intuso.housemate.real.impl.type.IntegerType;
 import com.intuso.housemate.real.impl.type.StringType;
+import org.junit.Ignore;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,6 +15,7 @@ import com.intuso.housemate.real.impl.type.StringType;
  * Time: 00:48
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class TestRealRoot extends RealRootObject {
 
     public TestRealRoot(RealResources resources) {

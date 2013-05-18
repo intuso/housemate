@@ -14,6 +14,7 @@ import com.intuso.housemate.real.RealResources;
 import com.intuso.utils.log.Log;
 import com.intuso.utils.log.LogLevel;
 import com.intuso.utils.log.writer.StdOutWriter;
+import org.junit.Ignore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ import java.util.regex.Pattern;
  * Time: 20:56
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class TestEnvironment {
 
     public final static TestEnvironment TEST_INSTANCE = new TestEnvironment();

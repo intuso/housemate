@@ -2,6 +2,7 @@ package com.intuso.housemate.core;
 
 import com.intuso.housemate.core.resources.Resources;
 import com.intuso.utils.log.Log;
+import org.junit.Ignore;
 
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import java.util.Map;
  * Time: 08:05
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class TestResources implements Resources {
 
     private final Log log;

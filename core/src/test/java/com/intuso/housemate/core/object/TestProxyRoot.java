@@ -10,6 +10,7 @@ import com.intuso.housemate.proxy.ProxyResources;
 import com.intuso.housemate.proxy.ProxyRootObject;
 import com.intuso.housemate.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.proxy.simple.SimpleProxyObject;
+import org.junit.Ignore;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,6 +19,7 @@ import com.intuso.housemate.proxy.simple.SimpleProxyObject;
  * Time: 00:48
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class TestProxyRoot extends ProxyRootObject<
             ProxyResources<SimpleProxyFactory.All>,
             ProxyResources<?>,

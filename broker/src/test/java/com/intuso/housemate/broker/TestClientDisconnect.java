@@ -58,14 +58,20 @@ public class TestClientDisconnect {
                 root.connect(new UsernamePassword(false, "admin", "admin", false), new AuthenticationResponseHandler() {
                     @Override
                     public void responseReceived(Root.AuthenticationResponse response) {
-                        disconnected.set(false);
+                        synchronized (disconnected) {
+                            disconnected.set(false);
+                            disconnected.notify();
+                        }
                         RemoteClient client = environment.getGeneralResources().getAuthenticationController().getClient(
                                 Arrays.asList("1", "0"));
                         assertNotNull(client);
                         client.addDisconnectListener(new DisconnectListener() {
                             @Override
                             public void disconnected(RemoteClient client) {
-                                disconnected.set(true);
+                                synchronized (disconnected) {
+                                    disconnected.set(true);
+                                    disconnected.notify();
+                                }
                             }
                         });
                     }
@@ -73,11 +79,15 @@ public class TestClientDisconnect {
             }
         });
 
-        Thread.sleep(300);// wait for messages to be processed
-        assertFalse(disconnected.get());
+        synchronized (disconnected) {
+            disconnected.wait(); // wait for messages to be processed
+            assertFalse(disconnected.get());
+        }
         root.disconnect();
-        Thread.sleep(100);// wait for messages to be processed
-        assertTrue(disconnected.get());
+        synchronized (disconnected) {
+            disconnected.wait(); // wait for messages to be processed
+            assertTrue(disconnected.get());
+        }
     }
 
     @Test
@@ -131,14 +141,20 @@ public class TestClientDisconnect {
                 root.connect(new UsernamePassword(false, "admin", "admin", false), new AuthenticationResponseHandler() {
                     @Override
                     public void responseReceived(Root.AuthenticationResponse response) {
-                        disconnected.set(false);
+                        synchronized (disconnected) {
+                            disconnected.set(false);
+                            disconnected.notify();
+                        }
                         RemoteClient client = environment.getGeneralResources().getAuthenticationController().getClient(
                                 Arrays.asList("2", "0"));
                         assertNotNull(client);
                         client.addDisconnectListener(new DisconnectListener() {
                             @Override
                             public void disconnected(RemoteClient client) {
-                                disconnected.set(true);
+                                synchronized (disconnected) {
+                                    disconnected.set(true);
+                                    disconnected.notify();
+                                }
                             }
                         });
                     }
@@ -146,13 +162,17 @@ public class TestClientDisconnect {
             }
         });
 
-        Thread.sleep(300);// wait for messages to be processed
-        assertFalse(disconnected.get());
+        synchronized (disconnected) {
+            disconnected.wait(); // wait for messages to be processed
+            assertFalse(disconnected.get());
+        }
         server.close();
         accepter.interrupt();
         accepter.join();
-        Thread.sleep(100);// wait for messages to be processed
-        assertTrue(disconnected.get());
+        synchronized (disconnected) {
+            disconnected.wait(); // wait for messages to be processed
+            assertTrue(disconnected.get());
+        }
     }
 
     private class StreamBridge extends Thread {

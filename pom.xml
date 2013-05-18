@@ -10,15 +10,14 @@
     <description>Parent for the Housemate framework</description>
 
     <properties>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
         <junit.version>4.8.1</junit.version>
+        <guava.version>13.0.1</guava.version>
+        <guice.version>3.0</guice.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
     </properties>
-
-    <scm>
-        <connection>scm:svn:https://intuso.com/svn/housemate/trunk/</connection>
-        <developerConnection>scm:svn:https://intuso.com/svn/housemate/trunk/</developerConnection>
-    </scm>
 
     <modules>
         <module>core</module>
@@ -39,6 +38,42 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Attach sources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Attach javadocs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <scm>
+        <connection>scm:svn:https://intuso.com/svn/housemate/trunk/</connection>
+        <developerConnection>scm:svn:https://intuso.com/svn/housemate/trunk/</developerConnection>
+    </scm>
 
     <distributionManagement>
         <repository>

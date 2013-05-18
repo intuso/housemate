@@ -12,8 +12,6 @@ import com.intuso.housemate.web.client.event.LoggedInEvent;
 import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
 
-import javax.naming.ServiceUnavailableException;
-
 /**
  * Created by IntelliJ IDEA.
  * User: tomc

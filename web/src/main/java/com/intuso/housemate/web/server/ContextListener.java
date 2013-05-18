@@ -1,10 +1,7 @@
 package com.intuso.housemate.web.server;
 
-import com.intuso.housemate.broker.App;
-import com.intuso.housemate.core.HousemateException;
 import com.intuso.housemate.core.authentication.UsernamePassword;
 import com.intuso.housemate.core.resources.ClientResources;
-import com.intuso.housemate.platform.pc.PCEnvironment;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -22,18 +19,8 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        try {
-            // will be null if started in dev mode, in which case the broker is run separately
-            if(com.intuso.jetty.embedded.App.ARGS == null) {
-                RESOURCES = new PCEnvironment(new String[0]).getResources();
-            } else {
-                RESOURCES = App.start(new String[0]).getGeneralResources().getClientResources();
-            }
-            RESOURCES.getRouter().connect(new UsernamePassword(false, "admin", "admin", false), null);
-        } catch(HousemateException e) {
-            System.err.println("Failed to start broker");
-            e.printStackTrace();
-        }
+        // will be null if started in dev mode, in which case the broker is run separately
+        RESOURCES.getRouter().connect(new UsernamePassword(false, "admin", "admin", false), null);
     }
 
     @Override

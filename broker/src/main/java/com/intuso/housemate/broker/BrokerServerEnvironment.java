@@ -267,10 +267,16 @@ public class BrokerServerEnvironment {
 
         // discover plugins from local dir
         File pluginDirectory = new File(this.config_dir, PLUGINS_DIR_NAME);
-        generalResources.getLog().d("Loading plugins from " + pluginDirectory.getAbsolutePath());
-        for(File pluginFile : pluginDirectory.listFiles(new PluginFileFilter())) {
-            for(PluginDescriptor plugin : loadPlugin(pluginFile))
-                generalResources.addPlugin(plugin);
+        if(!pluginDirectory.exists())
+            pluginDirectory.mkdir();
+        if(pluginDirectory.isFile())
+            log.w("Plugin path is not a directory");
+        else {
+            generalResources.getLog().d("Loading plugins from " + pluginDirectory.getAbsolutePath());
+            for(File pluginFile : pluginDirectory.listFiles(new PluginFileFilter())) {
+                for(PluginDescriptor plugin : loadPlugin(pluginFile))
+                    generalResources.addPlugin(plugin);
+            }
         }
     }
 
