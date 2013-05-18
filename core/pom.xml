@@ -1,36 +1,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.intuso.housemate</groupId>
-	<artifactId>core</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
 
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>lisa-n-tom.com-releases</name>
-            <url>https://lisa-n-tom.com/artifactory/libs-releases-local/</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>lisa-n-tom.com-snapshots</name>
-            <url>https://lisa-n-tom.com/artifactory/libs-snapshot-local/</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <parent>
+        <groupId>com.intuso.housemate</groupId>
+        <artifactId>housemate</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+	<artifactId>core</artifactId>
+    <name>Housemate Core</name>
+    <description>The data objects and interfaces that make up the core of the Housemate framework</description>
 
 	<dependencies>
         <dependency>
             <groupId>com.intuso</groupId>
             <artifactId>entity-lib</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
 		<!-- needed for logging only - should refactor utils into several subprojects -->
         <dependency>
 			<groupId>com.intuso</groupId>
 			<artifactId>utils</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 
         <!-- Guava goodness -->
@@ -61,44 +54,5 @@
             <artifactId>guice-assistedinject</artifactId>
             <version>3.0</version>
         </dependency>
-
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.7</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-
-				<configuration>
-                    <compilerArgument>-verbose</compilerArgument>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-
-			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <attach>true</attach>
-                </configuration>
-            </plugin>
-		</plugins>
-	</build>
 </project>

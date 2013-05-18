@@ -5,73 +5,32 @@
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.intuso.housemate</groupId>
-    <artifactId>web-ui</artifactId>
+
+    <parent>
+        <groupId>com.intuso.housemate</groupId>
+        <artifactId>housemate</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>web</artifactId>
     <packaging>war</packaging>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>web</name>
-
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>lisa-n-tom.com-releases</name>
-            <url>https://lisa-n-tom.com/artifactory/libs-releases-local/</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>lisa-n-tom.com-snapshots</name>
-            <url>https://lisa-n-tom.com/artifactory/libs-snapshot-local/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <repositories>
-        <repository>
-            <id>sonatype</id>
-            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-        </repository>
-    </repositories>
+    <name>Housemate Web</name>
+    <description>Housemate web interface</description>
 
     <properties>
-        <jetty.version>8.1.7.v20120910</jetty.version>
-        <jetty.orbit.version>3.0.0.v201112011016</jetty.orbit.version>
         <gwtMainVersion>2.4</gwtMainVersion>
         <gwtVersion>${gwtMainVersion}.0</gwtVersion>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
 
         <!-- Housemate -->
         <dependency>
-            <groupId>com.intuso</groupId>
-            <artifactId>utils</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.intuso</groupId>
-            <artifactId>entity-lib</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.intuso.housemate</groupId>
-            <artifactId>platform-pc</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.intuso.housemate</groupId>
-            <artifactId>broker</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- GWT -->
@@ -110,72 +69,11 @@
             <artifactId>slf4j-simple</artifactId>
             <version>1.6.6</version>
         </dependency>
+    </dependencies>
 
-        <!-- Runnable war. Each dependency in the tree has to be overlaid individually. To be overlaid
-             it must first be added as a dependency. Must be a better way of making a runnable jar? -->
-        <dependency>
-            <groupId>com.intuso</groupId>
-            <artifactId>jetty-embedded</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.orbit</groupId>
-            <artifactId>javax.servlet</artifactId>
-            <version>${jetty.orbit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-continuation</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-http</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-io</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-xml</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-security</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        </dependencies>
-
-        <build>
-        <!-- Generate compiled stuff in the folder used for developing mode -->
-        <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
+    <build>
 
         <plugins>
-
             <!-- GWT Maven Plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -256,92 +154,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Make the jar a runnable war -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.intuso.jetty.embedded.App</mainClass>
-                        </manifest>
-                    </archive>
-                    <packagingExcludes>WEB-INF/lib/jetty-*.jar</packagingExcludes>
-                    <overlays>
-
-                        <!-- Logging -->
-                        <overlay>
-                            <groupId>org.slf4j</groupId>
-                            <artifactId>slf4j-api</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.slf4j</groupId>
-                            <artifactId>slf4j-simple</artifactId>
-                            <type>jar</type>
-                        </overlay>
-
-                        <!-- Jetty stuff -->
-                        <overlay>
-                            <groupId>com.intuso</groupId>
-                            <artifactId>jetty-embedded</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-server</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.eclipse.jetty.orbit</groupId>
-                            <artifactId>javax.servlet</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-continuation</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-http</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-io</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-webapp</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-xml</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-util</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-servlet</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                        <overlay>
-                            <groupId>org.eclipse.jetty</groupId>
-                            <artifactId>jetty-security</artifactId>
-                            <type>jar</type>
-                        </overlay>
-                    </overlays>
-                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -8,9 +8,9 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>twitter</artifactId>
+    <artifactId>addon</artifactId>
     <packaging>pom</packaging>
-    <name>Housemate Addons</name>
+    <name>Housemate Addon</name>
     <description>Addons for the Housemate framework</description>
 
     <modules>

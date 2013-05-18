@@ -4,17 +4,17 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>housemate</artifactId>
+        <artifactId>comms-transport</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>platform</artifactId>
+    <artifactId>comms-transport-socket</artifactId>
     <packaging>pom</packaging>
-    <name>Housemate Platform</name>
-    <description>Platforms for the Housemate framework</description>
+    <name>Housemate Comms Transport Socket</name>
+    <description>Socket transport for Comms for the Housemate framework</description>
 
     <modules>
-        <module>pc</module>
+        <module>client</module>
     </modules>
 
 </project>

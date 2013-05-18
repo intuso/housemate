@@ -8,9 +8,9 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-	<groupId>com.intuso.housemate</groupId>
-	<artifactId>twitter</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<artifactId>addon-twitter</artifactId>
+    <name>Housemate Addon Twitter</name>
+    <description>Addon that tweets as events happen</description>
 
 	<dependencies>
 		<dependency>
@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>com.intuso.housemate</groupId>
 			<artifactId>platform-pc</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.twitter4j</groupId>
@@ -56,7 +56,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 </project>

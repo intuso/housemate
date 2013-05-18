@@ -1,43 +1,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.intuso.housemate.plugin</groupId>
-	<artifactId>rfxcom</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
 
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>lisa-n-tom.com-releases</name>
-            <url>https://lisa-n-tom.com/artifactory/libs-releases-local/</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>lisa-n-tom.com-snapshots</name>
-            <url>https://lisa-n-tom.com/artifactory/libs-snapshot-local/</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <parent>
+        <groupId>com.intuso.housemate</groupId>
+        <artifactId>plugin</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+	<artifactId>plugin-home-easy-device</artifactId>
+	<name>Housemate Plugin Home Easy Device</name>
+    <description>Housemate plugin for Home Easy devices</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.intuso.housemate</groupId>
 			<artifactId>core</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>broker</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 		<dependency>
 			<groupId>com.intuso.housemate</groupId>
 			<artifactId>platform-pc</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.intuso.housemate</groupId>
-			<artifactId>device-start-program</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.rfxcom</groupId>
@@ -47,18 +36,7 @@
 	</dependencies>
 
 	<build>
-		<!-- Use Java 1.6 -->
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-
 			<!-- Package all dependencies into the one jar and make it executable -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -67,10 +45,6 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<mainClass>com.lisantom.our.housemate.Main</mainClass>
-						</manifest>
                         <manifestEntries>
                             <Housemate-Plugin>com.lisantom.our.housemate.RFXComPlugin</Housemate-Plugin>
                         </manifestEntries>
@@ -86,7 +60,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 </project>
