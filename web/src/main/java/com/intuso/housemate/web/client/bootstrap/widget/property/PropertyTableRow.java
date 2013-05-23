@@ -4,7 +4,7 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Label;
-import com.intuso.housemate.core.object.property.Property;
+import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.argument.ArgumentInput;
 import com.intuso.housemate.web.client.bootstrap.widget.argument.ArgumentTableRow;

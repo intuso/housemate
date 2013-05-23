@@ -1,12 +1,13 @@
 package com.lisantom.our.housemate;
 
 import com.google.common.collect.Lists;
-import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.broker.plugin.BrokerConditionFactory;
-import com.intuso.housemate.broker.plugin.BrokerConsequenceFactory;
-import com.intuso.housemate.broker.plugin.PluginDescriptor;
-import com.intuso.housemate.broker.plugin.RealDeviceFactory;
-import com.intuso.housemate.real.RealType;
+import com.intuso.housemate.api.resources.Resources;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.plugin.api.BrokerConditionFactory;
+import com.intuso.housemate.plugin.api.BrokerConsequenceFactory;
+import com.intuso.housemate.plugin.api.PluginDescriptor;
+import com.intuso.housemate.plugin.api.RealDeviceFactory;
 import com.rfxcom.rfxtrx.RFXtrx;
 import com.rfxcom.rfxtrx.util.HomeEasy;
 import gnu.io.CommPortIdentifier;
@@ -40,7 +41,7 @@ public class RFXComPlugin implements PluginDescriptor {
     }
 
     @Override
-    public void init(BrokerGeneralResources resources) {
+    public void init(Resources resources) {
         resources.getLog().d("Initialising RFXCom plugin");
         java.util.List<CommPortIdentifier> portIds = RFXtrx.listSuitablePorts(resources.getLog());
         CommPortIdentifier portId = null;
@@ -62,7 +63,7 @@ public class RFXComPlugin implements PluginDescriptor {
     }
 
     @Override
-    public List<RealType<?, ?, ?>> getTypes() {
+    public List<RealType<?, ?, ?>> getTypes(RealResources resources) {
         return Lists.newArrayList();
     }
 

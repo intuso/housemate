@@ -1,20 +1,21 @@
 package com.intuso.housemate.broker.object.general;
 
 import com.google.common.collect.Lists;
-import com.intuso.housemate.broker.comms.ClientPayload;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.HousemateRuntimeException;
-import com.intuso.housemate.core.authentication.AuthenticationMethod;
-import com.intuso.housemate.core.authentication.AuthenticationResponseHandler;
-import com.intuso.housemate.core.comms.Message;
-import com.intuso.housemate.core.comms.Receiver;
-import com.intuso.housemate.core.comms.Router;
-import com.intuso.housemate.core.comms.message.StringMessageValue;
-import com.intuso.housemate.core.object.HousemateObject;
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.core.object.root.Root;
-import com.intuso.housemate.core.object.root.RootListener;
-import com.intuso.housemate.core.object.root.RootWrappable;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.HousemateRuntimeException;
+import com.intuso.housemate.api.authentication.AuthenticationMethod;
+import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
+import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.comms.message.StringMessageValue;
+import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.ObjectLifecycleListener;
+import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.api.object.root.RootWrappable;
+import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.listeners.ListenerRegistration;
 
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.List;
  */
 public class BrokerGeneralRootObject
         extends HousemateObject<BrokerGeneralResources, RootWrappable, HousemateObjectWrappable<?>,
-            HousemateObject<?, ?, ?, ?, ?>, RootListener<? super BrokerGeneralRootObject>>
+                    HousemateObject<?, ?, ?, ?, ?>, RootListener<? super BrokerGeneralRootObject>>
         implements Root<BrokerGeneralRootObject, RootListener<? super BrokerGeneralRootObject>> {
 
     public BrokerGeneralRootObject(BrokerGeneralResources resources) {
@@ -45,6 +46,11 @@ public class BrokerGeneralRootObject
     @Override
     public void disconnect() {
         throw new HousemateRuntimeException("Cannot disconnect this type of root object");
+    }
+
+    @Override
+    public ListenerRegistration<ObjectLifecycleListener> addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener) {
+        throw new HousemateRuntimeException("This root object is not intended to have listeners on its child objects");
     }
 
     @Override

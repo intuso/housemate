@@ -1,6 +1,6 @@
 package com.intuso.housemate.broker.comms;
 
-import com.intuso.housemate.core.HousemateException;
+import com.intuso.housemate.api.HousemateException;
 
 import java.util.Arrays;
 import java.util.Stack;

@@ -1,9 +1,9 @@
 package com.intuso.housemate.broker.object.bridge;
 
-import com.intuso.housemate.core.object.NoChildrenWrappable;
-import com.intuso.housemate.core.object.type.option.Option;
-import com.intuso.housemate.core.object.type.option.OptionListener;
-import com.intuso.housemate.core.object.type.option.OptionWrappable;
+import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.type.option.Option;
+import com.intuso.housemate.api.object.type.option.OptionListener;
+import com.intuso.housemate.api.object.type.option.OptionWrappable;
 
 /**
  * Created with IntelliJ IDEA.

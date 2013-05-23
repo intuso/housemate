@@ -2,12 +2,12 @@ package com.intuso.housemate.web.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.authentication.AuthenticationMethod;
-import com.intuso.housemate.core.authentication.AuthenticationResponseHandler;
-import com.intuso.housemate.core.comms.Comms;
-import com.intuso.housemate.core.comms.Message;
-import com.intuso.housemate.core.resources.Resources;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.authentication.AuthenticationMethod;
+import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
+import com.intuso.housemate.api.comms.Comms;
+import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.web.client.event.LoggedInEvent;
 import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
@@ -64,7 +64,7 @@ public class GWTComms extends Comms {
     /**
      * Create a new comms instance
      *
-     * @throws com.intuso.housemate.core.HousemateException
+     * @throws com.intuso.housemate.api.HousemateException
      *          if an error occurs creating the comms instance
      */
     protected GWTComms(Resources resources) {

@@ -1,20 +1,20 @@
 package com.intuso.housemate.broker.factory;
 
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.device.DeviceWrappable;
+import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.broker.object.real.BrokerRealArgument;
-import com.intuso.housemate.broker.object.real.BrokerRealCommand;
-import com.intuso.housemate.broker.plugin.PluginDescriptor;
-import com.intuso.housemate.broker.plugin.RealDeviceFactory;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.object.type.TypeSerialiser;
-import com.intuso.housemate.core.object.device.DeviceWrappable;
-import com.intuso.housemate.real.RealDevice;
-import com.intuso.housemate.real.RealList;
-import com.intuso.housemate.real.RealOption;
-import com.intuso.housemate.real.RealResources;
-import com.intuso.housemate.real.impl.type.RealSingleChoiceType;
-import com.intuso.housemate.real.impl.type.StringType;
+import com.intuso.housemate.object.real.RealArgument;
+import com.intuso.housemate.object.real.RealCommand;
+import com.intuso.housemate.object.real.RealDevice;
+import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealOption;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.real.impl.type.RealSingleChoiceType;
+import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.plugin.api.PluginDescriptor;
+import com.intuso.housemate.plugin.api.RealDeviceFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,11 +60,11 @@ public final class DeviceFactory implements PluginListener {
         return type;
     }
 
-    public BrokerRealCommand createAddDeviceCommand(String commandId, String commandName, String commandDescription, final RealList<DeviceWrappable, RealDevice> list) {
-        return new BrokerRealCommand(resources.getRealResources(), commandId, commandName, commandDescription, Arrays.asList(
-                new BrokerRealArgument<String>(resources.getRealResources(), NAME_ARGUMENT_ID, NAME_ARGUMENT_NAME, NAME_ARGUMENT_DESCRIPTION, new StringType(resources.getClientResources())),
-                new BrokerRealArgument<String>(resources.getRealResources(), DESCRIPTION_ARGUMENT_ID, DESCRIPTION_ARGUMENT_NAME, DESCRIPTION_ARGUMENT_DESCRIPTION, new StringType(resources.getClientResources())),
-                new BrokerRealArgument<RealDeviceFactory<?>>(resources.getRealResources(), TYPE_ARGUMENT_ID, TYPE_ARGUMENT_NAME, TYPE_ARGUMENT_DESCRIPTION, type)
+    public RealCommand createAddDeviceCommand(String commandId, String commandName, String commandDescription, final RealList<DeviceWrappable, RealDevice> list) {
+        return new RealCommand(resources.getClientResources(), commandId, commandName, commandDescription, Arrays.asList(
+                new RealArgument<String>(resources.getClientResources(), NAME_ARGUMENT_ID, NAME_ARGUMENT_NAME, NAME_ARGUMENT_DESCRIPTION, new StringType(resources.getClientResources())),
+                new RealArgument<String>(resources.getClientResources(), DESCRIPTION_ARGUMENT_ID, DESCRIPTION_ARGUMENT_NAME, DESCRIPTION_ARGUMENT_DESCRIPTION, new StringType(resources.getClientResources())),
+                new RealArgument<RealDeviceFactory<?>>(resources.getClientResources(), TYPE_ARGUMENT_ID, TYPE_ARGUMENT_NAME, TYPE_ARGUMENT_DESCRIPTION, type)
         )) {
             @Override
             public void perform(Map<String, String> values) throws HousemateException {

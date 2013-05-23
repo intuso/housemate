@@ -1,12 +1,12 @@
 package com.intuso.housemate.web.client.object;
 
-import com.intuso.housemate.core.object.HousemateObjectFactory;
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.core.object.condition.ConditionWrappable;
-import com.intuso.housemate.core.object.consequence.ConsequenceWrappable;
-import com.intuso.housemate.core.object.rule.RuleWrappable;
-import com.intuso.housemate.proxy.ProxyObject;
-import com.intuso.housemate.proxy.ProxyRule;
+import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.condition.ConditionWrappable;
+import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
+import com.intuso.housemate.api.object.rule.RuleWrappable;
+import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.object.proxy.ProxyRule;
 import com.intuso.housemate.web.client.GWTResources;
 
 /**

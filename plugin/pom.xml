@@ -14,8 +14,10 @@
     <description>Plugins for the Housemate framework</description>
 
     <modules>
+        <module>api</module>
         <module>home-easy-device</module>
         <module>run-program-device</module>
+        <module>twitter</module>
     </modules>
 
 </project>

@@ -6,7 +6,7 @@ import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.intuso.housemate.proxy.ProxyObject;
+import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.event.ObjectSelectedEvent;
 import com.intuso.housemate.web.client.handler.HasObjectSelectedHandlers;
 import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;

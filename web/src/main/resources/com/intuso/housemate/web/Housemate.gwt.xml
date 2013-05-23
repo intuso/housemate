@@ -8,7 +8,7 @@
     <inherits name='com.google.gwt.user.theme.chrome.Chrome'/>
 
     <!-- Other module inherits                                      -->
-    <inherits name='com.intuso.housemate.Core'/>
+    <inherits name='com.intuso.housemate.object.Proxy'/>
     <inherits name='com.github.gwtbootstrap.Bootstrap'/>
 
     <source path="client"></source>

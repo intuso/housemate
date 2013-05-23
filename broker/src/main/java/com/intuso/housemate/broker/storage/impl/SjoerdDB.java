@@ -5,7 +5,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.broker.storage.DetailsNotFoundException;
 import com.intuso.housemate.broker.storage.Storage;
-import com.intuso.housemate.core.HousemateException;
+import com.intuso.housemate.api.HousemateException;
 
 import javax.annotation.Nullable;
 import java.io.File;

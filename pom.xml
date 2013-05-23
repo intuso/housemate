@@ -10,8 +10,8 @@
     <description>Parent for the Housemate framework</description>
 
     <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
         <junit.version>4.8.1</junit.version>
         <guava.version>13.0.1</guava.version>
         <guice.version>3.0</guice.version>
@@ -20,13 +20,13 @@
     </properties>
 
     <modules>
-        <module>core</module>
+        <module>api</module>
+        <module>object</module>
         <module>web</module>
         <module>broker</module>
         <module>comms</module>
 	    <module>platform</module>
         <module>plugin</module>
-	    <module>addon</module>
     </modules>
 
     <dependencies>
@@ -55,7 +55,7 @@
                 </executions>
             </plugin>
             <!-- Attach javadocs -->
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <executions>
@@ -66,7 +66,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 

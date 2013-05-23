@@ -1,6 +1,6 @@
 package com.intuso.housemate.web.client.handler;
 
-import com.intuso.housemate.proxy.ProxyObject;
+import com.intuso.housemate.object.proxy.ProxyObject;
 
 /**
  * Created with IntelliJ IDEA.

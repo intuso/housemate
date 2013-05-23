@@ -1,9 +1,9 @@
 package com.intuso.housemate.broker.object.bridge;
 
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.core.object.primary.PrimaryListener;
-import com.intuso.housemate.core.object.primary.PrimaryObject;
-import com.intuso.housemate.real.impl.type.BooleanType;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.primary.PrimaryListener;
+import com.intuso.housemate.api.object.primary.PrimaryObject;
+import com.intuso.housemate.object.real.impl.type.BooleanType;
 
 /**
  * Created with IntelliJ IDEA.

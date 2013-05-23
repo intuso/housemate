@@ -1,6 +1,6 @@
 package com.intuso.housemate.broker;
 
-import com.intuso.housemate.core.HousemateException;
+import com.intuso.housemate.api.HousemateException;
 
 /**
  * Main class for the broker
@@ -15,7 +15,7 @@ public class App {
 
     public static BrokerServerEnvironment start(String[] args) throws HousemateException {
 		BrokerServerEnvironment environment = new BrokerServerEnvironment(args);
-        environment.getGeneralResources().getRealResources().getRoot().loadObjects();
+        environment.getGeneralResources().getStorage().loadObjects();
         return environment;
 	}
 }

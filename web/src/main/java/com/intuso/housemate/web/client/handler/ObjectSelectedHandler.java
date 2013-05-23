@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.handler;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.intuso.housemate.core.object.HousemateObject;
+import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.web.client.event.ObjectSelectedEvent;
 
 /**

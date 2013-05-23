@@ -6,7 +6,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.intuso.housemate.proxy.ProxyRootListener;
+import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
 import com.intuso.housemate.web.client.event.LoggedInEvent;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.handler.LoggedInHandler;

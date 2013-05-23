@@ -1,10 +1,10 @@
 package com.intuso.housemate.client.comms;
 
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.comms.Comms;
-import com.intuso.housemate.core.comms.Message;
-import com.intuso.housemate.core.comms.message.EmptyMessageValue;
-import com.intuso.housemate.core.resources.Resources;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.Comms;
+import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.message.EmptyMessageValue;
+import com.intuso.housemate.api.resources.Resources;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -6,7 +6,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.core.object.list.ListListener;
+import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.web.client.GWTResources;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.device.DeviceShortcut;

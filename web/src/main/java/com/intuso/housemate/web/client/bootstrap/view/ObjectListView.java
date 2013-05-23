@@ -8,7 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.proxy.ProxyObject;
+import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.GWTResources;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.list.ObjectNavs;

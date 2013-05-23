@@ -1,17 +1,17 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.broker.comms.ClientPayload;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.comms.Message;
-import com.intuso.housemate.core.comms.Receiver;
-import com.intuso.housemate.core.object.command.Command;
-import com.intuso.housemate.core.object.command.CommandListener;
-import com.intuso.housemate.core.object.command.CommandWrappable;
-import com.intuso.housemate.core.object.command.argument.Argument;
-import com.intuso.housemate.core.object.command.argument.ArgumentWrappable;
-import com.intuso.housemate.core.object.list.List;
-import com.intuso.housemate.core.object.list.ListWrappable;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.object.command.Command;
+import com.intuso.housemate.api.object.command.CommandListener;
+import com.intuso.housemate.api.object.command.CommandWrappable;
+import com.intuso.housemate.api.object.command.argument.Argument;
+import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.listeners.ListenerRegistration;
 
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ import java.util.Map;
 public class CommandBridge
         extends BridgeObject<CommandWrappable, ListWrappable<ArgumentWrappable>,
             ListBridge<Argument<?>, ArgumentWrappable, ArgumentBridge>, CommandBridge,
-            CommandListener<? super CommandBridge>>
+        CommandListener<? super CommandBridge>>
         implements Command<ListBridge<Argument<?>, ArgumentWrappable, ArgumentBridge>, CommandBridge> {
 
     private Command<?, ?> proxyCommand;

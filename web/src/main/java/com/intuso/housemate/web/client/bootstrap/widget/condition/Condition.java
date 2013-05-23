@@ -7,7 +7,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.core.object.condition.ConditionListener;
+import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.list.ObjectNavs;
 import com.intuso.housemate.web.client.bootstrap.widget.property.PropertyList;

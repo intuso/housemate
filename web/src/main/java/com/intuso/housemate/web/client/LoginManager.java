@@ -1,11 +1,11 @@
 package com.intuso.housemate.web.client;
 
 import com.google.gwt.user.client.Cookies;
-import com.intuso.housemate.core.authentication.AuthenticationMethod;
-import com.intuso.housemate.core.authentication.AuthenticationResponseHandler;
-import com.intuso.housemate.core.authentication.Session;
-import com.intuso.housemate.core.authentication.UsernamePassword;
-import com.intuso.housemate.core.object.root.Root;
+import com.intuso.housemate.api.authentication.AuthenticationMethod;
+import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
+import com.intuso.housemate.api.authentication.Session;
+import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.web.client.event.CredentialsSubmittedEvent;
 import com.intuso.housemate.web.client.event.LoggedInEvent;
 import com.intuso.housemate.web.client.handler.CredentialsSubmittedHandler;

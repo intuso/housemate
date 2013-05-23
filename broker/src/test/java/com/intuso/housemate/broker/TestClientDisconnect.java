@@ -1,15 +1,15 @@
 package com.intuso.housemate.broker;
 
-import com.intuso.housemate.broker.client.DisconnectListener;
-import com.intuso.housemate.broker.client.RemoteClient;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
+import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.client.comms.ClientComms;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.authentication.AuthenticationResponseHandler;
-import com.intuso.housemate.core.authentication.UsernamePassword;
-import com.intuso.housemate.core.object.root.Root;
-import com.intuso.housemate.proxy.ProxyResources;
-import com.intuso.housemate.proxy.simple.SimpleProxyFactory;
-import com.intuso.housemate.proxy.simple.SimpleProxyObject;
+import com.intuso.housemate.object.broker.DisconnectListener;
+import com.intuso.housemate.object.broker.RemoteClient;
+import com.intuso.housemate.object.proxy.ProxyResources;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
 import org.junit.Test;
 
 import java.io.IOException;

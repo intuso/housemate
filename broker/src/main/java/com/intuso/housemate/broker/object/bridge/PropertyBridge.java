@@ -1,10 +1,10 @@
 package com.intuso.housemate.broker.object.bridge;
 
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.object.command.CommandListener;
-import com.intuso.housemate.core.object.command.CommandWrappable;
-import com.intuso.housemate.core.object.property.Property;
-import com.intuso.housemate.core.object.property.PropertyWrappable;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.command.CommandListener;
+import com.intuso.housemate.api.object.command.CommandWrappable;
+import com.intuso.housemate.api.object.property.Property;
+import com.intuso.housemate.api.object.property.PropertyWrappable;
 
 import java.util.HashMap;
 

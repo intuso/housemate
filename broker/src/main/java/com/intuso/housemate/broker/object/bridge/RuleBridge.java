@@ -1,13 +1,13 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.core.object.condition.Condition;
-import com.intuso.housemate.core.object.condition.ConditionWrappable;
-import com.intuso.housemate.core.object.consequence.Consequence;
-import com.intuso.housemate.core.object.consequence.ConsequenceWrappable;
-import com.intuso.housemate.core.object.rule.Rule;
-import com.intuso.housemate.core.object.rule.RuleListener;
-import com.intuso.housemate.core.object.rule.RuleWrappable;
+import com.intuso.housemate.api.object.condition.Condition;
+import com.intuso.housemate.api.object.condition.ConditionWrappable;
+import com.intuso.housemate.api.object.consequence.Consequence;
+import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
+import com.intuso.housemate.api.object.rule.Rule;
+import com.intuso.housemate.api.object.rule.RuleListener;
+import com.intuso.housemate.api.object.rule.RuleWrappable;
 
 import javax.annotation.Nullable;
 
@@ -21,8 +21,8 @@ import javax.annotation.Nullable;
 public class RuleBridge
         extends PrimaryObjectBridge<RuleWrappable, RuleBridge, RuleListener<? super RuleBridge>>
         implements Rule<PropertyBridge, CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge,
-            ConditionBridge,ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge>, ConsequenceBridge,
-            ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge>, RuleBridge> {
+                    ConditionBridge,ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge>, ConsequenceBridge,
+                    ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge>, RuleBridge> {
 
     private ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge> conditionList;
     private ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge> satisfiedConsequenceList;

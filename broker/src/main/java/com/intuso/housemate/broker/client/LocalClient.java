@@ -1,14 +1,13 @@
 package com.intuso.housemate.broker.client;
 
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.broker.plugin.PluginDescriptor;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.authentication.AuthenticationMethod;
-import com.intuso.housemate.core.comms.Message;
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.real.RealRootObject;
-import com.intuso.housemate.real.RealType;
+import com.intuso.housemate.object.real.RealCommand;
+import com.intuso.housemate.object.real.RealRootObject;
+import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.plugin.api.PluginDescriptor;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,36 +19,20 @@ import com.intuso.housemate.real.RealType;
 public class LocalClient implements PluginListener {
 
     private final BrokerGeneralResources resources;
-    private final RealRootObject root;
+    private final LocalClientRoot root;
 
     public LocalClient(final BrokerGeneralResources resources) throws HousemateException {
         this.resources = resources;
-        root = new RealRootObject(resources.getClientResources()) {
-            @Override
-            public void messageReceived(Message<Message.Payload> message) throws HousemateException {
-                if(message.getPayload() instanceof HousemateObjectWrappable)
-                    super.messageReceived(new Message(message.getPath(), message.getType(),
-                        ((HousemateObjectWrappable)message.getPayload()).deepClone(),
-                        message.getRoute()));
-                else
-                    super.messageReceived(message);
-            }
-
-            @Override
-            public void sendMessage(Message<?> message) {
-                if(message.getPayload() instanceof HousemateObjectWrappable)
-                    super.sendMessage(new Message(message.getPath(), message.getType(),
-                            ((HousemateObjectWrappable)message.getPayload()).deepClone(),
-                            message.getRoute()));
-                else
-                    super.sendMessage(message);
-            }
-        };
+        root = new LocalClientRoot(resources);
         root.connect(new InternalConnectMethod(), null);
         root.addType(resources.getDeviceFactory().getType());
         root.addType(resources.getConditionFactory().getType());
         root.addType(resources.getConsequenceFactory().getType());
         resources.addPluginListener(LocalClient.this, true);
+    }
+
+    public RealCommand getAddDeviceCommand() {
+        return root.getAddDeviceCommand();
     }
 
     public RealRootObject getRoot() {
@@ -58,7 +41,7 @@ public class LocalClient implements PluginListener {
 
     @Override
     public void pluginAdded(PluginDescriptor plugin) {
-        for(RealType<?, ?, ?> type : plugin.getTypes()) {
+        for(RealType<?, ?, ?> type : plugin.getTypes(resources.getClientResources())) {
             resources.getLog().d("Adding type " + type.getId());
             root.addType(type);
         }
@@ -66,7 +49,7 @@ public class LocalClient implements PluginListener {
 
     @Override
     public void pluginRemoved(PluginDescriptor plugin) {
-        for(RealType<?, ?, ?> type : plugin.getTypes())
+        for(RealType<?, ?, ?> type : plugin.getTypes(resources.getClientResources()))
             root.removeType(type.getId());
     }
 

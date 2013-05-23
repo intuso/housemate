@@ -1,7 +1,7 @@
 package com.intuso.housemate.broker.object.bridge;
 
-import com.intuso.housemate.core.object.NoChildrenWrappable;
-import com.intuso.housemate.core.object.ObjectListener;
+import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.ObjectListener;
 
 /**
  * Created with IntelliJ IDEA.

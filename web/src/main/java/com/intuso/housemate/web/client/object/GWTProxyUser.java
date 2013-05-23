@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.object;
 
-import com.intuso.housemate.core.object.user.UserWrappable;
-import com.intuso.housemate.proxy.ProxyUser;
+import com.intuso.housemate.api.object.user.UserWrappable;
+import com.intuso.housemate.object.proxy.ProxyUser;
 import com.intuso.housemate.web.client.GWTResources;
 
 /**

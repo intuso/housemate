@@ -8,13 +8,14 @@
     </parent>
 
     <artifactId>comms-transport-socket-client</artifactId>
+    <packaging>jar</packaging>
     <name>Housemate Comms Transport Socket Client</name>
     <description>Client for socket transport between Housemate components</description>
 
     <dependencies>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

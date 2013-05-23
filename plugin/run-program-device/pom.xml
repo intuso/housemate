@@ -9,18 +9,14 @@
     </parent>
 
     <artifactId>plugin-run-program-device</artifactId>
+    <packaging>jar</packaging>
     <name>Housemate Plugin Run Program Device</name>
     <description>Housemate plugin for a device that runs a program</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.intuso.housemate</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.intuso.housemate</groupId>
-			<artifactId>platform-pc</artifactId>
+			<artifactId>object-real</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

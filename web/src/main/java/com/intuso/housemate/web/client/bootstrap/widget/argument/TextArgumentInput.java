@@ -5,10 +5,10 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
-import com.intuso.housemate.core.object.type.RegexTypeWrappable;
-import com.intuso.housemate.core.object.type.SimpleTypeWrappable;
-import com.intuso.housemate.core.object.type.TypeWrappable;
-import com.intuso.housemate.core.object.value.Value;
+import com.intuso.housemate.api.object.type.RegexTypeWrappable;
+import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
 import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
 

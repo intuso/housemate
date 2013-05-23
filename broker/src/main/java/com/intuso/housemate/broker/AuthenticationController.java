@@ -2,18 +2,18 @@ package com.intuso.housemate.broker;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.authentication.AuthenticationMethod;
+import com.intuso.housemate.api.authentication.Session;
+import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.broker.client.LocalClient;
-import com.intuso.housemate.broker.client.RemoteClient;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.broker.object.real.BrokerRealUser;
 import com.intuso.housemate.broker.storage.DetailsNotFoundException;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.authentication.AuthenticationMethod;
-import com.intuso.housemate.core.authentication.Session;
-import com.intuso.housemate.core.authentication.UsernamePassword;
-import com.intuso.housemate.core.comms.Message;
-import com.intuso.housemate.core.object.connection.ClientWrappable;
-import com.intuso.housemate.core.object.root.Root;
+import com.intuso.housemate.object.broker.RemoteClient;
+import com.intuso.housemate.object.broker.real.BrokerRealUser;
 
 import java.util.List;
 import java.util.Map;

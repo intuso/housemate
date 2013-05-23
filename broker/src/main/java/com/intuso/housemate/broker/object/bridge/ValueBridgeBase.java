@@ -1,10 +1,10 @@
 package com.intuso.housemate.broker.object.bridge;
 
-import com.intuso.housemate.core.comms.message.StringMessageValue;
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.core.object.value.Value;
-import com.intuso.housemate.core.object.value.ValueListener;
-import com.intuso.housemate.core.object.value.ValueWrappableBase;
+import com.intuso.housemate.api.comms.message.StringMessageValue;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.value.Value;
+import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.api.object.value.ValueWrappableBase;
 import com.intuso.listeners.ListenerRegistration;
 
 import java.util.List;

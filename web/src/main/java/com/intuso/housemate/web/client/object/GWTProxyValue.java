@@ -1,8 +1,8 @@
 package com.intuso.housemate.web.client.object;
 
-import com.intuso.housemate.core.object.value.ValueWrappable;
-import com.intuso.housemate.proxy.NoChildrenProxyObjectFactory;
-import com.intuso.housemate.proxy.ProxyValue;
+import com.intuso.housemate.api.object.value.ValueWrappable;
+import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
+import com.intuso.housemate.object.proxy.ProxyValue;
 import com.intuso.housemate.web.client.GWTResources;
 
 /**

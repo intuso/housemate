@@ -4,8 +4,7 @@ import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.intuso.housemate.core.object.value.Value;
-import com.intuso.housemate.real.impl.type.BooleanType;
+import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
 import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
 
@@ -34,6 +33,6 @@ public class CheckBoxArgumentInput extends CheckBox implements ArgumentInput {
 
     @Override
     public void setValue(Value<?, ?> value) {
-        setValue(BooleanType.SERIALISER.deserialise(value.getValue()), false);
+        setValue(Boolean.parseBoolean(value.getValue()), false);
     }
 }

@@ -2,17 +2,17 @@ package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.intuso.housemate.broker.client.DisconnectListener;
-import com.intuso.housemate.broker.client.RemoteClient;
-import com.intuso.housemate.broker.comms.ClientPayload;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.comms.Message;
-import com.intuso.housemate.core.comms.Receiver;
-import com.intuso.housemate.core.object.HousemateObject;
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.core.object.ObjectListener;
-import com.intuso.housemate.core.object.BaseObject;
-import com.intuso.housemate.core.object.connection.ClientWrappable;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.ObjectListener;
+import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.object.broker.ClientPayload;
+import com.intuso.housemate.object.broker.DisconnectListener;
+import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.listeners.ListenerRegistration;
 
 import java.util.Arrays;

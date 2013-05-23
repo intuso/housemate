@@ -1,15 +1,15 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.core.object.command.Command;
-import com.intuso.housemate.core.object.command.CommandWrappable;
-import com.intuso.housemate.core.object.device.Device;
-import com.intuso.housemate.core.object.device.DeviceListener;
-import com.intuso.housemate.core.object.device.DeviceWrappable;
-import com.intuso.housemate.core.object.property.Property;
-import com.intuso.housemate.core.object.property.PropertyWrappable;
-import com.intuso.housemate.core.object.value.Value;
-import com.intuso.housemate.core.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.command.Command;
+import com.intuso.housemate.api.object.command.CommandWrappable;
+import com.intuso.housemate.api.object.device.Device;
+import com.intuso.housemate.api.object.device.DeviceListener;
+import com.intuso.housemate.api.object.device.DeviceWrappable;
+import com.intuso.housemate.api.object.property.Property;
+import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.value.Value;
+import com.intuso.housemate.api.object.value.ValueWrappable;
 
 import javax.annotation.Nullable;
 
@@ -23,8 +23,8 @@ import javax.annotation.Nullable;
 public class DeviceBridge
         extends PrimaryObjectBridge<DeviceWrappable, DeviceBridge, DeviceListener<? super DeviceBridge>>
         implements Device<CommandBridge, CommandBridge, CommandBridge, ListBridge<Command<?, ?>, CommandWrappable, CommandBridge>,
-            ValueBridge, ValueBridge, ValueBridge, ListBridge<Value<?, ?>, ValueWrappable, ValueBridge>,
-            PropertyBridge, PropertyBridge, ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>, DeviceBridge> {
+                    ValueBridge, ValueBridge, ValueBridge, ListBridge<Value<?, ?>, ValueWrappable, ValueBridge>,
+                    PropertyBridge, PropertyBridge, ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>, DeviceBridge> {
 
     private ListBridge<Command<?, ?>, CommandWrappable, CommandBridge> commandList;
     private ListBridge<Value<?, ?>, ValueWrappable, ValueBridge> valueList;

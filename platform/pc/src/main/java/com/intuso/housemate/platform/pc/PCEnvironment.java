@@ -1,10 +1,10 @@
 package com.intuso.housemate.platform.pc;
 
 import com.intuso.housemate.client.comms.ClientComms;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.comms.Router;
-import com.intuso.housemate.core.resources.ClientResources;
-import com.intuso.housemate.core.resources.RegexMatcher;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.resources.ClientResources;
+import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.utils.log.Log;
 import com.intuso.utils.log.LogLevel;
 import com.intuso.utils.log.LogWriter;

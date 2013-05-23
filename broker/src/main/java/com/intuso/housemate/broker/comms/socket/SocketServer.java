@@ -1,9 +1,9 @@
 package com.intuso.housemate.broker.comms.socket;
 
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.broker.BrokerServerEnvironment;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.comms.Router;
 import com.intuso.utils.log.Log;
 
 import java.io.IOException;

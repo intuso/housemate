@@ -1,8 +1,8 @@
 package com.intuso.housemate.broker.object.bridge;
 
-import com.intuso.housemate.core.object.NoChildrenWrappable;
-import com.intuso.housemate.core.object.value.Value;
-import com.intuso.housemate.core.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.value.Value;
+import com.intuso.housemate.api.object.value.ValueWrappable;
 
 /**
 * Created with IntelliJ IDEA.

@@ -1,11 +1,11 @@
 package com.lisantom.our.housemate;
 
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.object.value.ValueListener;
-import com.intuso.housemate.real.RealProperty;
-import com.intuso.housemate.real.RealResources;
-import com.intuso.housemate.real.impl.device.OnOffDevice;
-import com.intuso.housemate.real.impl.type.IntegerType;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.real.RealProperty;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.real.impl.device.OnOffDevice;
+import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.rfxcom.rfxtrx.util.HomeEasy;
 
 import java.io.IOException;
@@ -57,7 +57,7 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
 	private void createHed(int id, int unitcode) {
 		
         appliance = homeEasy.createAppliance(id, (byte) unitcode);
-        appliance.addListener(new HomeEasy.KnownApplianceListener() {
+        appliance.addListener(new HomeEasy.KnownApplianceStateListener() {
             @Override
             public void nowOff(HomeEasy.Appliance a) {
                 setOff();

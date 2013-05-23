@@ -1,13 +1,13 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.core.object.property.Property;
-import com.intuso.housemate.core.object.property.PropertyWrappable;
-import com.intuso.housemate.core.object.condition.Condition;
-import com.intuso.housemate.core.object.condition.ConditionListener;
-import com.intuso.housemate.core.object.condition.ConditionWrappable;
-import com.intuso.housemate.real.impl.type.BooleanType;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.condition.Condition;
+import com.intuso.housemate.api.object.condition.ConditionListener;
+import com.intuso.housemate.api.object.condition.ConditionWrappable;
+import com.intuso.housemate.api.object.property.Property;
+import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.object.real.impl.type.BooleanType;
 
 import javax.annotation.Nullable;
 
@@ -21,8 +21,8 @@ import javax.annotation.Nullable;
 public class ConditionBridge
         extends BridgeObject<ConditionWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, ConditionBridge, ConditionListener<? super ConditionBridge>>
         implements Condition<PropertyBridge, ValueBridge, ValueBridge,
-            ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>, CommandBridge, ConditionBridge,
-            ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge>> {
+                    ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>, CommandBridge, ConditionBridge,
+                    ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge>> {
 
     private ValueBridge satisfiedValue;
     private ValueBridge errorValue;

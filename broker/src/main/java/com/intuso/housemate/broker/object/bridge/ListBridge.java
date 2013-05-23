@@ -1,11 +1,11 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.core.object.BaseObject;
-import com.intuso.housemate.core.object.list.List;
-import com.intuso.housemate.core.object.list.ListListener;
-import com.intuso.housemate.core.object.list.ListWrappable;
+import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.list.ListListener;
+import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.listeners.ListenerRegistration;
 import com.intuso.wrapper.Wrapper;
 import com.intuso.wrapper.WrapperListener;

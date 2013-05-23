@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.core.object.user.UserWrappable;
+import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.web.client.GWTResources;
 import com.intuso.housemate.web.client.bootstrap.widget.user.rule.User;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;

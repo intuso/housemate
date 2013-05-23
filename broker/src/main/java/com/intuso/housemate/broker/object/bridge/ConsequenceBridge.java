@@ -1,13 +1,13 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.core.object.property.Property;
-import com.intuso.housemate.core.object.property.PropertyWrappable;
-import com.intuso.housemate.core.object.consequence.Consequence;
-import com.intuso.housemate.core.object.consequence.ConsequenceListener;
-import com.intuso.housemate.core.object.consequence.ConsequenceWrappable;
-import com.intuso.housemate.real.impl.type.BooleanType;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.consequence.Consequence;
+import com.intuso.housemate.api.object.consequence.ConsequenceListener;
+import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
+import com.intuso.housemate.api.object.property.Property;
+import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.object.real.impl.type.BooleanType;
 
 import javax.annotation.Nullable;
 
@@ -20,10 +20,10 @@ import javax.annotation.Nullable;
  */
 public class ConsequenceBridge
         extends BridgeObject<ConsequenceWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, ConsequenceBridge,
-            ConsequenceListener<? super ConsequenceBridge>>
+        ConsequenceListener<? super ConsequenceBridge>>
         implements Consequence<PropertyBridge, ValueBridge, ValueBridge,
-            ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>,
-            ConsequenceBridge> {
+                    ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>,
+                    ConsequenceBridge> {
 
     private ValueBridge executingValue;
     private ValueBridge errorValue;

@@ -1,14 +1,14 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.core.object.HousemateObject;
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.core.object.list.List;
-import com.intuso.housemate.core.object.type.Type;
-import com.intuso.housemate.core.object.type.TypeListener;
-import com.intuso.housemate.core.object.type.TypeWrappable;
-import com.intuso.housemate.core.object.type.option.Option;
-import com.intuso.housemate.core.object.type.option.OptionWrappable;
+import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.type.Type;
+import com.intuso.housemate.api.object.type.TypeListener;
+import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.type.option.Option;
+import com.intuso.housemate.api.object.type.option.OptionWrappable;
 
 import javax.annotation.Nullable;
 

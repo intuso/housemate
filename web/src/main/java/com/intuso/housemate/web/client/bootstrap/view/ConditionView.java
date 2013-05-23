@@ -1,8 +1,8 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.core.object.condition.ConditionWrappable;
-import com.intuso.housemate.core.object.rule.RuleWrappable;
+import com.intuso.housemate.api.object.condition.ConditionWrappable;
+import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.web.client.GWTResources;
 import com.intuso.housemate.web.client.bootstrap.widget.condition.Condition;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;

@@ -29,7 +29,7 @@ public class ThumbsSimpleValue extends Value {
     }
 
     @Override
-    public void valueChanged(com.intuso.housemate.core.object.value.Value<?, ?> value) {
+    public void valueChanged(com.intuso.housemate.api.object.value.Value<?, ?> value) {
         if(value.getValue() != null && value.getValue().equals(Boolean.toString(true)))
             icon.setType(IconType.THUMBS_UP);
         else

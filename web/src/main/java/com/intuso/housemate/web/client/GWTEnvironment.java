@@ -2,9 +2,9 @@ package com.intuso.housemate.web.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.regexp.shared.RegExp;
-import com.intuso.housemate.core.resources.RegexMatcher;
-import com.intuso.housemate.core.resources.RegexMatcherFactory;
-import com.intuso.housemate.core.resources.SimpleResources;
+import com.intuso.housemate.api.resources.RegexMatcher;
+import com.intuso.housemate.api.resources.RegexMatcherFactory;
+import com.intuso.housemate.api.resources.SimpleResources;
 import com.intuso.housemate.web.client.object.GWTProxyFactory;
 import com.intuso.utils.log.Log;
 import com.intuso.utils.log.LogLevel;

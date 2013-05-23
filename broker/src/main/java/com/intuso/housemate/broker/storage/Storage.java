@@ -1,6 +1,6 @@
 package com.intuso.housemate.broker.storage;
 
-import com.intuso.housemate.core.HousemateException;
+import com.intuso.housemate.api.HousemateException;
 
 import java.util.Map;
 import java.util.Set;

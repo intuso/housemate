@@ -1,51 +1,41 @@
 package com.intuso.housemate.broker;
 
 import com.google.common.collect.Lists;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.broker.client.LocalClient;
-import com.intuso.housemate.broker.comms.ServerComms;
+import com.intuso.housemate.broker.comms.ServerCommsImpl;
 import com.intuso.housemate.broker.factory.ConditionFactory;
 import com.intuso.housemate.broker.factory.ConsequenceFactory;
 import com.intuso.housemate.broker.factory.DeviceFactory;
+import com.intuso.housemate.broker.object.BrokerProxyResourcesImpl;
+import com.intuso.housemate.broker.object.BrokerRealResourcesImpl;
+import com.intuso.housemate.broker.object.LifecycleHandlerImpl;
 import com.intuso.housemate.broker.object.bridge.BrokerBridgeResources;
-import com.intuso.housemate.broker.object.bridge.BrokerRootObjectBridge;
+import com.intuso.housemate.broker.object.bridge.RootObjectBridge;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.broker.object.general.BrokerGeneralRootObject;
-import com.intuso.housemate.broker.object.proxy.BrokerProxyFactory;
-import com.intuso.housemate.broker.object.proxy.BrokerProxyResources;
-import com.intuso.housemate.broker.object.proxy.BrokerProxyRootObject;
-import com.intuso.housemate.broker.object.real.BrokerRealResources;
-import com.intuso.housemate.broker.object.real.BrokerRealRootObject;
-import com.intuso.housemate.broker.plugin.PluginDescriptor;
-import com.intuso.housemate.broker.plugin.impl.MainPlugin;
+import com.intuso.housemate.broker.plugin.MainPlugin;
 import com.intuso.housemate.broker.storage.BrokerObjectStorage;
 import com.intuso.housemate.broker.storage.Storage;
 import com.intuso.housemate.broker.storage.impl.SjoerdDB;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.resources.RegexMatcher;
-import com.intuso.housemate.real.RealResources;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyFactory;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyRootObject;
+import com.intuso.housemate.object.broker.real.BrokerRealRootObject;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.utils.log.Log;
 import com.intuso.utils.log.LogLevel;
 import com.intuso.utils.log.LogWriter;
 import com.intuso.utils.log.writer.FileWriter;
 import com.intuso.utils.log.writer.StdOutWriter;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Pattern;
@@ -71,16 +61,16 @@ public class BrokerServerEnvironment {
 
 	private final Map<String, String> properties;
     private final Log log;
-    private final ServerComms comms;
+    private final ServerCommsImpl comms;
     private final Storage storage;
     private final DeviceFactory deviceFactory;
     private final ConditionFactory conditionFactory;
     private final ConsequenceFactory consequenceFactory;
 
     private final BrokerGeneralResources generalResources;
-    private final BrokerRealResources realResources;
+    private final BrokerRealResourcesImpl realResources;
     private final BrokerBridgeResources bridgeResources;
-    private final BrokerProxyResources<BrokerProxyFactory.All> proxyResources;
+    private final BrokerProxyResourcesImpl<BrokerProxyFactory.All> proxyResources;
     private final RealResources clientResources;
 
 	/**
@@ -182,11 +172,11 @@ public class BrokerServerEnvironment {
         generalResources = new BrokerGeneralResources(log, properties);
         generalResources.setRoot(new BrokerGeneralRootObject(generalResources));
 
-        realResources = new BrokerRealResources(generalResources);
+        realResources = new BrokerRealResourcesImpl(generalResources);
         bridgeResources = new BrokerBridgeResources(generalResources);
-        proxyResources = new BrokerProxyResources<BrokerProxyFactory.All>(generalResources, new BrokerProxyFactory.All());
+        proxyResources = new BrokerProxyResourcesImpl<BrokerProxyFactory.All>(generalResources, new BrokerProxyFactory.All());
 
-        comms = new ServerComms(generalResources);
+        comms = new ServerCommsImpl(generalResources);
         generalResources.setComms(comms);
 
         clientResources = new RealResources(log, properties, comms);
@@ -195,6 +185,8 @@ public class BrokerServerEnvironment {
         deviceFactory = new DeviceFactory(generalResources);
         conditionFactory = new ConditionFactory(generalResources);
         consequenceFactory = new ConsequenceFactory(generalResources);
+
+        generalResources.setLifecycleHandler(new LifecycleHandlerImpl(generalResources));
 
         initGeneralResources();
 
@@ -225,7 +217,7 @@ public class BrokerServerEnvironment {
     protected void initResources() {
         realResources.setRoot(new BrokerRealRootObject(realResources));
         proxyResources.setRoot(new BrokerProxyRootObject(proxyResources));
-        bridgeResources.setRoot(new BrokerRootObjectBridge(bridgeResources));
+        bridgeResources.setRoot(new RootObjectBridge(bridgeResources));
     }
 
     /**
@@ -263,7 +255,7 @@ public class BrokerServerEnvironment {
 
     private void loadPlugins() {
         // add the default plugin
-        generalResources.addPlugin(new MainPlugin());
+        generalResources.addPlugin(new MainPlugin(generalResources));
 
         // discover plugins from local dir
         File pluginDirectory = new File(this.config_dir, PLUGINS_DIR_NAME);

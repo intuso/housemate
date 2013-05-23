@@ -1,10 +1,10 @@
 package com.intuso.housemate.web.client.bootstrap.widget.value;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.intuso.housemate.core.object.type.SimpleTypeWrappable;
-import com.intuso.housemate.core.object.type.Type;
-import com.intuso.housemate.core.object.type.TypeWrappable;
-import com.intuso.housemate.core.object.value.ValueListener;
+import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.Type;
+import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
@@ -14,9 +14,9 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
  * Time: 22:28
  * To change this template use File | Settings | File Templates.
  */
-public abstract class Value extends Composite implements ValueListener<com.intuso.housemate.core.object.value.Value<?, ?>> {
+public abstract class Value extends Composite implements ValueListener<com.intuso.housemate.api.object.value.Value<?, ?>> {
 
-    public static Value getWidget(com.intuso.housemate.core.object.value.Value<?, ?> value) {
+    public static Value getWidget(com.intuso.housemate.api.object.value.Value<?, ?> value) {
         if(value != null) {
             Value result = null;
             Type type = value.getType();
@@ -47,7 +47,7 @@ public abstract class Value extends Composite implements ValueListener<com.intus
     public Value() {
     }
 
-    public final void setValue(com.intuso.housemate.core.object.value.Value<?, ?> value) {
+    public final void setValue(com.intuso.housemate.api.object.value.Value<?, ?> value) {
         if(value != null) {
             value.addObjectListener(this);
             valueChanged(value);
@@ -55,5 +55,5 @@ public abstract class Value extends Composite implements ValueListener<com.intus
     }
 
     @Override
-    public abstract void valueChanged(com.intuso.housemate.core.object.value.Value<?, ?> value);
+    public abstract void valueChanged(com.intuso.housemate.api.object.value.Value<?, ?> value);
 }

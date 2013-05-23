@@ -1,10 +1,11 @@
 package com.intuso.housemate.broker;
 
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.resources.RegexMatcher;
-import com.intuso.housemate.core.resources.RegexMatcherFactory;
-import com.intuso.housemate.proxy.ProxyResources;
-import com.intuso.housemate.proxy.simple.SimpleProxyFactory;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.Comms;
+import com.intuso.housemate.api.resources.RegexMatcher;
+import com.intuso.housemate.api.resources.RegexMatcherFactory;
+import com.intuso.housemate.object.proxy.ProxyResources;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,7 +23,7 @@ public class TestUtils {
     public static ProxyResources<SimpleProxyFactory.All> createProxyRootResources(BrokerServerEnvironment environment) {
         return new ProxyResources<SimpleProxyFactory.All>(environment.getGeneralResources().getLog(),
                 environment.getGeneralResources().getProperties(),
-                environment.getGeneralResources().getComms(),
+                (Comms)environment.getGeneralResources().getComms(),
                 new SimpleProxyFactory.All(),
                 new RegexMatcherFactory() {
                     @Override

@@ -1,8 +1,8 @@
 package com.lisantom.our.housemate;
 
-import com.intuso.housemate.broker.plugin.RealDeviceFactory;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.real.RealResources;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.plugin.api.RealDeviceFactory;
 import com.rfxcom.rfxtrx.util.HomeEasy;
 
 /**

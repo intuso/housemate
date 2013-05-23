@@ -1,6 +1,6 @@
 package com.intuso.housemate.broker;
 
-import com.intuso.housemate.broker.plugin.PluginDescriptor;
+import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.listeners.Listener;
 
 /**

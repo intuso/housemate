@@ -1,20 +1,21 @@
 package com.intuso.housemate.broker.object.general;
 
-import com.intuso.housemate.broker.PluginListener;
+import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.broker.AuthenticationController;
+import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.client.LocalClient;
-import com.intuso.housemate.broker.comms.ServerComms;
 import com.intuso.housemate.broker.factory.ConditionFactory;
 import com.intuso.housemate.broker.factory.ConsequenceFactory;
 import com.intuso.housemate.broker.factory.DeviceFactory;
 import com.intuso.housemate.broker.object.bridge.BrokerBridgeResources;
-import com.intuso.housemate.broker.object.proxy.BrokerProxyFactory;
-import com.intuso.housemate.broker.object.proxy.BrokerProxyResources;
-import com.intuso.housemate.broker.object.real.BrokerRealResources;
-import com.intuso.housemate.broker.plugin.PluginDescriptor;
 import com.intuso.housemate.broker.storage.BrokerObjectStorage;
-import com.intuso.housemate.core.resources.Resources;
-import com.intuso.housemate.real.RealResources;
+import com.intuso.housemate.object.broker.LifecycleHandler;
+import com.intuso.housemate.object.broker.ServerComms;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyFactory;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyResources;
+import com.intuso.housemate.object.broker.real.BrokerRealResources;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.listeners.ListenerRegistration;
 import com.intuso.listeners.Listeners;
 import com.intuso.utils.log.Log;
@@ -39,10 +40,11 @@ public class BrokerGeneralResources implements Resources {
     private BrokerObjectStorage storage;
     private AuthenticationController authenticationController;
     private DeviceFactory deviceFactory;
-    private List<PluginDescriptor> plugins;
-    private Listeners<PluginListener> pluginListeners;
+    private LifecycleHandler lifecycleHandler;
     private ConditionFactory conditionFactory;
     private ConsequenceFactory consequenceFactory;
+    private List<PluginDescriptor> plugins;
+    private Listeners<PluginListener> pluginListeners;
     private BrokerRealResources realResources;
     private BrokerBridgeResources bridgeResources;
     private BrokerProxyResources<BrokerProxyFactory.All> proxyResources;
@@ -98,6 +100,14 @@ public class BrokerGeneralResources implements Resources {
         this.authenticationController = authenticationController;
     }
 
+    public LifecycleHandler getLifecycleHandler() {
+        return lifecycleHandler;
+    }
+
+    public void setLifecycleHandler(LifecycleHandler lifecycleHandler) {
+        this.lifecycleHandler = lifecycleHandler;
+    }
+
     public DeviceFactory getDeviceFactory() {
         return deviceFactory;
     }
@@ -124,7 +134,6 @@ public class BrokerGeneralResources implements Resources {
 
     public void addPlugin(PluginDescriptor plugin) {
         log.d("New Plugin: " + plugin.getClass().getName());
-        plugin.init(this);
         plugins.add(plugin);
         for(PluginListener listener : pluginListeners)
             listener.pluginAdded(plugin);

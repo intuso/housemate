@@ -1,9 +1,9 @@
 package com.intuso.housemate.web.server;
 
-import com.intuso.housemate.core.comms.Message;
-import com.intuso.housemate.core.comms.Receiver;
-import com.intuso.housemate.core.comms.Router;
-import com.intuso.housemate.core.comms.Sender;
+import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.comms.Sender;
 
 import java.util.ArrayList;
 import java.util.List;

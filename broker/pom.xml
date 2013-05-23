@@ -9,6 +9,7 @@
     </parent>
 
 	<artifactId>broker</artifactId>
+    <packaging>jar</packaging>
     <name>Housemate Broker</name>
 	<description>Broker for the Housemate framework</description>
 
@@ -17,11 +18,26 @@
         <!-- Housemate API -->
 		<dependency>
 			<groupId>com.intuso.housemate</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>plugin-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>object-real</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Test dependencies -->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>object-proxy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>comms-transport-socket-client</artifactId>

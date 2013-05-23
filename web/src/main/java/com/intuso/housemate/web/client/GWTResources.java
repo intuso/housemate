@@ -1,10 +1,10 @@
 package com.intuso.housemate.web.client;
 
-import com.intuso.housemate.core.comms.Router;
-import com.intuso.housemate.core.object.HousemateObjectFactory;
-import com.intuso.housemate.core.resources.RegexMatcherFactory;
-import com.intuso.housemate.proxy.ProxyObject;
-import com.intuso.housemate.proxy.ProxyResources;
+import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.intuso.housemate.api.resources.RegexMatcherFactory;
+import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.web.client.object.GWTProxyRootObject;
 import com.intuso.utils.log.Log;
 

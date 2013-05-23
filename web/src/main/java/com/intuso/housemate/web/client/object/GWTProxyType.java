@@ -1,10 +1,10 @@
 package com.intuso.housemate.web.client.object;
 
-import com.intuso.housemate.core.object.HousemateObjectFactory;
-import com.intuso.housemate.core.object.HousemateObjectWrappable;
-import com.intuso.housemate.core.object.type.TypeWrappable;
-import com.intuso.housemate.proxy.ProxyObject;
-import com.intuso.housemate.proxy.ProxyType;
+import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.object.proxy.ProxyType;
 import com.intuso.housemate.web.client.GWTResources;
 
 /**

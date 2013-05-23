@@ -4,9 +4,9 @@ import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.intuso.housemate.core.object.type.option.OptionWrappable;
-import com.intuso.housemate.core.object.value.Value;
-import com.intuso.housemate.real.impl.type.RealMultiChoiceType;
+import com.intuso.housemate.api.object.type.MultiChoiceTypeWrappable;
+import com.intuso.housemate.api.object.type.option.OptionWrappable;
+import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
 import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -43,7 +43,7 @@ public class MultiSelectArgumentInput extends ListBox implements ArgumentInput {
                 for(int i = 0; i < getItemCount(); i++)
                     if(isItemSelected(i))
                         selectedOptions.add(getItemText(i));
-                fireEvent(new ArgumentEditedEvent(RealMultiChoiceType.SERIALISER.serialise(selectedOptions)));
+                fireEvent(new ArgumentEditedEvent(MultiChoiceTypeWrappable.SERIALISER.serialise(selectedOptions)));
             }
         });
         optionIndices.clear();
@@ -69,7 +69,7 @@ public class MultiSelectArgumentInput extends ListBox implements ArgumentInput {
     @Override
     public void setValue(Value<?, ?> value) {
         selectedOptions.clear();
-        selectedOptions.addAll(RealMultiChoiceType.SERIALISER.deserialise(value.getValue()));
+        selectedOptions.addAll(MultiChoiceTypeWrappable.SERIALISER.deserialise(value.getValue()));
         for(int i = 0; i < options.size(); i++)
             setItemSelected(i, false);
         for(String id : selectedOptions) {

@@ -1,22 +1,23 @@
 package com.intuso.housemate.broker.storage;
 
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.command.Command;
+import com.intuso.housemate.api.object.condition.ConditionWrappable;
+import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
+import com.intuso.housemate.api.object.device.Device;
+import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.list.ListListener;
+import com.intuso.housemate.api.object.property.Property;
+import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.rule.RuleWrappable;
+import com.intuso.housemate.api.object.user.UserWrappable;
+import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.broker.object.real.BrokerRealList;
-import com.intuso.housemate.broker.object.real.BrokerRealRule;
-import com.intuso.housemate.broker.object.real.BrokerRealUser;
-import com.intuso.housemate.broker.object.real.condition.BrokerRealCondition;
-import com.intuso.housemate.broker.object.real.consequence.BrokerRealConsequence;
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.core.object.command.Command;
-import com.intuso.housemate.core.object.condition.ConditionWrappable;
-import com.intuso.housemate.core.object.consequence.ConsequenceWrappable;
-import com.intuso.housemate.core.object.device.Device;
-import com.intuso.housemate.core.object.list.List;
-import com.intuso.housemate.core.object.list.ListListener;
-import com.intuso.housemate.core.object.property.Property;
-import com.intuso.housemate.core.object.rule.RuleWrappable;
-import com.intuso.housemate.core.object.user.UserWrappable;
-import com.intuso.housemate.core.object.value.ValueListener;
+import com.intuso.housemate.object.broker.real.BrokerRealList;
+import com.intuso.housemate.object.broker.real.BrokerRealRule;
+import com.intuso.housemate.object.broker.real.BrokerRealUser;
+import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence;
 import com.intuso.utils.log.Log;
 
 import java.util.Arrays;
@@ -44,7 +45,15 @@ public class BrokerObjectStorage implements Storage {
         log = resources.getLog();
     }
 
-    public void loadUsers(BrokerRealList<UserWrappable, BrokerRealUser> realUsers) {
+    public void loadObjects() {
+        loadUsers();
+        loadDevices(new String[]{"", Root.DEVICES}, resources.getRealResources().getLifecycleHandler().createAddDeviceCommand(
+                resources.getClient().getRoot().getDevices()));
+        loadRules();
+    }
+
+    public void loadUsers() {
+        BrokerRealList<UserWrappable, BrokerRealUser> realUsers = resources.getRealResources().getRoot().getUsers();
         try {
             for(String key : storage.getDetailsKeys(realUsers.getPath())) {
                 Map<String, String> details = getDetails(realUsers.getPath(), key);
@@ -93,7 +102,8 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    public void loadRules(BrokerRealList<RuleWrappable, BrokerRealRule> realRules) {
+    public void loadRules() {
+        BrokerRealList<RuleWrappable, BrokerRealRule> realRules = resources.getRealResources().getRoot().getRules();
         try {
             for(String id : storage.getDetailsKeys(realRules.getPath())) {
                 try {
@@ -241,7 +251,7 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    private class CommandListener implements com.intuso.housemate.core.object.command.CommandListener<Command<?, ?>> {
+    private class CommandListener implements com.intuso.housemate.api.object.command.CommandListener<Command<?, ?>> {
 
         private final String description;
 

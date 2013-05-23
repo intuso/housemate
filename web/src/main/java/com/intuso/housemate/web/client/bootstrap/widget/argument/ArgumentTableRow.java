@@ -1,12 +1,12 @@
 package com.intuso.housemate.web.client.bootstrap.widget.argument;
 
 import com.google.gwt.user.client.ui.Label;
-import com.intuso.housemate.core.object.type.MultiChoiceTypeWrappable;
-import com.intuso.housemate.core.object.type.ObjectTypeWrappable;
-import com.intuso.housemate.core.object.type.RegexTypeWrappable;
-import com.intuso.housemate.core.object.type.SimpleTypeWrappable;
-import com.intuso.housemate.core.object.type.SingleChoiceTypeWrappable;
-import com.intuso.housemate.core.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.type.MultiChoiceTypeWrappable;
+import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
+import com.intuso.housemate.api.object.type.RegexTypeWrappable;
+import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.SingleChoiceTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableCell;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;

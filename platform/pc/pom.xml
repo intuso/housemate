@@ -9,12 +9,14 @@
     </parent>
 
     <artifactId>platform-pc</artifactId>
+    <packaging>jar</packaging>
     <name>Housemate Platform PC</name>
+    <description>Platform for running Housemate components on a PC</description>
 
     <dependencies>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

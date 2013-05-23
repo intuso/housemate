@@ -9,13 +9,14 @@
     </parent>
 
 	<artifactId>plugin-home-easy-device</artifactId>
+    <packaging>jar</packaging>
 	<name>Housemate Plugin Home Easy Device</name>
     <description>Housemate plugin for Home Easy devices</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.intuso.housemate</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
         <dependency>
@@ -23,11 +24,6 @@
             <artifactId>broker</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<dependency>
-			<groupId>com.intuso.housemate</groupId>
-			<artifactId>platform-pc</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>com.rfxcom</groupId>
 			<artifactId>rfxtrx</artifactId>

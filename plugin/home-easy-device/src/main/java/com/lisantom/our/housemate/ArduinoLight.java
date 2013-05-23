@@ -1,8 +1,8 @@
 package com.lisantom.our.housemate;
 
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.real.RealResources;
-import com.intuso.housemate.real.impl.device.OnOffDevice;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.real.impl.device.OnOffDevice;
 
 import java.io.IOException;
 import java.io.OutputStream;

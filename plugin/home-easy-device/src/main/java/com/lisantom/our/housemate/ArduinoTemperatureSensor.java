@@ -1,10 +1,10 @@
 package com.lisantom.our.housemate;
 
-import com.intuso.housemate.core.HousemateException;
-import com.intuso.housemate.real.RealDevice;
-import com.intuso.housemate.real.RealResources;
-import com.intuso.housemate.real.RealValue;
-import com.intuso.housemate.real.impl.type.DoubleType;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.real.RealDevice;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.real.RealValue;
+import com.intuso.housemate.object.real.impl.type.DoubleType;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;

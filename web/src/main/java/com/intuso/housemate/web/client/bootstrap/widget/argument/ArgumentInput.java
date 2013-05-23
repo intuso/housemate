@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.widget.argument;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.intuso.housemate.core.object.value.Value;
+import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.web.client.handler.HasArgumentEditedHandlers;
 
 /**
