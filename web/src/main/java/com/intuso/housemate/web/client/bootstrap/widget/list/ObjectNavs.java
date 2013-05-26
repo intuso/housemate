@@ -5,6 +5,7 @@ import com.github.gwtbootstrap.client.ui.NavPills;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.constants.ResponsiveStyle;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -89,8 +90,8 @@ public class ObjectNavs<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> extends Comp
     }
 
     @Override
-    public void addObjectSelectedHandler(ObjectSelectedHandler<O> handler) {
-        addHandler(handler, ObjectSelectedEvent.TYPE);
+    public HandlerRegistration addObjectSelectedHandler(ObjectSelectedHandler<O> handler) {
+        return addHandler(handler, ObjectSelectedEvent.TYPE);
     }
 
     @Override

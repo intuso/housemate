@@ -1,22 +1,17 @@
 package com.intuso.housemate.web.client.bootstrap.widget.argument;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.common.base.Joiner;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SingleSelectionModel;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.Housemate;
-import com.intuso.housemate.web.client.bootstrap.widget.object.TreeBrowser;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
+import com.intuso.housemate.web.client.event.ObjectSelectedEvent;
 import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
+import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,42 +22,26 @@ import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
  */
 public class ObjectBrowserInput extends FlowPanel implements ArgumentInput {
 
-    private final TextBox textBox = new TextBox();
-    private final Button button = new Button("...");
-    private final SingleSelectionModel<ProxyObject<?, ?, ?, ?, ?, ?, ?>> selectionModel = new SingleSelectionModel<ProxyObject<?, ?, ?, ?, ?, ?, ?>>();
-    private final TreeBrowser cellTree;
+    private final ObjectNode rootNode;
 
     public ObjectBrowserInput(ObjectTypeWrappable typeWrappable) {
         super();
-        cellTree = new TreeBrowser(selectionModel, Housemate.ENVIRONMENT.getResources().getRoot());
-        cellTree.setVisible(false);
-        button.addClickHandler(new ClickHandler() {
+        rootNode = new ObjectNode(Housemate.ENVIRONMENT.getResources().getRoot());
+        rootNode.addObjectSelectedHandler(new ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
             @Override
-            public void onClick(ClickEvent event) {
-                cellTree.setVisible(true);
+            public void objectSelected(ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?, ?, ?>> event) {
+                fireEvent(new ArgumentEditedEvent(Joiner.on("/").join(event.getObject().getPath())));
             }
         });
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-            @Override
-            public void onSelectionChange(SelectionChangeEvent event) {
-                fireEvent(new ArgumentEditedEvent(Joiner.on("/").join(selectionModel.getSelectedObject().getPath())));
-            }
-        });
-        add(textBox);
-        add(button);
-        add(cellTree);
+        add(rootNode);
     }
 
     @Override
     public void setValue(Value<?, ?> value) {
         if(value.getValue() != null) {
             HousemateObject<?, ?, ?, ?, ?> object = Housemate.ENVIRONMENT.getResources().getRoot().getWrapper(value.getValue().split("/"));
-            if(object != null)
-                textBox.setText(Joiner.on("/").join(object.getPath()));
             if(object instanceof ProxyObject)
-                selectionModel.setSelected((ProxyObject<?, ?, ?, ?, ?, ?, ?>)object, false);
-            else
-                selectionModel.setSelected(null, false);
+                rootNode.showObject((ProxyObject<?, ?, ?, ?, ?, ?, ?>) object);
         }
     }
 
@@ -70,4 +49,5 @@ public class ObjectBrowserInput extends FlowPanel implements ArgumentInput {
     public HandlerRegistration addArgumentEditedHandler(ArgumentEditedHandler handler) {
         return addHandler(handler, ArgumentEditedEvent.TYPE);
     }
+
 }

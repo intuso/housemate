@@ -15,7 +15,7 @@ import com.intuso.housemate.web.client.object.GWTProxyValue;
 public class ValueTableRow extends TableRow {
 
     public ValueTableRow(GWTProxyValue value) {
-        addNameCell(value.getId(), value.getDescription());
+        addNameCell(value.getName(), value.getDescription());
         addValueCell(value);
     }
 

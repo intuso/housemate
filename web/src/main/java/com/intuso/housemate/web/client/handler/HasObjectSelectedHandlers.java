@@ -1,5 +1,6 @@
 package com.intuso.housemate.web.client.handler;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.intuso.housemate.object.proxy.ProxyObject;
 
 /**
@@ -10,5 +11,5 @@ import com.intuso.housemate.object.proxy.ProxyObject;
  * To change this template use File | Settings | File Templates.
  */
 public interface HasObjectSelectedHandlers<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
-    void addObjectSelectedHandler(ObjectSelectedHandler<O> handler);
+    HandlerRegistration addObjectSelectedHandler(ObjectSelectedHandler<O> handler);
 }

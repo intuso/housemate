@@ -12,7 +12,7 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 public final class RootWrappable extends HousemateObjectWrappable<HousemateObjectWrappable<?>> {
 
     public RootWrappable() {
-        super("", null, null);
+        super("", "Root", "Root");
     }
 
     @Override

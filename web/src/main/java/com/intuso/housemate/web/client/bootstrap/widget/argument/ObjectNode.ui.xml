@@ -1,0 +1,28 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
+    <ui:style type='com.intuso.housemate.web.client.bootstrap.widget.argument.ObjectNode.Style'>
+
+        .currentSelection {
+            border-radius: 3px 3px 3px 3px;
+            background-color: #0088CC;
+            color: #FFFFFF;
+        }
+
+        .newSelection {
+            border-radius: 3px 3px 3px 3px;
+            background-color: #00CC88;
+            color: #FFFFFF;
+        }
+
+        .heading {
+            margin-left: 5px;
+            padding: 0 3px;
+        }
+    </ui:style>
+    <g:FlowPanel>
+        <b:Icon type="CHEVRON_RIGHT" ui:field="icon"/>
+        <g:Anchor ui:field="heading" addStyleNames="{style.heading}"/>
+        <g:FlowPanel ui:field="children"/>
+    </g:FlowPanel>
+</ui:UiBinder>

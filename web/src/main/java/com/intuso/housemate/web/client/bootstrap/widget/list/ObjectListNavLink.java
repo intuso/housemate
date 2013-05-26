@@ -6,6 +6,7 @@ import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.event.ObjectSelectedEvent;
 import com.intuso.housemate.web.client.handler.HasObjectSelectedHandlers;
@@ -37,8 +38,8 @@ public class ObjectListNavLink<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> exten
         addObjectSelectedHandler(handler);
     }
 
-    public void addObjectSelectedHandler(ObjectSelectedHandler<O> handler) {
-        addHandler(handler, ObjectSelectedEvent.TYPE);
+    public HandlerRegistration addObjectSelectedHandler(ObjectSelectedHandler<O> handler) {
+        return addHandler(handler, ObjectSelectedEvent.TYPE);
     }
 
     public O getObject() {

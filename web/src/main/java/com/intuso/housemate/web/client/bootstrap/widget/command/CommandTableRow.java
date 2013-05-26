@@ -15,7 +15,7 @@ import com.intuso.housemate.web.client.object.GWTProxyCommand;
 public class CommandTableRow extends TableRow {
 
     public CommandTableRow(GWTProxyCommand command) {
-        addNameCell(command.getId(), command.getDescription());
+        addNameCell(command.getName(), command.getDescription());
         addPerformCell(command);
     }
 

@@ -13,6 +13,10 @@
     <name>Housemate Broker</name>
 	<description>Broker for the Housemate framework</description>
 
+    <properties>
+        <jetty.version>8.1.7.v20120910</jetty.version>
+    </properties>
+
     <dependencies>
 
         <!-- Housemate API -->
@@ -32,21 +36,80 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Jetty server/web container stuff -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-io</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>object-proxy</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>comms-transport-socket-client</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
 	<build>
 		<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.3</version>
+
+                <executions>
+                    <execution>
+                        <!-- Used to copy the housemate war to inside the webapps folder -->
+                        <id>copy-dependency-web</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.intuso.housemate</groupId>
+                                    <artifactId>web</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/</outputDirectory>
+                                    <destFileName>housemate.war</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Package all dependencies into the one jar and make it executable -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

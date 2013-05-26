@@ -29,13 +29,29 @@ import com.intuso.utils.log.LogLevel;
 import com.intuso.utils.log.LogWriter;
 import com.intuso.utils.log.writer.FileWriter;
 import com.intuso.utils.log.writer.StdOutWriter;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.WebAppContext;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Pattern;
@@ -56,8 +72,13 @@ public class BrokerServerEnvironment {
     public final static String LOG_LEVEL = "log.level";
     public final static String BROKER_NAME = "broker.name";
     public final static String BROKER_PORT = "broker.port";
+    public final static String RUN_WEBAPP = "webapp.run";
+    public final static String WEBAPP_PORT = "webapp.port";
 
-	public final File config_dir;
+    private final static String WEBAPP_FOLDER = "webapp";
+    private final static String WEBAPP_NAME = "housemate.war";
+
+    public final File config_dir;
 
 	private final Map<String, String> properties;
     private final Log log;
@@ -196,6 +217,8 @@ public class BrokerServerEnvironment {
         comms.start();
 
         loadPlugins();
+
+        startWebapp();
     }
 
     public BrokerGeneralResources getGeneralResources() {
@@ -354,6 +377,92 @@ public class BrokerServerEnvironment {
         @Override
         public boolean accept(File pathname) {
             return pathname.isFile() && pathname.getName().endsWith(".jar");
+        }
+    }
+
+    private void startWebapp() throws HousemateException {
+        if(generalResources.getProperties().get(RUN_WEBAPP) != null
+                && generalResources.getProperties().get(RUN_WEBAPP).equalsIgnoreCase("false")) {
+            generalResources.getLog().d("Not starting webapp");
+            return;
+        }
+        File webappDirectory = new File(config_dir, WEBAPP_FOLDER);
+        if(!webappDirectory.exists())
+            webappDirectory.mkdir();
+        File webapp = new File(webappDirectory, WEBAPP_NAME);
+        if(!webapp.exists()) {
+            URL url = getClass().getResource("/" + webapp.getName());
+            if(url == null) {
+                generalResources.getLog().e("Could not find existing webapp and could not find it in jar. Cannot start web interface");
+                return;
+            }
+            copyWebapp(url, webapp);
+        }
+        int port = 64784;
+        try {
+            if(generalResources.getProperties().containsKey(WEBAPP_PORT))
+                port = Integer.parseInt(generalResources.getProperties().get(WEBAPP_PORT));
+        } catch(Throwable t) {
+            generalResources.getLog().w("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
+        }
+        startJetty(port, webapp);
+    }
+
+    private void copyWebapp(URL fromUrl, File toFile) throws HousemateException {
+        InputStream is = null;
+        OutputStream os = null;
+        try {
+            try {
+                is = fromUrl.openStream();
+            } catch(IOException e) {
+                throw new HousemateException("Failed to open stream to copy webapp from");
+            }
+            try {
+                os = new FileOutputStream(toFile);
+            } catch(IOException e) {
+                throw new HousemateException("Failed to open stream to write webapp to");
+            }
+            byte[] buffer = new byte[1024];
+            int read;
+            try {
+                while((read = is.read(buffer)) > 0)
+                    os.write(buffer, 0, read);
+            } catch (IOException e) {
+                throw new HousemateException("Failed to copy webapp", e);
+            }
+        } finally {
+            try {
+                if(is != null)
+                    is.close();
+            } catch(IOException e) {
+                generalResources.getLog().e("Failed to close input stream when copying webapp");
+                generalResources.getLog().st(e);
+            }
+            try {
+                if(os != null)
+                    os.close();
+            } catch(IOException e) {
+                generalResources.getLog().e("Failed to close input stream when copying webapp");
+                generalResources.getLog().st(e);
+            }
+        }
+    }
+
+    private void startJetty(int port, File warFile) throws HousemateException {
+        Server server = new Server(port);
+
+        // Configure webapp provided as external WAR
+        WebAppContext webapp = new WebAppContext();
+        webapp.getServletContext().setAttribute("RESOURCES", clientResources);
+        webapp.setContextPath("/");
+        webapp.setWar(warFile.getAbsolutePath());
+        server.setHandler(webapp);
+
+        // Start the server
+        try {
+            server.start();
+        } catch(Exception e) {
+            throw new HousemateException("Failed to start internal webserver", e);
         }
     }
 

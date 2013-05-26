@@ -23,8 +23,13 @@ public class ContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         // will be null if started in dev mode, in which case the broker is run separately
         try {
-            if(RESOURCES == null)
-                RESOURCES = new PCEnvironment(new String[0]).getResources();
+            if(RESOURCES == null) {
+                if(servletContextEvent.getServletContext().getAttribute("RESOURCES") != null
+                        && servletContextEvent.getServletContext().getAttribute("RESOURCES") instanceof ClientResources)
+                    RESOURCES = (ClientResources)servletContextEvent.getServletContext().getAttribute("RESOURCES");
+                else
+                    RESOURCES = new PCEnvironment(new String[0]).getResources();
+            }
             RESOURCES.getRouter().connect(new UsernamePassword(false, "admin", "admin", false), null);
         } catch(HousemateException e) {
             System.err.println("Failed to start Housemate platform");

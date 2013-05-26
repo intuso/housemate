@@ -32,7 +32,7 @@ public class PropertyTableRow extends TableRow implements ArgumentEditedHandler 
     private Map<String, String> values = new HashMap<String, String>();
 
     public PropertyTableRow(GWTProxyProperty property) {
-        addNameCell(property.getId(), property.getDescription());
+        addNameCell(property.getName(), property.getDescription());
         addValueCell(property);
         this.setCommand = property.getSetCommand();
         addSetButtonCell();

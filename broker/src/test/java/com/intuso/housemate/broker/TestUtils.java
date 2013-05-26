@@ -17,7 +17,7 @@ import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 public class TestUtils {
 
     public static BrokerServerEnvironment startBroker(int port) throws HousemateException {
-        return App.start(new String[]{"-broker.port", Integer.toString(port)});
+        return App.start(new String[]{"-broker.port", Integer.toString(port), "-webapp.run", "false"});
     }
 
     public static ProxyResources<SimpleProxyFactory.All> createProxyRootResources(BrokerServerEnvironment environment) {
