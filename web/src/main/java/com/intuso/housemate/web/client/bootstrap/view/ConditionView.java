@@ -1,5 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
 import com.intuso.housemate.api.object.rule.RuleWrappable;
@@ -11,8 +12,6 @@ import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyRule;
 import com.intuso.housemate.web.client.place.ConditionPlace;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -77,24 +76,16 @@ public class ConditionView extends ObjectListView<GWTProxyCondition, ConditionPl
 
     @Override
     protected Widget getObjectWidget(ConditionPlace place, GWTProxyCondition condition) {
-        return new Condition(place.getRuleName(), place.getConditionNames(), condition);
+        return new Condition(place.getRuleName(), place.getDepth(), place.getConditionNames(), condition);
     }
 
     @Override
     protected ConditionPlace getPlace(ConditionPlace place, GWTProxyCondition condition) {
-        if(condition == null) {
-            if(place.getConditionNames() == null)
-                return new ConditionPlace(place.getRuleName());
-            else
-                return new ConditionPlace(place.getRuleName(), place.getConditionNames());
-        } else {
-            if(place.getConditionNames() == null)
-                return new ConditionPlace(place.getRuleName(), Arrays.asList(condition.getId()));
-            else {
-                List<String> newConditionNames = new LinkedList<String>(place.getConditionNames());
-                newConditionNames.add(condition.getId());
-                return new ConditionPlace(place.getRuleName(), newConditionNames);
-            }
-        }
+        List<String> conditionNames = Lists.newArrayList(place.getConditionNames());
+        if(conditionNames.size() >= place.getDepth())
+            conditionNames.remove(conditionNames.size() - 1);
+        if(condition != null)
+            conditionNames.add(condition.getId());
+        return new ConditionPlace(place.getRuleName(), place.getDepth(), conditionNames);
     }
 }

@@ -57,7 +57,7 @@ public class Rule extends Composite {
             @Override
             public void objectSelected(ObjectSelectedEvent<GWTProxyCondition> event) {
                 Housemate.FACTORY.getPlaceController().goTo(
-                        new ConditionPlace(rule.getId(), Lists.newArrayList(event.getObject().getId())));
+                        new ConditionPlace(rule.getId(), 0, Lists.newArrayList(event.getObject().getId())));
             }
         });
         satisfiedConsequenceList.setList(rule.getSatisfiedConsequences(), rule.getAddSatisifedConsequenceCommand());

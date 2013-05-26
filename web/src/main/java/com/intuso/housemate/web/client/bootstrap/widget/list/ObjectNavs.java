@@ -86,6 +86,10 @@ public class ObjectNavs<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> extends Comp
 
     @Override
     public final void elementRemoved(O element) {
+        if(selectedObject != null && selectedObject.getId().equals(element.getId())) {
+            selectedObject = null;
+            fireEvent(new ObjectSelectedEvent<O>(null));
+        }
         navPills.remove(elementWidgets.get(element.getId()));
     }
 

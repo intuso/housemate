@@ -24,13 +24,15 @@ public class Not extends BrokerNonLeafCondition {
 	 */
 	public Not(BrokerRealResources resources, String id, String name, String description) throws HousemateException {
 		super(resources, id, name, description);
-        if(getConditions().size() > 1) {
+
+        // todo move this check somewhere else
+        /*if(getConditions().size() > 1) {
             getLog().e("There are multiple sub-conditions for the Not condition \"" + getId() + "\"");
             throw new HousemateException("There are multiple sub-conditions for the Not condition \"" + getId() + "\"");
         } else if(getConditions().size() == 0) {
             getLog().e("There are no sub-conditions for the Not condition \"" + getId() + "\"");
             throw new HousemateException("There are no sub-conditions for the Not condition \"" + getId() + "\"");
-        }
+        }*/
     }
 
     @Override
