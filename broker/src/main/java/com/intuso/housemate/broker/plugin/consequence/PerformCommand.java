@@ -28,7 +28,7 @@ public class PerformCommand extends BrokerRealConsequence implements ObjectLifec
 
     private final BrokerRealProperty<RealObjectType.Reference<BaseObject<?>>> commandPath;
     private Command<?, ?> command;
-    private ListenerRegistration<ObjectLifecycleListener> commandLifecycleListenerRegistration = null;
+    private ListenerRegistration commandLifecycleListenerRegistration = null;
 
     private CommandListener listener = new CommandListener<Command<?, ?>>() {
         @Override

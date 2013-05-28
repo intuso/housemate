@@ -43,8 +43,8 @@ public abstract class ProxyConsequence<
     }
 
     @Override
-    protected java.util.List<ListenerRegistration<?>> registerListeners() {
-        java.util.List<ListenerRegistration<?>>result = super.registerListeners();
+    protected java.util.List<ListenerRegistration> registerListeners() {
+        java.util.List<ListenerRegistration>result = super.registerListeners();
         result.add(executing.addObjectListener(new ValueListener<V>() {
             @Override
             public void valueChanged(V value) {

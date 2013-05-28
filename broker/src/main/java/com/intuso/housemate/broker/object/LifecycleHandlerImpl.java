@@ -30,6 +30,7 @@ import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,15 +98,18 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Override
     public RealCommand createAddDeviceCommand(final RealList<DeviceWrappable, RealDevice> devices) {
+        final Map<RealDevice, ListenerRegistration> listeners = Maps.newHashMap();
         devices.addObjectListener(new ListListener<RealDevice>() {
             @Override
             public void elementAdded(RealDevice device) {
-                device.getRunningValue().addObjectListener(runningListener);
+                listeners.put(device, device.getRunningValue().addObjectListener(runningListener));
             }
 
             @Override
-            public void elementRemoved(RealDevice element) {
-                // todo remove the listener added in elementAdded()
+            public void elementRemoved(RealDevice device) {
+                ListenerRegistration registration = listeners.remove(device);
+                if(registration != null)
+                    registration.removeListener();
             }
         });
         return resources.getDeviceFactory().createAddDeviceCommand(Root.ADD_DEVICE, Root.ADD_DEVICE, "Add a new device", devices);

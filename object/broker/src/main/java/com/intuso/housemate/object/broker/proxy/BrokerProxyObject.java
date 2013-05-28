@@ -29,7 +29,7 @@ public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWB
         extends HousemateObject<BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, SWBL, ? extends SWR>>, WBL, SWBL, SWR, L> implements BaseObject<L>, DisconnectListener {
 
     private RemoteClient client;
-    private ListenerRegistration<DisconnectListener> clientListener;
+    private ListenerRegistration clientListener;
 
     protected BrokerProxyObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, SWBL, ? extends SWR>> resources, WBL wrappable) {
         super(resources, wrappable);

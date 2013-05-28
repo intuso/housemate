@@ -26,7 +26,7 @@ public class ListBridge<
         extends BridgeObject<ListWrappable<SWBL>, SWBL, SWR, ListBridge<OWR, SWBL, SWR>, ListListener<? super SWR>>
         implements List<SWR>, WrapperListener<SWR> {
 
-    private ListenerRegistration<?> otherListListener;
+    private ListenerRegistration otherListListener;
 
     public ListBridge(BrokerBridgeResources resources, List<? extends OWR> list, final Function<? super OWR, ? extends SWR> converter) {
         super(resources, new ListWrappable(list.getId(), list.getName(), list.getDescription()));
@@ -44,8 +44,8 @@ public class ListBridge<
     }
 
     @Override
-    public ListenerRegistration<? super ListListener<? super SWR>> addObjectListener(ListListener<? super SWR> listener, boolean callForExistingElements) {
-        ListenerRegistration<? super ListListener<? super SWR>> listenerRegistration = addObjectListener(listener);
+    public ListenerRegistration addObjectListener(ListListener<? super SWR> listener, boolean callForExistingElements) {
+        ListenerRegistration listenerRegistration = addObjectListener(listener);
         if(callForExistingElements)
             for(SWR element : this)
                 listener.elementAdded(element);
@@ -53,8 +53,8 @@ public class ListBridge<
     }
 
     @Override
-    protected java.util.List<ListenerRegistration<?>> registerListeners() {
-        java.util.List<ListenerRegistration<?>> result = super.registerListeners();
+    protected java.util.List<ListenerRegistration> registerListeners() {
+        java.util.List<ListenerRegistration> result = super.registerListeners();
         if(otherListListener != null)
             result.add(otherListListener);
         result.add(addWrapperListener(this));

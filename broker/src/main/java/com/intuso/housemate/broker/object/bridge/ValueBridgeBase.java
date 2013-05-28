@@ -43,12 +43,14 @@ public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     @Override
-    protected List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(proxyValue.addObjectListener(new ValueListener<Value<?, ?>>() {
             @Override
             public void valueChanged(Value<?, ?> value) {
                 getWrappable().setValue(value.getValue());
+                for(ValueListener<? super V> listener : getObjectListeners())
+                    listener.valueChanged(getThis());
                 broadcastMessage(VALUE, new StringMessageValue(value.getValue()));
             }}));
         return result;

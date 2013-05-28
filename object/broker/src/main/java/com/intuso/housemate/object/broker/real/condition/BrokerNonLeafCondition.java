@@ -1,5 +1,6 @@
 package com.intuso.housemate.object.broker.real.condition;
 
+import com.google.common.collect.Maps;
 import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
@@ -20,7 +21,7 @@ public abstract class BrokerNonLeafCondition extends BrokerRealCondition
         implements ConditionListener<BrokerRealCondition> {
 
     private final Map<BrokerRealCondition, Boolean> satisfied = new HashMap<BrokerRealCondition, Boolean>();
-    private final Map<BrokerRealCondition, ListenerRegistration<? super ConditionListener<? super BrokerRealCondition>>> conditionListenerRegistrations = new HashMap<BrokerRealCondition, ListenerRegistration<? super ConditionListener<? super BrokerRealCondition>>>();
+    private final Map<BrokerRealCondition, ListenerRegistration> conditionListenerRegistrations = Maps.newHashMap();
 
     public BrokerNonLeafCondition(BrokerRealResources resources, String id, String name, String description) {
         this(resources, id, name, description, new ArrayList<BrokerRealProperty<?>>());

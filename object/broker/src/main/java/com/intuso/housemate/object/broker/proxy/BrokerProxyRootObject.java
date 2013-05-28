@@ -54,7 +54,7 @@ public class BrokerProxyRootObject
     }
 
     @Override
-    public ListenerRegistration<ObjectLifecycleListener> addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener) {
+    public ListenerRegistration addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener) {
         throw new HousemateRuntimeException("This root object is not intended to have listeners on its child objects");
     }
 

@@ -41,7 +41,7 @@ public abstract class HousemateObject<R extends Resources,
     private String path[];
     private final Listeners<L> objectListeners = new Listeners<L>();
     private final Map<String, Listeners<Receiver<?>>> messageListeners = Maps.newHashMap();
-    private final List<ListenerRegistration<?>> listenerRegistrations = Lists.newArrayList();
+    private final List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
 
     protected HousemateObject(R resources, WBL wrappable) {
         super(wrappable);
@@ -72,11 +72,11 @@ public abstract class HousemateObject<R extends Resources,
         return objectListeners.getListeners();
     }
 
-    public ListenerRegistration<? super L> addObjectListener(L listener) {
+    public ListenerRegistration addObjectListener(L listener) {
         return objectListeners.addListener(listener);
     }
 
-    protected ListenerRegistration<? super Receiver<?>> addMessageListener(String type, Receiver listener) {
+    protected ListenerRegistration addMessageListener(String type, Receiver listener) {
         Listeners<Receiver<?>> listeners = messageListeners.get(type);
         if(listeners == null) {
             listeners = new Listeners<Receiver<?>>();
@@ -124,7 +124,7 @@ public abstract class HousemateObject<R extends Resources,
         listenerRegistrations.addAll(registerListeners());
     }
 
-    protected List<ListenerRegistration<?>> registerListeners() {
+    protected List<ListenerRegistration> registerListeners() {
         return Lists.newArrayList();
     }
 
@@ -132,7 +132,7 @@ public abstract class HousemateObject<R extends Resources,
     protected void initPostRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {}
 
     public final void uninit() {
-        for(ListenerRegistration<?> listenerRegistration : listenerRegistrations)
+        for(ListenerRegistration listenerRegistration : listenerRegistrations)
             listenerRegistration.removeListener();
         listenerRegistrations.clear();
         for(SWR baseWrapper : getWrappers())

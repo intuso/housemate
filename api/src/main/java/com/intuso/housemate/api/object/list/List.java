@@ -18,5 +18,5 @@ public interface List<T> extends BaseObject<ListListener<? super T>>, Iterable<T
     public T get(String name);
     public int size();
 
-    public ListenerRegistration<? super ListListener<? super T>> addObjectListener(ListListener<? super T> listener, boolean callForExistingElements);
+    public ListenerRegistration addObjectListener(ListListener<? super T> listener, boolean callForExistingElements);
 }

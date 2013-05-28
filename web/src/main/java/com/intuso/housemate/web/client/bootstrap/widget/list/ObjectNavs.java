@@ -44,7 +44,7 @@ public class ObjectNavs<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> extends Comp
     PerformButton addButton;
 
     private O selectedObject;
-    private ListenerRegistration<? super ListListener<O>> listenerRegistration = null;
+    private ListenerRegistration listenerRegistration = null;
     private Map<String, NavLink> elementWidgets = new HashMap<String, NavLink>();
 
     public ObjectNavs() {
@@ -90,7 +90,9 @@ public class ObjectNavs<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> extends Comp
             selectedObject = null;
             fireEvent(new ObjectSelectedEvent<O>(null));
         }
-        navPills.remove(elementWidgets.get(element.getId()));
+        NavLink navLink = elementWidgets.remove(element.getId());
+        if(navLink != null)
+            navPills.remove(navLink);
     }
 
     @Override

@@ -34,7 +34,7 @@ public interface Root<R extends Root, L extends RootListener<? super R>>
 
     public void connect(AuthenticationMethod method, AuthenticationResponseHandler responseHandler);
     public void disconnect();
-    public ListenerRegistration<ObjectLifecycleListener> addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener);
+    public ListenerRegistration addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener);
     public HousemateObject<?, ?, ?, ?, ?> getWrapper(String[] path);
 
     /**

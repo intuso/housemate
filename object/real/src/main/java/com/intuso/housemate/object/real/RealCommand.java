@@ -34,8 +34,8 @@ public abstract class RealCommand
     }
 
     @Override
-    protected final List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    protected final List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addMessageListener(PERFORM, new Receiver<PerformMessageValue>() {
             @Override
             public void messageReceived(final Message<Command.PerformMessageValue> message) throws HousemateException {

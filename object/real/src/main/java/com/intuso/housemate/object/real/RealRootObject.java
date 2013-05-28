@@ -72,7 +72,7 @@ public class RealRootObject
     }
 
     @Override
-    public ListenerRegistration<ObjectLifecycleListener> addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener) {
+    public ListenerRegistration addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener) {
         throw new HousemateRuntimeException("This root object is not intended to have listeners on its child objects");
     }
 
@@ -87,8 +87,8 @@ public class RealRootObject
     }
 
     @Override
-    protected List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addMessageListener(AUTHENTICATION_RESPONSE, new Receiver<AuthenticationResponse>() {
             @Override
             public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {

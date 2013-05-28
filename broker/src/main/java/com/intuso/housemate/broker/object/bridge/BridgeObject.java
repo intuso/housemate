@@ -34,7 +34,7 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
         extends HousemateObject<BrokerBridgeResources, WBL, SWBL, SWR, L> implements BaseObject<L>,DisconnectListener {
 
     private final List<RemoteClient> loadedByClients = Lists.newArrayList();
-    private final Map<RemoteClient, ListenerRegistration<DisconnectListener>> clientListeners= Maps.newHashMap();
+    private final Map<RemoteClient, ListenerRegistration> clientListeners= Maps.newHashMap();
 
     protected BridgeObject(BrokerBridgeResources resources, WBL wrappable) {
         super(resources, wrappable);
@@ -56,8 +56,8 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
     }
 
     @Override
-    protected List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addMessageListener(LOAD_REQUEST, new Receiver<ClientPayload<LoadRequest>>() {
             @Override
             public void messageReceived(Message<ClientPayload<LoadRequest>> message) throws HousemateException {

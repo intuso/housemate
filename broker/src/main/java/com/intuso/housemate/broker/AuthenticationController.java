@@ -9,10 +9,12 @@ import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.broker.client.LocalClient;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.broker.storage.DetailsNotFoundException;
 import com.intuso.housemate.object.broker.RemoteClient;
+import com.intuso.housemate.object.broker.real.BrokerRealList;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
 
 import java.util.List;
@@ -156,6 +158,10 @@ public class AuthenticationController {
             else
                 return null;
         } catch(DetailsNotFoundException e) {
+            // check there are actually some users
+            BrokerRealList<UserWrappable, BrokerRealUser> users = resources.getRealResources().getRoot().getUsers();
+            if(users.size() == 1 && users.get("admin") != null)
+                return users.get("admin");
             return null;
         }
     }

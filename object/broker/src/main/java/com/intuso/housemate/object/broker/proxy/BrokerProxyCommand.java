@@ -46,8 +46,8 @@ public class BrokerProxyCommand
     }
 
     @Override
-    protected List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addMessageListener(PERFORMING, new Receiver<ClientPayload<PerformingMessageValue>>() {
             @Override
             public void messageReceived(Message<ClientPayload<PerformingMessageValue>> message) throws HousemateException {

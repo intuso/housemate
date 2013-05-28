@@ -53,7 +53,6 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
     }
 
     private void removeEndpoint() {
-        // TODO remove existing endpoint if it exists
         this.getThreadLocalRequest().getSession().removeAttribute(ATT_NAME);
     }
 }

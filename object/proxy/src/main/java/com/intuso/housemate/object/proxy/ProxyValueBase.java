@@ -35,8 +35,8 @@ public abstract class ProxyValueBase<
     }
 
     @Override
-    public final List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    public final List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addMessageListener(VALUE, new Receiver<StringMessageValue>() {
             @Override
             public void messageReceived(Message<StringMessageValue> stringMessageValueMessage) {

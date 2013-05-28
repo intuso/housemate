@@ -29,7 +29,7 @@ public class RemoteClient {
         this.type = type;
     }
 
-    public ListenerRegistration<DisconnectListener> addDisconnectListener(DisconnectListener listener) {
+    public ListenerRegistration addDisconnectListener(DisconnectListener listener) {
         return disconnectListeners.addListener(listener);
     }
 
@@ -112,7 +112,6 @@ public class RemoteClient {
 
             // if we're at the end then remove it
             if(route.size() - 1 == currentIndex) {
-                // todo also handle whatever children the just-deleted client has
                 result = current.children.remove(route.get(currentIndex));
                 if(result != null)
                     result.removed();

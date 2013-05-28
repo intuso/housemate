@@ -1,5 +1,6 @@
 package com.intuso.housemate.addon.twitter;
 
+import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
 import com.intuso.housemate.api.authentication.UsernamePassword;
@@ -61,7 +62,7 @@ public class HousemateTweeter {
 	 */
 	private final Resources resources;
 
-    private final Map<SimpleProxyObject.Device, java.util.List<ListenerRegistration<?>>> listeners;
+    private final Map<SimpleProxyObject.Device, java.util.List<ListenerRegistration>> listeners;
 
     private DeviceListListener deviceListListener = new DeviceListListener();
 
@@ -75,7 +76,7 @@ public class HousemateTweeter {
 	public HousemateTweeter(final ProxyResources<SimpleProxyFactory.All> resources) throws HousemateException {
 
 		this.resources = resources;
-        listeners = new HashMap<SimpleProxyObject.Device, java.util.List<ListenerRegistration<?>>>();
+        listeners = new HashMap<SimpleProxyObject.Device, java.util.List<ListenerRegistration>>();
 
 		dateFormat = new SimpleDateFormat("h:mm a");
         DateFormatSymbols dateFormatSymbols = dateFormat.getDateFormatSymbols();
@@ -193,7 +194,7 @@ public class HousemateTweeter {
     private class DeviceListListener implements ListListener<SimpleProxyObject.Device> {
         @Override
         public void elementAdded(SimpleProxyObject.Device device) {
-            java.util.List<ListenerRegistration<?>> registrations = new ArrayList<ListenerRegistration<?>>();
+            java.util.List<ListenerRegistration> registrations = new ArrayList<ListenerRegistration>();
             listeners.put(device, registrations);
             registrations.add(device.getCommands().addObjectListener(new CommandListListener(device, registrations), true));
             registrations.add(device.getValues().addObjectListener(new ValueListListener(device, registrations), true));
@@ -205,7 +206,7 @@ public class HousemateTweeter {
         @Override
         public void elementRemoved(SimpleProxyObject.Device device) {
             if(listeners.get(device) != null)
-                for(ListenerRegistration<?> registration : listeners.remove(device))
+                for(ListenerRegistration registration : listeners.remove(device))
                     registration.removeListener();
             tweet("\"" + device.getName() + "\" device removed");
         }
@@ -225,11 +226,11 @@ public class HousemateTweeter {
 
     private class CommandListListener implements ListListener<SimpleProxyObject.Command> {
 
-        private final Map<SimpleProxyObject.Command, ListenerRegistration<?>> commandListenerRegistrations = new HashMap<SimpleProxyObject.Command, ListenerRegistration<?>>();
-        private final java.util.List<ListenerRegistration<?>> deviceListenerRegistrations;
+        private final Map<SimpleProxyObject.Command, ListenerRegistration> commandListenerRegistrations = Maps.newHashMap();
+        private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
         private final CommandListener listener;
 
-        private CommandListListener(SimpleProxyObject.Device device, java.util.List<ListenerRegistration<?>> deviceListenerRegistrations) {
+        private CommandListListener(SimpleProxyObject.Device device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new CommandListener(device);
         }
@@ -274,11 +275,11 @@ public class HousemateTweeter {
 
     private class ValueListListener implements ListListener<SimpleProxyObject.Value> {
 
-        private final Map<SimpleProxyObject.Value, ListenerRegistration<?>> valueListenerRegistrations = new HashMap<SimpleProxyObject.Value, ListenerRegistration<?>>();
-        private final java.util.List<ListenerRegistration<?>> deviceListenerRegistrations;
+        private final Map<SimpleProxyObject.Value, ListenerRegistration> valueListenerRegistrations = Maps.newHashMap();
+        private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
         private final ValueListener listener;
 
-        private ValueListListener(SimpleProxyObject.Device device, java.util.List<ListenerRegistration<?>> deviceListenerRegistrations) {
+        private ValueListListener(SimpleProxyObject.Device device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new ValueListener(device);
         }
@@ -313,11 +314,11 @@ public class HousemateTweeter {
 
     private class PropertyListListener implements ListListener<SimpleProxyObject.Property> {
 
-        private final Map<SimpleProxyObject.Property, ListenerRegistration<?>> propertyListenerRegistrations = new HashMap<SimpleProxyObject.Property, ListenerRegistration<?>>();
-        private final java.util.List<ListenerRegistration<?>> deviceListenerRegistrations;
+        private final Map<SimpleProxyObject.Property, ListenerRegistration> propertyListenerRegistrations = Maps.newHashMap();
+        private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
         private final PropertyListener listener;
 
-        private PropertyListListener(SimpleProxyObject.Device device, java.util.List<ListenerRegistration<?>> deviceListenerRegistrations) {
+        private PropertyListListener(SimpleProxyObject.Device device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new PropertyListener(device);
         }

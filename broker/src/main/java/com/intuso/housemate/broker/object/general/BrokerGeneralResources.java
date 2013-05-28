@@ -145,8 +145,8 @@ public class BrokerGeneralResources implements Resources {
             listener.pluginRemoved(plugin);
     }
 
-    public ListenerRegistration<PluginListener> addPluginListener(PluginListener listener, boolean callForExisting) {
-        ListenerRegistration<PluginListener> result = pluginListeners.addListener(listener);
+    public ListenerRegistration addPluginListener(PluginListener listener, boolean callForExisting) {
+        ListenerRegistration result = pluginListeners.addListener(listener);
         if(callForExisting)
             for(PluginDescriptor plugin : plugins)
                 listener.pluginAdded(plugin);

@@ -66,7 +66,7 @@ public abstract class ProxyRootObject<
     private AuthenticationResponseHandler responseHandler = null;
     
     private final static Set<String> toLoad = Sets.newHashSet();
-    private ListenerRegistration<WrapperListener<ProxyObject<?, ?, ?, ?, ?, ?, ?>>> loadRegistration;
+    private ListenerRegistration loadRegistration;
 
     public ProxyRootObject(R resources, SR subResources) {
         super(resources, subResources, new RootWrappable());
@@ -102,8 +102,8 @@ public abstract class ProxyRootObject<
     }
 
     @Override
-    protected List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addWrapperListener(this));
         result.add(addMessageListener(AUTHENTICATION_RESPONSE, new Receiver<AuthenticationResponse>() {
             @Override
@@ -247,7 +247,7 @@ public abstract class ProxyRootObject<
     }
 
     @Override
-    public final ListenerRegistration<ObjectLifecycleListener> addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener) {
+    public final ListenerRegistration addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener) {
         String path = Joiner.on(PATH_SEPARATOR).join(ancestorPath);
         Listeners<ObjectLifecycleListener> listeners = objectLifecycleListeners.get(path);
         if(listeners == null) {

@@ -49,7 +49,7 @@ public class BrokerGeneralRootObject
     }
 
     @Override
-    public ListenerRegistration<ObjectLifecycleListener> addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener) {
+    public ListenerRegistration addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener) {
         throw new HousemateRuntimeException("This root object is not intended to have listeners on its child objects");
     }
 
@@ -64,8 +64,8 @@ public class BrokerGeneralRootObject
     }
 
     @Override
-    protected List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addMessageListener(AUTHENTICATION_REQUEST, new Receiver<ClientPayload<AuthenticationRequest>>() {
             @Override
             public void messageReceived(Message<ClientPayload<AuthenticationRequest>> message) throws HousemateException {

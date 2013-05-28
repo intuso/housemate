@@ -49,8 +49,8 @@ public abstract class ProxyCommand<
     }
 
     @Override
-    protected List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addMessageListener(PERFORMING, new Receiver<PerformingMessageValue>() {
             @Override
             public void messageReceived(Message<PerformingMessageValue> message) throws HousemateException {

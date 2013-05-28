@@ -59,8 +59,8 @@ public abstract class RealValueBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     @Override
-    public final List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    public final List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addObjectListener(this));
         return result;
     }

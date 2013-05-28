@@ -1,5 +1,6 @@
 package com.intuso.housemate.broker.storage;
 
+import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
@@ -11,6 +12,7 @@ import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.api.object.user.UserWrappable;
+import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.real.BrokerRealList;
@@ -18,6 +20,7 @@ import com.intuso.housemate.object.broker.real.BrokerRealRule;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
 import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
 import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence;
+import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -37,6 +40,7 @@ public class BrokerObjectStorage implements Storage {
     private final Storage storage;
     private final Log log;
     private final BrokerGeneralResources resources;
+    private final WatchDeviceListListener watchDeviceListListener = new WatchDeviceListListener();
     private final WatchPropertyListListener watchPropertyListListener = new WatchPropertyListListener();
 
     public BrokerObjectStorage(Storage storage, BrokerGeneralResources resources) {
@@ -66,6 +70,8 @@ public class BrokerObjectStorage implements Storage {
             log.e("Failed to get names of existing users");
             log.st(e);
         }
+        if(realUsers.getWrappers().size() == 0)
+            realUsers.add(new BrokerRealUser(resources.getRealResources(), "admin", "admin", "Default admin user"));
     }
 
     public void loadDevices(String[] path, Command<?, ?> addDeviceCommand) {
@@ -87,19 +93,8 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    public void loadDeviceInfo(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
-        try {
-            watchPropertyValues(device.getProperties());
-            String value = storage.getValue(device.getRunningValue().getPath());
-            if(Boolean.parseBoolean(value))
-                device.getStartCommand().perform(new HashMap<String, String>(),
-                        new CommandListener("Start device \"" + device.getId() + "\""));
-        } catch(DetailsNotFoundException e) {
-            log.w("No details found for whether the device was previously running" + Arrays.toString(device.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to check value for whether the device was previously running");
-            log.st(e);
-        }
+    public void watchDevices(List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> devices) {
+        devices.addObjectListener(watchDeviceListListener, true);
     }
 
     public void loadRules() {
@@ -214,9 +209,42 @@ public class BrokerObjectStorage implements Storage {
         storage.removeDetails(path);
     }
 
+    private class WatchDeviceListListener implements ListListener<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> {
+
+        private final WatchPropertyListListener watchPropertyListListener = new WatchPropertyListListener();
+        private final WatchValueListener watchPropertyListener = new WatchValueListener();
+        private final Map<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
+        private final Map<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> runningListeners = Maps.newHashMap();
+
+        @Override
+        public void elementAdded(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+            propertyListeners.put(device, device.getProperties().addObjectListener(watchPropertyListListener, true));
+            runningListeners.put(device, device.getRunningValue().addObjectListener(watchPropertyListener));
+            try {
+                String value = storage.getValue(device.getRunningValue().getPath());
+                if(Boolean.parseBoolean(value))
+                    device.getStartCommand().perform(new HashMap<String, String>(),
+                            new CommandListener("Start device \"" + device.getId() + "\""));
+            } catch(DetailsNotFoundException e) {
+                log.w("No details found for whether the device was previously running" + Arrays.toString(device.getPath()));
+            } catch(HousemateException e) {
+                log.e("Failed to check value for whether the device was previously running");
+                log.st(e);
+            }
+        }
+
+        @Override
+        public void elementRemoved(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+            ListenerRegistration registration = propertyListeners.remove(device);
+            if(registration != null)
+                registration.removeListener();
+        }
+    }
+
     private class WatchPropertyListListener implements ListListener<Property<?, ?, ?>> {
 
-        private final WatchPropertyListener watchPropertyListener = new WatchPropertyListener();
+        private final WatchValueListener watchPropertyListener = new WatchValueListener();
+        private final Map<Property<?, ?, ?>, ListenerRegistration> listeners = Maps.newHashMap();
 
         @Override
         public void elementAdded(Property<?, ?, ?> property) {
@@ -229,19 +257,21 @@ public class BrokerObjectStorage implements Storage {
                 log.e("Failed to set property value " + Arrays.toString(property.getPath()));
                 log.st(e);
             }
-            property.addObjectListener(watchPropertyListener);
+            listeners.put(property, property.addObjectListener(watchPropertyListener));
         }
 
         @Override
-        public void elementRemoved(Property<?, ?, ?> element) {
-            // do nothing
+        public void elementRemoved(Property<?, ?, ?> property) {
+            ListenerRegistration registration = listeners.remove(property);
+            if(registration != null)
+                registration.removeListener();
         }
     }
 
-    private class WatchPropertyListener implements ValueListener<Property<?, ?, ?>> {
+    private class WatchValueListener implements ValueListener<Value<?, ?>> {
 
         @Override
-        public void valueChanged(Property<?, ?, ?> property) {
+        public void valueChanged(Value<?, ?> property) {
             try {
                 storage.saveValue(property.getPath(), property.getValue());
             } catch(HousemateException e) {

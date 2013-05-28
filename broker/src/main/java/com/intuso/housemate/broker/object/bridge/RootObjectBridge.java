@@ -11,9 +11,7 @@ import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.device.Device;
-import com.intuso.housemate.api.object.device.DeviceListener;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
-import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.RootWrappable;
@@ -54,16 +52,6 @@ public class RootObjectBridge
     private CommandBridge addUser;
     private CommandBridge addDevice;
     private CommandBridge addRule;
-
-    private DeviceListener<DeviceBridge> deviceListener = new DeviceListener<DeviceBridge>() {
-        @Override
-        public void error(DeviceBridge device, String description) {}
-
-        @Override
-        public void running(DeviceBridge device, boolean running) {
-            deviceRunningChanged(device, running);
-        }
-    };
 
     private BrokerProxyPrimaryObject.Remover<BrokerProxyDevice> deviceRemover = new BrokerProxyPrimaryObject.Remover<BrokerProxyDevice>() {
         @Override
@@ -122,17 +110,7 @@ public class RootObjectBridge
         addWrapper(addUser);
         addWrapper(addDevice);
         addWrapper(addRule);
-        devices.addObjectListener(new ListListener<DeviceBridge>() {
-            @Override
-            public void elementAdded(DeviceBridge device) {
-                getResources().getGeneralResources().getStorage().loadDeviceInfo(device);
-                device.addObjectListener(deviceListener);
-            }
-
-            @Override
-            public void elementRemoved(DeviceBridge device) {
-            }
-        });
+        getResources().getGeneralResources().getStorage().watchDevices(devices);
         init(null);
     }
 
@@ -173,8 +151,8 @@ public class RootObjectBridge
     }
 
     @Override
-    protected List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addWrapperListener(this));
         return result;
     }
@@ -221,7 +199,7 @@ public class RootObjectBridge
             objectWrapperRemoved(path + Wrapper.PATH_SEPARATOR + child.getId(), child);
     }
 
-    public final ListenerRegistration<ObjectLifecycleListener> addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener) {
+    public final ListenerRegistration addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener) {
         String path = Joiner.on(Wrapper.PATH_SEPARATOR).join(ancestorPath);
         Listeners<ObjectLifecycleListener> listeners = objectLifecycleListeners.get(path);
         if(listeners == null) {

@@ -57,8 +57,8 @@ public abstract class ProxyObject<
         proxyRoot.sendMessage(new Message<MV>(getPath(), type, value));
     }
 
-    protected List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = Lists.newArrayList();
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = Lists.newArrayList();
         result.add(addMessageListener(LOAD_RESPONSE, new Receiver<HousemateObjectWrappable>() {
             @Override
             public void messageReceived(Message<HousemateObjectWrappable> message) throws HousemateException {

@@ -32,7 +32,7 @@ public class BrokerRealRule
     private BrokerRealCommand addSatisfiedConsequenceCommand;
     private BrokerRealCommand addUnsatisfiedConsequenceCommand;
 
-    private ListenerRegistration<? super ConditionListener<? super BrokerRealCondition>> conditionListenerRegistration;
+    private ListenerRegistration conditionListenerRegistration;
 
     public BrokerRealRule(final BrokerRealResources resources, String id, String name, String description) {
         super(resources, new RuleWrappable(id, name, description), "rule");

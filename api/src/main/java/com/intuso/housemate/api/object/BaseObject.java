@@ -12,7 +12,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
 public interface BaseObject<L extends ObjectListener> {
     public String getId();
     public String[] getPath();
-    public ListenerRegistration<? super L> addObjectListener(L listener);
+    public ListenerRegistration addObjectListener(L listener);
     public String getName();
     public String getDescription();
 }

@@ -27,8 +27,8 @@ public class ValueComparison
     private final BrokerRealProperty<RealObjectType.Reference<BaseObject<?>>> valuePath;
     private final BrokerRealProperty<String> compareTo;
     private ValueBridgeBase<?, ?, ?, ? extends ValueBridgeBase<?, ?, ?, ?>> value;
-    private ListenerRegistration<ObjectLifecycleListener> valueLifecycleListenerRegistration = null;
-    private ListenerRegistration<? super ValueListener<ValueBridgeBase<?, ?, ?, ?>>> valueListenerRegistration = null;
+    private ListenerRegistration valueLifecycleListenerRegistration = null;
+    private ListenerRegistration valueListenerRegistration = null;
     private boolean running;
 
     private final Root<?, ?> root;

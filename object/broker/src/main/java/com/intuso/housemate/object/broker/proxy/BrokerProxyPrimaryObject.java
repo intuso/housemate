@@ -87,8 +87,8 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
     }
 
     @Override
-    public List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    public List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         if(running != null) {
             result.add(running.addObjectListener(new ValueListener<BrokerProxyValue>() {
                 @Override

@@ -47,8 +47,8 @@ public class CommandBridge
     }
 
     @Override
-    protected final java.util.List<ListenerRegistration<?>> registerListeners() {
-        java.util.List<ListenerRegistration<?>> result = super.registerListeners();
+    protected final java.util.List<ListenerRegistration> registerListeners() {
+        java.util.List<ListenerRegistration> result = super.registerListeners();
         result.add(addMessageListener(PERFORM, new Receiver<ClientPayload<PerformMessageValue>>() {
             @Override
             public void messageReceived(final Message<ClientPayload<PerformMessageValue>> message) throws HousemateException {
@@ -56,6 +56,8 @@ public class CommandBridge
                     @Override
                     public void commandStarted(CommandBridge command) {
                         try {
+                            for(CommandListener<? super CommandBridge> listener : getObjectListeners())
+                                listener.commandStarted(getThis());
                             sendMessage(PERFORMING, new PerformingMessageValue(message.getPayload().getOriginal().getOpId(), true), message.getPayload().getClient());
                         } catch(HousemateException e) {
                             getLog().e("Failed to send command started message to client");
@@ -66,6 +68,8 @@ public class CommandBridge
                     @Override
                     public void commandFinished(CommandBridge command) {
                         try {
+                            for(CommandListener<? super CommandBridge> listener : getObjectListeners())
+                                listener.commandFinished(getThis());
                             sendMessage(PERFORMING, new PerformingMessageValue(message.getPayload().getOriginal().getOpId(), false), message.getPayload().getClient());
                         } catch(HousemateException e) {
                             getLog().e("Failed to send command finished message to client");
@@ -76,6 +80,9 @@ public class CommandBridge
                     @Override
                     public void commandFailed(CommandBridge command, String error) {
                         try {
+
+                            for(CommandListener<? super CommandBridge> listener : getObjectListeners())
+                                listener.commandFailed(getThis(), error);
                             sendMessage(FAILED, new FailedMessageValue(message.getPayload().getOriginal().getOpId(), error), message.getPayload().getClient());
                         } catch(HousemateException e) {
                             getLog().e("Failed to send command failed message to client");

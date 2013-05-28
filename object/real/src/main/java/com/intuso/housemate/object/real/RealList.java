@@ -33,8 +33,8 @@ public final class RealList<SWBL extends HousemateObjectWrappable<?>,
     }
 
     @Override
-    public ListenerRegistration<? super ListListener<? super SWR>> addObjectListener(ListListener<? super SWR> listener, boolean callForExistingElements) {
-        ListenerRegistration<? super ListListener<? super SWR>> listenerRegistration = addObjectListener(listener);
+    public ListenerRegistration addObjectListener(ListListener<? super SWR> listener, boolean callForExistingElements) {
+        ListenerRegistration listenerRegistration = addObjectListener(listener);
         if(callForExistingElements)
             for(SWR element : this)
                 listener.elementAdded(element);
@@ -42,8 +42,8 @@ public final class RealList<SWBL extends HousemateObjectWrappable<?>,
     }
 
     @Override
-    protected java.util.List<ListenerRegistration<?>> registerListeners() {
-        java.util.List<ListenerRegistration<?>> result = super.registerListeners();
+    protected java.util.List<ListenerRegistration> registerListeners() {
+        java.util.List<ListenerRegistration> result = super.registerListeners();
         result.add(addWrapperListener(this));
         return result;
     }

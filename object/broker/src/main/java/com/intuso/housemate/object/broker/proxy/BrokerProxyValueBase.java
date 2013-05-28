@@ -44,8 +44,8 @@ public class BrokerProxyValueBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     @Override
-    public final List<ListenerRegistration<?>> registerListeners() {
-        List<ListenerRegistration<?>> result = super.registerListeners();
+    public final List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
         result.add(addMessageListener(VALUE, new Receiver<ClientPayload<StringMessageValue>>() {
             @Override
             public void messageReceived(Message<ClientPayload<StringMessageValue>> stringMessageValueMessage) {

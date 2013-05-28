@@ -32,5 +32,5 @@ public interface ProxyRoot<UL extends List<? extends User>,
     public C getAddDeviceCommand();
     public C getAddRuleCommand();
 
-    public ListenerRegistration<ObjectLifecycleListener> addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener);
+    public ListenerRegistration addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener);
 }

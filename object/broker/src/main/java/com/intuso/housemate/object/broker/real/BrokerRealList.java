@@ -23,7 +23,7 @@ public final class BrokerRealList<SWBL extends HousemateObjectWrappable<?>,
         extends BrokerRealObject<ListWrappable<SWBL>, SWBL, SWR, ListListener<? super SWR>>
         implements List<SWR>, WrapperListener<SWR> {
 
-    private ListenerRegistration<ListListener<SWR>> listenerRegistration;
+    private ListenerRegistration listenerRegistration;
 
     public BrokerRealList(BrokerRealResources resources, String id, String name, String description) {
         super(resources, new ListWrappable(id, name, description));
@@ -36,8 +36,8 @@ public final class BrokerRealList<SWBL extends HousemateObjectWrappable<?>,
     }
 
     @Override
-    public ListenerRegistration<? super ListListener<? super SWR>> addObjectListener(ListListener<? super SWR> listener, boolean callForExistingElements) {
-        ListenerRegistration<? super ListListener<? super SWR>> listenerRegistration = addObjectListener(listener);
+    public ListenerRegistration addObjectListener(ListListener<? super SWR> listener, boolean callForExistingElements) {
+        ListenerRegistration listenerRegistration = addObjectListener(listener);
         if(callForExistingElements)
             for(HousemateObject<?, ?, ?, ?, ?> element : this)
                 listener.elementAdded((SWR)element);
@@ -45,8 +45,8 @@ public final class BrokerRealList<SWBL extends HousemateObjectWrappable<?>,
     }
 
     @Override
-    protected java.util.List<ListenerRegistration<?>> registerListeners() {
-        java.util.List<ListenerRegistration<?>> result = super.registerListeners();
+    protected java.util.List<ListenerRegistration> registerListeners() {
+        java.util.List<ListenerRegistration> result = super.registerListeners();
         result.add(addWrapperListener(this));
         return result;
     }

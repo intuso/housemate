@@ -35,7 +35,7 @@ public abstract class Router implements Sender, Receiver {
         root = new RouterRootObject(resources, this);
     }
 
-    public ListenerRegistration<? super RootListener<? super RouterRootObject>> addRootListener(RootListener<? super RouterRootObject> listener) {
+    public <L extends RootListener<? super RouterRootObject>> ListenerRegistration addRootListener(L listener) {
         return root.addObjectListener(listener);
     }
 

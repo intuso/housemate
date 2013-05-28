@@ -30,6 +30,9 @@ import com.intuso.utilities.log.LogWriter;
 import com.intuso.utilities.log.writer.FileWriter;
 import com.intuso.utilities.log.writer.StdOutWriter;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.resource.FileResource;
+import org.eclipse.jetty.util.resource.JarResource;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.BufferedWriter;
@@ -76,7 +79,7 @@ public class BrokerServerEnvironment {
     public final static String WEBAPP_PORT = "webapp.port";
 
     private final static String WEBAPP_FOLDER = "webapp";
-    private final static String WEBAPP_NAME = "housemate.war";
+    private final static String WEBAPP_NAME = "housemate";
 
     public final File config_dir;
 
@@ -389,23 +392,32 @@ public class BrokerServerEnvironment {
         File webappDirectory = new File(config_dir, WEBAPP_FOLDER);
         if(!webappDirectory.exists())
             webappDirectory.mkdir();
-        File webapp = new File(webappDirectory, WEBAPP_NAME);
-        if(!webapp.exists()) {
-            URL url = getClass().getResource("/" + webapp.getName());
+        File webappFile = new File(webappDirectory, WEBAPP_NAME + ".war");
+        if(webappFile.isDirectory())
+            webappFile.delete();
+        if(!webappFile.exists()) {
+            URL url = getClass().getResource("/" + webappFile.getName());
             if(url == null) {
                 generalResources.getLog().e("Could not find existing webapp and could not find it in jar. Cannot start web interface");
                 return;
             }
-            copyWebapp(url, webapp);
+            copyWebapp(url, webappFile);
         }
-        int port = 64784;
+        File webappDir = new File(webappDirectory, WEBAPP_NAME);
+        if(webappDir.isFile())
+            webappDir.delete();
+        if(!webappDir.exists()) {
+            webappDir.mkdir();
+            unpackWar(webappFile, webappDir);
+        }
+        int port = 46874;
         try {
             if(generalResources.getProperties().containsKey(WEBAPP_PORT))
                 port = Integer.parseInt(generalResources.getProperties().get(WEBAPP_PORT));
         } catch(Throwable t) {
             generalResources.getLog().w("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
         }
-        startJetty(port, webapp);
+        startJetty(port, webappDir);
     }
 
     private void copyWebapp(URL fromUrl, File toFile) throws HousemateException {
@@ -445,6 +457,15 @@ public class BrokerServerEnvironment {
                 generalResources.getLog().e("Failed to close input stream when copying webapp");
                 generalResources.getLog().st(e);
             }
+        }
+    }
+
+    private void unpackWar(File webappFile, File webappDir) throws HousemateException {
+        try {
+            Resource jarWebApp = JarResource.newJarResource(FileResource.newResource(webappFile));
+            jarWebApp.copyTo(webappDir);
+        } catch(IOException e) {
+            throw new HousemateException("Error unpacking webapp", e);
         }
     }
 
