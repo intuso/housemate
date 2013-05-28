@@ -1,7 +1,7 @@
 package com.intuso.housemate.api.object;
 
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.wrapper.Wrappable;
+import com.intuso.utilities.wrapper.Wrappable;
 
 import java.util.Map;
 

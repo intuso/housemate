@@ -1,6 +1,6 @@
 package com.intuso.housemate.api.resources;
 
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 

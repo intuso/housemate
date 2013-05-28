@@ -2,7 +2,7 @@ package com.intuso.housemate.object.real;
 
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.ClientResources;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 

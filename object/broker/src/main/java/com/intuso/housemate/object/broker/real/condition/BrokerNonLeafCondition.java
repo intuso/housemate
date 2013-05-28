@@ -1,9 +1,9 @@
 package com.intuso.housemate.object.broker.real.condition;
 
+import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.api.object.condition.ConditionListener;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.HashMap;

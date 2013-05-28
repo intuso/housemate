@@ -1,7 +1,7 @@
 package com.intuso.housemate.api;
 
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 import org.junit.Ignore;
 
 import java.util.Map;

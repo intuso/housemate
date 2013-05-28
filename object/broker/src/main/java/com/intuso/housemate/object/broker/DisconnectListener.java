@@ -1,7 +1,6 @@
 package com.intuso.housemate.object.broker;
 
-import com.intuso.housemate.object.broker.RemoteClient;
-import com.intuso.listeners.Listener;
+import com.intuso.utilities.listener.Listener;
 
 /**
  * Created with IntelliJ IDEA.

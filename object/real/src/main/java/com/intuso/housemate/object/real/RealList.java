@@ -4,9 +4,9 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.listeners.ListenerRegistration;
-import com.intuso.wrapper.Wrapper;
-import com.intuso.wrapper.WrapperListener;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.wrapper.Wrapper;
+import com.intuso.utilities.wrapper.WrapperListener;
 
 import java.util.Iterator;
 

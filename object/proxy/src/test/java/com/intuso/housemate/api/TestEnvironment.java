@@ -11,9 +11,9 @@ import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
 import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.real.RealResources;
-import com.intuso.utils.log.Log;
-import com.intuso.utils.log.LogLevel;
-import com.intuso.utils.log.writer.StdOutWriter;
+import com.intuso.utilities.log.Log;
+import com.intuso.utilities.log.LogLevel;
+import com.intuso.utilities.log.writer.StdOutWriter;
 import org.junit.Ignore;
 
 import java.util.HashMap;

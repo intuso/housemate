@@ -5,7 +5,7 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
 

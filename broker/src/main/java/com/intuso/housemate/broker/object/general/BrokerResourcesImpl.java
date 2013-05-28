@@ -4,7 +4,7 @@ import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.broker.LifecycleHandler;
 import com.intuso.housemate.object.broker.BrokerResources;
 import com.intuso.housemate.object.broker.ServerComms;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 

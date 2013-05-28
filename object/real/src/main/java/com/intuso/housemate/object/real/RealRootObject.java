@@ -15,7 +15,7 @@ import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.RootWrappable;
 import com.intuso.housemate.api.object.root.real.RealRoot;
 import com.intuso.housemate.api.object.type.TypeWrappable;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
 

@@ -34,19 +34,27 @@
     </properties>
 
     <dependencies>
+        <!-- Utilities -->
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>wrapper</artifactId>
+            <version>${intuso.utils.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>listener</artifactId>
+            <version>${intuso.utils.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>log</artifactId>
+            <version>${intuso.utils.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
         <!-- Housemate -->
-        <dependency>
-            <groupId>com.intuso</groupId>
-            <artifactId>utils</artifactId>
-            <version>${project.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.intuso</groupId>
-            <artifactId>entity-lib</artifactId>
-            <version>${project.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>api</artifactId>

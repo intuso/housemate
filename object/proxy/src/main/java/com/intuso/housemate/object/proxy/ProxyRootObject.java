@@ -18,10 +18,10 @@ import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.api.object.root.RootWrappable;
 import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
-import com.intuso.listeners.ListenerRegistration;
-import com.intuso.listeners.Listeners;
-import com.intuso.wrapper.Wrapper;
-import com.intuso.wrapper.WrapperListener;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.wrapper.Wrapper;
+import com.intuso.utilities.wrapper.WrapperListener;
 
 import java.util.HashMap;
 import java.util.List;

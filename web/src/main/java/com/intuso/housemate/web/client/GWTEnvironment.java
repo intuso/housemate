@@ -6,9 +6,9 @@ import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.api.resources.RegexMatcherFactory;
 import com.intuso.housemate.api.resources.SimpleResources;
 import com.intuso.housemate.web.client.object.GWTProxyFactory;
-import com.intuso.utils.log.Log;
-import com.intuso.utils.log.LogLevel;
-import com.intuso.utils.log.LogWriter;
+import com.intuso.utilities.log.Log;
+import com.intuso.utilities.log.LogLevel;
+import com.intuso.utilities.log.LogWriter;
 
 import java.util.Map;
 

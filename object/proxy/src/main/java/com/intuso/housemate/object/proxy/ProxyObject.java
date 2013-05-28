@@ -5,14 +5,14 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
-import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
-import com.intuso.listeners.ListenerRegistration;
-import com.intuso.wrapper.WrapperFactory;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.wrapper.WrapperFactory;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.intuso.housemate.broker;
 
 import com.intuso.housemate.plugin.api.PluginDescriptor;
-import com.intuso.listeners.Listener;
+import com.intuso.utilities.listener.Listener;
 
 /**
  * Created with IntelliJ IDEA.

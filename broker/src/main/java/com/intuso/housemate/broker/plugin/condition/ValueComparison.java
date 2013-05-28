@@ -12,7 +12,7 @@ import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.housemate.object.real.impl.type.StringType;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * Condition which is true iff the current day of the week matches

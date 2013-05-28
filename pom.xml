@@ -15,6 +15,7 @@
         <junit.version>4.8.1</junit.version>
         <guava.version>13.0.1</guava.version>
         <guice.version>3.0</guice.version>
+        <intuso.utils.version>1.0.0-SNAPSHOT</intuso.utils.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
     </properties>

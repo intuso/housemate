@@ -8,7 +8,7 @@ import com.intuso.housemate.api.comms.message.StringMessageValue;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.HashMap;
 import java.util.Map;

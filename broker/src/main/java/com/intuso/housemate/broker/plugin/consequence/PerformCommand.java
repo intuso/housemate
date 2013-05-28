@@ -13,7 +13,7 @@ import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.HashMap;
 

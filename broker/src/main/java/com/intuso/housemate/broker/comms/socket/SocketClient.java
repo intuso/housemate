@@ -5,7 +5,7 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.EmptyMessageValue;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

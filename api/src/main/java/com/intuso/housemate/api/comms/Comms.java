@@ -2,7 +2,7 @@ package com.intuso.housemate.api.comms;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 
 /**
  * Abstract class for all Housemate comms. Implemented for each Platform that

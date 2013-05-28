@@ -24,11 +24,11 @@ import com.intuso.housemate.object.broker.proxy.BrokerProxyRootObject;
 import com.intuso.housemate.object.broker.real.BrokerRealRootObject;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
-import com.intuso.utils.log.Log;
-import com.intuso.utils.log.LogLevel;
-import com.intuso.utils.log.LogWriter;
-import com.intuso.utils.log.writer.FileWriter;
-import com.intuso.utils.log.writer.StdOutWriter;
+import com.intuso.utilities.log.Log;
+import com.intuso.utilities.log.LogLevel;
+import com.intuso.utilities.log.LogWriter;
+import com.intuso.utilities.log.writer.FileWriter;
+import com.intuso.utilities.log.writer.StdOutWriter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 

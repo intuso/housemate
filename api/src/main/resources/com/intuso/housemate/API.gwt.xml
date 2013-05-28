@@ -5,9 +5,9 @@
     <inherits name="com.google.common.base.Base"/>
     <inherits name="com.google.common.collect.Collect"/>
 
-    <inherits name='com.intuso.Utils'/>
-    <inherits name='com.intuso.Listeners'/>
-    <inherits name='com.intuso.WrapperLib'/>
+    <inherits name='com.intuso.utilities.Log'/>
+    <inherits name='com.intuso.utilities.Listener'/>
+    <inherits name='com.intuso.utilities.Wrapper'/>
 
     <source path="api"/>
 </module>

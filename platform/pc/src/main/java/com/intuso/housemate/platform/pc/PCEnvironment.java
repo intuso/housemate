@@ -5,10 +5,10 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.housemate.api.resources.RegexMatcher;
-import com.intuso.utils.log.Log;
-import com.intuso.utils.log.LogLevel;
-import com.intuso.utils.log.LogWriter;
-import com.intuso.utils.log.writer.StdOutWriter;
+import com.intuso.utilities.log.Log;
+import com.intuso.utilities.log.LogLevel;
+import com.intuso.utilities.log.LogWriter;
+import com.intuso.utilities.log.writer.StdOutWriter;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -133,7 +133,7 @@ public class PCEnvironment {
         }
 
         try {
-            com.intuso.utils.log.writer.FileWriter fileWriter = new com.intuso.utils.log.writer.FileWriter(LogLevel.valueOf(properties.get(LOG_LEVEL)), logDirectory.getAbsolutePath() + File.separator + "housemate.log");
+            com.intuso.utilities.log.writer.FileWriter fileWriter = new com.intuso.utilities.log.writer.FileWriter(LogLevel.valueOf(properties.get(LOG_LEVEL)), logDirectory.getAbsolutePath() + File.separator + "housemate.log");
             StdOutWriter stdOutWriter = new StdOutWriter(LogLevel.DEBUG);
             List<LogWriter> logWriters = Arrays.asList(new LogWriter[]{fileWriter, stdOutWriter});
             appLog = new Log("Housemate", logWriters);

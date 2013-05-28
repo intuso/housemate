@@ -17,16 +17,16 @@
         <dependency>
 
         <!-- Base library for object-tree strucutre -->
-        <groupId>com.intuso</groupId>
-            <artifactId>entity-lib</artifactId>
-            <version>${project.version}</version>
+        <groupId>com.intuso.utilities</groupId>
+            <artifactId>wrapper</artifactId>
+            <version>${intuso.utils.version}</version>
         </dependency>
 
 		<!-- needed for logging only - should refactor utils into several subprojects -->
         <dependency>
-			<groupId>com.intuso</groupId>
-			<artifactId>utils</artifactId>
-			<version>${project.version}</version>
+			<groupId>com.intuso.utilities</groupId>
+			<artifactId>log</artifactId>
+			<version>${intuso.utils.version}</version>
 		</dependency>
 
         <!-- Guava goodness -->

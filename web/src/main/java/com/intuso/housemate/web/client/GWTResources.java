@@ -6,7 +6,7 @@ import com.intuso.housemate.api.resources.RegexMatcherFactory;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.web.client.object.GWTProxyRootObject;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 

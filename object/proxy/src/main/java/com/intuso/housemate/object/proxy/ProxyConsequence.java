@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.consequence.ConsequenceListener;
 import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * Created by IntelliJ IDEA.

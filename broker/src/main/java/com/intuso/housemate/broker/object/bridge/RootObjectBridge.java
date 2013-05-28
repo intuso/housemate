@@ -25,10 +25,10 @@ import com.intuso.housemate.object.broker.proxy.BrokerProxyPrimaryObject;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 import com.intuso.housemate.object.broker.real.BrokerRealRule;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
-import com.intuso.listeners.ListenerRegistration;
-import com.intuso.listeners.Listeners;
-import com.intuso.wrapper.Wrapper;
-import com.intuso.wrapper.WrapperListener;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.wrapper.Wrapper;
+import com.intuso.utilities.wrapper.WrapperListener;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

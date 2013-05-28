@@ -3,12 +3,16 @@ package com.intuso.housemate.object.broker.proxy;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.*;
+import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.object.broker.DisconnectListener;
 import com.intuso.housemate.object.broker.RemoteClient;
-import com.intuso.listeners.ListenerRegistration;
-import com.intuso.wrapper.WrapperFactory;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.wrapper.WrapperFactory;
 
 /**
  * Created by IntelliJ IDEA.

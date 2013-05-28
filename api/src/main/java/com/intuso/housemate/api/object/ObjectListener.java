@@ -1,6 +1,6 @@
 package com.intuso.housemate.api.object;
 
-import com.intuso.listeners.Listener;
+import com.intuso.utilities.listener.Listener;
 
 /**
  * Created with IntelliJ IDEA.

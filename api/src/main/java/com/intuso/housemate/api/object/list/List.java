@@ -1,7 +1,7 @@
 package com.intuso.housemate.api.object.list;
 
 import com.intuso.housemate.api.object.BaseObject;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * Created by IntelliJ IDEA.

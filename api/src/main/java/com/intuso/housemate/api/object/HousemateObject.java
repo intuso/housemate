@@ -6,10 +6,10 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.listeners.ListenerRegistration;
-import com.intuso.listeners.Listeners;
-import com.intuso.utils.log.Log;
-import com.intuso.wrapper.Wrapper;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.log.Log;
+import com.intuso.utilities.wrapper.Wrapper;
 
 import java.util.Arrays;
 import java.util.List;

@@ -13,7 +13,7 @@ import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.housemate.object.broker.DisconnectListener;
 import com.intuso.housemate.object.broker.RemoteClient;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.Arrays;
 import java.util.List;

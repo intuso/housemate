@@ -4,7 +4,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.broker.BrokerServerEnvironment;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,7 +1,5 @@
 package com.intuso.housemate.object.broker.real;
 
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
-import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
@@ -9,7 +7,9 @@ import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
 import com.intuso.housemate.api.object.rule.Rule;
 import com.intuso.housemate.api.object.rule.RuleListener;
 import com.intuso.housemate.api.object.rule.RuleWrappable;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * Created by IntelliJ IDEA.

@@ -4,8 +4,8 @@ import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
-import com.intuso.listeners.ListenerRegistration;
-import com.intuso.listeners.Listeners;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.Listeners;
 
 import java.util.List;
 import java.util.Map;

@@ -6,7 +6,7 @@ import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
 import com.intuso.housemate.object.real.impl.type.Time;
 import com.intuso.housemate.object.real.impl.type.TimeType;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 
 import java.util.Calendar;
 

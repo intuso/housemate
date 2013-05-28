@@ -16,9 +16,9 @@ import com.intuso.housemate.object.broker.proxy.BrokerProxyResources;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
-import com.intuso.listeners.ListenerRegistration;
-import com.intuso.listeners.Listeners;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.log.Log;
 
 import java.util.ArrayList;
 import java.util.List;

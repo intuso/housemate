@@ -12,7 +12,7 @@ import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.object.broker.ClientPayload;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 import javax.annotation.Nullable;
 import java.util.Map;

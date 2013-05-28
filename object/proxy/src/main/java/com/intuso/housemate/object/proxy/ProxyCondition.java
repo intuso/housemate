@@ -8,7 +8,7 @@ import com.intuso.housemate.api.object.condition.ConditionWrappable;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
 import com.intuso.housemate.api.object.rule.Rule;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * Created by IntelliJ IDEA.

@@ -12,7 +12,7 @@ import com.intuso.housemate.api.object.type.HasTypes;
 import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.user.HasUsers;
 import com.intuso.housemate.api.object.user.User;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * Created with IntelliJ IDEA.

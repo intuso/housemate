@@ -18,7 +18,7 @@ import com.intuso.housemate.object.broker.real.BrokerRealRule;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
 import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
 import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.HashMap;

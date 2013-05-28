@@ -18,7 +18,7 @@ import com.intuso.housemate.web.client.handler.HasObjectSelectedHandlers;
 import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;
-import com.intuso.listeners.ListenerRegistration;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.HashMap;
 import java.util.Map;

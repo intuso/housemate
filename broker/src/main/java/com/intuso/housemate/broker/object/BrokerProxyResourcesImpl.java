@@ -8,7 +8,7 @@ import com.intuso.housemate.object.broker.ServerComms;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyObject;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyResources;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyRootObject;
-import com.intuso.utils.log.Log;
+import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 
