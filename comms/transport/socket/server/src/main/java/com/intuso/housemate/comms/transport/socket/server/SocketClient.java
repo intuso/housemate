@@ -1,10 +1,10 @@
-package com.intuso.housemate.broker.comms.socket;
+package com.intuso.housemate.comms.transport.socket.server;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.comms.message.EmptyMessageValue;
+import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
@@ -132,7 +132,7 @@ public final class SocketClient implements Receiver<Message.Payload> {
 				
 				log.d("Closed connection");
 
-                routerRegistration.disconnect();
+                routerRegistration.connectionLost();
 			}
 		}.start();
 	}
@@ -207,7 +207,7 @@ public final class SocketClient implements Receiver<Message.Payload> {
         /**
          * heartbeat messgae
          */
-        private Message heartbeat = new Message<EmptyMessageValue>(new String[] {}, "heartbeat", EmptyMessageValue.VALUE);
+        private Message heartbeat = new Message<NoPayload>(new String[] {}, "heartbeat", NoPayload.VALUE);
 
         private ObjectOutputStream oos;
 

@@ -9,6 +9,6 @@ import com.intuso.housemate.api.object.list.List;
  * Time: 01:08
  * To change this template use File | Settings | File Templates.
  */
-public interface HasDevices<L extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
+public interface HasDevices<L extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
     public L getDevices();
 }

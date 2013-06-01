@@ -1,9 +1,8 @@
-package com.intuso.housemate.broker.comms.socket;
+package com.intuso.housemate.comms.transport.socket.server;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.broker.BrokerServerEnvironment;
-import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
+import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
@@ -18,7 +17,9 @@ import java.net.Socket;
  * To change this template use File | Settings | File Templates.
  */
 public class SocketServer {
-    
+
+    public final static String BROKER_PORT = "broker.port";
+
     private final Log log;
 
     /**
@@ -33,7 +34,7 @@ public class SocketServer {
 
     private final Router clientMap;
 
-    public SocketServer(BrokerGeneralResources resources, Router clientMap) throws HousemateException {
+    public SocketServer(Resources resources, Router clientMap) throws HousemateException {
 
         this.clientMap = clientMap;
 
@@ -41,7 +42,7 @@ public class SocketServer {
 
         try {
             // open the server port
-            String port = resources.getProperties().get(BrokerServerEnvironment.BROKER_PORT);
+            String port = resources.getProperties().get(BROKER_PORT);
             log.d("Starting server comms on port " + port);
             serverSocket = new ServerSocket(Integer.parseInt(port));
             accepter = new Accepter();

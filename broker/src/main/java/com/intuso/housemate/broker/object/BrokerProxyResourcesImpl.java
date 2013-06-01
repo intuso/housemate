@@ -4,10 +4,11 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.broker.object.general.BrokerResourcesImpl;
 import com.intuso.housemate.object.broker.LifecycleHandler;
-import com.intuso.housemate.object.broker.ServerComms;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyObject;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyResources;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyRootObject;
+import com.intuso.housemate.object.broker.real.BrokerRealResources;
+import com.intuso.housemate.object.real.RealResources;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
@@ -60,8 +61,13 @@ public class BrokerProxyResourcesImpl<F extends HousemateObjectFactory<?, ?, ?>>
         }
 
         @Override
-        public ServerComms getComms() {
-            return original.getComms();
+        public BrokerRealResources getBrokerRealResources() {
+            return original.getBrokerRealResources();
+        }
+
+        @Override
+        public RealResources getRealResources() {
+            return original.getRealResources();
         }
 
         @Override

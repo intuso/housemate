@@ -17,11 +17,11 @@ import com.intuso.housemate.api.object.value.Value;
  * To change this template use File | Settings | File Templates.
  */
 public interface Rule<SP extends Property<?, ?, ?>, RC extends Command<?, ?>, SC extends Command<?, ?>,
-            AC extends Command<?, ?>, BV extends Value<?, ?>, SV extends Value<?, ?>,
+            AC extends Command<?, ?>, CV extends Value<?, ?>, RV extends Value<?, ?>, SV extends Value<?, ?>,
             Cond extends Condition<?, ?, ?, ?, ?, ?, ?>, CondL extends List<? extends Cond>,
             Cons extends Consequence<?, ?, ?, ?, ?>, ConsL extends List<? extends Cons>,
-            R extends Rule<SP, RC, SC, AC, BV, SV, Cond, CondL, Cons, ConsL, R>>
-        extends PrimaryObject<SP, RC, SC, BV, SV, R, RuleListener<? super R>>, HasConditions<CondL> {
+            R extends Rule<SP, RC, SC, AC, CV, RV, SV, Cond, CondL, Cons, ConsL, R>>
+        extends PrimaryObject<SP, RC, SC, CV, RV, SV, R, RuleListener<? super R>>, HasConditions<CondL> {
 
     public final static String CONDITIONS = "conditions";
     public final static String SATISFIED_CONSEQUENCES = "satisfied-consequences";

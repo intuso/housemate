@@ -1,6 +1,6 @@
 package com.intuso.housemate.platform.pc;
 
-import com.intuso.housemate.client.comms.ClientComms;
+import com.intuso.housemate.comms.transport.socket.client.ClientComms;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.ClientResources;

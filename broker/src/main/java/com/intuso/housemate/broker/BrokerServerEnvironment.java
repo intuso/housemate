@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.broker.client.LocalClient;
-import com.intuso.housemate.broker.comms.ServerCommsImpl;
+import com.intuso.housemate.broker.comms.ServerComms;
 import com.intuso.housemate.broker.factory.ConditionFactory;
 import com.intuso.housemate.broker.factory.ConsequenceFactory;
 import com.intuso.housemate.broker.factory.DeviceFactory;
@@ -19,6 +19,7 @@ import com.intuso.housemate.broker.plugin.MainPlugin;
 import com.intuso.housemate.broker.storage.BrokerObjectStorage;
 import com.intuso.housemate.broker.storage.Storage;
 import com.intuso.housemate.broker.storage.impl.SjoerdDB;
+import com.intuso.housemate.comms.transport.socket.server.SocketServer;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyFactory;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyRootObject;
 import com.intuso.housemate.object.broker.real.BrokerRealRootObject;
@@ -74,7 +75,6 @@ public class BrokerServerEnvironment {
     public final static String PLUGINS_DIR_NAME= "plugins";
     public final static String LOG_LEVEL = "log.level";
     public final static String BROKER_NAME = "broker.name";
-    public final static String BROKER_PORT = "broker.port";
     public final static String RUN_WEBAPP = "webapp.run";
     public final static String WEBAPP_PORT = "webapp.port";
 
@@ -85,7 +85,7 @@ public class BrokerServerEnvironment {
 
 	private final Map<String, String> properties;
     private final Log log;
-    private final ServerCommsImpl comms;
+    private final ServerComms comms;
     private final Storage storage;
     private final DeviceFactory deviceFactory;
     private final ConditionFactory conditionFactory;
@@ -200,7 +200,7 @@ public class BrokerServerEnvironment {
         bridgeResources = new BrokerBridgeResources(generalResources);
         proxyResources = new BrokerProxyResourcesImpl<BrokerProxyFactory.All>(generalResources, new BrokerProxyFactory.All());
 
-        comms = new ServerCommsImpl(generalResources);
+        comms = new ServerComms(generalResources);
         generalResources.setComms(comms);
 
         clientResources = new RealResources(log, properties, comms);
@@ -230,7 +230,7 @@ public class BrokerServerEnvironment {
 
     private void initGeneralResources() {
         generalResources.setStorage(new BrokerObjectStorage(storage, generalResources));
-        generalResources.setAuthenticationController(new AuthenticationController(generalResources));
+        generalResources.setRemoteClientManager(new RemoteClientManager(generalResources));
         generalResources.setDeviceFactory(deviceFactory);
         generalResources.setConditionFactory(conditionFactory);
         generalResources.setConsequenceFactory(consequenceFactory);
@@ -272,7 +272,7 @@ public class BrokerServerEnvironment {
             BufferedWriter out = new BufferedWriter(new java.io.FileWriter(file));
             out.write(LOG_LEVEL + "=DEBUG\n");
             out.write(BROKER_NAME + "=My Broker\n");
-            out.write(BROKER_PORT + "=46873\n");
+            out.write(SocketServer.BROKER_PORT + "=46873\n");
             out.close();
         } catch(IOException e) {
             throw new HousemateException("Could not create default props file", e);

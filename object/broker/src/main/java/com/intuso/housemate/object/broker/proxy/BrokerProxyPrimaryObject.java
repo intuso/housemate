@@ -6,6 +6,8 @@ import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.broker.real.BrokerRealCommand;
+import com.intuso.housemate.object.broker.real.BrokerRealResources;
+import com.intuso.housemate.object.broker.real.BrokerRealValue;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -22,19 +24,24 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
             PO extends BrokerProxyPrimaryObject<WBL, PO, L>,
             L extends PrimaryListener<? super PO>>
         extends BrokerProxyObject<WBL, HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>, PO, L>
-        implements PrimaryObject<BrokerProxyProperty, BrokerRealCommand, BrokerProxyCommand, BrokerProxyValue,
-            BrokerProxyValue, PO, L> {
+        implements PrimaryObject<BrokerProxyProperty, BrokerRealCommand, BrokerProxyCommand, BrokerRealValue<Boolean>,
+            BrokerProxyValue, BrokerProxyValue, PO, L> {
 
     private BrokerProxyCommand realRemoveCommand;
     private BrokerRealCommand remove;
+    private BrokerRealValue<Boolean> connected;
     private BrokerProxyValue running;
     private BrokerProxyCommand start;
     private BrokerProxyCommand stop;
     private BrokerProxyValue error;
     private Remover<PO> remover;
 
-    protected BrokerProxyPrimaryObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, HousemateObjectWrappable<?>, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> resources, WBL wrappable) {
+    protected BrokerProxyPrimaryObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, HousemateObjectWrappable<?>, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> resources,
+                                       BrokerRealResources realResources, WBL wrappable) {
         super(resources, wrappable);
+        connected = new BrokerRealValue<Boolean>(realResources, CONNECTED_VALUE, CONNECTED_VALUE,
+                "Whether the server has a connection open to control the object",
+                new BooleanType(realResources.getRealResources()), true);
     }
 
     public void setRemover(Remover<PO> remover) {
@@ -54,6 +61,16 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
     @Override
     public BrokerRealCommand getRemoveCommand() {
         return remove;
+    }
+
+    @Override
+    public Boolean isConnected() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public BrokerRealValue<Boolean> getConnectedValue() {
+        return connected;
     }
 
     @Override

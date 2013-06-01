@@ -19,7 +19,7 @@
 
     <dependencies>
 
-        <!-- Housemate API -->
+        <!-- Housemate API+objects -->
 		<dependency>
 			<groupId>com.intuso.housemate</groupId>
 			<artifactId>api</artifactId>
@@ -33,6 +33,13 @@
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>object-real</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Transport implementations -->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>comms-transport-socket-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 

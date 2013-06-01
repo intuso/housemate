@@ -2,6 +2,7 @@ package com.intuso.housemate.object.real;
 
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
@@ -21,7 +22,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
             PO extends RealPrimaryObject<WBL, PO, L>,
             L extends PrimaryListener<? super PO>>
         extends RealObject<WBL, HousemateObjectWrappable<?>, RealObject<?, ?, ?, ?>, L>
-        implements PrimaryObject<RealProperty<String>, RealCommand, RealCommand, RealValue<Boolean>, RealValue<String>, PO, L> {
+        implements PrimaryObject<RealProperty<String>, RealCommand, RealCommand, RealValue<Boolean>, RealValue<Boolean>, RealValue<String>, PO, L> {
 
     private final RealCommand remove;
     private final RealValue<Boolean> running;
@@ -89,6 +90,16 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
     @Override
     public RealCommand getStartCommand() {
         return start;
+    }
+
+    @Override
+    public Boolean isConnected() {
+        throw new HousemateRuntimeException("This value is not maintained by the client");
+    }
+
+    @Override
+    public RealValue<Boolean> getConnectedValue() {
+        throw new HousemateRuntimeException("This value is not maintained by the client");
     }
 
     @Override

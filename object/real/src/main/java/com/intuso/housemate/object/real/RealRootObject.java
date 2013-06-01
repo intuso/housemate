@@ -4,9 +4,11 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
+import com.intuso.housemate.api.authentication.Reconnect;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
@@ -38,6 +40,8 @@ public class RealRootObject
     private AuthenticationMethod method = null;
     private AuthenticationResponseHandler responseHandler = null;
 
+    private String connectionId;
+
     public RealRootObject(RealResources resources) {
         super(resources, new RootWrappable());
 
@@ -60,13 +64,11 @@ public class RealRootObject
             throw new HousemateRuntimeException("Authentication already in progress/succeeded");
         this.method = method;
         this.responseHandler = responseHandler;
-        sendMessage(AUTHENTICATION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.REAL, method));
+        sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.REAL, method));
     }
 
     @Override
     public void disconnect() {
-        if(this.method == null)
-            throw new HousemateRuntimeException("Not connected");
         routerRegistration.disconnect();
         method = null;
     }
@@ -89,16 +91,30 @@ public class RealRootObject
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(AUTHENTICATION_RESPONSE, new Receiver<AuthenticationResponse>() {
+        result.add(addMessageListener(CONNECTION_RESPONSE, new Receiver<AuthenticationResponse>() {
             @Override
             public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {
+                if(message.getPayload() instanceof ReconnectResponse)
+                    return;
+                connectionId = message.getPayload().getConnectionId();
                 if(responseHandler != null)
                     responseHandler.responseReceived(message.getPayload());
                 // if authentication failed remove responseHandler so that if can be tried again
-                if(message.getPayload().getUserId() == null) {
-                    method = null;
-                    responseHandler = null;
-                }
+                method = null;
+                responseHandler = null;
+            }
+        }));
+        result.add(addMessageListener(Router.CONNECTION_LOST, new Receiver<NoPayload>() {
+            @Override
+            public void messageReceived(Message<NoPayload> message) throws HousemateException {
+
+            }
+        }));
+        result.add(addMessageListener(Router.CONNECTION_MADE, new Receiver<NoPayload>() {
+            @Override
+            public void messageReceived(Message<NoPayload> message) throws HousemateException {
+                if(connectionId != null)
+                    sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.PROXY, new Reconnect(connectionId)));
             }
         }));
         return result;

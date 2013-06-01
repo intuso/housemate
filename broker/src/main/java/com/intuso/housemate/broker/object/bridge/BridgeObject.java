@@ -11,8 +11,8 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.object.broker.ClientPayload;
-import com.intuso.housemate.object.broker.DisconnectListener;
 import com.intuso.housemate.object.broker.RemoteClient;
+import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.Arrays;
@@ -31,7 +31,8 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
             SWR extends BridgeObject<? extends SWBL, ?, ?, ?, ?>,
             PBO extends BridgeObject<WBL, SWBL, SWR, PBO, L>,
             L extends ObjectListener>
-        extends HousemateObject<BrokerBridgeResources, WBL, SWBL, SWR, L> implements BaseObject<L>,DisconnectListener {
+        extends HousemateObject<BrokerBridgeResources, WBL, SWBL, SWR, L>
+        implements BaseObject<L>, RemoteClientListener {
 
     private final List<RemoteClient> loadedByClients = Lists.newArrayList();
     private final Map<RemoteClient, ListenerRegistration> clientListeners= Maps.newHashMap();
@@ -41,13 +42,16 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
     }
 
     protected void sendMessage(String type, Message.Payload payload, RemoteClient client) throws HousemateException {
-        getResources().getComms().sendMessageToClient(getPath(), type, payload, client);
+        client.sendMessage(getPath(), type, payload);
     }
 
     protected <MV extends Message.Payload> void broadcastMessage(String type, MV content) {
         for(RemoteClient client : loadedByClients) {
             try {
-                sendMessage(type, content, client);
+                if(client.isCurrentlyConnected())
+                    sendMessage(type, content, client);
+                else
+                    getLog().w("Not sending message to client " + client.getConnectionId() + " as it's not currently connected");
             } catch(HousemateException e) {
                 getLog().e("Failed to broadcast message to client");
                 getLog().e(e.getMessage());
@@ -85,7 +89,7 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
             if(child != null)
                 result.addWrappable(child);
         }
-        clientListeners.put(client, client.addDisconnectListener(this));
+        clientListeners.put(client, client.addListener(this));
         loadedByClients.add(client);
         return result;
     }
@@ -109,5 +113,15 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
         if(clientListeners.containsKey(client))
             clientListeners.remove(client).removeListener();
         loadedByClients.remove(client);
+    }
+
+    @Override
+    public void connectionLost(RemoteClient client) {
+        // do nothing
+    }
+
+    @Override
+    public void reconnected(RemoteClient client) {
+        // do nothing
     }
 }

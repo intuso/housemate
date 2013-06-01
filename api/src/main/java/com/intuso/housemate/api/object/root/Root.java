@@ -21,8 +21,8 @@ import com.intuso.utilities.listener.ListenerRegistration;
 public interface Root<R extends Root, L extends RootListener<? super R>>
         extends BaseObject<L>, Receiver<Message.Payload>, Sender {
 
-    public final static String AUTHENTICATION_REQUEST = "authentication-request";
-    public final static String AUTHENTICATION_RESPONSE = "authentication-response";
+    public final static String CONNECTION_REQUEST = "connection-request";
+    public final static String CONNECTION_RESPONSE = "connection-response";
     public final static String DISCONNECT = "disconnect";
     public final static String USERS = "users";
     public final static String TYPES = "types";
@@ -72,7 +72,7 @@ public interface Root<R extends Root, L extends RootListener<? super R>>
      * Time: 09:08
      * To change this template use File | Settings | File Templates.
      */
-    final class AuthenticationResponse implements Message.Payload {
+    class AuthenticationResponse implements Message.Payload {
 
         private String connectionId;
         private String userId;
@@ -103,5 +103,9 @@ public interface Root<R extends Root, L extends RootListener<? super R>>
         public String getProblem() {
             return problem;
         }
+    }
+
+    class ReconnectResponse extends AuthenticationResponse {
+        public ReconnectResponse() {}
     }
 }

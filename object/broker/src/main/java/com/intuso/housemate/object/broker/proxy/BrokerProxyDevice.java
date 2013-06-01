@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
 import com.intuso.housemate.api.object.value.ValueWrappable;
 import com.intuso.housemate.object.broker.real.BrokerRealCommand;
+import com.intuso.housemate.object.broker.real.BrokerRealValue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,7 +19,7 @@ import com.intuso.housemate.object.broker.real.BrokerRealCommand;
 public class BrokerProxyDevice
         extends BrokerProxyPrimaryObject<DeviceWrappable, BrokerProxyDevice, DeviceListener<? super BrokerProxyDevice>>
         implements Device<BrokerRealCommand, BrokerProxyCommand, BrokerProxyCommand,
-            BrokerProxyList<CommandWrappable, BrokerProxyCommand>, BrokerProxyValue, BrokerProxyValue, BrokerProxyValue,
+            BrokerProxyList<CommandWrappable, BrokerProxyCommand>, BrokerRealValue<Boolean>, BrokerProxyValue, BrokerProxyValue, BrokerProxyValue,
             BrokerProxyList<ValueWrappable, BrokerProxyValue>, BrokerProxyProperty, BrokerProxyProperty,
             BrokerProxyList<PropertyWrappable, BrokerProxyProperty>, BrokerProxyDevice> {
 
@@ -27,7 +28,7 @@ public class BrokerProxyDevice
     private BrokerProxyList<PropertyWrappable, BrokerProxyProperty> properties;
 
     public BrokerProxyDevice(BrokerProxyResources<BrokerProxyFactory.All> resources, DeviceWrappable wrappable) {
-        super(resources, wrappable);
+        super(resources, resources.getBrokerRealResources(), wrappable);
     }
 
     @Override

@@ -23,14 +23,14 @@ import javax.annotation.Nullable;
 public class DeviceBridge
         extends PrimaryObjectBridge<DeviceWrappable, DeviceBridge, DeviceListener<? super DeviceBridge>>
         implements Device<CommandBridge, CommandBridge, CommandBridge, ListBridge<Command<?, ?>, CommandWrappable, CommandBridge>,
-                    ValueBridge, ValueBridge, ValueBridge, ListBridge<Value<?, ?>, ValueWrappable, ValueBridge>,
+                    ValueBridge, ValueBridge, ValueBridge, ValueBridge, ListBridge<Value<?, ?>, ValueWrappable, ValueBridge>,
                     PropertyBridge, PropertyBridge, ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>, DeviceBridge> {
 
     private ListBridge<Command<?, ?>, CommandWrappable, CommandBridge> commandList;
     private ListBridge<Value<?, ?>, ValueWrappable, ValueBridge> valueList;
     private ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge> propertyList;
 
-    public DeviceBridge(BrokerBridgeResources resources, Device<?, ?, ? extends Command<?, ?>, ?, ?, ?, ? extends Value<?, ?>, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+    public DeviceBridge(BrokerBridgeResources resources, Device<?, ?, ? extends Command<?, ?>, ?, ?, ?, ?, ? extends Value<?, ?>, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
         super(resources, new DeviceWrappable(device.getId(), device.getName(), device.getDescription()), device);
         commandList = new ListBridge<Command<?, ?>, CommandWrappable, CommandBridge>(resources, device.getCommands(), new CommandConverter(resources));
         valueList = new ListBridge<Value<?, ?>, ValueWrappable, ValueBridge>(resources, device.getValues(), new ValueConverter(resources));

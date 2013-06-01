@@ -10,7 +10,6 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
@@ -42,7 +41,7 @@ import java.util.Map;
  */
 public class RootObjectBridge
         extends BridgeObject<RootWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>,
-        RootObjectBridge, RootListener<? super RootObjectBridge>>
+            RootObjectBridge, RootListener<? super RootObjectBridge>>
         implements Root<RootObjectBridge, RootListener<? super RootObjectBridge>>, WrapperListener<HousemateObject<?, ?, ?, ?, ?>> {
 
     private ListBridge<BrokerRealUser, UserWrappable, UserBridge> users;
@@ -207,13 +206,5 @@ public class RootObjectBridge
             objectLifecycleListeners.put(path, listeners);
         }
         return listeners.addListener(listener);
-    }
-
-    public void deviceRunningChanged(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device, boolean running) {
-        try {
-            getResources().getGeneralResources().getStorage().saveValue(device.getRunningValue().getPath(), Boolean.toString(running));
-        } catch(HousemateException e) {
-            getResources().getLog().w("Failed to save device running value. Device may not be started correctly the next time");
-        }
     }
 }

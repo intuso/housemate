@@ -9,10 +9,10 @@ import com.intuso.housemate.api.comms.Message;
  * Time: 19:11
  * To change this template use File | Settings | File Templates.
  */
-public class EmptyMessageValue implements Message.Payload {
-    public final static EmptyMessageValue VALUE = new EmptyMessageValue();
+public class NoPayload implements Message.Payload {
+    public final static NoPayload VALUE = new NoPayload();
 
-    private EmptyMessageValue() {}
+    private NoPayload() {}
 
     @Override
     public String toString() {

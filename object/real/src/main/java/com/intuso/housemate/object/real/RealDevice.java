@@ -21,7 +21,7 @@ import java.util.List;
 public abstract class RealDevice
         extends RealPrimaryObject<DeviceWrappable, RealDevice, DeviceListener<? super RealDevice>>
         implements Device<RealCommand, RealCommand, RealCommand, RealList<CommandWrappable, RealCommand>,
-            RealValue<Boolean>, RealValue<String>, RealValue<?>, RealList<ValueWrappable, RealValue<?>>,
+            RealValue<Boolean>, RealValue<Boolean>, RealValue<String>, RealValue<?>, RealList<ValueWrappable, RealValue<?>>,
             RealProperty<String>, RealProperty<?>, RealList<PropertyWrappable, RealProperty<?>>, RealDevice> {
 
     private final static String COMMANDS_DESCRIPTION = "The device's commands";

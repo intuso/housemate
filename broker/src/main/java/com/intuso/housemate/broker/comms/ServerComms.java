@@ -5,18 +5,17 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Comms;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.broker.comms.socket.SocketServer;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
+import com.intuso.housemate.comms.transport.socket.server.SocketServer;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.housemate.object.broker.RemoteClient;
-import com.intuso.housemate.object.broker.ServerComms;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author tclabon
  */
-public final class ServerCommsImpl extends Comms implements ServerComms {
+public final class ServerComms extends Comms {
 
     private final LinkedBlockingQueue<Message<Message.Payload>> incomingMessages = new LinkedBlockingQueue<Message<Message.Payload>>();
 
@@ -24,7 +23,7 @@ public final class ServerCommsImpl extends Comms implements ServerComms {
 
     private BrokerGeneralResources resources;
 
-    public ServerCommsImpl(BrokerGeneralResources resources) {
+    public ServerComms(BrokerGeneralResources resources) {
         super(resources);
         this.resources = resources;
     }
@@ -32,7 +31,6 @@ public final class ServerCommsImpl extends Comms implements ServerComms {
 	/**
 	 * Start accepting connections to the server socket
 	 */
-	@Override
     public final void start() {
 
 		// start the thread that will process incoming messages
@@ -55,10 +53,8 @@ public final class ServerCommsImpl extends Comms implements ServerComms {
         throw new HousemateRuntimeException("The ServerComms cannot be disconnected");
     }
 
-    @Override
-    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClient client) throws HousemateException {
-        Message<?> message = new Message<Message.Payload>(path, type, payload,
-                resources.getAuthenticationController().getClientRoute(client.getConnectionId()));
+    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClientImpl client) throws HousemateException {
+        Message<?> message = new Message<Message.Payload>(path, type, payload, client.getRoute());
         getLog().d("Sending message " + message.toString());
         // to send a message we tell the outgoing root it is received. Any listeners on the outgoing root
         // will get it. These listeners are all created from the clientHandle and just put messages
@@ -110,7 +106,7 @@ public final class ServerCommsImpl extends Comms implements ServerComms {
                 }
                 getLog().d("Message received " + message.toString());
                 try {
-                    RemoteClient client = resources.getAuthenticationController().getClient(message.getRoute());
+                    RemoteClientImpl client = resources.getRemoteClientManager().getClient(message.getRoute());
                     Root<?, ?> root = getRoot(client, message);
                     // wrap payload in new payload in which we can put the client's id
                     message = new Message<Message.Payload>(message.getPath(), message.getType(),

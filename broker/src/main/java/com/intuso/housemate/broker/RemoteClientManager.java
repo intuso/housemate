@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
+import com.intuso.housemate.api.authentication.Reconnect;
 import com.intuso.housemate.api.authentication.Session;
 import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.Message;
@@ -11,9 +12,9 @@ import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.broker.client.LocalClient;
+import com.intuso.housemate.broker.comms.RemoteClientImpl;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.broker.storage.DetailsNotFoundException;
-import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.real.BrokerRealList;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
 
@@ -28,30 +29,48 @@ import java.util.UUID;
  * Time: 08:36
  * To change this template use File | Settings | File Templates.
  */
-public class AuthenticationController {
+public class RemoteClientManager {
 
     private final BrokerGeneralResources resources;
-    private final RemoteClient root = new RemoteClient(UUID.randomUUID().toString(), ClientWrappable.Type.ROUTER);
-    private final Map<String, List<String>> clients = Maps.newHashMap();
+    private final RemoteClientImpl root;
+    private final Map<String, RemoteClientImpl> lostClients = Maps.newHashMap();
 
-    public AuthenticationController(BrokerGeneralResources resources) {
+    public RemoteClientManager(BrokerGeneralResources resources) {
         this.resources = resources;
-        clients.put(root.getConnectionId(), Lists.<String>newArrayList());
+        root = new RemoteClientImpl(UUID.randomUUID().toString(), ClientWrappable.Type.ROUTER, resources.getComms());
+        root.setRoute(Lists.<String>newArrayList());
     }
 
     public void processRequest(Root.AuthenticationRequest request, List<String> route) {
+        if(!(request.getMethod() instanceof Reconnect) || !processReconnect(request, route))
+            processNewClient(request, route);
+    }
 
+    private boolean processReconnect(Root.AuthenticationRequest request, List<String> route) {
+        RemoteClientImpl client = lostClients.remove(((Reconnect) request.getMethod()).getConnectionId());
+        if(client == null)
+            return false;
+        client.setRoute(route);
+        try {
+            client.sendMessage(new String[] {""}, Root.CONNECTION_RESPONSE, new Root.ReconnectResponse());
+        } catch(HousemateException e) {
+            resources.getLog().e("Failed to send authentication response to client at route " + Message.routeToString(route));
+        }
+        return true;
+    }
+
+    private void processNewClient(Root.AuthenticationRequest request, List<String> route) {
         // create a new connection id
         String connectionId = UUID.randomUUID().toString();
-        RemoteClient client;
+        RemoteClientImpl client;
 
         // try and add the client. If this fails, it's because one of the intermediate clients isn't authenticated
         // in which case it shouldn't have allowed this message through. We shouldn't reply to prevent misuse
         try {
             client = addClient(connectionId, route, request.getType());
+            client.setRoute(route);
         } catch(HousemateException e) {
             resources.getLog().e("Failed to add client endpoint for " + Message.routeToString(route));
-            root.removeClient(route);
             return;
         }
 
@@ -65,7 +84,7 @@ public class AuthenticationController {
 
         try {
             if(response != null)
-                resources.getComms().sendMessageToClient(new String[] {""}, Root.AUTHENTICATION_RESPONSE, response, client);
+                client.sendMessage(new String[]{""}, Root.CONNECTION_RESPONSE, response);
         } catch(HousemateException e) {
             resources.getLog().e("Failed to send authentication response to client at route " + Message.routeToString(route));
             response = null;
@@ -103,6 +122,10 @@ public class AuthenticationController {
         } else if(method instanceof LocalClient.InternalConnectMethod) {
             return new Root.AuthenticationResponse(connectionId, null);
 
+            // reconnect
+        } else if(method instanceof Reconnect) {
+            return new Root.AuthenticationResponse("Unknown connection id");
+
             // unknown method
         } else {
             if(method != null)
@@ -112,21 +135,43 @@ public class AuthenticationController {
         }
     }
 
-    private RemoteClient addClient(String connectionId, List<String> route, ClientWrappable.Type type) throws HousemateException {
-        RemoteClient client = root.addClient(route, connectionId, type);
-        clients.put(connectionId, route);
+    private RemoteClientImpl addClient(String connectionId, List<String> route, ClientWrappable.Type type) throws HousemateException {
+        RemoteClientImpl client = root.addClient(route, connectionId, type);
         return client;
     }
 
-    public void removeClient(List<String> route) {
-        RemoteClient client = root.removeClient(route);
-        if(client != null)
-            clients.remove(client.getConnectionId());
+    public void clientDisconnected(List<String> route) {
+        RemoteClientImpl client = root.getClient(route);
+        if(client != null) {
+            client.remove();
+            clientDisconnected(client);
+        }
     }
 
-    public void removeClient(RemoteClient client) {
+    private void clientDisconnected(RemoteClientImpl client) {
+        client.disconnected();
+        for(RemoteClientImpl child : client.getChildren())
+            clientDisconnected(child);
+    }
+
+    public void connectionLost(List<String> route) {
+        RemoteClientImpl client = root.getClient(route);
+        if(client != null) {
+            client.remove();
+            connectionLost(client);
+        }
+    }
+
+    private void connectionLost(RemoteClientImpl client) {
+        client.connectionLost();
+        lostClients.put(client.getConnectionId(), client);
+        for(RemoteClientImpl child : client.getChildren())
+            connectionLost(child);
+    }
+
+    public void removeClient(RemoteClientImpl client) {
         if(client != null)
-            root.removeClient(clients.remove(client.getConnectionId()));
+            root.getClient(client.getRoute());
     }
 
     private BrokerRealUser getUserForSession(String sessionId) throws HousemateException {
@@ -166,11 +211,7 @@ public class AuthenticationController {
         }
     }
 
-    public List<String> getClientRoute(String clientId) {
-        return clients.get(clientId);
-    }
-
-    public RemoteClient getClient(List<String> route) {
-        return root.getChild(route);
+    public RemoteClientImpl getClient(List<String> route) {
+        return root.getClient(route);
     }
 }

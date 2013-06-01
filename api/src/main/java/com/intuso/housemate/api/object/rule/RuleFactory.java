@@ -12,6 +12,6 @@ import com.intuso.housemate.api.resources.Resources;
  */
 public interface RuleFactory<
             R extends Resources,
-            Ru extends Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>
+            Ru extends Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>
         extends HousemateObjectFactory<R, RuleWrappable, Ru> {
 }

@@ -12,6 +12,6 @@ import com.intuso.housemate.api.resources.Resources;
  */
 public interface DeviceFactory<
             R extends Resources,
-            D extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?>>
+            D extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?>>
         extends HousemateObjectFactory<R, DeviceWrappable, D> {
 }

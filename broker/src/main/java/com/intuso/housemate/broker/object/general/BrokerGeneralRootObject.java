@@ -66,11 +66,11 @@ public class BrokerGeneralRootObject
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(AUTHENTICATION_REQUEST, new Receiver<ClientPayload<AuthenticationRequest>>() {
+        result.add(addMessageListener(CONNECTION_REQUEST, new Receiver<ClientPayload<AuthenticationRequest>>() {
             @Override
             public void messageReceived(Message<ClientPayload<AuthenticationRequest>> message) throws HousemateException {
                 // process the request
-                getResources().getAuthenticationController().processRequest(message.getPayload().getOriginal(), message.getRoute());
+                getResources().getRemoteClientManager().processRequest(message.getPayload().getOriginal(), message.getRoute());
             }
         }));
         result.add(addMessageListener(DISCONNECT, new Receiver<ClientPayload<StringMessageValue>>() {
@@ -79,16 +79,16 @@ public class BrokerGeneralRootObject
                 // build the disconnecting client's route as the router's route + the end client id
                 List<String> route = Lists.newArrayList(message.getRoute());
                 route.add(message.getPayload().getOriginal().getValue());
-                getResources().getAuthenticationController().removeClient(route);
+                getResources().getRemoteClientManager().clientDisconnected(route);
             }
         }));
-        result.add(addMessageListener(Router.UNKNOWN_CLIENT, new Receiver<ClientPayload<StringMessageValue>>() {
+        result.add(addMessageListener(Router.CONNECTION_LOST, new Receiver<ClientPayload<StringMessageValue>>() {
             @Override
             public void messageReceived(Message<ClientPayload<StringMessageValue>> message) throws HousemateException {
                 // process the request
                 List<String> route = Lists.newArrayList(message.getRoute());
                 route.add(message.getPayload().getOriginal().getValue());
-                getResources().getAuthenticationController().removeClient(route);
+                getResources().getRemoteClientManager().connectionLost(route);
             }
         }));
         return result;

@@ -1,16 +1,16 @@
 package com.intuso.housemate.broker.object.general;
 
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.broker.AuthenticationController;
+import com.intuso.housemate.broker.RemoteClientManager;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.client.LocalClient;
+import com.intuso.housemate.broker.comms.ServerComms;
 import com.intuso.housemate.broker.factory.ConditionFactory;
 import com.intuso.housemate.broker.factory.ConsequenceFactory;
 import com.intuso.housemate.broker.factory.DeviceFactory;
 import com.intuso.housemate.broker.object.bridge.BrokerBridgeResources;
 import com.intuso.housemate.broker.storage.BrokerObjectStorage;
 import com.intuso.housemate.object.broker.LifecycleHandler;
-import com.intuso.housemate.object.broker.ServerComms;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyFactory;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyResources;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
@@ -38,7 +38,7 @@ public class BrokerGeneralResources implements Resources {
     private ServerComms comms;
     private BrokerGeneralRootObject root;
     private BrokerObjectStorage storage;
-    private AuthenticationController authenticationController;
+    private RemoteClientManager remoteClientManager;
     private DeviceFactory deviceFactory;
     private LifecycleHandler lifecycleHandler;
     private ConditionFactory conditionFactory;
@@ -92,12 +92,12 @@ public class BrokerGeneralResources implements Resources {
         this.storage = storage;
     }
 
-    public AuthenticationController getAuthenticationController() {
-        return authenticationController;
+    public RemoteClientManager getRemoteClientManager() {
+        return remoteClientManager;
     }
 
-    public void setAuthenticationController(AuthenticationController authenticationController) {
-        this.authenticationController = authenticationController;
+    public void setRemoteClientManager(RemoteClientManager remoteClientManager) {
+        this.remoteClientManager = remoteClientManager;
     }
 
     public LifecycleHandler getLifecycleHandler() {

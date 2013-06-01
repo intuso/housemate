@@ -23,8 +23,8 @@ import com.intuso.utilities.listener.ListenerRegistration;
  */
 public interface ProxyRoot<UL extends List<? extends User>,
             TL extends List<? extends Type>,
-            DL extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
-            RL extends List<? extends Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
+            DL extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
+            RL extends List<? extends Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
             C extends Command<?, ?>, R extends ProxyRoot<UL, TL, DL, RL, C, R>>
         extends Root<R, ProxyRootListener<? super R>>, HasUsers<UL>, HasTypes<TL>, HasDevices<DL>, HasRules<RL> {
 

@@ -26,7 +26,7 @@ public abstract class ProxyRule<
             ConsL extends ProxyList<?, ?, ConsequenceWrappable, Cons, ConsL>,
             Ru extends ProxyRule<R, SR, P, C, V, Cond, CondL, Cons, ConsL, Ru>>
         extends ProxyPrimaryObject<R, SR, RuleWrappable, P, C, V, Ru, RuleListener<? super Ru>>
-        implements Rule<P, C, C, C, V, V, Cond, CondL, Cons, ConsL, Ru> {
+        implements Rule<P, C, C, C, V, V, V, Cond, CondL, Cons, ConsL, Ru> {
 
     private CondL conditions;
     private ConsL satisfiedConsequences;

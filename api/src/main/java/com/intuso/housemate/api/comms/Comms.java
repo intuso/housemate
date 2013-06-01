@@ -1,8 +1,11 @@
 package com.intuso.housemate.api.comms;
 
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.log.Log;
+
+import java.util.Arrays;
 
 /**
  * Abstract class for all Housemate comms. Implemented for each Platform that
@@ -31,9 +34,19 @@ public abstract class Comms extends Router {
 		return log;
 	}
 
-    protected final void connected(boolean connected) {
-        // TODO add a list of Comms listeners for connection changes. Broker can then add itself as a comms listener
-        // to call brokerConnected() etc
-        //root.brokerConnected();
+    protected final void connected() {
+        try {
+            messageReceived(new Message<NoPayload>(new String[] {""}, CONNECTION_MADE, NoPayload.VALUE, Arrays.asList(ALL_CLIENTS_RECURSE)));
+        } catch(HousemateException e) {
+            getLog().e("Failed to inform clients that the connection has been made");
+        };
 	}
+
+    protected final void disconnected() {
+        try {
+            messageReceived(new Message<NoPayload>(new String[] {""}, CONNECTION_LOST, NoPayload.VALUE, Arrays.asList(ALL_CLIENTS_RECURSE)));
+        } catch(HousemateException e) {
+            getLog().e("Failed to inform clients that the connection has been lost");
+        };
+    }
 }

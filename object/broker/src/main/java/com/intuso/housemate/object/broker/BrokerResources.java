@@ -1,6 +1,8 @@
 package com.intuso.housemate.object.broker;
 
 import com.intuso.housemate.api.resources.Resources;
+import com.intuso.housemate.object.broker.real.BrokerRealResources;
+import com.intuso.housemate.object.real.RealResources;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,7 +12,8 @@ import com.intuso.housemate.api.resources.Resources;
  * To change this template use File | Settings | File Templates.
  */
 public interface BrokerResources<R> extends Resources {
-    ServerComms getComms();
+    BrokerRealResources getBrokerRealResources();
+    RealResources getRealResources();
     LifecycleHandler getLifecycleHandler();
     R getRoot();
 }

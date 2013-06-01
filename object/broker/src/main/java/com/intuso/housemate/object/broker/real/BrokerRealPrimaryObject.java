@@ -21,9 +21,10 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
             PO extends BrokerRealPrimaryObject<WBL, PO, L>, L extends PrimaryListener<? super PO>>
         extends BrokerRealObject<WBL, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>, L>
         implements PrimaryObject<BrokerRealProperty<String>, BrokerRealCommand, BrokerRealCommand,
-            BrokerRealValue<Boolean>, BrokerRealValue<String>, PO, L> {
+            BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, PO, L> {
 
     private final BrokerRealCommand remove;
+    private final BrokerRealValue<Boolean> connected;
     private final BrokerRealValue<Boolean> running;
     private final BrokerRealCommand start;
     private final BrokerRealCommand stop;
@@ -39,6 +40,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
                 remove();
             }
         };
+        this.connected = new BrokerRealValue<Boolean>(resources, CONNECTED_VALUE, CONNECTED_VALUE, "Whether the " + objectType + " is connected or not", new BooleanType(resources.getRealResources()), true);
         this.running = new BrokerRealValue<Boolean>(resources, RUNNING_VALUE, RUNNING_VALUE, "Whether the " + objectType + " is running or not", new BooleanType(resources.getRealResources()), false);
         this.start = new BrokerRealCommand(resources, START_COMMAND, START_COMMAND, "Start the " + objectType, Lists.<BrokerRealArgument<?>>newArrayList()) {
             @Override
@@ -89,6 +91,16 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
     @Override
     public BrokerRealCommand getStartCommand() {
         return start;
+    }
+
+    @Override
+    public Boolean isConnected() {
+        return connected.getTypedValue();
+    }
+
+    @Override
+    public BrokerRealValue<Boolean> getConnectedValue() {
+        return connected;
     }
 
     @Override

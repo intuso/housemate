@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
  */
 public class RuleBridge
         extends PrimaryObjectBridge<RuleWrappable, RuleBridge, RuleListener<? super RuleBridge>>
-        implements Rule<PropertyBridge, CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge,
+        implements Rule<PropertyBridge, CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge, ValueBridge,
                     ConditionBridge,ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge>, ConsequenceBridge,
                     ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge>, RuleBridge> {
 
@@ -31,7 +31,7 @@ public class RuleBridge
     private CommandBridge addSatisfiedConsequence;
     private CommandBridge addUnsatisfiedConsequence;
     
-    public RuleBridge(BrokerBridgeResources resources, Rule<?, ?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?, ? extends Consequence<?, ?, ?, ?, ?>, ?, ?> rule) {
+    public RuleBridge(BrokerBridgeResources resources, Rule<?, ?, ?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?, ? extends Consequence<?, ?, ?, ?, ?>, ?, ?> rule) {
         super(resources, new RuleWrappable(rule.getId(), rule.getName(), rule.getDescription()), rule);
         conditionList = new ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge>(resources,  rule.getConditions(), new ConditionConverter(resources));
         satisfiedConsequenceList = new ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge>(resources, rule.getSatisfiedConsequences(), new ConsequenceConverter(resources));

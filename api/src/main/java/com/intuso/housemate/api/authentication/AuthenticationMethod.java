@@ -11,7 +11,7 @@ import java.io.Serializable;
 */
 public class AuthenticationMethod implements Serializable {
 
-    private boolean allowReconnect;
+    private boolean allowReconnect = true;
 
     protected AuthenticationMethod() {}
 

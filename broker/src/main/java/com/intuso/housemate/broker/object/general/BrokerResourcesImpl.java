@@ -1,9 +1,10 @@
 package com.intuso.housemate.broker.object.general;
 
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.object.broker.LifecycleHandler;
 import com.intuso.housemate.object.broker.BrokerResources;
-import com.intuso.housemate.object.broker.ServerComms;
+import com.intuso.housemate.object.broker.LifecycleHandler;
+import com.intuso.housemate.object.broker.real.BrokerRealResources;
+import com.intuso.housemate.object.real.RealResources;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
@@ -39,8 +40,13 @@ public class BrokerResourcesImpl<R> implements Resources, BrokerResources<R> {
     }
 
     @Override
-    public ServerComms getComms() {
-        return generalResources.getComms();
+    public BrokerRealResources getBrokerRealResources() {
+        return getGeneralResources().getRealResources();
+    }
+
+    @Override
+    public RealResources getRealResources() {
+        return getGeneralResources().getClientResources();
     }
 
     @Override

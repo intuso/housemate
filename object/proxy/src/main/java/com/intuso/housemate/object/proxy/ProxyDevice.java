@@ -27,7 +27,7 @@ public abstract class ProxyDevice<
             PL extends ProxyList<?, ?, PropertyWrappable, P, PL>,
             D extends ProxyDevice<R, SR, C, CL, V, SL, P, PL, D>>
         extends ProxyPrimaryObject<R, SR, DeviceWrappable, P, C, V, D, DeviceListener<? super D>>
-        implements Device<C, C, C, CL, V, V, V, SL, P, P, PL, D> {
+        implements Device<C, C, C, CL, V, V, V, V, SL, P, P, PL, D> {
 
     private CL commandList;
     private SL valueList;

@@ -22,7 +22,10 @@ import java.util.Map;
  */
 public abstract class Router implements Sender, Receiver {
 
-    public final static String UNKNOWN_CLIENT = "unknown-client";
+    public final static String ALL_CLIENTS = "*";
+    public final static String ALL_CLIENTS_RECURSE = "**";
+    public final static String CONNECTION_MADE = "connection-made";
+    public final static String CONNECTION_LOST = "connection-lost";
 
     private int nextId = 0;
 
@@ -56,15 +59,29 @@ public abstract class Router implements Sender, Receiver {
         // get the key
         String key = message.getNextClientKey();
 
-        // if no key then it's a broadcast
+        // if no key then it's intended for this router's root object
         if(key == null) {
             root.distributeMessage(message);
         } else {
-            Receiver ms = keyClientMap.get(key);
-            if(ms == null)
-                root.unknownClient(key);
-            else
-                ms.messageReceived(message);
+            // distribute to all clients without recursing
+            if(key.equals(ALL_CLIENTS)) {
+                for(Receiver receiver : keyClientMap.values())
+                    receiver.messageReceived(message);
+            // distribute to all clients recursively
+            } else if(key.equals(ALL_CLIENTS_RECURSE)) {
+                // re add the STAR_STAR so the message recurses
+                message.addClientKey(ALL_CLIENTS_RECURSE);
+                // tell the router root object too
+                root.distributeMessage(message);
+                for(Receiver receiver : keyClientMap.values())
+                    receiver.messageReceived(message);
+            } else {
+                Receiver receiver = keyClientMap.get(key);
+                if(receiver == null)
+                    root.unknownClient(key);
+                else
+                    receiver.messageReceived(message);
+            }
         }
     }
 
@@ -92,6 +109,14 @@ public abstract class Router implements Sender, Receiver {
             if(clientId != null)
                 keyClientMap.remove(clientId);
             Router.this.sendMessage(new Message<StringMessageValue>(new String[] {""}, Root.DISCONNECT,
+                    new StringMessageValue(clientId)));
+        }
+
+        public synchronized final void connectionLost() {
+            connected = false;
+            if(clientId != null)
+                keyClientMap.remove(clientId);
+            Router.this.sendMessage(new Message<StringMessageValue>(new String[] {""}, Router.CONNECTION_LOST,
                     new StringMessageValue(clientId)));
         }
     }

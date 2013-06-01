@@ -25,9 +25,10 @@ public abstract class ProxyPrimaryObject<
             PO extends ProxyPrimaryObject<R, SR, WBL, P, C, V, PO, L>,
             L extends PrimaryListener<? super PO>>
         extends ProxyObject<R, SR, WBL, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, PO, L>
-        implements PrimaryObject<P, C, C, V, V, PO, L> {
+        implements PrimaryObject<P, C, C, V, V, V, PO, L> {
 
     private C remove;
+    private V connected;
     private V running;
     private C start;
     private C stop;
@@ -41,6 +42,7 @@ public abstract class ProxyPrimaryObject<
     protected void getChildObjects() {
         super.getChildObjects();
         remove = (C)getWrapper(REMOVE_COMMAND);
+        connected = (V)getWrapper(CONNECTED_VALUE);
         running = (V)getWrapper(RUNNING_VALUE);
         start = (C)getWrapper(START_COMMAND);
         stop = (C)getWrapper(STOP_COMMAND);
@@ -50,6 +52,16 @@ public abstract class ProxyPrimaryObject<
     @Override
     public C getRemoveCommand() {
         return remove;
+    }
+
+    @Override
+    public Boolean isConnected() {
+        return Boolean.parseBoolean(connected.getValue());
+    }
+
+    @Override
+    public V getConnectedValue() {
+        return connected;
     }
 
     @Override

@@ -21,7 +21,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
 public class BrokerRealRule
         extends BrokerRealPrimaryObject<RuleWrappable, BrokerRealRule, RuleListener<? super BrokerRealRule>>
         implements Rule<BrokerRealProperty<String>, BrokerRealCommand, BrokerRealCommand, BrokerRealCommand,
-            BrokerRealValue<Boolean>, BrokerRealValue<String>, BrokerRealCondition, BrokerRealList<ConditionWrappable, BrokerRealCondition>,
+            BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, BrokerRealCondition, BrokerRealList<ConditionWrappable, BrokerRealCondition>,
             BrokerRealConsequence, BrokerRealList<ConsequenceWrappable, BrokerRealConsequence>, BrokerRealRule>,
             ConditionListener<BrokerRealCondition> {
 

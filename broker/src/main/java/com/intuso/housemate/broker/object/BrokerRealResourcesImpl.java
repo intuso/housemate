@@ -4,7 +4,6 @@ import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.broker.object.general.BrokerResourcesImpl;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.BrokerRealRootObject;
-import com.intuso.housemate.object.real.RealResources;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,10 +16,5 @@ public class BrokerRealResourcesImpl extends BrokerResourcesImpl<BrokerRealRootO
 
     public BrokerRealResourcesImpl(BrokerGeneralResources generalResources) {
         super(generalResources);
-    }
-
-    @Override
-    public RealResources getRealResources() {
-        return getGeneralResources().getClientResources();
     }
 }

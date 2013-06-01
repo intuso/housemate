@@ -93,7 +93,7 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    public void watchDevices(List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> devices) {
+    public void watchDevices(List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> devices) {
         devices.addObjectListener(watchDeviceListListener, true);
     }
 
@@ -209,15 +209,15 @@ public class BrokerObjectStorage implements Storage {
         storage.removeDetails(path);
     }
 
-    private class WatchDeviceListListener implements ListListener<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> {
+    private class WatchDeviceListListener implements ListListener<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> {
 
         private final WatchPropertyListListener watchPropertyListListener = new WatchPropertyListListener();
         private final WatchValueListener watchPropertyListener = new WatchValueListener();
-        private final Map<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
-        private final Map<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> runningListeners = Maps.newHashMap();
+        private final Map<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
+        private final Map<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> runningListeners = Maps.newHashMap();
 
         @Override
-        public void elementAdded(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+        public void elementAdded(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
             propertyListeners.put(device, device.getProperties().addObjectListener(watchPropertyListListener, true));
             runningListeners.put(device, device.getRunningValue().addObjectListener(watchPropertyListener));
             try {
@@ -234,7 +234,7 @@ public class BrokerObjectStorage implements Storage {
         }
 
         @Override
-        public void elementRemoved(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+        public void elementRemoved(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
             ListenerRegistration registration = propertyListeners.remove(device);
             if(registration != null)
                 registration.removeListener();

@@ -9,8 +9,8 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
-import com.intuso.housemate.object.broker.DisconnectListener;
 import com.intuso.housemate.object.broker.RemoteClient;
+import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.wrapper.WrapperFactory;
 
@@ -26,7 +26,7 @@ public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWB
             SWR extends BrokerProxyObject<? extends SWBL, ?, ?, ?, ?>,
             PBO extends BrokerProxyObject<?, ?, ?, ?, ?>,
             L extends ObjectListener>
-        extends HousemateObject<BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, SWBL, ? extends SWR>>, WBL, SWBL, SWR, L> implements BaseObject<L>, DisconnectListener {
+        extends HousemateObject<BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, SWBL, ? extends SWR>>, WBL, SWBL, SWR, L> implements BaseObject<L>, RemoteClientListener {
 
     private RemoteClient client;
     private ListenerRegistration clientListener;
@@ -43,13 +43,18 @@ public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWB
         if(clientListener != null)
             clientListener.removeListener();
         this.client = client;
-        clientListener = client.addDisconnectListener(this);
+        clientListener = client.addListener(this);
         for(BrokerProxyObject<?, ?, ?, ?, ?> child : getWrappers())
                 ((BrokerProxyObject)child).setClient(client);
     }
 
-    protected final <MV extends Message.Payload> void sendMessage(String type, MV value) throws HousemateException {
-        getResources().getComms().sendMessageToClient(getPath(), type, value, client);
+    protected final void sendMessage(String type, Message.Payload payload) throws HousemateException {
+        if(client == null)
+            throw new HousemateException("Client has disconnected. This object should no longer be used");
+        else if(!client.isCurrentlyConnected())
+            throw new HousemateException("Client is not currently connected");
+        else
+            client.sendMessage(getPath(), type, payload);
     }
 
     @Override
@@ -81,6 +86,16 @@ public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWB
     @Override
     public void disconnected(RemoteClient client) {
         clientListener.removeListener();
-        client = null;
+        this.client = null;
+    }
+
+    @Override
+    public void connectionLost(RemoteClient client) {
+        // do nothing
+    }
+
+    @Override
+    public void reconnected(RemoteClient client) {
+        // do nothing
     }
 }

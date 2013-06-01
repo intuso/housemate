@@ -1,9 +1,9 @@
-package com.intuso.housemate.client.comms;
+package com.intuso.housemate.comms.transport.socket.client;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Comms;
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.message.EmptyMessageValue;
+import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.resources.Resources;
 
 import java.io.IOException;
@@ -108,7 +108,7 @@ public class ClientComms extends Comms {
                 messageSender.start();
 
                 getLog().d("Connected to broker");
-                connected(true);
+                connected();
 
                 // return from the method
                 return;
@@ -161,7 +161,7 @@ public class ClientComms extends Comms {
         }
 
         getLog().d("Disconnected");
-        connected(false);
+        disconnected();
     }
 
     /**
@@ -265,7 +265,7 @@ public class ClientComms extends Comms {
         /**
          * heartbeat messgae
          */
-        private Message heartbeat = new Message<EmptyMessageValue>(new String[] {}, "heartbeat", EmptyMessageValue.VALUE);
+        private Message heartbeat = new Message<NoPayload>(new String[] {}, "heartbeat", NoPayload.VALUE);
 
         private ObjectOutputStream oos;
 

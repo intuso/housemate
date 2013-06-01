@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.primary.PrimaryListener;
  * @author tclabon
  *
  */
-public interface RuleListener<R extends Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>
+public interface RuleListener<R extends Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>
         extends PrimaryListener<R> {
     public void satisfied(R rule, boolean satisfied);
 }
