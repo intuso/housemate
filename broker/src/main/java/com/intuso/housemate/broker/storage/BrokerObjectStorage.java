@@ -23,6 +23,8 @@ import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,8 +72,26 @@ public class BrokerObjectStorage implements Storage {
             log.e("Failed to get names of existing users");
             log.st(e);
         }
-        if(realUsers.getWrappers().size() == 0)
-            realUsers.add(new BrokerRealUser(resources.getRealResources(), "admin", "admin", "Default admin user"));
+        if(realUsers.getWrappers().size() == 0) {
+            Map<String, String> toSave = Maps.newHashMap();
+            try {
+                toSave.put("password-hash", new String(MessageDigest.getInstance("MD5").digest(
+                        "admin".getBytes())));
+            } catch(NoSuchAlgorithmException e) {
+                resources.getLog().e("Unable to hash the password for the default user to save it securely");
+            }
+            toSave.put("id", "admin");
+            toSave.put("name", "admin");
+            toSave.put("description", "admin");
+
+            BrokerRealUser user = new BrokerRealUser(resources.getRealResources(), "admin", "admin", "Default admin user");
+            try {
+                resources.getStorage().saveDetails(realUsers.getPath(), user.getId(), toSave);
+            } catch(HousemateException e) {
+                resources.getLog().e("Failed to save details for admin user, no one will be able to login");
+            }
+            realUsers.add(user);
+        }
     }
 
     public void loadDevices(String[] path, Command<?, ?> addDeviceCommand) {

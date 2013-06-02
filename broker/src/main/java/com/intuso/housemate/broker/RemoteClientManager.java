@@ -10,14 +10,14 @@ import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.broker.client.LocalClient;
 import com.intuso.housemate.broker.comms.RemoteClientImpl;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.broker.storage.DetailsNotFoundException;
-import com.intuso.housemate.object.broker.real.BrokerRealList;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -191,8 +191,12 @@ public class RemoteClientManager {
     }
 
     private BrokerRealUser authenticateUser(String username, String password) throws HousemateException {
-        // todo hash the password
-        String passwordHash = password;
+        String passwordHash;
+        try {
+            passwordHash = new String(MessageDigest.getInstance("MD5").digest(password.getBytes()));
+        } catch(NoSuchAlgorithmException e) {
+            throw new HousemateException("Unable to hash password to compare with saved hashed version", e);
+        }
         // todo look up the id of the user with that username
         String userId = username;
         try {
@@ -204,9 +208,6 @@ public class RemoteClientManager {
                 return null;
         } catch(DetailsNotFoundException e) {
             // check there are actually some users
-            BrokerRealList<UserWrappable, BrokerRealUser> users = resources.getRealResources().getRoot().getUsers();
-            if(users.size() == 1 && users.get("admin") != null)
-                return users.get("admin");
             return null;
         }
     }

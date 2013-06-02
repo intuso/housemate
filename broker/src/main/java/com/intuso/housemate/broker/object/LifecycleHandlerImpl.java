@@ -32,6 +32,8 @@ import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -73,14 +75,18 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
             @Override
             public void perform(Map<String, String> values) throws HousemateException {
                 Map<String, String> toSave = Maps.newHashMap();
+                try {
+                    toSave.put("password-hash", new String(MessageDigest.getInstance("MD5").digest(
+                            values.get("password").getBytes())));
+                } catch(NoSuchAlgorithmException e) {
+                    throw new HousemateException("Unable to hash the password to save it securely");
+                }
                 toSave.put("id", values.get("username"));
                 toSave.put("name", values.get("username"));
                 toSave.put("description", values.get("username"));
-                // todo hash the password
-                toSave.put("password-hash", values.get("password"));
                 BrokerRealUser user = new BrokerRealUser(getResources(), toSave.get("id"), toSave.get("name"), toSave.get("description"));
                 users.add(user);
-                resources.getStorage().saveDetails(users.getPath(), user.getId(), values);
+                resources.getStorage().saveDetails(users.getPath(), user.getId(), toSave);
             }
         };
     }
