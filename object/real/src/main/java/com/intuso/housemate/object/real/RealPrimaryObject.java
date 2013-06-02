@@ -45,7 +45,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
             @Override
             public void perform(Map<String, String> values) throws HousemateException {
                 if(!isRunning()) {
-                    start();
+                    _start();
                     running.setTypedValue(true);
                 }
             }
@@ -54,7 +54,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
             @Override
             public void perform(Map<String, String> values) throws HousemateException {
                 if(isRunning()) {
-                    stop();
+                    _stop();
                     running.setTypedValue(false);
                 }
             }
@@ -113,6 +113,6 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
     }
 
     protected abstract void remove();
-    protected abstract void start() throws HousemateException;
-    protected abstract void stop();
+    protected abstract void _start() throws HousemateException;
+    protected abstract void _stop();
 }

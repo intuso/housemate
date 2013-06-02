@@ -14,7 +14,9 @@ public class RealValue<O> extends RealValueBase<ValueWrappable, NoChildrenWrappa
         RealValue<O>> {
     public RealValue(RealResources resources, String id, String name, String description,
                      RealType<?, ?, O> type, O value) {
-        super(resources, new ValueWrappable(id, name, description, type.getId(), type.serialise(value)), type);
+        super(resources,
+                new ValueWrappable(id, name, description, type.getId(), value != null ? type.serialise(value) : null),
+                type);
     }
 
     @Override

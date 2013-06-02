@@ -1,5 +1,6 @@
 package com.intuso.housemate.broker.plugin.condition;
 
+import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
@@ -19,6 +20,7 @@ import java.util.Set;
  * @author tclabon
  *
  */
+@FactoryInformation(id = "day-of-the-week", name = "Day of the Week", description = "True on certain days")
 public class DayOfTheWeek extends BrokerRealCondition {
 
     private final Map<Day, Integer> DAY_MAP = new HashMap<Day, Integer>() {
@@ -32,8 +34,6 @@ public class DayOfTheWeek extends BrokerRealCondition {
             put(Day.Sunday, Calendar.SUNDAY);
         }
     };
-
-    public final static String TYPE = "day-of-the-week";
 
     public static final String DAYS_FIELD = "days";
     

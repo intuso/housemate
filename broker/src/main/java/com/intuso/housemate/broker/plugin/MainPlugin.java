@@ -1,18 +1,24 @@
 package com.intuso.housemate.broker.plugin;
 
+import com.intuso.housemate.annotations.plugin.AnnotatedPluginDescriptor;
+import com.intuso.housemate.annotations.plugin.Conditions;
+import com.intuso.housemate.annotations.plugin.Consequences;
+import com.intuso.housemate.annotations.plugin.Devices;
+import com.intuso.housemate.annotations.plugin.PluginInformation;
+import com.intuso.housemate.annotations.plugin.Types;
+import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.BaseObject;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.broker.plugin.condition.AndConditionFactory;
-import com.intuso.housemate.broker.plugin.condition.DayOfTheWeekConditionFactory;
-import com.intuso.housemate.broker.plugin.condition.NotConditionFactory;
-import com.intuso.housemate.broker.plugin.condition.OrConditionFactory;
-import com.intuso.housemate.broker.plugin.condition.TimeOfTheDayConditionFactory;
+import com.intuso.housemate.broker.plugin.condition.And;
+import com.intuso.housemate.broker.plugin.condition.DayOfTheWeek;
+import com.intuso.housemate.broker.plugin.condition.Not;
+import com.intuso.housemate.broker.plugin.condition.Or;
+import com.intuso.housemate.broker.plugin.condition.TimeOfTheDay;
 import com.intuso.housemate.broker.plugin.condition.ValueComparisonConditionFactory;
-import com.intuso.housemate.broker.plugin.consequence.DelayConsequenceFactory;
+import com.intuso.housemate.broker.plugin.consequence.Delay;
 import com.intuso.housemate.broker.plugin.consequence.PerformCommandConsequenceFactory;
-import com.intuso.housemate.broker.plugin.consequence.RandomDelayConsequenceFactory;
-import com.intuso.housemate.broker.plugin.device.OnOffCommandDeviceFactory;
+import com.intuso.housemate.broker.plugin.consequence.RandomDelay;
+import com.intuso.housemate.broker.plugin.device.OnOffCommandDevice;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
@@ -24,10 +30,7 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.object.real.impl.type.TimeType;
 import com.intuso.housemate.plugin.api.BrokerConditionFactory;
 import com.intuso.housemate.plugin.api.BrokerConsequenceFactory;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
-import com.intuso.housemate.plugin.api.RealDeviceFactory;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,7 +40,13 @@ import java.util.List;
  * Time: 09:02
  * To change this template use File | Settings | File Templates.
  */
-public class MainPlugin implements PluginDescriptor {
+@PluginInformation(id = "main-plugin", name = "Main plugin",
+        description = "Plugin containing the core types and factories", author = "Intuso")
+@Types({StringType.class, BooleanType.class, IntegerType.class, DoubleType.class, TimeType.class, DaysType.class})
+@Devices({OnOffCommandDevice.class})
+@Conditions({And.class, Or.class, Not.class, TimeOfTheDay.class, DayOfTheWeek.class})
+@Consequences({Delay.class, RandomDelay.class})
+public class MainPlugin extends AnnotatedPluginDescriptor {
 
     private final BrokerGeneralResources generalResources;
 
@@ -46,53 +55,23 @@ public class MainPlugin implements PluginDescriptor {
     }
 
     @Override
-    public String getId() {
-        return getClass().getName();
-    }
-
-    @Override
-    public String getDescription() {
-        return "Plugin containing the core types and factories";
-    }
-
-    @Override
-    public String getAuthor() {
-        return "Intuso";
-    }
-
-    @Override
-    public void init(Resources resources) {}
-
-    @Override
-    public List<RealType<?, ?, ?>> getTypes(RealResources resources) {
-        return Arrays.<RealType<?, ?, ?>>asList(new StringType(resources),
-                new BooleanType(resources),
-                new IntegerType(resources),
-                new DoubleType(resources),
-                new RealObjectType<BaseObject<?>>(resources, generalResources.getBridgeResources().getRoot()),
-                new TimeType(resources),
-                new DaysType(resources));
-    }
-
-    @Override
-    public List<RealDeviceFactory<?>> getDeviceFactories() {
-        return Arrays.<RealDeviceFactory<?>>asList(new OnOffCommandDeviceFactory());
+    public List<RealType<?, ?, ?>> getTypes(RealResources resources) throws HousemateException {
+        List<RealType<?, ?, ?>> result = super.getTypes(resources);
+        result.add(new RealObjectType<BaseObject<?>>(resources, generalResources.getBridgeResources().getRoot()));
+        return result;
     }
 
     @Override
     public List<BrokerConditionFactory<?>> getConditionFactories() {
-        return Arrays.<BrokerConditionFactory<?>>asList(new AndConditionFactory(),
-                new OrConditionFactory(),
-                new NotConditionFactory(),
-                new ValueComparisonConditionFactory(generalResources),
-                new TimeOfTheDayConditionFactory(),
-                new DayOfTheWeekConditionFactory());
+        List<BrokerConditionFactory<?>> result = super.getConditionFactories();
+        result.add(new ValueComparisonConditionFactory(generalResources));
+        return result;
     }
 
     @Override
     public List<BrokerConsequenceFactory<?>> getConsequenceFactories() {
-        return Arrays.<BrokerConsequenceFactory<?>>asList(new DelayConsequenceFactory(),
-                new RandomDelayConsequenceFactory(),
-                new PerformCommandConsequenceFactory(generalResources));
+        List<BrokerConsequenceFactory<?>> result = super.getConsequenceFactories();
+        result.add(new PerformCommandConsequenceFactory(generalResources));
+        return result;
     }
 }

@@ -15,7 +15,7 @@
 
     <modules>
         <module>api</module>
-        <module>home-easy-device</module>
+        <module>rfxcom</module>
         <module>run-program-device</module>
         <module>twitter</module>
     </modules>

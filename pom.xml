@@ -21,13 +21,14 @@
     </properties>
 
     <modules>
+        <module>annotations</module>
         <module>api</module>
-        <module>object</module>
-        <module>web</module>
         <module>broker</module>
         <module>comms</module>
+        <module>object</module>
 	    <module>platform</module>
         <module>plugin</module>
+        <module>web</module>
     </modules>
 
     <dependencies>

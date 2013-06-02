@@ -36,6 +36,18 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Annotations -->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>annotations-processor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>annotations-plugin</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Transport implementations -->
         <dependency>
             <groupId>com.intuso.housemate</groupId>

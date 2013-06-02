@@ -1,6 +1,7 @@
 package com.intuso.housemate.broker;
 
 import com.google.common.collect.Lists;
+import com.intuso.housemate.annotations.processor.AnnotationProcessor;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.broker.client.LocalClient;
@@ -219,6 +220,8 @@ public class BrokerServerEnvironment {
         initResources();
         comms.start();
 
+        generalResources.setAnnotationParser(new AnnotationProcessor(generalResources.getLog(),
+                getGeneralResources().getClient().getRoot().getTypes()));
         loadPlugins();
 
         startWebapp();

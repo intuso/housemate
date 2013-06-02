@@ -41,16 +41,19 @@ public class LocalClient implements PluginListener {
 
     @Override
     public void pluginAdded(PluginDescriptor plugin) {
-        for(RealType<?, ?, ?> type : plugin.getTypes(resources.getClientResources())) {
-            resources.getLog().d("Adding type " + type.getId());
-            root.addType(type);
+        try {
+            for(RealType<?, ?, ?> type : plugin.getTypes(resources.getClientResources())) {
+                resources.getLog().d("Adding type " + type.getId());
+                root.addType(type);
+            }
+        } catch(HousemateException e) {
+            resources.getLog().e("Failed to list types from plugin " + plugin.getId());
         }
     }
 
     @Override
     public void pluginRemoved(PluginDescriptor plugin) {
-        for(RealType<?, ?, ?> type : plugin.getTypes(resources.getClientResources()))
-            root.removeType(type.getId());
+        // todo remove types added by this plugin
     }
 
     public final class InternalConnectMethod extends AuthenticationMethod {

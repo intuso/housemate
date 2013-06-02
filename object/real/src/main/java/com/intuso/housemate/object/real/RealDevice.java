@@ -67,24 +67,24 @@ public abstract class RealDevice
         getRealRoot().removeDevice(getId());
     }
 
-    protected final void start() {
+    protected final void _start() {
         if(isRunning())
             return;
         try {
-            _start();
+            start();
             getRunningValue().setTypedValue(Boolean.TRUE);
         } catch (HousemateException e) {
             getErrorValue().setTypedValue("Could not start device: " + e.getMessage());
         }
     }
 
-    protected final void stop() {
+    protected final void _stop() {
         if(!isRunning())
             return;
-        _stop();
+        stop();
         getRunningValue().setTypedValue(Boolean.FALSE);
     }
 
-    protected abstract void _start() throws HousemateException;
-    protected abstract void _stop();
+    protected void start() throws HousemateException {};
+    protected void stop() {};
 }

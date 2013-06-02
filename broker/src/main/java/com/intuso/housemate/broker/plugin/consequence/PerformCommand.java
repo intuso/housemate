@@ -1,6 +1,7 @@
 package com.intuso.housemate.broker.plugin.consequence;
 
 import com.google.common.base.Joiner;
+import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.HousemateObject;
@@ -24,6 +25,7 @@ import java.util.HashMap;
  * Time: 23:25
  * To change this template use File | Settings | File Templates.
  */
+@FactoryInformation(id = "perform-command", name = "Perform Command", description = "Perform a command in the system")
 public class PerformCommand extends BrokerRealConsequence implements ObjectLifecycleListener {
 
     private final BrokerRealProperty<RealObjectType.Reference<BaseObject<?>>> commandPath;

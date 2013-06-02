@@ -1,5 +1,6 @@
 package com.intuso.housemate.broker.plugin.condition;
 
+import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
@@ -15,6 +16,7 @@ import java.util.Calendar;
  * @author tclabon
  *
  */
+@FactoryInformation(id = "time-of-the-day", name = "Time of the day", description = "True between two times")
 public class TimeOfTheDay extends BrokerRealCondition {
 
     public final static String BEFORE_FIELD = "before";

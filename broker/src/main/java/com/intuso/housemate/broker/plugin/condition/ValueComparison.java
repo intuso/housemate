@@ -1,5 +1,6 @@
 package com.intuso.housemate.broker.plugin.condition;
 
+import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.HousemateObject;
@@ -20,6 +21,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * @author tclabon
  *
  */
+@FactoryInformation(id = "value-comparison", name = "Value Comparison", description = "Compare a value")
 public class ValueComparison
         extends BrokerRealCondition
         implements ObjectLifecycleListener, ValueListener<ValueBridgeBase<?, ?, ?, ?>> {

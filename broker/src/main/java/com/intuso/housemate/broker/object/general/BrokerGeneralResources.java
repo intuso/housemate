@@ -1,5 +1,7 @@
 package com.intuso.housemate.broker.object.general;
 
+import com.intuso.housemate.annotations.processor.AnnotationProcessor;
+import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.broker.RemoteClientManager;
 import com.intuso.housemate.broker.PluginListener;
@@ -39,6 +41,7 @@ public class BrokerGeneralResources implements Resources {
     private BrokerGeneralRootObject root;
     private BrokerObjectStorage storage;
     private RemoteClientManager remoteClientManager;
+    private AnnotationProcessor annotationParser;
     private DeviceFactory deviceFactory;
     private LifecycleHandler lifecycleHandler;
     private ConditionFactory conditionFactory;
@@ -100,6 +103,14 @@ public class BrokerGeneralResources implements Resources {
         this.remoteClientManager = remoteClientManager;
     }
 
+    public AnnotationProcessor getAnnotationParser() {
+        return annotationParser;
+    }
+
+    public void setAnnotationParser(AnnotationProcessor annotationParser) {
+        this.annotationParser = annotationParser;
+    }
+
     public LifecycleHandler getLifecycleHandler() {
         return lifecycleHandler;
     }
@@ -134,6 +145,13 @@ public class BrokerGeneralResources implements Resources {
 
     public void addPlugin(PluginDescriptor plugin) {
         log.d("New Plugin: " + plugin.getClass().getName());
+        try {
+            plugin.init(realResources);
+        } catch(HousemateException e) {
+            log.e("Failed to initialise plugin");
+            log.st(e);
+            return;
+        }
         plugins.add(plugin);
         for(PluginListener listener : pluginListeners)
             listener.pluginAdded(plugin);

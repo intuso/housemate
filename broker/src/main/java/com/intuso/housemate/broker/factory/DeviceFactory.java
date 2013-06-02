@@ -81,6 +81,7 @@ public final class DeviceFactory implements PluginListener {
                 if(deviceFactory == null)
                     throw new HousemateException("No factory known for device type " + type);
                 RealDevice device = deviceFactory.create(resources.getClientResources(), name, name, description);
+                resources.getAnnotationParser().process(device);
                 list.add(device);
                 resources.getStorage().saveDetails(list.getPath(), device.getId(), values);
             }

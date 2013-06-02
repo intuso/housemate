@@ -1,5 +1,6 @@
 package com.intuso.housemate.broker.plugin.condition;
 
+import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.broker.real.condition.BrokerNonLeafCondition;
@@ -13,9 +14,8 @@ import java.util.Map;
  * @author tclabon
  *
  */
+@FactoryInformation(id = "or", name = "Or", description = "True if any child condition is true")
 public class Or extends BrokerNonLeafCondition {
-
-    public final static String TYPE = "or";
 
     /**
 	 * Create a new Or condition

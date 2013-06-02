@@ -1,5 +1,6 @@
 package com.intuso.housemate.broker.plugin.consequence;
 
+import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.api.HousemateException;
@@ -13,6 +14,7 @@ import com.intuso.housemate.object.real.impl.type.TimeUnitType;
  * @author tclabon
  *
  */
+@FactoryInformation(id = "delay", name = "Delay", description = "Delays for a set amount of time")
 public class Delay extends BrokerRealConsequence {
 
     /**
