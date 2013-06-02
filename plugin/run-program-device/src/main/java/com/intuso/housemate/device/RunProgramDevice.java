@@ -151,13 +151,13 @@ public class RunProgramDevice extends RealDevice {
 	}
 
 	@Override
-	protected void _start() {
+	protected void start() {
 		monitor = new Monitor();
 		monitor.start();
 	}
 
 	@Override
-	protected void _stop() {
+	protected void stop() {
 		// stop the monitor
 		if(monitor != null)
 			monitor.interrupt();

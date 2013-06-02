@@ -18,7 +18,7 @@ import java.util.List;
  * Time: 17:49
  * To change this template use File | Settings | File Templates.
  */
-public abstract class RealDevice
+public class RealDevice
         extends RealPrimaryObject<DeviceWrappable, RealDevice, DeviceListener<? super RealDevice>>
         implements Device<RealCommand, RealCommand, RealCommand, RealList<CommandWrappable, RealCommand>,
             RealValue<Boolean>, RealValue<Boolean>, RealValue<String>, RealValue<?>, RealList<ValueWrappable, RealValue<?>>,
