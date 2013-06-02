@@ -1,5 +1,10 @@
-package com.intuso.housemate.annotations;
+package com.intuso.housemate.annotations.processor;
 
+import com.intuso.housemate.annotations.basic.Argument;
+import com.intuso.housemate.annotations.basic.Command;
+import com.intuso.housemate.annotations.basic.Property;
+import com.intuso.housemate.annotations.basic.Value;
+import com.intuso.housemate.annotations.basic.Values;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.BooleanType;

@@ -1,7 +1,6 @@
-package com.intuso.housemate.annotations;
+package com.intuso.housemate.annotations.processor;
 
 import com.google.common.collect.Maps;
-import com.intuso.housemate.annotations.processor.AnnotationProcessor;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.object.real.RealList;

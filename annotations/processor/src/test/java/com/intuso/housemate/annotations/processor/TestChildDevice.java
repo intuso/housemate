@@ -1,5 +1,9 @@
-package com.intuso.housemate.annotations;
+package com.intuso.housemate.annotations.processor;
 
+import com.intuso.housemate.annotations.basic.Command;
+import com.intuso.housemate.annotations.basic.Property;
+import com.intuso.housemate.annotations.basic.Value;
+import com.intuso.housemate.annotations.basic.Values;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 
@@ -17,7 +21,7 @@ public class TestChildDevice extends TestParentDevice {
 
     @Property(id = "increment-amount", name = "Increment Amount", description = "Amount to increase/decrease volume by",
               type = IntegerType.class)
-    int incrementAmount;
+    int incrementAmount = 0;
 
     int currentVolume = 0;
 
