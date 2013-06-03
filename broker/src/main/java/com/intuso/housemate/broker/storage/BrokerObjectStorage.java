@@ -11,6 +11,8 @@ import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.rule.RuleWrappable;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
@@ -26,7 +28,6 @@ import com.intuso.utilities.log.Log;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,9 +62,10 @@ public class BrokerObjectStorage implements Storage {
     public void loadUsers() {
         BrokerRealList<UserWrappable, BrokerRealUser> realUsers = resources.getRealResources().getRoot().getUsers();
         try {
-            for(String key : storage.getDetailsKeys(realUsers.getPath())) {
-                Map<String, String> details = getDetails(realUsers.getPath(), key);
-                BrokerRealUser user = new BrokerRealUser(resources.getRealResources(), details.get("id"), details.get("name"), details.get("description"));
+            for(String key : storage.getValuesKeys(realUsers.getPath())) {
+                TypeValues details = getValues(realUsers.getPath(), key);
+                BrokerRealUser user = new BrokerRealUser(resources.getRealResources(), details.get("id").getValue(),
+                        details.get("name").getValue(), details.get("description").getValue());
                 realUsers.add(user);
             }
         } catch(DetailsNotFoundException e) {
@@ -73,20 +75,20 @@ public class BrokerObjectStorage implements Storage {
             log.st(e);
         }
         if(realUsers.getWrappers().size() == 0) {
-            Map<String, String> toSave = Maps.newHashMap();
+            TypeValues toSave = new TypeValues();
             try {
-                toSave.put("password-hash", new String(MessageDigest.getInstance("MD5").digest(
-                        "admin".getBytes())));
+                toSave.put("password-hash", new TypeValue(new String(MessageDigest.getInstance("MD5").digest(
+                        "admin".getBytes()))));
             } catch(NoSuchAlgorithmException e) {
                 resources.getLog().e("Unable to hash the password for the default user to save it securely");
             }
-            toSave.put("id", "admin");
-            toSave.put("name", "admin");
-            toSave.put("description", "admin");
+            toSave.put("id", new TypeValue("admin"));
+            toSave.put("name", new TypeValue("admin"));
+            toSave.put("description", new TypeValue("admin"));
 
             BrokerRealUser user = new BrokerRealUser(resources.getRealResources(), "admin", "admin", "Default admin user");
             try {
-                resources.getStorage().saveDetails(realUsers.getPath(), user.getId(), toSave);
+                resources.getStorage().saveValues(realUsers.getPath(), user.getId(), toSave);
             } catch(HousemateException e) {
                 resources.getLog().e("Failed to save details for admin user, no one will be able to login");
             }
@@ -96,9 +98,9 @@ public class BrokerObjectStorage implements Storage {
 
     public void loadDevices(String[] path, Command<?, ?> addDeviceCommand) {
         try {
-            for(String key : storage.getDetailsKeys(path)) {
+            for(String key : storage.getValuesKeys(path)) {
                 try {
-                    addDeviceCommand.perform(storage.getDetails(path, key),
+                    addDeviceCommand.perform(storage.getValues(path, key),
                             new CommandListener("Load device \"" + key + "\""));
                 } catch(HousemateException e) {
                     log.e("Failed to load device");
@@ -120,10 +122,11 @@ public class BrokerObjectStorage implements Storage {
     public void loadRules() {
         BrokerRealList<RuleWrappable, BrokerRealRule> realRules = resources.getRealResources().getRoot().getRules();
         try {
-            for(String id : storage.getDetailsKeys(realRules.getPath())) {
+            for(String id : storage.getValuesKeys(realRules.getPath())) {
                 try {
-                    Map<String, String> details = getDetails(realRules.getPath(), id);
-                    BrokerRealRule rule = new BrokerRealRule(resources.getRealResources(), details.get("id"), details.get("name"), details.get("description"));
+                    TypeValues details = getValues(realRules.getPath(), id);
+                    BrokerRealRule rule = new BrokerRealRule(resources.getRealResources(), details.get("id").getValue(),
+                            details.get("name").getValue(), details.get("description").getValue());
                     realRules.add(rule);
                     loadRuleInfo(rule);
                 } catch(HousemateException e) {
@@ -146,7 +149,7 @@ public class BrokerObjectStorage implements Storage {
         try {
             String value = storage.getValue(rule.getRunningValue().getPath());
             if(Boolean.parseBoolean(value))
-                rule.getStartCommand().perform(new HashMap<String, String>(),
+                rule.getStartCommand().perform(new TypeValues(),
                         new CommandListener("Start rule \"" + rule.getId() + "\""));
         } catch(DetailsNotFoundException e) {
             log.w("No details found for rule info " + Arrays.toString(rule.getPath()));
@@ -155,9 +158,9 @@ public class BrokerObjectStorage implements Storage {
 
     private void loadConditions(BrokerRealList<ConditionWrappable, BrokerRealCondition> conditions) {
         try {
-            for(String conditionName : storage.getDetailsKeys(conditions.getPath())) {
+            for(String conditionName : storage.getValuesKeys(conditions.getPath())) {
                 try {
-                    Map<String, String> details = storage.getDetails(conditions.getPath(), conditionName);
+                    TypeValues details = storage.getValues(conditions.getPath(), conditionName);
                     BrokerRealCondition condition = resources.getConditionFactory().createCondition(details);
                     conditions.add(condition);
                     watchPropertyValues(condition.getProperties());
@@ -177,9 +180,9 @@ public class BrokerObjectStorage implements Storage {
 
     private void loadConsequences(BrokerRealList<ConsequenceWrappable, BrokerRealConsequence> consequences) {
         try {
-            for(String consequenceName : storage.getDetailsKeys(consequences.getPath())) {
+            for(String consequenceName : storage.getValuesKeys(consequences.getPath())) {
                 try {
-                    Map<String, String> details = storage.getDetails(consequences.getPath(), consequenceName);
+                    TypeValues details = storage.getValues(consequences.getPath(), consequenceName);
                     BrokerRealConsequence consequence = resources.getConsequenceFactory().createConsequence(details);
                     consequences.add(consequence);
                     watchPropertyValues(consequence.getProperties());
@@ -211,22 +214,22 @@ public class BrokerObjectStorage implements Storage {
     }
 
     @Override
-    public Set<String> getDetailsKeys(String[] path) throws DetailsNotFoundException, HousemateException {
-        return storage.getDetailsKeys(path);
+    public Set<String> getValuesKeys(String[] path) throws DetailsNotFoundException, HousemateException {
+        return storage.getValuesKeys(path);
     }
 
     @Override
-    public Map<String, String> getDetails(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
-        return storage.getDetails(path, detailsKey);
+    public TypeValues getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
+        return storage.getValues(path, detailsKey);
     }
 
     @Override
-    public void saveDetails(String[] path, String detailsKey, Map<String, String> details) throws HousemateException {
-        storage.saveDetails(path, detailsKey, details);
+    public void saveValues(String[] path, String detailsKey, TypeValues details) throws HousemateException {
+        storage.saveValues(path, detailsKey, details);
     }
 
-    public void removeDetails(String[] path) throws HousemateException {
-        storage.removeDetails(path);
+    public void removeValues(String[] path) throws HousemateException {
+        storage.removeValues(path);
     }
 
     private class WatchDeviceListListener implements ListListener<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> {
@@ -243,7 +246,7 @@ public class BrokerObjectStorage implements Storage {
             try {
                 String value = storage.getValue(device.getRunningValue().getPath());
                 if(Boolean.parseBoolean(value))
-                    device.getStartCommand().perform(new HashMap<String, String>(),
+                    device.getStartCommand().perform(new TypeValues(),
                             new CommandListener("Start device \"" + device.getId() + "\""));
             } catch(DetailsNotFoundException e) {
                 log.w("No details found for whether the device was previously running" + Arrays.toString(device.getPath()));

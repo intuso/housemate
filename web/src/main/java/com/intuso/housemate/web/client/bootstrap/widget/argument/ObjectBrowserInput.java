@@ -5,6 +5,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeValue;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.Housemate;
@@ -30,7 +31,7 @@ public class ObjectBrowserInput extends FlowPanel implements ArgumentInput {
         rootNode.addObjectSelectedHandler(new ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
             @Override
             public void objectSelected(ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?, ?, ?>> event) {
-                fireEvent(new ArgumentEditedEvent(Joiner.on("/").join(event.getObject().getPath())));
+                fireEvent(new ArgumentEditedEvent(new TypeValue(Joiner.on("/").join(event.getObject().getPath()))));
             }
         });
         add(rootNode);

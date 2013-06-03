@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.intuso.housemate.api.object.type.TypeValue;
 import com.intuso.housemate.api.object.type.option.OptionWrappable;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
@@ -33,7 +34,7 @@ public class SingleSelectArgumentInput extends ListBox implements ArgumentInput 
         addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                fireEvent(new ArgumentEditedEvent(optionMap.get(getValue(getSelectedIndex())).getId()));
+                fireEvent(new ArgumentEditedEvent(new TypeValue(optionMap.get(getValue(getSelectedIndex())).getId())));
             }
         });
         if(type.getWrapper(OPTIONS) != null) {
@@ -43,14 +44,14 @@ public class SingleSelectArgumentInput extends ListBox implements ArgumentInput 
                 addItem(option.getName());
             }
             if(options.size() > 0)
-                fireEvent(new ArgumentEditedEvent(getValue(getSelectedIndex())));
+                fireEvent(new ArgumentEditedEvent(new TypeValue(getValue(getSelectedIndex()))));
         }
     }
 
     @Override
     public HandlerRegistration addArgumentEditedHandler(ArgumentEditedHandler handler) {
         HandlerRegistration result = addHandler(handler, ArgumentEditedEvent.TYPE);
-        handler.onArgumentEdited(new ArgumentEditedEvent(optionMap.get(getValue(getSelectedIndex())).getId()));
+        handler.onArgumentEdited(new ArgumentEditedEvent(new TypeValue(optionMap.get(getValue(getSelectedIndex())).getId())));
         return result;
     }
 

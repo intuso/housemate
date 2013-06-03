@@ -1,6 +1,8 @@
 package com.intuso.housemate.annotations.processor;
 
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.object.real.RealArgument;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealResources;
@@ -8,7 +10,6 @@ import com.intuso.housemate.object.real.RealResources;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,7 +32,7 @@ public class CommandImpl extends RealCommand {
     }
 
     @Override
-    public void perform(Map<String, String> values) throws HousemateException {
+    public void perform(TypeValues values) throws HousemateException {
         try {
             method.invoke(instance, argumentConverter.convert(values));
         } catch(InvocationTargetException e) {
@@ -49,14 +50,14 @@ public class CommandImpl extends RealCommand {
             this.arguments = arguments;
         }
 
-        public Object[] convert(Map<String, String> values) {
+        public Object[] convert(TypeValues values) {
             Object[] result = new Object[arguments.size()];
             for(int i = 0; i < result.length; i++) {
-                String value = values.get(arguments.get(i).getId());
+                TypeValue value = values.get(arguments.get(i).getId());
                 if(value == null)
                     result[i] = null;
                 else
-                    result[i] = arguments.get(i).getType().deserialise(value);
+                    result[i] = arguments.get(i).getType().deserialise(value.getValue());
             }
             return result;
         }

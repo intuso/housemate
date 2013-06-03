@@ -1,6 +1,5 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
@@ -11,6 +10,7 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.HashMap;
@@ -88,11 +88,11 @@ public abstract class ProxyCommand<
     }
 
     public final synchronized void perform(CommandListener<? super C> listener) {
-        perform(Maps.<String, String>newHashMap(), listener);
+        perform(new TypeValues(), listener);
     }
 
     @Override
-    public final synchronized void perform(Map<String, String> values, CommandListener<? super C> listener) {
+    public final synchronized void perform(TypeValues values, CommandListener<? super C> listener) {
         String id = "" + nextId++;
         listenerMap.put(id, listener);
         sendMessage(PERFORM, new PerformMessageValue(id, values));

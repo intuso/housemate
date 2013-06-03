@@ -12,6 +12,8 @@ import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.rule.Rule;
 import com.intuso.housemate.api.object.rule.RuleWrappable;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.api.object.value.Value;
@@ -36,7 +38,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -73,20 +74,21 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                 new BrokerRealArgument<String>(resources.getRealResources(), "password", "Password", "The password for the new user", new StringType(resources.getClientResources()))
         )) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
-                Map<String, String> toSave = Maps.newHashMap();
+            public void perform(TypeValues values) throws HousemateException {
+                TypeValues toSave = new TypeValues();
                 try {
-                    toSave.put("password-hash", new String(MessageDigest.getInstance("MD5").digest(
-                            values.get("password").getBytes())));
+                    toSave.put("password-hash", new TypeValue(new String(MessageDigest.getInstance("MD5").digest(
+                            values.get("password").getValue().getBytes()))));
                 } catch(NoSuchAlgorithmException e) {
                     throw new HousemateException("Unable to hash the password to save it securely");
                 }
                 toSave.put("id", values.get("username"));
                 toSave.put("name", values.get("username"));
                 toSave.put("description", values.get("username"));
-                BrokerRealUser user = new BrokerRealUser(getResources(), toSave.get("id"), toSave.get("name"), toSave.get("description"));
+                BrokerRealUser user = new BrokerRealUser(getResources(), toSave.get("id").getValue(),
+                        toSave.get("name").getValue(), toSave.get("description").getValue());
                 users.add(user);
-                resources.getStorage().saveDetails(users.getPath(), user.getId(), toSave);
+                resources.getStorage().saveValues(users.getPath(), user.getId(), toSave);
             }
         };
     }
@@ -95,9 +97,9 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     public BrokerRealCommand createRemoveUserCommand(final BrokerRealUser user) {
         return new BrokerRealCommand(resources.getRealResources(), User.REMOVE_COMMAND, User.REMOVE_COMMAND, "Remove the user", Lists.<BrokerRealArgument<?>>newArrayList()) {
                     @Override
-                    public void perform(Map<String, String> values) throws HousemateException {
+                    public void perform(TypeValues values) throws HousemateException {
                         getResources().getRoot().getUsers().remove(user.getId());
-                        resources.getStorage().removeDetails(user.getPath());
+                        resources.getStorage().removeValues(user.getPath());
                     }
                 };
     }
@@ -128,11 +130,12 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                 new BrokerRealArgument<String>(resources.getRealResources(), "description", "Description", "The description for the new rule", new StringType(resources.getClientResources()))
         )) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 values.put("id", values.get("name")); // todo figure out a better way of getting an id
-                BrokerRealRule rule = new BrokerRealRule(getResources(), values.get("id"), values.get("name"), values.get("description"));
+                BrokerRealRule rule = new BrokerRealRule(getResources(), values.get("id").getValue(),
+                        values.get("name").getValue(), values.get("description").getValue());
                 rules.add(rule);
-                resources.getStorage().saveDetails(rules.getPath(), rule.getId(), values);
+                resources.getStorage().saveValues(rules.getPath(), rule.getId(), values);
                 rule.getRunningValue().addObjectListener(runningListener);
             }
         };
@@ -141,7 +144,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     @Override
     public void ruleRemoved(String[] path) {
         try {
-            resources.getStorage().removeDetails(path);
+            resources.getStorage().removeValues(path);
         } catch(HousemateException e) {
             resources.getLog().e("Failed to remove stored details for rule " + Arrays.toString(path));
         }
@@ -155,8 +158,8 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
         return new BrokerRealCommand(resources.getRealResources(), originalCommand.getId(), originalCommand.getName(), originalCommand.getDescription(),
                 new ArrayList<BrokerRealArgument<?>>()) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
-                originalCommand.perform(new HashMap<String, String>(), new CommandListener<Command<?, ?>>() {
+            public void perform(TypeValues values) throws HousemateException {
+                originalCommand.perform(new TypeValues(), new CommandListener<Command<?, ?>>() {
                     @Override
                     public void commandStarted(Command<?, ?> command) {
                         // do nothing
@@ -174,7 +177,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                     }
                 });
                 try {
-                    resources.getStorage().removeDetails(source.getPath());
+                    resources.getStorage().removeValues(source.getPath());
                 } catch(HousemateException e) {
                     getResources().getLog().e("Failed to remove stored details for primary object " + Arrays.toString(source.getPath()));
                 }

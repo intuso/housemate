@@ -5,8 +5,8 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
-
-import java.util.HashMap;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,9 +38,9 @@ public abstract class ProxyProperty<
 
     @Override
     public void set(final String value, CommandListener<? super F> listener) {
-        getSetCommand().perform(new HashMap<String, String>() {
+        getSetCommand().perform(new TypeValues() {
             {
-                put(VALUE, value);
+                put(VALUE, new TypeValue(value));
             }
         }, listener);
     }

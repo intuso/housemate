@@ -3,6 +3,7 @@ package com.intuso.housemate.broker.factory;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.real.BrokerRealArgument;
@@ -66,23 +67,23 @@ public final class ConsequenceFactory implements PluginListener {
                 new BrokerRealArgument<BrokerConsequenceFactory<?>>(resources.getRealResources(), TYPE_ARGUMENT_ID, TYPE_ARGUMENT_NAME, TYPE_ARGUMENT_DESCRIPTION, type)
         )) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 BrokerRealConsequence consequence = createConsequence(values);
                 list.add(consequence);
                 resources.getStorage().watchPropertyValues(consequence.getProperties());
-                resources.getStorage().saveDetails(list.getPath(), consequence.getId(), values);
+                resources.getStorage().saveValues(list.getPath(), consequence.getId(), values);
             }
         };
     }
 
-    public BrokerRealConsequence createConsequence(Map<String, String> values) throws HousemateException {
-        String type = values.get(TYPE_ARGUMENT_ID);
+    public BrokerRealConsequence createConsequence(TypeValues values) throws HousemateException {
+        String type = values.get(TYPE_ARGUMENT_ID).getValue();
         if(type == null)
             throw new HousemateException("No consequence type specified");
-        String name = values.get(NAME_ARGUMENT_ID);
+        String name = values.get(NAME_ARGUMENT_ID).getValue();
         if(name == null)
             throw new HousemateException("No consequence name specified");
-        String description = values.get(DESCRIPTION_ARGUMENT_ID);
+        String description = values.get(DESCRIPTION_ARGUMENT_ID).getValue();
         if(description == null)
             throw new HousemateException("No consequence description specified");
         BrokerConsequenceFactory<?> consequenceFactory = serialiser.deserialise(type);

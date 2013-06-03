@@ -161,7 +161,7 @@ public class GWTProxyFactory {
     public static class Option implements OptionFactory<GWTResources<?>, GWTProxyOption> {
         @Override
         public GWTProxyOption create(GWTResources<?> resources, OptionWrappable wrappable) throws HousemateException {
-            return new GWTProxyOption(GWTProxyFactory.<NoChildrenProxyObjectFactory>changeFactoryType(resources, null), wrappable);
+            return new GWTProxyOption(noFactoryType(resources), wrappable);
         }
     }
 
@@ -196,7 +196,7 @@ public class GWTProxyFactory {
     public static class Value implements ValueFactory<GWTResources<?>, GWTProxyValue> {
         @Override
         public GWTProxyValue create(GWTResources<?> resources, ValueWrappable wrappable) throws HousemateException {
-            return new GWTProxyValue(GWTProxyFactory.<NoChildrenProxyObjectFactory>changeFactoryType(resources, null), wrappable);
+            return new GWTProxyValue(noFactoryType(resources), wrappable);
         }
     }
 

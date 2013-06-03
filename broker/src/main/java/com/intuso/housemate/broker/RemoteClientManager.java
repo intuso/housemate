@@ -10,6 +10,8 @@ import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.broker.client.LocalClient;
 import com.intuso.housemate.broker.comms.RemoteClientImpl;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
@@ -176,8 +178,8 @@ public class RemoteClientManager {
 
     private BrokerRealUser getUserForSession(String sessionId) throws HousemateException {
         try {
-            Map<String, String> details = resources.getStorage().getDetails(new String[] {"sessions"}, sessionId);
-            String userId = details.get("user-id");
+            TypeValues details = resources.getStorage().getValues(new String[]{"sessions"}, sessionId);
+            String userId = details.get("user-id").getValue();
             return resources.getRealResources().getRoot().getUsers().get(userId);
         } catch(DetailsNotFoundException e) {
             return null;
@@ -185,9 +187,9 @@ public class RemoteClientManager {
     }
 
     private void saveUserSession(String sessionId, BrokerRealUser user) throws HousemateException {
-        Map<String, String> details = Maps.newHashMap();
-        details.put("user-id", user.getId());
-        resources.getStorage().saveDetails(new String[] {"sessions"}, sessionId, details);
+        TypeValues details = new TypeValues();
+        details.put("user-id", new TypeValue(user.getId()));
+        resources.getStorage().saveValues(new String[]{"sessions"}, sessionId, details);
     }
 
     private BrokerRealUser authenticateUser(String username, String password) throws HousemateException {
@@ -200,9 +202,11 @@ public class RemoteClientManager {
         // todo look up the id of the user with that username
         String userId = username;
         try {
-            Map<String, String> details = resources.getStorage().getDetails(resources.getRealResources().getRoot().getUsers().getPath(), userId);
-            String storedPasswordHash = details.get("password-hash");
-            if(storedPasswordHash != null && storedPasswordHash.equals(passwordHash))
+            TypeValues details = resources.getStorage().getValues(resources.getRealResources().getRoot().getUsers().getPath(), userId);
+            TypeValue storedPasswordHash = details.get("password-hash");
+            if(storedPasswordHash != null
+                    && storedPasswordHash.getValue() != null
+                    && storedPasswordHash.getValue().equals(passwordHash))
                 return resources.getRealResources().getRoot().getUsers().get(userId);
             else
                 return null;

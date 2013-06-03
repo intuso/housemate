@@ -1,13 +1,12 @@
 package com.intuso.housemate.web.client.bootstrap.widget.argument;
 
 import com.google.gwt.dom.client.Style;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.web.client.bootstrap.widget.list.TableList;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableCol;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableColGroup;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
 import com.intuso.housemate.web.client.object.GWTProxyArgument;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,14 +17,14 @@ import java.util.Map;
  */
 public class ArgumentList extends TableList<GWTProxyArgument> {
 
-    private Map<String, String> valuesMap;
+    private TypeValues values;
 
     public ArgumentList() {
         addColGroup();
     }
 
-    public void setValuesMap(Map<String, String> valuesMap) {
-        this.valuesMap = valuesMap;
+    public void setTypeValues(TypeValues values) {
+        this.values = values;
     }
 
     private void addColGroup() {
@@ -40,6 +39,6 @@ public class ArgumentList extends TableList<GWTProxyArgument> {
 
     @Override
     public TableRow createObjectTableRow(GWTProxyArgument argument) {
-        return new ArgumentTableRow(argument, valuesMap);
+        return new ArgumentTableRow(argument, values);
     }
 }

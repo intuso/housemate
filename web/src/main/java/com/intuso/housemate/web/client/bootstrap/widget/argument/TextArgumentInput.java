@@ -7,6 +7,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
 import com.intuso.housemate.api.object.type.RegexTypeWrappable;
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeValue;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
@@ -27,7 +28,7 @@ public class TextArgumentInput extends TextBox implements ArgumentInput {
             @Override
             public void onChange(ChangeEvent event) {
                 if(validator.isValid(getText()))
-                    fireEvent(new ArgumentEditedEvent(getText()));
+                    fireEvent(new ArgumentEditedEvent(new TypeValue(getText())));
                 else {
                     // TODO show invalid input
                 }

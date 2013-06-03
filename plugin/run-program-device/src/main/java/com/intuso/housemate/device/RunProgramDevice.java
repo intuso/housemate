@@ -1,7 +1,13 @@
 package com.intuso.housemate.device;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.real.*;
+import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.object.real.RealArgument;
+import com.intuso.housemate.object.real.RealCommand;
+import com.intuso.housemate.object.real.RealDevice;
+import com.intuso.housemate.object.real.RealProperty;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.real.RealValue;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
@@ -9,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Housemate device that will start and stop a program
@@ -33,7 +38,7 @@ public class RunProgramDevice extends RealDevice {
 	 */
     private final RealCommand start = new RealCommand(getResources(), "start", "Start", "Start the program", new ArrayList<RealArgument<?>>()) {
 		@Override
-		public void perform(Map<String, String> values) throws HousemateException {
+		public void perform(TypeValues values) throws HousemateException {
 			try {
 				if(command.getValue().toString().length() == 0)
 					throw new HousemateException("No command has been set");
@@ -51,7 +56,7 @@ public class RunProgramDevice extends RealDevice {
 	 */
 	private final RealCommand stop = new RealCommand(getResources(), "stop", "Stop", "Stop the program", new ArrayList<RealArgument<?>>()) {
 		@Override
-		public void perform(Map<String, String> values) throws HousemateException {
+		public void perform(TypeValues values) throws HousemateException {
 			Integer pid = getFirstPID();
 			if(pid != null) {
 				try {

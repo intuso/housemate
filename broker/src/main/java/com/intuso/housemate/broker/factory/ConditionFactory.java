@@ -3,6 +3,7 @@ package com.intuso.housemate.broker.factory;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.real.BrokerRealArgument;
@@ -66,23 +67,23 @@ public final class ConditionFactory implements PluginListener {
                 new BrokerRealArgument<BrokerConditionFactory<?>>(resources.getRealResources(), TYPE_ARGUMENT_ID, TYPE_ARGUMENT_NAME, TYPE_ARGUMENT_DESCRIPTION, type)
         )) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 BrokerRealCondition condition = createCondition(values);
                 list.add(condition);
                 resources.getStorage().watchPropertyValues(condition.getProperties());
-                resources.getStorage().saveDetails(list.getPath(), condition.getId(), values);
+                resources.getStorage().saveValues(list.getPath(), condition.getId(), values);
             }
         };
     }
 
-    public BrokerRealCondition createCondition(Map<String, String> values) throws HousemateException {
-        String type = values.get(TYPE_ARGUMENT_ID);
+    public BrokerRealCondition createCondition(TypeValues values) throws HousemateException {
+        String type = values.get(TYPE_ARGUMENT_ID).getValue();
         if(type == null)
             throw new HousemateException("No condition type specified");
-        String name = values.get(NAME_ARGUMENT_ID);
+        String name = values.get(NAME_ARGUMENT_ID).getValue();
         if(name == null)
             throw new HousemateException("No condition name specified");
-        String description = values.get(DESCRIPTION_ARGUMENT_ID);
+        String description = values.get(DESCRIPTION_ARGUMENT_ID).getValue();
         if(description == null)
             throw new HousemateException("No condition description specified");
         BrokerConditionFactory<?> conditionFactory = serialiser.deserialise(type);

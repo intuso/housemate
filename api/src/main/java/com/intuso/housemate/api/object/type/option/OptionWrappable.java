@@ -3,6 +3,9 @@ package com.intuso.housemate.api.object.type.option;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: tomc
@@ -12,10 +15,21 @@ import com.intuso.housemate.api.object.NoChildrenWrappable;
  */
 public class OptionWrappable extends HousemateObjectWrappable<NoChildrenWrappable> {
 
+    private List<String> typeIds;
+
     protected OptionWrappable() {}
 
-    public OptionWrappable(String id, String name, String description) {
-        super(id, name,  description);
+    public OptionWrappable(String id, String name, String description, String ... typesIds) {
+        this(id, name, description, Arrays.asList(typesIds));
+    }
+
+    public OptionWrappable(String id, String name, String description, List<String> typesIds) {
+        super(id, name, description);
+        this.typeIds = typesIds;
+    }
+
+    public List<String> getSubTypes() {
+        return typeIds;
     }
 
     @Override

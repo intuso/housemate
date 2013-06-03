@@ -5,10 +5,10 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,10 +28,12 @@ public class RealProperty<O>
         setCommand = new RealCommand(resources, SET_COMMAND, SET_COMMAND, "The function to change the property's value",
                 Arrays.<RealArgument<?>>asList(new RealArgument<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
-                String newValueString = values.get(VALUE_PARAM);
-                O newValue = newValueString == null ? null : getType().deserialise(newValueString);
-                RealProperty.this.setTypedValue(newValue);
+            public void perform(TypeValues values) throws HousemateException {
+                TypeValue newValue = values.get(VALUE_PARAM);
+                O object = newValue != null && newValue.getValue() != null
+                        ? getType().deserialise(newValue.getValue())
+                        : null;
+                RealProperty.this.setTypedValue(object);
             }
         };
         addWrapper(setCommand);
@@ -44,9 +46,9 @@ public class RealProperty<O>
 
     @Override
     public void set(final String value, CommandListener<? super RealCommand> listener) {
-        getSetCommand().perform(new HashMap<String, String>() {
+        getSetCommand().perform(new TypeValues() {
             {
-                put(VALUE, value);
+                put(VALUE, new TypeValue(value));
             }
         }, listener);
     }

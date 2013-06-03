@@ -5,6 +5,8 @@ import com.intuso.housemate.api.object.type.option.Option;
 import com.intuso.housemate.api.object.type.option.OptionListener;
 import com.intuso.housemate.api.object.type.option.OptionWrappable;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ravnroot
@@ -18,5 +20,10 @@ public class BrokerProxyOption
 
     public BrokerProxyOption(BrokerProxyResources<NoChildrenBrokerProxyObjectFactory> resources, OptionWrappable wrappable) {
         super(resources, wrappable);
+    }
+
+    @Override
+    public List<String> getSubTypes() {
+        return getWrappable().getSubTypes();
     }
 }

@@ -238,12 +238,12 @@ public class ClientComms extends Comms {
          * @return the next message
          * @throws HousemateException malformed message
          */
-        private <T extends Message.Payload> Message<T> readMessage() throws HousemateException {
+        private Message readMessage() throws HousemateException {
             while(true) {
                 try {
                     Object next = ois.readObject();
                     if(next instanceof Message)
-                        return (Message<T>)next;
+                        return (Message)next;
                     else
                         getLog().e("Read non Message object: " + next);
                 } catch(IOException e) {

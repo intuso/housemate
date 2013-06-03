@@ -11,11 +11,11 @@ import com.intuso.housemate.api.object.command.argument.Argument;
 import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -96,7 +96,7 @@ public class CommandBridge
     }
 
     @Override
-    public void perform(Map<String, String> values, final CommandListener<? super CommandBridge> listener) {
+    public void perform(TypeValues values, final CommandListener<? super CommandBridge> listener) {
         proxyCommand.perform(values, new CommandListener<Command<?, ?>>() {
             @Override
             public void commandStarted(Command<?, ?> command) {

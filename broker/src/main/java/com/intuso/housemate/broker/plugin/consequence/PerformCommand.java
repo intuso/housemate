@@ -9,14 +9,13 @@ import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.utilities.listener.ListenerRegistration;
-
-import java.util.HashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -99,7 +98,7 @@ public class PerformCommand extends BrokerRealConsequence implements ObjectLifec
     public void _execute() throws HousemateException {
         if(command != null) {
             getLog().w("Executing " + Joiner.on("/").join(commandPath.getTypedValue().getPath()));
-            command.perform(new HashMap<String, String>(), listener);
+            command.perform(new TypeValues(), listener);
         } else
             getLog().w("Cannot execute consequence, no command at " + Joiner.on("/").join(commandPath.getTypedValue().getPath()));
     }

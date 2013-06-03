@@ -5,8 +5,8 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
-
-import java.util.HashMap;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,9 +31,9 @@ public class PropertyBridge
 
     @Override
     public void set(final String value, CommandListener<? super CommandBridge> listener) throws HousemateException {
-        setCommand.perform(new HashMap<String, String>() {
+        setCommand.perform(new TypeValues() {
             {
-                put(VALUE_PARAM, value);
+                put(VALUE_PARAM, new TypeValue(value));
             }
         }, listener);
     }

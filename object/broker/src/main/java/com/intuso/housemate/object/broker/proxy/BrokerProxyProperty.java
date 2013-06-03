@@ -4,8 +4,8 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
-
-import java.util.HashMap;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,9 +32,9 @@ public class BrokerProxyProperty
 
     @Override
     public void set(final String value, CommandListener<? super BrokerProxyCommand> listener) {
-        getSetCommand().perform(new HashMap<String, String>() {
+        getSetCommand().perform(new TypeValues() {
             {
-                put(VALUE_PARAM, value);
+                put(VALUE_PARAM, new TypeValue(value));
             }
         }, listener);
     }

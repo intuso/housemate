@@ -9,13 +9,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.argument.ArgumentList;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Ravn Systems
@@ -36,7 +34,7 @@ public class CommandPopup extends Composite {
     ArgumentList argumentList;
 
     private GWTProxyCommand command;
-    private Map<String, String> values;
+    private TypeValues values;
 
     public CommandPopup(GWTProxyCommand command) {
 
@@ -46,8 +44,8 @@ public class CommandPopup extends Composite {
 
         modal.setTitle(command.getDescription());
 
-        values = new HashMap<String, String>();
-        argumentList.setValuesMap(values);
+        values = new TypeValues();
+        argumentList.setTypeValues(values);
         argumentList.setList(command.getArguments());
     }
 

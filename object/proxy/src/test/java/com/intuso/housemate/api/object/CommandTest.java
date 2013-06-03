@@ -5,6 +5,8 @@ import com.intuso.housemate.api.TestEnvironment;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
 import com.intuso.housemate.object.real.RealArgument;
@@ -16,8 +18,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
@@ -63,7 +63,7 @@ public class CommandTest {
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
         realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-command", "My Command", "description", new ArrayList<RealArgument<?>>()) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
         };
@@ -81,13 +81,13 @@ public class CommandTest {
         final AtomicBoolean called = new AtomicBoolean(false);
         RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-other-command", "My Other Command", "description", new ArrayList<RealArgument<?>>()) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 called.set(true);
             }
         };
         realList.add(realCommand);
         SimpleProxyObject.Command proxyCommand = proxyList.get("my-other-command");
-        proxyCommand.perform(new HashMap<String, String>(), EMPTY_FUNCTION_LISTENER);
+        proxyCommand.perform(new TypeValues(), EMPTY_FUNCTION_LISTENER);
         assertEquals(true, called.get());
     }
 
@@ -97,15 +97,17 @@ public class CommandTest {
         RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-other-command", "My Other Command", "description",
                 Arrays.<RealArgument<?>>asList(IntegerType.createArgument(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-argument", "My Argument", "description"))) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
-                correctParam.set(values.get("my-argument") != null && values.get("my-argument").equals("1234"));
+            public void perform(TypeValues values) throws HousemateException {
+                correctParam.set(values.get("my-argument") != null
+                        && values.get("my-argument").getValue() != null
+                        && values.get("my-argument").getValue().equals("1234"));
             }
         };
         realList.add(realCommand);
         SimpleProxyObject.Command proxyCommand = proxyList.get("my-other-command");
-        proxyCommand.perform(new HashMap<String, String>() {
+        proxyCommand.perform(new TypeValues() {
             {
-                put("my-argument", "1234");
+                put("my-argument", new TypeValue("1234"));
             }
         }, EMPTY_FUNCTION_LISTENER);
         assertEquals(true, correctParam.get());
@@ -115,7 +117,7 @@ public class CommandTest {
     public void testPerformListenerCalled() throws HousemateException {
         final AtomicBoolean functionStartedCalled = new AtomicBoolean(false);
         final AtomicBoolean functionFinishedCalled = new AtomicBoolean(false);
-        proxyCommand.perform(new HashMap<String, String>(), new CommandListener<SimpleProxyObject.Command>() {
+        proxyCommand.perform(new TypeValues(), new CommandListener<SimpleProxyObject.Command>() {
             @Override
             public void commandStarted(SimpleProxyObject.Command function) {
                 functionStartedCalled.set(true);

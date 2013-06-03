@@ -5,6 +5,8 @@ import com.intuso.housemate.api.object.type.option.Option;
 import com.intuso.housemate.api.object.type.option.OptionListener;
 import com.intuso.housemate.api.object.type.option.OptionWrappable;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ravnroot
@@ -18,5 +20,10 @@ public class OptionBridge
 
     public OptionBridge(BrokerBridgeResources resources, String id, String name, String description) {
         super(resources, new OptionWrappable(id, name, description));
+    }
+
+    @Override
+    public List<String> getSubTypes() {
+        return getWrappable().getSubTypes();
     }
 }

@@ -2,6 +2,8 @@ package com.intuso.housemate.annotations.processor;
 
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealResources;
@@ -12,8 +14,6 @@ import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.utilities.log.Log;
 import org.junit.Test;
-
-import java.util.Map;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -70,14 +70,14 @@ public class TestAnnotationParser {
 
         // test parent device element instances
         testDevice.getProperties().get("switch-number").setValue("2");
-        Map<String, String> values = Maps.newHashMap();
-        values.put("on", "true");
+        TypeValues values = new TypeValues();
+        values.put("on", new TypeValue("true"));
         testDevice.getCommands().get("command").perform(values);
         assertEquals("On 2", testDevice.getValues().get("last-command").getValue());
 
         // test child device element instances
         testDevice.getProperties().get("increment-amount").setValue("2");
-        values = Maps.newHashMap();
+        values = new TypeValues();
         testDevice.getCommands().get("turn-up").perform(values);
         testDevice.getCommands().get("turn-up").perform(values);
         testDevice.getCommands().get("turn-up").perform(values);

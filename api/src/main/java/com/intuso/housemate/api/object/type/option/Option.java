@@ -2,6 +2,8 @@ package com.intuso.housemate.api.object.type.option;
 
 import com.intuso.housemate.api.object.BaseObject;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ravnroot
@@ -10,6 +12,5 @@ import com.intuso.housemate.api.object.BaseObject;
  * To change this template use File | Settings | File Templates.
  */
 public interface Option extends BaseObject<OptionListener> {
-    public String getName();
-    public String getDescription();
+    public List<String> getSubTypes();
 }

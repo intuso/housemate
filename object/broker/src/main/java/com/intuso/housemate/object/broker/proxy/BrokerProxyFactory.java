@@ -118,7 +118,7 @@ public class BrokerProxyFactory {
     public static class Option implements OptionFactory<BrokerProxyResources<?>, BrokerProxyOption> {
         @Override
         public BrokerProxyOption create(BrokerProxyResources<?> resources, OptionWrappable wrappable) throws HousemateException {
-            return new BrokerProxyOption(BrokerProxyFactory.<NoChildrenBrokerProxyObjectFactory>changeFactoryType(resources, null), wrappable);
+            return new BrokerProxyOption(noFactoryType(resources), wrappable);
         }
     }
 
@@ -142,7 +142,7 @@ public class BrokerProxyFactory {
     public static class Value implements ValueFactory<BrokerProxyResources<?>, BrokerProxyValue> {
         @Override
         public BrokerProxyValue create(BrokerProxyResources<?> resources, ValueWrappable wrappable) throws HousemateException {
-            return new BrokerProxyValue(BrokerProxyFactory.<NoChildrenBrokerProxyObjectFactory>changeFactoryType(resources, null), wrappable);
+            return new BrokerProxyValue(noFactoryType(resources), wrappable);
         }
     }
 

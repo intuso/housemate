@@ -3,9 +3,12 @@ package com.intuso.housemate.broker.storage.impl;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.broker.storage.DetailsNotFoundException;
 import com.intuso.housemate.broker.storage.Storage;
-import com.intuso.housemate.api.HousemateException;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -15,7 +18,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -51,7 +53,7 @@ public class SjoerdDB implements Storage {
 
     @Override
     public String getValue(String[] path) throws DetailsNotFoundException, HousemateException {
-        Map<String, String> details = null;
+        TypeValues details = null;
         try {
             details = getDetails(getFile(false, path, VALUE_FILENAME));
         }  catch(FileNotFoundException e) {
@@ -59,13 +61,14 @@ public class SjoerdDB implements Storage {
         } catch(IOException e) {
             throw new HousemateException("Failed to get value", e);
         }
-        return details.get(PROPERTY_VALUE_KEY);
+        TypeValue value = details.get(PROPERTY_VALUE_KEY);
+        return value != null ? value.getValue() : null;
     }
 
     @Override
     public void saveValue(String[] path, String value) throws HousemateException {
-        Map<String, String> details = new HashMap<String, String>();
-        details.put(PROPERTY_VALUE_KEY, value);
+        TypeValues details = new TypeValues();
+        details.put(PROPERTY_VALUE_KEY, new TypeValue(value));
         try {
             saveDetails(getFile(true, path, VALUE_FILENAME), details);
         } catch(IOException e) {
@@ -74,7 +77,7 @@ public class SjoerdDB implements Storage {
     }
 
     @Override
-    public Set<String> getDetailsKeys(String[] path) throws DetailsNotFoundException {
+    public Set<String> getValuesKeys(String[] path) throws DetailsNotFoundException {
         File file = getFile(false, path);
         if(!file.exists())
             throw new DetailsNotFoundException();
@@ -97,7 +100,7 @@ public class SjoerdDB implements Storage {
     }
 
     @Override
-    public Map<String, String> getDetails(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
+    public TypeValues getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
         try {
             return readDetailsFile(path, detailsKey);
         } catch(FileNotFoundException e) {
@@ -108,7 +111,7 @@ public class SjoerdDB implements Storage {
     }
 
     @Override
-    public void saveDetails(String[] path, String detailsKey, Map<String, String> details) throws HousemateException {
+    public void saveValues(String[] path, String detailsKey, TypeValues details) throws HousemateException {
         try {
             saveDetails(getFile(true, path, detailsKey + PROPERTIES_EXTENSION), details);
         } catch(IOException e) {
@@ -117,7 +120,7 @@ public class SjoerdDB implements Storage {
     }
 
     @Override
-    public void removeDetails(String[] path) throws HousemateException {
+    public void removeValues(String[] path) throws HousemateException {
         deleteFile(getFile(false, path));
         String[] propertiesPath = new String[path.length];
         System.arraycopy(path, 0, propertiesPath, 0, path.length - 1);
@@ -134,23 +137,28 @@ public class SjoerdDB implements Storage {
         file.delete();
     }
 
-    private Map<String, String> readDetailsFile(String[] path, String detailsKey) throws IOException {
+    private TypeValues readDetailsFile(String[] path, String detailsKey) throws IOException {
         return getDetails(getFile(false, path, detailsKey + PROPERTIES_EXTENSION));
     }
 
-    private Map<String, String> getDetails(File file) throws IOException {
+    private TypeValues getDetails(File file) throws IOException {
         Properties properties = new Properties();
         properties.load(new FileInputStream(file));
-        Map<String, String> result = new HashMap<String, String>();
+        TypeValues result = new TypeValues();
         for(Map.Entry<Object, Object> entry : properties.entrySet())
             if(entry.getKey() instanceof String && entry.getValue() instanceof String)
-                result.put((String)entry.getKey(), (String)entry.getValue());
+                result.put((String)entry.getKey(), new TypeValue((String)entry.getValue()));
         return result;
     }
 
-    private void saveDetails(File file, Map<String, String> details) throws IOException {
+    private void saveDetails(File file, TypeValues details) throws IOException {
         Properties properties = new Properties();
-        properties.putAll(details);
+        properties.putAll(Maps.transformValues(details, new Function<TypeValue, String>() {
+            @Override
+            public String apply(TypeValue typeValue) {
+                return typeValue.getValue();
+            }
+        }));
         properties.store(new FileOutputStream(file), "");
     }
 

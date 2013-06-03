@@ -6,9 +6,9 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.type.TypeValues;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,7 +38,7 @@ public abstract class BrokerRealCommand
     }
 
     @Override
-    public void perform(Map<String, String> values, CommandListener<? super BrokerRealCommand> listener) {
+    public void perform(TypeValues values, CommandListener<? super BrokerRealCommand> listener) {
         try {
             listener.commandStarted(this);
             perform(values);
@@ -50,5 +50,5 @@ public abstract class BrokerRealCommand
         }
     }
 
-    public abstract void perform(Map<String, String> values) throws HousemateException;
+    public abstract void perform(TypeValues values) throws HousemateException;
 }

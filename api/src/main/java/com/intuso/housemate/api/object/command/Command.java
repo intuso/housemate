@@ -5,8 +5,7 @@ import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.command.argument.Argument;
 import com.intuso.housemate.api.object.command.argument.HasArguments;
 import com.intuso.housemate.api.object.list.List;
-
-import java.util.Map;
+import com.intuso.housemate.api.object.type.TypeValues;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,16 +23,16 @@ public interface Command<AL extends List<? extends Argument<?>>, C extends Comma
     public final static String PERFORMING = "performing";
     public final static String FAILED = "failed";
 
-    public void perform(Map<String, String> values, CommandListener<? super C> listener);
+    public void perform(TypeValues values, CommandListener<? super C> listener);
 
     public static class PerformMessageValue implements Message.Payload {
 
         String opId;
-        Map<String, String> values;
+        TypeValues values;
 
         private PerformMessageValue() {}
 
-        public PerformMessageValue(String opId, Map<String, String> values) {
+        public PerformMessageValue(String opId, TypeValues values) {
             this.opId = opId;
             this.values = values;
         }
@@ -42,7 +41,7 @@ public interface Command<AL extends List<? extends Argument<?>>, C extends Comma
             return opId;
         }
 
-        public Map<String, String> getValues() {
+        public TypeValues getValues() {
             return values;
         }
     }

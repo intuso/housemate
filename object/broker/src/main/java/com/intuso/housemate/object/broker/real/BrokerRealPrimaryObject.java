@@ -5,10 +5,9 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,7 +33,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
         super(resources, wrappable);
         this.remove = new BrokerRealCommand(resources, REMOVE_COMMAND, REMOVE_COMMAND, "Remove the " + objectType, Lists.<BrokerRealArgument<?>>newArrayList()) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 if(isRunning())
                     throw new HousemateException("Cannot remove while " + objectType + " is still running");
                 remove();
@@ -44,7 +43,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
         this.running = new BrokerRealValue<Boolean>(resources, RUNNING_VALUE, RUNNING_VALUE, "Whether the " + objectType + " is running or not", new BooleanType(resources.getRealResources()), false);
         this.start = new BrokerRealCommand(resources, START_COMMAND, START_COMMAND, "Start the " + objectType, Lists.<BrokerRealArgument<?>>newArrayList()) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 if(!isRunning()) {
                     start();
                     running.setTypedValue(true);
@@ -53,7 +52,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
         };
         this.stop = new BrokerRealCommand(resources, STOP_COMMAND, STOP_COMMAND, "Stop the " + objectType, Lists.<BrokerRealArgument<?>>newArrayList()) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 if(isRunning()) {
                     stop();
                     running.setTypedValue(false);

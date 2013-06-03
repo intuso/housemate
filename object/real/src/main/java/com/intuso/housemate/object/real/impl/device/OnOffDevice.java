@@ -1,15 +1,15 @@
 package com.intuso.housemate.object.real.impl.device;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.real.*;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.object.real.RealArgument;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.real.RealValue;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * @author tclabon
@@ -23,7 +23,7 @@ public abstract class OnOffDevice extends RealDevice {
 	 */
 	private final RealCommand onCommand = new RealCommand(getResources(), "on", "Turn On", "Turn the device on", new ArrayList<RealArgument<?>>()) {
 		@Override
-		public void perform(Map<String, String> values) throws HousemateException {
+		public void perform(TypeValues values) throws HousemateException {
 			getLog().d("Performing \"On\" command");
 			turnOn();
 		}
@@ -34,7 +34,7 @@ public abstract class OnOffDevice extends RealDevice {
 	 */
 	private final RealCommand offCommand = new RealCommand(getResources(), "off", "Turn Off", "Turn the device off", new ArrayList<RealArgument<?>>()) {
 		@Override
-		public void perform(Map<String, String> values) throws HousemateException {
+		public void perform(TypeValues values) throws HousemateException {
 			getLog().d("Performing \"Off\" command");
 			turnOff();
 		}

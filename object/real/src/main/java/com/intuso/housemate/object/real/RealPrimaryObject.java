@@ -6,10 +6,9 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,7 +33,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
         super(resources, wrappable);
         this.remove = new RealCommand(resources, REMOVE_COMMAND, REMOVE_COMMAND, "Remove the " + objectType, Lists.<RealArgument<?>>newArrayList()) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 if(isRunning())
                     throw new HousemateException("Cannot remove while " + objectType + " is still running");
                 remove();
@@ -43,7 +42,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
         this.running = BooleanType.createValue(resources, RUNNING_VALUE, RUNNING_VALUE, "Whether the " + objectType + " is running or not", false);
         this.start = new RealCommand(resources, START_COMMAND, START_COMMAND, "Start the " + objectType, Lists.<RealArgument<?>>newArrayList()) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 if(!isRunning()) {
                     _start();
                     running.setTypedValue(true);
@@ -52,7 +51,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
         };
         this.stop = new RealCommand(resources, STOP_COMMAND, STOP_COMMAND, "Stop the " + objectType, Lists.<RealArgument<?>>newArrayList()) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
+            public void perform(TypeValues values) throws HousemateException {
                 if(isRunning()) {
                     _stop();
                     running.setTypedValue(false);

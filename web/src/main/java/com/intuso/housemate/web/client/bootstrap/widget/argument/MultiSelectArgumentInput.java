@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.intuso.housemate.api.object.type.MultiChoiceTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeValue;
 import com.intuso.housemate.api.object.type.option.OptionWrappable;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
@@ -43,7 +44,8 @@ public class MultiSelectArgumentInput extends ListBox implements ArgumentInput {
                 for(int i = 0; i < getItemCount(); i++)
                     if(isItemSelected(i))
                         selectedOptions.add(getItemText(i));
-                fireEvent(new ArgumentEditedEvent(MultiChoiceTypeWrappable.SERIALISER.serialise(selectedOptions)));
+                fireEvent(new ArgumentEditedEvent(
+                        new TypeValue(MultiChoiceTypeWrappable.SERIALISER.serialise(selectedOptions))));
             }
         });
         optionIndices.clear();

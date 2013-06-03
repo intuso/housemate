@@ -160,7 +160,7 @@ public class SimpleProxyFactory {
     public static class Option implements OptionFactory<ProxyResources<?>, SimpleProxyObject.Option> {
         @Override
         public SimpleProxyObject.Option create(ProxyResources<?> resources, OptionWrappable wrappable) throws HousemateException {
-            return new SimpleProxyObject.Option(SimpleProxyFactory.<NoChildrenProxyObjectFactory>changeFactoryType(resources, null), wrappable);
+            return new SimpleProxyObject.Option(noFactoryType(resources), wrappable);
         }
     }
 
@@ -195,7 +195,7 @@ public class SimpleProxyFactory {
     public static class Value implements ValueFactory<ProxyResources<?>, SimpleProxyObject.Value> {
         @Override
         public SimpleProxyObject.Value create(ProxyResources<?> resources, ValueWrappable wrappable) throws HousemateException {
-            return new SimpleProxyObject.Value(SimpleProxyFactory.<NoChildrenProxyObjectFactory>changeFactoryType(resources, null), wrappable);
+            return new SimpleProxyObject.Value(noFactoryType(resources), wrappable);
         }
     }
 

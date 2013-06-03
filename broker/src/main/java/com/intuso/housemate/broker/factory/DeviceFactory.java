@@ -3,6 +3,7 @@ package com.intuso.housemate.broker.factory;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.real.RealArgument;
@@ -67,14 +68,14 @@ public final class DeviceFactory implements PluginListener {
                 new RealArgument<RealDeviceFactory<?>>(resources.getClientResources(), TYPE_ARGUMENT_ID, TYPE_ARGUMENT_NAME, TYPE_ARGUMENT_DESCRIPTION, type)
         )) {
             @Override
-            public void perform(Map<String, String> values) throws HousemateException {
-                String type = values.get(TYPE_ARGUMENT_ID);
+            public void perform(TypeValues values) throws HousemateException {
+                String type = values.get(TYPE_ARGUMENT_ID).getValue();
                 if(type == null)
                     throw new HousemateException("No device type specified");
-                String name = values.get(NAME_ARGUMENT_ID);
+                String name = values.get(NAME_ARGUMENT_ID).getValue();
                 if(name == null)
                     throw new HousemateException("No device name specified");
-                String description = values.get(DESCRIPTION_ARGUMENT_ID);
+                String description = values.get(DESCRIPTION_ARGUMENT_ID).getValue();
                 if(description == null)
                     throw new HousemateException("No device description specified");
                 RealDeviceFactory<?> deviceFactory = serialiser.deserialise(type);
@@ -83,7 +84,7 @@ public final class DeviceFactory implements PluginListener {
                 RealDevice device = deviceFactory.create(resources.getClientResources(), name, name, description);
                 resources.getAnnotationParser().process(device);
                 list.add(device);
-                resources.getStorage().saveDetails(list.getPath(), device.getId(), values);
+                resources.getStorage().saveValues(list.getPath(), device.getId(), values);
             }
         };
     }

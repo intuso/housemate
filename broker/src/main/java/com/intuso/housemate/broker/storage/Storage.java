@@ -1,8 +1,8 @@
 package com.intuso.housemate.broker.storage;
 
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.type.TypeValues;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -15,8 +15,8 @@ import java.util.Set;
 public interface Storage {
     public String getValue(String[] path) throws DetailsNotFoundException, HousemateException;
     public void saveValue(String[] path, String value) throws HousemateException;
-    public Set<String> getDetailsKeys(String[] path) throws DetailsNotFoundException, HousemateException;
-    public Map<String, String> getDetails(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException;
-    public void saveDetails(String[] path, String detailsKey, Map<String, String> details) throws HousemateException;
-    public void removeDetails(String[] path) throws HousemateException;
+    public Set<String> getValuesKeys(String[] path) throws DetailsNotFoundException, HousemateException;
+    public TypeValues getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException;
+    public void saveValues(String[] path, String detailsKey, TypeValues details) throws HousemateException;
+    public void removeValues(String[] path) throws HousemateException;
 }

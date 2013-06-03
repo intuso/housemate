@@ -6,6 +6,7 @@ import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
 import com.intuso.housemate.api.object.type.RegexTypeWrappable;
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
 import com.intuso.housemate.api.object.type.SingleChoiceTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeValues;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableCell;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
@@ -13,8 +14,6 @@ import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
 import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyArgument;
 import com.intuso.housemate.web.client.object.GWTProxyType;
-
-import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,11 +25,11 @@ import java.util.Map;
 public class ArgumentTableRow extends TableRow implements ArgumentEditedHandler {
 
     private String argumentId;
-    private Map<String, String> valuesMap;
+    private TypeValues values;
 
-    public ArgumentTableRow(GWTProxyArgument argument, Map<String, String> valuesMap) {
+    public ArgumentTableRow(GWTProxyArgument argument, TypeValues values) {
         this.argumentId = argument.getId();
-        this.valuesMap = valuesMap;
+        this.values = values;
         addNameCell(argument.getId(), argument.getDescription());
         addValueCell(argument);
     }
@@ -54,7 +53,7 @@ public class ArgumentTableRow extends TableRow implements ArgumentEditedHandler 
 
     @Override
     public void onArgumentEdited(ArgumentEditedEvent event) {
-        valuesMap.put(argumentId, event.getNewValue());
+        values.put(argumentId, event.getNewValue());
     }
 
     public static ArgumentInput getArgumentInput(GWTProxyType type) {
