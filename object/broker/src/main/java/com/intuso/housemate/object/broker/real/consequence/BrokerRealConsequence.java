@@ -59,7 +59,7 @@ public abstract class BrokerRealConsequence
 
     @Override
     public String getError() {
-        return errorValue.getValue();
+        return errorValue.getTypedValue();
     }
 
     @Override

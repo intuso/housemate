@@ -69,8 +69,13 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
             }
         });
 	}
-	
-	/**
+
+    @Override
+    public void valueChanging(RealProperty<?> value) {
+        // do nothing
+    }
+
+    /**
 	 * Check if all the current property values are valid and if so, start the USB relay client
 	 * @throws HousemateException
 	 */
@@ -81,13 +86,13 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
 		
         // check the port value is a positive number
         if(id < 0 || id > 0x03FFFFFF)
-            getErrorValue().setValue("House id must be between 0 and " + 0x03FFFFFF);
+            getErrorValue().setTypedValue("House id must be between 0 and " + 0x03FFFFFF);
 			
 		// check the relay value is a number between 1 and 8
 		if(unitcode < 1 || unitcode > 16)
-            getErrorValue().setValue("Unitcode must be between 1 and 16 (inclusive)");
+            getErrorValue().setTypedValue("Unitcode must be between 1 and 16 (inclusive)");
 
-        getErrorValue().setValue(null);
+        getErrorValue().setTypedValue(null);
         createHed(id, unitcode);
 	}
 	

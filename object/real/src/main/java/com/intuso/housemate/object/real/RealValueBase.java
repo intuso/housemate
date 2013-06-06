@@ -1,7 +1,7 @@
 package com.intuso.housemate.object.real;
 
-import com.intuso.housemate.api.comms.message.StringMessageValue;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueWrappableBase;
@@ -25,6 +25,7 @@ public abstract class RealValueBase<WBL extends ValueWrappableBase<SWBL>,
         implements Value<RealType<?, ?, O>, V>, ValueListener<V> {
 
     private RealType<?, ?, O> type;
+    private O typedValue;
 
     public RealValueBase(RealResources resources, WBL wrappable, RealType<?, ?, O> type) {
         super(resources, wrappable);
@@ -37,25 +38,20 @@ public abstract class RealValueBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     public O getTypedValue() {
-        return getType().deserialise(getValue());
+        return typedValue;
     }
 
     @Override
-    public java.lang.String getValue() {
+    public TypeInstance getValue() {
         return getWrappable().getValue();
     }
 
-    public final void setValue(java.lang.String value) {
-        if((this.getWrappable().getValue() == null && value == null)
-                || (this.getWrappable().getValue() != null && value != null && this.getWrappable().getValue().equals(value)))
+    public final void setTypedValue(O typedValue) {
+        if((this.typedValue == null && typedValue == null)
+                || (this.typedValue != null && typedValue != null && this.typedValue.equals(typedValue)))
             return;
-        this.getWrappable().setValue(value);
-        for(ValueListener<? super V> listener : getObjectListeners())
-            listener.valueChanged(getThis());
-    }
-
-    public final void setTypedValue(O value) {
-        setValue(getType().serialise(value));
+        this.typedValue = typedValue;
+        this.getWrappable().setValue(getType().serialise(typedValue));
     }
 
     @Override
@@ -66,10 +62,12 @@ public abstract class RealValueBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     @Override
-    public final void valueChanged(RealValueBase value) {
-        sendMessage(VALUE, new StringMessageValue(getValue()));
+    public void valueChanging(V value) {
+        // do nothing
     }
 
-    protected abstract V getThis();
-
+    @Override
+    public final void valueChanged(RealValueBase value) {
+        sendMessage(VALUE, getValue());
+    }
 }

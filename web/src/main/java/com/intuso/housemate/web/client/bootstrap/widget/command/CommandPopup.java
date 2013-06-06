@@ -9,7 +9,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.argument.ArgumentList;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
@@ -34,7 +34,7 @@ public class CommandPopup extends Composite {
     ArgumentList argumentList;
 
     private GWTProxyCommand command;
-    private TypeValues values;
+    private TypeInstances values;
 
     public CommandPopup(GWTProxyCommand command) {
 
@@ -44,7 +44,7 @@ public class CommandPopup extends Composite {
 
         modal.setTitle(command.getDescription());
 
-        values = new TypeValues();
+        values = new TypeInstances();
         argumentList.setTypeValues(values);
         argumentList.setList(command.getArguments());
     }

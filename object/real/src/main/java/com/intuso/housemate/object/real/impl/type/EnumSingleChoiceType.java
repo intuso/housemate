@@ -3,13 +3,15 @@ package com.intuso.housemate.object.real.impl.type;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateRuntimeException;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.real.RealType;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 
 /**
@@ -21,27 +23,53 @@ import java.util.List;
  */
 public abstract class EnumSingleChoiceType<E extends Enum<E>> extends RealSingleChoiceType<E> {
 
-    private Class<E> enumClass;
+    private final Class<E> enumClass;
+    private final TypeSerialiser<E> serialiser;
 
-    protected EnumSingleChoiceType(RealResources resources, String id, String name, String description, Class<E> enumClass, E[] values) {
-        super(resources, id, name, description, convertValuesToOptions(resources, values), new EnumInstanceSerialiser<E>(enumClass));
+    protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
+                                   Class<E> enumClass, E[] values) {
+        this(resources, id, name, description, enumClass, values, new EnumMap<E, List<RealType<?, ?, ?>>>(enumClass),
+                new EnumInstanceSerialiser<E>(enumClass));
+    }
+
+    protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
+                                   Class<E> enumClass, E[] values, TypeSerialiser<E> serialiser) {
+        this(resources, id, name, description, enumClass, values, new EnumMap<E, List<RealType<?, ?, ?>>>(enumClass),
+                serialiser);
+    }
+
+    protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
+                                   Class<E> enumClass, E[] values, EnumMap<E, List<RealType<?, ?, ?>>> optionSubTypes) {
+        this(resources, id, name, description, enumClass, values, optionSubTypes, new EnumInstanceSerialiser<E>(enumClass));
+    }
+
+    protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
+                                   Class<E> enumClass, E[] values, EnumMap<E, List<RealType<?, ?, ?>>> optionSubTypes,
+                                   TypeSerialiser<E> serialiser) {
+        super(resources, id, name, description, convertValuesToOptions(resources, values, optionSubTypes));
         this.enumClass = enumClass;
+        this.serialiser = serialiser;
     }
 
-    public static List<RealOption> convertValuesToOptions(final RealResources resources, Enum[] values) {
-        return Lists.transform(Arrays.asList(values), new Function<Enum, RealOption>() {
-            @Override
-            public RealOption apply(@Nullable Enum value) {
-                return new RealOption(resources, value.name(), value.name(), value.name());
-            }
-        });
+    @Override
+    public TypeInstance serialise(E o) {
+        return serialiser.serialise(o);
     }
 
-    public static List<OptionWrappable> convertValuesToOptionWrappables(Enum[] values) {
-        return Lists.transform(Arrays.asList(values), new Function<Enum, OptionWrappable>() {
+    @Override
+    public E deserialise(TypeInstance value) {
+        return serialiser.deserialise(value);
+    }
+
+    public static <E extends Enum<E>> List<RealOption> convertValuesToOptions(final RealResources resources, E[] values,
+                                                          final EnumMap<E, List<RealType<?, ?, ?>>> optionSubTypes) {
+        return Lists.transform(Arrays.asList(values), new Function<E, RealOption>() {
             @Override
-            public OptionWrappable apply(@Nullable Enum value) {
-                return new OptionWrappable(value.name(), value.name(), value.name());
+            public RealOption apply(@Nullable E value) {
+                if(optionSubTypes.containsKey(value))
+                    return new RealOption(resources, value.name(), value.name(), value.name(), optionSubTypes.get(value));
+                else
+                    return new RealOption(resources, value.name(), value.name(), value.name());
             }
         });
     }
@@ -55,14 +83,14 @@ public abstract class EnumSingleChoiceType<E extends Enum<E>> extends RealSingle
         }
 
         @Override
-        public String serialise(E value) {
-            return value.name();
+        public TypeInstance serialise(E value) {
+            return value != null ? new TypeInstance(value.name()) : null;
         }
 
         @Override
-        public E deserialise(String value) {
+        public E deserialise(TypeInstance value) {
             try {
-                return Enum.valueOf(enumClass, value);
+                return value != null && value.getValue() != null ? Enum.valueOf(enumClass, value.getValue()) : null;
             } catch(Throwable t) {
                 throw new HousemateRuntimeException("Could not convert \"" + value + "\" to instance of enum " + enumClass.getName());
             }

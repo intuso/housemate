@@ -10,8 +10,8 @@ import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.type.TypeValue;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.client.LocalClient;
 import com.intuso.housemate.broker.comms.RemoteClientImpl;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
@@ -54,9 +54,16 @@ public class RemoteClientManager {
             return false;
         client.setRoute(route);
         try {
+            root.addClient(client);
+        } catch(HousemateException e) {
+            resources.getLog().e("Failed to add reconnected client");
+            return false;
+        }
+        try {
             client.sendMessage(new String[] {""}, Root.CONNECTION_RESPONSE, new Root.ReconnectResponse());
         } catch(HousemateException e) {
             resources.getLog().e("Failed to send authentication response to client at route " + Message.routeToString(route));
+            return false;
         }
         return true;
     }
@@ -178,7 +185,7 @@ public class RemoteClientManager {
 
     private BrokerRealUser getUserForSession(String sessionId) throws HousemateException {
         try {
-            TypeValues details = resources.getStorage().getValues(new String[]{"sessions"}, sessionId);
+            TypeInstances details = resources.getStorage().getValues(new String[]{"sessions"}, sessionId);
             String userId = details.get("user-id").getValue();
             return resources.getRealResources().getRoot().getUsers().get(userId);
         } catch(DetailsNotFoundException e) {
@@ -187,8 +194,8 @@ public class RemoteClientManager {
     }
 
     private void saveUserSession(String sessionId, BrokerRealUser user) throws HousemateException {
-        TypeValues details = new TypeValues();
-        details.put("user-id", new TypeValue(user.getId()));
+        TypeInstances details = new TypeInstances();
+        details.put("user-id", new TypeInstance(user.getId()));
         resources.getStorage().saveValues(new String[]{"sessions"}, sessionId, details);
     }
 
@@ -202,8 +209,8 @@ public class RemoteClientManager {
         // todo look up the id of the user with that username
         String userId = username;
         try {
-            TypeValues details = resources.getStorage().getValues(resources.getRealResources().getRoot().getUsers().getPath(), userId);
-            TypeValue storedPasswordHash = details.get("password-hash");
+            TypeInstances details = resources.getStorage().getValues(resources.getRealResources().getRoot().getUsers().getPath(), userId);
+            TypeInstance storedPasswordHash = details.get("password-hash");
             if(storedPasswordHash != null
                     && storedPasswordHash.getValue() != null
                     && storedPasswordHash.getValue().equals(passwordHash))

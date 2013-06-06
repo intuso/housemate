@@ -2,8 +2,8 @@ package com.intuso.housemate.broker.factory;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
-import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.real.RealArgument;
@@ -47,13 +47,11 @@ public final class DeviceFactory implements PluginListener {
     private final BrokerGeneralResources resources;
     private final Map<String, RealDeviceFactory<?>> factories;
     private final DeviceFactoryType type;
-    private final DeviceFactorySerialiser serialiser;
 
     public DeviceFactory(BrokerGeneralResources resources) {
         this.resources = resources;
         factories = new HashMap<String, RealDeviceFactory<?>>();
-        serialiser = new DeviceFactorySerialiser();
-        type = new DeviceFactoryType(resources.getClientResources(), serialiser);
+        type = new DeviceFactoryType(resources.getClientResources());
         resources.addPluginListener(this, true);
     }
 
@@ -68,20 +66,20 @@ public final class DeviceFactory implements PluginListener {
                 new RealArgument<RealDeviceFactory<?>>(resources.getClientResources(), TYPE_ARGUMENT_ID, TYPE_ARGUMENT_NAME, TYPE_ARGUMENT_DESCRIPTION, type)
         )) {
             @Override
-            public void perform(TypeValues values) throws HousemateException {
-                String type = values.get(TYPE_ARGUMENT_ID).getValue();
-                if(type == null)
+            public void perform(TypeInstances values) throws HousemateException {
+                TypeInstance deviceType = values.get(TYPE_ARGUMENT_ID);
+                if(deviceType == null || deviceType.getValue() == null)
                     throw new HousemateException("No device type specified");
-                String name = values.get(NAME_ARGUMENT_ID).getValue();
-                if(name == null)
+                TypeInstance name = values.get(NAME_ARGUMENT_ID);
+                if(name == null || name.getValue() == null)
                     throw new HousemateException("No device name specified");
-                String description = values.get(DESCRIPTION_ARGUMENT_ID).getValue();
-                if(description == null)
+                TypeInstance description = values.get(DESCRIPTION_ARGUMENT_ID);
+                if(description == null || description.getValue() == null)
                     throw new HousemateException("No device description specified");
-                RealDeviceFactory<?> deviceFactory = serialiser.deserialise(type);
+                RealDeviceFactory<?> deviceFactory = type.deserialise(deviceType);
                 if(deviceFactory == null)
-                    throw new HousemateException("No factory known for device type " + type);
-                RealDevice device = deviceFactory.create(resources.getClientResources(), name, name, description);
+                    throw new HousemateException("No factory known for device type " + deviceType);
+                RealDevice device = deviceFactory.create(resources.getClientResources(), name.getValue(), name.getValue(), description.getValue());
                 resources.getAnnotationParser().process(device);
                 list.add(device);
                 resources.getStorage().saveValues(list.getPath(), device.getId(), values);
@@ -107,20 +105,18 @@ public final class DeviceFactory implements PluginListener {
     }
 
     private class DeviceFactoryType extends RealSingleChoiceType<RealDeviceFactory<?>> {
-        protected DeviceFactoryType(RealResources resources, DeviceFactorySerialiser serialiser) {
-            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Arrays.<RealOption>asList(), serialiser);
-        }
-    }
-
-    private class DeviceFactorySerialiser implements TypeSerialiser<RealDeviceFactory<?>> {
-        @Override
-        public String serialise(RealDeviceFactory<?> o) {
-            return o.getTypeId();
+        protected DeviceFactoryType(RealResources resources) {
+            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Arrays.<RealOption>asList());
         }
 
         @Override
-        public RealDeviceFactory<?> deserialise(String value) {
-            return factories.get(value);
+        public TypeInstance serialise(RealDeviceFactory<?> o) {
+            return new TypeInstance(o.getTypeId());
+        }
+
+        @Override
+        public RealDeviceFactory<?> deserialise(TypeInstance value) {
+            return value != null && value.getValue() != null ? factories.get(value.getValue()) : null;
         }
     }
 }

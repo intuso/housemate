@@ -1,27 +1,37 @@
 package com.intuso.housemate.broker.plugin.type;
 
-import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.impl.type.EnumSingleChoiceType;
+import com.intuso.housemate.api.object.ObjectLifecycleListener;
+import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.value.Value;
+import com.intuso.housemate.broker.object.bridge.ValueBridge;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.Listeners;
 
 /**
  * Created with IntelliJ IDEA.
  * User: ravnroot
  * Date: 03/06/13
- * Time: 07:20
+ * Time: 23:56
  * To change this template use File | Settings | File Templates.
  */
-public class ValueSource extends EnumSingleChoiceType<ValueSource.SourceType> {
+public abstract class ValueSource {
 
-    public final static String ID = "value-source";
-    public final static String NAME = "Value Source";
-    public final static String DESCRIPTION = "The source for a value";
+    protected final Listeners<ValueAvailableListener> listeners = new Listeners<ValueAvailableListener>();
 
-    public enum SourceType {
-        Object,
-        Constant
+    public ListenerRegistration addValueAvailableListener(ValueAvailableListener listener) {
+        return listeners.addListener(listener);
     }
 
-    protected ValueSource(RealResources resources) {
-        super(resources, ID, NAME, DESCRIPTION, SourceType.class, SourceType.values());
+    public ListenerRegistration addValueAvailableListener(ValueAvailableListener listener, boolean callForExisting) {
+        ListenerRegistration result = addValueAvailableListener(listener);
+        if(callForExisting) {
+            if(getValue() != null)
+                listener.valueAvailable(this, getValue());
+            else
+                listener.valueUnavailable(this);
+        }
+        return result;
     }
+
+    public abstract Value<?, ?> getValue();
 }

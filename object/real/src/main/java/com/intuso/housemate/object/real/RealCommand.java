@@ -8,7 +8,7 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
@@ -66,7 +66,7 @@ public abstract class RealCommand
     }
 
     @Override
-    public void perform(TypeValues values, CommandListener<? super RealCommand> listener) {
+    public void perform(TypeInstances values, CommandListener<? super RealCommand> listener) {
         try {
             listener.commandStarted(this);
             perform(values);
@@ -78,5 +78,5 @@ public abstract class RealCommand
         }
     }
 
-    public abstract void perform(TypeValues values) throws HousemateException;
+    public abstract void perform(TypeInstances values) throws HousemateException;
 }

@@ -29,7 +29,15 @@ public class LabelSimpleValue extends Value {
     }
 
     @Override
+    public void valueChanging(com.intuso.housemate.api.object.value.Value<?, ?> value) {
+        // do nothing
+    }
+
+    @Override
     public void valueChanged(com.intuso.housemate.api.object.value.Value<?, ?> value) {
-        label.setText(value.getValue());
+        if(value.getValue() == null || value.getValue().getValue() == null)
+            label.setText("");
+        else
+            label.setText(value.getValue().getValue());
     }
 }

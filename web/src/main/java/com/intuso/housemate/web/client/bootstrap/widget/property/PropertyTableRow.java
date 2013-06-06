@@ -5,7 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Label;
 import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.argument.ArgumentInput;
 import com.intuso.housemate.web.client.bootstrap.widget.argument.ArgumentTableRow;
@@ -27,7 +27,7 @@ import com.intuso.housemate.web.client.object.GWTProxyProperty;
 public class PropertyTableRow extends TableRow implements ArgumentEditedHandler {
 
     private GWTProxyCommand setCommand;
-    private TypeValues values = new TypeValues();
+    private TypeInstances values = new TypeInstances();
 
     public PropertyTableRow(GWTProxyProperty property) {
         addNameCell(property.getName(), property.getDescription());

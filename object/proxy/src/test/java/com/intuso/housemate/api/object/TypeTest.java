@@ -3,6 +3,7 @@ package com.intuso.housemate.api.object;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.TestEnvironment;
 import com.intuso.housemate.api.object.type.RegexTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
 import com.intuso.housemate.object.proxy.ProxyRegexType;
@@ -31,7 +32,7 @@ public class TypeTest {
     public void testStringType() {
         TypeSerialiser<String> serialiser = StringType.SERIALISER;
         String value = "value";
-        String serialised = serialiser.serialise(value);
+        TypeInstance serialised = serialiser.serialise(value);
         assertEquals("value", serialised);
         assertEquals(value, serialiser.deserialise(serialised));
     }
@@ -40,7 +41,7 @@ public class TypeTest {
     public void testIntegerType() {
         TypeSerialiser<Integer> serialiser = IntegerType.SERIALISER;
         Integer value = new Integer(1234);
-        String serialised = serialiser.serialise(value);
+        TypeInstance serialised = serialiser.serialise(value);
         assertEquals("1234", serialised);
         assertEquals(value, serialiser.deserialise(serialised));
         value = new Integer(-1234);
@@ -53,7 +54,7 @@ public class TypeTest {
     public void testBooleanType() {
         TypeSerialiser<Boolean> serialiser = BooleanType.SERIALISER;
         Boolean value = Boolean.TRUE;
-        String serialised = serialiser.serialise(value);
+        TypeInstance serialised = serialiser.serialise(value);
         assertEquals("true", serialised);
         assertEquals(value, serialiser.deserialise(serialised));
     }
@@ -62,7 +63,7 @@ public class TypeTest {
     public void testCustomType() throws HousemateException {
         TypeSerialiser<MyClass> serialiser = SERIALISER;
         MyClass mc = new MyClass("one", "two");
-        String serialised = serialiser.serialise(mc);
+        TypeInstance serialised = serialiser.serialise(mc);
         assertEquals("one;two", serialised);
         assertEquals(mc, serialiser.deserialise(serialised));
     }
@@ -96,13 +97,15 @@ public class TypeTest {
 
     private TypeSerialiser<MyClass> SERIALISER = new TypeSerialiser<MyClass>() {
         @Override
-        public String serialise(MyClass myClass) {
-            return myClass.field1 + ";" + myClass.field2;
+        public TypeInstance serialise(MyClass myClass) {
+            return new TypeInstance(myClass.field1 + ";" + myClass.field2);
         }
 
         @Override
-        public MyClass deserialise(String value) {
-            String[] parts = value.split(";");
+        public MyClass deserialise(TypeInstance value) {
+            if(value == null || value.getValue() == null)
+                return null;
+            String[] parts = value.getValue().split(";");
             return new MyClass(parts[0], parts[1]);
         }
     };
@@ -115,7 +118,17 @@ public class TypeTest {
     private class MyRealType extends RealRegexType<MyClass> {
 
         protected MyRealType(RealResources resources) throws HousemateException {
-            super(resources, ID, NAME, DESCRIPTION, REGEX, SERIALISER);
+            super(resources, ID, NAME, DESCRIPTION, REGEX);
+        }
+
+        @Override
+        public TypeInstance serialise(MyClass o) {
+            return SERIALISER.serialise(o);
+        }
+
+        @Override
+        public MyClass deserialise(TypeInstance value) {
+            return SERIALISER.deserialise(value);
         }
     }
 

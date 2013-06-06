@@ -20,6 +20,12 @@ public class PropertyImpl extends RealProperty<Object> {
                         RealType<?, ?, Object> type, Object value, final Field field, final Object instance) {
         super(resources, id, name, description, type, value);
         addObjectListener(new ValueListener<RealProperty<Object>>() {
+
+            @Override
+            public void valueChanging(RealProperty<Object> value) {
+                // do nothing
+            }
+
             @Override
             public void valueChanged(RealProperty<Object> value) {
                 try {

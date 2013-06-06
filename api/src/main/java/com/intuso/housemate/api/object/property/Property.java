@@ -4,6 +4,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.type.Type;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.value.Value;
 
 /**
@@ -19,6 +20,6 @@ public interface Property<T extends Type, C extends Command<?, ?>, P extends Pro
     public final static String SET_COMMAND = "set-command";
     public final static String VALUE_PARAM = "value";
 
-    public void set(String value, CommandListener<? super C> listener) throws HousemateException;
+    public void set(TypeInstance value, CommandListener<? super C> listener) throws HousemateException;
     public C getSetCommand();
 }

@@ -58,21 +58,30 @@ public class HomeView extends Composite implements com.intuso.housemate.web.clie
         deviceList.addObjectSelectedHandler(new ObjectSelectedHandler() {
             @Override
             public void objectSelected(ObjectSelectedEvent event) {
-                Housemate.FACTORY.getPlaceController().goTo(new DevicePlace(event.getObject().getId()));
+                if(event.getObject() != null)
+                    Housemate.FACTORY.getPlaceController().goTo(new DevicePlace(event.getObject().getId()));
+                else
+                    Housemate.FACTORY.getPlaceController().goTo(new DevicePlace());
             }
         });
         ruleList.setList(root.getRules(), root.getAddRuleCommand());
         ruleList.addObjectSelectedHandler(new ObjectSelectedHandler() {
             @Override
             public void objectSelected(ObjectSelectedEvent event) {
-                Housemate.FACTORY.getPlaceController().goTo(new RulePlace(event.getObject().getId()));
+                if(event.getObject() != null)
+                    Housemate.FACTORY.getPlaceController().goTo(new RulePlace(event.getObject().getId()));
+                else
+                    Housemate.FACTORY.getPlaceController().goTo(new RulePlace());
             }
         });
         userList.setList(root.getUsers(), root.getAddUserCommand());
         userList.addObjectSelectedHandler(new ObjectSelectedHandler() {
             @Override
             public void objectSelected(ObjectSelectedEvent event) {
-                Housemate.FACTORY.getPlaceController().goTo(new UserPlace(event.getObject().getId()));
+                if(event.getObject() != null)
+                    Housemate.FACTORY.getPlaceController().goTo(new UserPlace(event.getObject().getId()));
+                else
+                    Housemate.FACTORY.getPlaceController().goTo(new UserPlace());
             }
         });
 

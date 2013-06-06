@@ -5,7 +5,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
-import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.Housemate;
@@ -31,7 +31,7 @@ public class ObjectBrowserInput extends FlowPanel implements ArgumentInput {
         rootNode.addObjectSelectedHandler(new ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
             @Override
             public void objectSelected(ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?, ?, ?>> event) {
-                fireEvent(new ArgumentEditedEvent(new TypeValue(Joiner.on("/").join(event.getObject().getPath()))));
+                fireEvent(new ArgumentEditedEvent(new TypeInstance(Joiner.on("/").join(event.getObject().getPath()))));
             }
         });
         add(rootNode);
@@ -39,8 +39,9 @@ public class ObjectBrowserInput extends FlowPanel implements ArgumentInput {
 
     @Override
     public void setValue(Value<?, ?> value) {
-        if(value.getValue() != null) {
-            HousemateObject<?, ?, ?, ?, ?> object = Housemate.ENVIRONMENT.getResources().getRoot().getWrapper(value.getValue().split("/"));
+        if(value.getValue() != null && value.getValue().getValue() != null) {
+            HousemateObject<?, ?, ?, ?, ?> object = Housemate.ENVIRONMENT.getResources().getRoot().getWrapper(
+                    value.getValue().getValue().split("/"));
             if(object instanceof ProxyObject)
                 rootNode.showObject((ProxyObject<?, ?, ?, ?, ?, ?, ?>) object);
         }

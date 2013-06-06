@@ -9,6 +9,7 @@ import com.intuso.housemate.object.broker.real.BrokerRealCommand;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.BrokerRealValue;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
+import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
@@ -95,7 +96,7 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
 
     @Override
     public final String getError() {
-        return error.getValue();
+        return StringType.SERIALISER.deserialise(error.getValue());
     }
 
     @Override
@@ -108,6 +109,12 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
         List<ListenerRegistration> result = super.registerListeners();
         if(running != null) {
             result.add(running.addObjectListener(new ValueListener<BrokerProxyValue>() {
+
+                @Override
+                public void valueChanging(BrokerProxyValue value) {
+                    // do nothing
+                }
+
                 @Override
                 public void valueChanged(BrokerProxyValue value) {
                     for(PrimaryListener<? super PO> listener : getObjectListeners())
@@ -117,10 +124,16 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
         }
         if(error != null) {
             result.add(error.addObjectListener(new ValueListener<BrokerProxyValue>() {
+
+                @Override
+                public void valueChanging(BrokerProxyValue value) {
+                    // do nothing
+                }
+
                 @Override
                 public void valueChanged(BrokerProxyValue value) {
                     for (PrimaryListener<? super PO> listener : getObjectListeners())
-                        listener.error(getThis(), error.getValue());
+                        listener.error(getThis(), getError());
                 }
             }));
         }

@@ -50,6 +50,12 @@ public abstract class ProxyCondition<
     protected java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
         result.add(satisfied.addObjectListener(new ValueListener<V>() {
+
+            @Override
+            public void valueChanging(V value) {
+                // do nothing
+            }
+
             @Override
             public void valueChanged(V value) {
                 for(ConditionListener listener : getObjectListeners())
@@ -57,10 +63,16 @@ public abstract class ProxyCondition<
             }
         }));
         result.add(error.addObjectListener(new ValueListener<V>() {
+
+            @Override
+            public void valueChanging(V value) {
+                // do nothing
+            }
+
             @Override
             public void valueChanged(V value) {
                 for(ConditionListener listener : getObjectListeners())
-                    listener.conditionError(getThis(), error.getValue());
+                    listener.conditionError(getThis(), getError());
             }
         }));
         return result;
@@ -85,7 +97,7 @@ public abstract class ProxyCondition<
     }
 
     public final String getError() {
-        return error.getValue();
+        return error.getValue() != null ? error.getValue().getValue() : null;
     }
 
     public final V getSatisfiedValue() {
@@ -93,6 +105,6 @@ public abstract class ProxyCondition<
     }
 
     public final boolean isSatisfied() {
-        return Boolean.parseBoolean(satisfied.getValue());
+        return satisfied.getValue() != null ? Boolean.parseBoolean(satisfied.getValue().getValue()) : null;
     }
 }

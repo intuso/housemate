@@ -1,10 +1,9 @@
 package com.intuso.housemate.object.real.impl.type;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.MultiChoiceTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.api.object.type.option.HasOptions;
 import com.intuso.housemate.api.object.type.option.OptionWrappable;
@@ -13,7 +12,7 @@ import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 
-import javax.annotation.Nullable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,8 +31,8 @@ public abstract class RealMultiChoiceType<O>
 
     private RealList<OptionWrappable, RealOption> options;
 
-    protected RealMultiChoiceType(RealResources resources, String id, String name, String description, List<RealOption> options, TypeSerialiser<O> elementSerialiser) {
-        super(resources, new MultiChoiceTypeWrappable(id, name, description), new Serialiser<O>(elementSerialiser));
+    protected RealMultiChoiceType(RealResources resources, String id, String name, String description, List<RealOption> options) {
+        super(resources, new MultiChoiceTypeWrappable(id, name, description));
         this.options = new RealList<OptionWrappable, RealOption>(resources, OPTIONS, OPTIONS, "The options for the choice", options);
         addWrapper(this.options);
     }
@@ -43,36 +42,32 @@ public abstract class RealMultiChoiceType<O>
         return options;
     }
 
-    private static class Serialiser<O> implements TypeSerialiser<Set<O>> {
+    protected static class MultiChoiceSerialiser<O> implements TypeSerialiser<Set<O>> {
 
         private final TypeSerialiser<O> elementSerialiser;
 
-        private final Function<O, String> serialiseTransformer = new Function<O, String>() {
-            @Override
-            public String apply(@Nullable O o) {
-                return elementSerialiser.serialise(o);
-            }
-        };
-
-        private final Function<String, O> deserialiseTransformer = new Function<String, O>() {
-            @Override
-            public O apply(@Nullable String value) {
-                return elementSerialiser.deserialise(value);
-            }
-        };
-
-        private Serialiser(TypeSerialiser<O> elementSerialiser) {
+        protected MultiChoiceSerialiser(TypeSerialiser<O> elementSerialiser) {
             this.elementSerialiser = elementSerialiser;
         }
 
         @Override
-        public String serialise(Set<O> os) {
-            return MultiChoiceTypeWrappable.JOINER.join(Iterables.transform(os, serialiseTransformer));
+        public TypeInstance serialise(Set<O> os) {
+            TypeInstances children = new TypeInstances();
+            for(O o : os) {
+                TypeInstance typeValue = elementSerialiser.serialise(o);
+                children.put(typeValue.getValue(), typeValue);
+            }
+            return new TypeInstance("", children);
         }
 
         @Override
-        public Set<O> deserialise(String value) {
-            return Sets.newHashSet(Iterables.transform(MultiChoiceTypeWrappable.SPLITTER.split(value), deserialiseTransformer));
+        public Set<O> deserialise(TypeInstance value) {
+            if(value == null || value.getChildValues() == null)
+                return null;
+            Set<O> result = new HashSet<O>();
+            for(TypeInstance typeValue : value.getChildValues().values())
+                result.add(elementSerialiser.deserialise(typeValue));
+            return result;
         }
     }
 }

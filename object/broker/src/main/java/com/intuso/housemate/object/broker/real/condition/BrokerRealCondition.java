@@ -77,7 +77,7 @@ public abstract class BrokerRealCondition
 
     @Override
     public String getError() {
-        return errorValue.getValue();
+        return errorValue.getTypedValue();
     }
 
     @Override

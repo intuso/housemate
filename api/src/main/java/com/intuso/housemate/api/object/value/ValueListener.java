@@ -10,5 +10,6 @@ import com.intuso.housemate.api.object.ObjectListener;
  * To change this template use File | Settings | File Templates.
  */
 public interface ValueListener<V extends Value<?, ?>> extends ObjectListener {
+    public void valueChanging(V value);
     public void valueChanged(V value);
 }

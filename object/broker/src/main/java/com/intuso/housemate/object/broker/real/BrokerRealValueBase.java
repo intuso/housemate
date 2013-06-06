@@ -2,6 +2,7 @@ package com.intuso.housemate.object.broker.real;
 
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueWrappableBase;
@@ -23,6 +24,7 @@ public abstract class BrokerRealValueBase<WBL extends ValueWrappableBase<SWBL>,
         implements Value<RealType<?, ?, O>, V> {
 
     private RealType<?, ?, O> type;
+    private O typedValue;
 
     public BrokerRealValueBase(BrokerRealResources resources, WBL wrappable, RealType<?, ?, O> type) {
         super(resources, wrappable);
@@ -35,26 +37,19 @@ public abstract class BrokerRealValueBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     public O getTypedValue() {
-        return getType().deserialise(getValue());
+        return typedValue;
     }
 
     @Override
-    public String getValue() {
+    public TypeInstance getValue() {
         return getWrappable().getValue();
     }
 
-    public final void setValue(String value) {
-        if((this.getWrappable().getValue() == null && value == null)
-                || (this.getWrappable().getValue() != null && value != null && this.getWrappable().getValue().equals(value)))
+    public final void setTypedValue(O typedValue) {
+        if((this.typedValue == null && typedValue == null)
+                || (this.typedValue != null && typedValue != null && this.typedValue.equals(typedValue)))
             return;
-        this.getWrappable().setValue(value);
-        for(ValueListener<? super V> listener : getObjectListeners())
-            listener.valueChanged(getThis());
+        this.typedValue = typedValue;
+        this.getWrappable().setValue(getType().serialise(typedValue));
     }
-
-    public final void setTypedValue(O value) {
-        setValue(getType().serialise(value));
-    }
-
-    protected abstract V getThis();
 }

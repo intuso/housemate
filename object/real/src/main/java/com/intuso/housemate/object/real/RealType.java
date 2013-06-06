@@ -17,20 +17,7 @@ public abstract class RealType<T extends TypeWrappable<SWBL>, SWBL extends House
         extends RealObject<T, SWBL, RealObject<SWBL, ?, ?, ?>, TypeListener>
         implements Type, TypeSerialiser<O> {
 
-    private TypeSerialiser<O> serialiser;
-
-    protected RealType(RealResources resources, T wrappable, TypeSerialiser<O> serialiser) {
+    protected RealType(RealResources resources, T wrappable) {
         super(resources, wrappable);
-        this.serialiser = serialiser;
-    }
-
-    @Override
-    public final String serialise(O o) {
-        return serialiser.serialise(o);
-    }
-
-    @Override
-    public final O deserialise(String value) {
-        return serialiser.deserialise(value);
     }
 }

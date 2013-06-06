@@ -31,8 +31,6 @@ public abstract class HousemateObject<R extends Resources,
         extends Wrapper<WBL, SWBL, SWR, HousemateException>
         implements BaseObject<L> {
 
-    public final static String NAME_ID = "name";
-
     public final static String LOAD_REQUEST = "load-request";
     public final static String LOAD_RESPONSE = "load-response";
 

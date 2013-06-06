@@ -19,6 +19,7 @@ import com.intuso.housemate.broker.plugin.consequence.Delay;
 import com.intuso.housemate.broker.plugin.consequence.PerformCommandConsequenceFactory;
 import com.intuso.housemate.broker.plugin.consequence.RandomDelay;
 import com.intuso.housemate.broker.plugin.device.OnOffCommandDevice;
+import com.intuso.housemate.broker.plugin.type.ValueSourceType;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
@@ -58,6 +59,7 @@ public class MainPlugin extends AnnotatedPluginDescriptor {
     public List<RealType<?, ?, ?>> getTypes(RealResources resources) throws HousemateException {
         List<RealType<?, ?, ?>> result = super.getTypes(resources);
         result.add(new RealObjectType<BaseObject<?>>(resources, generalResources.getBridgeResources().getRoot()));
+        result.add(new ValueSourceType(resources, generalResources.getBridgeResources().getRoot()));
         return result;
     }
 

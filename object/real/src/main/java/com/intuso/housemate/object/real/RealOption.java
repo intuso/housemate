@@ -1,5 +1,7 @@
 package com.intuso.housemate.object.real;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
 import com.intuso.housemate.api.object.type.option.Option;
 import com.intuso.housemate.api.object.type.option.OptionListener;
@@ -19,7 +21,16 @@ public class RealOption
         implements Option {
 
     public RealOption(RealResources resources, String id, String name, String description) {
-        super(resources, new OptionWrappable(id, name,  description));
+        this(resources, id, name,  description, Lists.<RealType<?, ?, ?>>newArrayList());
+    }
+
+    public RealOption(RealResources resources, String id, String name, String description, List<RealType<?, ?, ?>> subTypes) {
+        super(resources, new OptionWrappable(id, name,  description, Lists.transform(subTypes, new Function<RealType<?, ?, ?>, String>() {
+            @Override
+            public String apply(RealType<?, ?, ?> realType) {
+                return realType.getId();
+            }
+        })));
     }
 
     @Override

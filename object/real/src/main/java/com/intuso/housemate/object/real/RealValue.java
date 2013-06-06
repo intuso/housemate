@@ -18,9 +18,4 @@ public class RealValue<O> extends RealValueBase<ValueWrappable, NoChildrenWrappa
                 new ValueWrappable(id, name, description, type.getId(), value != null ? type.serialise(value) : null),
                 type);
     }
-
-    @Override
-    protected RealValue getThis() {
-        return this;
-    }
 }

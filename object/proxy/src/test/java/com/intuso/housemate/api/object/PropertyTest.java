@@ -5,6 +5,7 @@ import com.intuso.housemate.api.TestEnvironment;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
@@ -59,7 +60,7 @@ public class PropertyTest {
 
     @Test
     public void testSetProxyProperty() throws HousemateException {
-        proxyProperty.set("-1234", new CommandListener<SimpleProxyObject.Command>() {
+        proxyProperty.set(new TypeInstance("-1234"), new CommandListener<SimpleProxyObject.Command>() {
             @Override
             public void commandStarted(SimpleProxyObject.Command function) {
                 //To change body of implemented methods use File | Settings | File Templates.
@@ -82,6 +83,12 @@ public class PropertyTest {
     public void testListenerCalled() throws HousemateException {
         final AtomicBoolean called = new AtomicBoolean(false);
         proxyProperty.addObjectListener(new ValueListener<SimpleProxyObject.Property>() {
+
+            @Override
+            public void valueChanging(SimpleProxyObject.Property value) {
+                // do nothing
+            }
+
             @Override
             public void valueChanged(SimpleProxyObject.Property property) {
                 called.set(true);

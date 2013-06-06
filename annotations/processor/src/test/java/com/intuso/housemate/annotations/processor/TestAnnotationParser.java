@@ -2,10 +2,11 @@ package com.intuso.housemate.annotations.processor;
 
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.type.TypeValue;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
@@ -69,15 +70,15 @@ public class TestAnnotationParser {
         assertNotNull(testDevice.getProperties().get("increment-amount"));
 
         // test parent device element instances
-        testDevice.getProperties().get("switch-number").setValue("2");
-        TypeValues values = new TypeValues();
-        values.put("on", new TypeValue("true"));
+        ((RealProperty<Integer>)testDevice.getProperties().get("switch-number")).setTypedValue(new Integer(2));
+        TypeInstances values = new TypeInstances();
+        values.put("on", new TypeInstance("true"));
         testDevice.getCommands().get("command").perform(values);
         assertEquals("On 2", testDevice.getValues().get("last-command").getValue());
 
         // test child device element instances
-        testDevice.getProperties().get("increment-amount").setValue("2");
-        values = new TypeValues();
+        ((RealProperty<Integer>)testDevice.getProperties().get("increment-amount")).setTypedValue(2);
+        values = new TypeInstances();
         testDevice.getCommands().get("turn-up").perform(values);
         testDevice.getCommands().get("turn-up").perform(values);
         testDevice.getCommands().get("turn-up").perform(values);

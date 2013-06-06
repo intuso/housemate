@@ -1,6 +1,7 @@
 package com.intuso.housemate.object.real.impl.type;
 
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealArgument;
 import com.intuso.housemate.object.real.RealProperty;
@@ -18,13 +19,13 @@ public class IntegerType extends RealSimpleType<Integer> {
 
     public final static TypeSerialiser<Integer> SERIALISER = new TypeSerialiser<Integer>() {
         @Override
-        public String serialise(Integer i) {
-            return i.toString();
+        public TypeInstance serialise(Integer i) {
+            return i != null ? new TypeInstance(i.toString()) : null;
         }
 
         @Override
-        public Integer deserialise(String value) {
-            return new Integer(value);
+        public Integer deserialise(TypeInstance value) {
+            return value != null && value.getValue() != null ? new Integer(value.getValue()) : null;
         }
     };
 

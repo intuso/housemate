@@ -1,6 +1,7 @@
 package com.intuso.housemate.object.real.impl.type;
 
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealArgument;
 import com.intuso.housemate.object.real.RealProperty;
@@ -18,13 +19,13 @@ public class BooleanType extends RealSimpleType<Boolean> {
 
     public final static TypeSerialiser<Boolean> SERIALISER = new TypeSerialiser<Boolean>() {
         @Override
-        public String serialise(Boolean b) {
-            return b.toString();
+        public TypeInstance serialise(Boolean b) {
+            return b != null ? new TypeInstance(b.toString()) : null;
         }
 
         @Override
-        public Boolean deserialise(String value) {
-            return Boolean.parseBoolean(value);
+        public Boolean deserialise(TypeInstance value) {
+            return value != null && value.getValue() != null ? Boolean.parseBoolean(value.getValue()) : null;
         }
     };
 

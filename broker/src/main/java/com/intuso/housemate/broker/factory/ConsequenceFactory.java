@@ -2,8 +2,8 @@ package com.intuso.housemate.broker.factory;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
-import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.real.BrokerRealArgument;
@@ -46,13 +46,11 @@ public final class ConsequenceFactory implements PluginListener {
     private final BrokerGeneralResources resources;
     private final Map<String, BrokerConsequenceFactory<?>> factories;
     private final ConsequenceFactoryType type;
-    private final ConsequenceFactorySerialiser serialiser;
 
     public ConsequenceFactory(BrokerGeneralResources resources) {
         this.resources = resources;
         factories = new HashMap<String, BrokerConsequenceFactory<?>>();
-        serialiser = new ConsequenceFactorySerialiser();
-        type = new ConsequenceFactoryType(resources.getClientResources(), serialiser);
+        type = new ConsequenceFactoryType(resources.getClientResources());
         resources.addPluginListener(this, true);
     }
 
@@ -67,7 +65,7 @@ public final class ConsequenceFactory implements PluginListener {
                 new BrokerRealArgument<BrokerConsequenceFactory<?>>(resources.getRealResources(), TYPE_ARGUMENT_ID, TYPE_ARGUMENT_NAME, TYPE_ARGUMENT_DESCRIPTION, type)
         )) {
             @Override
-            public void perform(TypeValues values) throws HousemateException {
+            public void perform(TypeInstances values) throws HousemateException {
                 BrokerRealConsequence consequence = createConsequence(values);
                 list.add(consequence);
                 resources.getStorage().watchPropertyValues(consequence.getProperties());
@@ -76,20 +74,20 @@ public final class ConsequenceFactory implements PluginListener {
         };
     }
 
-    public BrokerRealConsequence createConsequence(TypeValues values) throws HousemateException {
-        String type = values.get(TYPE_ARGUMENT_ID).getValue();
-        if(type == null)
+    public BrokerRealConsequence createConsequence(TypeInstances values) throws HousemateException {
+        TypeInstance consequenceType = values.get(TYPE_ARGUMENT_ID);
+        if(consequenceType == null && consequenceType.getValue() != null)
             throw new HousemateException("No consequence type specified");
-        String name = values.get(NAME_ARGUMENT_ID).getValue();
-        if(name == null)
+        TypeInstance name = values.get(NAME_ARGUMENT_ID);
+        if(name == null && name.getValue() != null)
             throw new HousemateException("No consequence name specified");
-        String description = values.get(DESCRIPTION_ARGUMENT_ID).getValue();
-        if(description == null)
+        TypeInstance description = values.get(DESCRIPTION_ARGUMENT_ID);
+        if(description == null && description.getValue() != null)
             throw new HousemateException("No consequence description specified");
-        BrokerConsequenceFactory<?> consequenceFactory = serialiser.deserialise(type);
+        BrokerConsequenceFactory<?> consequenceFactory = type.deserialise(consequenceType);
         if(consequenceFactory == null)
-            throw new HousemateException("No factory known for consequence type " + type);
-        return consequenceFactory.create(resources.getRealResources(), name, name, description);
+            throw new HousemateException("No factory known for consequence type " + consequenceType);
+        return consequenceFactory.create(resources.getRealResources(), name.getValue(), name.getValue(), description.getValue());
     }
 
     @Override
@@ -110,20 +108,18 @@ public final class ConsequenceFactory implements PluginListener {
     }
 
     private class ConsequenceFactoryType extends RealSingleChoiceType<BrokerConsequenceFactory<?>> {
-        protected ConsequenceFactoryType(RealResources resources, ConsequenceFactorySerialiser serialiser) {
-            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Arrays.<RealOption>asList(), serialiser);
-        }
-    }
-
-    private class ConsequenceFactorySerialiser implements TypeSerialiser<BrokerConsequenceFactory<?>> {
-        @Override
-        public String serialise(BrokerConsequenceFactory<?> o) {
-            return o.getTypeId();
+        protected ConsequenceFactoryType(RealResources resources) {
+            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Arrays.<RealOption>asList());
         }
 
         @Override
-        public BrokerConsequenceFactory<?> deserialise(String value) {
-            return factories.get(value);
+        public TypeInstance serialise(BrokerConsequenceFactory<?> o) {
+            return new TypeInstance(o.getTypeId());
+        }
+
+        @Override
+        public BrokerConsequenceFactory<?> deserialise(TypeInstance value) {
+            return value != null && value.getValue() != null ? factories.get(value.getValue()) : null;
         }
     }
 }

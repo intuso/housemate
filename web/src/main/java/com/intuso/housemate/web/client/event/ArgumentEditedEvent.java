@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.event;
 
 import com.google.gwt.event.shared.GwtEvent;
-import com.intuso.housemate.api.object.type.TypeValue;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
 
 /**
@@ -15,13 +15,13 @@ public class ArgumentEditedEvent extends GwtEvent<ArgumentEditedHandler> {
 
     public static Type<ArgumentEditedHandler> TYPE = new Type<ArgumentEditedHandler>();
 
-    private TypeValue newValue;
+    private TypeInstance newValue;
 
-    public ArgumentEditedEvent(TypeValue newValue) {
+    public ArgumentEditedEvent(TypeInstance newValue) {
         this.newValue = newValue;
     }
 
-    public TypeValue getNewValue() {
+    public TypeInstance getNewValue() {
         return newValue;
     }
 

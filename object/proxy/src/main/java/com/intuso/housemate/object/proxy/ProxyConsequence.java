@@ -46,6 +46,12 @@ public abstract class ProxyConsequence<
     protected java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration>result = super.registerListeners();
         result.add(executing.addObjectListener(new ValueListener<V>() {
+
+            @Override
+            public void valueChanging(V value) {
+                // do nothing
+            }
+
             @Override
             public void valueChanged(V value) {
                 for(ConsequenceListener listener : getObjectListeners())
@@ -53,10 +59,16 @@ public abstract class ProxyConsequence<
             }
         }));
         result.add(error.addObjectListener(new ValueListener<V>() {
+
+            @Override
+            public void valueChanging(V value) {
+                // do nothing
+            }
+
             @Override
             public void valueChanged(V value) {
                 for(ConsequenceListener listener : getObjectListeners())
-                    listener.consequenceError(getThis(), error.getValue());
+                    listener.consequenceError(getThis(), getError());
             }
         }));
         return result;
@@ -72,7 +84,7 @@ public abstract class ProxyConsequence<
     }
 
     public final String getError() {
-        return error.getValue();
+        return error.getValue() != null ? error.getValue().getValue() : null;
     }
 
     public final V getExecutingValue() {
@@ -80,6 +92,6 @@ public abstract class ProxyConsequence<
     }
 
     public final boolean isExecuting() {
-        return Boolean.parseBoolean(executing.getValue());
+        return executing.getValue() != null ? Boolean.parseBoolean(executing.getValue().getValue()) : null;
     }
 }

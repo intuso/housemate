@@ -12,8 +12,8 @@ import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.rule.Rule;
 import com.intuso.housemate.api.object.rule.RuleWrappable;
-import com.intuso.housemate.api.object.type.TypeValue;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.api.object.value.Value;
@@ -52,6 +52,12 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     private final BrokerGeneralResources resources;
 
     private final ValueListener<Value<?, ?>> runningListener = new ValueListener<Value<?, ?>>() {
+
+        @Override
+        public void valueChanging(Value<?, ?> value) {
+            // do nothing
+        }
+
         @Override
         public void valueChanged(Value<?, ?> value) {
             try {
@@ -74,10 +80,10 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                 new BrokerRealArgument<String>(resources.getRealResources(), "password", "Password", "The password for the new user", new StringType(resources.getClientResources()))
         )) {
             @Override
-            public void perform(TypeValues values) throws HousemateException {
-                TypeValues toSave = new TypeValues();
+            public void perform(TypeInstances values) throws HousemateException {
+                TypeInstances toSave = new TypeInstances();
                 try {
-                    toSave.put("password-hash", new TypeValue(new String(MessageDigest.getInstance("MD5").digest(
+                    toSave.put("password-hash", new TypeInstance(new String(MessageDigest.getInstance("MD5").digest(
                             values.get("password").getValue().getBytes()))));
                 } catch(NoSuchAlgorithmException e) {
                     throw new HousemateException("Unable to hash the password to save it securely");
@@ -97,7 +103,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     public BrokerRealCommand createRemoveUserCommand(final BrokerRealUser user) {
         return new BrokerRealCommand(resources.getRealResources(), User.REMOVE_COMMAND, User.REMOVE_COMMAND, "Remove the user", Lists.<BrokerRealArgument<?>>newArrayList()) {
                     @Override
-                    public void perform(TypeValues values) throws HousemateException {
+                    public void perform(TypeInstances values) throws HousemateException {
                         getResources().getRoot().getUsers().remove(user.getId());
                         resources.getStorage().removeValues(user.getPath());
                     }
@@ -130,7 +136,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                 new BrokerRealArgument<String>(resources.getRealResources(), "description", "Description", "The description for the new rule", new StringType(resources.getClientResources()))
         )) {
             @Override
-            public void perform(TypeValues values) throws HousemateException {
+            public void perform(TypeInstances values) throws HousemateException {
                 values.put("id", values.get("name")); // todo figure out a better way of getting an id
                 BrokerRealRule rule = new BrokerRealRule(getResources(), values.get("id").getValue(),
                         values.get("name").getValue(), values.get("description").getValue());
@@ -158,8 +164,8 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
         return new BrokerRealCommand(resources.getRealResources(), originalCommand.getId(), originalCommand.getName(), originalCommand.getDescription(),
                 new ArrayList<BrokerRealArgument<?>>()) {
             @Override
-            public void perform(TypeValues values) throws HousemateException {
-                originalCommand.perform(new TypeValues(), new CommandListener<Command<?, ?>>() {
+            public void perform(TypeInstances values) throws HousemateException {
+                originalCommand.perform(new TypeInstances(), new CommandListener<Command<?, ?>>() {
                     @Override
                     public void commandStarted(Command<?, ?> command) {
                         // do nothing

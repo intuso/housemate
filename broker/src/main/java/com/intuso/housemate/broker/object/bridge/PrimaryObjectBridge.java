@@ -77,7 +77,7 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<H
 
     @Override
     public String getError() {
-        return errorValue.getValue();
+        return errorValue != null && errorValue.getValue() != null ? errorValue.getValue().getValue() : null;
     }
 
     @Override

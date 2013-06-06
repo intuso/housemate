@@ -72,7 +72,7 @@ public class ArduinoTemperatureSensor extends RealDevice implements SerialPortEv
                 }
             }
         } catch(IOException e) {
-            getErrorValue().setValue("Failed to read temperature from Arduino device");
+            getErrorValue().setTypedValue("Failed to read temperature from Arduino device");
             stop();
         }
     }

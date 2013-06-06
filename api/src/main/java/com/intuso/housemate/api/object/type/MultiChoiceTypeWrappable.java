@@ -24,13 +24,13 @@ public final class MultiChoiceTypeWrappable extends TypeWrappable<ListWrappable<
     public final static TypeSerialiser<Set<String>> SERIALISER = new TypeSerialiser<Set<String>>() {
 
         @Override
-        public String serialise(Set<String> os) {
-            return JOINER.join(os);
+        public TypeInstance serialise(Set<String> os) {
+            return os != null ? new TypeInstance(JOINER.join(os)) : null;
         }
 
         @Override
-        public Set<String> deserialise(String value) {
-            return Sets.newHashSet(SPLITTER.split(value));
+        public Set<String> deserialise(TypeInstance value) {
+            return value != null && value.getValue() != null ? Sets.newHashSet(SPLITTER.split(value.getValue())) : null;
         }
     };
 

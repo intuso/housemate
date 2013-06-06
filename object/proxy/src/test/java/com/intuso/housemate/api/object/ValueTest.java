@@ -67,6 +67,12 @@ public class ValueTest {
     public void testListenerCalled() throws HousemateException {
         final AtomicBoolean called = new AtomicBoolean(false);
         proxyValue.addObjectListener(new ValueListener<SimpleProxyObject.Value>() {
+
+            @Override
+            public void valueChanging(SimpleProxyObject.Value value) {
+                // do nothing
+            }
+
             @Override
             public void valueChanged(SimpleProxyObject.Value value) {
                 called.set(true);

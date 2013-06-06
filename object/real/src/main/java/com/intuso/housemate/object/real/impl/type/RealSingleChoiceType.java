@@ -2,7 +2,6 @@ package com.intuso.housemate.object.real.impl.type;
 
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.SingleChoiceTypeWrappable;
-import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.api.object.type.option.HasOptions;
 import com.intuso.housemate.api.object.type.option.OptionWrappable;
 import com.intuso.housemate.object.real.RealList;
@@ -27,8 +26,9 @@ public abstract class RealSingleChoiceType<O>
 
     private RealList<OptionWrappable, RealOption> options;
 
-    protected RealSingleChoiceType(RealResources resources, String id, String name, String description, List<RealOption> options, TypeSerialiser<O> serialiser) {
-        super(resources, new SingleChoiceTypeWrappable(id, name, description), serialiser);
+    protected RealSingleChoiceType(RealResources resources, String id, String name, String description,
+                                   List<RealOption> options) {
+        super(resources, new SingleChoiceTypeWrappable(id, name, description));
         this.options = new RealList<OptionWrappable, RealOption>(resources, OPTIONS, OPTIONS, "The options for the choice", options);
         addWrapper(this.options);
     }

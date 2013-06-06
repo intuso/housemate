@@ -1,6 +1,7 @@
 package com.intuso.housemate.object.real.impl.type;
 
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealArgument;
@@ -18,13 +19,13 @@ public class DoubleType extends RealSimpleType<Double> {
 
     public final static TypeSerialiser<Double> SERIALISER = new TypeSerialiser<Double>() {
         @Override
-        public String serialise(Double d) {
-            return d.toString();
+        public TypeInstance serialise(Double d) {
+            return d != null ? new TypeInstance(d.toString()) : null;
         }
 
         @Override
-        public Double deserialise(String value) {
-            return new Double(value);
+        public Double deserialise(TypeInstance value) {
+            return value != null && value.getValue() != null ? new Double(value.getValue()) : null;
         }
     };
 

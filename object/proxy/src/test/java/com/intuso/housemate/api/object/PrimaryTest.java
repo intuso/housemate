@@ -106,7 +106,7 @@ public class PrimaryTest {
         });
         proxyPrimary.getStartCommand().perform(EMPTY_LISTENER);
         proxyPrimary.getStopCommand().perform(EMPTY_LISTENER);
-        realPrimary.getErrorValue().setValue("error");
+        realPrimary.getErrorValue().setTypedValue("error");
         proxyPrimary.getRemoveCommand().perform(EMPTY_LISTENER);
         assertTrue(errorUpdated.get());
         assertTrue(runningUpdated.get());

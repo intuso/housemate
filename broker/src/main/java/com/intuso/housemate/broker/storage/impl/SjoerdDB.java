@@ -5,8 +5,8 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.type.TypeValue;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.storage.DetailsNotFoundException;
 import com.intuso.housemate.broker.storage.Storage;
 
@@ -52,8 +52,8 @@ public class SjoerdDB implements Storage {
     }
 
     @Override
-    public String getValue(String[] path) throws DetailsNotFoundException, HousemateException {
-        TypeValues details = null;
+    public TypeInstance getValue(String[] path) throws DetailsNotFoundException, HousemateException {
+        TypeInstances details = null;
         try {
             details = getDetails(getFile(false, path, VALUE_FILENAME));
         }  catch(FileNotFoundException e) {
@@ -61,14 +61,14 @@ public class SjoerdDB implements Storage {
         } catch(IOException e) {
             throw new HousemateException("Failed to get value", e);
         }
-        TypeValue value = details.get(PROPERTY_VALUE_KEY);
-        return value != null ? value.getValue() : null;
+        TypeInstance value = details.get(PROPERTY_VALUE_KEY);
+        return value;
     }
 
     @Override
-    public void saveValue(String[] path, String value) throws HousemateException {
-        TypeValues details = new TypeValues();
-        details.put(PROPERTY_VALUE_KEY, new TypeValue(value));
+    public void saveValue(String[] path, TypeInstance value) throws HousemateException {
+        TypeInstances details = new TypeInstances();
+        details.put(PROPERTY_VALUE_KEY, value);
         try {
             saveDetails(getFile(true, path, VALUE_FILENAME), details);
         } catch(IOException e) {
@@ -100,7 +100,7 @@ public class SjoerdDB implements Storage {
     }
 
     @Override
-    public TypeValues getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
+    public TypeInstances getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
         try {
             return readDetailsFile(path, detailsKey);
         } catch(FileNotFoundException e) {
@@ -111,7 +111,7 @@ public class SjoerdDB implements Storage {
     }
 
     @Override
-    public void saveValues(String[] path, String detailsKey, TypeValues details) throws HousemateException {
+    public void saveValues(String[] path, String detailsKey, TypeInstances details) throws HousemateException {
         try {
             saveDetails(getFile(true, path, detailsKey + PROPERTIES_EXTENSION), details);
         } catch(IOException e) {
@@ -137,25 +137,25 @@ public class SjoerdDB implements Storage {
         file.delete();
     }
 
-    private TypeValues readDetailsFile(String[] path, String detailsKey) throws IOException {
+    private TypeInstances readDetailsFile(String[] path, String detailsKey) throws IOException {
         return getDetails(getFile(false, path, detailsKey + PROPERTIES_EXTENSION));
     }
 
-    private TypeValues getDetails(File file) throws IOException {
+    private TypeInstances getDetails(File file) throws IOException {
         Properties properties = new Properties();
         properties.load(new FileInputStream(file));
-        TypeValues result = new TypeValues();
+        TypeInstances result = new TypeInstances();
         for(Map.Entry<Object, Object> entry : properties.entrySet())
             if(entry.getKey() instanceof String && entry.getValue() instanceof String)
-                result.put((String)entry.getKey(), new TypeValue((String)entry.getValue()));
+                result.put((String)entry.getKey(), new TypeInstance((String)entry.getValue()));
         return result;
     }
 
-    private void saveDetails(File file, TypeValues details) throws IOException {
+    private void saveDetails(File file, TypeInstances details) throws IOException {
         Properties properties = new Properties();
-        properties.putAll(Maps.transformValues(details, new Function<TypeValue, String>() {
+        properties.putAll(Maps.transformValues(details, new Function<TypeInstance, String>() {
             @Override
-            public String apply(TypeValue typeValue) {
+            public String apply(TypeInstance typeValue) {
                 return typeValue.getValue();
             }
         }));

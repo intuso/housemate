@@ -19,9 +19,4 @@ public class BrokerRealValue<O>
     public BrokerRealValue(BrokerRealResources resources, String id, String name, String description, RealType<?, ?, O> type, O value) {
         super(resources, new ValueWrappable(id, name, description, type.getId(), type.serialise(value)), type);
     }
-
-    @Override
-    protected BrokerRealValue<O> getThis() {
-        return this;
-    }
 }

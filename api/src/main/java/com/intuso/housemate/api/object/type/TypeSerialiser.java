@@ -8,6 +8,6 @@ package com.intuso.housemate.api.object.type;
  * To change this template use File | Settings | File Templates.
  */
 public interface TypeSerialiser<O> {
-    public String serialise(O o);
-    public O deserialise(String value);
+    public TypeInstance serialise(O o);
+    public O deserialise(TypeInstance value);
 }

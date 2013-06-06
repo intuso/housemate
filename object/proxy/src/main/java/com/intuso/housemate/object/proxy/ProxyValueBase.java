@@ -2,9 +2,9 @@ package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.comms.message.StringMessageValue;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueWrappableBase;
@@ -37,10 +37,10 @@ public abstract class ProxyValueBase<
     @Override
     public final List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(VALUE, new Receiver<StringMessageValue>() {
+        result.add(addMessageListener(VALUE, new Receiver<TypeInstance>() {
             @Override
-            public void messageReceived(Message<StringMessageValue> stringMessageValueMessage) {
-                getWrappable().setValue(stringMessageValueMessage.getPayload().getValue());
+            public void messageReceived(Message<TypeInstance> stringMessageValueMessage) {
+                getWrappable().setValue(stringMessageValueMessage.getPayload());
                 for(ValueListener<? super V> listener : getObjectListeners())
                     listener.valueChanged(getThis());
             }
@@ -54,7 +54,7 @@ public abstract class ProxyValueBase<
     }
 
     @Override
-    public final String getValue() {
+    public final TypeInstance getValue() {
         return getWrappable().getValue();
     }
 

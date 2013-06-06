@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
 import com.intuso.housemate.api.object.type.RegexTypeWrappable;
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
 import com.intuso.housemate.api.object.type.SingleChoiceTypeWrappable;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableCell;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
@@ -25,9 +25,9 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
 public class ArgumentTableRow extends TableRow implements ArgumentEditedHandler {
 
     private String argumentId;
-    private TypeValues values;
+    private TypeInstances values;
 
-    public ArgumentTableRow(GWTProxyArgument argument, TypeValues values) {
+    public ArgumentTableRow(GWTProxyArgument argument, TypeInstances values) {
         this.argumentId = argument.getId();
         this.values = values;
         addNameCell(argument.getId(), argument.getDescription());
@@ -57,6 +57,8 @@ public class ArgumentTableRow extends TableRow implements ArgumentEditedHandler 
     }
 
     public static ArgumentInput getArgumentInput(GWTProxyType type) {
+        if(type == null)
+            return null;
         TypeWrappable typeWrappable = type.getWrappable();
         if(typeWrappable instanceof SimpleTypeWrappable) {
             if(((SimpleTypeWrappable)typeWrappable).getType() == SimpleTypeWrappable.Type.Boolean)

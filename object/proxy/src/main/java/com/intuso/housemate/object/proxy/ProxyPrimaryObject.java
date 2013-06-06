@@ -56,7 +56,7 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public Boolean isConnected() {
-        return Boolean.parseBoolean(connected.getValue());
+        return connected.getValue() != null ? Boolean.parseBoolean(connected.getValue().getValue()) : null;
     }
 
     @Override
@@ -66,7 +66,7 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public final Boolean isRunning() {
-        return Boolean.parseBoolean(running.getValue());
+        return running.getValue() != null ? Boolean.parseBoolean(running.getValue().getValue()) : null;
     }
 
     @Override
@@ -86,7 +86,7 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public final String getError() {
-        return error.getValue();
+        return error.getValue() != null ? error.getValue().getValue() : null;
     }
 
     @Override
@@ -99,6 +99,12 @@ public abstract class ProxyPrimaryObject<
         List<ListenerRegistration> result = super.registerListeners();
         if(running != null) {
             result.add(running.addObjectListener(new ValueListener<V>() {
+
+                @Override
+                public void valueChanging(V value) {
+                    // do nothing
+                }
+
                 @Override
                 public void valueChanged(V value) {
                     for(PrimaryListener<? super PO> listener : getObjectListeners())
@@ -108,10 +114,16 @@ public abstract class ProxyPrimaryObject<
         }
         if(error != null) {
             result.add(error.addObjectListener(new ValueListener<V>() {
+
+                @Override
+                public void valueChanging(V value) {
+                    // do nothing
+                }
+
                 @Override
                 public void valueChanged(V value) {
                     for (PrimaryListener<? super PO> listener : getObjectListeners())
-                        listener.error(getThis(), error.getValue());
+                        listener.error(getThis(), getError());
                 }
             }));
         }

@@ -2,6 +2,7 @@ package com.intuso.housemate.api.object.value;
 
 import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.type.Type;
+import com.intuso.housemate.api.object.type.TypeInstance;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,5 +17,5 @@ public interface Value<T extends Type, V extends Value<?, ?>>
     public final static String VALUE = "value";
 
     public T getType();
-    public String getValue();
+    public TypeInstance getValue();
 }

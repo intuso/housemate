@@ -46,7 +46,7 @@ public class ConsequenceBridge
 
     @Override
     public String getError() {
-        return errorValue.getValue();
+        return errorValue != null && errorValue.getValue() != null ? errorValue.getValue().getValue() : null;
     }
 
     @Override

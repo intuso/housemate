@@ -307,6 +307,11 @@ public class HousemateTweeter {
         }
 
         @Override
+        public void valueChanging(SimpleProxyObject.Value value) {
+            // do nothing
+        }
+
+        @Override
         public void valueChanged(SimpleProxyObject.Value value) {
             tweet("\"" + device.getName() + "\" value \"" + value.getId() + "\" is \"" + value.getValue() + "\"");
         }
@@ -343,6 +348,11 @@ public class HousemateTweeter {
 
         private PropertyListener(SimpleProxyObject.Device device) {
             this.device = device;
+        }
+
+        @Override
+        public void valueChanging(SimpleProxyObject.Property value) {
+            // do nothing
         }
 
         @Override

@@ -5,7 +5,7 @@ import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.command.argument.Argument;
 import com.intuso.housemate.api.object.command.argument.HasArguments;
 import com.intuso.housemate.api.object.list.List;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstances;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,16 +23,16 @@ public interface Command<AL extends List<? extends Argument<?>>, C extends Comma
     public final static String PERFORMING = "performing";
     public final static String FAILED = "failed";
 
-    public void perform(TypeValues values, CommandListener<? super C> listener);
+    public void perform(TypeInstances values, CommandListener<? super C> listener);
 
     public static class PerformMessageValue implements Message.Payload {
 
         String opId;
-        TypeValues values;
+        TypeInstances values;
 
         private PerformMessageValue() {}
 
-        public PerformMessageValue(String opId, TypeValues values) {
+        public PerformMessageValue(String opId, TypeInstances values) {
             this.opId = opId;
             this.values = values;
         }
@@ -41,7 +41,7 @@ public interface Command<AL extends List<? extends Argument<?>>, C extends Comma
             return opId;
         }
 
-        public TypeValues getValues() {
+        public TypeInstances getValues() {
             return values;
         }
     }

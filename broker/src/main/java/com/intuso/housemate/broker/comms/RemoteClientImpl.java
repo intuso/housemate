@@ -22,23 +22,22 @@ import java.util.Set;
  */
 public class RemoteClientImpl implements RemoteClient {
 
-    private final RemoteClientImpl parent;
     private final String connectionId;
     private final ClientWrappable.Type type;
     private final ServerComms comms;
     private final BiMap<String, RemoteClientImpl> children = HashBiMap.create();
     private final Listeners<RemoteClientListener> listeners = new Listeners<RemoteClientListener>();
+    private RemoteClientImpl parent;
     private List<String> route = null;
 
     public RemoteClientImpl(String connectionId, ClientWrappable.Type type, ServerComms comms) {
-        this(null, connectionId, type, comms);
-    }
-
-    private RemoteClientImpl(RemoteClientImpl parent, String connectionId, ClientWrappable.Type type, ServerComms comms) {
-        this.parent = parent;
         this.connectionId = connectionId;
         this.type = type;
         this.comms = comms;
+    }
+
+    private void setParent(RemoteClientImpl parent) {
+        this.parent = parent;
     }
 
     public String getConnectionId() {
@@ -67,8 +66,16 @@ public class RemoteClientImpl implements RemoteClient {
     public ListenerRegistration addListener(RemoteClientListener listener) {
         return listeners.addListener(listener);
     }
+
     public RemoteClientImpl addClient(List<String> route, String connectionId, ClientWrappable.Type type) throws HousemateException {
-        return addClient(this, 0, route, connectionId, type);
+        RemoteClientImpl client = new RemoteClientImpl(connectionId, type, comms);
+        client.setRoute(route);
+        addClient(client);
+        return client;
+    }
+
+    public void addClient(RemoteClientImpl remoteClient) throws HousemateException {
+        addClient(parent, this, 0, remoteClient);
     }
 
     public RemoteClientImpl getClient(List<String> route) {
@@ -78,6 +85,7 @@ public class RemoteClientImpl implements RemoteClient {
     public void remove() {
         if(parent != null)
             parent.children.inverse().remove(this);
+        parent = null;
     }
 
     public void disconnected() {
@@ -105,32 +113,32 @@ public class RemoteClientImpl implements RemoteClient {
             listener.reconnected(this);
     }
 
-    private static RemoteClientImpl addClient(RemoteClientImpl current, int currentIndex, List<String> route, String connectionId,
-                                 ClientWrappable.Type type) throws HousemateException {
+    private static void addClient(RemoteClientImpl parent, RemoteClientImpl current, int currentIndex, RemoteClientImpl client) throws HousemateException {
 
         // if we're past the end return null
-        if(route.size() < currentIndex)
-            return null;
+        if(client.getRoute().size() < currentIndex)
+            return;
 
         // if we're at the end return current
-        else if(route.size() == currentIndex)
-            return current;
+        else if(client.getRoute().size() == currentIndex) {
+            current.setParent(parent);
+            return;
+        }
 
         // else, if we're at the last position, then check the client route doesn't already exist
-        else if(route.size() - 1 == currentIndex) {
-            if(current.children.containsKey(route.get(currentIndex)))
+        else if(client.getRoute().size() - 1 == currentIndex) {
+            if(current.children.containsKey(client.getRoute().get(currentIndex)))
                 throw new HousemateException("Client route already exists");
-            RemoteClientImpl client = new RemoteClientImpl(current, connectionId, type, current.comms);
-            current.children.put(route.get(currentIndex), client);
-            return client;
+            current.children.put(client.getRoute().get(currentIndex), client);
+            return;
 
         // else, check there is an authorised client for the next key
         } else {
-            if(!current.children.containsKey(route.get(currentIndex)))
-                throw new HousemateException("No authorised client at index " + currentIndex + " of route " + Message.routeToString(route));
-            else if(current.children.get(route.get(currentIndex)).getType() != ClientWrappable.Type.ROUTER)
-                throw new HousemateException("Client at index " + currentIndex + " of route " + Message.routeToString(route) + " is not of type " + ClientWrappable.Type.ROUTER.name());
-            return addClient(current.children.get(route.get(currentIndex)), currentIndex + 1, route, connectionId, type);
+            if(!current.children.containsKey(client.getRoute().get(currentIndex)))
+                throw new HousemateException("No authorised client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()));
+            else if(current.children.get(client.getRoute().get(currentIndex)).getType() != ClientWrappable.Type.ROUTER)
+                throw new HousemateException("Client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()) + " is not of type " + ClientWrappable.Type.ROUTER.name());
+            addClient(current, current.children.get(client.getRoute().get(currentIndex)), currentIndex + 1, client);
         }
     }
 

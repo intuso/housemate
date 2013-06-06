@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
-import com.intuso.housemate.api.object.type.TypeSerialiser;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 
@@ -26,8 +26,30 @@ public class RealObjectType<O extends BaseObject<?>>
     public final static String ID = "object";
     public final static String NAME = "Object";
 
+    private final static Joiner JOINER = Joiner.on("/");
+    private final static Splitter SPLITTER = Splitter.on("/");
+
+    private final Root<?, ?> root;
+
     public RealObjectType(RealResources resources, Root<?, ?> root) {
-        super(resources, new ObjectTypeWrappable(ID, NAME, "Path to an object"), new Serialiser<O>(root));
+        super(resources, new ObjectTypeWrappable(ID, NAME, "Path to an object"));
+        this.root = root;
+    }
+
+    @Override
+    public TypeInstance serialise(Reference<O> o) {
+        if(o == null)
+            return null;
+        return new TypeInstance(JOINER.join(o.getPath()));
+    }
+
+    @Override
+    public Reference<O> deserialise(TypeInstance value) {
+        if(value == null || value.getValue() == null)
+            return null;
+        List<String> pathList = Lists.newArrayList(SPLITTER.split(value.getValue()));
+        String[] path = pathList.toArray(new String[pathList.size()]);
+        return new Reference(path, (O) root.getWrapper(path));
     }
 
     public static class Reference<O extends BaseObject<?>> {
@@ -43,7 +65,7 @@ public class RealObjectType<O extends BaseObject<?>>
             this(object == null ? null : object.getPath(), object);
         }
 
-        public Reference(String[] path, O object) {
+        private Reference(String[] path, O object) {
             this.path = path;
             this.object = object;
         }
@@ -54,34 +76,6 @@ public class RealObjectType<O extends BaseObject<?>>
 
         public O getObject() {
             return object;
-        }
-    }
-
-    private static class Serialiser<O extends BaseObject<?>> implements TypeSerialiser<Reference<O>> {
-
-        private final Joiner joiner = Joiner.on("/");
-        private final Splitter splitter = Splitter.on("/");
-        
-        private final Root<?, ?> root;
-
-        private Serialiser(Root<?, ?> root) {
-            this.root = root;
-        }
-
-        @Override
-        public String serialise(Reference<O> o) {
-            if(o == null)
-                return null;
-            return joiner.join(o.getPath());
-        }
-
-        @Override
-        public Reference<O> deserialise(String value) {
-            if(value == null)
-                return new Reference<O>(null, null);
-            List<String> pathList = Lists.newArrayList(splitter.split(value));
-            String[] path = pathList.toArray(new String[pathList.size()]);
-            return new Reference<O>(path, (O) root.getWrapper(path));
         }
     }
 }

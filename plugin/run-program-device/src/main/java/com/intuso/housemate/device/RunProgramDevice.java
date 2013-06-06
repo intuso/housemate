@@ -1,7 +1,7 @@
 package com.intuso.housemate.device;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealArgument;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
@@ -38,7 +38,7 @@ public class RunProgramDevice extends RealDevice {
 	 */
     private final RealCommand start = new RealCommand(getResources(), "start", "Start", "Start the program", new ArrayList<RealArgument<?>>()) {
 		@Override
-		public void perform(TypeValues values) throws HousemateException {
+		public void perform(TypeInstances values) throws HousemateException {
 			try {
 				if(command.getValue().toString().length() == 0)
 					throw new HousemateException("No command has been set");
@@ -56,7 +56,7 @@ public class RunProgramDevice extends RealDevice {
 	 */
 	private final RealCommand stop = new RealCommand(getResources(), "stop", "Stop", "Stop the program", new ArrayList<RealArgument<?>>()) {
 		@Override
-		public void perform(TypeValues values) throws HousemateException {
+		public void perform(TypeInstances values) throws HousemateException {
 			Integer pid = getFirstPID();
 			if(pid != null) {
 				try {

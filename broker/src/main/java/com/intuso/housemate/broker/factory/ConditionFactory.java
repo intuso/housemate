@@ -2,8 +2,8 @@ package com.intuso.housemate.broker.factory;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.real.BrokerRealArgument;
@@ -46,13 +46,11 @@ public final class ConditionFactory implements PluginListener {
     private final BrokerGeneralResources resources;
     private final Map<String, BrokerConditionFactory<?>> factories;
     private final ConditionFactoryType type;
-    private final ConditionFactorySerialiser serialiser;
 
     public ConditionFactory(BrokerGeneralResources resources) {
         this.resources = resources;
         factories = new HashMap<String, BrokerConditionFactory<?>>();
-        serialiser = new ConditionFactorySerialiser();
-        type = new ConditionFactoryType(resources.getClientResources(), serialiser);
+        type = new ConditionFactoryType(resources.getClientResources());
         resources.addPluginListener(this, true);
     }
 
@@ -67,7 +65,7 @@ public final class ConditionFactory implements PluginListener {
                 new BrokerRealArgument<BrokerConditionFactory<?>>(resources.getRealResources(), TYPE_ARGUMENT_ID, TYPE_ARGUMENT_NAME, TYPE_ARGUMENT_DESCRIPTION, type)
         )) {
             @Override
-            public void perform(TypeValues values) throws HousemateException {
+            public void perform(TypeInstances values) throws HousemateException {
                 BrokerRealCondition condition = createCondition(values);
                 list.add(condition);
                 resources.getStorage().watchPropertyValues(condition.getProperties());
@@ -76,20 +74,20 @@ public final class ConditionFactory implements PluginListener {
         };
     }
 
-    public BrokerRealCondition createCondition(TypeValues values) throws HousemateException {
-        String type = values.get(TYPE_ARGUMENT_ID).getValue();
-        if(type == null)
+    public BrokerRealCondition createCondition(TypeInstances values) throws HousemateException {
+        TypeInstance conditionType = values.get(TYPE_ARGUMENT_ID);
+        if(conditionType == null && conditionType.getValue() != null)
             throw new HousemateException("No condition type specified");
-        String name = values.get(NAME_ARGUMENT_ID).getValue();
-        if(name == null)
+        TypeInstance name = values.get(NAME_ARGUMENT_ID);
+        if(name == null && name.getValue() != null)
             throw new HousemateException("No condition name specified");
-        String description = values.get(DESCRIPTION_ARGUMENT_ID).getValue();
-        if(description == null)
+        TypeInstance description = values.get(DESCRIPTION_ARGUMENT_ID);
+        if(description == null && description.getValue() != null)
             throw new HousemateException("No condition description specified");
-        BrokerConditionFactory<?> conditionFactory = serialiser.deserialise(type);
+        BrokerConditionFactory<?> conditionFactory = type.deserialise(conditionType);
         if(conditionFactory == null)
-            throw new HousemateException("No factory known for condition type " + type);
-        return conditionFactory.create(resources.getRealResources(), name, name, description);
+            throw new HousemateException("No factory known for condition type " + conditionType);
+        return conditionFactory.create(resources.getRealResources(), name.getValue(), name.getValue(), description.getValue());
     }
 
     @Override
@@ -110,20 +108,18 @@ public final class ConditionFactory implements PluginListener {
     }
 
     private class ConditionFactoryType extends RealSingleChoiceType<BrokerConditionFactory<?>> {
-        protected ConditionFactoryType(RealResources resources, ConditionFactorySerialiser serialiser) {
-            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Arrays.<RealOption>asList(), serialiser);
-        }
-    }
-
-    private class ConditionFactorySerialiser implements TypeSerialiser<BrokerConditionFactory<?>> {
-        @Override
-        public String serialise(BrokerConditionFactory<?> o) {
-            return o.getTypeId();
+        protected ConditionFactoryType(RealResources resources) {
+            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Arrays.<RealOption>asList());
         }
 
         @Override
-        public BrokerConditionFactory<?> deserialise(String value) {
-            return factories.get(value);
+        public TypeInstance serialise(BrokerConditionFactory<?> o) {
+            return new TypeInstance(o.getTypeId());
+        }
+
+        @Override
+        public BrokerConditionFactory<?> deserialise(TypeInstance value) {
+            return value != null && value.getValue() != null ? factories.get(value.getValue()) : null;
         }
     }
 }

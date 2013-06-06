@@ -5,8 +5,8 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.type.TypeValue;
-import com.intuso.housemate.api.object.type.TypeValues;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 
 import java.util.Arrays;
 
@@ -28,10 +28,10 @@ public class RealProperty<O>
         setCommand = new RealCommand(resources, SET_COMMAND, SET_COMMAND, "The function to change the property's value",
                 Arrays.<RealArgument<?>>asList(new RealArgument<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
             @Override
-            public void perform(TypeValues values) throws HousemateException {
-                TypeValue newValue = values.get(VALUE_PARAM);
+            public void perform(TypeInstances values) throws HousemateException {
+                TypeInstance newValue = values.get(VALUE_PARAM);
                 O object = newValue != null && newValue.getValue() != null
-                        ? getType().deserialise(newValue.getValue())
+                        ? getType().deserialise(newValue)
                         : null;
                 RealProperty.this.setTypedValue(object);
             }
@@ -40,15 +40,10 @@ public class RealProperty<O>
     }
 
     @Override
-    protected final RealProperty getThis() {
-        return this;
-    }
-
-    @Override
-    public void set(final String value, CommandListener<? super RealCommand> listener) {
-        getSetCommand().perform(new TypeValues() {
+    public void set(final TypeInstance value, CommandListener<? super RealCommand> listener) {
+        getSetCommand().perform(new TypeInstances() {
             {
-                put(VALUE, new TypeValue(value));
+                put(VALUE, value);
             }
         }, listener);
     }
