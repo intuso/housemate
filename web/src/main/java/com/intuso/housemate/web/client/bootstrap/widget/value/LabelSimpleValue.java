@@ -35,9 +35,9 @@ public class LabelSimpleValue extends Value {
 
     @Override
     public void valueChanged(com.intuso.housemate.api.object.value.Value<?, ?> value) {
-        if(value.getValue() == null || value.getValue().getValue() == null)
+        if(value.getTypeInstance() == null || value.getTypeInstance().getValue() == null)
             label.setText("");
         else
-            label.setText(value.getValue().getValue());
+            label.setText(value.getTypeInstance().getValue());
     }
 }

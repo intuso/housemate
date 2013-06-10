@@ -40,9 +40,9 @@ public class RunProgramDevice extends RealDevice {
 		@Override
 		public void perform(TypeInstances values) throws HousemateException {
 			try {
-				if(command.getValue().toString().length() == 0)
+				if(command.getTypeInstance().toString().length() == 0)
 					throw new HousemateException("No command has been set");
-				Runtime.getRuntime().exec(command.getValue().toString());
+				Runtime.getRuntime().exec(command.getTypeInstance().toString());
 			} catch (Throwable t) {
 				getLog().e("Could not start program: " + t.getMessage());
 				getLog().st(t);
@@ -97,7 +97,7 @@ public class RunProgramDevice extends RealDevice {
 			String[] cmd = {
 					"/bin/sh",
 					"-c",
-					"ps -eopid,comm,user | grep -v grep | grep \"" + command.getValue() + "\" | cut -c1-5"
+					"ps -eopid,comm,user | grep -v grep | grep \"" + command.getTypeInstance() + "\" | cut -c1-5"
 			};
 			p = Runtime.getRuntime().exec(cmd);
 		} catch (IOException e) {

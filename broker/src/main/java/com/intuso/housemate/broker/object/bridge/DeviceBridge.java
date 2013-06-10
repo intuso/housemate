@@ -22,78 +22,50 @@ import javax.annotation.Nullable;
  */
 public class DeviceBridge
         extends PrimaryObjectBridge<DeviceWrappable, DeviceBridge, DeviceListener<? super DeviceBridge>>
-        implements Device<CommandBridge, CommandBridge, CommandBridge, ListBridge<Command<?, ?>, CommandWrappable, CommandBridge>,
-                    ValueBridge, ValueBridge, ValueBridge, ValueBridge, ListBridge<Value<?, ?>, ValueWrappable, ValueBridge>,
-                    PropertyBridge, PropertyBridge, ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>, DeviceBridge> {
+        implements Device<CommandBridge, CommandBridge, CommandBridge, ListBridge<CommandWrappable, Command<?, ?>, CommandBridge>,
+                    ValueBridge, ValueBridge, ValueBridge, ValueBridge, ListBridge<ValueWrappable, Value<?, ?>, ValueBridge>,
+                    PropertyBridge, PropertyBridge, ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>, DeviceBridge> {
 
-    private ListBridge<Command<?, ?>, CommandWrappable, CommandBridge> commandList;
-    private ListBridge<Value<?, ?>, ValueWrappable, ValueBridge> valueList;
-    private ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge> propertyList;
+    private ListBridge<CommandWrappable, Command<?, ?>, CommandBridge> commandList;
+    private ListBridge<ValueWrappable, Value<?, ?>, ValueBridge> valueList;
+    private ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge> propertyList;
 
     public DeviceBridge(BrokerBridgeResources resources, Device<?, ?, ? extends Command<?, ?>, ?, ?, ?, ?, ? extends Value<?, ?>, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
         super(resources, new DeviceWrappable(device.getId(), device.getName(), device.getDescription()), device);
-        commandList = new ListBridge<Command<?, ?>, CommandWrappable, CommandBridge>(resources, device.getCommands(), new CommandConverter(resources));
-        valueList = new ListBridge<Value<?, ?>, ValueWrappable, ValueBridge>(resources, device.getValues(), new ValueConverter(resources));
-        propertyList = new ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>(resources, device.getProperties(), new PropertyConverter(resources));
+        commandList = new ListBridge<CommandWrappable, Command<?, ?>, CommandBridge>(resources, device.getCommands(), new CommandBridge.Converter(resources));
+        valueList = new ListBridge<ValueWrappable, Value<?, ?>, ValueBridge>(resources, device.getValues(), new ValueBridge.Converter(resources));
+        propertyList = new ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>(resources, device.getProperties(), new PropertyBridge.Converter(resources));
         addWrapper(commandList);
         addWrapper(valueList);
         addWrapper(propertyList);
     }
 
     @Override
-    public ListBridge<Command<?, ?>, CommandWrappable, CommandBridge> getCommands() {
+    public ListBridge<CommandWrappable, Command<?, ?>, CommandBridge> getCommands() {
         return commandList;
     }
 
     @Override
-    public ListBridge<Value<?, ?>, ValueWrappable, ValueBridge> getValues() {
+    public ListBridge<ValueWrappable, Value<?, ?>, ValueBridge> getValues() {
         return valueList;
     }
 
     @Override
-    public ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge> getProperties() {
+    public ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
     }
 
-    private class CommandConverter implements Function<Command<?, ?>, CommandBridge> {
+    public final static class Converter implements Function<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> {
 
-        private final BrokerBridgeResources resources;
+        private BrokerBridgeResources resources;
 
-        private CommandConverter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources) {
             this.resources = resources;
         }
 
         @Override
-        public CommandBridge apply(@Nullable Command<?, ?> command) {
-            return new CommandBridge(resources, command);
-        }
-    }
-
-    private class ValueConverter implements Function<Value<?, ?>, ValueBridge> {
-
-        private final BrokerBridgeResources resources;
-
-        private ValueConverter(BrokerBridgeResources resources) {
-            this.resources = resources;
-        }
-
-        @Override
-        public ValueBridge apply(@Nullable Value<?, ?> value) {
-            return new ValueBridge(resources, value);
-        }
-    }
-
-    private class PropertyConverter implements Function<Property<?, ?, ?>, PropertyBridge> {
-
-        private final BrokerBridgeResources resources;
-
-        private PropertyConverter(BrokerBridgeResources resources) {
-            this.resources = resources;
-        }
-
-        @Override
-        public PropertyBridge apply(@Nullable Property<?, ?, ?> property) {
-            return new PropertyBridge(resources, property);
+        public DeviceBridge apply(@Nullable Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
+            return new DeviceBridge(resources, device);
         }
     }
 }

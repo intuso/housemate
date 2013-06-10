@@ -40,6 +40,8 @@ public abstract class ProxyValueBase<
         result.add(addMessageListener(VALUE, new Receiver<TypeInstance>() {
             @Override
             public void messageReceived(Message<TypeInstance> stringMessageValueMessage) {
+                for(ValueListener<? super V> listener : getObjectListeners())
+                    listener.valueChanging(getThis());
                 getWrappable().setValue(stringMessageValueMessage.getPayload());
                 for(ValueListener<? super V> listener : getObjectListeners())
                     listener.valueChanged(getThis());
@@ -54,7 +56,7 @@ public abstract class ProxyValueBase<
     }
 
     @Override
-    public final TypeInstance getValue() {
+    public final TypeInstance getTypeInstance() {
         return getWrappable().getValue();
     }
 

@@ -4,11 +4,14 @@ import com.google.common.base.Function;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.option.Option;
+import com.intuso.housemate.api.object.option.OptionWrappable;
+import com.intuso.housemate.api.object.subtype.SubType;
+import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeListener;
 import com.intuso.housemate.api.object.type.TypeWrappable;
-import com.intuso.housemate.api.object.type.option.Option;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
+import com.intuso.utilities.log.Log;
 
 import javax.annotation.Nullable;
 
@@ -26,16 +29,39 @@ public class TypeBridge
 
     private final static String OPTIONS = "options";
 
-    public TypeBridge(final BrokerBridgeResources resources, TypeWrappable<HousemateObjectWrappable<?>> wrappable, Type type) {
-        super(resources, (TypeWrappable<HousemateObjectWrappable<?>>)wrappable.clone());
+    public TypeBridge(final BrokerBridgeResources resources, Type type) {
+        super(resources, cloneWrappable(resources.getLog(), type));
         if(type instanceof HousemateObject && ((HousemateObject)type).getWrapper(OPTIONS) != null) {
-            addWrapper(new ListBridge<Option, OptionWrappable, OptionBridge>(resources, (List)((HousemateObject)(type)).getWrapper(OPTIONS),
+            addWrapper(new ListBridge<OptionWrappable, Option<ListBridge<SubTypeWrappable, SubType<?>, SubTypeBridge>>, OptionBridge>(resources, (List)((HousemateObject)(type)).getWrapper(OPTIONS),
                     new Function<Option, OptionBridge>() {
                         @Override
                         public OptionBridge apply(@Nullable Option option) {
-                            return new OptionBridge(resources, option.getId(), option.getName(), option.getDescription());
+                            return new OptionBridge(resources, option);
                         }
                     }));
+        }
+    }
+
+    private static TypeWrappable<HousemateObjectWrappable<?>> cloneWrappable(Log log, Type type) {
+        if(type instanceof HousemateObject)
+            return (TypeWrappable<HousemateObjectWrappable<?>>) ((HousemateObject<?, ?, ?, ?, ?>)type).getWrappable().clone();
+        else {
+            log.e("Cannot bridge to a non-real type. Bridged type will have a null wrappable");
+            return null;
+        }
+    }
+
+    public final static class Converter implements Function<Type, TypeBridge> {
+
+        private BrokerBridgeResources resources;
+
+        public Converter(BrokerBridgeResources resources) {
+            this.resources = resources;
+        }
+
+        @Override
+        public TypeBridge apply(@Nullable Type type) {
+            return new TypeBridge(resources, type);
         }
     }
 }

@@ -2,7 +2,7 @@ package com.intuso.housemate.api.object.type;
 
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
+import com.intuso.housemate.api.object.option.OptionWrappable;
 
 /**
  * Created by IntelliJ IDEA.

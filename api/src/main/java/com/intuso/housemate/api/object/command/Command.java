@@ -2,8 +2,8 @@ package com.intuso.housemate.api.object.command;
 
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.BaseObject;
-import com.intuso.housemate.api.object.command.argument.Argument;
-import com.intuso.housemate.api.object.command.argument.HasArguments;
+import com.intuso.housemate.api.object.argument.Argument;
+import com.intuso.housemate.api.object.argument.HasArguments;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.type.TypeInstances;
 

@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.RealSubType;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.housemate.object.real.impl.type.RealSingleChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
@@ -48,11 +48,11 @@ public class ValueSourceType extends RealSingleChoiceType<ValueSource> {
     public TypeInstance serialise(ValueSource source) {
         if(source instanceof StaticValue) {
             TypeInstances childValues = new TypeInstances();
-            childValues.put(STATIC_ID, source.getValue().getValue());
+            childValues.put("value", source.getValue().getTypeInstance());
             return new TypeInstance(STATIC_ID, childValues);
         } else if(source instanceof DynamicValue) {
             TypeInstances childValues = new TypeInstances();
-            childValues.put(DYNAMIC_ID, realObjectType.serialise(((DynamicValue) source).getObjectReference()));
+            childValues.put("path", realObjectType.serialise(((DynamicValue) source).getObjectReference()));
             return new TypeInstance(DYNAMIC_ID, childValues);
         } else
             return null;
@@ -63,17 +63,20 @@ public class ValueSourceType extends RealSingleChoiceType<ValueSource> {
         if(value == null || value.getValue() == null)
             return null;
         if(value.getValue().equals(STATIC_ID)) {
-            return new StaticValue(value.getChildValues().get(STATIC_ID));
+            return new StaticValue(value.getChildValues().get("value"));
         } else if(value.getValue().equals(DYNAMIC_ID)) {
-            return new DynamicValue(realObjectType.deserialise(value.getChildValues().get(DYNAMIC_ID)), root);
+            return new DynamicValue(realObjectType.deserialise(value.getChildValues().get("path")), root);
         } else
             return null;
     }
 
     private static List<RealOption> createOptions(RealResources resources, Root<?, ?> root) {
-        return Arrays.asList(new RealOption(resources, DYNAMIC_ID, DYNAMIC_NAME, DYNAMIC_DESCRIPTION,
-                        Arrays.<RealType<?, ?, ?>>asList(new RealObjectType(resources, root))),
+        return Arrays.asList(
                 new RealOption(resources, STATIC_ID, STATIC_NAME, STATIC_DESCRIPTION,
-                        Arrays.<RealType<?, ?, ?>>asList(new StringType(resources))));
+                        Arrays.<RealSubType<?>>asList(
+                                new RealSubType<String>(resources, "value", "Value", "Value", new StringType(resources)))),
+                new RealOption(resources, DYNAMIC_ID, DYNAMIC_NAME, DYNAMIC_DESCRIPTION,
+                        Arrays.<RealSubType<?>>asList(
+                                new RealSubType<RealObjectType.Reference>(resources, "path", "Path", "Path to the value", new RealObjectType(resources, root)))));
     }
 }

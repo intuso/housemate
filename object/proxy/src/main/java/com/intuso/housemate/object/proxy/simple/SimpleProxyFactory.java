@@ -3,10 +3,10 @@ package com.intuso.housemate.object.proxy.simple;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.argument.ArgumentFactory;
+import com.intuso.housemate.api.object.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.command.CommandFactory;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.command.argument.ArgumentFactory;
-import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.condition.ConditionFactory;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
 import com.intuso.housemate.api.object.consequence.ConsequenceFactory;
@@ -15,14 +15,16 @@ import com.intuso.housemate.api.object.device.DeviceFactory;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.list.ListFactory;
 import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.option.OptionFactory;
+import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.property.PropertyFactory;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
 import com.intuso.housemate.api.object.rule.RuleFactory;
 import com.intuso.housemate.api.object.rule.RuleWrappable;
+import com.intuso.housemate.api.object.subtype.SubTypeFactory;
+import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeFactory;
 import com.intuso.housemate.api.object.type.TypeWrappable;
-import com.intuso.housemate.api.object.type.option.OptionFactory;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
 import com.intuso.housemate.api.object.user.UserFactory;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.api.object.value.ValueFactory;
@@ -51,6 +53,7 @@ public class SimpleProxyFactory {
     private final static Option optionFactory = new Option();
     private final static Property propertyFactory = new Property();
     private final static Rule ruleFactory = new Rule();
+    private final static SubType subTypeFactory = new SubType();
     private final static Type typeFactory = new Type();
     private final static Value valueFactory = new Value();
 
@@ -77,6 +80,8 @@ public class SimpleProxyFactory {
                 return propertyFactory.create(resources, (PropertyWrappable) wrappable);
             else if(wrappable instanceof RuleWrappable)
                 return ruleFactory.create(resources, (RuleWrappable) wrappable);
+            else if(wrappable instanceof SubTypeWrappable)
+                return subTypeFactory.create(resources, (SubTypeWrappable) wrappable);
             else if(wrappable instanceof TypeWrappable)
                 return typeFactory.create(resources, (TypeWrappable) wrappable);
             else if(wrappable instanceof ValueWrappable)
@@ -160,7 +165,10 @@ public class SimpleProxyFactory {
     public static class Option implements OptionFactory<ProxyResources<?>, SimpleProxyObject.Option> {
         @Override
         public SimpleProxyObject.Option create(ProxyResources<?> resources, OptionWrappable wrappable) throws HousemateException {
-            return new SimpleProxyObject.Option(noFactoryType(resources), wrappable);
+            ProxyResources<List<SubTypeWrappable, SimpleProxyObject.SubType>> r = changeFactoryType(resources,
+                    new List<SubTypeWrappable, SimpleProxyObject.SubType>());
+            ProxyResources<SubType> sr = changeFactoryType(resources, subTypeFactory);
+            return new SimpleProxyObject.Option(r, sr, wrappable);
         }
     }
 
@@ -180,6 +188,13 @@ public class SimpleProxyFactory {
         public SimpleProxyObject.Rule create(ProxyResources<?> resources, RuleWrappable wrappable) throws HousemateException {
             ProxyResources<All> r = changeFactoryType(resources, allFactory);
             return new SimpleProxyObject.Rule(r, resources, wrappable);
+        }
+    }
+
+    public static class SubType implements SubTypeFactory<ProxyResources<?>, SimpleProxyObject.SubType> {
+        @Override
+        public SimpleProxyObject.SubType create(ProxyResources<?> resources, SubTypeWrappable wrappable) throws HousemateException {
+            return new SimpleProxyObject.SubType(noFactoryType(resources), wrappable);
         }
     }
 

@@ -22,18 +22,18 @@ public class ConsequenceBridge
         extends BridgeObject<ConsequenceWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, ConsequenceBridge,
         ConsequenceListener<? super ConsequenceBridge>>
         implements Consequence<PropertyBridge, ValueBridge, ValueBridge,
-                    ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>,
+                    ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>,
                     ConsequenceBridge> {
 
     private ValueBridge executingValue;
     private ValueBridge errorValue;
-    private ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge> propertyList;
+    private ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge> propertyList;
 
     public ConsequenceBridge(BrokerBridgeResources resources, Consequence<?, ?, ?, ?, ?> consequence) {
         super(resources, new ConsequenceWrappable(consequence.getId(), consequence.getName(), consequence.getDescription()));
         executingValue = new ValueBridge(resources,consequence.getExecutingValue());
         errorValue = new ValueBridge(resources,consequence.getErrorValue());
-        propertyList = new ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>(resources, consequence.getProperties(), new PropertyConverter(resources));
+        propertyList = new ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>(resources, consequence.getProperties(), new PropertyBridge.Converter(resources));
         addWrapper(executingValue);
         addWrapper(errorValue);
         addWrapper(propertyList);
@@ -46,7 +46,7 @@ public class ConsequenceBridge
 
     @Override
     public String getError() {
-        return errorValue != null && errorValue.getValue() != null ? errorValue.getValue().getValue() : null;
+        return errorValue != null && errorValue.getTypeInstance() != null ? errorValue.getTypeInstance().getValue() : null;
     }
 
     @Override
@@ -56,25 +56,26 @@ public class ConsequenceBridge
 
     @Override
     public boolean isExecuting() {
-        return BooleanType.SERIALISER.deserialise(executingValue.getValue());
+        Boolean value = BooleanType.SERIALISER.deserialise(executingValue.getTypeInstance());
+        return value != null ? value : false;
     }
 
     @Override
-    public ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge> getProperties() {
+    public ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
     }
 
-    private class PropertyConverter implements Function<Property<?, ?, ?>, PropertyBridge> {
+    public static class Converter implements Function<Consequence<?, ?, ?, ?, ?>, ConsequenceBridge> {
 
         private final BrokerBridgeResources resources;
 
-        private PropertyConverter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources) {
             this.resources = resources;
         }
 
         @Override
-        public PropertyBridge apply(@Nullable Property<?, ?, ?> property) {
-            return new PropertyBridge(resources, property);
+        public ConsequenceBridge apply(@Nullable Consequence<?, ?, ?, ?, ?> command) {
+            return new ConsequenceBridge(resources, command);
         }
     }
 }

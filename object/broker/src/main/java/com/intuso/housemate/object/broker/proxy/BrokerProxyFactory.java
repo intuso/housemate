@@ -3,20 +3,22 @@ package com.intuso.housemate.object.broker.proxy;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.argument.ArgumentFactory;
+import com.intuso.housemate.api.object.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.command.CommandFactory;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.command.argument.ArgumentFactory;
-import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.device.DeviceFactory;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.list.ListFactory;
 import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.option.OptionFactory;
+import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.property.PropertyFactory;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.subtype.SubTypeFactory;
+import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeFactory;
 import com.intuso.housemate.api.object.type.TypeWrappable;
-import com.intuso.housemate.api.object.type.option.OptionFactory;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
 import com.intuso.housemate.api.object.value.ValueFactory;
 import com.intuso.housemate.api.object.value.ValueWrappable;
 
@@ -36,6 +38,7 @@ public class BrokerProxyFactory {
     private final static GenericList listFactory = new GenericList();
     private final static Option optionFactory = new Option();
     private final static Property propertyFactory = new Property();
+    private final static SubType subTypeFactory = new SubType();
     private final static Type typeFactory = new Type();
     private final static Value valueFactory = new Value();
 
@@ -54,6 +57,8 @@ public class BrokerProxyFactory {
                 return optionFactory.create(resources, (OptionWrappable) wrappable);
             else if(wrappable instanceof PropertyWrappable)
                 return propertyFactory.create(resources, (PropertyWrappable) wrappable);
+            else if(wrappable instanceof SubTypeWrappable)
+                return subTypeFactory.create(resources, (SubTypeWrappable) wrappable);
             else if(wrappable instanceof TypeWrappable)
                 return typeFactory.create(resources, (TypeWrappable) wrappable);
             else if(wrappable instanceof ValueWrappable)
@@ -73,7 +78,9 @@ public class BrokerProxyFactory {
     public static class Command implements CommandFactory<BrokerProxyResources<?>, BrokerProxyCommand> {
         @Override
         public BrokerProxyCommand create(BrokerProxyResources<?> resources, CommandWrappable wrappable) throws HousemateException {
-            BrokerProxyResources<List<ArgumentWrappable, BrokerProxyArgument>> r = changeFactoryType(resources, new List<ArgumentWrappable, BrokerProxyArgument>(changeFactoryType(resources, argumentFactory)));
+            BrokerProxyResources<List<ArgumentWrappable, BrokerProxyArgument>> r
+                    = changeFactoryType(resources,
+                    new List<ArgumentWrappable, BrokerProxyArgument>(changeFactoryType(resources, argumentFactory)));
             return new BrokerProxyCommand(r, wrappable);
         }
     }
@@ -118,7 +125,10 @@ public class BrokerProxyFactory {
     public static class Option implements OptionFactory<BrokerProxyResources<?>, BrokerProxyOption> {
         @Override
         public BrokerProxyOption create(BrokerProxyResources<?> resources, OptionWrappable wrappable) throws HousemateException {
-            return new BrokerProxyOption(noFactoryType(resources), wrappable);
+            BrokerProxyResources<List<SubTypeWrappable, BrokerProxySubType>> r
+                    = changeFactoryType(resources,
+                    new List<SubTypeWrappable, BrokerProxySubType>(changeFactoryType(resources, subTypeFactory)));
+            return new BrokerProxyOption(r, wrappable);
         }
     }
 
@@ -127,6 +137,13 @@ public class BrokerProxyFactory {
         public BrokerProxyProperty create(BrokerProxyResources<?> resources, PropertyWrappable wrappable) throws HousemateException {
             BrokerProxyResources<Command> r = changeFactoryType(resources, commandFactory);
             return new BrokerProxyProperty(r, wrappable);
+        }
+    }
+
+    public static class SubType implements SubTypeFactory<BrokerProxyResources<?>, BrokerProxySubType> {
+        @Override
+        public BrokerProxySubType create(BrokerProxyResources<?> resources, SubTypeWrappable wrappable) throws HousemateException {
+            return new BrokerProxySubType(noFactoryType(resources), wrappable);
         }
     }
 

@@ -7,8 +7,8 @@ import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.command.argument.Argument;
-import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.argument.Argument;
+import com.intuso.housemate.api.object.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -26,23 +26,23 @@ import javax.annotation.Nullable;
  */
 public class CommandBridge
         extends BridgeObject<CommandWrappable, ListWrappable<ArgumentWrappable>,
-            ListBridge<Argument<?>, ArgumentWrappable, ArgumentBridge>, CommandBridge,
+            ListBridge<ArgumentWrappable, Argument<?>, ArgumentBridge>, CommandBridge,
         CommandListener<? super CommandBridge>>
-        implements Command<ListBridge<Argument<?>, ArgumentWrappable, ArgumentBridge>, CommandBridge> {
+        implements Command<ListBridge<ArgumentWrappable, Argument<?>, ArgumentBridge>, CommandBridge> {
 
     private Command<?, ?> proxyCommand;
-    private ListBridge<Argument<?>, ArgumentWrappable, ArgumentBridge> arguments;
+    private ListBridge<ArgumentWrappable, Argument<?>, ArgumentBridge> arguments;
 
     public CommandBridge(BrokerBridgeResources resources, Command<? extends List<? extends Argument<?>>, ?> proxyCommand) {
         super(resources, new CommandWrappable(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
         this.proxyCommand = proxyCommand;
-        arguments = new ListBridge<Argument<?>, ArgumentWrappable, ArgumentBridge>(resources,
-                proxyCommand.getArguments(), new ArgumentConverter(resources));
+        arguments = new ListBridge<ArgumentWrappable, Argument<?>, ArgumentBridge>(resources,
+                proxyCommand.getArguments(), new ArgumentBridge.Converter(resources));
         addWrapper(arguments);
     }
 
     @Override
-    public ListBridge<Argument<?>, ArgumentWrappable, ArgumentBridge> getArguments() {
+    public ListBridge<ArgumentWrappable, Argument<?>, ArgumentBridge> getArguments() {
         return arguments;
     }
 
@@ -115,17 +115,17 @@ public class CommandBridge
         });
     }
 
-    private final static class ArgumentConverter implements Function<Argument<?>, ArgumentBridge> {
+    public static class Converter implements Function<Command<?, ?>, CommandBridge> {
 
-        private BrokerBridgeResources resources;
+        private final BrokerBridgeResources resources;
 
-        private ArgumentConverter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources) {
             this.resources = resources;
         }
 
         @Override
-        public ArgumentBridge apply(@Nullable Argument<?> argument) {
-            return new ArgumentBridge(resources, argument);
+        public CommandBridge apply(@Nullable Command<?, ?> command) {
+            return new CommandBridge(resources, command);
         }
-    };
+    }
 }

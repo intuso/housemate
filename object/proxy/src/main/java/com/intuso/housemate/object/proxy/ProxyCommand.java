@@ -8,7 +8,7 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.utilities.listener.ListenerRegistration;

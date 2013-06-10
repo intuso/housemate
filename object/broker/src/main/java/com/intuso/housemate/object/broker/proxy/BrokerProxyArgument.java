@@ -1,9 +1,9 @@
 package com.intuso.housemate.object.broker.proxy;
 
 import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.command.argument.Argument;
-import com.intuso.housemate.api.object.command.argument.ArgumentListener;
-import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.argument.Argument;
+import com.intuso.housemate.api.object.argument.ArgumentListener;
+import com.intuso.housemate.api.object.argument.ArgumentWrappable;
 
 /**
  * Created with IntelliJ IDEA.

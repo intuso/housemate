@@ -2,8 +2,8 @@ package com.intuso.housemate.object.real.impl.type;
 
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.SingleChoiceTypeWrappable;
-import com.intuso.housemate.api.object.type.option.HasOptions;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
+import com.intuso.housemate.api.object.option.HasOptions;
+import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;

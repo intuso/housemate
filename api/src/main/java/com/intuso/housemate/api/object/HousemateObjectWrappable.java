@@ -3,6 +3,8 @@ package com.intuso.housemate.api.object;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.utilities.wrapper.Wrappable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,8 +23,12 @@ public abstract class HousemateObjectWrappable<WBL extends HousemateObjectWrappa
 
     protected HousemateObjectWrappable() {}
 
-    public HousemateObjectWrappable(String id, String name, String description) {
-        super(id);
+    public HousemateObjectWrappable(String id, String name, String description, WBL ... subWrappables) {
+        this(id, name, description, Arrays.asList(subWrappables));
+    }
+
+    public HousemateObjectWrappable(String id, String name, String description, List<WBL> subWrappables) {
+        super(id, subWrappables);
         this.name = name;
         this.description = description;
     }

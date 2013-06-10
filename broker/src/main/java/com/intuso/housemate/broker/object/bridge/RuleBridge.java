@@ -21,21 +21,21 @@ import javax.annotation.Nullable;
 public class RuleBridge
         extends PrimaryObjectBridge<RuleWrappable, RuleBridge, RuleListener<? super RuleBridge>>
         implements Rule<PropertyBridge, CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge, ValueBridge,
-                    ConditionBridge,ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge>, ConsequenceBridge,
-                    ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge>, RuleBridge> {
+                    ConditionBridge,ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>, ConsequenceBridge,
+                    ListBridge<ConsequenceWrappable, Consequence<?, ?, ?, ?, ?>, ConsequenceBridge>, RuleBridge> {
 
-    private ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge> conditionList;
-    private ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge> satisfiedConsequenceList;
-    private ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge> unsatisfiedConsequenceList;
+    private ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
+    private ListBridge<ConsequenceWrappable, Consequence<?, ?, ?, ?, ?>, ConsequenceBridge> satisfiedConsequenceList;
+    private ListBridge<ConsequenceWrappable, Consequence<?, ?, ?, ?, ?>, ConsequenceBridge> unsatisfiedConsequenceList;
     private CommandBridge addCondition;
     private CommandBridge addSatisfiedConsequence;
     private CommandBridge addUnsatisfiedConsequence;
     
     public RuleBridge(BrokerBridgeResources resources, Rule<?, ?, ?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?, ? extends Consequence<?, ?, ?, ?, ?>, ?, ?> rule) {
         super(resources, new RuleWrappable(rule.getId(), rule.getName(), rule.getDescription()), rule);
-        conditionList = new ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge>(resources,  rule.getConditions(), new ConditionConverter(resources));
-        satisfiedConsequenceList = new ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge>(resources, rule.getSatisfiedConsequences(), new ConsequenceConverter(resources));
-        unsatisfiedConsequenceList = new ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge>(resources, rule.getUnsatisfiedConsequences(), new ConsequenceConverter(resources));
+        conditionList = new ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(resources,  rule.getConditions(), new ConditionBridge.Converter(resources));
+        satisfiedConsequenceList = new ListBridge<ConsequenceWrappable, Consequence<?, ?, ?, ?, ?>, ConsequenceBridge>(resources, rule.getSatisfiedConsequences(), new ConsequenceBridge.Converter(resources));
+        unsatisfiedConsequenceList = new ListBridge<ConsequenceWrappable, Consequence<?, ?, ?, ?, ?>, ConsequenceBridge>(resources, rule.getUnsatisfiedConsequences(), new ConsequenceBridge.Converter(resources));
         addCondition = new CommandBridge(resources, rule.getAddConditionCommand());
         addSatisfiedConsequence = new CommandBridge(resources, rule.getAddSatisifedConsequenceCommand());
         addUnsatisfiedConsequence = new CommandBridge(resources, rule.getAddUnsatisifedConsequenceCommand());
@@ -63,45 +63,31 @@ public class RuleBridge
     }
 
     @Override
-    public ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge> getUnsatisfiedConsequences() {
+    public ListBridge<ConsequenceWrappable, Consequence<?, ?, ?, ?, ?>, ConsequenceBridge> getUnsatisfiedConsequences() {
         return unsatisfiedConsequenceList;
     }
 
     @Override
-    public ListBridge<Consequence<?, ?, ?, ?, ?>, ConsequenceWrappable, ConsequenceBridge> getSatisfiedConsequences() {
+    public ListBridge<ConsequenceWrappable, Consequence<?, ?, ?, ?, ?>, ConsequenceBridge> getSatisfiedConsequences() {
         return satisfiedConsequenceList;
     }
 
     @Override
-    public ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge> getConditions() {
+    public ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
         return conditionList;
     }
 
-    private class ConditionConverter implements Function<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> {
+    public final static class Converter implements Function<Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, RuleBridge> {
 
-        private final BrokerBridgeResources resources;
+        private BrokerBridgeResources resources;
 
-        private ConditionConverter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources) {
             this.resources = resources;
         }
 
         @Override
-        public ConditionBridge apply(@Nullable Condition<?, ?, ?, ?, ?, ?, ?> command) {
-            return new ConditionBridge(resources, command);
-        }
-    }
-
-    private class ConsequenceConverter implements Function<Consequence<?, ?, ?, ?, ?>, ConsequenceBridge> {
-
-        private final BrokerBridgeResources resources;
-
-        private ConsequenceConverter(BrokerBridgeResources resources) {
-            this.resources = resources;
-        }
-
-        @Override
-        public ConsequenceBridge apply(@Nullable Consequence<?, ?, ?, ?, ?> command) {
-            return new ConsequenceBridge(resources, command);
+        public RuleBridge apply(@Nullable Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> rule) {
+            return new RuleBridge(resources, rule);
         }
     }
 }

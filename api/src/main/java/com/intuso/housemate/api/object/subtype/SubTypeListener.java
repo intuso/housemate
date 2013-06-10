@@ -1,4 +1,4 @@
-package com.intuso.housemate.api.object.command.argument;
+package com.intuso.housemate.api.object.subtype;
 
 import com.intuso.housemate.api.object.ObjectListener;
 
@@ -9,6 +9,6 @@ import com.intuso.housemate.api.object.ObjectListener;
  * Time: 18:29
  * To change this template use File | Settings | File Templates.
  */
-public final class ArgumentListener implements ObjectListener {
-    private ArgumentListener() {}
+public final class SubTypeListener implements ObjectListener {
+    private SubTypeListener() {}
 }

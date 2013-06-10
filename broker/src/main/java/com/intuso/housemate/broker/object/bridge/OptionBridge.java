@@ -1,11 +1,11 @@
 package com.intuso.housemate.broker.object.bridge;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.type.option.Option;
-import com.intuso.housemate.api.object.type.option.OptionListener;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
-
-import java.util.List;
+import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.option.Option;
+import com.intuso.housemate.api.object.option.OptionListener;
+import com.intuso.housemate.api.object.option.OptionWrappable;
+import com.intuso.housemate.api.object.subtype.SubType;
+import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,15 +15,25 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class OptionBridge
-        extends BridgeObject<OptionWrappable, NoChildrenWrappable, NoChildrenBridgeObject, OptionBridge, OptionListener>
-        implements Option {
+        extends BridgeObject<OptionWrappable,
+            ListWrappable<SubTypeWrappable>,
+            ListBridge<SubTypeWrappable, SubType<?>, SubTypeBridge>,
+            OptionBridge,
+            OptionListener>
+        implements Option<ListBridge<SubTypeWrappable, SubType<?>, SubTypeBridge>> {
 
-    public OptionBridge(BrokerBridgeResources resources, String id, String name, String description) {
-        super(resources, new OptionWrappable(id, name, description));
+    private ListBridge<SubTypeWrappable, SubType<?>, SubTypeBridge> types;
+
+    public OptionBridge(BrokerBridgeResources resources, Option<?> option) {
+        super(resources, new OptionWrappable(option.getId(), option.getName(), option.getDescription()));
+        if(option.getSubTypes() != null) {
+            types = new ListBridge<SubTypeWrappable, SubType<?>, SubTypeBridge>(resources, option.getSubTypes(), new SubTypeBridge.Converter(resources));
+            addWrapper(types);
+        }
     }
 
     @Override
-    public List<String> getSubTypes() {
-        return getWrappable().getSubTypes();
+    public ListBridge<SubTypeWrappable, SubType<?>, SubTypeBridge> getSubTypes() {
+        return types;
     }
 }

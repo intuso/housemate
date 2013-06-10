@@ -20,15 +20,15 @@ import java.util.Iterator;
  * To change this template use File | Settings | File Templates.
  */
 public class ListBridge<
+            WBL extends HousemateObjectWrappable<?>,
             OWR extends BaseObject<?>,
-            SWBL extends HousemateObjectWrappable<?>,
-            SWR extends BridgeObject<? extends SWBL, ?, ?, ?, ?>>
-        extends BridgeObject<ListWrappable<SWBL>, SWBL, SWR, ListBridge<OWR, SWBL, SWR>, ListListener<? super SWR>>
-        implements List<SWR>, WrapperListener<SWR> {
+            WR extends BridgeObject<? extends WBL, ?, ?, ?, ?>>
+        extends BridgeObject<ListWrappable<WBL>, WBL, WR, ListBridge<WBL, OWR, WR>, ListListener<? super WR>>
+        implements List<WR>, WrapperListener<WR> {
 
     private ListenerRegistration otherListListener;
 
-    public ListBridge(BrokerBridgeResources resources, List<? extends OWR> list, final Function<? super OWR, ? extends SWR> converter) {
+    public ListBridge(BrokerBridgeResources resources, List<? extends OWR> list, final Function<? super OWR, ? extends WR> converter) {
         super(resources, new ListWrappable(list.getId(), list.getName(), list.getDescription()));
         otherListListener = list.addObjectListener(new ListListener<OWR>() {
             @Override
@@ -44,10 +44,10 @@ public class ListBridge<
     }
 
     @Override
-    public ListenerRegistration addObjectListener(ListListener<? super SWR> listener, boolean callForExistingElements) {
+    public ListenerRegistration addObjectListener(ListListener<? super WR> listener, boolean callForExistingElements) {
         ListenerRegistration listenerRegistration = addObjectListener(listener);
         if(callForExistingElements)
-            for(SWR element : this)
+            for(WR element : this)
                 listener.elementAdded(element);
         return listenerRegistration;
     }
@@ -62,19 +62,19 @@ public class ListBridge<
     }
 
     @Override
-    public void childWrapperAdded(String childName, SWR wrapper) {
+    public void childWrapperAdded(String childName, WR wrapper) {
         wrapper.init(this);
         addLoadedBy(wrapper);
         broadcastMessage(ADD, wrapper.getWrappable().deepClone());
-        for(ListListener<? super SWR> listener : getObjectListeners())
+        for(ListListener<? super WR> listener : getObjectListeners())
             listener.elementAdded(wrapper);
     }
 
     @Override
-    public void childWrapperRemoved(String name, SWR wrapper) {
+    public void childWrapperRemoved(String name, WR wrapper) {
         wrapper.uninit();
         broadcastMessage(REMOVE, wrapper.getWrappable());
-        for(ListListener<? super SWR> listener : getObjectListeners())
+        for(ListListener<? super WR> listener : getObjectListeners())
             listener.elementRemoved(wrapper);
     }
 
@@ -89,7 +89,7 @@ public class ListBridge<
     }
 
     @Override
-    public SWR get(String name) {
+    public WR get(String name) {
         return getWrapper(name);
     }
 
@@ -99,7 +99,7 @@ public class ListBridge<
     }
 
     @Override
-    public Iterator<SWR> iterator() {
+    public Iterator<WR> iterator() {
         return getWrappers().iterator();
     }
 }

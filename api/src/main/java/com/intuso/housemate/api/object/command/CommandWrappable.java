@@ -1,7 +1,7 @@
 package com.intuso.housemate.api.object.command;
 
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
 
 /**

@@ -17,5 +17,5 @@ public interface Value<T extends Type, V extends Value<?, ?>>
     public final static String VALUE = "value";
 
     public T getType();
-    public TypeInstance getValue();
+    public TypeInstance getTypeInstance();
 }

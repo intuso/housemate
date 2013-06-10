@@ -2,7 +2,7 @@ package com.intuso.housemate.web.client.object;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.argument.ArgumentWrappable;
 import com.intuso.housemate.object.proxy.ProxyCommand;
 import com.intuso.housemate.web.client.GWTResources;
 

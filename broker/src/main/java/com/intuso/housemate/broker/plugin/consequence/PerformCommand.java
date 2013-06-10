@@ -73,7 +73,7 @@ public class PerformCommand extends BrokerRealConsequence implements ObjectLifec
                 commandLifecycleListenerRegistration = root.addObjectLifecycleListener(path, PerformCommand.this);
                 HousemateObject<?, ?, ?, ?, ?> object = root.getWrapper(path);
                 if(object == null)
-                    setError("Cannot find an object at path " + commandPath.getValue());
+                    setError("Cannot find an object at path " + commandPath.getTypeInstance());
                 else {
                     objectCreated(path, object);
                 }

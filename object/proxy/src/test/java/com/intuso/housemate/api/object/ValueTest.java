@@ -60,7 +60,7 @@ public class ValueTest {
     @Test
     public void testSetRealValue() throws HousemateException {
         realValue.setTypedValue(-1234);
-        assertEquals("-1234", proxyValue.getValue());
+        assertEquals("-1234", proxyValue.getTypeInstance().getValue());
     }
 
     @Test

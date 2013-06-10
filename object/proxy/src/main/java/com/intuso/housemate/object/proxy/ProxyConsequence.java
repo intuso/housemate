@@ -84,7 +84,7 @@ public abstract class ProxyConsequence<
     }
 
     public final String getError() {
-        return error.getValue() != null ? error.getValue().getValue() : null;
+        return error.getTypeInstance() != null ? error.getTypeInstance().getValue() : null;
     }
 
     public final V getExecutingValue() {
@@ -92,6 +92,6 @@ public abstract class ProxyConsequence<
     }
 
     public final boolean isExecuting() {
-        return executing.getValue() != null ? Boolean.parseBoolean(executing.getValue().getValue()) : null;
+        return executing.getTypeInstance() != null ? Boolean.parseBoolean(executing.getTypeInstance().getValue()) : null;
     }
 }

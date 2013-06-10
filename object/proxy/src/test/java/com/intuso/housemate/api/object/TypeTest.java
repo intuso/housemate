@@ -33,7 +33,7 @@ public class TypeTest {
         TypeSerialiser<String> serialiser = StringType.SERIALISER;
         String value = "value";
         TypeInstance serialised = serialiser.serialise(value);
-        assertEquals("value", serialised);
+        assertEquals("value", serialised.getValue());
         assertEquals(value, serialiser.deserialise(serialised));
     }
 
@@ -42,11 +42,11 @@ public class TypeTest {
         TypeSerialiser<Integer> serialiser = IntegerType.SERIALISER;
         Integer value = new Integer(1234);
         TypeInstance serialised = serialiser.serialise(value);
-        assertEquals("1234", serialised);
+        assertEquals("1234", serialised.getValue());
         assertEquals(value, serialiser.deserialise(serialised));
         value = new Integer(-1234);
         serialised = serialiser.serialise(value);
-        assertEquals("-1234", serialised);
+        assertEquals("-1234", serialised.getValue());
         assertEquals(value, serialiser.deserialise(serialised));
     }
 
@@ -55,7 +55,7 @@ public class TypeTest {
         TypeSerialiser<Boolean> serialiser = BooleanType.SERIALISER;
         Boolean value = Boolean.TRUE;
         TypeInstance serialised = serialiser.serialise(value);
-        assertEquals("true", serialised);
+        assertEquals("true", serialised.getValue());
         assertEquals(value, serialiser.deserialise(serialised));
     }
 
@@ -64,7 +64,7 @@ public class TypeTest {
         TypeSerialiser<MyClass> serialiser = SERIALISER;
         MyClass mc = new MyClass("one", "two");
         TypeInstance serialised = serialiser.serialise(mc);
-        assertEquals("one;two", serialised);
+        assertEquals("one;two", serialised.getValue());
         assertEquals(mc, serialiser.deserialise(serialised));
     }
 

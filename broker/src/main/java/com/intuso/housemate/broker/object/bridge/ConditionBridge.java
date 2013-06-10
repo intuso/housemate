@@ -21,21 +21,21 @@ import javax.annotation.Nullable;
 public class ConditionBridge
         extends BridgeObject<ConditionWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, ConditionBridge, ConditionListener<? super ConditionBridge>>
         implements Condition<PropertyBridge, ValueBridge, ValueBridge,
-                    ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>, CommandBridge, ConditionBridge,
-                    ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge>> {
+                    ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>, CommandBridge, ConditionBridge,
+                    ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>> {
 
     private ValueBridge satisfiedValue;
     private ValueBridge errorValue;
-    private ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge> propertyList;
-    private ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge> conditionList;
+    private ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge> propertyList;
+    private ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
     private CommandBridge addConditionCommand;
 
     public ConditionBridge(BrokerBridgeResources resources, Condition<?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?> condition) {
         super(resources,new ConditionWrappable(condition.getId(), condition.getName(), condition.getDescription()));
         satisfiedValue = new ValueBridge(resources, condition.getSatisfiedValue());
         errorValue = new ValueBridge(resources, condition.getErrorValue());
-        propertyList = new ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge>(resources, condition.getProperties(), new PropertyConverter(resources));
-        conditionList = new ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge>(resources, condition.getConditions(), new ConditionConverter(resources));
+        propertyList = new ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>(resources, condition.getProperties(), new PropertyBridge.Converter(resources));
+        conditionList = new ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(resources, condition.getConditions(), new Converter(resources));
         addConditionCommand = new CommandBridge(resources, condition.getAddConditionCommand()) {};
         addWrapper(satisfiedValue);
         addWrapper(errorValue);
@@ -45,12 +45,12 @@ public class ConditionBridge
     }
 
     @Override
-    public ListBridge<Property<?, ?, ?>, PropertyWrappable, PropertyBridge> getProperties() {
+    public ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
     }
 
     @Override
-    public ListBridge<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionWrappable, ConditionBridge> getConditions() {
+    public ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
         return conditionList;
     }
 
@@ -66,7 +66,7 @@ public class ConditionBridge
 
     @Override
     public String getError() {
-        return errorValue != null && errorValue.getValue() != null ? errorValue.getValue().getValue() : null;
+        return errorValue != null && errorValue.getTypeInstance() != null ? errorValue.getTypeInstance().getValue() : null;
     }
 
     @Override
@@ -76,28 +76,15 @@ public class ConditionBridge
 
     @Override
     public boolean isSatisfied() {
-        return BooleanType.SERIALISER.deserialise(satisfiedValue.getValue());
+        Boolean value = BooleanType.SERIALISER.deserialise(satisfiedValue.getTypeInstance());
+        return value != null ? value : false;
     }
 
-    private class PropertyConverter implements Function<Property<?, ?, ?>, PropertyBridge> {
+    public static class Converter implements Function<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> {
 
         private final BrokerBridgeResources resources;
 
-        private PropertyConverter(BrokerBridgeResources resources) {
-            this.resources = resources;
-        }
-
-        @Override
-        public PropertyBridge apply(@Nullable Property<?, ?, ?> property) {
-            return new PropertyBridge(resources, property);
-        }
-    }
-
-    private class ConditionConverter implements Function<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> {
-
-        private final BrokerBridgeResources resources;
-
-        private ConditionConverter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources) {
             this.resources = resources;
         }
 

@@ -1,20 +1,24 @@
 package com.intuso.housemate.web.client.bootstrap.widget.argument;
 
 import com.github.gwtbootstrap.client.ui.ListBox;
-import com.google.common.collect.Maps;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
-import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
 import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyOption;
+import com.intuso.housemate.web.client.object.GWTProxySubType;
 import com.intuso.housemate.web.client.object.GWTProxyType;
-
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,43 +27,99 @@ import java.util.Map;
  * Time: 23:26
  * To change this template use File | Settings | File Templates.
  */
-public class SingleSelectArgumentInput extends ListBox implements ArgumentInput {
+public class SingleSelectArgumentInput extends Composite implements ArgumentInput {
 
     public final static String OPTIONS = "options";
 
-    private final Map<String, GWTProxyOption> optionMap = Maps.newHashMap();
+    interface SingleSelectArgumentInputUiBinder extends UiBinder<FlowPanel, SingleSelectArgumentInput> {
+    }
+
+    private static SingleSelectArgumentInputUiBinder ourUiBinder = GWT.create(SingleSelectArgumentInputUiBinder.class);
+
+    @UiField(provided = true)
+    protected ListBox listBox;
+    @UiField
+    protected FlowPanel subTypesPanel;
+
+    private final GWTProxyList<OptionWrappable, GWTProxyOption> options;
+    private final BiMap<GWTProxyOption, Integer> optionMap = HashBiMap.create();
+    private TypeInstance typeInstance = new TypeInstance();
 
     public SingleSelectArgumentInput(GWTProxyType type) {
-        super(false);
-        addChangeHandler(new ChangeHandler() {
+
+        options = (GWTProxyList<OptionWrappable, GWTProxyOption>) type.getWrapper(OPTIONS);
+
+        listBox = new ListBox(false);
+        initWidget(ourUiBinder.createAndBindUi(this));
+        listBox.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                fireEvent(new ArgumentEditedEvent(new TypeInstance(optionMap.get(getValue(getSelectedIndex())).getId())));
+                typeInstance.setValue(optionMap.inverse().get(listBox.getSelectedIndex()).getId());
+                selectedOptionChanged();
             }
         });
-        if(type.getWrapper(OPTIONS) != null) {
-            GWTProxyList<OptionWrappable, GWTProxyOption> options = (GWTProxyList<OptionWrappable, GWTProxyOption>) type.getWrapper(OPTIONS);
-            for(GWTProxyOption option : options) {
-                optionMap.put(option.getName(), option);
-                addItem(option.getName());
-            }
-            if(options.size() > 0)
-                fireEvent(new ArgumentEditedEvent(new TypeInstance(getValue(getSelectedIndex()))));
+        int i = 0;
+        for(GWTProxyOption option : options) {
+            optionMap.put(option, i++);
+            listBox.addItem(option.getName());
+        }
+        if(options.size() > 0) {
+            typeInstance.setValue(options.iterator().next().getId());
+            selectedOptionChanged();
         }
     }
 
     @Override
     public HandlerRegistration addArgumentEditedHandler(ArgumentEditedHandler handler) {
         HandlerRegistration result = addHandler(handler, ArgumentEditedEvent.TYPE);
-        handler.onArgumentEdited(new ArgumentEditedEvent(new TypeInstance(optionMap.get(getValue(getSelectedIndex())).getId())));
+        handler.onArgumentEdited(new ArgumentEditedEvent(typeInstance));
         return result;
     }
 
     @Override
-    public void setValue(Value<?, ?> value) {
-        if(value.getValue() == null || value.getValue().getValue() == null)
-            setSelectedIndex(0);
+    public void setTypeInstance(TypeInstance typeInstance) {
+        if(typeInstance == null || typeInstance.getValue() == null
+                || options.getWrapper(typeInstance.getValue()) == null)
+            listBox.setSelectedIndex(0);
         else
-            setSelectedValue(value.getValue().getValue());
+            listBox.setSelectedIndex(optionMap.get(options.get(typeInstance.getValue())));
+        this.typeInstance = typeInstance;
+        selectedOptionChanged();
+    }
+
+    private void selectedOptionChanged() {
+        showOptions();
+        fireEvent(new ArgumentEditedEvent(typeInstance));
+    }
+
+    private void showOptions() {
+        subTypesPanel.clear();
+        GWTProxyOption option = options.get(typeInstance.getValue());
+        if(option.getSubTypes() != null) {
+            for(GWTProxySubType subType : option.getSubTypes()) {
+                ArgumentInput argumentInput = ArgumentTableRow.getArgumentInput(subType.getType());
+                argumentInput.addArgumentEditedHandler(new SubTypeArgumentEditedHandler(subType.getId(), typeInstance));
+                subTypesPanel.add(argumentInput);
+                if(typeInstance.getChildValues().get(subType.getId()) == null)
+                    typeInstance.getChildValues().put(subType.getId(), new TypeInstance());
+                argumentInput.setTypeInstance(typeInstance.getChildValues().get(subType.getId()));
+            }
+        }
+    }
+
+    private class SubTypeArgumentEditedHandler implements ArgumentEditedHandler {
+
+        private final String typeId;
+        private final TypeInstance typeInstance;
+
+        public SubTypeArgumentEditedHandler(String typeId, TypeInstance typeInstance) {
+            this.typeId = typeId;
+            this.typeInstance = typeInstance;
+        }
+
+        @Override
+        public void onArgumentEdited(ArgumentEditedEvent event) {
+            typeInstance.getChildValues().put(typeId, event.getNewValue());
+        }
     }
 }

@@ -92,7 +92,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
     }
 
     @Override
-    public Boolean isConnected() {
+    public boolean isConnected() {
         throw new HousemateRuntimeException("This value is not maintained by the client");
     }
 
@@ -107,7 +107,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
     }
 
     @Override
-    public Boolean isRunning() {
+    public boolean isRunning() {
         return running.getTypedValue() != null ? running.getTypedValue() : false;
     }
 

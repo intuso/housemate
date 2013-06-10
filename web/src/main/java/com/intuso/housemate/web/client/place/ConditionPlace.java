@@ -32,6 +32,11 @@ public class ConditionPlace extends RulePlace {
         }
     }
 
+    public static Breadcrumb getBreadcrumb(String ruleName) {
+        return new Breadcrumb("Conditions", PlaceName.Condition.getToken()
+                + RulePlace.Field.RuleName.getFieldName() + FIELD_VALUE_SEPARATOR + ruleName);
+    }
+
     public static List<Breadcrumb> getBreadcrumbs(String ruleName, List<String> conditionNames) {
         List<Breadcrumb> result = new ArrayList<Breadcrumb>(conditionNames.size());
         List<String> previousConditionNames = new ArrayList<String>(conditionNames.size());

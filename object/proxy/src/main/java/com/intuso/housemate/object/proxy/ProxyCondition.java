@@ -97,7 +97,7 @@ public abstract class ProxyCondition<
     }
 
     public final String getError() {
-        return error.getValue() != null ? error.getValue().getValue() : null;
+        return error.getTypeInstance() != null ? error.getTypeInstance().getValue() : null;
     }
 
     public final V getSatisfiedValue() {
@@ -105,6 +105,6 @@ public abstract class ProxyCondition<
     }
 
     public final boolean isSatisfied() {
-        return satisfied.getValue() != null ? Boolean.parseBoolean(satisfied.getValue().getValue()) : null;
+        return satisfied.getTypeInstance() != null ? Boolean.parseBoolean(satisfied.getTypeInstance().getValue()) : null;
     }
 }

@@ -26,13 +26,14 @@ import com.intuso.housemate.web.client.object.GWTProxyProperty;
  */
 public class PropertyTableRow extends TableRow implements ArgumentEditedHandler {
 
-    private GWTProxyCommand setCommand;
-    private TypeInstances values = new TypeInstances();
+    private final GWTProxyCommand setCommand;
+    private final TypeInstances values = new TypeInstances();
 
     public PropertyTableRow(GWTProxyProperty property) {
+        this.setCommand = property.getSetCommand();
+        values.put(Property.VALUE, property.getTypeInstance());
         addNameCell(property.getName(), property.getDescription());
         addValueCell(property);
-        this.setCommand = property.getSetCommand();
         addSetButtonCell();
     }
 
@@ -47,7 +48,7 @@ public class PropertyTableRow extends TableRow implements ArgumentEditedHandler 
         TableCell valueCell = new TableCell();
         ArgumentInput argumentInput = ArgumentTableRow.getArgumentInput(value.getType());
         if(argumentInput != null) {
-            argumentInput.setValue(value);
+            argumentInput.setTypeInstance(value.getTypeInstance());
             argumentInput.addArgumentEditedHandler(this);
             valueCell.add(argumentInput);
         }

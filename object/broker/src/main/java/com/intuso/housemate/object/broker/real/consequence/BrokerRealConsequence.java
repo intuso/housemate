@@ -69,7 +69,7 @@ public abstract class BrokerRealConsequence
 
     @Override
     public boolean isExecuting() {
-        return executingValue.getTypedValue();
+        return executingValue.getTypedValue() != null ? executingValue.getTypedValue() : false;
     }
 
     public final void setError(String error) {

@@ -6,7 +6,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
@@ -38,10 +37,10 @@ public class ObjectBrowserInput extends FlowPanel implements ArgumentInput {
     }
 
     @Override
-    public void setValue(Value<?, ?> value) {
-        if(value.getValue() != null && value.getValue().getValue() != null) {
+    public void setTypeInstance(TypeInstance typeInstance) {
+        if(typeInstance != null && typeInstance.getValue() != null) {
             HousemateObject<?, ?, ?, ?, ?> object = Housemate.ENVIRONMENT.getResources().getRoot().getWrapper(
-                    value.getValue().getValue().split("/"));
+                    typeInstance.getValue().split("/"));
             if(object instanceof ProxyObject)
                 rootNode.showObject((ProxyObject<?, ?, ?, ?, ?, ?, ?>) object);
         }

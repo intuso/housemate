@@ -12,7 +12,7 @@ import com.intuso.housemate.api.object.ObjectListener;
  */
 public class NoChildrenBridgeObject extends BridgeObject<NoChildrenWrappable, NoChildrenWrappable,
             NoChildrenBridgeObject, NoChildrenBridgeObject, ObjectListener> {
-    protected NoChildrenBridgeObject(BrokerBridgeResources resources, NoChildrenWrappable wrappable) {
-        super(resources, wrappable);
+    protected NoChildrenBridgeObject(BrokerBridgeResources resources) {
+        super(resources, null);
     }
 }

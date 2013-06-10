@@ -74,7 +74,7 @@ public class TestAnnotationParser {
         TypeInstances values = new TypeInstances();
         values.put("on", new TypeInstance("true"));
         testDevice.getCommands().get("command").perform(values);
-        assertEquals("On 2", testDevice.getValues().get("last-command").getValue());
+        assertEquals("On 2", testDevice.getValues().get("last-command").getTypeInstance().getValue());
 
         // test child device element instances
         ((RealProperty<Integer>)testDevice.getProperties().get("increment-amount")).setTypedValue(2);
@@ -84,6 +84,6 @@ public class TestAnnotationParser {
         testDevice.getCommands().get("turn-up").perform(values);
         testDevice.getCommands().get("turn-up").perform(values);
         testDevice.getCommands().get("turn-down").perform(values);
-        assertEquals("6", testDevice.getValues().get("volume").getValue());
+        assertEquals("6", testDevice.getValues().get("volume").getTypeInstance().getValue());
     }
 }

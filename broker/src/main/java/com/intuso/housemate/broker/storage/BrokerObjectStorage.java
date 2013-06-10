@@ -302,7 +302,7 @@ public class BrokerObjectStorage implements Storage {
         @Override
         public void valueChanged(Value<?, ?> property) {
             try {
-                storage.saveValue(property.getPath(), property.getValue());
+                storage.saveValue(property.getPath(), property.getTypeInstance());
             } catch(HousemateException e) {
                 log.e("Failed to save property value");
                 log.st(e);

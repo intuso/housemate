@@ -2,7 +2,7 @@ package com.intuso.housemate.api.object;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.TestEnvironment;
-import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;

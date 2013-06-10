@@ -55,8 +55,8 @@ public abstract class ProxyPrimaryObject<
     }
 
     @Override
-    public Boolean isConnected() {
-        return connected.getValue() != null ? Boolean.parseBoolean(connected.getValue().getValue()) : null;
+    public boolean isConnected() {
+        return connected.getTypeInstance() != null ? Boolean.parseBoolean(connected.getTypeInstance().getValue()) : null;
     }
 
     @Override
@@ -65,8 +65,8 @@ public abstract class ProxyPrimaryObject<
     }
 
     @Override
-    public final Boolean isRunning() {
-        return running.getValue() != null ? Boolean.parseBoolean(running.getValue().getValue()) : null;
+    public final boolean isRunning() {
+        return running.getTypeInstance() != null ? Boolean.parseBoolean(running.getTypeInstance().getValue()) : null;
     }
 
     @Override
@@ -86,7 +86,7 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public final String getError() {
-        return error.getValue() != null ? error.getValue().getValue() : null;
+        return error.getTypeInstance() != null ? error.getTypeInstance().getValue() : null;
     }
 
     @Override

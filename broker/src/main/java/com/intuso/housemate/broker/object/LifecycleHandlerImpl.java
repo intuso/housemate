@@ -61,7 +61,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
         @Override
         public void valueChanged(Value<?, ?> value) {
             try {
-                resources.getStorage().saveValue(value.getPath(), value.getValue());
+                resources.getStorage().saveValue(value.getPath(), value.getTypeInstance());
             } catch(HousemateException e) {
                 resources.getLog().e("Failed to save running value of device");
                 resources.getLog().st(e);

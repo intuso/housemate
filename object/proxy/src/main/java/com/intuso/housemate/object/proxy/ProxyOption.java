@@ -1,11 +1,11 @@
 package com.intuso.housemate.object.proxy;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.type.option.Option;
-import com.intuso.housemate.api.object.type.option.OptionListener;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
-
-import java.util.List;
+import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.option.Option;
+import com.intuso.housemate.api.object.option.OptionListener;
+import com.intuso.housemate.api.object.option.OptionWrappable;
+import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,17 +15,27 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyOption<
-            R extends ProxyResources<NoChildrenProxyObjectFactory>,
-            O extends ProxyOption<R, O>>
-        extends ProxyObject<R, ProxyResources<NoChildrenProxyObjectFactory>, OptionWrappable, NoChildrenWrappable, NoChildrenProxyObject, O, OptionListener>
-        implements Option {
+            R extends ProxyResources<? extends HousemateObjectFactory<SR, ListWrappable<SubTypeWrappable>, STL>>,
+            SR extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, SubTypeWrappable, ST>>,
+            ST extends ProxySubType<?, ?, ?>,
+            STL extends ProxyList<SR, ?, SubTypeWrappable, ST, STL>,
+            O extends ProxyOption<R, SR, ST, STL, O>>
+        extends ProxyObject<R, SR, OptionWrappable, ListWrappable<SubTypeWrappable>, STL, O, OptionListener>
+        implements Option<STL> {
 
-    public ProxyOption(R resources, OptionWrappable wrappable) {
-        super(resources, null, wrappable);
+    private STL subTypes;
+
+    public ProxyOption(R resources, SR subResources, OptionWrappable wrappable) {
+        super(resources, subResources, wrappable);
     }
 
     @Override
-    public List<String> getSubTypes() {
-        return getWrappable().getSubTypes();
+    protected void getChildObjects() {
+        subTypes = getWrapper(SUB_TYPES);
+    }
+
+    @Override
+    public STL getSubTypes() {
+        return subTypes;
     }
 }

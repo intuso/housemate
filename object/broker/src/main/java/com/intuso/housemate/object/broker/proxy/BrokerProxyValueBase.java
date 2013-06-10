@@ -39,7 +39,7 @@ public class BrokerProxyValueBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     @Override
-    public TypeInstance getValue() {
+    public TypeInstance getTypeInstance() {
         return getWrappable().getValue();
     }
 
@@ -49,6 +49,8 @@ public class BrokerProxyValueBase<WBL extends ValueWrappableBase<SWBL>,
         result.add(addMessageListener(VALUE, new Receiver<ClientPayload<TypeInstance>>() {
             @Override
             public void messageReceived(Message<ClientPayload<TypeInstance>> stringMessageValueMessage) {
+                for(ValueListener<? super V> listener : getObjectListeners())
+                    listener.valueChanging(getThis());
                 getWrappable().setValue(stringMessageValueMessage.getPayload().getOriginal());
                 for(ValueListener<? super V> listener : getObjectListeners())
                     listener.valueChanged(getThis());

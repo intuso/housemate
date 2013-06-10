@@ -67,7 +67,7 @@ public class StaticValue extends ValueSource {
         }
 
         @Override
-        public TypeInstance getValue() {
+        public TypeInstance getTypeInstance() {
             return value;
         }
     }

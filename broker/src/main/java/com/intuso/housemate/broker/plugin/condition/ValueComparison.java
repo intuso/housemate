@@ -71,10 +71,16 @@ public class ValueComparison extends BrokerRealCondition {
             }
         }
         // todo compare properly!
-        TypeInstance compareTo = values[0].getValue();
-        for(int i = 1; i < NUM_SOURCES; i++)
-            if(!compareTo.equals(values[i].getValue()))
+        TypeInstance compareTo = values[0].getTypeInstance();
+        for(int i = 1; i < NUM_SOURCES; i++) {
+            if((compareTo == null && values[i].getTypeInstance() == null)
+                    || (compareTo != null && compareTo.equals(values[i].getTypeInstance()))) {
+                continue;
+            } else {
                 conditionSatisfied(false);
+                return;
+            }
+        }
         conditionSatisfied(true);
     }
 

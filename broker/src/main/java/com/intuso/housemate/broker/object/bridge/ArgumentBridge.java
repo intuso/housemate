@@ -1,9 +1,12 @@
 package com.intuso.housemate.broker.object.bridge;
 
+import com.google.common.base.Function;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.command.argument.Argument;
-import com.intuso.housemate.api.object.command.argument.ArgumentListener;
-import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.argument.Argument;
+import com.intuso.housemate.api.object.argument.ArgumentListener;
+import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+
+import javax.annotation.Nullable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,5 +29,19 @@ public class ArgumentBridge
     @Override
     public TypeBridge getType() {
         return type;
+    }
+
+    public final static class Converter implements Function<Argument<?>, ArgumentBridge> {
+
+        private BrokerBridgeResources resources;
+
+        public Converter(BrokerBridgeResources resources) {
+            this.resources = resources;
+        }
+
+        @Override
+        public ArgumentBridge apply(@Nullable Argument<?> argument) {
+            return new ArgumentBridge(resources, argument);
+        }
     }
 }

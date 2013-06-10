@@ -5,7 +5,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
+import com.intuso.housemate.api.object.option.OptionWrappable;
 
 import java.util.Set;
 

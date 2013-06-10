@@ -41,7 +41,7 @@ public abstract class BrokerRealValueBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     @Override
-    public TypeInstance getValue() {
+    public TypeInstance getTypeInstance() {
         return getWrappable().getValue();
     }
 
@@ -49,7 +49,11 @@ public abstract class BrokerRealValueBase<WBL extends ValueWrappableBase<SWBL>,
         if((this.typedValue == null && typedValue == null)
                 || (this.typedValue != null && typedValue != null && this.typedValue.equals(typedValue)))
             return;
+        for(ValueListener<? super V> listener : getObjectListeners())
+            listener.valueChanging((V)this);
         this.typedValue = typedValue;
         this.getWrappable().setValue(getType().serialise(typedValue));
+        for(ValueListener<? super V> listener : getObjectListeners())
+            listener.valueChanged((V)this);
     }
 }

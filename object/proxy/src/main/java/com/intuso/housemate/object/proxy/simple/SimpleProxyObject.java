@@ -2,20 +2,36 @@ package com.intuso.housemate.object.proxy.simple;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.command.argument.ArgumentWrappable;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
 import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
 import com.intuso.housemate.api.object.rule.RuleWrappable;
+import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeWrappable;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.api.object.value.ValueWrappable;
-import com.intuso.housemate.object.proxy.*;
 import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
+import com.intuso.housemate.object.proxy.ProxyArgument;
+import com.intuso.housemate.object.proxy.ProxyCommand;
+import com.intuso.housemate.object.proxy.ProxyCondition;
+import com.intuso.housemate.object.proxy.ProxyConsequence;
+import com.intuso.housemate.object.proxy.ProxyDevice;
+import com.intuso.housemate.object.proxy.ProxyList;
+import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.object.proxy.ProxyOption;
+import com.intuso.housemate.object.proxy.ProxyProperty;
+import com.intuso.housemate.object.proxy.ProxyResources;
+import com.intuso.housemate.object.proxy.ProxyRootObject;
+import com.intuso.housemate.object.proxy.ProxyRule;
+import com.intuso.housemate.object.proxy.ProxySubType;
+import com.intuso.housemate.object.proxy.ProxyType;
+import com.intuso.housemate.object.proxy.ProxyUser;
+import com.intuso.housemate.object.proxy.ProxyValue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -120,6 +136,19 @@ public class SimpleProxyObject {
         }
     }
 
+    public final static class Option extends ProxyOption<
+            ProxyResources<SimpleProxyFactory.List<SubTypeWrappable, SubType>>,
+            ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, SubTypeWrappable, SubType>>,
+            SubType,
+            List<SubTypeWrappable, SubType>,
+            Option> {
+        public Option(ProxyResources<SimpleProxyFactory.List<SubTypeWrappable, SubType>> resources,
+                      ProxyResources<SimpleProxyFactory.SubType> subResources,
+                      OptionWrappable wrappable) {
+            super(resources, subResources, wrappable);
+        }
+    }
+
     public final static class Property extends ProxyProperty<ProxyResources<SimpleProxyFactory.Command>,
             ProxyResources<?>,
             Type,
@@ -147,8 +176,8 @@ public class SimpleProxyObject {
         }
     }
 
-    public final static class Option extends ProxyOption<ProxyResources<NoChildrenProxyObjectFactory>, Option> {
-        public Option(ProxyResources<NoChildrenProxyObjectFactory> resources, OptionWrappable wrappable) {
+    public final static class SubType extends ProxySubType<ProxyResources<NoChildrenProxyObjectFactory>, Type, SubType> {
+        public SubType(ProxyResources<NoChildrenProxyObjectFactory> resources, SubTypeWrappable wrappable) {
             super(resources, wrappable);
         }
     }

@@ -3,8 +3,8 @@ package com.intuso.housemate.object.proxy;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.MultiChoiceTypeWrappable;
-import com.intuso.housemate.api.object.type.option.HasOptions;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
+import com.intuso.housemate.api.object.option.HasOptions;
+import com.intuso.housemate.api.object.option.OptionWrappable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +16,7 @@ import com.intuso.housemate.api.object.type.option.OptionWrappable;
 public abstract class ProxyMultiChoiceType<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, ListWrappable<OptionWrappable>, OL>>,
             SR extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, OptionWrappable, ? extends O>>,
-            O extends ProxyOption<?, O>,
+            O extends ProxyOption<?, ?, ?, ?, O>,
             OL extends ProxyList<?, ?, OptionWrappable, O, OL>,
             T extends ProxyMultiChoiceType<R, SR, O, OL, T>>
         extends ProxyType<R, SR, MultiChoiceTypeWrappable, ListWrappable<OptionWrappable>, OL, T>

@@ -1,6 +1,5 @@
 package com.intuso.housemate.broker.object.bridge;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
@@ -18,7 +17,6 @@ import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyDevice;
-import com.intuso.housemate.object.broker.proxy.BrokerProxyPrimaryObject;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 import com.intuso.housemate.object.broker.real.BrokerRealRule;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
@@ -27,7 +25,6 @@ import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.wrapper.Wrapper;
 import com.intuso.utilities.wrapper.WrapperListener;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,61 +41,31 @@ public class RootObjectBridge
             RootObjectBridge, RootListener<? super RootObjectBridge>>
         implements Root<RootObjectBridge, RootListener<? super RootObjectBridge>>, WrapperListener<HousemateObject<?, ?, ?, ?, ?>> {
 
-    private ListBridge<BrokerRealUser, UserWrappable, UserBridge> users;
-    private ListBridge<BrokerProxyType, TypeWrappable<?>, TypeBridge> types;
-    private ListBridge<BrokerProxyDevice, DeviceWrappable, DeviceBridge> devices;
-    private ListBridge<BrokerRealRule, RuleWrappable, RuleBridge> rules;
+    private ListBridge<UserWrappable, BrokerRealUser, UserBridge> users;
+    private ListBridge<TypeWrappable<?>, BrokerProxyType, TypeBridge> types;
+    private ListBridge<DeviceWrappable, BrokerProxyDevice, DeviceBridge> devices;
+    private ListBridge<RuleWrappable, BrokerRealRule, RuleBridge> rules;
     private CommandBridge addUser;
     private CommandBridge addDevice;
     private CommandBridge addRule;
-
-    private BrokerProxyPrimaryObject.Remover<BrokerProxyDevice> deviceRemover = new BrokerProxyPrimaryObject.Remover<BrokerProxyDevice>() {
-        @Override
-        public void remove(BrokerProxyDevice primaryObject) {
-            if(getResources().getGeneralResources().getProxyResources().getRoot().getDevices().get(primaryObject.getId()) != null) {
-                getResources().getGeneralResources().getProxyResources().getRoot().getDevices().remove(primaryObject.getId());
-            }
-        }
-    };
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
     public RootObjectBridge(final BrokerBridgeResources resources) {
         super(resources, new RootWrappable());
         resources.setRoot(this);
-        users = new ListBridge<BrokerRealUser, UserWrappable, UserBridge>(resources,
+        users = new ListBridge<UserWrappable, BrokerRealUser, UserBridge>(resources,
                 resources.getGeneralResources().getRealResources().getRoot().getUsers(),
-                new Function<BrokerRealUser, UserBridge>() {
-            @Override
-            public UserBridge apply(@Nullable BrokerRealUser connection) {
-                return new UserBridge(resources, connection);
-            }
-        });
-        types = new ListBridge<BrokerProxyType, TypeWrappable<?>, TypeBridge>(resources,
+                new UserBridge.Converter(resources));
+        types = new ListBridge<TypeWrappable<?>, BrokerProxyType, TypeBridge>(resources,
                 resources.getGeneralResources().getProxyResources().getRoot().getTypes(),
-                new Function<BrokerProxyType, TypeBridge>() {
-            @Override
-            public TypeBridge apply(@Nullable BrokerProxyType type) {
-                return new TypeBridge(resources, type.getWrappable(), type);
-            }
-        });
-        devices = new ListBridge<BrokerProxyDevice, DeviceWrappable, DeviceBridge>(resources,
+                new TypeBridge.Converter(resources));
+        devices = new ListBridge<DeviceWrappable, BrokerProxyDevice, DeviceBridge>(resources,
                 resources.getGeneralResources().getProxyResources().getRoot().getDevices(),
-                new Function<BrokerProxyDevice, DeviceBridge>() {
-            @Override
-            public DeviceBridge apply(@Nullable BrokerProxyDevice device) {
-                device.setRemover(deviceRemover);
-                return new DeviceBridge(resources, device);
-            }
-        });
-        rules = new ListBridge<BrokerRealRule, RuleWrappable, RuleBridge>(resources,
+                new DeviceBridge.Converter(resources));
+        rules = new ListBridge<RuleWrappable, BrokerRealRule, RuleBridge>(resources,
                 resources.getGeneralResources().getRealResources().getRoot().getRules(),
-                new Function<BrokerRealRule, RuleBridge>() {
-            @Override
-            public RuleBridge apply(@Nullable BrokerRealRule rule) {
-                return new RuleBridge(resources, rule);
-            }
-        });
+                new RuleBridge.Converter(resources));
         addUser = new CommandBridge(resources, resources.getGeneralResources().getRealResources().getRoot().getAddUserCommand());
         addDevice = new CommandBridge(resources, resources.getGeneralResources().getClient().getAddDeviceCommand());
         addRule = new CommandBridge(resources, resources.getGeneralResources().getRealResources().getRoot().getAddRuleCommand());
@@ -133,19 +100,19 @@ public class RootObjectBridge
         throw new HousemateRuntimeException("Whatever");
     }
 
-    public ListBridge<BrokerRealUser, UserWrappable, UserBridge> getUsers() {
+    public ListBridge<UserWrappable, BrokerRealUser, UserBridge> getUsers() {
         return users;
     }
 
-    public ListBridge<BrokerProxyType, TypeWrappable<?>, TypeBridge> getTypes() {
+    public ListBridge<TypeWrappable<?>, BrokerProxyType, TypeBridge> getTypes() {
         return types;
     }
 
-    public ListBridge<BrokerProxyDevice, DeviceWrappable, DeviceBridge> getDevices() {
+    public ListBridge<DeviceWrappable, BrokerProxyDevice, DeviceBridge> getDevices() {
         return devices;
     }
 
-    public ListBridge<BrokerRealRule, RuleWrappable, RuleBridge> getRules() {
+    public ListBridge<RuleWrappable, BrokerRealRule, RuleBridge> getRules() {
         return rules;
     }
 

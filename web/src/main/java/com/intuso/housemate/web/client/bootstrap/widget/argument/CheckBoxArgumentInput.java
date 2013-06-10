@@ -5,7 +5,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
 import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
 
@@ -33,10 +32,10 @@ public class CheckBoxArgumentInput extends CheckBox implements ArgumentInput {
     }
 
     @Override
-    public void setValue(Value<?, ?> value) {
-        if(value.getValue() == null || value.getValue().getValue() == null)
+    public void setTypeInstance(TypeInstance typeInstance) {
+        if(typeInstance == null || typeInstance.getValue() == null)
             setValue(Boolean.FALSE);
         else
-            setValue(Boolean.parseBoolean(value.getValue().getValue()), false);
+            setValue(Boolean.parseBoolean(typeInstance.getValue()), false);
     }
 }

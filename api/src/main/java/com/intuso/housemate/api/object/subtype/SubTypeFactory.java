@@ -1,4 +1,4 @@
-package com.intuso.housemate.api.object.type.option;
+package com.intuso.housemate.api.object.subtype;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.resources.Resources;
@@ -10,8 +10,8 @@ import com.intuso.housemate.api.resources.Resources;
  * Time: 09:13
  * To change this template use File | Settings | File Templates.
  */
-public interface OptionFactory<
+public interface SubTypeFactory<
             R extends Resources,
-            O extends Option>
-        extends HousemateObjectFactory<R, OptionWrappable, O> {
+            ST extends SubType<?>>
+        extends HousemateObjectFactory<R, SubTypeWrappable, ST> {
 }

@@ -1,4 +1,4 @@
-package com.intuso.housemate.api.object.type.option;
+package com.intuso.housemate.api.object.subtype;
 
 import com.intuso.housemate.api.object.list.List;
 
@@ -9,6 +9,6 @@ import com.intuso.housemate.api.object.list.List;
  * Time: 16:51
  * To change this template use File | Settings | File Templates.
  */
-public interface HasOptions<L extends List<? extends Option>> {
-    public L getOptions();
+public interface HasSubTypes<L extends List<? extends SubType<?>>> {
+    public L getSubTypes();
 }

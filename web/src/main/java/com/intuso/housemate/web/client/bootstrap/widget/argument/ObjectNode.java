@@ -56,10 +56,10 @@ class ObjectNode extends Composite
     private boolean expanded = false;
 
     public ObjectNode(ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
-        this(null, object,  0);
+        this(null, object);
     }
 
-    private ObjectNode(ObjectNode root, final ProxyObject<?, ?, ?, ?, ?, ?, ?> object, int depth) {
+    private ObjectNode(ObjectNode root, final ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
 
         this.root = root != null ? root : this;
 
@@ -68,10 +68,10 @@ class ObjectNode extends Composite
         heading.setText(object.getName());
         heading.setTitle(object.getDescription());
 
-        children.getElement().getStyle().setPaddingLeft((depth + 1) * 10, com.google.gwt.dom.client.Style.Unit.PX);
+        children.getElement().getStyle().setPaddingLeft(10, com.google.gwt.dom.client.Style.Unit.PX);
 
         for(ProxyObject<?, ?, ?, ?, ?, ?, ?> child : object.getWrappers()) {
-            ObjectNode childNode = new ObjectNode(root, child, depth + 1);
+            ObjectNode childNode = new ObjectNode(root, child);
             childNodes.put(child.getId(), childNode);
             children.add(childNode);
             childNode.addObjectSelectedHandler(this);

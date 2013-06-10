@@ -93,8 +93,8 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
     }
 
     @Override
-    public Boolean isConnected() {
-        return connected.getTypedValue();
+    public boolean isConnected() {
+        return connected.getTypedValue() != null ? connected.getTypedValue() : false;
     }
 
     @Override
@@ -108,7 +108,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
     }
 
     @Override
-    public Boolean isRunning() {
+    public boolean isRunning() {
         return running.getTypedValue() != null ? running.getTypedValue() : false;
     }
 

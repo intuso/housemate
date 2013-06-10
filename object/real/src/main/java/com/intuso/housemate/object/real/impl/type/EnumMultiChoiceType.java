@@ -3,7 +3,7 @@ package com.intuso.housemate.object.real.impl.type;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.RealSubType;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -22,24 +22,24 @@ public abstract class EnumMultiChoiceType<E extends Enum<E>> extends RealMultiCh
 
     protected EnumMultiChoiceType(RealResources resources, String id, String name, String description,
                                   Class<E> enumClass, E[] values) {
-        this(resources, id, name, description, enumClass, values, new EnumMap<E, List<RealType<?, ?, ?>>>(enumClass),
+        this(resources, id, name, description, enumClass, values, new EnumMap<E, List<RealSubType<?>>>(enumClass),
                 new EnumSingleChoiceType.EnumInstanceSerialiser<E>(enumClass));
     }
 
     protected EnumMultiChoiceType(RealResources resources, String id, String name, String description,
-                                  Class<E> enumClass, E[] values, EnumMap<E, List<RealType<?, ?, ?>>> optionSubTypes) {
+                                  Class<E> enumClass, E[] values, EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
         this(resources, id, name, description, enumClass, values, optionSubTypes,
                 new EnumSingleChoiceType.EnumInstanceSerialiser<E>(enumClass));
     }
 
     protected EnumMultiChoiceType(RealResources resources, String id, String name, String description,
                                   Class<E> enumClass, E[] values, TypeSerialiser<E> elementSerialiser) {
-        this(resources, id, name, description, enumClass, values, new EnumMap<E, List<RealType<?, ?, ?>>>(enumClass),
+        this(resources, id, name, description, enumClass, values, new EnumMap<E, List<RealSubType<?>>>(enumClass),
                 elementSerialiser);
     }
 
     protected EnumMultiChoiceType(RealResources resources, String id, String name, String description,
-                                  Class<E> enumClass, E[] values, EnumMap<E, List<RealType<?, ?, ?>>> optionSubTypes,
+                                  Class<E> enumClass, E[] values, EnumMap<E, List<RealSubType<?>>> optionSubTypes,
                                   TypeSerialiser<E> elementSerialiser) {
         super(resources, id, name, description,
                 EnumSingleChoiceType.convertValuesToOptions(resources, values, optionSubTypes));

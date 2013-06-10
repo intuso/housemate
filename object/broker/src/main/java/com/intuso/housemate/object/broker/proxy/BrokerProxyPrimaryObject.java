@@ -65,8 +65,8 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
     }
 
     @Override
-    public Boolean isConnected() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean isConnected() {
+        return connected.getTypedValue() != null ? connected.getTypedValue() : false;
     }
 
     @Override
@@ -75,8 +75,9 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
     }
 
     @Override
-    public final Boolean isRunning() {
-        return BooleanType.SERIALISER.deserialise(running.getValue());
+    public final boolean isRunning() {
+        Boolean value = BooleanType.SERIALISER.deserialise(running.getTypeInstance());
+        return value != null ? value : false;
     }
 
     @Override
@@ -96,7 +97,7 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
 
     @Override
     public final String getError() {
-        return StringType.SERIALISER.deserialise(error.getValue());
+        return StringType.SERIALISER.deserialise(error.getTypeInstance());
     }
 
     @Override

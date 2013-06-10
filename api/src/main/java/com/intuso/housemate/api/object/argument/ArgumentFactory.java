@@ -1,4 +1,4 @@
-package com.intuso.housemate.api.object.command.argument;
+package com.intuso.housemate.api.object.argument;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.resources.Resources;

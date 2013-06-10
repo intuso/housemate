@@ -4,9 +4,9 @@ import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.type.MultiChoiceTypeWrappable;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
-import com.intuso.housemate.api.object.value.Value;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
 import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -68,9 +68,9 @@ public class MultiSelectArgumentInput extends ListBox implements ArgumentInput {
     }
 
     @Override
-    public void setValue(Value<?, ?> value) {
+    public void setTypeInstance(TypeInstance typeInstance) {
         selectedOptions.clear();
-        selectedOptions.addAll(MultiChoiceTypeWrappable.SERIALISER.deserialise(value.getValue()));
+        selectedOptions.addAll(MultiChoiceTypeWrappable.SERIALISER.deserialise(typeInstance));
         for(int i = 0; i < options.size(); i++)
             setItemSelected(i, false);
         for(String id : selectedOptions) {

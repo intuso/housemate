@@ -1,11 +1,10 @@
 package com.intuso.housemate.object.broker.proxy;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.type.option.Option;
-import com.intuso.housemate.api.object.type.option.OptionListener;
-import com.intuso.housemate.api.object.type.option.OptionWrappable;
-
-import java.util.List;
+import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.option.Option;
+import com.intuso.housemate.api.object.option.OptionListener;
+import com.intuso.housemate.api.object.option.OptionWrappable;
+import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,15 +14,26 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyOption
-        extends BrokerProxyObject<OptionWrappable, NoChildrenWrappable, NoChildrenBrokerProxyObject, BrokerProxyOption, OptionListener>
-        implements Option {
+        extends BrokerProxyObject<OptionWrappable, ListWrappable<SubTypeWrappable>,
+            BrokerProxyList<SubTypeWrappable, BrokerProxySubType>,
+            BrokerProxyOption,
+            OptionListener>
+        implements Option<BrokerProxyList<SubTypeWrappable, BrokerProxySubType>> {
 
-    public BrokerProxyOption(BrokerProxyResources<NoChildrenBrokerProxyObjectFactory> resources, OptionWrappable wrappable) {
+    private BrokerProxyList<SubTypeWrappable, BrokerProxySubType> subTypes;
+
+    public BrokerProxyOption(BrokerProxyResources<BrokerProxyFactory.List<SubTypeWrappable, BrokerProxySubType>> resources,
+                             OptionWrappable wrappable) {
         super(resources, wrappable);
     }
 
     @Override
-    public List<String> getSubTypes() {
-        return getWrappable().getSubTypes();
+    protected void getChildObjects() {
+        subTypes = getWrapper(SUB_TYPES);
+    }
+
+    @Override
+    public BrokerProxyList<SubTypeWrappable, BrokerProxySubType> getSubTypes() {
+        return subTypes;
     }
 }

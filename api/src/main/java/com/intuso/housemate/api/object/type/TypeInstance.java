@@ -14,10 +14,12 @@ public class TypeInstance implements Message.Payload {
     private String value;
     private TypeInstances childValues;
 
-    private TypeInstance() {}
+    public TypeInstance() {
+        this(null);
+    }
 
     public TypeInstance(String value) {
-        this.value = value;
+        this(value, new TypeInstances());
     }
 
     public TypeInstance(String value, TypeInstances childValues) {
@@ -29,6 +31,10 @@ public class TypeInstance implements Message.Payload {
         return value;
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     public TypeInstances getChildValues() {
         return childValues;
     }
@@ -38,10 +44,10 @@ public class TypeInstance implements Message.Payload {
         if(o == null || !(o instanceof TypeInstance))
             return false;
         TypeInstance other = (TypeInstance)o;
-        if(!(value == null && other.value == null)
-                || (value != null && other.value != null && value.equals(other.value)))
+        if(!((value == null && other.value == null)
+                || (value != null && other.value != null && value.equals(other.value))))
             return false;
-        return  (value == null && other.value == null)
-                || (value != null && other.value != null && value.equals(other.value));
+        // todo check child values
+        return true;
     }
 }

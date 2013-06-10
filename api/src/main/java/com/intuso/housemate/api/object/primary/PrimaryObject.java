@@ -25,9 +25,9 @@ public interface PrimaryObject<P extends Property<?, ?, ?>, RC extends Command<?
     public final static String ERROR_VALUE = "error";
 
     public RC getRemoveCommand();
-    public Boolean isConnected();
+    public boolean isConnected();
     public CV getConnectedValue();
-    public Boolean isRunning();
+    public boolean isRunning();
     public RV getRunningValue();
     public SC getStartCommand();
     public SC getStopCommand();

@@ -38,7 +38,7 @@ public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     @Override
-    public TypeInstance getValue() {
+    public TypeInstance getTypeInstance() {
         return getWrappable().getValue();
     }
 
@@ -49,15 +49,16 @@ public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
 
             @Override
             public void valueChanging(Value<?, ?> value) {
-                // do nothing
+                for(ValueListener<? super V> listener : getObjectListeners())
+                    listener.valueChanging(getThis());
             }
 
             @Override
             public void valueChanged(Value<?, ?> value) {
-                getWrappable().setValue(value.getValue());
+                getWrappable().setValue(value.getTypeInstance());
                 for(ValueListener<? super V> listener : getObjectListeners())
                     listener.valueChanged(getThis());
-                broadcastMessage(VALUE, value.getValue());
+                broadcastMessage(VALUE, value.getTypeInstance());
             }}));
         return result;
     }

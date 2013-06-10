@@ -46,8 +46,9 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<H
     }
 
     @Override
-    public Boolean isConnected() {
-        return BooleanType.SERIALISER.deserialise(connectedValue.getValue());
+    public boolean isConnected() {
+        Boolean value = BooleanType.SERIALISER.deserialise(connectedValue.getTypeInstance());
+        return value != null ? value : false;
     }
 
     @Override
@@ -56,8 +57,9 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<H
     }
 
     @Override
-    public Boolean isRunning() {
-        return BooleanType.SERIALISER.deserialise(runningValue.getValue());
+    public boolean isRunning() {
+        Boolean value = BooleanType.SERIALISER.deserialise(runningValue.getTypeInstance());
+        return value != null ? value : false;
     }
 
     @Override
@@ -77,7 +79,7 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<H
 
     @Override
     public String getError() {
-        return errorValue != null && errorValue.getValue() != null ? errorValue.getValue().getValue() : null;
+        return errorValue != null && errorValue.getTypeInstance() != null ? errorValue.getTypeInstance().getValue() : null;
     }
 
     @Override

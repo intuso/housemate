@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.RealSubType;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -28,23 +28,23 @@ public abstract class EnumSingleChoiceType<E extends Enum<E>> extends RealSingle
 
     protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
                                    Class<E> enumClass, E[] values) {
-        this(resources, id, name, description, enumClass, values, new EnumMap<E, List<RealType<?, ?, ?>>>(enumClass),
+        this(resources, id, name, description, enumClass, values, new EnumMap<E, List<RealSubType<?>>>(enumClass),
                 new EnumInstanceSerialiser<E>(enumClass));
     }
 
     protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
                                    Class<E> enumClass, E[] values, TypeSerialiser<E> serialiser) {
-        this(resources, id, name, description, enumClass, values, new EnumMap<E, List<RealType<?, ?, ?>>>(enumClass),
+        this(resources, id, name, description, enumClass, values, new EnumMap<E, List<RealSubType<?>>>(enumClass),
                 serialiser);
     }
 
     protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
-                                   Class<E> enumClass, E[] values, EnumMap<E, List<RealType<?, ?, ?>>> optionSubTypes) {
+                                   Class<E> enumClass, E[] values, EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
         this(resources, id, name, description, enumClass, values, optionSubTypes, new EnumInstanceSerialiser<E>(enumClass));
     }
 
     protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
-                                   Class<E> enumClass, E[] values, EnumMap<E, List<RealType<?, ?, ?>>> optionSubTypes,
+                                   Class<E> enumClass, E[] values, EnumMap<E, List<RealSubType<?>>> optionSubTypes,
                                    TypeSerialiser<E> serialiser) {
         super(resources, id, name, description, convertValuesToOptions(resources, values, optionSubTypes));
         this.enumClass = enumClass;
@@ -62,7 +62,7 @@ public abstract class EnumSingleChoiceType<E extends Enum<E>> extends RealSingle
     }
 
     public static <E extends Enum<E>> List<RealOption> convertValuesToOptions(final RealResources resources, E[] values,
-                                                          final EnumMap<E, List<RealType<?, ?, ?>>> optionSubTypes) {
+                                                          final EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
         return Lists.transform(Arrays.asList(values), new Function<E, RealOption>() {
             @Override
             public RealOption apply(@Nullable E value) {

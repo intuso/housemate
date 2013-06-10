@@ -2,8 +2,8 @@ package com.intuso.housemate.broker.storage.impl;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -35,6 +36,9 @@ public class SjoerdDB implements Storage {
     public final static String PROPERTY_VALUE_KEY = "value";
     public final static String PROPERTIES_EXTENSION = ".properties";
     public final static String VALUE_FILENAME = "value";
+
+    private final Joiner JOINER = Joiner.on("/");
+    private final Splitter SPLITTER = Splitter.on("/");
 
     private final Joiner pathJoiner = Joiner.on(File.separator);
     private final String basePath;
@@ -147,19 +151,42 @@ public class SjoerdDB implements Storage {
         TypeInstances result = new TypeInstances();
         for(Map.Entry<Object, Object> entry : properties.entrySet())
             if(entry.getKey() instanceof String && entry.getValue() instanceof String)
-                result.put((String)entry.getKey(), new TypeInstance((String)entry.getValue()));
+                addValue(result, (String) entry.getKey(), (String) entry.getValue());
         return result;
+    }
+
+    private void addValue(TypeInstances typeInstances, String path, String value) {
+        List<String> pathElements = Lists.newArrayList(SPLITTER.split(path));
+        for(int i = 0; i < pathElements.size() - 1; i++) {
+            if(!typeInstances.containsKey(pathElements.get(i)))
+                typeInstances.put(pathElements.get(i), new TypeInstance());
+            typeInstances = typeInstances.get(pathElements.get(i)).getChildValues();
+        }
+        if(!typeInstances.containsKey(pathElements.get(pathElements.size() - 1)))
+            typeInstances.put(pathElements.get(pathElements.size() - 1), new TypeInstance());
+        typeInstances.get(pathElements.get(pathElements.size() - 1)).setValue(value);
     }
 
     private void saveDetails(File file, TypeInstances details) throws IOException {
         Properties properties = new Properties();
-        properties.putAll(Maps.transformValues(details, new Function<TypeInstance, String>() {
-            @Override
-            public String apply(TypeInstance typeValue) {
-                return typeValue.getValue();
-            }
-        }));
+        List<String> path = Lists.newArrayList();
+        addValues(properties, path, details);
         properties.store(new FileOutputStream(file), "");
+    }
+
+    private void addValues(Properties properties, List<String> path, TypeInstances typeInstances) {
+        for(Map.Entry<String, TypeInstance> entry : typeInstances.entrySet()) {
+            path.add(entry.getKey());
+            addValue(properties, path, entry.getValue());
+            path.remove(path.size() - 1);
+        }
+    }
+
+    private void addValue(Properties properties, List<String> path, TypeInstance typeInstance) {
+        if(typeInstance != null) {
+            properties.put(JOINER.join(path), typeInstance.getValue());
+            addValues(properties, path, typeInstance.getChildValues());
+        }
     }
 
     private File getFile(boolean createParentFolder, String[] path, String ... extras) {

@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.widget.argument;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.intuso.housemate.api.object.value.Value;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.web.client.handler.HasArgumentEditedHandlers;
 
 /**
@@ -12,5 +12,5 @@ import com.intuso.housemate.web.client.handler.HasArgumentEditedHandlers;
  * To change this template use File | Settings | File Templates.
  */
 public interface ArgumentInput extends HasArgumentEditedHandlers, IsWidget {
-    public void setValue(Value<?, ?> value);
+    public void setTypeInstance(TypeInstance typeInstance);
 }

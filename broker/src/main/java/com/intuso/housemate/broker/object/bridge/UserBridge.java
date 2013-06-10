@@ -1,9 +1,12 @@
 package com.intuso.housemate.broker.object.bridge;
 
+import com.google.common.base.Function;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserListener;
 import com.intuso.housemate.api.object.user.UserWrappable;
+
+import javax.annotation.Nullable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,5 +30,19 @@ public class UserBridge
     @Override
     public CommandBridge getRemoveCommand() {
         return removeCommand;
+    }
+
+    public final static class Converter implements Function<User<?>, UserBridge> {
+
+        private BrokerBridgeResources resources;
+
+        public Converter(BrokerBridgeResources resources) {
+            this.resources = resources;
+        }
+
+        @Override
+        public UserBridge apply(@Nullable User<?> user) {
+            return new UserBridge(resources, user);
+        }
     }
 }

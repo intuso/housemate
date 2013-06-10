@@ -87,7 +87,7 @@ public abstract class BrokerRealCondition
 
     @Override
     public boolean isSatisfied() {
-        return satisfiedValue.getTypedValue();
+        return satisfiedValue.getTypedValue() != null ? satisfiedValue.getTypedValue() : false;
     }
 
     public final void setError(String error) {

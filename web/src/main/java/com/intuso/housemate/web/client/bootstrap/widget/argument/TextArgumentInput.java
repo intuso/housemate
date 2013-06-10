@@ -9,7 +9,6 @@ import com.intuso.housemate.api.object.type.RegexTypeWrappable;
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeWrappable;
-import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
 import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
 
@@ -37,11 +36,11 @@ public class TextArgumentInput extends TextBox implements ArgumentInput {
     }
 
     @Override
-    public void setValue(Value<?, ?> value) {
-        if(value.getValue() == null || value.getValue().getValue() == null)
+    public void setTypeInstance(TypeInstance typeInstance) {
+        if(typeInstance == null || typeInstance.getValue() == null)
             setText("");
         else
-            setText(value.getValue().getValue());
+            setText(typeInstance.getValue());
     }
 
     @Override
