@@ -33,13 +33,15 @@ import java.util.UUID;
  */
 public class RemoteClientManager {
 
+    private final static String BROKER_INSTANCE_ID = UUID.randomUUID().toString();
+
     private final BrokerGeneralResources resources;
     private final RemoteClientImpl root;
     private final Map<String, RemoteClientImpl> lostClients = Maps.newHashMap();
 
     public RemoteClientManager(BrokerGeneralResources resources) {
         this.resources = resources;
-        root = new RemoteClientImpl(UUID.randomUUID().toString(), ClientWrappable.Type.ROUTER, resources.getComms());
+        root = new RemoteClientImpl(UUID.randomUUID().toString(), ClientWrappable.Type.ROUTER, resources.getMainRouter());
         root.setRoute(Lists.<String>newArrayList());
     }
 
@@ -88,7 +90,7 @@ public class RemoteClientManager {
         try {
             response = checkMethod(request.getMethod(), connectionId);
         } catch(Throwable t) {
-            response = new Root.AuthenticationResponse("Could not check authentication: " + t.getMessage());
+            response = new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "Could not check authentication: " + t.getMessage());
         }
 
         try {
@@ -111,9 +113,9 @@ public class RemoteClientManager {
             Session s = (Session)method;
             BrokerRealUser user = getUserForSession(s.getSessionId());
             if(user != null) {
-                return new Root.AuthenticationResponse(s.getSessionId(), user.getId());
+                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, s.getSessionId(), user.getId());
             } else {
-                return new Root.AuthenticationResponse("Unknown Session");
+                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "Unknown Session");
             }
 
             // check username/passwords match
@@ -122,25 +124,25 @@ public class RemoteClientManager {
             BrokerRealUser user = authenticateUser(up.getUsername(), up.getPassword());
             if(user != null) {
                 saveUserSession(connectionId, user);
-                return new Root.AuthenticationResponse(connectionId, user.getId());
+                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, connectionId, user.getId());
             } else {
-                return new Root.AuthenticationResponse("Incorrect credentials");
+                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "Incorrect credentials");
             }
 
             // anything internal should just be accepted regardless
         } else if(method instanceof LocalClient.InternalConnectMethod) {
-            return new Root.AuthenticationResponse(connectionId, null);
+            return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, connectionId, null);
 
             // reconnect
         } else if(method instanceof Reconnect) {
-            return new Root.AuthenticationResponse("Unknown connection id");
+            return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "Unknown connection id");
 
             // unknown method
         } else {
             if(method != null)
-                return new Root.AuthenticationResponse("Unknown method used for authentication request: " + method.getClass().getName());
+                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "Unknown method used for authentication request: " + method.getClass().getName());
             else
-                return new Root.AuthenticationResponse("No method used for authentication request");
+                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "No method used for authentication request");
         }
     }
 
@@ -165,13 +167,12 @@ public class RemoteClientManager {
 
     public void connectionLost(List<String> route) {
         RemoteClientImpl client = root.getClient(route);
-        if(client != null) {
-            client.remove();
+        if(client != null)
             connectionLost(client);
-        }
     }
 
     private void connectionLost(RemoteClientImpl client) {
+        client.remove();
         client.connectionLost();
         lostClients.put(client.getConnectionId(), client);
         for(RemoteClientImpl child : client.getChildren())

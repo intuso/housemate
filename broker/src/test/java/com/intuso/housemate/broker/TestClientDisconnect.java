@@ -1,17 +1,18 @@
 package com.intuso.housemate.broker;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
 import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.comms.RouterRootObject;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
-import com.intuso.housemate.comms.transport.socket.client.ClientComms;
+import com.intuso.housemate.comms.transport.socket.client.SocketClient;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
-import org.junit.Ignore;
+import com.intuso.utilities.listener.ListenerRegistration;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,7 +33,6 @@ import static junit.framework.Assert.*;
  * Time: 08:44
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
 public class TestClientDisconnect {
 
     private static BrokerServerEnvironment environment = null;
@@ -47,7 +47,7 @@ public class TestClientDisconnect {
         }
     }
 
-    @Test(timeout = 15000)
+    @Test(timeout = 5000)
     public void testDisconnect() throws InterruptedException {
 
         final int testNum = TEST_NUM.incrementAndGet();
@@ -55,51 +55,60 @@ public class TestClientDisconnect {
         final AtomicBoolean disconnected = new AtomicBoolean(true);
 
         ProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
-        ClientComms comms = new ClientComms(resources, "localhost", 65432);
+        SocketClient socketClient = new SocketClient(resources, "localhost", 65432);
         resources = new ProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
-                comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
+                socketClient, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
-        comms.connect(new UsernamePassword(false, "admin", "admin", false), new AuthenticationResponseHandler() {
+        socketClient.addObjectListener(new RootListener<RouterRootObject>() {
             @Override
-            public void responseReceived(Root.AuthenticationResponse response) {
-                root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
-                    @Override
-                    public void loaded() {
-                        synchronized (disconnected) {
-                            disconnected.set(false);
-                            disconnected.notify();
+            public void statusChanged(RouterRootObject routerRoot, Root.Status status) {
+                if(status == Root.Status.Connected) {
+                    root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
+
+                        @Override
+                        public void statusChanged(SimpleProxyObject.Root root, Root.Status status) {
+
                         }
-                        RemoteClient client = environment.getGeneralResources().getRemoteClientManager().getClient(
-                                Arrays.asList(Integer.toString(testNum), "0"));
-                        assertNotNull(client);
-                        client.addListener(new RemoteClientListener() {
-                            @Override
-                            public void disconnected(RemoteClient client) {
-                                synchronized(disconnected) {
-                                    disconnected.set(true);
-                                    disconnected.notify();
-                                }
-                            }
 
-                            @Override
-                            public void connectionLost(RemoteClient client) {
-                                synchronized(disconnected) {
-                                    disconnected.notify();
-                                }
+                        @Override
+                        public void loaded() {
+                            synchronized(disconnected) {
+                                disconnected.set(false);
+                                disconnected.notify();
                             }
+                            RemoteClient client = environment.getGeneralResources().getRemoteClientManager().getClient(
+                                    Arrays.asList(Integer.toString(testNum), "0"));
+                            assertNotNull(client);
+                            client.addListener(new RemoteClientListener() {
+                                @Override
+                                public void disconnected(RemoteClient client) {
+                                    synchronized(disconnected) {
+                                        disconnected.set(true);
+                                        disconnected.notify();
+                                    }
+                                }
 
-                            @Override
-                            public void reconnected(RemoteClient client) {
-                                synchronized(disconnected) {
-                                    disconnected.notify();
+                                @Override
+                                public void connectionLost(RemoteClient client) {
+                                    synchronized(disconnected) {
+                                        disconnected.notify();
+                                    }
                                 }
-                            }
-                        });
-                    }
-                });
-                root.connect(new UsernamePassword(false, "admin", "admin", false), null);
+
+                                @Override
+                                public void reconnected(RemoteClient client) {
+                                    synchronized(disconnected) {
+                                        disconnected.notify();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    root.connect(new UsernamePassword(false, "admin", "admin", false));
+                }
             }
         });
+        socketClient.connect(new UsernamePassword(false, "admin", "admin", false));
 
         synchronized (disconnected) {
             disconnected.wait(); // wait for messages to be processed
@@ -112,7 +121,7 @@ public class TestClientDisconnect {
         }
     }
 
-    @Test(timeout = 15000)
+    @Test(timeout = 5000)
     public void testConnectionLost() throws InterruptedException, IOException {
 
         final int testNum = TEST_NUM.incrementAndGet();
@@ -126,51 +135,60 @@ public class TestClientDisconnect {
         final AtomicBoolean connectionLost = new AtomicBoolean(true);
 
         ProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
-        ClientComms comms = new ClientComms(resources, "localhost", 65433);
+        SocketClient comms = new SocketClient(resources, "localhost", 65433);
         resources = new ProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
-        comms.connect(new UsernamePassword(false, "admin", "admin", false), new AuthenticationResponseHandler() {
+        comms.addObjectListener(new RootListener<RouterRootObject>() {
             @Override
-            public void responseReceived(Root.AuthenticationResponse response) {
-                root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
-                    @Override
-                    public void loaded() {
-                        synchronized (connectionLost) {
-                            connectionLost.set(false);
-                            connectionLost.notify();
+            public void statusChanged(RouterRootObject routerRoot, Root.Status status) {
+                if(status == Root.Status.Connected) {
+                    root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
+
+                        @Override
+                        public void statusChanged(SimpleProxyObject.Root root, Root.Status status) {
+
                         }
-                        RemoteClient client = environment.getGeneralResources().getRemoteClientManager().getClient(
-                                Arrays.asList(Integer.toString(testNum), "0"));
-                        assertNotNull(client);
-                        client.addListener(new RemoteClientListener() {
-                            @Override
-                            public void disconnected(RemoteClient client) {
-                                synchronized (connectionLost) {
-                                    connectionLost.notify();
-                                }
-                            }
 
-                            @Override
-                            public void connectionLost(RemoteClient client) {
-                                synchronized(connectionLost) {
-                                    connectionLost.set(true);
-                                    connectionLost.notify();
-                                }
+                        @Override
+                        public void loaded() {
+                            synchronized (connectionLost) {
+                                connectionLost.set(false);
+                                connectionLost.notify();
                             }
+                            RemoteClient client = environment.getGeneralResources().getRemoteClientManager().getClient(
+                                    Arrays.asList(Integer.toString(testNum), "0"));
+                            assertNotNull(client);
+                            client.addListener(new RemoteClientListener() {
+                                @Override
+                                public void disconnected(RemoteClient client) {
+                                    synchronized (connectionLost) {
+                                        connectionLost.notify();
+                                    }
+                                }
 
-                            @Override
-                            public void reconnected(RemoteClient client) {
-                                synchronized (connectionLost) {
-                                    connectionLost.notify();
+                                @Override
+                                public void connectionLost(RemoteClient client) {
+                                    synchronized(connectionLost) {
+                                        connectionLost.set(true);
+                                        connectionLost.notify();
+                                    }
                                 }
-                            }
-                        });
-                    }
-                });
-                root.connect(new UsernamePassword(false, "admin", "admin", false), null);
+
+                                @Override
+                                public void reconnected(RemoteClient client) {
+                                    synchronized (connectionLost) {
+                                        connectionLost.notify();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    root.connect(new UsernamePassword(false, "admin", "admin", false));
+                }
             }
         });
+        comms.connect(new UsernamePassword(false, "admin", "admin", false));
 
         synchronized (connectionLost) {
             connectionLost.wait(); // wait for messages to be processed
@@ -185,7 +203,7 @@ public class TestClientDisconnect {
         }
     }
 
-    @Test(timeout = 15000)
+    @Test(timeout = 5000)
     public void testReconnect() throws InterruptedException, IOException {
 
         final int testNum = TEST_NUM.incrementAndGet();
@@ -199,57 +217,68 @@ public class TestClientDisconnect {
         final AtomicBoolean connected = new AtomicBoolean(true);
 
         ProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
-        ClientComms comms = new ClientComms(resources, "localhost", 65433);
+        SocketClient comms = new SocketClient(resources, "localhost", 65433);
         resources = new ProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
-        comms.connect(new UsernamePassword(false, "admin", "admin", false), new AuthenticationResponseHandler() {
+        ListenerRegistration rootListenerRegistration = root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
+
             @Override
-            public void responseReceived(Root.AuthenticationResponse response) {
-                root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
+            public void statusChanged(SimpleProxyObject.Root root, Root.Status status) {
+
+            }
+
+            @Override
+            public void loaded() {
+                synchronized(connected) {
+                    connected.set(true);
+                    connected.notify();
+                }
+                RemoteClient client = environment.getGeneralResources().getRemoteClientManager().getClient(
+                        Arrays.asList(Integer.toString(testNum), "0"));
+                assertNotNull(client);
+                client.addListener(new RemoteClientListener() {
                     @Override
-                    public void loaded() {
-                        synchronized (connected) {
+                    public void disconnected(RemoteClient client) {
+                        synchronized(connected) {
+                            connected.notify();
+                        }
+                    }
+
+                    @Override
+                    public void connectionLost(RemoteClient client) {
+                        synchronized(connected) {
+                            connected.set(false);
+                            connected.notify();
+                        }
+                    }
+
+                    @Override
+                    public void reconnected(RemoteClient client) {
+                        synchronized(connected) {
                             connected.set(true);
                             connected.notify();
                         }
-                        RemoteClient client = environment.getGeneralResources().getRemoteClientManager().getClient(
-                                Arrays.asList(Integer.toString(testNum), "0"));
-                        assertNotNull(client);
-                        client.addListener(new RemoteClientListener() {
-                            @Override
-                            public void disconnected(RemoteClient client) {
-                                synchronized (connected) {
-                                    connected.notify();
-                                }
-                            }
-
-                            @Override
-                            public void connectionLost(RemoteClient client) {
-                                synchronized(connected) {
-                                    connected.set(false);
-                                    connected.notify();
-                                }
-                            }
-
-                            @Override
-                            public void reconnected(RemoteClient client) {
-                                synchronized (connected) {
-                                    connected.set(true);
-                                    connected.notify();
-                                }
-                            }
-                        });
                     }
                 });
-                root.connect(new UsernamePassword(false, "admin", "admin", false), null);
             }
         });
+        ListenerRegistration commsListenerRegistration = comms.addObjectListener(new RootListener<RouterRootObject>() {
+            @Override
+            public void statusChanged(RouterRootObject routerRoot, Root.Status status) {
+                if(status == Root.Status.Connected) {
+                    root.connect(new UsernamePassword(false, "admin", "admin", false));
+                }
+            }
+        });
+        comms.connect(new UsernamePassword(false, "admin", "admin", false));
 
         synchronized (connected) {
             connected.wait(); // wait for messages to be processed, assert that it's connected
             assertTrue(connected.get());
         }
+        rootListenerRegistration.removeListener();
+        commsListenerRegistration.removeListener();
         server.close();
         accepter.interrupt();
         accepter.join();

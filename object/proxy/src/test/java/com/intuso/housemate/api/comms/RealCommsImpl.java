@@ -11,13 +11,13 @@ import com.intuso.housemate.api.resources.Resources;
  * Time: 21:00
  * To change this template use File | Settings | File Templates.
  */
-public class RealCommsImpl extends Comms {
+public class RealCommsImpl extends Router {
 
     private TestProxyRoot proxyRoot;
 
     public RealCommsImpl(Resources resources) {
         super(resources);
-        connect(null, null);
+        connect(null);
     }
 
     public void setProxyRoot(TestProxyRoot proxyRoot) {
@@ -35,8 +35,8 @@ public class RealCommsImpl extends Comms {
             if(proxyRoot != null)
                 proxyRoot.distributeMessage(message);
         } catch(HousemateException e) {
-            log.e("Could not send message to proxy root");
-            log.st(e);
+            getLog().e("Could not send message to proxy root");
+            getLog().st(e);
         }
     }
 }

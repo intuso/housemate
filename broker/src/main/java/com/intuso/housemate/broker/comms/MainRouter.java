@@ -2,8 +2,8 @@ package com.intuso.housemate.broker.comms;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.comms.Comms;
 import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.comms.transport.socket.server.SocketServer;
@@ -15,7 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * @author tclabon
  */
-public final class ServerComms extends Comms {
+public final class MainRouter extends Router {
 
     private final LinkedBlockingQueue<Message<Message.Payload>> incomingMessages = new LinkedBlockingQueue<Message<Message.Payload>>();
 
@@ -23,7 +23,7 @@ public final class ServerComms extends Comms {
 
     private BrokerGeneralResources resources;
 
-    public ServerComms(BrokerGeneralResources resources) {
+    public MainRouter(BrokerGeneralResources resources) {
         super(resources);
         this.resources = resources;
     }

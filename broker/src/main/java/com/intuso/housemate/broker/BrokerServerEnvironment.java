@@ -5,7 +5,7 @@ import com.intuso.housemate.annotations.processor.AnnotationProcessor;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.broker.client.LocalClient;
-import com.intuso.housemate.broker.comms.ServerComms;
+import com.intuso.housemate.broker.comms.MainRouter;
 import com.intuso.housemate.broker.factory.ConditionFactory;
 import com.intuso.housemate.broker.factory.ConsequenceFactory;
 import com.intuso.housemate.broker.factory.DeviceFactory;
@@ -86,7 +86,7 @@ public class BrokerServerEnvironment {
 
 	private final Map<String, String> properties;
     private final Log log;
-    private final ServerComms comms;
+    private final MainRouter comms;
     private final Storage storage;
     private final DeviceFactory deviceFactory;
     private final ConditionFactory conditionFactory;
@@ -201,8 +201,8 @@ public class BrokerServerEnvironment {
         bridgeResources = new BrokerBridgeResources(generalResources);
         proxyResources = new BrokerProxyResourcesImpl<BrokerProxyFactory.All>(generalResources, new BrokerProxyFactory.All());
 
-        comms = new ServerComms(generalResources);
-        generalResources.setComms(comms);
+        comms = new MainRouter(generalResources);
+        generalResources.setMainRouter(comms);
 
         clientResources = new RealResources(log, properties, comms);
         generalResources.setClientResources(clientResources);

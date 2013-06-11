@@ -3,7 +3,6 @@ package com.intuso.housemate.object.broker.proxy;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
@@ -44,7 +43,17 @@ public class BrokerProxyRootObject
     }
 
     @Override
-    public void connect(AuthenticationMethod method, AuthenticationResponseHandler responseHandler) {
+    public Status getStatus() {
+        return Status.Connected;
+    }
+
+    @Override
+    public String getConnectionId() {
+        return null;
+    }
+
+    @Override
+    public void connect(AuthenticationMethod method) {
         throw new HousemateRuntimeException("Cannot connect this type of root object");
     }
 

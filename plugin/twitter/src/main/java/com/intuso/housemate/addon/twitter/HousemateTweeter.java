@@ -2,7 +2,6 @@ package com.intuso.housemate.addon.twitter;
 
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
 import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.root.Root;
@@ -92,6 +91,15 @@ public class HousemateTweeter {
 		// setup the housemate stuff
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources,  resources);
         root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
+
+            @Override
+            public void statusChanged(SimpleProxyObject.Root root, Root.Status status) {
+                if(status == Root.Status.Connected)
+                    resources.getLog().d("Connected to broker");
+                else
+                    resources.getLog().e("Failed to connect to broker");
+            }
+
             @Override
             public void loaded() {
                 root.getDevices().addObjectListener(deviceListListener, true);
@@ -99,16 +107,7 @@ public class HousemateTweeter {
         });
 
         root.connect(
-                new UsernamePassword(true, resources.getProperties().get("username"), resources.getProperties().get("password"), true),
-                new AuthenticationResponseHandler() {
-                    @Override
-                    public void responseReceived(Root.AuthenticationResponse response) {
-                        if(response.getUserId() != null)
-                            resources.getLog().d("Connected to broker");
-                        else
-                            resources.getLog().e("Failed to connect to broker");
-                    }
-                });
+                new UsernamePassword(true, resources.getProperties().get("username"), resources.getProperties().get("password"), true));
 	}
 
 	/**

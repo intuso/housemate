@@ -6,7 +6,7 @@ import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.broker.RemoteClientManager;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.client.LocalClient;
-import com.intuso.housemate.broker.comms.ServerComms;
+import com.intuso.housemate.broker.comms.MainRouter;
 import com.intuso.housemate.broker.factory.ConditionFactory;
 import com.intuso.housemate.broker.factory.ConsequenceFactory;
 import com.intuso.housemate.broker.factory.DeviceFactory;
@@ -37,7 +37,7 @@ public class BrokerGeneralResources implements Resources {
 
     private final Log log;
     private final Map<String, String> properties;
-    private ServerComms comms;
+    private MainRouter mainRouter;
     private BrokerGeneralRootObject root;
     private BrokerObjectStorage storage;
     private RemoteClientManager remoteClientManager;
@@ -71,12 +71,12 @@ public class BrokerGeneralResources implements Resources {
         return properties;
     }
 
-    public ServerComms getComms() {
-        return comms;
+    public MainRouter getMainRouter() {
+        return mainRouter;
     }
 
-    public void setComms(ServerComms comms) {
-        this.comms = comms;
+    public void setMainRouter(MainRouter mainRouter) {
+        this.mainRouter = mainRouter;
     }
 
     public BrokerGeneralRootObject getRoot() {

@@ -1,9 +1,10 @@
 package com.intuso.housemate.comms.transport.socket.client;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.Comms;
 import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.NoPayload;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.resources.Resources;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @author tclabon
  *
  */
-public class ClientComms extends Comms {
+public class SocketClient extends Router {
 
     /**
      * broker host
@@ -60,7 +61,7 @@ public class ClientComms extends Comms {
      * Create a new client comms
      * @throws HousemateException
      */
-    public ClientComms(Resources resources, String host, int port) {
+    public SocketClient(Resources resources, String host, int port) {
         super(resources);
 
         // create the queues and threads
@@ -82,7 +83,7 @@ public class ClientComms extends Comms {
 
     @Override
     public void disconnect() {
-        shutdownComms();
+        shutdownComms(false);
     }
 
     /**
@@ -108,7 +109,7 @@ public class ClientComms extends Comms {
                 messageSender.start();
 
                 getLog().d("Connected to broker");
-                connected();
+                setStatus(Root.Status.Connected);
 
                 // return from the method
                 return;
@@ -137,7 +138,7 @@ public class ClientComms extends Comms {
     /**
      * Shutdown the comms connection
      */
-    private void shutdownComms() {
+    private void shutdownComms(boolean reconnecting) {
 
         getLog().d("Disconnecting from the broker");
         try {
@@ -161,7 +162,7 @@ public class ClientComms extends Comms {
         }
 
         getLog().d("Disconnected");
-        disconnected();
+        setStatus(reconnecting ? Root.Status.Reconnecting : Root.Status.Disconnected);
     }
 
     /**
@@ -176,7 +177,7 @@ public class ClientComms extends Comms {
                 public void run() {
                     connecting = true;
                     getLog().d("Running reconnect thread");
-                    shutdownComms();
+                    shutdownComms(true);
                     connectToBroker();
                     getLog().d("Reconnected");
                     connecting = false;
@@ -221,7 +222,7 @@ public class ClientComms extends Comms {
                 while(!isInterrupted()) {
                     Message message = this.readMessage();
                     if(!(message.getPath().length == 0 && message.getType().equals("heartbeat"))) {
-                        log.d("Message received " + message);
+                        getLog().d("Message received " + message);
                         messageReceived(message);
                     }
                 }

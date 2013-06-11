@@ -6,6 +6,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
 import com.intuso.housemate.web.client.event.LoggedInEvent;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
@@ -67,6 +68,11 @@ public class Housemate implements EntryPoint, LoggedInHandler, ProxyRootListener
     }
 
     @Override
+    public void statusChanged(GWTProxyRootObject root, Root.Status status) {
+        // todo show status in the UI
+    }
+
+    @Override
     public void loaded() {
         FACTORY.getPlaceHistoryHandler().handleCurrentHistory();
     }
@@ -78,7 +84,7 @@ public class Housemate implements EntryPoint, LoggedInHandler, ProxyRootListener
             RootPanel.get().add(FACTORY.getPage());
             // connect the root object
             ENVIRONMENT.getResources().getRoot().connect(
-                    ENVIRONMENT.getResources().getLoginManager().getLoginMethod(), null);
+                    ENVIRONMENT.getResources().getLoginManager().getLoginMethod());
         } else {
             RootPanel.get().clear();
             Housemate.ENVIRONMENT.getResources().getLoginManager().login();

@@ -3,12 +3,10 @@ package com.intuso.housemate.object.real;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
 import com.intuso.housemate.api.authentication.Reconnect;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
@@ -38,9 +36,9 @@ public class RealRootObject
 
     private final Router.Registration routerRegistration;
     private AuthenticationMethod method = null;
-    private AuthenticationResponseHandler responseHandler = null;
 
     private String connectionId;
+    private Status status = Status.Disconnected;
 
     public RealRootObject(RealResources resources) {
         super(resources, new RootWrappable());
@@ -58,12 +56,20 @@ public class RealRootObject
         devices.init(this);
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
     @Override
-    public void connect(AuthenticationMethod method, AuthenticationResponseHandler responseHandler) {
+    public String getConnectionId() {
+        return connectionId;
+    }
+
+    @Override
+    public void connect(AuthenticationMethod method) {
         if(this.method != null)
             throw new HousemateRuntimeException("Authentication already in progress/succeeded");
         this.method = method;
-        this.responseHandler = responseHandler;
         sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.REAL, method));
     }
 
@@ -95,26 +101,28 @@ public class RealRootObject
             @Override
             public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {
                 if(message.getPayload() instanceof ReconnectResponse)
-                    return;
-                connectionId = message.getPayload().getConnectionId();
-                if(responseHandler != null)
-                    responseHandler.responseReceived(message.getPayload());
-                // if authentication failed remove responseHandler so that if can be tried again
+                    status = Status.Connected;
+                else
+                    connectionId = message.getPayload().getConnectionId();
                 method = null;
-                responseHandler = null;
+                status = connectionId != null ? Status.Connected : Status.Disconnected;
+                for(RootListener<? super RealRootObject> listener : getObjectListeners())
+                    listener.statusChanged(RealRootObject.this, status);
             }
         }));
-        result.add(addMessageListener(Router.CONNECTION_LOST, new Receiver<NoPayload>() {
+        result.add(addMessageListener(STATUS, new Receiver<Status>() {
             @Override
-            public void messageReceived(Message<NoPayload> message) throws HousemateException {
-
-            }
-        }));
-        result.add(addMessageListener(Router.CONNECTION_MADE, new Receiver<NoPayload>() {
-            @Override
-            public void messageReceived(Message<NoPayload> message) throws HousemateException {
-                if(connectionId != null)
-                    sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.PROXY, new Reconnect(connectionId)));
+            public void messageReceived(Message<Status> message) throws HousemateException {
+                status = message.getPayload();
+                if(status == Status.Connected) {
+                    if(connectionId != null) {
+                        sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.PROXY, new Reconnect(connectionId)));
+                        return;
+                    } else
+                        status = Status.Disconnected;
+                }
+                for(RootListener<? super RealRootObject> listener : getObjectListeners())
+                    listener.statusChanged(RealRootObject.this, status);
             }
         }));
         return result;

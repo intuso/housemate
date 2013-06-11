@@ -1,7 +1,6 @@
 package com.intuso.housemate.api.object.root;
 
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Sender;
@@ -21,9 +20,12 @@ import com.intuso.utilities.listener.ListenerRegistration;
 public interface Root<R extends Root, L extends RootListener<? super R>>
         extends BaseObject<L>, Receiver<Message.Payload>, Sender {
 
+    public final static String STATUS = "status";
     public final static String CONNECTION_REQUEST = "connection-request";
     public final static String CONNECTION_RESPONSE = "connection-response";
     public final static String DISCONNECT = "disconnect";
+    public final static String CONNECTION_LOST = "connection-lost";
+
     public final static String USERS = "users";
     public final static String TYPES = "types";
     public final static String DEVICES = "devices";
@@ -32,7 +34,15 @@ public interface Root<R extends Root, L extends RootListener<? super R>>
     public final static String ADD_DEVICE = "add-device";
     public final static String ADD_RULE = "add-rule";
 
-    public void connect(AuthenticationMethod method, AuthenticationResponseHandler responseHandler);
+    public enum Status implements Message.Payload {
+        Connected,
+        Disconnected,
+        Reconnecting
+    }
+
+    public Status getStatus();
+    public String getConnectionId();
+    public void connect(AuthenticationMethod method);
     public void disconnect();
     public ListenerRegistration addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener);
     public HousemateObject<?, ?, ?, ?, ?> getWrapper(String[] path);
@@ -74,22 +84,29 @@ public interface Root<R extends Root, L extends RootListener<? super R>>
      */
     class AuthenticationResponse implements Message.Payload {
 
+        private String brokerInstanceId;
         private String connectionId;
         private String userId;
         private String problem;
 
         private AuthenticationResponse() {}
 
-        public AuthenticationResponse(String connectionId, String userId) {
+        public AuthenticationResponse(String brokerInstanceId, String connectionId, String userId) {
+            this.brokerInstanceId = brokerInstanceId;
             this.connectionId = connectionId;
             this.userId = userId;
             this.problem = null;
         }
 
-        public AuthenticationResponse(String problem) {
+        public AuthenticationResponse(String brokerInstanceId, String problem) {
+            this.brokerInstanceId = brokerInstanceId;
             this.connectionId = null;
             this.userId = null;
             this.problem = problem;
+        }
+
+        public String getBrokerInstanceId() {
+            return brokerInstanceId;
         }
 
         public String getConnectionId() {

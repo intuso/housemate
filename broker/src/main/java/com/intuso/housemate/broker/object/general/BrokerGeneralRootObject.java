@@ -4,10 +4,8 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.StringMessageValue;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
@@ -39,7 +37,17 @@ public class BrokerGeneralRootObject
     }
 
     @Override
-    public void connect(AuthenticationMethod method, AuthenticationResponseHandler responseHandler) {
+    public Status getStatus() {
+        return Status.Connected;
+    }
+
+    @Override
+    public String getConnectionId() {
+        return null;
+    }
+
+    @Override
+    public void connect(AuthenticationMethod method) {
         throw new HousemateRuntimeException("Cannot connect this type of root object");
     }
 
@@ -82,7 +90,7 @@ public class BrokerGeneralRootObject
                 getResources().getRemoteClientManager().clientDisconnected(route);
             }
         }));
-        result.add(addMessageListener(Router.CONNECTION_LOST, new Receiver<ClientPayload<StringMessageValue>>() {
+        result.add(addMessageListener(Root.CONNECTION_LOST, new Receiver<ClientPayload<StringMessageValue>>() {
             @Override
             public void messageReceived(Message<ClientPayload<StringMessageValue>> message) throws HousemateException {
                 // process the request

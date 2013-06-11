@@ -24,13 +24,13 @@ public class RemoteClientImpl implements RemoteClient {
 
     private final String connectionId;
     private final ClientWrappable.Type type;
-    private final ServerComms comms;
+    private final MainRouter comms;
     private final BiMap<String, RemoteClientImpl> children = HashBiMap.create();
     private final Listeners<RemoteClientListener> listeners = new Listeners<RemoteClientListener>();
     private RemoteClientImpl parent;
     private List<String> route = null;
 
-    public RemoteClientImpl(String connectionId, ClientWrappable.Type type, ServerComms comms) {
+    public RemoteClientImpl(String connectionId, ClientWrappable.Type type, MainRouter comms) {
         this.connectionId = connectionId;
         this.type = type;
         this.comms = comms;
@@ -130,6 +130,7 @@ public class RemoteClientImpl implements RemoteClient {
             if(current.children.containsKey(client.getRoute().get(currentIndex)))
                 throw new HousemateException("Client route already exists");
             current.children.put(client.getRoute().get(currentIndex), client);
+            client.setParent(current);
             return;
 
         // else, check there is an authorised client for the next key

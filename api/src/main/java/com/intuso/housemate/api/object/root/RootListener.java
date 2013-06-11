@@ -9,4 +9,6 @@ import com.intuso.housemate.api.object.ObjectListener;
  * Time: 09:16
  * To change this template use File | Settings | File Templates.
  */
-public interface RootListener<R extends Root> extends ObjectListener {}
+public interface RootListener<R extends Root> extends ObjectListener {
+    public void statusChanged(R root, Root.Status status);
+}

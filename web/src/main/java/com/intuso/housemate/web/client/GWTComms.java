@@ -4,9 +4,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
-import com.intuso.housemate.api.comms.Comms;
 import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.web.client.event.LoggedInEvent;
 import com.intuso.housemate.web.client.service.CommsService;
@@ -19,7 +18,7 @@ import com.intuso.housemate.web.client.service.CommsServiceAsync;
  * Time: 23:28
  * To change this template use File | Settings | File Templates.
  */
-public class GWTComms extends Comms {
+public class GWTComms extends Router {
 
     private AsyncCallback<Void> sendCallback = new AsyncCallback<Void>() {
         @Override
@@ -71,8 +70,8 @@ public class GWTComms extends Comms {
         super(resources);
     }
 
-    public void connect(AuthenticationMethod method, AuthenticationResponseHandler responseHandler) {
-        super.connect(method, responseHandler);
+    public void connect(AuthenticationMethod method) {
+        super.connect(method);
 
         // start getting messages
         requestMessages();

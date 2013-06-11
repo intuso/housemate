@@ -1,6 +1,6 @@
 package com.intuso.housemate.platform.pc;
 
-import com.intuso.housemate.comms.transport.socket.client.ClientComms;
+import com.intuso.housemate.comms.transport.socket.client.SocketClient;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.ClientResources;
@@ -42,7 +42,7 @@ public class PCEnvironment {
     private final File configDirectory;
     private final File logDirectory;
     private final Log appLog;
-    private final ClientComms comms;
+    private final SocketClient comms;
 
     /**
      * System Properties
@@ -158,7 +158,7 @@ public class PCEnvironment {
                 return properties;
             }
         };
-        comms = new ClientComms(resources, properties.get(BROKER_HOST), Integer.parseInt(properties.get(BROKER_PORT)));
+        comms = new SocketClient(resources, properties.get(BROKER_HOST), Integer.parseInt(properties.get(BROKER_PORT)));
     }
 
     public ClientResources getResources() {

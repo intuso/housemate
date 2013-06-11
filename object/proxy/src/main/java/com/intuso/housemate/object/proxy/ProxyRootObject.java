@@ -6,17 +6,17 @@ import com.google.common.collect.Sets;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
 import com.intuso.housemate.api.authentication.Reconnect;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.RootWrappable;
 import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
@@ -65,12 +65,12 @@ public abstract class ProxyRootObject<
 
     private final Router.Registration routerRegistration;
     private AuthenticationMethod method = null;
-    private AuthenticationResponseHandler responseHandler = null;
     
     private final static Set<String> toLoad = Sets.newHashSet();
     private ListenerRegistration loadRegistration;
 
     private String connectionId;
+    private Root.Status status;
 
     public ProxyRootObject(R resources, SR subResources) {
         super(resources, subResources, new RootWrappable());
@@ -79,11 +79,20 @@ public abstract class ProxyRootObject<
     }
 
     @Override
-    public void connect(AuthenticationMethod method, AuthenticationResponseHandler responseHandler) {
+    public Status getStatus() {
+        return status;
+    }
+
+    @Override
+    public String getConnectionId() {
+        return connectionId;
+    }
+
+    @Override
+    public void connect(AuthenticationMethod method) {
         if(this.method != null)
             throw new HousemateRuntimeException("Authentication already in progress/succeeded");
         this.method = method;
-        this.responseHandler = responseHandler;
         sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.PROXY, method));
     }
 
@@ -111,11 +120,14 @@ public abstract class ProxyRootObject<
             @Override
             public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {
                 if(message.getPayload() instanceof ReconnectResponse)
-                    return;
-                connectionId = message.getPayload().getConnectionId();
-                if(responseHandler != null)
-                    responseHandler.responseReceived(message.getPayload());
-                if(message.getPayload().getUserId() != null) {
+                    status = Status.Connected;
+                else
+                    connectionId = message.getPayload().getConnectionId();
+                method = null;
+                status = connectionId != null ? Status.Connected : Status.Disconnected;
+                for(RootListener<? super RO> listener : getObjectListeners())
+                    listener.statusChanged(getThis(), status);
+                if(!(message.getPayload() instanceof ReconnectResponse) && status == Root.Status.Connected) {
                     loadRegistration = addWrapperListener(new WrapperListener<ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
                         @Override
                         public void childWrapperAdded(String childId, ProxyObject<?, ?, ?, ?, ?, ?, ?> wrapper) {
@@ -140,25 +152,25 @@ public abstract class ProxyRootObject<
                             // do nothing
                         }
                     });
-                    method = null;
-                    responseHandler = null;
                     toLoad.addAll(Lists.newArrayList(USERS, TYPES, DEVICES, RULES, ADD_USER, ADD_DEVICE, ADD_RULE));
                     for(String name : toLoad)
                         load(name);
                 }
             }
         }));
-        result.add(addMessageListener(Router.CONNECTION_LOST, new Receiver<NoPayload>() {
+        result.add(addMessageListener(STATUS, new Receiver<Status>() {
             @Override
-            public void messageReceived(Message<NoPayload> message) throws HousemateException {
-
-            }
-        }));
-        result.add(addMessageListener(Router.CONNECTION_MADE, new Receiver<NoPayload>() {
-            @Override
-            public void messageReceived(Message<NoPayload> message) throws HousemateException {
-                if(connectionId != null)
-                    sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.PROXY, new Reconnect(connectionId)));
+            public void messageReceived(Message<Status> message) throws HousemateException {
+                status = message.getPayload();
+                if(status == Status.Connected) {
+                    if(connectionId != null) {
+                        sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.PROXY, new Reconnect(connectionId)));
+                        return;
+                    } else
+                        status = Status.Disconnected;
+                }
+                for(RootListener<? super RO> listener : getObjectListeners())
+                    listener.statusChanged(getThis(), status);
             }
         }));
         return result;

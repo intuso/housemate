@@ -1,17 +1,18 @@
 package com.intuso.housemate.api.comms;
 
+import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.AuthenticationResponseHandler;
 import com.intuso.housemate.api.comms.message.StringMessageValue;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,36 +23,62 @@ import java.util.Map;
  */
 public abstract class Router implements Sender, Receiver {
 
-    public final static String ALL_CLIENTS = "*";
-    public final static String ALL_CLIENTS_RECURSE = "**";
-    public final static String CONNECTION_MADE = "connection-made";
-    public final static String CONNECTION_LOST = "connection-lost";
+    private final Log log;
 
-    private int nextId = 0;
-
-    private final Map<String, Receiver<?>> keyClientMap;
+    private final AtomicInteger nextId = new AtomicInteger(-1);
+    private final Map<String, Receiver<?>> receivers = Maps.newHashMap();
 
     private final RouterRootObject root;
 
     public Router(Resources resources) {
-        keyClientMap = new HashMap<String, Receiver<?>>();
+        this.log = resources.getLog();
         root = new RouterRootObject(resources, this);
+        root.addObjectListener(new RootListener<RouterRootObject>() {
+            @Override
+            public void statusChanged(RouterRootObject root, Root.Status status) {
+                Message<Root.Status> message = new Message<Root.Status>(new String[] {""}, Root.STATUS, status);
+                for(Receiver receiver : receivers.values()) {
+                    try {
+                        receiver.messageReceived(message);
+                    } catch(HousemateException e) {
+                        log.e("Failed to notify client of new router status");
+                        log.st(e);
+                    }
+                }
+            }
+        });
     }
 
-    public <L extends RootListener<? super RouterRootObject>> ListenerRegistration addRootListener(L listener) {
+    public final Log getLog() {
+        return log;
+    }
+
+    public final Root.Status getStatus() {
+        return root.getStatus();
+    }
+
+    protected final void setStatus(Root.Status status) {
+        try {
+            root.distributeMessage(new Message<Root.Status>(new String[]{""}, Root.STATUS, status));
+        } catch(HousemateException e) {
+            log.e("Failed to notify root of the new status");
+        };
+    }
+
+    public ListenerRegistration addObjectListener(RootListener<? super RouterRootObject> listener) {
         return root.addObjectListener(listener);
     }
 
-    public void connect(AuthenticationMethod method, AuthenticationResponseHandler responseHandler) {
-        root.connect(method, responseHandler);
+    public void connect(AuthenticationMethod method) {
+        root.connect(method);
     }
 
     public abstract void disconnect();
     
     public synchronized final Registration registerReceiver(Receiver<?> receiver) {
-        String clientId = "" + nextId++;
-        keyClientMap.put(clientId, receiver);
-        return new Registration(clientId, receiver);
+        String clientId = "" + nextId.incrementAndGet();
+        receivers.put(clientId, receiver);
+        return new Registration(clientId);
     }
 
     @Override
@@ -63,25 +90,11 @@ public abstract class Router implements Sender, Receiver {
         if(key == null) {
             root.distributeMessage(message);
         } else {
-            // distribute to all clients without recursing
-            if(key.equals(ALL_CLIENTS)) {
-                for(Receiver receiver : keyClientMap.values())
-                    receiver.messageReceived(message);
-            // distribute to all clients recursively
-            } else if(key.equals(ALL_CLIENTS_RECURSE)) {
-                // re add the STAR_STAR so the message recurses
-                message.addClientKey(ALL_CLIENTS_RECURSE);
-                // tell the router root object too
-                root.distributeMessage(message);
-                for(Receiver receiver : keyClientMap.values())
-                    receiver.messageReceived(message);
-            } else {
-                Receiver receiver = keyClientMap.get(key);
-                if(receiver == null)
-                    root.unknownClient(key);
-                else
-                    receiver.messageReceived(message);
-            }
+            Receiver receiver = receivers.get(key);
+            if(receiver == null)
+                root.unknownClient(key);
+            else
+                receiver.messageReceived(message);
         }
     }
 
@@ -89,11 +102,9 @@ public abstract class Router implements Sender, Receiver {
 
         private boolean connected= true;
         private final String clientId;
-        private final Receiver<?> receiver;
 
-        private Registration(String clientId, Receiver<?> receiver) {
+        private Registration(String clientId) {
             this.clientId = clientId;
-            this.receiver = receiver;
         }
 
         @Override
@@ -107,7 +118,7 @@ public abstract class Router implements Sender, Receiver {
         public synchronized final void disconnect() {
             connected = false;
             if(clientId != null)
-                keyClientMap.remove(clientId);
+                receivers.remove(clientId);
             Router.this.sendMessage(new Message<StringMessageValue>(new String[] {""}, Root.DISCONNECT,
                     new StringMessageValue(clientId)));
         }
@@ -115,8 +126,8 @@ public abstract class Router implements Sender, Receiver {
         public synchronized final void connectionLost() {
             connected = false;
             if(clientId != null)
-                keyClientMap.remove(clientId);
-            Router.this.sendMessage(new Message<StringMessageValue>(new String[] {""}, Router.CONNECTION_LOST,
+                receivers.remove(clientId);
+            Router.this.sendMessage(new Message<StringMessageValue>(new String[] {""}, Root.CONNECTION_LOST,
                     new StringMessageValue(clientId)));
         }
     }
