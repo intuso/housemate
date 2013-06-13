@@ -26,4 +26,9 @@ public class ClientPayload<T extends Message.Payload> implements Message.Payload
     public T getOriginal() {
         return original;
     }
+
+    @Override
+    public String toString() {
+        return "from: " + client.getConnectionId() + ", message: " + original.toString();
+    }
 }

@@ -50,4 +50,9 @@ public class TypeInstance implements Message.Payload {
         // todo check child values
         return true;
     }
+
+    @Override
+    public String toString() {
+        return value + " and " + childValues.size() + " children";
+    }
 }

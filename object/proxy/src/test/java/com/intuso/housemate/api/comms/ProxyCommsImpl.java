@@ -17,7 +17,8 @@ public class ProxyCommsImpl extends Router {
 
     public ProxyCommsImpl(Resources resources) {
         super(resources);
-        connect(null);
+        connect();
+        login(null);
     }
 
     public void setRealRoot(TestRealRoot realRoot) {
@@ -25,7 +26,12 @@ public class ProxyCommsImpl extends Router {
     }
 
     @Override
-    public void disconnect() {
+    public final void connect() {
+        // do nothing
+    }
+
+    @Override
+    public final void disconnect() {
         // do nothing
     }
 

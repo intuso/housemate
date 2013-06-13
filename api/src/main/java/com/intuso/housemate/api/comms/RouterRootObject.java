@@ -3,7 +3,7 @@ package com.intuso.housemate.api.comms;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.Reconnect;
+import com.intuso.housemate.api.comms.message.AuthenticationResponse;
 import com.intuso.housemate.api.comms.message.StringMessageValue;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
@@ -27,46 +27,49 @@ import java.util.List;
 public class RouterRootObject
         extends HousemateObject<Resources, RootWrappable, HousemateObjectWrappable<?>,
             HousemateObject<?, ?, ?, ?, ?>, RootListener<? super RouterRootObject>>
-        implements Root<RouterRootObject, RootListener<? super RouterRootObject>> {
+        implements Root<RouterRootObject, RootListener<? super RouterRootObject>>, ConnectionStatusChangeListener {
 
     private final Router router;
-    private AuthenticationMethod method = null;
-
-    private String connectionId;
-
-    private Status status = Status.Disconnected;
+    private final ConnectionManager connectionManager;
 
     protected RouterRootObject(Resources resources, Router router) {
         super(resources, new RootWrappable());
         this.router = router;
+        connectionManager = new ConnectionManager(router, ClientWrappable.Type.Router, ConnectionStatus.Disconnected);
         init(null);
     }
 
     @Override
-    public void connect(AuthenticationMethod method) {
-        if(this.method != null)
-            throw new HousemateRuntimeException("Authentication already in progress/succeeded");
-        this.method = method;
-        sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.ROUTER, method));
+    public ConnectionStatus getStatus() {
+        return connectionManager.getStatus();
     }
 
-    @Override
-    public void disconnect() {
-        throw new HousemateRuntimeException("It is the router's responsibility to disconnect, not the root object");
-    }
-
-    public Router getRouter() {
-        return router;
-    }
-
-    @Override
-    public Status getStatus() {
-        return status;
+    protected void setRouterStatus(Router.Status status) {
+        switch (status) {
+            case Disconnected:
+            case Connecting:
+                connectionManager.routerStatusChanged(ConnectionStatus.Disconnected);
+                break;
+            case Connected:
+                // triggers the router to relog in if it thinks the router that it is connected to is now authenticated.
+                connectionManager.routerStatusChanged(ConnectionStatus.Authenticated);
+                break;
+        }
     }
 
     @Override
     public String getConnectionId() {
-        return connectionId;
+        return connectionManager.getConnectionId();
+    }
+
+    @Override
+    public void login(AuthenticationMethod method) {
+        connectionManager.login(method);
+    }
+
+    @Override
+    public void logout() {
+        connectionManager.logout();
     }
 
     @Override
@@ -77,32 +80,17 @@ public class RouterRootObject
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
+        result.add(connectionManager.addStatusChangeListener(this));
         result.add(addMessageListener(CONNECTION_RESPONSE, new Receiver<AuthenticationResponse>() {
             @Override
             public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {
-                if(message.getPayload() instanceof ReconnectResponse)
-                    status = Status.Connected;
-                else
-                    connectionId = message.getPayload().getConnectionId();
-                method = null;
-                status = connectionId != null ? Status.Connected : Status.Disconnected;
-                for(RootListener<? super RouterRootObject> listener : getObjectListeners())
-                    listener.statusChanged(RouterRootObject.this, status);
+                connectionManager.authenticationResponseReceived(message.getPayload());
             }
         }));
-        result.add(addMessageListener(STATUS, new Receiver<Status>() {
+        result.add(addMessageListener(STATUS, new Receiver<ConnectionStatus>() {
             @Override
-            public void messageReceived(Message<Status> message) throws HousemateException {
-                status = message.getPayload();
-                if(status == Status.Connected) {
-                    if(connectionId != null) {
-                        sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.PROXY, new Reconnect(connectionId)));
-                        return;
-                    } else
-                        status = Status.Disconnected;
-                }
-                for(RootListener<? super RouterRootObject> listener : getObjectListeners())
-                    listener.statusChanged(RouterRootObject.this, status);
+            public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
+                connectionManager.routerStatusChanged(message.getPayload());
             }
         }));
         return result;
@@ -124,5 +112,17 @@ public class RouterRootObject
 
     public void unknownClient(String key) {
         sendMessage(Root.CONNECTION_LOST, new StringMessageValue(key));
+    }
+
+    @Override
+    public void connectionStatusChanged(ConnectionStatus status) {
+        for(RootListener<? super RouterRootObject> listener : getObjectListeners())
+            listener.connectionStatusChanged(this, status);
+    }
+
+    @Override
+    public void brokerInstanceChanged() {
+        for(RootListener<? super RouterRootObject> listener : getObjectListeners())
+            listener.brokerInstanceChanged(this);
     }
 }

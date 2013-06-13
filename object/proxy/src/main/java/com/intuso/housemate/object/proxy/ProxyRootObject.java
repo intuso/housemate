@@ -4,19 +4,20 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.Reconnect;
+import com.intuso.housemate.api.comms.ConnectionManager;
+import com.intuso.housemate.api.comms.ConnectionStatus;
+import com.intuso.housemate.api.comms.ConnectionStatusChangeListener;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.comms.message.AuthenticationResponse;
+import com.intuso.housemate.api.comms.message.ReconnectResponse;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
-import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.RootWrappable;
 import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
@@ -51,7 +52,7 @@ public abstract class ProxyRootObject<
             C extends ProxyCommand<?, ?, ?, ?, C>,
             RO extends ProxyRootObject<R, SR, U, PUL, T, PTL, D, PDL, Ru, PRL, C, RO>>
         extends ProxyObject<R, SR, RootWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, RO, ProxyRootListener<? super RO>>
-        implements ProxyRoot<PUL, PTL, PDL, PRL, C, RO>, WrapperListener<HousemateObject<?, ?, ?, ?, ?>> {
+        implements ProxyRoot<PUL, PTL, PDL, PRL, C, RO>, WrapperListener<HousemateObject<?, ?, ?, ?, ?>>, ConnectionStatusChangeListener {
 
     private PUL proxyConnectionList;
     private PTL proxyTypeList;
@@ -64,42 +65,37 @@ public abstract class ProxyRootObject<
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
     private final Router.Registration routerRegistration;
-    private AuthenticationMethod method = null;
+    private final ConnectionManager connectionManager;
     
     private final static Set<String> toLoad = Sets.newHashSet();
     private ListenerRegistration loadRegistration;
 
-    private String connectionId;
-    private Root.Status status;
-
     public ProxyRootObject(R resources, SR subResources) {
         super(resources, subResources, new RootWrappable());
         routerRegistration = resources.getRouter().registerReceiver(this);
+        connectionManager = new ConnectionManager(routerRegistration, ClientWrappable.Type.Proxy, ConnectionStatus.Unauthenticated);
         init(null);
     }
 
     @Override
-    public Status getStatus() {
-        return status;
+    public ConnectionStatus getStatus() {
+        return connectionManager.getStatus();
     }
 
     @Override
     public String getConnectionId() {
-        return connectionId;
+        return connectionManager.getConnectionId();
     }
 
     @Override
-    public void connect(AuthenticationMethod method) {
-        if(this.method != null)
-            throw new HousemateRuntimeException("Authentication already in progress/succeeded");
-        this.method = method;
-        sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.PROXY, method));
+    public void login(AuthenticationMethod method) {
+        connectionManager.login(method);
     }
 
     @Override
-    public void disconnect() {
-        routerRegistration.disconnect();
-        method = null;
+    public void logout() {
+        connectionManager.logout();
+        routerRegistration.remove();
     }
 
     @Override
@@ -116,18 +112,12 @@ public abstract class ProxyRootObject<
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
         result.add(addWrapperListener(this));
+        result.add(connectionManager.addStatusChangeListener(this));
         result.add(addMessageListener(CONNECTION_RESPONSE, new Receiver<AuthenticationResponse>() {
             @Override
             public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {
-                if(message.getPayload() instanceof ReconnectResponse)
-                    status = Status.Connected;
-                else
-                    connectionId = message.getPayload().getConnectionId();
-                method = null;
-                status = connectionId != null ? Status.Connected : Status.Disconnected;
-                for(RootListener<? super RO> listener : getObjectListeners())
-                    listener.statusChanged(getThis(), status);
-                if(!(message.getPayload() instanceof ReconnectResponse) && status == Root.Status.Connected) {
+                connectionManager.authenticationResponseReceived(message.getPayload());
+                if(!(message.getPayload() instanceof ReconnectResponse) && getStatus() == ConnectionStatus.Authenticated) {
                     loadRegistration = addWrapperListener(new WrapperListener<ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
                         @Override
                         public void childWrapperAdded(String childId, ProxyObject<?, ?, ?, ?, ?, ?, ?> wrapper) {
@@ -158,19 +148,10 @@ public abstract class ProxyRootObject<
                 }
             }
         }));
-        result.add(addMessageListener(STATUS, new Receiver<Status>() {
+        result.add(addMessageListener(STATUS, new Receiver<ConnectionStatus>() {
             @Override
-            public void messageReceived(Message<Status> message) throws HousemateException {
-                status = message.getPayload();
-                if(status == Status.Connected) {
-                    if(connectionId != null) {
-                        sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.PROXY, new Reconnect(connectionId)));
-                        return;
-                    } else
-                        status = Status.Disconnected;
-                }
-                for(RootListener<? super RO> listener : getObjectListeners())
-                    listener.statusChanged(getThis(), status);
+            public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
+                connectionManager.routerStatusChanged(message.getPayload());
             }
         }));
         return result;
@@ -180,7 +161,7 @@ public abstract class ProxyRootObject<
         loadRegistration.removeListener();
         getChildObjects();
         for(ProxyRootListener<? super RO> listener : getObjectListeners())
-            listener.loaded();
+            listener.loaded(getThis());
     }
 
     @Override
@@ -281,5 +262,24 @@ public abstract class ProxyRootObject<
             objectLifecycleListeners.put(path, listeners);
         }
         return listeners.addListener(listener);
+    }
+
+    @Override
+    public final void connectionStatusChanged(ConnectionStatus status) {
+        for(ProxyRootListener<? super RO> listener : getObjectListeners())
+            listener.connectionStatusChanged(getThis(), status);
+    }
+
+    @Override
+    public final void brokerInstanceChanged() {
+        Set<String> ids = Sets.newHashSet();
+        for(HousemateObject<?, ?, ?, ?, ?> child : getWrappers()) {
+            child.uninit();
+            ids.add(child.getId());
+        }
+        for(String id : ids)
+            removeWrapper(id);
+        for(ProxyRootListener<? super RO> listener : getObjectListeners())
+            listener.brokerInstanceChanged(getThis());
     }
 }

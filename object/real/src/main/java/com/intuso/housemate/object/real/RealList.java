@@ -99,4 +99,9 @@ public final class RealList<SWBL extends HousemateObjectWrappable<?>,
     public Iterator<SWR> iterator() {
         return getWrappers().iterator();
     }
+
+    public void resendElements() {
+        for(SWR subWrapper : this)
+            sendMessage(ADD, subWrapper.getWrappable());
+    }
 }

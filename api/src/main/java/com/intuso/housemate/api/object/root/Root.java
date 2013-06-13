@@ -1,13 +1,13 @@
 package com.intuso.housemate.api.object.root;
 
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
+import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Sender;
 import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -34,95 +34,11 @@ public interface Root<R extends Root, L extends RootListener<? super R>>
     public final static String ADD_DEVICE = "add-device";
     public final static String ADD_RULE = "add-rule";
 
-    public enum Status implements Message.Payload {
-        Connected,
-        Disconnected,
-        Reconnecting
-    }
-
-    public Status getStatus();
+    public ConnectionStatus getStatus();
     public String getConnectionId();
-    public void connect(AuthenticationMethod method);
-    public void disconnect();
+    public void login(AuthenticationMethod method);
+    public void logout();
     public ListenerRegistration addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener);
     public HousemateObject<?, ?, ?, ?, ?> getWrapper(String[] path);
 
-    /**
-     * Created with IntelliJ IDEA.
-     * User: ravnroot
-     * Date: 05/03/13
-     * Time: 21:56
-     * To change this template use File | Settings | File Templates.
-     */
-    final class AuthenticationRequest implements Message.Payload {
-
-        private ClientWrappable.Type type;
-        private AuthenticationMethod method;
-
-        private AuthenticationRequest() {}
-
-        public AuthenticationRequest(ClientWrappable.Type type, AuthenticationMethod method) {
-            this.type = type;
-            this.method = method;
-        }
-
-        public ClientWrappable.Type getType() {
-            return type;
-        }
-
-        public AuthenticationMethod getMethod() {
-            return method;
-        }
-    }
-
-    /**
-     * Created with IntelliJ IDEA.
-     * User: ravnroot
-     * Date: 22/03/13
-     * Time: 09:08
-     * To change this template use File | Settings | File Templates.
-     */
-    class AuthenticationResponse implements Message.Payload {
-
-        private String brokerInstanceId;
-        private String connectionId;
-        private String userId;
-        private String problem;
-
-        private AuthenticationResponse() {}
-
-        public AuthenticationResponse(String brokerInstanceId, String connectionId, String userId) {
-            this.brokerInstanceId = brokerInstanceId;
-            this.connectionId = connectionId;
-            this.userId = userId;
-            this.problem = null;
-        }
-
-        public AuthenticationResponse(String brokerInstanceId, String problem) {
-            this.brokerInstanceId = brokerInstanceId;
-            this.connectionId = null;
-            this.userId = null;
-            this.problem = problem;
-        }
-
-        public String getBrokerInstanceId() {
-            return brokerInstanceId;
-        }
-
-        public String getConnectionId() {
-            return connectionId;
-        }
-
-        public String getUserId() {
-            return userId;
-        }
-
-        public String getProblem() {
-            return problem;
-        }
-    }
-
-    class ReconnectResponse extends AuthenticationResponse {
-        public ReconnectResponse() {}
-    }
 }

@@ -3,8 +3,8 @@ package com.intuso.housemate.addon.twitter;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.proxy.ProxyResources;
@@ -93,21 +93,39 @@ public class HousemateTweeter {
         root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
 
             @Override
-            public void statusChanged(SimpleProxyObject.Root root, Root.Status status) {
-                if(status == Root.Status.Connected)
-                    resources.getLog().d("Connected to broker");
-                else
-                    resources.getLog().e("Failed to connect to broker");
+            public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
+                switch (status) {
+                    case Disconnected:
+                        resources.getLog().d("Disconnected from server");
+                        break;
+                    case Connecting:
+                        resources.getLog().d("Reconnecting to server");
+                        break;
+                    case Unauthenticated:
+                        resources.getLog().d("Connected to server but not authenticated");
+                        break;
+                    case Authenticating:
+                        resources.getLog().d("Authenticating with server");
+                        break;
+                    case Authenticated:
+                        resources.getLog().e("Authenticated with server");
+                        break;
+                }
             }
 
             @Override
-            public void loaded() {
+            public void loaded(SimpleProxyObject.Root root) {
                 root.getDevices().addObjectListener(deviceListListener, true);
+            }
+
+            @Override
+            public void brokerInstanceChanged(SimpleProxyObject.Root root) {
+                tweet("Broker instance changed. Reconnecting");
+                root.login(new UsernamePassword(true, resources.getProperties().get("username"), resources.getProperties().get("password"), true));
             }
         });
 
-        root.connect(
-                new UsernamePassword(true, resources.getProperties().get("username"), resources.getProperties().get("password"), true));
+        root.login(new UsernamePassword(true, resources.getProperties().get("username"), resources.getProperties().get("password"), true));
 	}
 
 	/**

@@ -17,7 +17,7 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
     private final static String ATT_NAME = "endpoint";
 
     @Override
-    public void clientStarted() {
+    public void connectClient() {
         createNewEndpoint();
     }
 

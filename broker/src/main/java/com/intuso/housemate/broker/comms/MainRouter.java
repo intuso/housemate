@@ -2,6 +2,7 @@ package com.intuso.housemate.broker.comms;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
+import com.intuso.housemate.api.comms.message.AuthenticationRequest;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.object.root.Root;
@@ -49,8 +50,13 @@ public final class MainRouter extends Router {
     }
 
     @Override
+    public void connect() {
+        throw new HousemateRuntimeException("The main router cannot be connected");
+    }
+
+    @Override
     public void disconnect() {
-        throw new HousemateRuntimeException("The ServerComms cannot be disconnected");
+        throw new HousemateRuntimeException("The main router cannot be disconnected");
     }
 
     public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClientImpl client) throws HousemateException {
@@ -70,16 +76,19 @@ public final class MainRouter extends Router {
 
     private Root<?, ?> getRoot(RemoteClient client, Message<?> message) throws HousemateException {
         if(client == null) {
-            if(message.getPayload() instanceof Root.AuthenticationRequest)
+            if(message.getPayload() instanceof AuthenticationRequest)
                 return resources.getRoot();
             else
                 throw new UnknownClientRouteException(message.getRoute());
         }
         if(client.getType() != null) {
+            // intercept certain messages
+            if(message.getPath().length == 1 && message.getType().equals(Root.DISCONNECT))
+                return resources.getRoot();
             switch(client.getType()) {
-                case REAL: // the broker proxy objects are for remote real objects
+                case Real: // the broker proxy objects are for remote real objects
                     return resources.getProxyResources().getRoot();
-                case PROXY: // the broker bridge objects are for remote proxy objects
+                case Proxy: // the broker bridge objects are for remote proxy objects
                     return resources.getBridgeResources().getRoot();
             }
         }

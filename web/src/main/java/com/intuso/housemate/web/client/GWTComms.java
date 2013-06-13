@@ -1,13 +1,12 @@
 package com.intuso.housemate.web.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.web.client.event.LoggedInEvent;
 import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
 
@@ -36,8 +35,8 @@ public class GWTComms extends Router {
     private AsyncCallback<Message<Message.Payload>[]> receiveCallback = new AsyncCallback<Message<Message.Payload>[]>() {
         @Override
         public void onFailure(Throwable throwable) {
-            getLog().e("Failed to get messages");
-            Housemate.FACTORY.getEventBus().fireEvent(new LoggedInEvent(false));
+            Window.alert("Failed to get messages. The error handling of this will be improved in the future. For now, please refresh the page");
+            // todo improve this
         }
 
         @Override
@@ -57,8 +56,9 @@ public class GWTComms extends Router {
             requestMessages();
         }
     };
-    
-    private CommsServiceAsync commsService = GWT.create(CommsService.class);
+
+    private final AsyncCallback<Void> connectCallback;
+    private final CommsServiceAsync commsService = GWT.create(CommsService.class);
 
     /**
      * Create a new comms instance
@@ -66,19 +66,34 @@ public class GWTComms extends Router {
      * @throws com.intuso.housemate.api.HousemateException
      *          if an error occurs creating the comms instance
      */
-    protected GWTComms(Resources resources) {
+    protected GWTComms(Resources resources, AsyncCallback<Void> connectCallback) {
         super(resources);
+        this.connectCallback = connectCallback;
     }
 
-    public void connect(AuthenticationMethod method) {
-        super.connect(method);
+    @Override
+    public void connect() {
+        setRouterStatus(Status.Connecting);
+        commsService.connectClient(new AsyncCallback<Void>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                setRouterStatus(Status.Disconnected);
+                connectCallback.onFailure(throwable);
+            }
 
-        // start getting messages
-        requestMessages();
+            @Override
+            public void onSuccess(Void aVoid) {
+                setRouterStatus(Status.Connected);
+                connectCallback.onSuccess(aVoid);
+                // start getting messages
+                requestMessages();
+            }
+        });
     }
 
     @Override
     public void disconnect() {
+        setRouterStatus(Status.Disconnected);
         commsService.disconnectClient(new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable caught) {

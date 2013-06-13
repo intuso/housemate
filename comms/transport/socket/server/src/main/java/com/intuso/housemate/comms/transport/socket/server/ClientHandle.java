@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * @author tclabon
  *
  */
-public final class SocketClient implements Receiver<Message.Payload> {
+public final class ClientHandle implements Receiver<Message.Payload> {
 
 	/**
 	 * The log to use
@@ -57,7 +57,7 @@ public final class SocketClient implements Receiver<Message.Payload> {
 	 * @param log log to use
 	 * @throws HousemateException 
 	 */
-	public SocketClient(Router router, Socket socket, Log log) throws HousemateException {
+	public ClientHandle(Router router, Socket socket, Log log) throws HousemateException {
         super();
 
         routerRegistration = router.registerReceiver(this);

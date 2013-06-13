@@ -7,7 +7,10 @@ import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.authentication.Reconnect;
 import com.intuso.housemate.api.authentication.Session;
 import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.comms.message.AuthenticationRequest;
+import com.intuso.housemate.api.comms.message.AuthenticationResponse;
 import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.message.ReconnectResponse;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeInstance;
@@ -41,19 +44,23 @@ public class RemoteClientManager {
 
     public RemoteClientManager(BrokerGeneralResources resources) {
         this.resources = resources;
-        root = new RemoteClientImpl(UUID.randomUUID().toString(), ClientWrappable.Type.ROUTER, resources.getMainRouter());
+        root = new RemoteClientImpl(UUID.randomUUID().toString(), ClientWrappable.Type.Router, resources.getMainRouter());
         root.setRoute(Lists.<String>newArrayList());
     }
 
-    public void processRequest(Root.AuthenticationRequest request, List<String> route) {
+    public void processRequest(AuthenticationRequest request, List<String> route) {
+        resources.getLog().d("Authentication request received");
         if(!(request.getMethod() instanceof Reconnect) || !processReconnect(request, route))
             processNewClient(request, route);
     }
 
-    private boolean processReconnect(Root.AuthenticationRequest request, List<String> route) {
+    private boolean processReconnect(AuthenticationRequest request, List<String> route) {
+        resources.getLog().d("Reconnect request received");
         RemoteClientImpl client = lostClients.remove(((Reconnect) request.getMethod()).getConnectionId());
-        if(client == null)
+        if(client == null) {
+            resources.getLog().w("Could not find client for connection id " + ((Reconnect)request.getMethod()).getConnectionId());
             return false;
+        }
         client.setRoute(route);
         try {
             root.addClient(client);
@@ -62,7 +69,8 @@ public class RemoteClientManager {
             return false;
         }
         try {
-            client.sendMessage(new String[] {""}, Root.CONNECTION_RESPONSE, new Root.ReconnectResponse());
+            resources.getLog().d("Reconnect succeeded");
+            client.sendMessage(new String[] {""}, Root.CONNECTION_RESPONSE, new ReconnectResponse());
         } catch(HousemateException e) {
             resources.getLog().e("Failed to send authentication response to client at route " + Message.routeToString(route));
             return false;
@@ -70,7 +78,10 @@ public class RemoteClientManager {
         return true;
     }
 
-    private void processNewClient(Root.AuthenticationRequest request, List<String> route) {
+    private void processNewClient(AuthenticationRequest request, List<String> route) {
+
+        resources.getLog().d("Handling new client request");
+
         // create a new connection id
         String connectionId = UUID.randomUUID().toString();
         RemoteClientImpl client;
@@ -82,20 +93,23 @@ public class RemoteClientManager {
             client.setRoute(route);
         } catch(HousemateException e) {
             resources.getLog().e("Failed to add client endpoint for " + Message.routeToString(route));
+            resources.getLog().d("Maybe one of the intermediate clients isn't connected or isn't of type " + ClientWrappable.Type.Router);
             return;
         }
 
         // client is added, now authenticate it
-        Root.AuthenticationResponse response;
+        AuthenticationResponse response;
         try {
             response = checkMethod(request.getMethod(), connectionId);
         } catch(Throwable t) {
-            response = new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "Could not check authentication: " + t.getMessage());
+            response = new AuthenticationResponse(BROKER_INSTANCE_ID, "Could not check authentication: " + t.getMessage());
         }
 
         try {
-            if(response != null)
+            if(response != null) {
+                resources.getLog().d("Authentication succeeded");
                 client.sendMessage(new String[]{""}, Root.CONNECTION_RESPONSE, response);
+            }
         } catch(HousemateException e) {
             resources.getLog().e("Failed to send authentication response to client at route " + Message.routeToString(route));
             response = null;
@@ -103,46 +117,55 @@ public class RemoteClientManager {
 
         // if response is null, or it has no user id and is not one of the internal methods, then remove the client
         if(response == null
-                || (response.getUserId() == null && !(request.getMethod() instanceof LocalClient.InternalConnectMethod)))
+                || (response.getUserId() == null && !(request.getMethod() instanceof LocalClient.InternalConnectMethod))) {
+            if(response == null)
+                resources.getLog().d("Authentication failed. See previous log messages for details");
+            else
+                resources.getLog().d("Authentication failed: " + response.getProblem());
             removeClient(client);
+        }
     }
 
-    private Root.AuthenticationResponse checkMethod(AuthenticationMethod method, String connectionId) throws HousemateException {
+    private AuthenticationResponse checkMethod(AuthenticationMethod method, String connectionId) throws HousemateException {
         // check by session
-        if(method instanceof Session) {
+        if(method == null) {
+            resources.getLog().d("No authentication method");
+            return new AuthenticationResponse(BROKER_INSTANCE_ID, "No method used for authentication request");
+        } else if(method instanceof Session) {
             Session s = (Session)method;
+            resources.getLog().d("Authentication by session id " + s.getSessionId());
             BrokerRealUser user = getUserForSession(s.getSessionId());
             if(user != null) {
-                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, s.getSessionId(), user.getId());
+                return new AuthenticationResponse(BROKER_INSTANCE_ID, s.getSessionId(), user.getId());
             } else {
-                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "Unknown Session");
+                return new AuthenticationResponse(BROKER_INSTANCE_ID, "Unknown Session");
             }
 
             // check username/passwords match
         } else if(method instanceof UsernamePassword) {
             UsernamePassword up = (UsernamePassword)method;
+            resources.getLog().d("Authentication by username/password " + up.getUsername());
             BrokerRealUser user = authenticateUser(up.getUsername(), up.getPassword());
             if(user != null) {
                 saveUserSession(connectionId, user);
-                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, connectionId, user.getId());
+                return new AuthenticationResponse(BROKER_INSTANCE_ID, connectionId, user.getId());
             } else {
-                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "Incorrect credentials");
+                return new AuthenticationResponse(BROKER_INSTANCE_ID, "Incorrect credentials");
             }
 
             // anything internal should just be accepted regardless
         } else if(method instanceof LocalClient.InternalConnectMethod) {
-            return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, connectionId, null);
+            resources.getLog().d("Internal client authentication");
+            return new AuthenticationResponse(BROKER_INSTANCE_ID, connectionId, null);
 
             // reconnect
         } else if(method instanceof Reconnect) {
-            return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "Unknown connection id");
+            return new AuthenticationResponse(BROKER_INSTANCE_ID, "Unknown connection id");
 
             // unknown method
         } else {
-            if(method != null)
-                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "Unknown method used for authentication request: " + method.getClass().getName());
-            else
-                return new Root.AuthenticationResponse(BROKER_INSTANCE_ID, "No method used for authentication request");
+            resources.getLog().d("Unknown authentication method: " + method.getClass().getName());
+            return new AuthenticationResponse(BROKER_INSTANCE_ID, "Unknown method used for authentication request: " + method.getClass().getName());
         }
     }
 
@@ -181,7 +204,7 @@ public class RemoteClientManager {
 
     public void removeClient(RemoteClientImpl client) {
         if(client != null)
-            root.getClient(client.getRoute());
+            root.getClient(client.getRoute()).remove();
     }
 
     private BrokerRealUser getUserForSession(String sessionId) throws HousemateException {

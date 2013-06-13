@@ -6,23 +6,21 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.comms.ConnectionStatus;
+import com.intuso.housemate.api.comms.RouterRootObject;
+import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
-import com.intuso.housemate.web.client.event.LoggedInEvent;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
-import com.intuso.housemate.web.client.handler.LoggedInHandler;
 import com.intuso.housemate.web.client.handler.PerformCommandHandler;
 import com.intuso.housemate.web.client.object.GWTProxyRootObject;
 import com.intuso.housemate.web.client.place.HomePlace;
-import com.intuso.housemate.web.client.service.CommsService;
-import com.intuso.housemate.web.client.service.CommsServiceAsync;
 
 import java.util.HashMap;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Housemate implements EntryPoint, LoggedInHandler, ProxyRootListener<GWTProxyRootObject> {
+public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
 
     public static GWTEnvironment ENVIRONMENT;
     public final static ClientFactory FACTORY = GWT.create(ClientFactory.class);
@@ -33,22 +31,16 @@ public class Housemate implements EntryPoint, LoggedInHandler, ProxyRootListener
     @Override
     public void onModuleLoad() {
 
-        // tell the server that a new client has started
-        CommsServiceAsync commsService = GWT.create(CommsService.class);
-        commsService.clientStarted(new AsyncCallback<Void>() {
+        // we must start the platform and connect the router first
+        ENVIRONMENT = new GWTEnvironment(new HashMap<String, String>(), new AsyncCallback<Void>() {
+
             @Override
-            public void onFailure(Throwable throwable) {
-                Window.alert("Could not connect to server. Please try again later");
+            public void onFailure(Throwable caught) {
+                Window.alert("Failed to connect to server. Please try again later");
             }
 
             @Override
-            public void onSuccess(Void aVoid) {
-
-                // we must start the platform and create the root object before anything tries to use it
-                ENVIRONMENT = new GWTEnvironment(new HashMap<String, String>());
-                ENVIRONMENT.getResources().setRoot(new GWTProxyRootObject(ENVIRONMENT.getResources(), ENVIRONMENT.getResources()));
-                ENVIRONMENT.getResources().getLoginManager().init();
-
+            public void onSuccess(Void result) {
                 // setup the activity manager
                 ActivityManager activityManager = new ActivityManager(FACTORY.getActivityMapper(), FACTORY.getEventBus());
                 activityManager.setDisplay(FACTORY.getPage().getContainer());
@@ -57,37 +49,66 @@ public class Housemate implements EntryPoint, LoggedInHandler, ProxyRootListener
                 FACTORY.getPlaceHistoryHandler().register(FACTORY.getPlaceController(), FACTORY.getEventBus(), new HomePlace());
 
                 // add our default handlers
+                ENVIRONMENT.getResources().getRouter().addObjectListener(Housemate.this);
                 FACTORY.getEventBus().addHandler(PerformCommandEvent.TYPE, PerformCommandHandler.HANDLER);
-                FACTORY.getEventBus().addHandler(LoggedInEvent.TYPE, Housemate.this);
-                ENVIRONMENT.getResources().getRoot().addObjectListener(Housemate.this);
 
                 // start the first login
-                ENVIRONMENT.getResources().getLoginManager().login();
+                ENVIRONMENT.getResources().getLoginManager().init();
+                ENVIRONMENT.getResources().getLoginManager().startLogin();
             }
         });
+        ENVIRONMENT.getResources().getRouter().connect();
     }
 
     @Override
-    public void statusChanged(GWTProxyRootObject root, Root.Status status) {
-        // todo show status in the UI
+    public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
+        switch (status) {
+            case Authenticated:
+                if(ENVIRONMENT.getResources().getRoot() != null)
+                    ENVIRONMENT.getResources().getRoot().uninit();
+                ENVIRONMENT.getResources().setRoot(new GWTProxyRootObject(ENVIRONMENT.getResources(), ENVIRONMENT.getResources()));
+                // add the main view to the root panel of the page
+                RootPanel.get().add(FACTORY.getPage());
+                // connect the root object
+                ENVIRONMENT.getResources().getRoot().addObjectListener(new ProxyRootListener<GWTProxyRootObject>() {
+                    @Override
+                    public void loaded(GWTProxyRootObject root) {
+                        FACTORY.getPlaceHistoryHandler().handleCurrentHistory();
+                    }
+
+                    @Override
+                    public void connectionStatusChanged(GWTProxyRootObject root, ConnectionStatus status) {
+                        // do nothing
+                    }
+
+                    @Override
+                    public void brokerInstanceChanged(GWTProxyRootObject root) {
+                        // do nothing (handled by router listener
+                    }
+                });
+                ENVIRONMENT.getResources().getRoot().login(ENVIRONMENT.getResources().getLoginManager().getLoginMethod());
+                break;
+            case Disconnected:
+            case Unauthenticated:
+                resetContent();
+                break;
+            case AuthenticationFailed:
+            case Authenticating:
+            case Connecting:
+                break;
+        }
     }
 
     @Override
-    public void loaded() {
-        FACTORY.getPlaceHistoryHandler().handleCurrentHistory();
+    public void brokerInstanceChanged(RouterRootObject root) {
+        resetContent();
     }
 
-    @Override
-    public void onLoginEvent(final LoggedInEvent event) {
-        if(event.isLoggedIn()) {
-            // add the main view to the root panel of the page
-            RootPanel.get().add(FACTORY.getPage());
-            // connect the root object
-            ENVIRONMENT.getResources().getRoot().connect(
-                    ENVIRONMENT.getResources().getLoginManager().getLoginMethod());
-        } else {
-            RootPanel.get().clear();
-            Housemate.ENVIRONMENT.getResources().getLoginManager().login();
+    private void resetContent() {
+        RootPanel.get().remove(FACTORY.getPage());
+        if(ENVIRONMENT.getResources().getRoot() != null) {
+            ENVIRONMENT.getResources().getRoot().uninit();
+            ENVIRONMENT.getResources().setRoot(null);
         }
     }
 }

@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
+import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
@@ -80,8 +81,8 @@ public class RootObjectBridge
     }
 
     @Override
-    public Status getStatus() {
-        return Status.Connected;
+    public ConnectionStatus getStatus() {
+        return ConnectionStatus.Authenticated;
     }
 
     @Override
@@ -90,12 +91,12 @@ public class RootObjectBridge
     }
 
     @Override
-    public void connect(AuthenticationMethod method) {
+    public void login(AuthenticationMethod method) {
         throw new HousemateRuntimeException("Cannot connect this type of root object");
     }
 
     @Override
-    public void disconnect() {
+    public void logout() {
         throw new HousemateRuntimeException("Cannot disconnect this type of root object");
     }
 

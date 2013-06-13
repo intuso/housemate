@@ -10,5 +10,5 @@ import com.intuso.housemate.api.object.root.RootListener;
  * To change this template use File | Settings | File Templates.
  */
 public interface ProxyRootListener<R extends ProxyRoot<?, ?, ?, ?, ?, ?>> extends RootListener<R> {
-    public void loaded();
+    public void loaded(R root);
 }

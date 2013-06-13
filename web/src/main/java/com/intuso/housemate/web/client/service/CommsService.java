@@ -10,7 +10,7 @@ import com.intuso.housemate.web.client.NotConnectedException;
  */
 @RemoteServiceRelativePath("comms")
 public interface CommsService extends RemoteService {
-    void clientStarted();
+    void connectClient();
     void disconnectClient();
     Message<Message.Payload>[] getMessages(int num, long timeout) throws NotConnectedException;
     void sendMessageToBroker(Message<Message.Payload> message);

@@ -65,6 +65,11 @@ public interface Command<AL extends List<? extends Argument<?>>, C extends Comma
         public boolean isPerforming() {
             return performing;
         }
+
+        @Override
+        public String toString() {
+            return opId + " " + performing;
+        }
     }
 
     public static class FailedMessageValue implements Message.Payload {

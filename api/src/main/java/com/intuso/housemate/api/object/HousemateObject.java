@@ -150,6 +150,11 @@ public abstract class HousemateObject<R extends Resources,
         public String getSubWrapperName() {
             return subWrapperName;
         }
+
+        @Override
+        public String toString() {
+            return subWrapperName;
+        }
     }
 
     public final HousemateObject<?, ?, ?, ?, ?> getWrapper(String[] path) {

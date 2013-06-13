@@ -4,7 +4,6 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.NoPayload;
-import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.resources.Resources;
 
 import java.io.IOException;
@@ -74,22 +73,18 @@ public class SocketClient extends Router {
         // log for debug info
         getLog().d("Broker host is \"" + this.host + "\"");
         getLog().d("Broker port is \"" + this.port + "\"");
-
-        // connect to the broker
-        connecting = true;
-        connectToBroker();
-        connecting = false;
     }
 
     @Override
-    public void disconnect() {
+    public final void disconnect() {
         shutdownComms(false);
     }
 
     /**
      * Connect to the broker
      */
-    private final void connectToBroker() {
+    @Override
+    public final void connect() {
         int delay = 1;
         while(socket == null || !socket.isConnected()) {
             try {
@@ -109,7 +104,7 @@ public class SocketClient extends Router {
                 messageSender.start();
 
                 getLog().d("Connected to broker");
-                setStatus(Root.Status.Connected);
+                setRouterStatus(Status.Connected);
 
                 // return from the method
                 return;
@@ -162,7 +157,7 @@ public class SocketClient extends Router {
         }
 
         getLog().d("Disconnected");
-        setStatus(reconnecting ? Root.Status.Reconnecting : Root.Status.Disconnected);
+        setRouterStatus(reconnecting ? Status.Connecting : Status.Disconnected);
     }
 
     /**
@@ -178,7 +173,7 @@ public class SocketClient extends Router {
                     connecting = true;
                     getLog().d("Running reconnect thread");
                     shutdownComms(true);
-                    connectToBroker();
+                    connect();
                     getLog().d("Reconnected");
                     connecting = false;
                 }

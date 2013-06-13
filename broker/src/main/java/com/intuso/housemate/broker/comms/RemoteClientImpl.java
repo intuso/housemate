@@ -137,8 +137,8 @@ public class RemoteClientImpl implements RemoteClient {
         } else {
             if(!current.children.containsKey(client.getRoute().get(currentIndex)))
                 throw new HousemateException("No authorised client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()));
-            else if(current.children.get(client.getRoute().get(currentIndex)).getType() != ClientWrappable.Type.ROUTER)
-                throw new HousemateException("Client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()) + " is not of type " + ClientWrappable.Type.ROUTER.name());
+            else if(current.children.get(client.getRoute().get(currentIndex)).getType() != ClientWrappable.Type.Router)
+                throw new HousemateException("Client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()) + " is not of type " + ClientWrappable.Type.Router.name());
             addClient(current, current.children.get(client.getRoute().get(currentIndex)), currentIndex + 1, client);
         }
     }

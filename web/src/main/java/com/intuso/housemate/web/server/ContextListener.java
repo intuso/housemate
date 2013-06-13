@@ -2,6 +2,9 @@ package com.intuso.housemate.web.server;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.comms.ConnectionStatus;
+import com.intuso.housemate.api.comms.RouterRootObject;
+import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.housemate.platform.pc.PCEnvironment;
 
@@ -30,7 +33,22 @@ public class ContextListener implements ServletContextListener {
                 else
                     RESOURCES = new PCEnvironment(new String[0]).getResources();
             }
-            RESOURCES.getRouter().connect(new UsernamePassword(false, "admin", "admin", false));
+            RESOURCES.getRouter().connect();
+            RESOURCES.getRouter().login(
+                    new UsernamePassword(false, RESOURCES.getProperties().get("username"), RESOURCES.getProperties().get("password"), false));
+            RESOURCES.getRouter().addObjectListener(new RootListener<RouterRootObject>() {
+                @Override
+                public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
+                    RESOURCES.getLog().d("Router connection status: " + status);
+                }
+
+                @Override
+                public void brokerInstanceChanged(RouterRootObject root) {
+                    RESOURCES.getRouter().login(
+                            new UsernamePassword(false, RESOURCES.getProperties().get("username"), RESOURCES.getProperties().get("password"), false)
+                    );
+                }
+            });
         } catch(HousemateException e) {
             System.err.println("Failed to start Housemate platform");
             e.printStackTrace();

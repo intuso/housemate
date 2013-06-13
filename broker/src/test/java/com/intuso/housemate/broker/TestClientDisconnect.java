@@ -2,8 +2,8 @@ package com.intuso.housemate.broker;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.RouterRootObject;
-import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
 import com.intuso.housemate.comms.transport.socket.client.SocketClient;
@@ -61,17 +61,17 @@ public class TestClientDisconnect {
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
         socketClient.addObjectListener(new RootListener<RouterRootObject>() {
             @Override
-            public void statusChanged(RouterRootObject routerRoot, Root.Status status) {
-                if(status == Root.Status.Connected) {
+            public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
+                if(status == ConnectionStatus.Authenticated) {
                     root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
 
                         @Override
-                        public void statusChanged(SimpleProxyObject.Root root, Root.Status status) {
+                        public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
 
                         }
 
                         @Override
-                        public void loaded() {
+                        public void loaded(SimpleProxyObject.Root root) {
                             synchronized(disconnected) {
                                 disconnected.set(false);
                                 disconnected.notify();
@@ -103,18 +103,29 @@ public class TestClientDisconnect {
                                 }
                             });
                         }
+
+                        @Override
+                        public void brokerInstanceChanged(SimpleProxyObject.Root root) {
+                            // do nothing
+                        }
                     });
-                    root.connect(new UsernamePassword(false, "admin", "admin", false));
+                    root.login(new UsernamePassword(false, "admin", "admin", false));
                 }
             }
+
+            @Override
+            public void brokerInstanceChanged(RouterRootObject root) {
+                // do nothing
+            }
         });
-        socketClient.connect(new UsernamePassword(false, "admin", "admin", false));
+        socketClient.connect();
+        socketClient.login(new UsernamePassword(false, "admin", "admin", false));
 
         synchronized (disconnected) {
             disconnected.wait(); // wait for messages to be processed
             assertFalse(disconnected.get());
         }
-        root.disconnect();
+        root.logout();
         synchronized (disconnected) {
             disconnected.wait(); // wait for messages to be processed
             assertTrue(disconnected.get());
@@ -141,17 +152,17 @@ public class TestClientDisconnect {
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
         comms.addObjectListener(new RootListener<RouterRootObject>() {
             @Override
-            public void statusChanged(RouterRootObject routerRoot, Root.Status status) {
-                if(status == Root.Status.Connected) {
+            public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
+                if(status == ConnectionStatus.Authenticated) {
                     root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
 
                         @Override
-                        public void statusChanged(SimpleProxyObject.Root root, Root.Status status) {
+                        public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
 
                         }
 
                         @Override
-                        public void loaded() {
+                        public void loaded(SimpleProxyObject.Root root) {
                             synchronized (connectionLost) {
                                 connectionLost.set(false);
                                 connectionLost.notify();
@@ -183,12 +194,23 @@ public class TestClientDisconnect {
                                 }
                             });
                         }
+
+                        @Override
+                        public void brokerInstanceChanged(SimpleProxyObject.Root root) {
+                            // do nothing
+                        }
                     });
-                    root.connect(new UsernamePassword(false, "admin", "admin", false));
+                    root.login(new UsernamePassword(false, "admin", "admin", false));
                 }
             }
+
+            @Override
+            public void brokerInstanceChanged(RouterRootObject root) {
+                // do nothing
+            }
         });
-        comms.connect(new UsernamePassword(false, "admin", "admin", false));
+        comms.connect();
+        comms.login(new UsernamePassword(false, "admin", "admin", false));
 
         synchronized (connectionLost) {
             connectionLost.wait(); // wait for messages to be processed
@@ -224,12 +246,12 @@ public class TestClientDisconnect {
         ListenerRegistration rootListenerRegistration = root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
 
             @Override
-            public void statusChanged(SimpleProxyObject.Root root, Root.Status status) {
+            public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
 
             }
 
             @Override
-            public void loaded() {
+            public void loaded(SimpleProxyObject.Root root) {
                 synchronized(connected) {
                     connected.set(true);
                     connected.notify();
@@ -262,16 +284,27 @@ public class TestClientDisconnect {
                     }
                 });
             }
+
+            @Override
+            public void brokerInstanceChanged(SimpleProxyObject.Root root) {
+                // do nothing
+            }
         });
         ListenerRegistration commsListenerRegistration = comms.addObjectListener(new RootListener<RouterRootObject>() {
             @Override
-            public void statusChanged(RouterRootObject routerRoot, Root.Status status) {
-                if(status == Root.Status.Connected) {
-                    root.connect(new UsernamePassword(false, "admin", "admin", false));
+            public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
+                if(status == ConnectionStatus.Authenticated) {
+                    root.login(new UsernamePassword(false, "admin", "admin", false));
                 }
             }
+
+            @Override
+            public void brokerInstanceChanged(RouterRootObject root) {
+                // do nothing
+            }
         });
-        comms.connect(new UsernamePassword(false, "admin", "admin", false));
+        comms.connect();
+        comms.login(new UsernamePassword(false, "admin", "admin", false));
 
         synchronized (connected) {
             connected.wait(); // wait for messages to be processed, assert that it's connected

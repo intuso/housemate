@@ -38,8 +38,8 @@ public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWB
     public void setClient(RemoteClient client) throws HousemateException {
         if(this.client != null)
             throw new HousemateException("This object already has a client");
-        else if(client.getType() != ClientWrappable.Type.REAL)
-            throw new HousemateException("Client is not of type " + ClientWrappable.Type.REAL);
+        else if(client.getType() != ClientWrappable.Type.Real)
+            throw new HousemateException("Client is not of type " + ClientWrappable.Type.Real);
         if(clientListener != null)
             clientListener.removeListener();
         this.client = client;

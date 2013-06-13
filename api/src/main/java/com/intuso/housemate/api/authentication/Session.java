@@ -21,4 +21,9 @@ public class Session extends AuthenticationMethod {
     public String getSessionId() {
         return sessionId;
     }
+
+    @Override
+    public String toString() {
+        return "session=" + sessionId;
+    }
 }

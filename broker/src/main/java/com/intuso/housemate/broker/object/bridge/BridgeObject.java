@@ -65,8 +65,8 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
         result.add(addMessageListener(LOAD_REQUEST, new Receiver<ClientPayload<LoadRequest>>() {
             @Override
             public void messageReceived(Message<ClientPayload<LoadRequest>> message) throws HousemateException {
-                if(message.getPayload().getClient().getType() != ClientWrappable.Type.PROXY)
-                    getLog().e("Client requesting an object is not of type " + ClientWrappable.Type.PROXY);
+                if(message.getPayload().getClient().getType() != ClientWrappable.Type.Proxy)
+                    getLog().e("Client requesting an object is not of type " + ClientWrappable.Type.Proxy);
                 else {
                     BridgeObject<?, ?, ?, ?, ?> subWrapper = getWrapper(message.getPayload().getOriginal().getSubWrapperName());
                     if(subWrapper != null)

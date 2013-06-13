@@ -1,5 +1,6 @@
 package com.intuso.housemate.api.object.root;
 
+import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.object.ObjectListener;
 
 /**
@@ -10,5 +11,6 @@ import com.intuso.housemate.api.object.ObjectListener;
  * To change this template use File | Settings | File Templates.
  */
 public interface RootListener<R extends Root> extends ObjectListener {
-    public void statusChanged(R root, Root.Status status);
+    public void connectionStatusChanged(R root, ConnectionStatus status);
+    void brokerInstanceChanged(R root);
 }

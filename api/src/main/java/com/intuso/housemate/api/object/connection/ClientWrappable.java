@@ -13,9 +13,9 @@ import com.intuso.housemate.api.object.NoChildrenWrappable;
 public final class ClientWrappable extends HousemateObjectWrappable<NoChildrenWrappable> {
 
     public enum Type {
-        ROUTER,
-        REAL,
-        PROXY
+        Router,
+        Real,
+        Proxy
     }
 
     private Type type;

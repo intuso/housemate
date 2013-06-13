@@ -24,7 +24,7 @@ public class LocalClient implements PluginListener {
     public LocalClient(final BrokerGeneralResources resources) throws HousemateException {
         this.resources = resources;
         root = new LocalClientRoot(resources);
-        root.connect(new InternalConnectMethod());
+        root.login(new InternalConnectMethod());
         root.addType(resources.getDeviceFactory().getType());
         root.addType(resources.getConditionFactory().getType());
         root.addType(resources.getConsequenceFactory().getType());
@@ -59,6 +59,11 @@ public class LocalClient implements PluginListener {
     public final class InternalConnectMethod extends AuthenticationMethod {
         private InternalConnectMethod() {
             super(false);
+        }
+
+        @Override
+        public String toString() {
+            return "internal";
         }
     }
 }

@@ -38,7 +38,7 @@ public class GWTClientEndpoint implements Receiver, Sender {
 
     public void disconnect() {
         q.clear();
-        registration.disconnect();
+        registration.remove();
     }
 
     @Override

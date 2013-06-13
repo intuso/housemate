@@ -3,10 +3,13 @@ package com.intuso.housemate.object.real;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.Reconnect;
+import com.intuso.housemate.api.comms.ConnectionManager;
+import com.intuso.housemate.api.comms.ConnectionStatus;
+import com.intuso.housemate.api.comms.ConnectionStatusChangeListener;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.comms.message.AuthenticationResponse;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.connection.ClientWrappable;
@@ -29,21 +32,21 @@ import java.util.List;
 public class RealRootObject
         extends RealObject<RootWrappable, HousemateObjectWrappable<?>, RealObject<?, ? extends HousemateObjectWrappable<?>, ?, ?>, RootListener<? super RealRootObject>>
         implements RealRoot<RealType<?, ?, ?>, RealList<TypeWrappable<?>, RealType<?, ?, ?>>, RealDevice,
-            RealList<DeviceWrappable, RealDevice>, RealRootObject> {
+            RealList<DeviceWrappable, RealDevice>, RealRootObject>, ConnectionStatusChangeListener {
 
     private final RealList<TypeWrappable<?>, RealType<?, ?, ?>> types;
     private final RealList<DeviceWrappable, RealDevice> devices;
 
     private final Router.Registration routerRegistration;
-    private AuthenticationMethod method = null;
+    private final ConnectionManager connectionManager;
 
-    private String connectionId;
-    private Status status = Status.Disconnected;
+    private boolean resend = false;
 
     public RealRootObject(RealResources resources) {
         super(resources, new RootWrappable());
 
         routerRegistration = resources.getRouter().registerReceiver(this);
+        connectionManager = new ConnectionManager(routerRegistration, ClientWrappable.Type.Real, ConnectionStatus.Unauthenticated);
 
         types = new RealList<TypeWrappable<?>, RealType<?, ?, ?>>(resources, TYPES, TYPES, "Defined types");
         devices = new RealList<DeviceWrappable, RealDevice>(resources, DEVICES, DEVICES, "Defined devices");
@@ -56,27 +59,25 @@ public class RealRootObject
         devices.init(this);
     }
 
-    public Status getStatus() {
-        return status;
+    @Override
+    public ConnectionStatus getStatus() {
+        return connectionManager.getStatus();
     }
 
     @Override
     public String getConnectionId() {
-        return connectionId;
+        return connectionManager.getConnectionId();
     }
 
     @Override
-    public void connect(AuthenticationMethod method) {
-        if(this.method != null)
-            throw new HousemateRuntimeException("Authentication already in progress/succeeded");
-        this.method = method;
-        sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.REAL, method));
+    public void login(AuthenticationMethod method) {
+        connectionManager.login(method);
     }
 
     @Override
-    public void disconnect() {
-        routerRegistration.disconnect();
-        method = null;
+    public void logout() {
+        connectionManager.logout();
+        routerRegistration.remove();
     }
 
     @Override
@@ -97,32 +98,17 @@ public class RealRootObject
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
+        result.add(connectionManager.addStatusChangeListener(this));
         result.add(addMessageListener(CONNECTION_RESPONSE, new Receiver<AuthenticationResponse>() {
             @Override
             public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {
-                if(message.getPayload() instanceof ReconnectResponse)
-                    status = Status.Connected;
-                else
-                    connectionId = message.getPayload().getConnectionId();
-                method = null;
-                status = connectionId != null ? Status.Connected : Status.Disconnected;
-                for(RootListener<? super RealRootObject> listener : getObjectListeners())
-                    listener.statusChanged(RealRootObject.this, status);
+                connectionManager.authenticationResponseReceived(message.getPayload());
             }
         }));
-        result.add(addMessageListener(STATUS, new Receiver<Status>() {
+        result.add(addMessageListener(STATUS, new Receiver<ConnectionStatus>() {
             @Override
-            public void messageReceived(Message<Status> message) throws HousemateException {
-                status = message.getPayload();
-                if(status == Status.Connected) {
-                    if(connectionId != null) {
-                        sendMessage(CONNECTION_REQUEST, new AuthenticationRequest(ClientWrappable.Type.PROXY, new Reconnect(connectionId)));
-                        return;
-                    } else
-                        status = Status.Disconnected;
-                }
-                for(RootListener<? super RealRootObject> listener : getObjectListeners())
-                    listener.statusChanged(RealRootObject.this, status);
+            public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
+                connectionManager.routerStatusChanged(message.getPayload());
             }
         }));
         return result;
@@ -156,5 +142,22 @@ public class RealRootObject
     @Override
     public final void removeDevice(String name) {
         devices.remove(name);
+    }
+
+    @Override
+    public void connectionStatusChanged(ConnectionStatus status) {
+        for(RootListener<? super RealRootObject> listener : getObjectListeners())
+            listener.connectionStatusChanged(this, status);
+        if(status == ConnectionStatus.Authenticated && resend) {
+            types.resendElements();
+            devices.resendElements();
+        }
+    }
+
+    @Override
+    public void brokerInstanceChanged() {
+        for(RootListener<? super RealRootObject> listener : getObjectListeners())
+            listener.brokerInstanceChanged(this);
+        resend = true;
     }
 }

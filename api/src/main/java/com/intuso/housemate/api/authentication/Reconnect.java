@@ -11,6 +11,8 @@ public class Reconnect extends AuthenticationMethod {
 
     private String connectionId;
 
+    private Reconnect() {}
+
     public Reconnect(String connectionId) {
         super(true);
         this.connectionId = connectionId;
@@ -18,5 +20,10 @@ public class Reconnect extends AuthenticationMethod {
 
     public String getConnectionId() {
         return connectionId;
+    }
+
+    @Override
+    public String toString() {
+        return "reconnect connId=" + connectionId;
     }
 }

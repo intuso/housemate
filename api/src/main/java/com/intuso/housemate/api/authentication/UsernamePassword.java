@@ -33,4 +33,9 @@ public class UsernamePassword extends AuthenticationMethod {
     public boolean isCreateSession() {
         return createSession;
     }
+
+    @Override
+    public String toString() {
+        return "username/password=" + username + "/guessme";
+    }
 }

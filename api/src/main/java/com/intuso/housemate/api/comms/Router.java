@@ -23,6 +23,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class Router implements Sender, Receiver {
 
+    protected enum Status {
+        Disconnected,
+        Connecting,
+        Connected
+    }
+
     private final Log log;
 
     private final AtomicInteger nextId = new AtomicInteger(-1);
@@ -30,13 +36,15 @@ public abstract class Router implements Sender, Receiver {
 
     private final RouterRootObject root;
 
+    private Status routerStatus = Status.Disconnected;
+
     public Router(Resources resources) {
         this.log = resources.getLog();
         root = new RouterRootObject(resources, this);
         root.addObjectListener(new RootListener<RouterRootObject>() {
             @Override
-            public void statusChanged(RouterRootObject root, Root.Status status) {
-                Message<Root.Status> message = new Message<Root.Status>(new String[] {""}, Root.STATUS, status);
+            public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
+                Message<ConnectionStatus> message = new Message<ConnectionStatus>(new String[] {""}, Root.STATUS, status);
                 for(Receiver receiver : receivers.values()) {
                     try {
                         receiver.messageReceived(message);
@@ -46,6 +54,11 @@ public abstract class Router implements Sender, Receiver {
                     }
                 }
             }
+
+            @Override
+            public void brokerInstanceChanged(RouterRootObject root) {
+                // do nothing
+            }
         });
     }
 
@@ -53,26 +66,30 @@ public abstract class Router implements Sender, Receiver {
         return log;
     }
 
-    public final Root.Status getStatus() {
+    public final ConnectionStatus getStatus() {
         return root.getStatus();
     }
 
-    protected final void setStatus(Root.Status status) {
-        try {
-            root.distributeMessage(new Message<Root.Status>(new String[]{""}, Root.STATUS, status));
-        } catch(HousemateException e) {
-            log.e("Failed to notify root of the new status");
-        };
+    protected final void setRouterStatus(Status routerStatus) {
+        this.routerStatus = routerStatus;
+        root.setRouterStatus(routerStatus);
     }
 
     public ListenerRegistration addObjectListener(RootListener<? super RouterRootObject> listener) {
         return root.addObjectListener(listener);
     }
 
-    public void connect(AuthenticationMethod method) {
-        root.connect(method);
+    public final void login(AuthenticationMethod method) {
+        if(routerStatus != Status.Connected)
+            throw new HousemateRuntimeException("Cannot login until the router is connected");
+        root.login(method);
     }
 
+    public final void logout() {
+        root.logout();
+    }
+
+    public abstract void connect();
     public abstract void disconnect();
     
     public synchronized final Registration registerReceiver(Receiver<?> receiver) {
@@ -115,12 +132,10 @@ public abstract class Router implements Sender, Receiver {
             Router.this.sendMessage(message);
         }
 
-        public synchronized final void disconnect() {
+        public synchronized final void remove() {
             connected = false;
             if(clientId != null)
                 receivers.remove(clientId);
-            Router.this.sendMessage(new Message<StringMessageValue>(new String[] {""}, Root.DISCONNECT,
-                    new StringMessageValue(clientId)));
         }
 
         public synchronized final void connectionLost() {

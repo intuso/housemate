@@ -80,7 +80,7 @@ public class SocketServer {
                     // TODO read client "contract" - version, mime type etc
                     // could also read a name to call the client so that we can show something useful when showing
                     // who's connected?
-                    new SocketClient(clientMap, socket, log);
+                    new ClientHandle(clientMap, socket, log);
                 } catch (IOException e) {
                     if(!serverSocket.isClosed()) {
                         log.e("Error getting next client connection.");

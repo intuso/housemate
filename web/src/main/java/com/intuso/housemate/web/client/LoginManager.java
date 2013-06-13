@@ -4,11 +4,10 @@ import com.google.gwt.user.client.Cookies;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.authentication.Session;
 import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.RouterRootObject;
-import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.web.client.event.CredentialsSubmittedEvent;
-import com.intuso.housemate.web.client.event.LoggedInEvent;
 import com.intuso.housemate.web.client.handler.CredentialsSubmittedHandler;
 
 /**
@@ -24,16 +23,25 @@ public class LoginManager implements CredentialsSubmittedHandler {
 
     private final RootListener<RouterRootObject> statusChangedListener = new RootListener<RouterRootObject>() {
         @Override
-        public void statusChanged(RouterRootObject root, Root.Status status) {
-            if(status == Root.Status.Connected) {
-                isLoggedIn = true;
-                Cookies.setCookie(SESSION_COOKIE, root.getConnectionId());
-                Housemate.FACTORY.getEventBus().fireEvent(new LoggedInEvent(true));
-                Housemate.FACTORY.getLoginView().hide();
-            } else {
-                Housemate.FACTORY.getLoginView().show("Incorrect credentials");
-                Housemate.FACTORY.getLoginView().enable();
+        public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
+            switch (status) {
+                case Authenticated:
+                    isLoggedIn = true;
+                    Cookies.setCookie(SESSION_COOKIE, root.getConnectionId());
+                    Housemate.FACTORY.getLoginView().hide();
+                    break;
+                case AuthenticationFailed:
+                    Housemate.FACTORY.getLoginView().show("Incorrect credentials");
+                    Housemate.FACTORY.getLoginView().enable();
+                    break;
             }
+        }
+
+        @Override
+        public void brokerInstanceChanged(RouterRootObject root) {
+            isLoggedIn = false;
+            Housemate.FACTORY.getLoginView().show("The broker restarted. Please login again");
+            Housemate.FACTORY.getLoginView().enable();
         }
     };
 
@@ -44,9 +52,9 @@ public class LoginManager implements CredentialsSubmittedHandler {
         Housemate.FACTORY.getEventBus().addHandler(CredentialsSubmittedEvent.TYPE, this);
     }
 
-    public void login() {
+    public void startLogin() {
         if(Cookies.getCookieNames().contains(SESSION_COOKIE))
-            Housemate.ENVIRONMENT.getResources().getRouter().connect(
+            Housemate.ENVIRONMENT.getResources().getRouter().login(
                     new Session(true, Cookies.getCookie(SESSION_COOKIE)));
         else {
             Housemate.FACTORY.getLoginView().show(null);
@@ -57,13 +65,15 @@ public class LoginManager implements CredentialsSubmittedHandler {
     public void logout() {
         Cookies.removeCookie(SESSION_COOKIE);
         isLoggedIn = false;
-        Housemate.FACTORY.getEventBus().fireEvent(new LoggedInEvent(false));
+        Housemate.ENVIRONMENT.getResources().getRouter().logout();
+        Housemate.FACTORY.getLoginView().show(null);
+        Housemate.FACTORY.getLoginView().enable();
     }
 
     @Override
     public void onCredentialsSubmitted(CredentialsSubmittedEvent event) {
         if(!isLoggedIn)
-            Housemate.ENVIRONMENT.getResources().getRouter().connect(
+            Housemate.ENVIRONMENT.getResources().getRouter().login(
                     new UsernamePassword(true, event.getUsername(), event.getPassword(), true));
     }
 
