@@ -12,6 +12,6 @@ import com.intuso.housemate.api.resources.Resources;
  */
 public interface ConsequenceFactory<
             R extends Resources,
-            C extends Consequence<?, ?, ?, ?, ?>>
+            C extends Consequence<?, ?, ?, ?>>
         extends HousemateObjectFactory<R, ConsequenceWrappable, C> {
 }

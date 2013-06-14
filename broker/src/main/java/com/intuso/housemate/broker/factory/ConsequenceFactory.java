@@ -68,7 +68,6 @@ public final class ConsequenceFactory implements PluginListener {
             public void perform(TypeInstances values) throws HousemateException {
                 BrokerRealConsequence consequence = createConsequence(values);
                 list.add(consequence);
-                resources.getStorage().watchPropertyValues(consequence.getProperties());
                 resources.getStorage().saveValues(list.getPath(), consequence.getId(), values);
             }
         };

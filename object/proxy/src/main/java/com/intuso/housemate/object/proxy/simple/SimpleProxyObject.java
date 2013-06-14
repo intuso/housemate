@@ -76,7 +76,6 @@ public class SimpleProxyObject {
 
     public final static class Condition extends ProxyCondition<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
                 ProxyResources<?>,
-                Property,
                 Value,
                 List<PropertyWrappable, Property>,
                 Command,
@@ -92,7 +91,6 @@ public class SimpleProxyObject {
     public final static class Consequence extends ProxyConsequence<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
                 ProxyResources<?>,
                 Value,
-                Property,
                 List<PropertyWrappable, Property>,
                 Consequence> {
         public Consequence(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,

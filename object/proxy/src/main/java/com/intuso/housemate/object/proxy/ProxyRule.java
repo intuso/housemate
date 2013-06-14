@@ -20,9 +20,9 @@ public abstract class ProxyRule<
             SR extends ProxyResources<?>,
             P extends ProxyProperty<?, ?, ?, ?, P>, C extends ProxyCommand<?, ?, ?, ?, C>,
             V extends ProxyValue<?, ?, V>,
-            Cond extends ProxyCondition<?, ?, ?, ?, ?, ?, Cond, CondL>,
+            Cond extends ProxyCondition<?, ?, ?, ?, ?, Cond, CondL>,
             CondL extends ProxyList<?, ?, ConditionWrappable, Cond, CondL>,
-            Cons extends ProxyConsequence<?, ?, ?, ?, ?, Cons>,
+            Cons extends ProxyConsequence<?, ?, ?, ?, Cons>,
             ConsL extends ProxyList<?, ?, ConsequenceWrappable, Cons, ConsL>,
             Ru extends ProxyRule<R, SR, P, C, V, Cond, CondL, Cons, ConsL, Ru>>
         extends ProxyPrimaryObject<R, SR, RuleWrappable, P, C, V, Ru, RuleListener<? super Ru>>

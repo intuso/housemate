@@ -19,7 +19,6 @@ public class GWTProxyConsequence extends ProxyConsequence<
             GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             GWTResources<?>,
             GWTProxyValue,
-            GWTProxyProperty,
             GWTProxyList<PropertyWrappable, GWTProxyProperty>,
             GWTProxyConsequence> {
     public GWTProxyConsequence(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,

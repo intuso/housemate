@@ -9,7 +9,7 @@ import com.intuso.housemate.api.object.ObjectListener;
  * Time: 10:34
  * To change this template use File | Settings | File Templates.
  */
-public interface ConsequenceListener<C extends Consequence<?, ?, ?, ?, ?>>
+public interface ConsequenceListener<C extends Consequence<?, ?, ?, ?>>
         extends ObjectListener {
 
     /**

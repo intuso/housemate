@@ -77,6 +77,7 @@ public class RootObjectBridge
         addWrapper(addDevice);
         addWrapper(addRule);
         getResources().getGeneralResources().getStorage().watchDevices(devices);
+        getResources().getGeneralResources().getStorage().watchRules(rules);
         init(null);
     }
 

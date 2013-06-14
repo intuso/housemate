@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public abstract class BrokerRealCondition
         extends BrokerRealObject<ConditionWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>,
             ConditionListener<? super BrokerRealCondition>>
-        implements Condition<BrokerRealProperty<String>, BrokerRealValue<String>, BrokerRealValue<Boolean>,
+        implements Condition<BrokerRealValue<String>, BrokerRealValue<Boolean>,
             BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>, BrokerRealCommand, BrokerRealCondition,
             BrokerRealList<ConditionWrappable, BrokerRealCondition>> {
 

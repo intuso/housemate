@@ -20,11 +20,10 @@ public abstract class ProxyConsequence<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             SR extends ProxyResources<?>,
             V extends ProxyValue<?, ?, V>,
-            P extends ProxyProperty<?, ?, ?, ?, P>,
-            PL extends ProxyList<?, ?, PropertyWrappable, P, PL>,
-            C extends ProxyConsequence<R, SR, V, P, PL, C>>
+            PL extends ProxyList<?, ?, PropertyWrappable, ? extends ProxyProperty<?, ?, ?, ?, ?>, PL>,
+            C extends ProxyConsequence<R, SR, V, PL, C>>
         extends ProxyObject<R, SR, ConsequenceWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, C, ConsequenceListener<? super C>>
-        implements Consequence<P, V, V, PL, C> {
+        implements Consequence<V, V, PL, C> {
 
     private V executing;
     private V error;

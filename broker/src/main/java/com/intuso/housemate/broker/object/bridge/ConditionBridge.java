@@ -20,22 +20,22 @@ import javax.annotation.Nullable;
  */
 public class ConditionBridge
         extends BridgeObject<ConditionWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, ConditionBridge, ConditionListener<? super ConditionBridge>>
-        implements Condition<PropertyBridge, ValueBridge, ValueBridge,
+        implements Condition<ValueBridge, ValueBridge,
                     ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>, CommandBridge, ConditionBridge,
-                    ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>> {
+                    ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>> {
 
     private ValueBridge satisfiedValue;
     private ValueBridge errorValue;
     private ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge> propertyList;
-    private ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
+    private ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
     private CommandBridge addConditionCommand;
 
-    public ConditionBridge(BrokerBridgeResources resources, Condition<?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?> condition) {
+    public ConditionBridge(BrokerBridgeResources resources, Condition<?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?>, ?> condition) {
         super(resources,new ConditionWrappable(condition.getId(), condition.getName(), condition.getDescription()));
         satisfiedValue = new ValueBridge(resources, condition.getSatisfiedValue());
         errorValue = new ValueBridge(resources, condition.getErrorValue());
         propertyList = new ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>(resources, condition.getProperties(), new PropertyBridge.Converter(resources));
-        conditionList = new ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(resources, condition.getConditions(), new Converter(resources));
+        conditionList = new ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>(resources, condition.getConditions(), new Converter(resources));
         addConditionCommand = new CommandBridge(resources, condition.getAddConditionCommand()) {};
         addWrapper(satisfiedValue);
         addWrapper(errorValue);
@@ -50,7 +50,7 @@ public class ConditionBridge
     }
 
     @Override
-    public ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
+    public ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
         return conditionList;
     }
 
@@ -80,7 +80,7 @@ public class ConditionBridge
         return value != null ? value : false;
     }
 
-    public static class Converter implements Function<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> {
+    public static class Converter implements Function<Condition<?, ?, ?, ?, ?, ?>, ConditionBridge> {
 
         private final BrokerBridgeResources resources;
 
@@ -89,7 +89,7 @@ public class ConditionBridge
         }
 
         @Override
-        public ConditionBridge apply(@Nullable Condition<?, ?, ?, ?, ?, ?, ?> condition) {
+        public ConditionBridge apply(@Nullable Condition<?, ?, ?, ?, ?, ?> condition) {
             return new ConditionBridge(resources, condition);
         }
     }

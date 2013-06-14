@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 public class ConsequenceBridge
         extends BridgeObject<ConsequenceWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, ConsequenceBridge,
         ConsequenceListener<? super ConsequenceBridge>>
-        implements Consequence<PropertyBridge, ValueBridge, ValueBridge,
+        implements Consequence<ValueBridge, ValueBridge,
                     ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>,
                     ConsequenceBridge> {
 
@@ -29,7 +29,7 @@ public class ConsequenceBridge
     private ValueBridge errorValue;
     private ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge> propertyList;
 
-    public ConsequenceBridge(BrokerBridgeResources resources, Consequence<?, ?, ?, ?, ?> consequence) {
+    public ConsequenceBridge(BrokerBridgeResources resources, Consequence<?, ?, ?, ?> consequence) {
         super(resources, new ConsequenceWrappable(consequence.getId(), consequence.getName(), consequence.getDescription()));
         executingValue = new ValueBridge(resources,consequence.getExecutingValue());
         errorValue = new ValueBridge(resources,consequence.getErrorValue());
@@ -65,7 +65,7 @@ public class ConsequenceBridge
         return propertyList;
     }
 
-    public static class Converter implements Function<Consequence<?, ?, ?, ?, ?>, ConsequenceBridge> {
+    public static class Converter implements Function<Consequence<?, ?, ?, ?>, ConsequenceBridge> {
 
         private final BrokerBridgeResources resources;
 
@@ -74,7 +74,7 @@ public class ConsequenceBridge
         }
 
         @Override
-        public ConsequenceBridge apply(@Nullable Consequence<?, ?, ?, ?, ?> command) {
+        public ConsequenceBridge apply(@Nullable Consequence<?, ?, ?, ?> command) {
             return new ConsequenceBridge(resources, command);
         }
     }

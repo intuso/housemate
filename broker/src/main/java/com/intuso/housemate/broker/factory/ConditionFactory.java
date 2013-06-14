@@ -68,7 +68,6 @@ public final class ConditionFactory implements PluginListener {
             public void perform(TypeInstances values) throws HousemateException {
                 BrokerRealCondition condition = createCondition(values);
                 list.add(condition);
-                resources.getStorage().watchPropertyValues(condition.getProperties());
                 resources.getStorage().saveValues(list.getPath(), condition.getId(), values);
             }
         };

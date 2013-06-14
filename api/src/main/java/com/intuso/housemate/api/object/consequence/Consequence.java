@@ -13,8 +13,8 @@ import com.intuso.housemate.api.object.value.Value;
  * Time: 20:45
  * To change this template use File | Settings | File Templates.
  */
-public interface Consequence<SP extends Property<?, ?, ?>, BV extends Value<?, ?>, SV extends Value<?, ?>,
-        PL extends List<? extends Property<?, ?, ?>>, C extends Consequence<SP, BV, SV, PL, C>>
+public interface Consequence<BV extends Value<?, ?>, SV extends Value<?, ?>,
+        PL extends List<? extends Property<?, ?, ?>>, C extends Consequence<BV, SV, PL, C>>
         extends BaseObject<ConsequenceListener<? super C>>, HasProperties<PL> {
 
     public final static String EXECUTING = "executing";

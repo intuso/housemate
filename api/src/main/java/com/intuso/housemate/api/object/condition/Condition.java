@@ -14,9 +14,9 @@ import com.intuso.housemate.api.object.value.Value;
  * Time: 20:45
  * To change this template use File | Settings | File Templates.
  */
-public interface Condition<SP extends Property<?, ?, ?>, SV extends Value<?, ?>, BV extends Value<?, ?>,
+public interface Condition<SV extends Value<?, ?>, BV extends Value<?, ?>,
             PL extends List<? extends Property<?, ?, ?>>, AC extends Command<?, ?>,
-            C extends Condition<SP, SV, BV, PL, AC, C, CL>, CL extends List<? extends C>>
+            C extends Condition<SV, BV, PL, AC, C, CL>, CL extends List<? extends C>>
         extends BaseObject<ConditionListener<? super C>>, HasProperties<PL>, HasConditions<CL> {
 
     public final static String SATISFIED = "satisfied";

@@ -3,13 +3,16 @@ package com.intuso.housemate.broker.storage;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.command.Command;
+import com.intuso.housemate.api.object.condition.Condition;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
+import com.intuso.housemate.api.object.consequence.Consequence;
 import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
 import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.rule.Rule;
 import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -45,7 +48,11 @@ public class BrokerObjectStorage implements Storage {
     private final Log log;
     private final BrokerGeneralResources resources;
     private final WatchDeviceListListener watchDeviceListListener = new WatchDeviceListListener();
+    private final WatchRuleListListener watchRuleListListener = new WatchRuleListListener();
+    private final WatchConditionListListener watchConditionListListener = new WatchConditionListListener();
+    private final WatchConsequenceListListener watchConsequenceListListener = new WatchConsequenceListListener();
     private final WatchPropertyListListener watchPropertyListListener = new WatchPropertyListListener();
+    private final WatchValueListener watchValueListener = new WatchValueListener();
 
     public BrokerObjectStorage(Storage storage, BrokerGeneralResources resources) {
         this.storage = storage;
@@ -116,10 +123,6 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    public void watchDevices(List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> devices) {
-        devices.addObjectListener(watchDeviceListListener, true);
-    }
-
     public void loadRules() {
         BrokerRealList<RuleWrappable, BrokerRealRule> realRules = resources.getRealResources().getRoot().getRules();
         try {
@@ -147,14 +150,6 @@ public class BrokerObjectStorage implements Storage {
         loadConditions(rule.getConditions());
         loadConsequences(rule.getSatisfiedConsequences());
         loadConsequences(rule.getUnsatisfiedConsequences());
-        try {
-            TypeInstance value = storage.getValue(rule.getRunningValue().getPath());
-            if(BooleanType.SERIALISER.deserialise(value))
-                rule.getStartCommand().perform(new TypeInstances(),
-                        new CommandListener("Start rule \"" + rule.getId() + "\""));
-        } catch(DetailsNotFoundException e) {
-            log.w("No details found for rule info " + Arrays.toString(rule.getPath()));
-        }
     }
 
     private void loadConditions(BrokerRealList<ConditionWrappable, BrokerRealCondition> conditions) {
@@ -164,7 +159,6 @@ public class BrokerObjectStorage implements Storage {
                     TypeInstances details = storage.getValues(conditions.getPath(), conditionName);
                     BrokerRealCondition condition = resources.getConditionFactory().createCondition(details);
                     conditions.add(condition);
-                    watchPropertyValues(condition.getProperties());
                     loadConditions(condition.getConditions());
                 } catch(HousemateException e) {
                     log.e("Failed to load condition");
@@ -184,9 +178,7 @@ public class BrokerObjectStorage implements Storage {
             for(String consequenceName : storage.getValuesKeys(consequences.getPath())) {
                 try {
                     TypeInstances details = storage.getValues(consequences.getPath(), consequenceName);
-                    BrokerRealConsequence consequence = resources.getConsequenceFactory().createConsequence(details);
-                    consequences.add(consequence);
-                    watchPropertyValues(consequence.getProperties());
+                    consequences.add(resources.getConsequenceFactory().createConsequence(details));
                 } catch(HousemateException e) {
                     log.e("Failed to load consequence");
                     log.st(e);
@@ -200,8 +192,14 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    public void watchPropertyValues(List<? extends Property<?, ?, ?>> properties) {
-        properties.addObjectListener(watchPropertyListListener, true);
+    public void watchDevices(List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> devices) {
+        devices.addObjectListener(watchDeviceListListener, true);
+    }
+
+    public void watchRules(List<? extends Rule<?, ?, ?, ?, ?, ?, ?,
+            ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+            ? extends Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> rules) {
+        rules.addObjectListener(watchRuleListListener, true);
     }
 
     @Override
@@ -235,15 +233,13 @@ public class BrokerObjectStorage implements Storage {
 
     private class WatchDeviceListListener implements ListListener<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> {
 
-        private final WatchPropertyListListener watchPropertyListListener = new WatchPropertyListListener();
-        private final WatchValueListener watchPropertyListener = new WatchValueListener();
-        private final Map<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
         private final Map<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> runningListeners = Maps.newHashMap();
+        private final Map<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
 
         @Override
         public void elementAdded(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+            runningListeners.put(device, device.getRunningValue().addObjectListener(watchValueListener));
             propertyListeners.put(device, device.getProperties().addObjectListener(watchPropertyListListener, true));
-            runningListeners.put(device, device.getRunningValue().addObjectListener(watchPropertyListener));
             try {
                 TypeInstance value = storage.getValue(device.getRunningValue().getPath());
                 if(BooleanType.SERIALISER.deserialise(value))
@@ -259,7 +255,98 @@ public class BrokerObjectStorage implements Storage {
 
         @Override
         public void elementRemoved(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
-            ListenerRegistration registration = propertyListeners.remove(device);
+            ListenerRegistration registration = runningListeners.remove(device);
+            if(registration != null)
+                registration.removeListener();
+            registration = propertyListeners.remove(device);
+            if(registration != null)
+                registration.removeListener();
+        }
+    }
+
+    private class WatchRuleListListener implements ListListener<Rule<?, ?, ?, ?, ?, ?, ?,
+            ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+            ? extends Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> {
+
+        private final Map<Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> runningListeners = Maps.newHashMap();
+        private final Map<Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> conditionListeners = Maps.newHashMap();
+        private final Map<Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> satisfiedConsequenceListeners = Maps.newHashMap();
+        private final Map<Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> unsatisfiedConsequenceListeners = Maps.newHashMap();
+
+        @Override
+        public void elementAdded(Rule<?, ?, ?, ?, ?, ?, ?,
+                ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+                ? extends Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> rule) {
+            runningListeners.put(rule, rule.getRunningValue().addObjectListener(watchValueListener));
+            conditionListeners.put(rule, rule.getConditions().addObjectListener(watchConditionListListener, true));
+            satisfiedConsequenceListeners.put(rule, rule.getSatisfiedConsequences().addObjectListener(watchConsequenceListListener, true));
+            unsatisfiedConsequenceListeners.put(rule, rule.getUnsatisfiedConsequences().addObjectListener(watchConsequenceListListener, true));
+            try {
+                TypeInstance value = storage.getValue(rule.getRunningValue().getPath());
+                if(BooleanType.SERIALISER.deserialise(value))
+                    rule.getStartCommand().perform(new TypeInstances(),
+                            new CommandListener("Start rule \"" + rule.getId() + "\""));
+            } catch(DetailsNotFoundException e) {
+                log.w("No details found for whether the device was previously running" + Arrays.toString(rule.getPath()));
+            } catch(HousemateException e) {
+                log.e("Failed to check value for whether the device was previously running");
+                log.st(e);
+            }
+        }
+
+        @Override
+        public void elementRemoved(Rule<?, ?, ?, ?, ?, ?, ?,
+                ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+                ? extends Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> rule) {
+            ListenerRegistration registration = runningListeners.remove(rule);
+            if(registration != null)
+                registration.removeListener();
+            registration = conditionListeners.remove(rule);
+            if(registration != null)
+                registration.removeListener();
+            registration = satisfiedConsequenceListeners.remove(rule);
+            if(registration != null)
+                registration.removeListener();
+            registration = unsatisfiedConsequenceListeners.remove(rule);
+            if(registration != null)
+                registration.removeListener();
+        }
+    }
+
+    private class WatchConditionListListener implements ListListener<Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ? extends List<? extends Condition<?, ?, ?, ?, ?, ?>>>> {
+
+        private final Map<Condition<?, ?, ?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
+        private final Map<Condition<?, ?, ?, ?, ?, ?>, ListenerRegistration> conditionListeners = Maps.newHashMap();
+
+        @Override
+        public void elementAdded(Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ? extends List<? extends Condition<?, ?, ?, ?, ?, ?>>> condition) {
+            propertyListeners.put(condition, condition.getProperties().addObjectListener(watchPropertyListListener, true));
+            conditionListeners.put(condition, condition.getConditions().addObjectListener(watchConditionListListener, true));
+        }
+
+        @Override
+        public void elementRemoved(Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ? extends List<? extends Condition<?, ?, ?, ?, ?, ?>>> condition) {
+            ListenerRegistration registration = propertyListeners.remove(condition);
+            if(registration != null)
+                registration.removeListener();
+            registration = conditionListeners.remove(condition);
+            if(registration != null)
+                registration.removeListener();
+        }
+    }
+
+    private class WatchConsequenceListListener implements ListListener<Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>> {
+
+        private final Map<Consequence<?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
+
+        @Override
+        public void elementAdded(Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?> consequence) {
+            propertyListeners.put(consequence, consequence.getProperties().addObjectListener(watchPropertyListListener, true));
+        }
+
+        @Override
+        public void elementRemoved(Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?> consequence) {
+            ListenerRegistration registration = propertyListeners.remove(consequence);
             if(registration != null)
                 registration.removeListener();
         }

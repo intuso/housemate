@@ -20,11 +20,11 @@ import com.intuso.utilities.listener.ListenerRegistration;
 public abstract class ProxyCondition<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             SR extends ProxyResources<?>,
-            P extends ProxyProperty<?, ?, ?, ?, P>, V extends ProxyValue<?, ?, V>,
-            PL extends ProxyList<?, ?, PropertyWrappable, P, PL>, AC extends ProxyCommand<?, ?, ?, ?, AC>,
-            C extends ProxyCondition<R, SR, P, V, PL, AC, C, CL>, CL extends ProxyList<?, ?, ConditionWrappable, C, CL>>
+            V extends ProxyValue<?, ?, V>,
+            PL extends ProxyList<?, ?, PropertyWrappable, ? extends ProxyProperty<?, ?, ?, ?, ?>, PL>, AC extends ProxyCommand<?, ?, ?, ?, AC>,
+            C extends ProxyCondition<R, SR, V, PL, AC, C, CL>, CL extends ProxyList<?, ?, ConditionWrappable, C, CL>>
         extends ProxyObject<R, SR, ConditionWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, C, ConditionListener<? super C>>
-        implements Condition<P, V, V, PL, AC, C, CL> {
+        implements Condition<V, V, PL, AC, C, CL> {
 
     private V error;
     private V satisfied;

@@ -9,7 +9,7 @@ import com.intuso.housemate.api.object.ObjectListener;
  * Time: 10:34
  * To change this template use File | Settings | File Templates.
  */
-public interface ConditionListener<C extends Condition<?, ?, ?, ?, ?, ?, ?>> extends ObjectListener {
+public interface ConditionListener<C extends Condition<?, ?, ?, ?, ?, ?>> extends ObjectListener {
 
     /**
      * Called when a condition becomes (un)satisfied

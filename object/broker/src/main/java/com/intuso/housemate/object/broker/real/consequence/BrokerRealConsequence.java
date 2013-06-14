@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public abstract class BrokerRealConsequence
         extends BrokerRealObject<ConsequenceWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>,
             ConsequenceListener<? super BrokerRealConsequence>>
-        implements Consequence<BrokerRealProperty<String>, BrokerRealValue<Boolean>, BrokerRealValue<String>,
+        implements Consequence<BrokerRealValue<Boolean>, BrokerRealValue<String>,
             BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>, BrokerRealConsequence> {
 
     private BrokerRealValue<String> errorValue;

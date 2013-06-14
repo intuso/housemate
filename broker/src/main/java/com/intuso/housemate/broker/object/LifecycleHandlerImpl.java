@@ -1,14 +1,12 @@
 package com.intuso.housemate.broker.object;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
 import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
-import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.rule.Rule;
 import com.intuso.housemate.api.object.rule.RuleWrappable;
@@ -32,13 +30,11 @@ import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.impl.type.StringType;
-import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -112,20 +108,6 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Override
     public RealCommand createAddDeviceCommand(final RealList<DeviceWrappable, RealDevice> devices) {
-        final Map<RealDevice, ListenerRegistration> listeners = Maps.newHashMap();
-        devices.addObjectListener(new ListListener<RealDevice>() {
-            @Override
-            public void elementAdded(RealDevice device) {
-                listeners.put(device, device.getRunningValue().addObjectListener(runningListener));
-            }
-
-            @Override
-            public void elementRemoved(RealDevice device) {
-                ListenerRegistration registration = listeners.remove(device);
-                if(registration != null)
-                    registration.removeListener();
-            }
-        });
         return resources.getDeviceFactory().createAddDeviceCommand(Root.ADD_DEVICE, Root.ADD_DEVICE, "Add a new device", devices);
     }
 
