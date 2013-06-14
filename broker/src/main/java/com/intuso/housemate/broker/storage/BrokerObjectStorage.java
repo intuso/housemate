@@ -67,7 +67,7 @@ public class BrokerObjectStorage implements Storage {
         loadRules();
     }
 
-    public void loadUsers() {
+    private void loadUsers() {
         BrokerRealList<UserWrappable, BrokerRealUser> realUsers = resources.getRealResources().getRoot().getUsers();
         try {
             for(String key : storage.getValuesKeys(realUsers.getPath())) {
@@ -104,7 +104,7 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    public void loadDevices(String[] path, Command<?, ?> addDeviceCommand) {
+    private void loadDevices(String[] path, Command<?, ?> addDeviceCommand) {
         try {
             for(String key : storage.getValuesKeys(path)) {
                 try {
@@ -123,7 +123,7 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    public void loadRules() {
+    private void loadRules() {
         BrokerRealList<RuleWrappable, BrokerRealRule> realRules = resources.getRealResources().getRoot().getRules();
         try {
             for(String id : storage.getValuesKeys(realRules.getPath())) {
@@ -131,8 +131,9 @@ public class BrokerObjectStorage implements Storage {
                     TypeInstances details = getValues(realRules.getPath(), id);
                     BrokerRealRule rule = new BrokerRealRule(resources.getRealResources(), details.get("id").getValue(),
                             details.get("name").getValue(), details.get("description").getValue());
-                    realRules.add(rule);
+                    rule.init(realRules);
                     loadRuleInfo(rule);
+                    realRules.add(rule);
                 } catch(HousemateException e) {
                     log.e("Failed to load rule");
                     log.st(e);

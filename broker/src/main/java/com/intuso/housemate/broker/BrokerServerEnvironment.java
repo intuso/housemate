@@ -224,6 +224,8 @@ public class BrokerServerEnvironment {
                 getGeneralResources().getClient().getRoot().getTypes()));
         loadPlugins();
 
+        generalResources.getStorage().loadObjects();
+
         startWebapp();
     }
 
