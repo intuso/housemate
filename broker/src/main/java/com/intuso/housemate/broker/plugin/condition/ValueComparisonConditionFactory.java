@@ -37,6 +37,6 @@ public class ValueComparisonConditionFactory implements BrokerConditionFactory<V
 
     @Override
     public ValueComparison create(BrokerRealResources resources, String id, String name, String description) throws HousemateException {
-        return new ValueComparison(resources, id, name, description, generalResources.getBridgeResources().getRoot());
+        return new ValueComparison(resources, id, name, description, generalResources);
     }
 }

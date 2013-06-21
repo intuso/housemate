@@ -7,13 +7,13 @@ import com.google.gwt.user.client.ui.Label;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.Housemate;
-import com.intuso.housemate.web.client.bootstrap.widget.argument.ArgumentInput;
-import com.intuso.housemate.web.client.bootstrap.widget.argument.ArgumentTableRow;
+import com.intuso.housemate.web.client.bootstrap.widget.type.TypeInput;
+import com.intuso.housemate.web.client.bootstrap.widget.type.TypeInputTableRow;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableCell;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
-import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
+import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
-import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
+import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyProperty;
 
@@ -24,7 +24,7 @@ import com.intuso.housemate.web.client.object.GWTProxyProperty;
  * Time: 09:31
  * To change this template use File | Settings | File Templates.
  */
-public class PropertyTableRow extends TableRow implements ArgumentEditedHandler {
+public class PropertyTableRow extends TableRow implements TypeInputEditedHandler {
 
     private final GWTProxyCommand setCommand;
     private final TypeInstances values = new TypeInstances();
@@ -46,10 +46,10 @@ public class PropertyTableRow extends TableRow implements ArgumentEditedHandler 
 
     private void addValueCell(GWTProxyProperty value) {
         TableCell valueCell = new TableCell();
-        ArgumentInput argumentInput = ArgumentTableRow.getArgumentInput(value.getType());
+        TypeInput argumentInput = TypeInputTableRow.getArgumentInput(value.getType());
         if(argumentInput != null) {
             argumentInput.setTypeInstance(value.getTypeInstance());
-            argumentInput.addArgumentEditedHandler(this);
+            argumentInput.addTypeInputEditedHandler(this);
             valueCell.add(argumentInput);
         }
         add(valueCell);
@@ -69,7 +69,7 @@ public class PropertyTableRow extends TableRow implements ArgumentEditedHandler 
     }
 
     @Override
-    public void onArgumentEdited(ArgumentEditedEvent event) {
+    public void onTypeInputEdited(TypeInputEditedEvent event) {
         values.put(Property.VALUE, event.getNewValue());
     }
 }

@@ -184,7 +184,8 @@ public class SjoerdDB implements Storage {
 
     private void addValue(Properties properties, List<String> path, TypeInstance typeInstance) {
         if(typeInstance != null) {
-            properties.put(JOINER.join(path), typeInstance.getValue());
+            if(typeInstance.getValue() != null)
+                properties.put(JOINER.join(path), typeInstance.getValue());
             addValues(properties, path, typeInstance.getChildValues());
         }
     }

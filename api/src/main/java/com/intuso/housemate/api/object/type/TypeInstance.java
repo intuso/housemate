@@ -2,6 +2,8 @@ package com.intuso.housemate.api.object.type;
 
 import com.intuso.housemate.api.comms.Message;
 
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: ravnroot
@@ -24,7 +26,7 @@ public class TypeInstance implements Message.Payload {
 
     public TypeInstance(String value, TypeInstances childValues) {
         this.value = value;
-        this.childValues = childValues;
+        this.childValues = (childValues != null ? childValues : new TypeInstances());
     }
 
     public String getValue() {
@@ -44,10 +46,14 @@ public class TypeInstance implements Message.Payload {
         if(o == null || !(o instanceof TypeInstance))
             return false;
         TypeInstance other = (TypeInstance)o;
-        if(!((value == null && other.value == null)
-                || (value != null && other.value != null && value.equals(other.value))))
+        if((value == null && other.value != null)
+                || !value.equals(other.value))
             return false;
-        // todo check child values
+        if(childValues.size() != other.childValues.size())
+            return false;
+        for(Map.Entry<String, TypeInstance> entry : childValues.entrySet())
+            if(!other.childValues.containsKey(entry.getKey()) || !entry.getValue().equals(other.childValues.get(entry.getKey())))
+                return false;
         return true;
     }
 

@@ -1,14 +1,13 @@
-package com.intuso.housemate.web.client.bootstrap.widget.argument;
+package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.intuso.housemate.api.object.option.OptionWrappable;
-import com.intuso.housemate.api.object.type.MultiChoiceTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
-import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
+import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
+import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyOption;
 import com.intuso.housemate.web.client.object.GWTProxyType;
@@ -25,7 +24,7 @@ import java.util.Set;
  * Time: 23:26
  * To change this template use File | Settings | File Templates.
  */
-public class MultiSelectArgumentInput extends ListBox implements ArgumentInput {
+public class MultiSelectArgumentInput extends ListBox implements TypeInput {
 
     public final static String OPTIONS = "options";
 
@@ -43,8 +42,10 @@ public class MultiSelectArgumentInput extends ListBox implements ArgumentInput {
                 for(int i = 0; i < getItemCount(); i++)
                     if(isItemSelected(i))
                         selectedOptions.add(getItemText(i));
-                fireEvent(new ArgumentEditedEvent(
-                        MultiChoiceTypeWrappable.SERIALISER.serialise(selectedOptions)));
+                TypeInstance typeInstance = new TypeInstance();
+                for(String selectedOption : selectedOptions)
+                    typeInstance.getChildValues().put(selectedOption, new TypeInstance());
+                fireEvent(new TypeInputEditedEvent(typeInstance));
             }
         });
         optionIndices.clear();
@@ -63,14 +64,14 @@ public class MultiSelectArgumentInput extends ListBox implements ArgumentInput {
     }
 
     @Override
-    public HandlerRegistration addArgumentEditedHandler(ArgumentEditedHandler handler) {
-        return addHandler(handler, ArgumentEditedEvent.TYPE);
+    public HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler) {
+        return addHandler(handler, TypeInputEditedEvent.TYPE);
     }
 
     @Override
     public void setTypeInstance(TypeInstance typeInstance) {
         selectedOptions.clear();
-        selectedOptions.addAll(MultiChoiceTypeWrappable.SERIALISER.deserialise(typeInstance));
+        selectedOptions.addAll(typeInstance.getChildValues().keySet());
         for(int i = 0; i < options.size(); i++)
             setItemSelected(i, false);
         for(String id : selectedOptions) {

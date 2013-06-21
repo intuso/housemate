@@ -29,10 +29,7 @@ public class RealProperty<O>
                 Arrays.<RealArgument<?>>asList(new RealArgument<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
-                TypeInstance newValue = values.get(VALUE_PARAM);
-                O object = newValue != null && newValue.getValue() != null
-                        ? getType().deserialise(newValue)
-                        : null;
+                O object = getType().deserialise(values.get(VALUE_PARAM));
                 RealProperty.this.setTypedValue(object);
             }
         };

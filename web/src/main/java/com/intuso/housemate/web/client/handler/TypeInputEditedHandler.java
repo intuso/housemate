@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.handler;
 
 import com.google.gwt.event.shared.EventHandler;
-import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
+import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,6 +10,6 @@ import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
  * Time: 00:00
  * To change this template use File | Settings | File Templates.
  */
-public interface ArgumentEditedHandler extends EventHandler {
-    public void onArgumentEdited(ArgumentEditedEvent event);
+public interface TypeInputEditedHandler extends EventHandler {
+    public void onTypeInputEdited(TypeInputEditedEvent event);
 }

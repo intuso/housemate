@@ -6,6 +6,7 @@ import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.BrokerConditionFactory;
 import com.intuso.housemate.plugin.api.BrokerConsequenceFactory;
+import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
 import com.rfxcom.rfxtrx.RFXtrx;
@@ -69,6 +70,11 @@ public class RFXComPlugin implements PluginDescriptor {
 
     @Override
     public List<RealType<?, ?, ?>> getTypes(RealResources resources) {
+        return Lists.newArrayList();
+    }
+
+    @Override
+    public List<Comparator<?>> getComparators(RealResources resources) {
         return Lists.newArrayList();
     }
 

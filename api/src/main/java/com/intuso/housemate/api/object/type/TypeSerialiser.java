@@ -9,5 +9,5 @@ package com.intuso.housemate.api.object.type;
  */
 public interface TypeSerialiser<O> {
     public TypeInstance serialise(O o);
-    public O deserialise(TypeInstance value);
+    public O deserialise(TypeInstance instance);
 }

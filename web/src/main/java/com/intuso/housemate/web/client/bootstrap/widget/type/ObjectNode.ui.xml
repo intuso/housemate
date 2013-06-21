@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
-    <ui:style type='com.intuso.housemate.web.client.bootstrap.widget.argument.ObjectNode.Style'>
+    <ui:style type='com.intuso.housemate.web.client.bootstrap.widget.type.ObjectNode.Style'>
 
         .currentSelection {
             border-radius: 3px 3px 3px 3px;

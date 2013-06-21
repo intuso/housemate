@@ -9,6 +9,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
  * Time: 00:05
  * To change this template use File | Settings | File Templates.
  */
-public interface HasArgumentEditedHandlers {
-    HandlerRegistration addArgumentEditedHandler(ArgumentEditedHandler handler);
+public interface HasTypeInputEditedHandlers {
+    HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler);
 }

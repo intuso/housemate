@@ -1,4 +1,4 @@
-package com.intuso.housemate.web.client.bootstrap.widget.argument;
+package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.google.common.base.Joiner;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -8,9 +8,9 @@ import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.Housemate;
-import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
+import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
 import com.intuso.housemate.web.client.event.ObjectSelectedEvent;
-import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
+import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
 
 /**
@@ -20,7 +20,7 @@ import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
  * Time: 09:07
  * To change this template use File | Settings | File Templates.
  */
-public class ObjectBrowserInput extends FlowPanel implements ArgumentInput {
+public class ObjectBrowserInput extends FlowPanel implements TypeInput {
 
     private final ObjectNode rootNode;
 
@@ -30,7 +30,7 @@ public class ObjectBrowserInput extends FlowPanel implements ArgumentInput {
         rootNode.addObjectSelectedHandler(new ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
             @Override
             public void objectSelected(ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?, ?, ?>> event) {
-                fireEvent(new ArgumentEditedEvent(new TypeInstance(Joiner.on("/").join(event.getObject().getPath()))));
+                fireEvent(new TypeInputEditedEvent(new TypeInstance(Joiner.on("/").join(event.getObject().getPath()))));
             }
         });
         add(rootNode);
@@ -47,8 +47,8 @@ public class ObjectBrowserInput extends FlowPanel implements ArgumentInput {
     }
 
     @Override
-    public HandlerRegistration addArgumentEditedHandler(ArgumentEditedHandler handler) {
-        return addHandler(handler, ArgumentEditedEvent.TYPE);
+    public HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler) {
+        return addHandler(handler, TypeInputEditedEvent.TYPE);
     }
 
 }

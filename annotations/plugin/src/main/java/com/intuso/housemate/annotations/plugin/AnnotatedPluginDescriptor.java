@@ -11,6 +11,7 @@ import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.BrokerConditionFactory;
 import com.intuso.housemate.plugin.api.BrokerConsequenceFactory;
+import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
 
@@ -28,6 +29,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
 
     private PluginInformation information;
     private final List<Constructor<? extends RealType<?, ?, ?>>> typeConstructors = Lists.newArrayList();
+    private final List<Constructor<? extends Comparator<?>>> comparatorConstructors = Lists.newArrayList();
     private final List<RealDeviceFactory<?>> deviceFactories = Lists.newArrayList();
     private final List<BrokerConditionFactory<?>> conditionFactories = Lists.newArrayList();
     private final List<BrokerConsequenceFactory<?>> consequenceFactories = Lists.newArrayList();
@@ -56,6 +58,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
     public void init(Resources resources) throws HousemateException {
         initInformation();
         initTypes(resources);
+        initComparators(resources);
         initDeviceFactories(resources);
         initConditionFactories(resources);
         initConsequenceFactories(resources);
@@ -77,6 +80,20 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
                     typeConstructors.add(typeClass.getConstructor(RealResources.class));
                 } catch(NoSuchMethodException e) {
                     throw new HousemateException("Failed to find " + typeClass.getName() + " constructor with single "
+                            + RealResources.class.getName() + " parameter");
+                }
+            }
+        }
+    }
+
+    private void initComparators(Resources resources) throws HousemateException {
+        Comparators comparators = getClass().getAnnotation(Comparators.class);
+        if(comparators != null) {
+            for(Class<? extends Comparator<?>> comparatorClass : comparators.value()) {
+                try {
+                    comparatorConstructors.add(comparatorClass.getConstructor());
+                } catch(NoSuchMethodException e) {
+                    throw new HousemateException("Failed to find " + comparatorClass.getName() + " constructor with single "
                             + RealResources.class.getName() + " parameter");
                 }
             }
@@ -165,13 +182,28 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
     }
 
     @Override
-    public List<RealType<?, ?, ?>> getTypes(RealResources resources) throws HousemateException {
+    public List<RealType<?, ?, ?>> getTypes(RealResources resources) {
         List<RealType<?, ?, ?>> result = Lists.newArrayList();
         for(Constructor<? extends RealType<?, ?, ?>> constructor : typeConstructors) {
             try {
                 result.add(constructor.newInstance(resources));
             } catch(Exception e) {
-                throw new HousemateException("Failed to create type instance", e);
+                resources.getLog().e("Failed to create type instance");
+                resources.getLog().st(e);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Comparator<?>> getComparators(RealResources resources) {
+        List<Comparator<?>> result = Lists.newArrayList();
+        for(Constructor<? extends Comparator<?>> constructor : comparatorConstructors) {
+            try {
+                result.add(constructor.newInstance());
+            } catch(Exception e) {
+                resources.getLog().e("Failed to create type comparator");
+                resources.getLog().st(e);
             }
         }
         return result;

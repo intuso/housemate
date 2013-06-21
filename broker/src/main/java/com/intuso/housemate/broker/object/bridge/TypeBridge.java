@@ -28,6 +28,7 @@ public class TypeBridge
         implements Type {
 
     private final static String OPTIONS = "options";
+    private final static String SUB_TYPES = "sub-types";
 
     public TypeBridge(final BrokerBridgeResources resources, Type type) {
         super(resources, cloneWrappable(resources.getLog(), type));
@@ -37,6 +38,15 @@ public class TypeBridge
                         @Override
                         public OptionBridge apply(@Nullable Option option) {
                             return new OptionBridge(resources, option);
+                        }
+                    }));
+        }
+        if(type instanceof HousemateObject && ((HousemateObject)type).getWrapper(SUB_TYPES) != null) {
+            addWrapper(new ListBridge<SubTypeWrappable, SubType<?>, SubTypeBridge>(resources, (List)((HousemateObject)(type)).getWrapper(SUB_TYPES),
+                    new Function<SubType<?>, SubTypeBridge>() {
+                        @Override
+                        public SubTypeBridge apply(@Nullable SubType<?> subType) {
+                            return new SubTypeBridge(resources, subType);
                         }
                     }));
         }

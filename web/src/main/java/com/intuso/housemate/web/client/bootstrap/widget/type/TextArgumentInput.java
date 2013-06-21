@@ -1,4 +1,4 @@
-package com.intuso.housemate.web.client.bootstrap.widget.argument;
+package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -9,8 +9,8 @@ import com.intuso.housemate.api.object.type.RegexTypeWrappable;
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeWrappable;
-import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
-import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
+import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
+import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,7 +19,7 @@ import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
  * Time: 18:22
  * To change this template use File | Settings | File Templates.
  */
-public class TextArgumentInput extends TextBox implements ArgumentInput {
+public class TextArgumentInput extends TextBox implements TypeInput {
 
     public TextArgumentInput(TypeWrappable typeWrappable) {
         final Validator validator = getValidator(typeWrappable);
@@ -27,7 +27,7 @@ public class TextArgumentInput extends TextBox implements ArgumentInput {
             @Override
             public void onChange(ChangeEvent event) {
                 if(validator.isValid(getText()))
-                    fireEvent(new ArgumentEditedEvent(new TypeInstance(getText())));
+                    fireEvent(new TypeInputEditedEvent(new TypeInstance(getText())));
                 else {
                     // TODO show invalid input
                 }
@@ -44,8 +44,8 @@ public class TextArgumentInput extends TextBox implements ArgumentInput {
     }
 
     @Override
-    public HandlerRegistration addArgumentEditedHandler(ArgumentEditedHandler handler) {
-        return addHandler(handler, ArgumentEditedEvent.TYPE);
+    public HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler) {
+        return addHandler(handler, TypeInputEditedEvent.TYPE);
     }
 
     private Validator getValidator(TypeWrappable typeWrappable) {

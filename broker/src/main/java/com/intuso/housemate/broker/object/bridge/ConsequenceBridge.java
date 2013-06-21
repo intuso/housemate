@@ -8,6 +8,7 @@ import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
+import com.intuso.housemate.object.real.impl.type.StringType;
 
 import javax.annotation.Nullable;
 
@@ -46,7 +47,7 @@ public class ConsequenceBridge
 
     @Override
     public String getError() {
-        return errorValue != null && errorValue.getTypeInstance() != null ? errorValue.getTypeInstance().getValue() : null;
+        return StringType.SERIALISER.deserialise(errorValue.getTypeInstance());
     }
 
     @Override

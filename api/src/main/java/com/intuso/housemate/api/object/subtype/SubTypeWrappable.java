@@ -14,7 +14,7 @@ public final class SubTypeWrappable extends HousemateObjectWrappable<NoChildrenW
 
     private String type;
 
-    protected SubTypeWrappable() {}
+    private SubTypeWrappable() {}
 
     public SubTypeWrappable(String id, String name, String description, String type) {
         super(id, name, description);

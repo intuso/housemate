@@ -4,6 +4,7 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
+import com.intuso.housemate.object.real.impl.type.StringType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -79,7 +80,7 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<H
 
     @Override
     public String getError() {
-        return errorValue != null && errorValue.getTypeInstance() != null ? errorValue.getTypeInstance().getValue() : null;
+        return StringType.SERIALISER.deserialise(errorValue.getTypeInstance());
     }
 
     @Override

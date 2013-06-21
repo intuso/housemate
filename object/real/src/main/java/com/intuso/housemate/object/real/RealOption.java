@@ -1,12 +1,12 @@
 package com.intuso.housemate.object.real;
 
-import com.google.common.collect.Lists;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.option.Option;
 import com.intuso.housemate.api.object.option.OptionListener;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,8 +23,8 @@ public class RealOption
 
     private final RealList<SubTypeWrappable, RealSubType<?>> subTypes;
 
-    public RealOption(RealResources resources, String id, String name, String description) {
-        this(resources, id, name,  description, Lists.<RealSubType<?>>newArrayList());
+    public RealOption(RealResources resources, String id, String name, String description, RealSubType<?> ... subTypes) {
+        this(resources, id, name,  description, Arrays.asList(subTypes));
     }
 
     public RealOption(RealResources resources, String id, String name, String description, List<RealSubType<?>> subTypes) {

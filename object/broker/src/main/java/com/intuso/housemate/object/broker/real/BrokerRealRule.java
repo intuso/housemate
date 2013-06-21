@@ -113,7 +113,6 @@ public class BrokerRealRule
             BrokerRealCondition condition = conditions.iterator().next();
             condition.start();
             conditionListenerRegistration = condition.addObjectListener(this);
-            getRunningValue().setTypedValue(Boolean.TRUE);
         }
     }
 
@@ -124,6 +123,5 @@ public class BrokerRealRule
             conditionListenerRegistration.removeListener();
             conditionListenerRegistration = null;
         }
-        getRunningValue().setTypedValue(Boolean.FALSE);
     }
 }

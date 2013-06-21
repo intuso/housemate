@@ -1,6 +1,8 @@
-package com.intuso.housemate.web.client.bootstrap.widget.argument;
+package com.intuso.housemate.web.client.bootstrap.widget.type;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Label;
+import com.intuso.housemate.api.object.type.CompoundTypeWrappable;
 import com.intuso.housemate.api.object.type.MultiChoiceTypeWrappable;
 import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
 import com.intuso.housemate.api.object.type.RegexTypeWrappable;
@@ -10,9 +12,9 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableCell;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
-import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
-import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
-import com.intuso.housemate.web.client.object.GWTProxyArgument;
+import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
+import com.intuso.housemate.web.client.handler.HasTypeInputEditedHandlers;
+import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
@@ -22,16 +24,18 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
  * Time: 09:31
  * To change this template use File | Settings | File Templates.
  */
-public class ArgumentTableRow extends TableRow implements ArgumentEditedHandler {
+public class TypeInputTableRow
+        extends TableRow
+        implements HasTypeInputEditedHandlers, TypeInputEditedHandler {
 
-    private String argumentId;
-    private TypeInstances values;
+    private final String id;
+    private final TypeInstances instances;
 
-    public ArgumentTableRow(GWTProxyArgument argument, TypeInstances values) {
-        this.argumentId = argument.getId();
-        this.values = values;
-        addNameCell(argument.getId(), argument.getDescription());
-        addValueCell(argument);
+    public TypeInputTableRow(String id, String name, String description, GWTProxyType type, TypeInstances instances) {
+        this.id = id;
+        this.instances = instances;
+        addNameCell(name, description);
+        addValueCell(type);
     }
 
     private void addNameCell(String name, String description) {
@@ -41,22 +45,31 @@ public class ArgumentTableRow extends TableRow implements ArgumentEditedHandler 
         add(nameCell);
     }
 
-    private void addValueCell(GWTProxyArgument argument) {
+    private void addValueCell(GWTProxyType type) {
         TableCell valueCell = new TableCell();
-        ArgumentInput argumentInput = getArgumentInput(argument.getType());
+        TypeInput argumentInput = getArgumentInput(type);
         if(argumentInput != null) {
-            argumentInput.addArgumentEditedHandler(this);
+            argumentInput.addTypeInputEditedHandler(this);
+            if(instances != null)
+                argumentInput.setTypeInstance(instances.get(id));
             valueCell.add(argumentInput);
         }
         add(valueCell);
     }
 
     @Override
-    public void onArgumentEdited(ArgumentEditedEvent event) {
-        values.put(argumentId, event.getNewValue());
+    public HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler) {
+        return addHandler(handler, TypeInputEditedEvent.TYPE);
     }
 
-    public static ArgumentInput getArgumentInput(GWTProxyType type) {
+    @Override
+    public void onTypeInputEdited(TypeInputEditedEvent event) {
+        if(instances != null)
+            instances.put(id, event.getNewValue());
+        fireEvent(event);
+    }
+
+    public static TypeInput getArgumentInput(GWTProxyType type) {
         if(type == null)
             return null;
         TypeWrappable typeWrappable = type.getWrappable();
@@ -73,6 +86,8 @@ public class ArgumentTableRow extends TableRow implements ArgumentEditedHandler 
             return new TextArgumentInput(typeWrappable);
         else if(typeWrappable instanceof ObjectTypeWrappable)
             return new ObjectBrowserInput((ObjectTypeWrappable) typeWrappable);
+        else if(typeWrappable instanceof CompoundTypeWrappable)
+            return new CompoundArgumentInput((CompoundTypeWrappable) typeWrappable, type);
         return null;
     }
 }

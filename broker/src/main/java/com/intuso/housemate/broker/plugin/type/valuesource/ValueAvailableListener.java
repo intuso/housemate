@@ -1,4 +1,4 @@
-package com.intuso.housemate.broker.plugin.type;
+package com.intuso.housemate.broker.plugin.type.valuesource;
 
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.utilities.listener.Listener;

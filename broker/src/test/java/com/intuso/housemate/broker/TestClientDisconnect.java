@@ -1,6 +1,5 @@
 package com.intuso.housemate.broker;
 
-import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.RouterRootObject;
@@ -35,17 +34,8 @@ import static junit.framework.Assert.*;
  */
 public class TestClientDisconnect {
 
-    private static BrokerServerEnvironment environment = null;
+    private final static BrokerServerEnvironment environment = TestUtils.startBroker(65432);
     private final static AtomicInteger TEST_NUM = new AtomicInteger(0);
-
-    static {
-        try {
-            environment = TestUtils.startBroker(65432);
-        } catch(HousemateException e) {
-            System.err.println("Failed to start broker");
-            e.printStackTrace();
-        }
-    }
 
     @Test(timeout = 5000)
     public void testDisconnect() throws InterruptedException {

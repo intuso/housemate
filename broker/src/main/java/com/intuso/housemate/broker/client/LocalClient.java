@@ -41,13 +41,9 @@ public class LocalClient implements PluginListener {
 
     @Override
     public void pluginAdded(PluginDescriptor plugin) {
-        try {
-            for(RealType<?, ?, ?> type : plugin.getTypes(resources.getClientResources())) {
-                resources.getLog().d("Adding type " + type.getId());
-                root.addType(type);
-            }
-        } catch(HousemateException e) {
-            resources.getLog().e("Failed to list types from plugin " + plugin.getId());
+        for(RealType<?, ?, ?> type : plugin.getTypes(resources.getClientResources())) {
+            resources.getLog().d("Adding type " + type.getId());
+            root.addType(type);
         }
     }
 

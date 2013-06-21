@@ -6,7 +6,7 @@
     </ui:style>
     <g:HTMLPanel>
         <b:Modal backdrop="STATIC" ui:field="modal" animation="true">
-            <h:argument.ArgumentList ui:field="argumentList"/>
+            <h:type.ArgumentInputList ui:field="argumentList"/>
             <b:Button ui:field="performButton" text="Perform"/>
         </b:Modal>
     </g:HTMLPanel>

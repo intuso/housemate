@@ -83,8 +83,8 @@ public final class RealList<SWBL extends HousemateObjectWrappable<?>,
         addWrapper(element);
     }
 
-    public SWR remove(String name) {
-        SWR result = removeWrapper(name);
+    public SWR remove(String id) {
+        SWR result = removeWrapper(id);
         if(result != null)
             result.uninit();
         return result;

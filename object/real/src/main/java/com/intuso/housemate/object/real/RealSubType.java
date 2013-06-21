@@ -19,7 +19,11 @@ public class RealSubType<O>
     private RealType<?, ?, O> type;
 
     public RealSubType(RealResources resources, String id, String name, String description, RealType<?, ?, O> type) {
-        super(resources, new SubTypeWrappable(id, name, description, type.getId()));
+        this(resources, id, name, description, type.getId());
+    }
+
+    public RealSubType(RealResources resources, String id, String name, String description, String typeId) {
+        super(resources, new SubTypeWrappable(id, name, description, typeId));
         this.type = type;
     }
 

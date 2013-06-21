@@ -103,7 +103,7 @@ public class BrokerGeneralResources implements Resources {
         this.remoteClientManager = remoteClientManager;
     }
 
-    public AnnotationProcessor getAnnotationParser() {
+    public AnnotationProcessor getAnnotationProcessor() {
         return annotationParser;
     }
 

@@ -1,4 +1,4 @@
-package com.intuso.housemate.web.client.bootstrap.widget.argument;
+package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.common.collect.BiMap;
@@ -13,8 +13,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.web.client.event.ArgumentEditedEvent;
-import com.intuso.housemate.web.client.handler.ArgumentEditedHandler;
+import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
+import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyOption;
 import com.intuso.housemate.web.client.object.GWTProxySubType;
@@ -27,7 +27,7 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
  * Time: 23:26
  * To change this template use File | Settings | File Templates.
  */
-public class SingleSelectArgumentInput extends Composite implements ArgumentInput {
+public class SingleSelectArgumentInput extends Composite implements TypeInput {
 
     public final static String OPTIONS = "options";
 
@@ -63,17 +63,15 @@ public class SingleSelectArgumentInput extends Composite implements ArgumentInpu
             optionMap.put(option, i++);
             listBox.addItem(option.getName());
         }
-        if(options.size() > 0) {
+        /*if(options.size() > 0) {
             typeInstance.setValue(options.iterator().next().getId());
             selectedOptionChanged();
-        }
+        }*/
     }
 
     @Override
-    public HandlerRegistration addArgumentEditedHandler(ArgumentEditedHandler handler) {
-        HandlerRegistration result = addHandler(handler, ArgumentEditedEvent.TYPE);
-        handler.onArgumentEdited(new ArgumentEditedEvent(typeInstance));
-        return result;
+    public HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler) {
+        return addHandler(handler, TypeInputEditedEvent.TYPE);
     }
 
     @Override
@@ -89,16 +87,16 @@ public class SingleSelectArgumentInput extends Composite implements ArgumentInpu
 
     private void selectedOptionChanged() {
         showOptions();
-        fireEvent(new ArgumentEditedEvent(typeInstance));
+        fireEvent(new TypeInputEditedEvent(typeInstance));
     }
 
     private void showOptions() {
         subTypesPanel.clear();
         GWTProxyOption option = options.get(typeInstance.getValue());
-        if(option.getSubTypes() != null) {
+        if(option != null && option.getSubTypes() != null) {
             for(GWTProxySubType subType : option.getSubTypes()) {
-                ArgumentInput argumentInput = ArgumentTableRow.getArgumentInput(subType.getType());
-                argumentInput.addArgumentEditedHandler(new SubTypeArgumentEditedHandler(subType.getId(), typeInstance));
+                TypeInput argumentInput = TypeInputTableRow.getArgumentInput(subType.getType());
+                argumentInput.addTypeInputEditedHandler(new SubTypeArgumentEditedHandler(subType.getId(), typeInstance));
                 subTypesPanel.add(argumentInput);
                 if(typeInstance.getChildValues().get(subType.getId()) == null)
                     typeInstance.getChildValues().put(subType.getId(), new TypeInstance());
@@ -107,7 +105,7 @@ public class SingleSelectArgumentInput extends Composite implements ArgumentInpu
         }
     }
 
-    private class SubTypeArgumentEditedHandler implements ArgumentEditedHandler {
+    private class SubTypeArgumentEditedHandler implements TypeInputEditedHandler {
 
         private final String typeId;
         private final TypeInstance typeInstance;
@@ -118,7 +116,7 @@ public class SingleSelectArgumentInput extends Composite implements ArgumentInpu
         }
 
         @Override
-        public void onArgumentEdited(ArgumentEditedEvent event) {
+        public void onTypeInputEdited(TypeInputEditedEvent event) {
             typeInstance.getChildValues().put(typeId, event.getNewValue());
         }
     }

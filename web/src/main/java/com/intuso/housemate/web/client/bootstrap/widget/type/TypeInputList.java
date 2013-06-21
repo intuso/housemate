@@ -1,12 +1,11 @@
-package com.intuso.housemate.web.client.bootstrap.widget.argument;
+package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.google.gwt.dom.client.Style;
+import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.bootstrap.widget.list.TableList;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableCol;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableColGroup;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
-import com.intuso.housemate.web.client.object.GWTProxyArgument;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,16 +14,20 @@ import com.intuso.housemate.web.client.object.GWTProxyArgument;
  * Time: 22:17
  * To change this template use File | Settings | File Templates.
  */
-public class ArgumentList extends TableList<GWTProxyArgument> {
+public abstract class TypeInputList<O extends BaseObject<?>> extends TableList<O> {
 
-    private TypeInstances values;
+    private TypeInstances instances;
 
-    public ArgumentList() {
+    public TypeInputList() {
         addColGroup();
     }
 
-    public void setTypeValues(TypeInstances values) {
-        this.values = values;
+    public void setTypeInstances(TypeInstances instances) {
+        this.instances = instances != null ? instances : new TypeInstances();
+    }
+
+    protected TypeInstances getInstances() {
+        return instances;
     }
 
     private void addColGroup() {
@@ -35,10 +38,5 @@ public class ArgumentList extends TableList<GWTProxyArgument> {
         colGroup.add(titleCol);
         colGroup.add(valueCol);
         add(colGroup);
-    }
-
-    @Override
-    public TableRow createObjectTableRow(GWTProxyArgument argument) {
-        return new ArgumentTableRow(argument, values);
     }
 }

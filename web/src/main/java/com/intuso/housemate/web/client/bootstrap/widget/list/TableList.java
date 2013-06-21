@@ -21,6 +21,8 @@ public abstract class TableList<O extends BaseObject<?>> extends Table implement
     private Map<O, TableRow> widgetMap = new HashMap<O, TableRow>();
 
     public void setList(List<O> list) {
+        clear();
+        widgetMap.clear();
         list.addObjectListener(this, true);
     }
 

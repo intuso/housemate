@@ -1,9 +1,6 @@
-package com.intuso.housemate.broker.plugin.type;
+package com.intuso.housemate.broker.plugin.type.valuesource;
 
-import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.broker.object.bridge.ValueBridge;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 

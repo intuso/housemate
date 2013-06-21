@@ -23,7 +23,8 @@ public interface PluginDescriptor {
     public String getDescription();
     public String getAuthor();
     public void init(Resources resources) throws HousemateException;
-    public List<RealType<?, ?, ?>> getTypes(RealResources resources) throws HousemateException;
+    public List<RealType<?, ?, ?>> getTypes(RealResources resources);
+    public List<Comparator<?>> getComparators(RealResources resources);
     public List<RealDeviceFactory<?>> getDeviceFactories();
     public List<BrokerConditionFactory<?>> getConditionFactories();
     public List<BrokerConsequenceFactory<?>> getConsequenceFactories();

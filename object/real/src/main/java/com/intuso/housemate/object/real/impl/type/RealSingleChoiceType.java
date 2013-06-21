@@ -9,6 +9,7 @@ import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -25,6 +26,11 @@ public abstract class RealSingleChoiceType<O>
     private final static String OPTIONS = "options";
 
     private RealList<OptionWrappable, RealOption> options;
+
+    protected RealSingleChoiceType(RealResources resources, String id, String name, String description,
+                                   RealOption ... options) {
+        this(resources, id, name, description, Arrays.asList(options));
+    }
 
     protected RealSingleChoiceType(RealResources resources, String id, String name, String description,
                                    List<RealOption> options) {
