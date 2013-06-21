@@ -81,19 +81,32 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
 	 */
     @Override
     public void valueChanged(RealProperty<?> property) {
-        int id = this.houseId.getTypedValue();
-        int unitcode = this.unitId.getTypedValue();
+        Integer houseId = this.houseId.getTypedValue();
+        if(houseId == null) {
+            getErrorValue().setTypedValue(this.houseId.getName() + " has not been set");
+            return;
+        }
+
+        Integer unitId = this.unitId.getTypedValue();
+        if(unitId == null) {
+            getErrorValue().setTypedValue(this.unitId.getName() + " has not been set");
+            return;
+        }
 		
         // check the port value is a positive number
-        if(id < 0 || id > 0x03FFFFFF)
+        if(houseId < 0 || houseId > 0x03FFFFFF) {
             getErrorValue().setTypedValue("House id must be between 0 and " + 0x03FFFFFF);
+            return;
+        }
 			
 		// check the relay value is a number between 1 and 8
-		if(unitcode < 1 || unitcode > 16)
+		if(unitId < 1 || unitId > 16) {
             getErrorValue().setTypedValue("Unitcode must be between 1 and 16 (inclusive)");
+            return;
+        }
 
         getErrorValue().setTypedValue(null);
-        createHed(id, unitcode);
+        createHed(houseId, unitId);
 	}
 	
 	@Override
