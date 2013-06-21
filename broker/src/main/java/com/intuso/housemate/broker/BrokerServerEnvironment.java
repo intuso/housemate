@@ -78,9 +78,11 @@ public class BrokerServerEnvironment {
     public final static String BROKER_NAME = "broker.name";
     public final static String RUN_WEBAPP = "webapp.run";
     public final static String WEBAPP_PORT = "webapp.port";
+    private final static String WEBAPP_PATH = "webapp.path";
 
     private final static String WEBAPP_FOLDER = "webapp";
     private final static String WEBAPP_NAME = "housemate";
+    private final static String DEFAULT_WEBAPP_PATH = "/housemate";
 
     public final File config_dir;
 
@@ -480,7 +482,7 @@ public class BrokerServerEnvironment {
         // Configure webapp provided as external WAR
         WebAppContext webapp = new WebAppContext();
         webapp.getServletContext().setAttribute("RESOURCES", clientResources);
-        webapp.setContextPath("/");
+        webapp.setContextPath(properties.get(WEBAPP_PATH) != null ? properties.get(WEBAPP_PATH) : DEFAULT_WEBAPP_PATH);
         webapp.setWar(warFile.getAbsolutePath());
         server.setHandler(webapp);
 
