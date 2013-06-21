@@ -12,6 +12,7 @@ import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
 import com.intuso.utilities.listener.ListenerRegistration;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -32,6 +33,7 @@ import static junit.framework.Assert.*;
  * Time: 08:44
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class TestClientDisconnect {
 
     private final static BrokerServerEnvironment environment = TestUtils.startBroker(65432);
