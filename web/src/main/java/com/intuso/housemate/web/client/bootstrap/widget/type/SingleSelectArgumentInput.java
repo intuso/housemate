@@ -77,8 +77,11 @@ public class SingleSelectArgumentInput extends Composite implements TypeInput {
     @Override
     public void setTypeInstance(TypeInstance typeInstance) {
         this.typeInstance = typeInstance != null ? typeInstance : new TypeInstance();
-        if(this.typeInstance.getValue() == null
-                || options.getWrapper(this.typeInstance.getValue()) == null)
+        if(this.typeInstance.getValue() == null) {
+            if(options.size() > 0)
+                this.typeInstance.setValue(options.getWrappers().iterator().next().getId());
+            listBox.setSelectedIndex(optionMap.get(options.get(this.typeInstance.getValue())));
+        } else if(options.getWrapper(this.typeInstance.getValue()) == null)
             listBox.setSelectedIndex(0);
         else
             listBox.setSelectedIndex(optionMap.get(options.get(this.typeInstance.getValue())));
