@@ -49,6 +49,16 @@ public class ArduinoIndicator extends OnOffDevice {
     }
 
     @Override
+    protected void stop() {
+        try {
+            os.close();
+        } catch(IOException e) {
+            getLog().e("Failed to close connection to Arduino");
+            getLog().st(e);
+        }
+    }
+
+    @Override
     protected void turnOn() {
         try {
             os.write(new byte[] {colour.getBytes()[0], (byte)('0' + intensity)});

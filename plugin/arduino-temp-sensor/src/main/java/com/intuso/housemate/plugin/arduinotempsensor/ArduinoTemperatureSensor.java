@@ -76,6 +76,11 @@ public class ArduinoTemperatureSensor extends RealDevice {
             } catch(IOException e) {
                 getLog().e("Error reading temperature from Arduino");
             }
+            try {
+                in.close();
+            } catch(IOException e) {
+                getLog().e("Failed to close connection to the Arduino");
+            }
         }
     }
 }
