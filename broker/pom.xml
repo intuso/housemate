@@ -82,6 +82,13 @@
             <version>${jetty.version}</version>
         </dependency>
 
+        <!-- JNI libraries that need to be loaded globally so they can be shared -->
+        <dependency>
+            <groupId>org.rxtx</groupId>
+            <artifactId>rxtx</artifactId>
+            <version>2.2pre2</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>com.intuso.housemate</groupId>

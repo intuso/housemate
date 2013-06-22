@@ -8,22 +8,27 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-	<artifactId>plugin-rfxcom</artifactId>
+	<artifactId>plugin-arduino-temp-sensor</artifactId>
     <packaging>jar</packaging>
-	<name>Housemate Plugin RFXCom</name>
+	<name>Housemate Plugin Arduino Temp Sensor</name>
     <description>Housemate plugin for devices using RFXCom</description>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.intuso.housemate</groupId>
+			<artifactId>annotations-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>plugin-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<dependency>
-			<groupId>com.rfxcom</groupId>
-			<artifactId>rfxtrx</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
+        <dependency>
+            <groupId>org.rxtx</groupId>
+            <artifactId>rxtx</artifactId>
+            <version>2.2pre2</version>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -37,7 +42,7 @@
 					</descriptorRefs>
 					<archive>
                         <manifestEntries>
-                            <Housemate-Plugin>com.intuso.housemate.plugin.rfxcom.RFXComPlugin</Housemate-Plugin>
+                            <Housemate-Plugin>com.intuso.housemate.plugin.arduinotempsensor.ArduinoTemperatureSensorPlugin</Housemate-Plugin>
                         </manifestEntries>
 					</archive>
 				</configuration>

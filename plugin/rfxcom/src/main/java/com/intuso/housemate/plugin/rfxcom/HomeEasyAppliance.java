@@ -1,4 +1,4 @@
-package com.lisantom.our.housemate;
+package com.intuso.housemate.plugin.rfxcom;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.value.ValueListener;
@@ -117,7 +117,7 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
 			appliance.turnOn();
             setOn();
 		} catch (IOException e) {
-			throw new HousemateException("Could not turn relay on", e);
+			throw new HousemateException("Could not turn appliance on", e);
 		}
 	}
 	
@@ -129,7 +129,7 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
 			appliance.turnOff();
             setOff();
 		} catch (IOException e) {
-			throw new HousemateException("Could not turn relay off", e);
+			throw new HousemateException("Could not turn appliance off", e);
 		}
 	}
 	

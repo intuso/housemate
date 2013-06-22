@@ -31,6 +31,7 @@ import com.intuso.utilities.log.LogLevel;
 import com.intuso.utilities.log.LogWriter;
 import com.intuso.utilities.log.writer.FileWriter;
 import com.intuso.utilities.log.writer.StdOutWriter;
+import gnu.io.CommPortIdentifier;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.FileResource;
 import org.eclipse.jetty.util.resource.JarResource;
@@ -287,6 +288,9 @@ public class BrokerServerEnvironment {
     }
 
     private void loadPlugins() {
+
+        loadSharedJNILibs();
+
         // add the default plugin
         generalResources.addPlugin(new MainPlugin(generalResources));
 
@@ -303,6 +307,10 @@ public class BrokerServerEnvironment {
                     generalResources.addPlugin(plugin);
             }
         }
+    }
+
+    private void loadSharedJNILibs() {
+        CommPortIdentifier.getPortIdentifiers();
     }
 
     private List<PluginDescriptor> loadPlugin(File file) {

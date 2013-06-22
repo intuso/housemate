@@ -1,4 +1,4 @@
-package com.lisantom.our.housemate;
+package com.intuso.housemate.plugin.rfxcom;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.real.RealResources;
@@ -12,11 +12,11 @@ import com.rfxcom.rfxtrx.util.HomeEasy;
  * Time: 11:30
  * To change this template use File | Settings | File Templates.
  */
-public class HomeEasyDeviceFactory implements RealDeviceFactory<HomeEasyAppliance> {
+public class HomeEasyApplianceFactory implements RealDeviceFactory<HomeEasyAppliance> {
 
     private final HomeEasy homeEasy;
 
-    public HomeEasyDeviceFactory(HomeEasy homeEasy) {
+    public HomeEasyApplianceFactory(HomeEasy homeEasy) {
         this.homeEasy = homeEasy;
     }
 

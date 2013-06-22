@@ -1,6 +1,7 @@
-package com.lisantom.our.housemate;
+package com.intuso.housemate.plugin.rfxcom;
 
 import com.google.common.collect.Lists;
+import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
@@ -47,7 +48,7 @@ public class RFXComPlugin implements PluginDescriptor {
     }
 
     @Override
-    public void init(Resources resources) {
+    public void init(Resources resources) throws HousemateException {
         resources.getLog().d("Initialising RFXCom plugin");
         java.util.List<CommPortIdentifier> portIds = RFXtrx.listSuitablePorts(resources.getLog());
         CommPortIdentifier portId = null;
@@ -59,10 +60,8 @@ public class RFXComPlugin implements PluginDescriptor {
                 break;
             }
         }
-        if(portId == null) {
-            resources.getLog().d("No suitable portId found for Home Easy devices, shutting down");
-            System.exit(0);
-        }
+        if(portId == null)
+            throw new HousemateException("No suitable portId found for Home Easy devices, shutting down");
         RFXtrx agent = new RFXtrx(portId, resources.getLog());
         agent.openPort();
         homeEasy = HomeEasy.createUK(agent);
@@ -80,7 +79,7 @@ public class RFXComPlugin implements PluginDescriptor {
 
     @Override
     public List<RealDeviceFactory<?>> getDeviceFactories() {
-        return Lists.<RealDeviceFactory<?>>newArrayList(new HomeEasyDeviceFactory(homeEasy));
+        return Lists.<RealDeviceFactory<?>>newArrayList(new HomeEasyApplianceFactory(homeEasy));
     }
 
     @Override
