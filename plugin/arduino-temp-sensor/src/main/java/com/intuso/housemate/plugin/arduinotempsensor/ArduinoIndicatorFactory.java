@@ -3,7 +3,7 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
-import gnu.io.SerialPort;
+import jssc.SerialPort;
 
 /**
  * Created with IntelliJ IDEA.

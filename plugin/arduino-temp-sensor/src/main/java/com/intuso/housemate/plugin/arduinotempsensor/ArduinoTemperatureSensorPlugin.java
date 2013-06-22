@@ -10,13 +10,9 @@ import com.intuso.housemate.plugin.api.BrokerConsequenceFactory;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
-import com.intuso.utilities.log.Log;
-import gnu.io.CommPortIdentifier;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.UnsupportedCommOperationException;
+import jssc.SerialPort;
+import jssc.SerialPortException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,43 +49,14 @@ public class ArduinoTemperatureSensorPlugin implements PluginDescriptor {
     @Override
     public void init(Resources resources) throws HousemateException {
         resources.getLog().d("Initialising Arduino Temperature Sensor plugin");
-        List<CommPortIdentifier> portIds = listSuitablePorts(resources.getLog());
-        CommPortIdentifier portId = null;
-        for(CommPortIdentifier pi : portIds) {
-            resources.getLog().d("Found comm port id " + pi.getName());
-            if(pi.getName().equals("/dev/ttyACM0")) {
-                resources.getLog().d("Found required comm port id");
-                portId = pi;
-                break;
-            }
-        }
-        if(portId == null)
-            throw new HousemateException("No suitable portId found for Arduino Temperature Sensor devices, shutting down");
+        serialPort = new SerialPort("/dev/ttyACM0");
         try {
-            serialPort = openPort(portId, resources.getLog());
-        } catch(HousemateException e) {
-            throw new HousemateException("Could not open serial port to Arduino");
-        }
-    }
-
-    /**
-     * Open a serial port
-     */
-    private SerialPort openPort(CommPortIdentifier portId, Log log) throws HousemateException {
-
-        // Open the port
-        try {
-            log.d("Attempting to open serial port " + portId.getName());
-            SerialPort port = (SerialPort)portId.open(ArduinoTemperatureSensorPlugin.class.getName(), 9600);
-            port.setInputBufferSize(0);
-            port.setOutputBufferSize(0);
-            port.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-            log.d("Successfully opened serial port");
-            return port;
-        } catch (PortInUseException e) {
-            throw new HousemateException("Serial port is already in use. Is the service already running elsewhere?", e);
-        } catch (UnsupportedCommOperationException e) {
-            throw new HousemateException("Couldn't set serial port parameters", e);
+            if(!serialPort.openPort())
+                throw new HousemateException("No suitable port found for Arduino Temperature Sensor devices");
+            if(!serialPort.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE))
+                throw new HousemateException("Failed to properly configure port for Arduino Temperature Sensor devices");
+        } catch(SerialPortException e) {
+            throw new HousemateException("Failed to open connection to Arduino", e);
         }
     }
 
@@ -118,31 +85,5 @@ public class ArduinoTemperatureSensorPlugin implements PluginDescriptor {
     @Override
     public List<BrokerConsequenceFactory<?>> getConsequenceFactories() {
         return Lists.newArrayList();
-    }
-
-    /**
-     * Get a list of descriptions of potential serial ports
-     * @return a list of descriptions of potential serial ports
-     */
-    public static List<CommPortIdentifier> listSuitablePorts(Log log) {
-
-        List<CommPortIdentifier> suitablePorts = new ArrayList<CommPortIdentifier>();
-
-        // Get a list of suitable ports;
-        @SuppressWarnings("unchecked")
-        java.util.Enumeration<CommPortIdentifier> commPorts = CommPortIdentifier.getPortIdentifiers();
-        while(commPorts.hasMoreElements())
-        {
-            CommPortIdentifier commPortId = commPorts.nextElement();
-            log.d("Found comm port " + commPortId.getName());
-            if(commPortId.getPortType() != CommPortIdentifier.PORT_SERIAL)
-                log.d("Comm port is not serial type");
-            else if(commPortId.isCurrentlyOwned())
-                log.d("Comm port is already owned");
-            else
-                suitablePorts.add(commPortId);
-        }
-
-        return suitablePorts;
     }
 }

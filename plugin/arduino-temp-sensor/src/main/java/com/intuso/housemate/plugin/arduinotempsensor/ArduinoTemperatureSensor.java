@@ -5,11 +5,12 @@ import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
 import com.intuso.housemate.object.real.impl.type.DoubleType;
-import gnu.io.SerialPort;
+import jssc.SerialPort;
+import jssc.SerialPortException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,7 +25,7 @@ public class ArduinoTemperatureSensor extends RealDevice {
     
     private final SerialPort serialPort;
     private BufferedReader in;
-    private Reader reader = null;
+    private LineReader reader = null;
     
     /**
      * Create a new device
@@ -39,13 +40,9 @@ public class ArduinoTemperatureSensor extends RealDevice {
 
     @Override
     protected void start() throws HousemateException {
-        try {
-            in = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
-            reader = new Reader();
-            reader.start();
-        } catch(IOException e) {
-            throw new HousemateException("Failed to open connection to Arduino");
-        }
+        in = new BufferedReader(new SerialPortReader());
+        reader = new LineReader();
+        reader.start();
     }
 
     @Override
@@ -61,14 +58,16 @@ public class ArduinoTemperatureSensor extends RealDevice {
         }
     }
 
-    private class Reader extends Thread {
+    private class LineReader extends Thread {
         @Override
         public void run() {
             try {
                 String line;
                 while(!isInterrupted() && (line = in.readLine()) != null) {
+                    getLog().d("Read line");
                     try {
                         temperature.setTypedValue(Double.parseDouble(line));
+                        getLog().d("Set temperature");
                     } catch(NumberFormatException e) {
                         getLog().w("Could not parse temperature value \"" + line + "\"");
                     }
@@ -80,6 +79,27 @@ public class ArduinoTemperatureSensor extends RealDevice {
                 in.close();
             } catch(IOException e) {
                 getLog().e("Failed to close connection to the Arduino");
+            }
+        }
+    }
+
+    private class SerialPortReader extends Reader {
+        @Override
+        public int read(char[] chars, int offset, int length) throws IOException {
+            try {
+                chars[offset] = (char)serialPort.readBytes(1)[0];
+                return 1;
+            } catch(SerialPortException e) {
+                throw new IOException("Failed to read from serial port");
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                serialPort.closePort();
+            } catch(SerialPortException e) {
+                throw new IOException("Failed to close serial port", e);
             }
         }
     }
