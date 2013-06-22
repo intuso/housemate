@@ -80,6 +80,8 @@ public class BrokerServerEnvironment {
     public final static String RUN_WEBAPP = "webapp.run";
     public final static String WEBAPP_PORT = "webapp.port";
     private final static String WEBAPP_PATH = "webapp.path";
+    private final static String USERNAME = "username";
+    private final static String PASSWORD = "password";
 
     private final static String WEBAPP_FOLDER = "webapp";
     private final static String WEBAPP_NAME = "housemate";
@@ -281,6 +283,9 @@ public class BrokerServerEnvironment {
             out.write(LOG_LEVEL + "=DEBUG\n");
             out.write(BROKER_NAME + "=My Broker\n");
             out.write(SocketServer.BROKER_PORT + "=46873\n");
+            out.write(RUN_WEBAPP + "=true\n");
+            out.write(USERNAME + "=admin\n");
+            out.write(PASSWORD + "=admin\n");
             out.close();
         } catch(IOException e) {
             throw new HousemateException("Could not create default props file", e);
