@@ -16,7 +16,7 @@ import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.RootWrappable;
-import com.intuso.housemate.api.object.root.real.RealRoot;
+import com.intuso.housemate.api.object.root.real.RealAutomation;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -31,8 +31,8 @@ import java.util.List;
  */
 public class RealRootObject
         extends RealObject<RootWrappable, HousemateObjectWrappable<?>, RealObject<?, ? extends HousemateObjectWrappable<?>, ?, ?>, RootListener<? super RealRootObject>>
-        implements RealRoot<RealType<?, ?, ?>, RealList<TypeWrappable<?>, RealType<?, ?, ?>>, RealDevice,
-            RealList<DeviceWrappable, RealDevice>, RealRootObject>, ConnectionStatusChangeListener {
+        implements RealAutomation<RealType<?, ?, ?>, RealList<TypeWrappable<?>, RealType<?, ?, ?>>, RealDevice,
+                    RealList<DeviceWrappable, RealDevice>, RealRootObject>, ConnectionStatusChangeListener {
 
     private final RealList<TypeWrappable<?>, RealType<?, ?, ?>> types;
     private final RealList<DeviceWrappable, RealDevice> devices;

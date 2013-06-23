@@ -9,16 +9,16 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
+import com.intuso.housemate.api.object.automation.AutomationWrappable;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.RootWrappable;
-import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyDevice;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
-import com.intuso.housemate.object.broker.real.BrokerRealRule;
+import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -44,10 +44,10 @@ public class RootObjectBridge
     private ListBridge<UserWrappable, BrokerRealUser, UserBridge> users;
     private ListBridge<TypeWrappable<?>, BrokerProxyType, TypeBridge> types;
     private ListBridge<DeviceWrappable, BrokerProxyDevice, DeviceBridge> devices;
-    private ListBridge<RuleWrappable, BrokerRealRule, RuleBridge> rules;
+    private ListBridge<AutomationWrappable, BrokerRealAutomation, AutomationBridge> automations;
     private CommandBridge addUser;
     private CommandBridge addDevice;
-    private CommandBridge addRule;
+    private CommandBridge addAutomation;
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
@@ -63,21 +63,21 @@ public class RootObjectBridge
         devices = new ListBridge<DeviceWrappable, BrokerProxyDevice, DeviceBridge>(resources,
                 resources.getGeneralResources().getProxyResources().getRoot().getDevices(),
                 new DeviceBridge.Converter(resources));
-        rules = new ListBridge<RuleWrappable, BrokerRealRule, RuleBridge>(resources,
-                resources.getGeneralResources().getRealResources().getRoot().getRules(),
-                new RuleBridge.Converter(resources));
+        automations = new ListBridge<AutomationWrappable, BrokerRealAutomation, AutomationBridge>(resources,
+                resources.getGeneralResources().getRealResources().getRoot().getAutomations(),
+                new AutomationBridge.Converter(resources));
         addUser = new CommandBridge(resources, resources.getGeneralResources().getRealResources().getRoot().getAddUserCommand());
         addDevice = new CommandBridge(resources, resources.getGeneralResources().getClient().getAddDeviceCommand());
-        addRule = new CommandBridge(resources, resources.getGeneralResources().getRealResources().getRoot().getAddRuleCommand());
+        addAutomation = new CommandBridge(resources, resources.getGeneralResources().getRealResources().getRoot().getAddAutomationCommand());
         addWrapper(users);
         addWrapper(types);
         addWrapper(devices);
-        addWrapper(rules);
+        addWrapper(automations);
         addWrapper(addUser);
         addWrapper(addDevice);
-        addWrapper(addRule);
+        addWrapper(addAutomation);
         getResources().getGeneralResources().getStorage().watchDevices(devices);
-        getResources().getGeneralResources().getStorage().watchRules(rules);
+        getResources().getGeneralResources().getStorage().watchAutomations(automations);
         init(null);
     }
 
@@ -123,8 +123,8 @@ public class RootObjectBridge
         return devices;
     }
 
-    public ListBridge<RuleWrappable, BrokerRealRule, RuleBridge> getRules() {
-        return rules;
+    public ListBridge<AutomationWrappable, BrokerRealAutomation, AutomationBridge> getAutomations() {
+        return automations;
     }
 
     @Override

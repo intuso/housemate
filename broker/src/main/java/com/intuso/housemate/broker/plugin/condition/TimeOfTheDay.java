@@ -4,7 +4,7 @@ import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.object.real.impl.type.Time;
 import com.intuso.housemate.object.real.impl.type.TimeType;
 import com.intuso.utilities.log.Log;
@@ -38,12 +38,12 @@ public class TimeOfTheDay extends BrokerRealCondition {
 	private final static long WAIT_MAX = 10 * 60 * 1000;
 
     /**
-     * String version of the time that, once passed, makes the rule unsatisfied. Default is the start of the day
+     * String version of the time that, once passed, makes the condition unsatisfied. Default is the start of the day
      */
     private final BrokerRealProperty<Time> before;
 
     /**
-     * String version of the time that, until reached, makes the rule unsatisfied
+     * String version of the time that, until reached, makes the condition unsatisfied
      */
     private final BrokerRealProperty<Time> after;
 

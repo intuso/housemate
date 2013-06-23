@@ -5,12 +5,14 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.argument.ArgumentFactory;
 import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.automation.AutomationFactory;
+import com.intuso.housemate.api.object.automation.AutomationWrappable;
 import com.intuso.housemate.api.object.command.CommandFactory;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.condition.ConditionFactory;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.consequence.ConsequenceFactory;
-import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
+import com.intuso.housemate.api.object.task.TaskFactory;
+import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.object.device.DeviceFactory;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.list.ListFactory;
@@ -19,8 +21,6 @@ import com.intuso.housemate.api.object.option.OptionFactory;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.property.PropertyFactory;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.rule.RuleFactory;
-import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.api.object.subtype.SubTypeFactory;
 import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeFactory;
@@ -45,16 +45,16 @@ public class GWTProxyFactory {
 
     private final static All allFactory = new All();
     private final static Argument argumentFactory = new Argument();
+    private final static Automation automationFactory = new Automation();
     private final static Command commandFactory = new Command();
     private final static Condition conditionFactory = new Condition();
     private final static Connection connectionFactory = new Connection();
-    private final static Consequence consequenceFactory = new Consequence();
     private final static Device deviceFactory = new Device();
     private final static GenericList listFactory = new GenericList();
     private final static Option optionFactory = new Option();
     private final static Property propertyFactory = new Property();
-    private final static Rule ruleFactory = new Rule();
     private final static SubType subTypeFactory = new SubType();
+    private final static Task taskFactory = new Task();
     private final static Type typeFactory = new Type();
     private final static Value valueFactory = new Value();
 
@@ -69,8 +69,8 @@ public class GWTProxyFactory {
                 return conditionFactory.create(resources, (ConditionWrappable) wrappable);
             else if(wrappable instanceof UserWrappable)
                 return connectionFactory.create(resources, (UserWrappable) wrappable);
-            else if(wrappable instanceof ConsequenceWrappable)
-                return consequenceFactory.create(resources, (ConsequenceWrappable) wrappable);
+            else if(wrappable instanceof TaskWrappable)
+                return taskFactory.create(resources, (TaskWrappable) wrappable);
             else if(wrappable instanceof DeviceWrappable)
                 return deviceFactory.create(resources, (DeviceWrappable) wrappable);
             else if(wrappable instanceof ListWrappable)
@@ -79,8 +79,8 @@ public class GWTProxyFactory {
                 return optionFactory.create(resources, (OptionWrappable) wrappable);
             else if(wrappable instanceof PropertyWrappable)
                 return propertyFactory.create(resources, (PropertyWrappable) wrappable);
-            else if(wrappable instanceof RuleWrappable)
-                return ruleFactory.create(resources, (RuleWrappable) wrappable);
+            else if(wrappable instanceof AutomationWrappable)
+                return automationFactory.create(resources, (AutomationWrappable) wrappable);
             else if(wrappable instanceof SubTypeWrappable)
                 return subTypeFactory.create(resources, (SubTypeWrappable) wrappable);
             else if(wrappable instanceof TypeWrappable)
@@ -124,11 +124,11 @@ public class GWTProxyFactory {
         }
     }
 
-    public static class Consequence implements ConsequenceFactory<GWTResources<?>, GWTProxyConsequence> {
+    public static class Task implements TaskFactory<GWTResources<?>, GWTProxyTask> {
         @Override
-        public GWTProxyConsequence create(GWTResources<?> resources, ConsequenceWrappable wrappable) throws HousemateException {
+        public GWTProxyTask create(GWTResources<?> resources, TaskWrappable wrappable) throws HousemateException {
             GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyConsequence(r, resources, wrappable);
+            return new GWTProxyTask(r, resources, wrappable);
         }
     }
 
@@ -181,13 +181,13 @@ public class GWTProxyFactory {
         }
     }
 
-    public static class Rule implements RuleFactory<
-            GWTResources<?>,
-            GWTProxyRule> {
+    public static class Automation implements AutomationFactory<
+                GWTResources<?>,
+            GWTProxyAutomation> {
         @Override
-        public GWTProxyRule create(GWTResources<?> resources, RuleWrappable wrappable) throws HousemateException {
+        public GWTProxyAutomation create(GWTResources<?> resources, AutomationWrappable wrappable) throws HousemateException {
             GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyRule(r, resources, wrappable);
+            return new GWTProxyAutomation(r, resources, wrappable);
         }
     }
 

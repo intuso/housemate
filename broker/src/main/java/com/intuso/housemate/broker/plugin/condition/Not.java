@@ -3,8 +3,8 @@ package com.intuso.housemate.broker.plugin.condition;
 import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.broker.real.condition.BrokerNonLeafCondition;
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerNonLeafCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 
 import java.util.Map;
 

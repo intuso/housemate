@@ -7,7 +7,7 @@ import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.broker.client.LocalClient;
 import com.intuso.housemate.broker.comms.MainRouter;
 import com.intuso.housemate.broker.factory.ConditionFactory;
-import com.intuso.housemate.broker.factory.ConsequenceFactory;
+import com.intuso.housemate.broker.factory.TaskFactory;
 import com.intuso.housemate.broker.factory.DeviceFactory;
 import com.intuso.housemate.broker.object.BrokerProxyResourcesImpl;
 import com.intuso.housemate.broker.object.BrokerRealResourcesImpl;
@@ -95,7 +95,7 @@ public class BrokerServerEnvironment {
     private final Storage storage;
     private final DeviceFactory deviceFactory;
     private final ConditionFactory conditionFactory;
-    private final ConsequenceFactory consequenceFactory;
+    private final TaskFactory taskFactory;
 
     private final BrokerGeneralResources generalResources;
     private final BrokerRealResourcesImpl realResources;
@@ -214,7 +214,7 @@ public class BrokerServerEnvironment {
 
         deviceFactory = new DeviceFactory(generalResources);
         conditionFactory = new ConditionFactory(generalResources);
-        consequenceFactory = new ConsequenceFactory(generalResources);
+        taskFactory = new TaskFactory(generalResources);
 
         generalResources.setLifecycleHandler(new LifecycleHandlerImpl(generalResources));
 
@@ -243,7 +243,7 @@ public class BrokerServerEnvironment {
         generalResources.setRemoteClientManager(new RemoteClientManager(generalResources));
         generalResources.setDeviceFactory(deviceFactory);
         generalResources.setConditionFactory(conditionFactory);
-        generalResources.setConsequenceFactory(consequenceFactory);
+        generalResources.setTaskFactory(taskFactory);
         generalResources.setRealResources(realResources);
         generalResources.setProxyResources(proxyResources);
         generalResources.setBridgeResources(bridgeResources);

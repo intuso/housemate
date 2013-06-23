@@ -2,7 +2,7 @@ package com.intuso.housemate.annotations.plugin;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.plugin.api.BrokerConditionFactory;
 
 import java.lang.reflect.Constructor;

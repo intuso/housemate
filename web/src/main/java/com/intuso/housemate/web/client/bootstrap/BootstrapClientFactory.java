@@ -9,13 +9,13 @@ import com.intuso.housemate.web.client.ClientFactory;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.activity.HousemateActivityMapper;
 import com.intuso.housemate.web.client.bootstrap.view.AccountView;
+import com.intuso.housemate.web.client.bootstrap.view.AutomationView;
 import com.intuso.housemate.web.client.bootstrap.view.ConditionView;
 import com.intuso.housemate.web.client.bootstrap.view.DeviceView;
 import com.intuso.housemate.web.client.bootstrap.view.HomeView;
 import com.intuso.housemate.web.client.bootstrap.view.Page;
-import com.intuso.housemate.web.client.bootstrap.view.RuleView;
-import com.intuso.housemate.web.client.bootstrap.view.SatisfiedConsequenceView;
-import com.intuso.housemate.web.client.bootstrap.view.UnsatisfiedConsequenceView;
+import com.intuso.housemate.web.client.bootstrap.view.SatisfiedTaskView;
+import com.intuso.housemate.web.client.bootstrap.view.UnsatisfiedTaskView;
 import com.intuso.housemate.web.client.bootstrap.view.UserView;
 import com.intuso.housemate.web.client.bootstrap.widget.login.LoginPopup;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryMapper;
@@ -45,10 +45,10 @@ public class BootstrapClientFactory implements ClientFactory {
     private HomeView homeView = null;
     private UserView userView = null;
     private DeviceView deviceView = null;
-    private RuleView ruleView = null;
+    private AutomationView automationView = null;
     private ConditionView conditionView = null;
-    private SatisfiedConsequenceView satisfiedConsequenceView = null;
-    private UnsatisfiedConsequenceView unsatisfiedConsequenceView = null;
+    private SatisfiedTaskView satisfiedTaskView = null;
+    private UnsatisfiedTaskView unsatisfiedTaskView = null;
     private AccountView accountView = null;
 
     @Override
@@ -112,10 +112,10 @@ public class BootstrapClientFactory implements ClientFactory {
     }
 
     @Override
-    public com.intuso.housemate.web.client.ui.view.RuleView getRuleView() {
-        if(ruleView == null)
-            ruleView = new RuleView(Housemate.ENVIRONMENT.getResources());
-        return ruleView;
+    public com.intuso.housemate.web.client.ui.view.AutomationView getAutomationView() {
+        if(automationView == null)
+            automationView = new AutomationView(Housemate.ENVIRONMENT.getResources());
+        return automationView;
     }
 
     @Override
@@ -126,17 +126,17 @@ public class BootstrapClientFactory implements ClientFactory {
     }
 
     @Override
-    public com.intuso.housemate.web.client.ui.view.SatisfiedConsequenceView getSatisfiedConsequenceView() {
-        if(satisfiedConsequenceView == null)
-            satisfiedConsequenceView = new SatisfiedConsequenceView(Housemate.ENVIRONMENT.getResources());
-        return satisfiedConsequenceView;
+    public com.intuso.housemate.web.client.ui.view.SatisfiedTaskView getSatisfiedTaskView() {
+        if(satisfiedTaskView == null)
+            satisfiedTaskView = new SatisfiedTaskView(Housemate.ENVIRONMENT.getResources());
+        return satisfiedTaskView;
     }
 
     @Override
-    public com.intuso.housemate.web.client.ui.view.UnsatisfiedConsequenceView getUnsatisfiedConsequenceView() {
-        if(unsatisfiedConsequenceView == null)
-            unsatisfiedConsequenceView = new UnsatisfiedConsequenceView(Housemate.ENVIRONMENT.getResources());
-        return unsatisfiedConsequenceView;
+    public com.intuso.housemate.web.client.ui.view.UnsatisfiedTaskView getUnsatisfiedTaskView() {
+        if(unsatisfiedTaskView == null)
+            unsatisfiedTaskView = new UnsatisfiedTaskView(Housemate.ENVIRONMENT.getResources());
+        return unsatisfiedTaskView;
     }
 
     @Override

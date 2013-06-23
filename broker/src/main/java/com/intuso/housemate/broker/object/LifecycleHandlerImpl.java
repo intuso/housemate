@@ -2,14 +2,14 @@ package com.intuso.housemate.broker.object;
 
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.automation.Automation;
+import com.intuso.housemate.api.object.automation.AutomationWrappable;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
+import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.rule.Rule;
-import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.User;
@@ -20,12 +20,12 @@ import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.LifecycleHandler;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyPrimaryObject;
 import com.intuso.housemate.object.broker.real.BrokerRealArgument;
+import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
 import com.intuso.housemate.object.broker.real.BrokerRealCommand;
 import com.intuso.housemate.object.broker.real.BrokerRealList;
-import com.intuso.housemate.object.broker.real.BrokerRealRule;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
-import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealTask;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
@@ -112,29 +112,29 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     }
 
     @Override
-    public BrokerRealCommand createAddRuleCommand(final BrokerRealList<RuleWrappable, BrokerRealRule> rules) {
-        return new BrokerRealCommand(resources.getRealResources(), Root.ADD_RULE, Root.ADD_RULE, "Add a new rule", Arrays.<BrokerRealArgument<?>>asList(
-                new BrokerRealArgument<String>(resources.getRealResources(), "name", "Name", "The name for the new rule", new StringType(resources.getClientResources())),
-                new BrokerRealArgument<String>(resources.getRealResources(), "description", "Description", "The description for the new rule", new StringType(resources.getClientResources()))
+    public BrokerRealCommand createAddAutomationCommand(final BrokerRealList<AutomationWrappable, BrokerRealAutomation> automations) {
+        return new BrokerRealCommand(resources.getRealResources(), Root.ADD_AUTOMATION, Root.ADD_AUTOMATION, "Add a new automation", Arrays.<BrokerRealArgument<?>>asList(
+                new BrokerRealArgument<String>(resources.getRealResources(), "name", "Name", "The name for the new automation", new StringType(resources.getClientResources())),
+                new BrokerRealArgument<String>(resources.getRealResources(), "description", "Description", "The description for the new automation", new StringType(resources.getClientResources()))
         )) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 values.put("id", values.get("name")); // todo figure out a better way of getting an id
-                BrokerRealRule rule = new BrokerRealRule(getResources(), values.get("id").getValue(),
+                BrokerRealAutomation automation = new BrokerRealAutomation(getResources(), values.get("id").getValue(),
                         values.get("name").getValue(), values.get("description").getValue());
-                rules.add(rule);
-                resources.getStorage().saveValues(rules.getPath(), rule.getId(), values);
-                rule.getRunningValue().addObjectListener(runningListener);
+                automations.add(automation);
+                resources.getStorage().saveValues(automations.getPath(), automation.getId(), values);
+                automation.getRunningValue().addObjectListener(runningListener);
             }
         };
     }
 
     @Override
-    public void ruleRemoved(String[] path) {
+    public void automationRemoved(String[] path) {
         try {
             resources.getStorage().removeValues(path);
         } catch(HousemateException e) {
-            resources.getLog().e("Failed to remove stored details for rule " + Arrays.toString(path));
+            resources.getLog().e("Failed to remove stored details for automation " + Arrays.toString(path));
         }
     }
 
@@ -175,16 +175,16 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Override
     public BrokerRealCommand createAddConditionCommand(BrokerRealList<ConditionWrappable, BrokerRealCondition> conditions) {
-        return resources.getConditionFactory().createAddConditionCommand(Rule.ADD_CONDITION, Rule.ADD_CONDITION, "Add a new condition", conditions);
+        return resources.getConditionFactory().createAddConditionCommand(Automation.ADD_CONDITION, Automation.ADD_CONDITION, "Add a new condition", conditions);
     }
 
     @Override
-    public BrokerRealCommand createAddSatisfiedConsequenceCommand(BrokerRealList<ConsequenceWrappable, BrokerRealConsequence> consequences) {
-        return resources.getConsequenceFactory().createAddConsequenceCommand(Rule.ADD_SATISFIED_CONSEQUENCE, Rule.ADD_SATISFIED_CONSEQUENCE, "Add a new satisfied consequence", consequences);
+    public BrokerRealCommand createAddSatisfiedTaskCommand(BrokerRealList<TaskWrappable, BrokerRealTask> tasks) {
+        return resources.getTaskFactory().createAddTaskCommand(Automation.ADD_SATISFIED_TASK, Automation.ADD_SATISFIED_TASK, "Add a new satisfied task", tasks);
     }
 
     @Override
-    public BrokerRealCommand createAddUnsatisfiedConsequenceCommand(BrokerRealList<ConsequenceWrappable, BrokerRealConsequence> consequences) {
-        return resources.getConsequenceFactory().createAddConsequenceCommand(Rule.ADD_UNSATISFIED_CONSEQUENCE, Rule.ADD_UNSATISFIED_CONSEQUENCE, "Add a new unsatisfied consequence", consequences);
+    public BrokerRealCommand createAddUnsatisfiedTaskCommand(BrokerRealList<TaskWrappable, BrokerRealTask> tasks) {
+        return resources.getTaskFactory().createAddTaskCommand(Automation.ADD_UNSATISFIED_TASK, Automation.ADD_UNSATISFIED_TASK, "Add a new unsatisfied task", tasks);
     }
 }

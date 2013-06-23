@@ -7,10 +7,10 @@ import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
+import com.intuso.housemate.api.object.automation.AutomationWrappable;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.RootWrappable;
-import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -26,21 +26,21 @@ public class BrokerRealRootObject
         implements Root<BrokerRealRootObject, RootListener<? super BrokerRealRootObject>> {
 
     private final BrokerRealList<UserWrappable, BrokerRealUser> users;
-    private final BrokerRealList<RuleWrappable, BrokerRealRule> rules;
+    private final BrokerRealList<AutomationWrappable, BrokerRealAutomation> automations;
     private final BrokerRealCommand addUserCommand;
-    private final BrokerRealCommand addRuleCommand;
+    private final BrokerRealCommand addAutomationCommand;
 
     public BrokerRealRootObject(BrokerRealResources resources) {
         super(resources, new RootWrappable());
         users = new BrokerRealList<UserWrappable, BrokerRealUser>(resources, USERS, USERS, "The defined users");
-        rules = new BrokerRealList<RuleWrappable, BrokerRealRule>(resources, RULES, RULES, "The defined rules");
+        automations = new BrokerRealList<AutomationWrappable, BrokerRealAutomation>(resources, AUTOMATIONS, AUTOMATIONS, "The defined automations");
         addUserCommand = getResources().getLifecycleHandler().createAddUserCommand(users);
-        addRuleCommand = getResources().getLifecycleHandler().createAddRuleCommand(rules);
+        addAutomationCommand = getResources().getLifecycleHandler().createAddAutomationCommand(automations);
 
         addWrapper(users);
-        addWrapper(rules);
+        addWrapper(automations);
         addWrapper(addUserCommand);
-        addWrapper(addRuleCommand);
+        addWrapper(addAutomationCommand);
 
         init(null);
     }
@@ -84,15 +84,15 @@ public class BrokerRealRootObject
         return users;
     }
 
-    public BrokerRealList<RuleWrappable, BrokerRealRule> getRules() {
-        return rules;
+    public BrokerRealList<AutomationWrappable, BrokerRealAutomation> getAutomations() {
+        return automations;
     }
 
     public BrokerRealCommand getAddUserCommand() {
         return addUserCommand;
     }
 
-    public BrokerRealCommand getAddRuleCommand() {
-        return addRuleCommand;
+    public BrokerRealCommand getAddAutomationCommand() {
+        return addAutomationCommand;
     }
 }

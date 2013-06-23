@@ -41,13 +41,13 @@ public class Condition extends Composite
     @UiField
     public PropertyList propertyList;
 
-    private String ruleName;
+    private String automationName;
     private int depth;
     private List<String> conditionNames;
 
-    public Condition(String ruleName, int depth, List<String> conditionNames, GWTProxyCondition condition) {
+    public Condition(String automationName, int depth, List<String> conditionNames, GWTProxyCondition condition) {
 
-        this.ruleName = ruleName;
+        this.automationName = automationName;
         this.conditionNames = conditionNames;
 
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -74,6 +74,6 @@ public class Condition extends Composite
     public void objectSelected(ObjectSelectedEvent<GWTProxyCondition> event) {
         List<String> newConditionNames = new LinkedList<String>(conditionNames);
         newConditionNames.add(event.getObject().getId());
-        Housemate.FACTORY.getPlaceController().goTo(new ConditionPlace(ruleName, depth + 1, newConditionNames));
+        Housemate.FACTORY.getPlaceController().goTo(new ConditionPlace(automationName, depth + 1, newConditionNames));
     }
 }

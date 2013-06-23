@@ -27,5 +27,5 @@ public interface PluginDescriptor {
     public List<Comparator<?>> getComparators(RealResources resources);
     public List<RealDeviceFactory<?>> getDeviceFactories();
     public List<BrokerConditionFactory<?>> getConditionFactories();
-    public List<BrokerConsequenceFactory<?>> getConsequenceFactories();
+    public List<BrokerTaskFactory<?>> getTaskFactories();
 }

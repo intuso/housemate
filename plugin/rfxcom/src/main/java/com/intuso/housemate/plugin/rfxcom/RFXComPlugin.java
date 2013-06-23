@@ -6,7 +6,7 @@ import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.BrokerConditionFactory;
-import com.intuso.housemate.plugin.api.BrokerConsequenceFactory;
+import com.intuso.housemate.plugin.api.BrokerTaskFactory;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
@@ -88,7 +88,7 @@ public class RFXComPlugin implements PluginDescriptor {
     }
 
     @Override
-    public List<BrokerConsequenceFactory<?>> getConsequenceFactories() {
+    public List<BrokerTaskFactory<?>> getTaskFactories() {
         return Lists.newArrayList();
     }
 }

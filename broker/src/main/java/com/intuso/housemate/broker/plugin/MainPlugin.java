@@ -3,7 +3,7 @@ package com.intuso.housemate.broker.plugin;
 import com.intuso.housemate.annotations.plugin.AnnotatedPluginDescriptor;
 import com.intuso.housemate.annotations.plugin.Comparators;
 import com.intuso.housemate.annotations.plugin.Conditions;
-import com.intuso.housemate.annotations.plugin.Consequences;
+import com.intuso.housemate.annotations.plugin.Tasks;
 import com.intuso.housemate.annotations.plugin.Devices;
 import com.intuso.housemate.annotations.plugin.PluginInformation;
 import com.intuso.housemate.annotations.plugin.Types;
@@ -19,9 +19,9 @@ import com.intuso.housemate.broker.plugin.condition.Not;
 import com.intuso.housemate.broker.plugin.condition.Or;
 import com.intuso.housemate.broker.plugin.condition.TimeOfTheDay;
 import com.intuso.housemate.broker.plugin.condition.ValueComparisonConditionFactory;
-import com.intuso.housemate.broker.plugin.consequence.Delay;
-import com.intuso.housemate.broker.plugin.consequence.PerformCommandConsequenceFactory;
-import com.intuso.housemate.broker.plugin.consequence.RandomDelay;
+import com.intuso.housemate.broker.plugin.task.Delay;
+import com.intuso.housemate.broker.plugin.task.PerformCommandTaskFactory;
+import com.intuso.housemate.broker.plugin.task.RandomDelay;
 import com.intuso.housemate.broker.plugin.device.OnOffCommandDevice;
 import com.intuso.housemate.broker.plugin.type.comparison.ComparisonOperatorType;
 import com.intuso.housemate.broker.plugin.type.comparison.ComparisonType;
@@ -37,7 +37,7 @@ import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.object.real.impl.type.TimeType;
 import com.intuso.housemate.plugin.api.BrokerConditionFactory;
-import com.intuso.housemate.plugin.api.BrokerConsequenceFactory;
+import com.intuso.housemate.plugin.api.BrokerTaskFactory;
 
 import java.util.List;
 
@@ -60,7 +60,7 @@ import java.util.List;
         DoubleComparators.LessThan.class, DoubleComparators.LessThanOrEqual.class})
 @Devices({OnOffCommandDevice.class})
 @Conditions({And.class, Or.class, Not.class, TimeOfTheDay.class, DayOfTheWeek.class})
-@Consequences({Delay.class, RandomDelay.class})
+@Tasks({Delay.class, RandomDelay.class})
 public class MainPlugin extends AnnotatedPluginDescriptor {
 
     public static ConstantType CONSTANT_TYPE;
@@ -91,9 +91,9 @@ public class MainPlugin extends AnnotatedPluginDescriptor {
     }
 
     @Override
-    public List<BrokerConsequenceFactory<?>> getConsequenceFactories() {
-        List<BrokerConsequenceFactory<?>> result = super.getConsequenceFactories();
-        result.add(new PerformCommandConsequenceFactory(generalResources));
+    public List<BrokerTaskFactory<?>> getTaskFactories() {
+        List<BrokerTaskFactory<?>> result = super.getTaskFactories();
+        result.add(new PerformCommandTaskFactory(generalResources));
         return result;
     }
 }

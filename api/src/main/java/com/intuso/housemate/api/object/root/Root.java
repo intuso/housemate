@@ -29,10 +29,10 @@ public interface Root<R extends Root, L extends RootListener<? super R>>
     public final static String USERS = "users";
     public final static String TYPES = "types";
     public final static String DEVICES = "devices";
-    public final static String RULES = "rules";
+    public final static String AUTOMATIONS = "automations";
     public final static String ADD_USER = "add-user";
     public final static String ADD_DEVICE = "add-device";
-    public final static String ADD_RULE = "add-rule";
+    public final static String ADD_AUTOMATION = "add-automation";
 
     public ConnectionStatus getStatus();
     public String getConnectionId();

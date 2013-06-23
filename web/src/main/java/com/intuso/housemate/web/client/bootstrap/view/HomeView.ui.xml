@@ -10,8 +10,8 @@
         <b:Column size="6" addStyleNames="panel">
             <b:Heading size="3">Devices</b:Heading>
             <h:list.ObjectNavs ui:field="deviceList"/>
-            <b:Heading size="3">Rules</b:Heading>
-            <h:list.ObjectNavs ui:field="ruleList"/>
+            <b:Heading size="3">Automations</b:Heading>
+            <h:list.ObjectNavs ui:field="automationList"/>
             <b:Heading size="3">Users</b:Heading>
             <h:list.ObjectNavs ui:field="userList"/>
         </b:Column>

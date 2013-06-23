@@ -13,10 +13,10 @@ public enum PlaceName {
     Home("#home:"),
     User("#user:"),
     Device("#device:"),
-    Rule("#rule:"),
+    Automation("#automation:"),
     Condition("#condition:"),
-    SatisfiedConsequence("#satisfiedconsequence:"),
-    UnsatisfiedConsequence("#unsatisfiedconsequence:");
+    SatisfiedTask("#satisfiedtask:"),
+    UnsatisfiedTask("#unsatisfiedtask:");
 
     private String token;
 

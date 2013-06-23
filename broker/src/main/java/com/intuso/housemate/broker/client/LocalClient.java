@@ -27,7 +27,7 @@ public class LocalClient implements PluginListener {
         root.login(new InternalConnectMethod());
         root.addType(resources.getDeviceFactory().getType());
         root.addType(resources.getConditionFactory().getType());
-        root.addType(resources.getConsequenceFactory().getType());
+        root.addType(resources.getTaskFactory().getType());
         resources.addPluginListener(LocalClient.this, true);
     }
 

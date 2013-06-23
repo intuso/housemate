@@ -2,11 +2,11 @@ package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.condition.Condition;
 import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.rule.Rule;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -43,7 +43,7 @@ public abstract class ProxyCondition<
         satisfied = (V)getWrapper(SATISFIED);
         propertyList = (PL)getWrapper(PROPERTIES);
         conditionList = (CL)getWrapper(CONDITIONS);
-        addConditionCommand = (AC)getWrapper(Rule.ADD_CONDITION);
+        addConditionCommand = (AC)getWrapper(Automation.ADD_CONDITION);
     }
 
     @Override

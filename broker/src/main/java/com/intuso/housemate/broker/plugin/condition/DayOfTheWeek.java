@@ -4,7 +4,7 @@ import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.object.real.impl.type.Day;
 import com.intuso.housemate.object.real.impl.type.DaysType;
 

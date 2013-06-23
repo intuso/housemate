@@ -1,8 +1,8 @@
 package com.intuso.housemate.api.object;
 
+import com.intuso.housemate.api.object.automation.AutomationWrappable;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.object.proxy.ProxyObject;
@@ -26,7 +26,7 @@ public class TestProxyRoot extends ProxyRootObject<
             SimpleProxyObject.User, SimpleProxyObject.List<UserWrappable, SimpleProxyObject.User>,
             SimpleProxyObject.Type, SimpleProxyObject.List<TypeWrappable<?>, SimpleProxyObject.Type>,
             SimpleProxyObject.Device, SimpleProxyObject.List<DeviceWrappable, SimpleProxyObject.Device>,
-            SimpleProxyObject.Rule, SimpleProxyObject.List<RuleWrappable, SimpleProxyObject.Rule>,
+        SimpleProxyObject.Automation, SimpleProxyObject.List<AutomationWrappable, SimpleProxyObject.Automation>,
             SimpleProxyObject.Command, TestProxyRoot> {
 
     public TestProxyRoot(ProxyResources<SimpleProxyFactory.All> resources, ProxyResources<?> subResources) {

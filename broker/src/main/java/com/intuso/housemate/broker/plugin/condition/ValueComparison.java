@@ -10,7 +10,7 @@ import com.intuso.housemate.broker.plugin.type.valuesource.ValueAvailableListene
 import com.intuso.housemate.broker.plugin.type.valuesource.ValueSource;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.utilities.listener.ListenerRegistration;

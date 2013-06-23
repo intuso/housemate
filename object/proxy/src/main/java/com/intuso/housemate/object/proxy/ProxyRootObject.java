@@ -47,7 +47,7 @@ public abstract class ProxyRootObject<
             PTL extends ProxyList<?, ?, ?, T, PTL>,
             D extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?, ?>,
             PDL extends ProxyList<?, ?, ?, D, PDL>,
-            Ru extends ProxyRule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
+            Ru extends ProxyAutomation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
             PRL extends ProxyList<?, ?, ?, Ru, PRL>,
             C extends ProxyCommand<?, ?, ?, ?, C>,
             RO extends ProxyRootObject<R, SR, U, PUL, T, PTL, D, PDL, Ru, PRL, C, RO>>
@@ -57,10 +57,10 @@ public abstract class ProxyRootObject<
     private PUL proxyConnectionList;
     private PTL proxyTypeList;
     private PDL proxyDeviceList;
-    private PRL proxyRuleList;
+    private PRL proxyAutomationList;
     private C addUserCommand;
     private C addDeviceCommand;
-    private C addRuleCommand;
+    private C addAutomationCommand;
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
@@ -142,7 +142,7 @@ public abstract class ProxyRootObject<
                             // do nothing
                         }
                     });
-                    toLoad.addAll(Lists.newArrayList(USERS, TYPES, DEVICES, RULES, ADD_USER, ADD_DEVICE, ADD_RULE));
+                    toLoad.addAll(Lists.newArrayList(USERS, TYPES, DEVICES, AUTOMATIONS, ADD_USER, ADD_DEVICE, ADD_AUTOMATION));
                     for(String name : toLoad)
                         load(name);
                 }
@@ -170,10 +170,10 @@ public abstract class ProxyRootObject<
         proxyConnectionList = (PUL)getWrapper(USERS);
         proxyTypeList = (PTL)getWrapper(TYPES);
         proxyDeviceList = (PDL)getWrapper(DEVICES);
-        proxyRuleList = (PRL)getWrapper(RULES);
+        proxyAutomationList = (PRL)getWrapper(AUTOMATIONS);
         addUserCommand = (C)getWrapper(ADD_USER);
         addDeviceCommand = (C)getWrapper(ADD_DEVICE);
-        addRuleCommand = (C)getWrapper(ADD_RULE);
+        addAutomationCommand = (C)getWrapper(ADD_AUTOMATION);
     }
 
     @Override
@@ -192,8 +192,8 @@ public abstract class ProxyRootObject<
     }
 
     @Override
-    public PRL getRules() {
-        return proxyRuleList;
+    public PRL getAutomations() {
+        return proxyAutomationList;
     }
 
     @Override
@@ -207,8 +207,8 @@ public abstract class ProxyRootObject<
     }
 
     @Override
-    public C getAddRuleCommand() {
-        return addRuleCommand;
+    public C getAddAutomationCommand() {
+        return addAutomationCommand;
     }
 
     @Override

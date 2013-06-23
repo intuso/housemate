@@ -4,13 +4,13 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
-import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealTask;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.BrokerConditionFactory;
-import com.intuso.housemate.plugin.api.BrokerConsequenceFactory;
+import com.intuso.housemate.plugin.api.BrokerTaskFactory;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
@@ -32,7 +32,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
     private final List<Constructor<? extends Comparator<?>>> comparatorConstructors = Lists.newArrayList();
     private final List<RealDeviceFactory<?>> deviceFactories = Lists.newArrayList();
     private final List<BrokerConditionFactory<?>> conditionFactories = Lists.newArrayList();
-    private final List<BrokerConsequenceFactory<?>> consequenceFactories = Lists.newArrayList();
+    private final List<BrokerTaskFactory<?>> taskFactories = Lists.newArrayList();
 
     @Override
     public final String getId() {
@@ -61,7 +61,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
         initComparators(resources);
         initDeviceFactories(resources);
         initConditionFactories(resources);
-        initConsequenceFactories(resources);
+        initTaskFactories(resources);
     }
 
     private void initInformation() throws HousemateException {
@@ -154,30 +154,30 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
         }
     }
 
-    private void initConsequenceFactories(Resources resources) throws HousemateException {
-        ConsequenceFactories consequenceFactories = getClass().getAnnotation(ConsequenceFactories.class);
-        if(consequenceFactories != null) {
-            for(Class<? extends BrokerConsequenceFactory<?>> factoryClass : consequenceFactories.value())
+    private void initTaskFactories(Resources resources) throws HousemateException {
+        TaskFactories taskFactories = getClass().getAnnotation(TaskFactories.class);
+        if(taskFactories != null) {
+            for(Class<? extends BrokerTaskFactory<?>> factoryClass : taskFactories.value())
                 try {
-                    this.consequenceFactories.add(factoryClass.newInstance());
+                    this.taskFactories.add(factoryClass.newInstance());
                 } catch(Exception e) {
-                    throw new HousemateException("Failed to create consequence factory");
+                    throw new HousemateException("Failed to create task factory");
                 }
         }
-        Consequences consequences = getClass().getAnnotation(Consequences.class);
-        for(Class<? extends BrokerRealConsequence> consequenceClass : consequences.value()) {
-            FactoryInformation information = consequenceClass.getAnnotation(FactoryInformation.class);
+        Tasks tasks = getClass().getAnnotation(Tasks.class);
+        for(Class<? extends BrokerRealTask> taskClass : tasks.value()) {
+            FactoryInformation information = taskClass.getAnnotation(FactoryInformation.class);
             if(information == null)
-                throw new HousemateException("Consequence class " + consequenceClass.getName() + " has no "
+                throw new HousemateException("Task class " + taskClass.getName() + " has no "
                         + FactoryInformation.class.getName() + " annotation");
-            Constructor<? extends BrokerRealConsequence> constructor;
+            Constructor<? extends BrokerRealTask> constructor;
             try {
-                constructor = consequenceClass.getConstructor(
+                constructor = taskClass.getConstructor(
                         BrokerRealResources.class, String.class, String.class, String.class);
             } catch(NoSuchMethodException e) {
-                throw new HousemateException("Consequence class " + consequenceClass.getName() + " does not have the correct constructor");
+                throw new HousemateException("Task class " + taskClass.getName() + " does not have the correct constructor");
             }
-            this.consequenceFactories.add(new SimpleConsequenceFactory(information, constructor));
+            this.taskFactories.add(new SimpleTaskFactory(information, constructor));
         }
     }
 
@@ -220,7 +220,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
     }
 
     @Override
-    public List<BrokerConsequenceFactory<?>> getConsequenceFactories() {
-        return consequenceFactories;
+    public List<BrokerTaskFactory<?>> getTaskFactories() {
+        return taskFactories;
     }
 }

@@ -1,6 +1,6 @@
 package com.intuso.housemate.annotations.plugin;
 
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -2,29 +2,29 @@ package com.intuso.housemate.broker.storage;
 
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.automation.Automation;
+import com.intuso.housemate.api.object.automation.AutomationWrappable;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.condition.Condition;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.consequence.Consequence;
-import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
+import com.intuso.housemate.api.object.task.Task;
+import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.rule.Rule;
-import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
+import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
 import com.intuso.housemate.object.broker.real.BrokerRealList;
-import com.intuso.housemate.object.broker.real.BrokerRealRule;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
-import com.intuso.housemate.object.broker.real.consequence.BrokerRealConsequence;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealTask;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
@@ -48,9 +48,9 @@ public class BrokerObjectStorage implements Storage {
     private final Log log;
     private final BrokerGeneralResources resources;
     private final WatchDeviceListListener watchDeviceListListener = new WatchDeviceListListener();
-    private final WatchRuleListListener watchRuleListListener = new WatchRuleListListener();
+    private final WatchAutomationListListener watchAutomationListListener = new WatchAutomationListListener();
     private final WatchConditionListListener watchConditionListListener = new WatchConditionListListener();
-    private final WatchConsequenceListListener watchConsequenceListListener = new WatchConsequenceListListener();
+    private final WatchTaskListListener watchTaskListListener = new WatchTaskListListener();
     private final WatchPropertyListListener watchPropertyListListener = new WatchPropertyListListener();
     private final WatchValueListener watchValueListener = new WatchValueListener();
 
@@ -64,7 +64,7 @@ public class BrokerObjectStorage implements Storage {
         loadUsers();
         loadDevices(new String[]{"", Root.DEVICES}, resources.getRealResources().getLifecycleHandler().createAddDeviceCommand(
                 resources.getClient().getRoot().getDevices()));
-        loadRules();
+        loadAutomations();
     }
 
     private void loadUsers() {
@@ -123,34 +123,34 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    private void loadRules() {
-        BrokerRealList<RuleWrappable, BrokerRealRule> realRules = resources.getRealResources().getRoot().getRules();
+    private void loadAutomations() {
+        BrokerRealList<AutomationWrappable, BrokerRealAutomation> realAutomations = resources.getRealResources().getRoot().getAutomations();
         try {
-            for(String id : storage.getValuesKeys(realRules.getPath())) {
+            for(String id : storage.getValuesKeys(realAutomations.getPath())) {
                 try {
-                    TypeInstances details = getValues(realRules.getPath(), id);
-                    BrokerRealRule rule = new BrokerRealRule(resources.getRealResources(), details.get("id").getValue(),
+                    TypeInstances details = getValues(realAutomations.getPath(), id);
+                    BrokerRealAutomation automation = new BrokerRealAutomation(resources.getRealResources(), details.get("id").getValue(),
                             details.get("name").getValue(), details.get("description").getValue());
-                    rule.init(realRules);
-                    loadRuleInfo(rule);
-                    realRules.add(rule);
+                    automation.init(realAutomations);
+                    loadAutomationInfo(automation);
+                    realAutomations.add(automation);
                 } catch(HousemateException e) {
-                    log.e("Failed to load rule");
+                    log.e("Failed to load automation");
                     log.st(e);
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved rules " + Arrays.toString(realRules.getPath()));
+            log.w("No details found for saved automations " + Arrays.toString(realAutomations.getPath()));
         } catch(HousemateException e) {
-            log.e("Failed to get names of existing rules");
+            log.e("Failed to get names of existing automations");
             log.st(e);
         }
     }
 
-    private void loadRuleInfo(BrokerRealRule rule) throws HousemateException {
-        loadConditions(rule.getConditions());
-        loadConsequences(rule.getSatisfiedConsequences());
-        loadConsequences(rule.getUnsatisfiedConsequences());
+    private void loadAutomationInfo(BrokerRealAutomation automation) throws HousemateException {
+        loadConditions(automation.getConditions());
+        loadTasks(automation.getSatisfiedTasks());
+        loadTasks(automation.getUnsatisfiedTasks());
     }
 
     private void loadConditions(BrokerRealList<ConditionWrappable, BrokerRealCondition> conditions) {
@@ -174,21 +174,21 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    private void loadConsequences(BrokerRealList<ConsequenceWrappable, BrokerRealConsequence> consequences) {
+    private void loadTasks(BrokerRealList<TaskWrappable, BrokerRealTask> tasks) {
         try {
-            for(String consequenceName : storage.getValuesKeys(consequences.getPath())) {
+            for(String taskName : storage.getValuesKeys(tasks.getPath())) {
                 try {
-                    TypeInstances details = storage.getValues(consequences.getPath(), consequenceName);
-                    consequences.add(resources.getConsequenceFactory().createConsequence(details));
+                    TypeInstances details = storage.getValues(tasks.getPath(), taskName);
+                    tasks.add(resources.getTaskFactory().createTask(details));
                 } catch(HousemateException e) {
-                    log.e("Failed to load consequence");
+                    log.e("Failed to load task");
                     log.st(e);
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved consequences " + Arrays.toString(consequences.getPath()));
+            log.w("No details found for saved tasks " + Arrays.toString(tasks.getPath()));
         } catch(HousemateException e) {
-            log.e("Failed to get device names of existing consequences");
+            log.e("Failed to get device names of existing tasks");
             log.st(e);
         }
     }
@@ -197,10 +197,10 @@ public class BrokerObjectStorage implements Storage {
         devices.addObjectListener(watchDeviceListListener, true);
     }
 
-    public void watchRules(List<? extends Rule<?, ?, ?, ?, ?, ?, ?,
-            ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-            ? extends Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> rules) {
-        rules.addObjectListener(watchRuleListListener, true);
+    public void watchAutomations(List<? extends Automation<?, ?, ?, ?, ?, ?, ?,
+                ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+                ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> automations) {
+        automations.addObjectListener(watchAutomationListListener, true);
     }
 
     @Override
@@ -265,30 +265,30 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    private class WatchRuleListListener implements ListListener<Rule<?, ?, ?, ?, ?, ?, ?,
-            ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-            ? extends Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> {
+    private class WatchAutomationListListener implements ListListener<Automation<?, ?, ?, ?, ?, ?, ?,
+                ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+                ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> {
 
-        private final Map<Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> runningListeners = Maps.newHashMap();
-        private final Map<Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> conditionListeners = Maps.newHashMap();
-        private final Map<Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> satisfiedConsequenceListeners = Maps.newHashMap();
-        private final Map<Rule<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> unsatisfiedConsequenceListeners = Maps.newHashMap();
+        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> runningListeners = Maps.newHashMap();
+        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> conditionListeners = Maps.newHashMap();
+        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> satisfiedTaskListeners = Maps.newHashMap();
+        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> unsatisfiedTaskListeners = Maps.newHashMap();
 
         @Override
-        public void elementAdded(Rule<?, ?, ?, ?, ?, ?, ?,
-                ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-                ? extends Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> rule) {
-            runningListeners.put(rule, rule.getRunningValue().addObjectListener(watchValueListener));
-            conditionListeners.put(rule, rule.getConditions().addObjectListener(watchConditionListListener, true));
-            satisfiedConsequenceListeners.put(rule, rule.getSatisfiedConsequences().addObjectListener(watchConsequenceListListener, true));
-            unsatisfiedConsequenceListeners.put(rule, rule.getUnsatisfiedConsequences().addObjectListener(watchConsequenceListListener, true));
+        public void elementAdded(Automation<?, ?, ?, ?, ?, ?, ?,
+                        ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+                        ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
+            runningListeners.put(automation, automation.getRunningValue().addObjectListener(watchValueListener));
+            conditionListeners.put(automation, automation.getConditions().addObjectListener(watchConditionListListener, true));
+            satisfiedTaskListeners.put(automation, automation.getSatisfiedTasks().addObjectListener(watchTaskListListener, true));
+            unsatisfiedTaskListeners.put(automation, automation.getUnsatisfiedTasks().addObjectListener(watchTaskListListener, true));
             try {
-                TypeInstance value = storage.getValue(rule.getRunningValue().getPath());
+                TypeInstance value = storage.getValue(automation.getRunningValue().getPath());
                 if(BooleanType.SERIALISER.deserialise(value))
-                    rule.getStartCommand().perform(new TypeInstances(),
-                            new CommandListener("Start rule \"" + rule.getId() + "\""));
+                    automation.getStartCommand().perform(new TypeInstances(),
+                            new CommandListener("Start automation \"" + automation.getId() + "\""));
             } catch(DetailsNotFoundException e) {
-                log.w("No details found for whether the device was previously running" + Arrays.toString(rule.getPath()));
+                log.w("No details found for whether the device was previously running" + Arrays.toString(automation.getPath()));
             } catch(HousemateException e) {
                 log.e("Failed to check value for whether the device was previously running");
                 log.st(e);
@@ -296,19 +296,19 @@ public class BrokerObjectStorage implements Storage {
         }
 
         @Override
-        public void elementRemoved(Rule<?, ?, ?, ?, ?, ?, ?,
-                ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-                ? extends Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> rule) {
-            ListenerRegistration registration = runningListeners.remove(rule);
+        public void elementRemoved(Automation<?, ?, ?, ?, ?, ?, ?,
+                        ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+                        ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
+            ListenerRegistration registration = runningListeners.remove(automation);
             if(registration != null)
                 registration.removeListener();
-            registration = conditionListeners.remove(rule);
+            registration = conditionListeners.remove(automation);
             if(registration != null)
                 registration.removeListener();
-            registration = satisfiedConsequenceListeners.remove(rule);
+            registration = satisfiedTaskListeners.remove(automation);
             if(registration != null)
                 registration.removeListener();
-            registration = unsatisfiedConsequenceListeners.remove(rule);
+            registration = unsatisfiedTaskListeners.remove(automation);
             if(registration != null)
                 registration.removeListener();
         }
@@ -336,18 +336,18 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    private class WatchConsequenceListListener implements ListListener<Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>> {
+    private class WatchTaskListListener implements ListListener<Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>> {
 
-        private final Map<Consequence<?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
+        private final Map<Task<?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
 
         @Override
-        public void elementAdded(Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?> consequence) {
-            propertyListeners.put(consequence, consequence.getProperties().addObjectListener(watchPropertyListListener, true));
+        public void elementAdded(Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?> task) {
+            propertyListeners.put(task, task.getProperties().addObjectListener(watchPropertyListListener, true));
         }
 
         @Override
-        public void elementRemoved(Consequence<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?> consequence) {
-            ListenerRegistration registration = propertyListeners.remove(consequence);
+        public void elementRemoved(Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?> task) {
+            ListenerRegistration registration = propertyListeners.remove(task);
             if(registration != null)
                 registration.removeListener();
         }

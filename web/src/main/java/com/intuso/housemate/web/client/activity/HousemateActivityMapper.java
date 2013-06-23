@@ -4,12 +4,12 @@ import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.place.shared.Place;
 import com.intuso.housemate.web.client.place.AccountPlace;
+import com.intuso.housemate.web.client.place.AutomationPlace;
 import com.intuso.housemate.web.client.place.ConditionPlace;
 import com.intuso.housemate.web.client.place.DevicePlace;
 import com.intuso.housemate.web.client.place.HomePlace;
-import com.intuso.housemate.web.client.place.RulePlace;
-import com.intuso.housemate.web.client.place.SatisfiedConsequencePlace;
-import com.intuso.housemate.web.client.place.UnsatisfiedConsequencePlace;
+import com.intuso.housemate.web.client.place.SatisfiedTaskPlace;
+import com.intuso.housemate.web.client.place.UnsatisfiedTaskPlace;
 import com.intuso.housemate.web.client.place.UserPlace;
 
 /**
@@ -26,12 +26,12 @@ public class HousemateActivityMapper implements ActivityMapper {
             return new DeviceActivity((DevicePlace)place);
         else if(place instanceof ConditionPlace)
             return new ConditionActivity((ConditionPlace)place);
-        else if(place instanceof SatisfiedConsequencePlace)
-            return new SatisfiedConsequenceActivity((SatisfiedConsequencePlace)place);
-        else if(place instanceof UnsatisfiedConsequencePlace)
-            return new UnsatisfiedConsequenceActivity((UnsatisfiedConsequencePlace)place);
-        else if(place instanceof RulePlace)
-            return new RuleActivity((RulePlace)place);
+        else if(place instanceof SatisfiedTaskPlace)
+            return new SatisfiedTaskActivity((SatisfiedTaskPlace)place);
+        else if(place instanceof UnsatisfiedTaskPlace)
+            return new UnsatisfiedTaskActivity((UnsatisfiedTaskPlace)place);
+        else if(place instanceof AutomationPlace)
+            return new AutomationActivity((AutomationPlace)place);
         else if(place instanceof AccountPlace)
             return new AccountActivity((AccountPlace)place);
         else if(place instanceof UserPlace)

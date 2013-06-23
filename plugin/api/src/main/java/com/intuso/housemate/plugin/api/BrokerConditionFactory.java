@@ -1,7 +1,7 @@
 package com.intuso.housemate.plugin.api;
 
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.condition.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.api.HousemateException;
 
 /**

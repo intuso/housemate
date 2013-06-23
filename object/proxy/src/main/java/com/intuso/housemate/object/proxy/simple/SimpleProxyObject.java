@@ -3,23 +3,24 @@ package com.intuso.housemate.object.proxy.simple;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.automation.AutomationWrappable;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.consequence.ConsequenceWrappable;
+import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.rule.RuleWrappable;
 import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.api.object.value.ValueWrappable;
 import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
 import com.intuso.housemate.object.proxy.ProxyArgument;
+import com.intuso.housemate.object.proxy.ProxyAutomation;
 import com.intuso.housemate.object.proxy.ProxyCommand;
 import com.intuso.housemate.object.proxy.ProxyCondition;
-import com.intuso.housemate.object.proxy.ProxyConsequence;
+import com.intuso.housemate.object.proxy.ProxyTask;
 import com.intuso.housemate.object.proxy.ProxyDevice;
 import com.intuso.housemate.object.proxy.ProxyList;
 import com.intuso.housemate.object.proxy.ProxyObject;
@@ -27,7 +28,6 @@ import com.intuso.housemate.object.proxy.ProxyOption;
 import com.intuso.housemate.object.proxy.ProxyProperty;
 import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.ProxyRootObject;
-import com.intuso.housemate.object.proxy.ProxyRule;
 import com.intuso.housemate.object.proxy.ProxySubType;
 import com.intuso.housemate.object.proxy.ProxyType;
 import com.intuso.housemate.object.proxy.ProxyUser;
@@ -48,7 +48,7 @@ public class SimpleProxyObject {
                     User, List<UserWrappable, User>,
                     Type, List<TypeWrappable<?>, Type>,
                     Device, List<DeviceWrappable, Device>,
-                    Rule, List<RuleWrappable, Rule>,
+            Automation, List<AutomationWrappable, Automation>,
                     Command, Root> {
         public Root(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                     ProxyResources<?> subResources) {
@@ -88,14 +88,14 @@ public class SimpleProxyObject {
         }
     }
 
-    public final static class Consequence extends ProxyConsequence<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-                ProxyResources<?>,
-                Value,
-                List<PropertyWrappable, Property>,
-                Consequence> {
-        public Consequence(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                           ProxyResources<?> subResources,
-                           ConsequenceWrappable wrappable) {
+    public final static class Task extends ProxyTask<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+                    ProxyResources<?>,
+                    Value,
+                    List<PropertyWrappable, Property>,
+            Task> {
+        public Task(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+                        ProxyResources<?> subResources,
+                        TaskWrappable wrappable) {
             super(resources, subResources, wrappable);
         }
     }
@@ -159,17 +159,17 @@ public class SimpleProxyObject {
         }
     }
 
-    public final static class Rule extends ProxyRule<
-                ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-                ProxyResources<?>,
-                Property,
-                Command,
-                Value,
-                Condition,
-                List<ConditionWrappable, Condition>, Consequence, List<ConsequenceWrappable, Consequence>, Rule> {
-        public Rule(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                    ProxyResources<?> subResources,
-                    RuleWrappable wrappable) {
+    public final static class Automation extends ProxyAutomation<
+                    ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+                    ProxyResources<?>,
+                    Property,
+                    Command,
+                    Value,
+                    Condition,
+                    List<ConditionWrappable, Condition>, Task, List<TaskWrappable, Task>, Automation> {
+        public Automation(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+                          ProxyResources<?> subResources,
+                          AutomationWrappable wrappable) {
             super(resources, subResources, wrappable);
         }
     }

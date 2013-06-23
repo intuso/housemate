@@ -8,7 +8,7 @@ import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.client.LocalClient;
 import com.intuso.housemate.broker.comms.MainRouter;
 import com.intuso.housemate.broker.factory.ConditionFactory;
-import com.intuso.housemate.broker.factory.ConsequenceFactory;
+import com.intuso.housemate.broker.factory.TaskFactory;
 import com.intuso.housemate.broker.factory.DeviceFactory;
 import com.intuso.housemate.broker.object.bridge.BrokerBridgeResources;
 import com.intuso.housemate.broker.storage.BrokerObjectStorage;
@@ -45,7 +45,7 @@ public class BrokerGeneralResources implements Resources {
     private DeviceFactory deviceFactory;
     private LifecycleHandler lifecycleHandler;
     private ConditionFactory conditionFactory;
-    private ConsequenceFactory consequenceFactory;
+    private TaskFactory taskFactory;
     private List<PluginDescriptor> plugins;
     private Listeners<PluginListener> pluginListeners;
     private BrokerRealResources realResources;
@@ -135,12 +135,12 @@ public class BrokerGeneralResources implements Resources {
         this.conditionFactory = conditionFactory;
     }
 
-    public ConsequenceFactory getConsequenceFactory() {
-        return consequenceFactory;
+    public TaskFactory getTaskFactory() {
+        return taskFactory;
     }
 
-    public void setConsequenceFactory(ConsequenceFactory consequenceFactory) {
-        this.consequenceFactory = consequenceFactory;
+    public void setTaskFactory(TaskFactory taskFactory) {
+        this.taskFactory = taskFactory;
     }
 
     public void addPlugin(PluginDescriptor plugin) {

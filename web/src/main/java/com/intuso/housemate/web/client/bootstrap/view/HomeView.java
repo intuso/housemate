@@ -13,13 +13,13 @@ import com.intuso.housemate.web.client.bootstrap.widget.device.DeviceShortcut;
 import com.intuso.housemate.web.client.bootstrap.widget.list.ObjectNavs;
 import com.intuso.housemate.web.client.event.ObjectSelectedEvent;
 import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
+import com.intuso.housemate.web.client.object.GWTProxyAutomation;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
 import com.intuso.housemate.web.client.object.GWTProxyRootObject;
-import com.intuso.housemate.web.client.object.GWTProxyRule;
 import com.intuso.housemate.web.client.object.GWTProxyUser;
+import com.intuso.housemate.web.client.place.AutomationPlace;
 import com.intuso.housemate.web.client.place.DevicePlace;
 import com.intuso.housemate.web.client.place.HomePlace;
-import com.intuso.housemate.web.client.place.RulePlace;
 import com.intuso.housemate.web.client.place.UserPlace;
 
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class HomeView extends Composite implements com.intuso.housemate.web.clie
     @UiField
     public ObjectNavs<GWTProxyDevice> deviceList;
     @UiField
-    public ObjectNavs<GWTProxyRule> ruleList;
+    public ObjectNavs<GWTProxyAutomation> automationList;
     @UiField
     public ObjectNavs<GWTProxyUser> userList;
 
@@ -64,14 +64,14 @@ public class HomeView extends Composite implements com.intuso.housemate.web.clie
                     Housemate.FACTORY.getPlaceController().goTo(new DevicePlace());
             }
         });
-        ruleList.setList(root.getRules(), root.getAddRuleCommand());
-        ruleList.addObjectSelectedHandler(new ObjectSelectedHandler() {
+        automationList.setList(root.getAutomations(), root.getAddAutomationCommand());
+        automationList.addObjectSelectedHandler(new ObjectSelectedHandler() {
             @Override
             public void objectSelected(ObjectSelectedEvent event) {
                 if(event.getObject() != null)
-                    Housemate.FACTORY.getPlaceController().goTo(new RulePlace(event.getObject().getId()));
+                    Housemate.FACTORY.getPlaceController().goTo(new AutomationPlace(event.getObject().getId()));
                 else
-                    Housemate.FACTORY.getPlaceController().goTo(new RulePlace());
+                    Housemate.FACTORY.getPlaceController().goTo(new AutomationPlace());
             }
         });
         userList.setList(root.getUsers(), root.getAddUserCommand());

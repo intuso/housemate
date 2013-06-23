@@ -15,7 +15,7 @@ import java.util.Map;
  * Time: 22:52
  * To change this template use File | Settings | File Templates.
  */
-public class ConditionPlace extends RulePlace {
+public class ConditionPlace extends AutomationPlace {
 
     protected enum Field implements HousematePlace.TokenisableField {
         ConditionNames {
@@ -32,19 +32,19 @@ public class ConditionPlace extends RulePlace {
         }
     }
 
-    public static Breadcrumb getBreadcrumb(String ruleName) {
+    public static Breadcrumb getBreadcrumb(String automationName) {
         return new Breadcrumb("Conditions", PlaceName.Condition.getToken()
-                + RulePlace.Field.RuleName.getFieldName() + FIELD_VALUE_SEPARATOR + ruleName);
+                + AutomationPlace.Field.AutomationName.getFieldName() + FIELD_VALUE_SEPARATOR + automationName);
     }
 
-    public static List<Breadcrumb> getBreadcrumbs(String ruleName, List<String> conditionNames) {
+    public static List<Breadcrumb> getBreadcrumbs(String automationName, List<String> conditionNames) {
         List<Breadcrumb> result = new ArrayList<Breadcrumb>(conditionNames.size());
         List<String> previousConditionNames = new ArrayList<String>(conditionNames.size());
         for(int depth = 0; depth < conditionNames.size(); depth++) {
             String conditionName = conditionNames.get(depth);
             previousConditionNames.add(conditionName);
             result.add(new Breadcrumb(conditionName, PlaceName.Condition.getToken()
-                    + RulePlace.Field.RuleName.getFieldName() + FIELD_VALUE_SEPARATOR + ruleName + FIELD_SEPARATOR
+                    + AutomationPlace.Field.AutomationName.getFieldName() + FIELD_VALUE_SEPARATOR + automationName + FIELD_SEPARATOR
                     + Field.Depth.getFieldName() + FIELD_VALUE_SEPARATOR + depth + FIELD_SEPARATOR
                     + Field.ConditionNames.getFieldName() + FIELD_VALUE_SEPARATOR + namesToString(previousConditionNames)));
         }
@@ -54,17 +54,17 @@ public class ConditionPlace extends RulePlace {
     private int depth = 0;
     private List<String> conditionNames;
 
-    public ConditionPlace(String ruleName) {
-        super(ruleName);
-        breadcrumbList.add(getBreadcrumb(ruleName));
+    public ConditionPlace(String automationName) {
+        super(automationName);
+        breadcrumbList.add(getBreadcrumb(automationName));
     }
 
-    public ConditionPlace(String ruleName, int depth, List<String> conditionNames) {
-        super(ruleName);
+    public ConditionPlace(String automationName, int depth, List<String> conditionNames) {
+        super(automationName);
         this.depth = depth;
         this.conditionNames = conditionNames;
-        breadcrumbList.add(getBreadcrumb(ruleName));
-        breadcrumbList.addAll(getBreadcrumbs(ruleName, conditionNames));
+        breadcrumbList.add(getBreadcrumb(automationName));
+        breadcrumbList.addAll(getBreadcrumbs(automationName, conditionNames));
     }
 
     public int getDepth() {
@@ -83,14 +83,14 @@ public class ConditionPlace extends RulePlace {
             Map<String, String> fields = HousematePlace.getFields(token);
             if(fields.get(Field.Depth.getFieldName()) != null
                     && fields.get(Field.ConditionNames.getFieldName()) != null
-                    && fields.get(RulePlace.Field.RuleName.getFieldName()) != null)
+                    && fields.get(AutomationPlace.Field.AutomationName.getFieldName()) != null)
                 return new ConditionPlace(
-                        fields.get(RulePlace.Field.RuleName.getFieldName()),
+                        fields.get(AutomationPlace.Field.AutomationName.getFieldName()),
                         Integer.parseInt(fields.get(Field.Depth.getFieldName())),
                         stringToNames(fields.get(Field.ConditionNames.getFieldName())));
-            else if(fields.get(RulePlace.Field.RuleName.getFieldName()) != null)
+            else if(fields.get(AutomationPlace.Field.AutomationName.getFieldName()) != null)
                 return new ConditionPlace(
-                        fields.get(RulePlace.Field.RuleName.getFieldName()));
+                        fields.get(AutomationPlace.Field.AutomationName.getFieldName()));
             else
                 return null;
         }
@@ -98,8 +98,8 @@ public class ConditionPlace extends RulePlace {
         @Override
         public String getToken(ConditionPlace conditionPlace) {
             Map<TokenisableField, String> fields = new HashMap<TokenisableField, String>();
-            if(conditionPlace.getRuleName() != null)
-                fields.put(RulePlace.Field.RuleName, conditionPlace.getRuleName());
+            if(conditionPlace.getAutomationName() != null)
+                fields.put(AutomationPlace.Field.AutomationName, conditionPlace.getAutomationName());
             fields.put(Field.Depth, Integer.toString(conditionPlace.getDepth()));
             if(conditionPlace.getConditionNames() != null) {
                 fields.put(Field.ConditionNames, namesToString(conditionPlace.getConditionNames()));
