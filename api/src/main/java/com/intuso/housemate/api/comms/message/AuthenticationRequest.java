@@ -2,7 +2,7 @@ package com.intuso.housemate.api.comms.message;
 
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.api.comms.ConnectionType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,17 +13,17 @@ import com.intuso.housemate.api.object.connection.ClientWrappable;
  */
 public final class AuthenticationRequest implements Message.Payload {
 
-    private ClientWrappable.Type type;
+    private ConnectionType type;
     private AuthenticationMethod method;
 
     private AuthenticationRequest() {}
 
-    public AuthenticationRequest(ClientWrappable.Type type, AuthenticationMethod method) {
+    public AuthenticationRequest(ConnectionType type, AuthenticationMethod method) {
         this.type = type;
         this.method = method;
     }
 
-    public ClientWrappable.Type getType() {
+    public ConnectionType getType() {
         return type;
     }
 

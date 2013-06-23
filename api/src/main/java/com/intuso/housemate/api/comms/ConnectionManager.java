@@ -7,7 +7,6 @@ import com.intuso.housemate.api.comms.message.AuthenticationRequest;
 import com.intuso.housemate.api.comms.message.AuthenticationResponse;
 import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.comms.message.ReconnectResponse;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -27,13 +26,13 @@ public class ConnectionManager {
     private final String[] path;
     private final String connectMessageType;
     private final String disconnectMessageType;
-    private final ClientWrappable.Type clientType;
+    private final ConnectionType clientType;
 
     private String brokerInstanceId = null;
     private String connectionId = null;
     private ConnectionStatus status = null;
 
-    public ConnectionManager(Sender sender, ClientWrappable.Type clientType, ConnectionStatus initialStatus) {
+    public ConnectionManager(Sender sender, ConnectionType clientType, ConnectionStatus initialStatus) {
         this.sender = sender;
         this.path = new String[] {""};
         this.connectMessageType = Root.CONNECTION_REQUEST;
@@ -103,7 +102,7 @@ public class ConnectionManager {
             case Authenticated:
                 if(connectionId != null) {
                     sender.sendMessage(new Message<AuthenticationRequest>(path, connectMessageType,
-                            new AuthenticationRequest(ClientWrappable.Type.Proxy, new Reconnect(connectionId))));
+                            new AuthenticationRequest(ConnectionType.Proxy, new Reconnect(connectionId))));
                     status = ConnectionStatus.Authenticating;
                     return;
                 } else

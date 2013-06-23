@@ -9,7 +9,7 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
-import com.intuso.housemate.object.real.RealArgument;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
@@ -61,7 +61,7 @@ public class CommandTest {
     public void addLists() throws HousemateException {
         TestEnvironment.TEST_INSTANCE.getProxyRoot().addWrapper(proxyList);
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
-        realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-command", "My Command", "description", new ArrayList<RealArgument<?>>()) {
+        realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-command", "My Command", "description", new ArrayList<RealParameter<?>>()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 //To change body of implemented methods use File | Settings | File Templates.
@@ -79,7 +79,7 @@ public class CommandTest {
     @Test
     public void testPerformProxyFunction() throws HousemateException {
         final AtomicBoolean called = new AtomicBoolean(false);
-        RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-other-command", "My Other Command", "description", new ArrayList<RealArgument<?>>()) {
+        RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-other-command", "My Other Command", "description", new ArrayList<RealParameter<?>>()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 called.set(true);
@@ -92,22 +92,22 @@ public class CommandTest {
     }
 
     @Test
-    public void testArgument() throws HousemateException {
+    public void testParameter() throws HousemateException {
         final AtomicBoolean correctParam = new AtomicBoolean(false);
         RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-other-command", "My Other Command", "description",
-                Arrays.<RealArgument<?>>asList(IntegerType.createArgument(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-argument", "My Argument", "description"))) {
+                Arrays.<RealParameter<?>>asList(IntegerType.createParameter(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-parameter", "My Parameter", "description"))) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
-                correctParam.set(values.get("my-argument") != null
-                        && values.get("my-argument").getValue() != null
-                        && values.get("my-argument").getValue().equals("1234"));
+                correctParam.set(values.get("my-parameter") != null
+                        && values.get("my-parameter").getValue() != null
+                        && values.get("my-parameter").getValue().equals("1234"));
             }
         };
         realList.add(realCommand);
         SimpleProxyObject.Command proxyCommand = proxyList.get("my-other-command");
         proxyCommand.perform(new TypeInstances() {
             {
-                put("my-argument", new TypeInstance("1234"));
+                put("my-parameter", new TypeInstance("1234"));
             }
         }, EMPTY_FUNCTION_LISTENER);
         assertEquals(true, correctParam.get());

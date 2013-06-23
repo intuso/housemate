@@ -2,7 +2,7 @@ package com.intuso.housemate.web.client.object;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.object.proxy.ProxyCommand;
 import com.intuso.housemate.web.client.GWTResources;
 
@@ -14,11 +14,11 @@ import com.intuso.housemate.web.client.GWTResources;
  * To change this template use File | Settings | File Templates.
  */
 public class GWTProxyCommand extends ProxyCommand<
-            GWTResources<GWTProxyFactory.List<ArgumentWrappable, GWTProxyArgument>>,
-            GWTResources<? extends HousemateObjectFactory<GWTResources<?>, ArgumentWrappable, GWTProxyArgument>>,
-            GWTProxyArgument, GWTProxyList<ArgumentWrappable, GWTProxyArgument>, GWTProxyCommand> {
-    public GWTProxyCommand(GWTResources<GWTProxyFactory.List<ArgumentWrappable, GWTProxyArgument>> resources,
-                           GWTResources<GWTProxyFactory.Argument> subResources,
+            GWTResources<GWTProxyFactory.List<ParameterWrappable, GWTProxyParameter>>,
+            GWTResources<? extends HousemateObjectFactory<GWTResources<?>, ParameterWrappable, GWTProxyParameter>>,
+        GWTProxyParameter, GWTProxyList<ParameterWrappable, GWTProxyParameter>, GWTProxyCommand> {
+    public GWTProxyCommand(GWTResources<GWTProxyFactory.List<ParameterWrappable, GWTProxyParameter>> resources,
+                           GWTResources<GWTProxyFactory.Parameter> subResources,
                            CommandWrappable wrappable) {
         super(resources, subResources, wrappable);
     }

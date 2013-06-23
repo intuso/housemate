@@ -1,4 +1,4 @@
-package com.intuso.housemate.api.object.argument;
+package com.intuso.housemate.api.object.parameter;
 
 import com.intuso.housemate.api.object.list.List;
 
@@ -9,6 +9,6 @@ import com.intuso.housemate.api.object.list.List;
  * Time: 22:38
  * To change this template use File | Settings | File Templates.
  */
-public interface HasArguments<L extends List<? extends Argument<?>>> {
-    public L getArguments();
+public interface HasParameters<L extends List<? extends Parameter<?>>> {
+    public L getParameters();
 }

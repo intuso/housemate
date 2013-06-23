@@ -3,7 +3,7 @@ package com.intuso.housemate.annotations.processor;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.real.RealArgument;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealResources;
 
@@ -22,19 +22,19 @@ public class CommandImpl extends RealCommand {
 
     private final Method method;
     private final Object instance;
-    private final ArgumentConverter argumentConverter;
+    private final ParameterConverter parameterConverter;
 
-    protected CommandImpl(RealResources resources, String id, String name, String description, List<RealArgument<?>> arguments, Method method, Object instance) {
-        super(resources, id, name, description, arguments);
+    protected CommandImpl(RealResources resources, String id, String name, String description, List<RealParameter<?>> parameters, Method method, Object instance) {
+        super(resources, id, name, description, parameters);
         this.method = method;
         this.instance = instance;
-        argumentConverter = new ArgumentConverter(arguments);
+        parameterConverter = new ParameterConverter(parameters);
     }
 
     @Override
     public void perform(TypeInstances values) throws HousemateException {
         try {
-            method.invoke(instance, argumentConverter.convert(values));
+            method.invoke(instance, parameterConverter.convert(values));
         } catch(InvocationTargetException e) {
             throw new HousemateException("Failed to perform command", e);
         } catch(IllegalAccessException e) {
@@ -42,22 +42,22 @@ public class CommandImpl extends RealCommand {
         }
     }
 
-    private final class ArgumentConverter {
+    private final class ParameterConverter {
 
-        private final List<RealArgument<?>> arguments;
+        private final List<RealParameter<?>> parameters;
 
-        private ArgumentConverter(List<RealArgument<?>> arguments) {
-            this.arguments = arguments;
+        private ParameterConverter(List<RealParameter<?>> parameters) {
+            this.parameters = parameters;
         }
 
         public Object[] convert(TypeInstances values) {
-            Object[] result = new Object[arguments.size()];
+            Object[] result = new Object[parameters.size()];
             for(int i = 0; i < result.length; i++) {
-                TypeInstance value = values.get(arguments.get(i).getId());
+                TypeInstance value = values.get(parameters.get(i).getId());
                 if(value == null)
                     result[i] = null;
                 else
-                    result[i] = arguments.get(i).getType().deserialise(value);
+                    result[i] = parameters.get(i).getType().deserialise(value);
             }
             return result;
         }

@@ -12,7 +12,7 @@ import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.AuthenticationResponse;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.RootWrappable;
@@ -46,7 +46,7 @@ public class RealRootObject
         super(resources, new RootWrappable());
 
         routerRegistration = resources.getRouter().registerReceiver(this);
-        connectionManager = new ConnectionManager(routerRegistration, ClientWrappable.Type.Real, ConnectionStatus.Unauthenticated);
+        connectionManager = new ConnectionManager(routerRegistration, ConnectionType.Real, ConnectionStatus.Unauthenticated);
 
         types = new RealList<TypeWrappable<?>, RealType<?, ?, ?>>(resources, TYPES, TYPES, "Defined types");
         devices = new RealList<DeviceWrappable, RealDevice>(resources, DEVICES, DEVICES, "Defined devices");

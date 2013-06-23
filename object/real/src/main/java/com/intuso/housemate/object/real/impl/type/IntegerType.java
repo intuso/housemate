@@ -3,7 +3,7 @@ package com.intuso.housemate.object.real.impl.type;
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.object.real.RealArgument;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
@@ -41,7 +41,7 @@ public class IntegerType extends RealSimpleType<Integer> {
         return new RealProperty<Integer>(resources, id, name, description, new IntegerType(resources), value);
     }
 
-    public static RealArgument<Integer> createArgument(RealResources resources, String id, String name, String description) {
-        return new RealArgument<Integer>(resources, id, name, description, new IntegerType(resources));
+    public static RealParameter<Integer> createParameter(RealResources resources, String id, String name, String description) {
+        return new RealParameter<Integer>(resources, id, name, description, new IntegerType(resources));
     }
 }

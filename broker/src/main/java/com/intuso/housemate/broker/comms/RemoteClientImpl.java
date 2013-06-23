@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -23,14 +23,14 @@ import java.util.Set;
 public class RemoteClientImpl implements RemoteClient {
 
     private final String connectionId;
-    private final ClientWrappable.Type type;
+    private final ConnectionType type;
     private final MainRouter comms;
     private final BiMap<String, RemoteClientImpl> children = HashBiMap.create();
     private final Listeners<RemoteClientListener> listeners = new Listeners<RemoteClientListener>();
     private RemoteClientImpl parent;
     private List<String> route = null;
 
-    public RemoteClientImpl(String connectionId, ClientWrappable.Type type, MainRouter comms) {
+    public RemoteClientImpl(String connectionId, ConnectionType type, MainRouter comms) {
         this.connectionId = connectionId;
         this.type = type;
         this.comms = comms;
@@ -45,7 +45,7 @@ public class RemoteClientImpl implements RemoteClient {
     }
 
     @Override
-    public ClientWrappable.Type getType() {
+    public ConnectionType getType() {
         return type;
     }
 
@@ -67,7 +67,7 @@ public class RemoteClientImpl implements RemoteClient {
         return listeners.addListener(listener);
     }
 
-    public RemoteClientImpl addClient(List<String> route, String connectionId, ClientWrappable.Type type) throws HousemateException {
+    public RemoteClientImpl addClient(List<String> route, String connectionId, ConnectionType type) throws HousemateException {
         RemoteClientImpl client = new RemoteClientImpl(connectionId, type, comms);
         client.setRoute(route);
         addClient(client);
@@ -137,8 +137,8 @@ public class RemoteClientImpl implements RemoteClient {
         } else {
             if(!current.children.containsKey(client.getRoute().get(currentIndex)))
                 throw new HousemateException("No authorised client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()));
-            else if(current.children.get(client.getRoute().get(currentIndex)).getType() != ClientWrappable.Type.Router)
-                throw new HousemateException("Client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()) + " is not of type " + ClientWrappable.Type.Router.name());
+            else if(current.children.get(client.getRoute().get(currentIndex)).getType() != ConnectionType.Router)
+                throw new HousemateException("Client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()) + " is not of type " + ConnectionType.Router.name());
             addClient(current, current.children.get(client.getRoute().get(currentIndex)), currentIndex + 1, client);
         }
     }

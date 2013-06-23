@@ -23,6 +23,7 @@ import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.ComparisonOperator;
+import com.intuso.utilities.listener.ListenerRegistration;
 import org.junit.Test;
 
 import java.util.Map;
@@ -73,7 +74,7 @@ public class TestValueComparison {
         ValueLocation valueTwo = new ValueLocation(
                 new RealObjectType.Reference<Value<?, ?>>(valuePath),
                 SERVER_ENVIRONMENT.getGeneralResources().getBridgeResources().getRoot());
-        SERVER_ENVIRONMENT.getGeneralResources().getBridgeResources().getRoot().addObjectLifecycleListener(valuePath, new ObjectLifecycleListener() {
+        ListenerRegistration lr = SERVER_ENVIRONMENT.getGeneralResources().getBridgeResources().getRoot().addObjectLifecycleListener(valuePath, new ObjectLifecycleListener() {
             @Override
             public void objectCreated(String[] path, HousemateObject<?, ?, ?, ?, ?> object) {
                 synchronized (lock) {
@@ -94,10 +95,11 @@ public class TestValueComparison {
         synchronized (lock) {
             lock.wait();
         }
+        lr.removeListener();
         device.values.doubleValue(0.0);
         assertNull(vc.getError());
         assertSatisfied(vc, false);
-        SERVER_ENVIRONMENT.getGeneralResources().getBridgeResources().getRoot().getDevices().get("device").getValues().get("dv").addObjectListener(new ValueListener<ValueBridge>() {
+        lr = SERVER_ENVIRONMENT.getGeneralResources().getBridgeResources().getRoot().getDevices().get("device").getValues().get("dv").addObjectListener(new ValueListener<ValueBridge>() {
             @Override
             public void valueChanging(ValueBridge value) {
                 // do nothing
@@ -114,6 +116,8 @@ public class TestValueComparison {
         synchronized (lock) {
             lock.wait();
         }
+        Thread.sleep(1); // the listener that notifies might get called before the vc listener, so the vc might not have updated yet
+        lr.removeListener();
         assertSatisfied(vc, true);
     }
 

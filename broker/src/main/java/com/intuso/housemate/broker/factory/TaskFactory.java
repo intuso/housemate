@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.object.broker.real.BrokerRealArgument;
+import com.intuso.housemate.object.broker.real.BrokerRealParameter;
 import com.intuso.housemate.object.broker.real.BrokerRealCommand;
 import com.intuso.housemate.object.broker.real.BrokerRealList;
 import com.intuso.housemate.object.broker.real.BrokerRealTask;
@@ -33,15 +33,15 @@ public final class TaskFactory implements PluginListener {
     public final static String TYPE_NAME = "Task Factory";
     public final static String TYPE_DESCRIPTION = "Available types for new tasks";
 
-    public final static String NAME_ARGUMENT_ID = "name";
-    public final static String NAME_ARGUMENT_NAME = "Name";
-    public final static String NAME_ARGUMENT_DESCRIPTION = "The name of the new task";
-    public final static String DESCRIPTION_ARGUMENT_ID = "description";
-    public final static String DESCRIPTION_ARGUMENT_NAME = "Description";
-    public final static String DESCRIPTION_ARGUMENT_DESCRIPTION = "Description for the new task";
-    public final static String TYPE_ARGUMENT_ID = "type";
-    public final static String TYPE_ARGUMENT_NAME = "Type";
-    public final static String TYPE_ARGUMENT_DESCRIPTION = "The type of the new task";
+    public final static String NAME_PARAMETER_ID = "name";
+    public final static String NAME_PARAMETER_NAME = "Name";
+    public final static String NAME_PARAMETER_DESCRIPTION = "The name of the new task";
+    public final static String DESCRIPTION_PARAMETER_ID = "description";
+    public final static String DESCRIPTION_PARAMETER_NAME = "Description";
+    public final static String DESCRIPTION_PARAMETER_DESCRIPTION = "Description for the new task";
+    public final static String TYPE_PARAMETER_ID = "type";
+    public final static String TYPE_PARAMETER_NAME = "Type";
+    public final static String TYPE_PARAMETER_DESCRIPTION = "The type of the new task";
 
     private final BrokerGeneralResources resources;
     private final Map<String, BrokerTaskFactory<?>> factories;
@@ -60,9 +60,9 @@ public final class TaskFactory implements PluginListener {
 
     public BrokerRealCommand createAddTaskCommand(String commandId, String commandName, String commandDescription, final BrokerRealList<TaskWrappable, BrokerRealTask> list) {
         return new BrokerRealCommand(resources.getRealResources(), commandId, commandName, commandDescription, Arrays.asList(
-                new BrokerRealArgument<String>(resources.getRealResources(), NAME_ARGUMENT_ID, NAME_ARGUMENT_NAME, NAME_ARGUMENT_DESCRIPTION, new StringType(resources.getClientResources())),
-                new BrokerRealArgument<String>(resources.getRealResources(), DESCRIPTION_ARGUMENT_ID, DESCRIPTION_ARGUMENT_NAME, DESCRIPTION_ARGUMENT_DESCRIPTION, new StringType(resources.getClientResources())),
-                new BrokerRealArgument<BrokerTaskFactory<?>>(resources.getRealResources(), TYPE_ARGUMENT_ID, TYPE_ARGUMENT_NAME, TYPE_ARGUMENT_DESCRIPTION, type)
+                new BrokerRealParameter<String>(resources.getRealResources(), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
+                new BrokerRealParameter<String>(resources.getRealResources(), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
+                new BrokerRealParameter<BrokerTaskFactory<?>>(resources.getRealResources(), TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
@@ -74,13 +74,13 @@ public final class TaskFactory implements PluginListener {
     }
 
     public BrokerRealTask createTask(TypeInstances values) throws HousemateException {
-        TypeInstance taskType = values.get(TYPE_ARGUMENT_ID);
+        TypeInstance taskType = values.get(TYPE_PARAMETER_ID);
         if(taskType == null && taskType.getValue() != null)
             throw new HousemateException("No task type specified");
-        TypeInstance name = values.get(NAME_ARGUMENT_ID);
+        TypeInstance name = values.get(NAME_PARAMETER_ID);
         if(name == null && name.getValue() != null)
             throw new HousemateException("No task name specified");
-        TypeInstance description = values.get(DESCRIPTION_ARGUMENT_ID);
+        TypeInstance description = values.get(DESCRIPTION_PARAMETER_ID);
         if(description == null && description.getValue() != null)
             throw new HousemateException("No task description specified");
         BrokerTaskFactory<?> taskFactory = type.deserialise(taskType);

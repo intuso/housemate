@@ -1,9 +1,9 @@
 package com.intuso.housemate.object.broker.proxy;
 
 import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.argument.Argument;
-import com.intuso.housemate.api.object.argument.ArgumentListener;
-import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.parameter.Parameter;
+import com.intuso.housemate.api.object.parameter.ParameterListener;
+import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,13 +12,13 @@ import com.intuso.housemate.api.object.argument.ArgumentWrappable;
  * Time: 00:57
  * To change this template use File | Settings | File Templates.
  */
-public class BrokerProxyArgument
-        extends BrokerProxyObject<ArgumentWrappable, NoChildrenWrappable, NoChildrenBrokerProxyObject, BrokerProxyArgument, ArgumentListener>
-        implements Argument<BrokerProxyType> {
+public class BrokerProxyParameter
+        extends BrokerProxyObject<ParameterWrappable, NoChildrenWrappable, NoChildrenBrokerProxyObject, BrokerProxyParameter, ParameterListener>
+        implements Parameter<BrokerProxyType> {
 
     private BrokerProxyType type;
 
-    public BrokerProxyArgument(BrokerProxyResources<NoChildrenBrokerProxyObjectFactory> resources, ArgumentWrappable wrappable) {
+    public BrokerProxyParameter(BrokerProxyResources<NoChildrenBrokerProxyObjectFactory> resources, ParameterWrappable wrappable) {
         super(resources, wrappable);
     }
 

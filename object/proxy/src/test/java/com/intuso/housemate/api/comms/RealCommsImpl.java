@@ -18,6 +18,7 @@ public class RealCommsImpl extends Router {
     public RealCommsImpl(Resources resources) {
         super(resources);
         connect();
+        setRouterStatus(Status.Connected);
         login(null);
     }
 

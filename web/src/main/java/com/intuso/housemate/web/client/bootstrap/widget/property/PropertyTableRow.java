@@ -46,11 +46,11 @@ public class PropertyTableRow extends TableRow implements TypeInputEditedHandler
 
     private void addValueCell(GWTProxyProperty value) {
         TableCell valueCell = new TableCell();
-        TypeInput argumentInput = TypeInputTableRow.getArgumentInput(value.getType());
-        if(argumentInput != null) {
-            argumentInput.setTypeInstance(value.getTypeInstance());
-            argumentInput.addTypeInputEditedHandler(this);
-            valueCell.add(argumentInput);
+        TypeInput input = TypeInputTableRow.getInput(value.getType());
+        if(input != null) {
+            input.setTypeInstance(value.getTypeInstance());
+            input.addTypeInputEditedHandler(this);
+            valueCell.add(input);
         }
         add(valueCell);
     }

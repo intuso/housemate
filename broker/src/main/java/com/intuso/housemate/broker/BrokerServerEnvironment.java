@@ -7,8 +7,8 @@ import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.broker.client.LocalClient;
 import com.intuso.housemate.broker.comms.MainRouter;
 import com.intuso.housemate.broker.factory.ConditionFactory;
-import com.intuso.housemate.broker.factory.TaskFactory;
 import com.intuso.housemate.broker.factory.DeviceFactory;
+import com.intuso.housemate.broker.factory.TaskFactory;
 import com.intuso.housemate.broker.object.BrokerProxyResourcesImpl;
 import com.intuso.housemate.broker.object.BrokerRealResourcesImpl;
 import com.intuso.housemate.broker.object.LifecycleHandlerImpl;
@@ -31,7 +31,6 @@ import com.intuso.utilities.log.LogLevel;
 import com.intuso.utilities.log.LogWriter;
 import com.intuso.utilities.log.writer.FileWriter;
 import com.intuso.utilities.log.writer.StdOutWriter;
-import gnu.io.CommPortIdentifier;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.FileResource;
 import org.eclipse.jetty.util.resource.JarResource;
@@ -315,7 +314,7 @@ public class BrokerServerEnvironment {
     }
 
     private void loadSharedJNILibs() {
-        CommPortIdentifier.getPortIdentifiers();
+        //CommPortIdentifier.getPortIdentifiers();
     }
 
     private List<PluginDescriptor> loadPlugin(File file) {

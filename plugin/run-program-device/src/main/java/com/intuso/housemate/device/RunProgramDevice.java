@@ -2,7 +2,7 @@ package com.intuso.housemate.device;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.real.RealArgument;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealProperty;
@@ -36,7 +36,7 @@ public class RunProgramDevice extends RealDevice {
 	/**
 	 * The command to start the program
 	 */
-    private final RealCommand start = new RealCommand(getResources(), "start", "Start", "Start the program", new ArrayList<RealArgument<?>>()) {
+    private final RealCommand start = new RealCommand(getResources(), "start", "Start", "Start the program", new ArrayList<RealParameter<?>>()) {
 		@Override
 		public void perform(TypeInstances values) throws HousemateException {
 			try {
@@ -54,7 +54,7 @@ public class RunProgramDevice extends RealDevice {
 	/**
 	 * The command to stop the program
 	 */
-	private final RealCommand stop = new RealCommand(getResources(), "stop", "Stop", "Stop the program", new ArrayList<RealArgument<?>>()) {
+	private final RealCommand stop = new RealCommand(getResources(), "stop", "Stop", "Stop the program", new ArrayList<RealParameter<?>>()) {
 		@Override
 		public void perform(TypeInstances values) throws HousemateException {
 			Integer pid = getFirstPID();

@@ -1,9 +1,9 @@
 package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.argument.Argument;
-import com.intuso.housemate.api.object.argument.ArgumentListener;
-import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.parameter.Parameter;
+import com.intuso.housemate.api.object.parameter.ParameterListener;
+import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,14 +12,14 @@ import com.intuso.housemate.api.object.argument.ArgumentWrappable;
  * Time: 00:57
  * To change this template use File | Settings | File Templates.
  */
-public abstract class ProxyArgument<
+public abstract class ProxyParameter<
             R extends ProxyResources<NoChildrenProxyObjectFactory>,
             T extends ProxyType<?, ?, ?, ?, ?, ?>,
-            P extends ProxyArgument<?, T, P>>
-        extends ProxyObject<R, ProxyResources<NoChildrenProxyObjectFactory>, ArgumentWrappable, NoChildrenWrappable, NoChildrenProxyObject, P, ArgumentListener>
-        implements Argument<T> {
+            P extends ProxyParameter<?, T, P>>
+        extends ProxyObject<R, ProxyResources<NoChildrenProxyObjectFactory>, ParameterWrappable, NoChildrenWrappable, NoChildrenProxyObject, P, ParameterListener>
+        implements Parameter<T> {
 
-    public ProxyArgument(R resources, ArgumentWrappable wrappable) {
+    public ProxyParameter(R resources, ParameterWrappable wrappable) {
         super(resources, null, wrappable);
     }
 

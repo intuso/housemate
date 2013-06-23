@@ -62,14 +62,14 @@ public class PerformButton extends Button implements ClickHandler {
     public void setCommand(GWTProxyCommand command, TypeInstances values) {
         this.command = command;
         this.values = values;
-        if(command.getArguments().size() > 0)
+        if(command.getParameters().size() > 0)
             setIcon(IconType.CHEVRON_RIGHT);
     }
 
     @Override
     public void onClick(ClickEvent clickEvent) {
         if(command != null) {
-            if(values == null && command.getArguments().size() > 0) {
+            if(values == null && command.getParameters().size() > 0) {
                 CommandPopup popup = new CommandPopup(command);
                 popup.show();
             } else

@@ -11,7 +11,7 @@ import com.intuso.housemate.api.comms.message.AuthenticationRequest;
 import com.intuso.housemate.api.comms.message.AuthenticationResponse;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.message.ReconnectResponse;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -44,7 +44,7 @@ public class RemoteClientManager {
 
     public RemoteClientManager(BrokerGeneralResources resources) {
         this.resources = resources;
-        root = new RemoteClientImpl(UUID.randomUUID().toString(), ClientWrappable.Type.Router, resources.getMainRouter());
+        root = new RemoteClientImpl(UUID.randomUUID().toString(), ConnectionType.Router, resources.getMainRouter());
         root.setRoute(Lists.<String>newArrayList());
     }
 
@@ -93,7 +93,7 @@ public class RemoteClientManager {
             client.setRoute(route);
         } catch(HousemateException e) {
             resources.getLog().e("Failed to add client endpoint for " + Message.routeToString(route));
-            resources.getLog().d("Maybe one of the intermediate clients isn't connected or isn't of type " + ClientWrappable.Type.Router);
+            resources.getLog().d("Maybe one of the intermediate clients isn't connected or isn't of type " + ConnectionType.Router);
             return;
         }
 
@@ -169,7 +169,7 @@ public class RemoteClientManager {
         }
     }
 
-    private RemoteClientImpl addClient(String connectionId, List<String> route, ClientWrappable.Type type) throws HousemateException {
+    private RemoteClientImpl addClient(String connectionId, List<String> route, ConnectionType type) throws HousemateException {
         RemoteClientImpl client = root.addClient(route, connectionId, type);
         return client;
     }

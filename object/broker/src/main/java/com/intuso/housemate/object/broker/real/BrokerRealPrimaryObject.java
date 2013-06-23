@@ -31,7 +31,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
 
     public BrokerRealPrimaryObject(BrokerRealResources resources, WBL wrappable, final String objectType) {
         super(resources, wrappable);
-        this.remove = new BrokerRealCommand(resources, REMOVE_COMMAND, REMOVE_COMMAND, "Remove the " + objectType, Lists.<BrokerRealArgument<?>>newArrayList()) {
+        this.remove = new BrokerRealCommand(resources, REMOVE_COMMAND, REMOVE_COMMAND, "Remove the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 if(isRunning())
@@ -41,7 +41,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
         };
         this.connected = new BrokerRealValue<Boolean>(resources, CONNECTED_VALUE, CONNECTED_VALUE, "Whether the " + objectType + " is connected or not", new BooleanType(resources.getRealResources()), true);
         this.running = new BrokerRealValue<Boolean>(resources, RUNNING_VALUE, RUNNING_VALUE, "Whether the " + objectType + " is running or not", new BooleanType(resources.getRealResources()), false);
-        this.start = new BrokerRealCommand(resources, START_COMMAND, START_COMMAND, "Start the " + objectType, Lists.<BrokerRealArgument<?>>newArrayList()) {
+        this.start = new BrokerRealCommand(resources, START_COMMAND, START_COMMAND, "Start the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 if(!isRunning()) {
@@ -50,7 +50,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
                 }
             }
         };
-        this.stop = new BrokerRealCommand(resources, STOP_COMMAND, STOP_COMMAND, "Stop the " + objectType, Lists.<BrokerRealArgument<?>>newArrayList()) {
+        this.stop = new BrokerRealCommand(resources, STOP_COMMAND, STOP_COMMAND, "Stop the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 if(isRunning()) {

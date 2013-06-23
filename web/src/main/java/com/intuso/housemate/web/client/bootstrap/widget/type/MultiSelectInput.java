@@ -24,7 +24,7 @@ import java.util.Set;
  * Time: 23:26
  * To change this template use File | Settings | File Templates.
  */
-public class MultiSelectArgumentInput extends ListBox implements TypeInput {
+public class MultiSelectInput extends ListBox implements TypeInput {
 
     public final static String OPTIONS = "options";
 
@@ -33,7 +33,7 @@ public class MultiSelectArgumentInput extends ListBox implements TypeInput {
     private GWTProxyList<OptionWrappable, GWTProxyOption> options;
     private Map<String, GWTProxyOption> optionsByName = new HashMap<String, GWTProxyOption>();
 
-    public MultiSelectArgumentInput(GWTProxyType type) {
+    public MultiSelectInput(GWTProxyType type) {
         super(true);
         addChangeHandler(new ChangeHandler() {
             @Override

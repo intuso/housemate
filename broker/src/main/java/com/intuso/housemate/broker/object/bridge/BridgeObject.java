@@ -9,7 +9,7 @@ import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
@@ -65,8 +65,8 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
         result.add(addMessageListener(LOAD_REQUEST, new Receiver<ClientPayload<LoadRequest>>() {
             @Override
             public void messageReceived(Message<ClientPayload<LoadRequest>> message) throws HousemateException {
-                if(message.getPayload().getClient().getType() != ClientWrappable.Type.Proxy)
-                    getLog().e("Client requesting an object is not of type " + ClientWrappable.Type.Proxy);
+                if(message.getPayload().getClient().getType() != ConnectionType.Proxy)
+                    getLog().e("Client requesting an object is not of type " + ConnectionType.Proxy);
                 else {
                     BridgeObject<?, ?, ?, ?, ?> subWrapper = getWrapper(message.getPayload().getOriginal().getSubWrapperName());
                     if(subWrapper != null)

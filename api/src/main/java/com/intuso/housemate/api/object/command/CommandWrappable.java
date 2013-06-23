@@ -1,7 +1,7 @@
 package com.intuso.housemate.api.object.command;
 
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
 
 /**
@@ -11,7 +11,7 @@ import com.intuso.housemate.api.object.list.ListWrappable;
  * Time: 20:00
  * To change this template use File | Settings | File Templates.
  */
-public final class CommandWrappable extends HousemateObjectWrappable<ListWrappable<ArgumentWrappable>> {
+public final class CommandWrappable extends HousemateObjectWrappable<ListWrappable<ParameterWrappable>> {
 
     private CommandWrappable() {}
 

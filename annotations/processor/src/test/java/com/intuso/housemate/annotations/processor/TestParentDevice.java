@@ -1,6 +1,6 @@
 package com.intuso.housemate.annotations.processor;
 
-import com.intuso.housemate.annotations.basic.Argument;
+import com.intuso.housemate.annotations.basic.Parameter;
 import com.intuso.housemate.annotations.basic.Command;
 import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.annotations.basic.Value;
@@ -31,7 +31,7 @@ public class TestParentDevice extends RealDevice {
     }
 
     @Command(id = "command", name = "Command", description = "Command to do something")
-    public void command(@Argument(id="on", name="On", description = "True to turn on", type = BooleanType.class) boolean on) {
+    public void command(@Parameter(id="on", name="On", description = "True to turn on", type = BooleanType.class) boolean on) {
         values.lastCommand((on ? "On " : "Off ") + switchNumber);
     }
 

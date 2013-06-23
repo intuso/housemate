@@ -47,12 +47,12 @@ public class TypeInputTableRow
 
     private void addValueCell(GWTProxyType type) {
         TableCell valueCell = new TableCell();
-        TypeInput argumentInput = getArgumentInput(type);
-        if(argumentInput != null) {
-            argumentInput.addTypeInputEditedHandler(this);
+        TypeInput input = getInput(type);
+        if(input != null) {
+            input.addTypeInputEditedHandler(this);
             if(instances != null)
-                argumentInput.setTypeInstance(instances.get(id));
-            valueCell.add(argumentInput);
+                input.setTypeInstance(instances.get(id));
+            valueCell.add(input);
         }
         add(valueCell);
     }
@@ -69,25 +69,25 @@ public class TypeInputTableRow
         fireEvent(event);
     }
 
-    public static TypeInput getArgumentInput(GWTProxyType type) {
+    public static TypeInput getInput(GWTProxyType type) {
         if(type == null)
             return null;
         TypeWrappable typeWrappable = type.getWrappable();
         if(typeWrappable instanceof SimpleTypeWrappable) {
             if(((SimpleTypeWrappable)typeWrappable).getType() == SimpleTypeWrappable.Type.Boolean)
-                return new CheckBoxArgumentInput();
+                return new CheckBoxInput();
             else
-                return new TextArgumentInput(typeWrappable);
+                return new TextInput(typeWrappable);
         } else if(typeWrappable instanceof SingleChoiceTypeWrappable)
-            return new SingleSelectArgumentInput(type);
+            return new SingleSelectInput(type);
         else if(typeWrappable instanceof MultiChoiceTypeWrappable)
-            return new MultiSelectArgumentInput(type);
+            return new MultiSelectInput(type);
         else if(typeWrappable instanceof RegexTypeWrappable)
-            return new TextArgumentInput(typeWrappable);
+            return new TextInput(typeWrappable);
         else if(typeWrappable instanceof ObjectTypeWrappable)
             return new ObjectBrowserInput((ObjectTypeWrappable) typeWrappable);
         else if(typeWrappable instanceof CompoundTypeWrappable)
-            return new CompoundArgumentInput((CompoundTypeWrappable) typeWrappable, type);
+            return new CompoundInput((CompoundTypeWrappable) typeWrappable, type);
         return null;
     }
 }

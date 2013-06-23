@@ -2,7 +2,7 @@ package com.intuso.housemate.annotations.processor;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.intuso.housemate.annotations.basic.Argument;
+import com.intuso.housemate.annotations.basic.Parameter;
 import com.intuso.housemate.annotations.basic.Command;
 import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.annotations.basic.Value;
@@ -16,7 +16,7 @@ import com.intuso.housemate.api.object.property.PropertyWrappable;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.api.object.value.HasValues;
 import com.intuso.housemate.api.object.value.ValueWrappable;
-import com.intuso.housemate.object.real.RealArgument;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealObject;
@@ -74,21 +74,21 @@ public class AnnotationProcessor {
         for(Map.Entry<Method, Command> commandMethod : getAnnotatedMethods(object.getClass(), Command.class).entrySet())
             commands.add(new CommandImpl(object.getResources(), commandMethod.getValue().id(),
                     commandMethod.getValue().name(), commandMethod.getValue().description(),
-                    parseArguments(object.getResources(), commandMethod.getKey()), commandMethod.getKey(), object));
+                    parseParameters(object.getResources(), commandMethod.getKey()), commandMethod.getKey(), object));
     }
 
-    private List<RealArgument<?>> parseArguments(RealResources resources, Method method) throws HousemateException {
-        List<RealArgument<?>> result = Lists.newArrayList();
-        Annotation[][] argumentAnnotations = method.getParameterAnnotations();
-        for(int a = 0; a < argumentAnnotations.length; a++) {
-            Argument argumentAnnotation = getAnnotation(argumentAnnotations[a], Argument.class);
-            if(argumentAnnotation == null)
-                throw new HousemateException("Argument " + a + " of command method " + method.getName()
-                        + " is not annotated with " + Argument.class.getName());
-            if(registeredTypes.get(argumentAnnotation.type()) == null)
-                throw new HousemateException(argumentAnnotation.type().getName() + " does not exist");
-            result.add(new RealArgument(resources, argumentAnnotation.id(), argumentAnnotation.name(),
-                    argumentAnnotation.description(), registeredTypes.get(argumentAnnotation.type())));
+    private List<RealParameter<?>> parseParameters(RealResources resources, Method method) throws HousemateException {
+        List<RealParameter<?>> result = Lists.newArrayList();
+        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+        for(int a = 0; a < parameterAnnotations.length; a++) {
+            Parameter parameterAnnotation = getAnnotation(parameterAnnotations[a], Parameter.class);
+            if(parameterAnnotation == null)
+                throw new HousemateException("Parameter " + a + " of command method " + method.getName()
+                        + " is not annotated with " + Parameter.class.getName());
+            if(registeredTypes.get(parameterAnnotation.type()) == null)
+                throw new HousemateException(parameterAnnotation.type().getName() + " does not exist");
+            result.add(new RealParameter(resources, parameterAnnotation.id(), parameterAnnotation.name(),
+                    parameterAnnotation.description(), registeredTypes.get(parameterAnnotation.type())));
         }
         return result;
     }

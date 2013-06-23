@@ -18,6 +18,7 @@ public class ProxyCommsImpl extends Router {
     public ProxyCommsImpl(Resources resources) {
         super(resources);
         connect();
+        setRouterStatus(Status.Connected);
         login(null);
     }
 

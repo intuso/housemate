@@ -19,9 +19,9 @@ import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
  * Time: 18:22
  * To change this template use File | Settings | File Templates.
  */
-public class TextArgumentInput extends TextBox implements TypeInput {
+public class TextInput extends TextBox implements TypeInput {
 
-    public TextArgumentInput(TypeWrappable typeWrappable) {
+    public TextInput(TypeWrappable typeWrappable) {
         final Validator validator = getValidator(typeWrappable);
         addChangeHandler(new ChangeHandler() {
             @Override

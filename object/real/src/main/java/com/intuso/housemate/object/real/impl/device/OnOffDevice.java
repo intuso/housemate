@@ -2,7 +2,7 @@ package com.intuso.housemate.object.real.impl.device;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.real.RealArgument;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
@@ -21,7 +21,7 @@ public abstract class OnOffDevice extends RealDevice {
 	/**
 	 * The On command
 	 */
-	private final RealCommand onCommand = new RealCommand(getResources(), "on", "Turn On", "Turn the device on", new ArrayList<RealArgument<?>>()) {
+	private final RealCommand onCommand = new RealCommand(getResources(), "on", "Turn On", "Turn the device on", new ArrayList<RealParameter<?>>()) {
 		@Override
 		public void perform(TypeInstances values) throws HousemateException {
 			getLog().d("Performing \"On\" command");
@@ -32,7 +32,7 @@ public abstract class OnOffDevice extends RealDevice {
 	/**
 	 * The Off command
 	 */
-	private final RealCommand offCommand = new RealCommand(getResources(), "off", "Turn Off", "Turn the device off", new ArrayList<RealArgument<?>>()) {
+	private final RealCommand offCommand = new RealCommand(getResources(), "off", "Turn Off", "Turn the device off", new ArrayList<RealParameter<?>>()) {
 		@Override
 		public void perform(TypeInstances values) throws HousemateException {
 			getLog().d("Performing \"Off\" command");

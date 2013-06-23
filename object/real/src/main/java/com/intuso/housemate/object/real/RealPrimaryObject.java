@@ -31,7 +31,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
 
     public RealPrimaryObject(RealResources resources, WBL wrappable, final String objectType) {
         super(resources, wrappable);
-        this.remove = new RealCommand(resources, REMOVE_COMMAND, REMOVE_COMMAND, "Remove the " + objectType, Lists.<RealArgument<?>>newArrayList()) {
+        this.remove = new RealCommand(resources, REMOVE_COMMAND, REMOVE_COMMAND, "Remove the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 if(isRunning())
@@ -40,7 +40,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
             }
         };
         this.running = BooleanType.createValue(resources, RUNNING_VALUE, RUNNING_VALUE, "Whether the " + objectType + " is running or not", false);
-        this.start = new RealCommand(resources, START_COMMAND, START_COMMAND, "Start the " + objectType, Lists.<RealArgument<?>>newArrayList()) {
+        this.start = new RealCommand(resources, START_COMMAND, START_COMMAND, "Start the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 if(!isRunning()) {
@@ -49,7 +49,7 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
                 }
             }
         };
-        this.stop = new RealCommand(resources, STOP_COMMAND, STOP_COMMAND, "Stop the " + objectType, Lists.<RealArgument<?>>newArrayList()) {
+        this.stop = new RealCommand(resources, STOP_COMMAND, STOP_COMMAND, "Stop the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 if(isRunning()) {

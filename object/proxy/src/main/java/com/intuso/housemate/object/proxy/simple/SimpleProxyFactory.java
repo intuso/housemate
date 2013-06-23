@@ -3,8 +3,8 @@ package com.intuso.housemate.object.proxy.simple;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.argument.ArgumentFactory;
-import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.parameter.ParameterFactory;
+import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.api.object.automation.AutomationFactory;
 import com.intuso.housemate.api.object.automation.AutomationWrappable;
 import com.intuso.housemate.api.object.command.CommandFactory;
@@ -43,13 +43,13 @@ import com.intuso.housemate.object.proxy.ProxyResources;
 public class SimpleProxyFactory {
 
     private final static All allFactory = new All();
-    private final static Argument argumentFactory = new Argument();
     private final static Automation automationFactory = new Automation();
     private final static Command commandFactory = new Command();
     private final static Condition conditionFactory = new Condition();
     private final static Device deviceFactory = new Device();
     private final static GenericList listFactory = new GenericList();
     private final static Option optionFactory = new Option();
+    private final static Parameter parameterFactory = new Parameter();
     private final static Property propertyFactory = new Property();
     private final static SubType subTypeFactory = new SubType();
     private final static Task taskFactory = new Task();
@@ -60,8 +60,8 @@ public class SimpleProxyFactory {
     public static class All implements HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
         @Override
         public ProxyObject<?, ?, ?, ?, ?, ?, ?> create(ProxyResources<?> resources, HousemateObjectWrappable<?> wrappable) throws HousemateException {
-            if(wrappable instanceof ArgumentWrappable)
-                return argumentFactory.create(resources, (ArgumentWrappable) wrappable);
+            if(wrappable instanceof ParameterWrappable)
+                return parameterFactory.create(resources, (ParameterWrappable) wrappable);
             else if(wrappable instanceof CommandWrappable)
                 return commandFactory.create(resources, (CommandWrappable) wrappable);
             else if(wrappable instanceof ConditionWrappable)
@@ -91,18 +91,21 @@ public class SimpleProxyFactory {
         }
     }
 
-    public static class Argument implements ArgumentFactory<ProxyResources<?>, SimpleProxyObject.Argument> {
+    public static class Automation implements AutomationFactory<
+            ProxyResources<?>,
+            SimpleProxyObject.Automation> {
         @Override
-        public SimpleProxyObject.Argument create(ProxyResources<?> resources, ArgumentWrappable wrappable) throws HousemateException {
-            return new SimpleProxyObject.Argument(noFactoryType(resources), wrappable);
+        public SimpleProxyObject.Automation create(ProxyResources<?> resources, AutomationWrappable wrappable) throws HousemateException {
+            ProxyResources<All> r = changeFactoryType(resources, allFactory);
+            return new SimpleProxyObject.Automation(r, resources, wrappable);
         }
     }
 
     public static class Command implements CommandFactory<ProxyResources<?>, SimpleProxyObject.Command> {
         @Override
         public SimpleProxyObject.Command create(ProxyResources<?> resources, CommandWrappable wrappable) throws HousemateException {
-            ProxyResources<List<ArgumentWrappable, SimpleProxyObject.Argument>> r = changeFactoryType(resources, new List<ArgumentWrappable, SimpleProxyObject.Argument>());
-            ProxyResources<Argument> sr = changeFactoryType(resources, argumentFactory);
+            ProxyResources<List<ParameterWrappable, SimpleProxyObject.Parameter>> r = changeFactoryType(resources, new List<ParameterWrappable, SimpleProxyObject.Parameter>());
+            ProxyResources<Parameter> sr = changeFactoryType(resources, parameterFactory);
             return new SimpleProxyObject.Command(r, sr, wrappable);
         }
     }
@@ -112,22 +115,6 @@ public class SimpleProxyFactory {
         public SimpleProxyObject.Condition create(ProxyResources<?> resources, ConditionWrappable wrappable) throws HousemateException {
             ProxyResources<All> r = changeFactoryType(resources, allFactory);
             return new SimpleProxyObject.Condition(r, resources, wrappable);
-        }
-    }
-
-    public static class User implements UserFactory<ProxyResources<?>, SimpleProxyObject.User> {
-        @Override
-        public SimpleProxyObject.User create(ProxyResources<?> resources, UserWrappable wrappable) throws HousemateException {
-            ProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new SimpleProxyObject.User(r, resources, wrappable);
-        }
-    }
-
-    public static class Task implements TaskFactory<ProxyResources<?>, SimpleProxyObject.Task> {
-        @Override
-        public SimpleProxyObject.Task create(ProxyResources<?> resources, TaskWrappable wrappable) throws HousemateException {
-            ProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new SimpleProxyObject.Task(r, resources, wrappable);
         }
     }
 
@@ -172,22 +159,19 @@ public class SimpleProxyFactory {
         }
     }
 
+    public static class Parameter implements ParameterFactory<ProxyResources<?>, SimpleProxyObject.Parameter> {
+        @Override
+        public SimpleProxyObject.Parameter create(ProxyResources<?> resources, ParameterWrappable wrappable) throws HousemateException {
+            return new SimpleProxyObject.Parameter(noFactoryType(resources), wrappable);
+        }
+    }
+
     public static class Property implements PropertyFactory<ProxyResources<?>, SimpleProxyObject.Property> {
         @Override
         public SimpleProxyObject.Property create(ProxyResources<?> resources, PropertyWrappable wrappable) throws HousemateException {
             ProxyResources<Command> r = changeFactoryType(resources, commandFactory);
-            ProxyResources<List<ArgumentWrappable, SimpleProxyObject.Argument>> sr = changeFactoryType(resources, new List<ArgumentWrappable, SimpleProxyObject.Argument>());
+            ProxyResources<List<ParameterWrappable, SimpleProxyObject.Parameter>> sr = changeFactoryType(resources, new List<ParameterWrappable, SimpleProxyObject.Parameter>());
             return new SimpleProxyObject.Property(r, sr, wrappable);
-        }
-    }
-
-    public static class Automation implements AutomationFactory<
-                ProxyResources<?>,
-            SimpleProxyObject.Automation> {
-        @Override
-        public SimpleProxyObject.Automation create(ProxyResources<?> resources, AutomationWrappable wrappable) throws HousemateException {
-            ProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new SimpleProxyObject.Automation(r, resources, wrappable);
         }
     }
 
@@ -198,12 +182,28 @@ public class SimpleProxyFactory {
         }
     }
 
+    public static class Task implements TaskFactory<ProxyResources<?>, SimpleProxyObject.Task> {
+        @Override
+        public SimpleProxyObject.Task create(ProxyResources<?> resources, TaskWrappable wrappable) throws HousemateException {
+            ProxyResources<All> r = changeFactoryType(resources, allFactory);
+            return new SimpleProxyObject.Task(r, resources, wrappable);
+        }
+    }
+
     public static class Type implements TypeFactory<ProxyResources<?>, SimpleProxyObject.Type> {
         @Override
         public SimpleProxyObject.Type create(ProxyResources<?> resources,
                                              TypeWrappable<?> wrappable) throws HousemateException {
             ProxyResources<All> r = changeFactoryType(resources, allFactory);
             return new SimpleProxyObject.Type(r, resources, wrappable);
+        }
+    }
+
+    public static class User implements UserFactory<ProxyResources<?>, SimpleProxyObject.User> {
+        @Override
+        public SimpleProxyObject.User create(ProxyResources<?> resources, UserWrappable wrappable) throws HousemateException {
+            ProxyResources<All> r = changeFactoryType(resources, allFactory);
+            return new SimpleProxyObject.User(r, resources, wrappable);
         }
     }
 

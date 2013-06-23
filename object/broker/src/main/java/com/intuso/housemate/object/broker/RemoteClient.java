@@ -2,7 +2,7 @@ package com.intuso.housemate.object.broker;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -13,7 +13,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * To change this template use File | Settings | File Templates.
  */
 public interface RemoteClient {
-    ClientWrappable.Type getType();
+    ConnectionType getType();
     String getConnectionId();
     void sendMessage(String[] path, String type, Message.Payload payload) throws HousemateException;
     boolean isCurrentlyConnected();

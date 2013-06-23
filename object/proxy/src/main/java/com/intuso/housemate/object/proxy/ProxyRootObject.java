@@ -17,7 +17,7 @@ import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.object.root.RootWrappable;
 import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
@@ -73,7 +73,7 @@ public abstract class ProxyRootObject<
     public ProxyRootObject(R resources, SR subResources) {
         super(resources, subResources, new RootWrappable());
         routerRegistration = resources.getRouter().registerReceiver(this);
-        connectionManager = new ConnectionManager(routerRegistration, ClientWrappable.Type.Proxy, ConnectionStatus.Unauthenticated);
+        connectionManager = new ConnectionManager(routerRegistration, ConnectionType.Proxy, ConnectionStatus.Unauthenticated);
         init(null);
     }
 

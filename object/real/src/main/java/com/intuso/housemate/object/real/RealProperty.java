@@ -26,7 +26,7 @@ public class RealProperty<O>
     public RealProperty(RealResources resources, String id, String name, String description, RealType<?, ?, O> type, O value) {
         super(resources, new PropertyWrappable(id, name, description, type.getId(), type.serialise(value)), type);
         setCommand = new RealCommand(resources, SET_COMMAND, SET_COMMAND, "The function to change the property's value",
-                Arrays.<RealArgument<?>>asList(new RealArgument<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
+                Arrays.<RealParameter<?>>asList(new RealParameter<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 O object = getType().deserialise(values.get(VALUE_PARAM));

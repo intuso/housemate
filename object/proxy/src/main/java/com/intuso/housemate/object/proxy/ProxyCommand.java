@@ -8,7 +8,7 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -25,17 +25,17 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyCommand<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, ListWrappable<ArgumentWrappable>, AL>>,
-            SR extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, ArgumentWrappable, ? extends A>>,
-            A extends ProxyArgument<?, ?, A>,
-            AL extends ProxyList<?, ?, ArgumentWrappable, A, AL>,
-            C extends ProxyCommand<R, SR, A, AL, C>>
-        extends ProxyObject<R, SR, CommandWrappable, ListWrappable<ArgumentWrappable>, AL, C, CommandListener<? super C>>
-        implements Command<AL, C> {
+            R extends ProxyResources<? extends HousemateObjectFactory<SR, ListWrappable<ParameterWrappable>, PL>>,
+            SR extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, ParameterWrappable, ? extends P>>,
+            P extends ProxyParameter<?, ?, P>,
+            PL extends ProxyList<?, ?, ParameterWrappable, P, PL>,
+            C extends ProxyCommand<R, SR, P, PL, C>>
+        extends ProxyObject<R, SR, CommandWrappable, ListWrappable<ParameterWrappable>, PL, C, CommandListener<? super C>>
+        implements Command<PL, C> {
 
     private int nextId;
     private Map<String, CommandListener<? super C>> listenerMap = new HashMap<String, CommandListener<? super C>>();
-    private AL arguments;
+    private PL parameters;
 
     protected ProxyCommand(R resources, SR subResources, CommandWrappable wrappable) {
         super(resources, subResources, wrappable);
@@ -43,9 +43,9 @@ public abstract class ProxyCommand<
 
     @Override
     protected void getChildObjects() {
-        arguments = getWrapper(ARGUMENTS_FIELD);
-        if(arguments == null)
-            throw new HousemateRuntimeException("Could not unwrap command " + getId() + ", " + ARGUMENTS_FIELD + " value wrapper is missing");
+        parameters = getWrapper(PARAMETERS_FIELD);
+        if(parameters == null)
+            throw new HousemateRuntimeException("Could not unwrap command " + getId() + ", " + PARAMETERS_FIELD + " value wrapper is missing");
     }
 
     @Override
@@ -83,8 +83,8 @@ public abstract class ProxyCommand<
     }
 
     @Override
-    public AL getArguments() {
-        return arguments;
+    public PL getParameters() {
+        return parameters;
     }
 
     public final synchronized void perform(CommandListener<? super C> listener) {

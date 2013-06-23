@@ -27,14 +27,14 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
  * Time: 23:26
  * To change this template use File | Settings | File Templates.
  */
-public class SingleSelectArgumentInput extends Composite implements TypeInput {
+public class SingleSelectInput extends Composite implements TypeInput {
 
     public final static String OPTIONS = "options";
 
-    interface SingleSelectArgumentInputUiBinder extends UiBinder<FlowPanel, SingleSelectArgumentInput> {
+    interface SingleSelectInputUiBinder extends UiBinder<FlowPanel, SingleSelectInput> {
     }
 
-    private static SingleSelectArgumentInputUiBinder ourUiBinder = GWT.create(SingleSelectArgumentInputUiBinder.class);
+    private static SingleSelectInputUiBinder ourUiBinder = GWT.create(SingleSelectInputUiBinder.class);
 
     @UiField(provided = true)
     protected ListBox listBox;
@@ -45,7 +45,7 @@ public class SingleSelectArgumentInput extends Composite implements TypeInput {
     private final BiMap<GWTProxyOption, Integer> optionMap = HashBiMap.create();
     private TypeInstance typeInstance = new TypeInstance();
 
-    public SingleSelectArgumentInput(GWTProxyType type) {
+    public SingleSelectInput(GWTProxyType type) {
 
         options = (GWTProxyList<OptionWrappable, GWTProxyOption>) type.getWrapper(OPTIONS);
 
@@ -98,22 +98,22 @@ public class SingleSelectArgumentInput extends Composite implements TypeInput {
         GWTProxyOption option = options.get(typeInstance.getValue());
         if(option != null && option.getSubTypes() != null) {
             for(GWTProxySubType subType : option.getSubTypes()) {
-                TypeInput argumentInput = TypeInputTableRow.getArgumentInput(subType.getType());
-                argumentInput.addTypeInputEditedHandler(new SubTypeArgumentEditedHandler(subType.getId(), typeInstance));
-                subTypesPanel.add(argumentInput);
+                TypeInput input = TypeInputTableRow.getInput(subType.getType());
+                input.addTypeInputEditedHandler(new SubTypeEditedHandler(subType.getId(), typeInstance));
+                subTypesPanel.add(input);
                 if(typeInstance.getChildValues().get(subType.getId()) == null)
                     typeInstance.getChildValues().put(subType.getId(), new TypeInstance());
-                argumentInput.setTypeInstance(typeInstance.getChildValues().get(subType.getId()));
+                input.setTypeInstance(typeInstance.getChildValues().get(subType.getId()));
             }
         }
     }
 
-    private class SubTypeArgumentEditedHandler implements TypeInputEditedHandler {
+    private class SubTypeEditedHandler implements TypeInputEditedHandler {
 
         private final String typeId;
         private final TypeInstance typeInstance;
 
-        public SubTypeArgumentEditedHandler(String typeId, TypeInstance typeInstance) {
+        public SubTypeEditedHandler(String typeId, TypeInstance typeInstance) {
             this.typeId = typeId;
             this.typeInstance = typeInstance;
         }

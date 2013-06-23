@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.broker.ClientPayload;
@@ -25,25 +25,25 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyCommand
-        extends BrokerProxyObject<CommandWrappable, ListWrappable<ArgumentWrappable>, BrokerProxyList<ArgumentWrappable, BrokerProxyArgument>, BrokerProxyCommand, CommandListener<? super BrokerProxyCommand>>
-        implements Command<BrokerProxyList<ArgumentWrappable, BrokerProxyArgument>, BrokerProxyCommand> {
+        extends BrokerProxyObject<CommandWrappable, ListWrappable<ParameterWrappable>, BrokerProxyList<ParameterWrappable, BrokerProxyParameter>, BrokerProxyCommand, CommandListener<? super BrokerProxyCommand>>
+        implements Command<BrokerProxyList<ParameterWrappable, BrokerProxyParameter>, BrokerProxyCommand> {
 
-    private BrokerProxyList<ArgumentWrappable, BrokerProxyArgument> arguments;
+    private BrokerProxyList<ParameterWrappable, BrokerProxyParameter> parameters;
     private int nextId;
     private Map<String, CommandListener<? super BrokerProxyCommand>> listenerMap = new HashMap<String, CommandListener<? super BrokerProxyCommand>>();
 
-    protected BrokerProxyCommand(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, ListWrappable<ArgumentWrappable>, ? extends BrokerProxyList<ArgumentWrappable, BrokerProxyArgument>>> resources, CommandWrappable wrappable) {
+    protected BrokerProxyCommand(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, ListWrappable<ParameterWrappable>, ? extends BrokerProxyList<ParameterWrappable, BrokerProxyParameter>>> resources, CommandWrappable wrappable) {
         super(resources, wrappable);
     }
 
     @Override
-    public BrokerProxyList<ArgumentWrappable, BrokerProxyArgument> getArguments() {
-        return arguments;
+    public BrokerProxyList<ParameterWrappable, BrokerProxyParameter> getParameters() {
+        return parameters;
     }
 
     @Override
     protected void getChildObjects() {
-        arguments = getWrapper(ARGUMENTS_FIELD);
+        parameters = getWrapper(PARAMETERS_FIELD);
     }
 
     @Override

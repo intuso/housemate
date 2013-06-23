@@ -15,9 +15,9 @@ import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
  * Time: 23:26
  * To change this template use File | Settings | File Templates.
  */
-public class CheckBoxArgumentInput extends CheckBox implements TypeInput {
+public class CheckBoxInput extends CheckBox implements TypeInput {
 
-    public CheckBoxArgumentInput() {
+    public CheckBoxInput() {
         addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {

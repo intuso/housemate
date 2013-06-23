@@ -1,4 +1,4 @@
-package com.intuso.housemate.api.object.argument;
+package com.intuso.housemate.api.object.parameter;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.resources.Resources;
@@ -10,8 +10,8 @@ import com.intuso.housemate.api.resources.Resources;
  * Time: 09:13
  * To change this template use File | Settings | File Templates.
  */
-public interface ArgumentFactory<
+public interface ParameterFactory<
             R extends Resources,
-            A extends Argument<?>>
-        extends HousemateObjectFactory<R, ArgumentWrappable, A> {
+            P extends Parameter<?>>
+        extends HousemateObjectFactory<R, ParameterWrappable, P> {
 }

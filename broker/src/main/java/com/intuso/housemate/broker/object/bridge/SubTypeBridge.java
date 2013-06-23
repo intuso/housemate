@@ -40,8 +40,8 @@ public class SubTypeBridge
         }
 
         @Override
-        public SubTypeBridge apply(@Nullable SubType<?> argument) {
-            return new SubTypeBridge(resources, argument);
+        public SubTypeBridge apply(@Nullable SubType<?> parameter) {
+            return new SubTypeBridge(resources, parameter);
         }
     }
 }

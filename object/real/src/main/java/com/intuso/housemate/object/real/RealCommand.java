@@ -6,7 +6,7 @@ import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -21,16 +21,16 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class RealCommand
-        extends RealObject<CommandWrappable, ListWrappable<ArgumentWrappable>, RealList<ArgumentWrappable, RealArgument<?>>,
+        extends RealObject<CommandWrappable, ListWrappable<ParameterWrappable>, RealList<ParameterWrappable, RealParameter<?>>,
             CommandListener<? super RealCommand>>
-        implements Command<RealList<ArgumentWrappable, RealArgument<?>>, RealCommand> {
+        implements Command<RealList<ParameterWrappable, RealParameter<?>>, RealCommand> {
 
-    private RealList<ArgumentWrappable, RealArgument<?>> realArguments;
+    private RealList<ParameterWrappable, RealParameter<?>> realParameters;
 
-    protected RealCommand(RealResources resources, String id, String name, String description, List<RealArgument<?>> arguments) {
+    protected RealCommand(RealResources resources, String id, String name, String description, List<RealParameter<?>> parameters) {
         super(resources, new CommandWrappable(id, name, description));
-        realArguments = new RealList<ArgumentWrappable, RealArgument<?>>(resources, ARGUMENTS_FIELD, ARGUMENTS_FIELD, "The arguments required by the command", arguments);
-        addWrapper(realArguments);
+        realParameters = new RealList<ParameterWrappable, RealParameter<?>>(resources, PARAMETERS_FIELD, PARAMETERS_FIELD, "The parameters required by the command", parameters);
+        addWrapper(realParameters);
     }
 
     @Override
@@ -61,8 +61,8 @@ public abstract class RealCommand
     }
 
     @Override
-    public RealList<ArgumentWrappable, RealArgument<?>> getArguments() {
-        return realArguments;
+    public RealList<ParameterWrappable, RealParameter<?>> getParameters() {
+        return realParameters;
     }
 
     @Override

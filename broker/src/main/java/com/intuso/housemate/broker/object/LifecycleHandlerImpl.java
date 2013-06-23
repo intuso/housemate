@@ -19,7 +19,7 @@ import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.LifecycleHandler;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyPrimaryObject;
-import com.intuso.housemate.object.broker.real.BrokerRealArgument;
+import com.intuso.housemate.object.broker.real.BrokerRealParameter;
 import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
 import com.intuso.housemate.object.broker.real.BrokerRealCommand;
 import com.intuso.housemate.object.broker.real.BrokerRealList;
@@ -71,9 +71,9 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Override
     public BrokerRealCommand createAddUserCommand(final BrokerRealList<UserWrappable, BrokerRealUser> users) {
-        return new BrokerRealCommand(resources.getRealResources(), Root.ADD_USER, Root.ADD_USER, "Add a new user", Arrays.<BrokerRealArgument<?>>asList(
-                new BrokerRealArgument<String>(resources.getRealResources(), "username", "Username", "The username for the new user", new StringType(resources.getClientResources())),
-                new BrokerRealArgument<String>(resources.getRealResources(), "password", "Password", "The password for the new user", new StringType(resources.getClientResources()))
+        return new BrokerRealCommand(resources.getRealResources(), Root.ADD_USER, Root.ADD_USER, "Add a new user", Arrays.<BrokerRealParameter<?>>asList(
+                new BrokerRealParameter<String>(resources.getRealResources(), "username", "Username", "The username for the new user", new StringType(resources.getClientResources())),
+                new BrokerRealParameter<String>(resources.getRealResources(), "password", "Password", "The password for the new user", new StringType(resources.getClientResources()))
         )) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
@@ -97,7 +97,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Override
     public BrokerRealCommand createRemoveUserCommand(final BrokerRealUser user) {
-        return new BrokerRealCommand(resources.getRealResources(), User.REMOVE_COMMAND, User.REMOVE_COMMAND, "Remove the user", Lists.<BrokerRealArgument<?>>newArrayList()) {
+        return new BrokerRealCommand(resources.getRealResources(), User.REMOVE_COMMAND, User.REMOVE_COMMAND, "Remove the user", Lists.<BrokerRealParameter<?>>newArrayList()) {
                     @Override
                     public void perform(TypeInstances values) throws HousemateException {
                         getResources().getRoot().getUsers().remove(user.getId());
@@ -113,9 +113,9 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Override
     public BrokerRealCommand createAddAutomationCommand(final BrokerRealList<AutomationWrappable, BrokerRealAutomation> automations) {
-        return new BrokerRealCommand(resources.getRealResources(), Root.ADD_AUTOMATION, Root.ADD_AUTOMATION, "Add a new automation", Arrays.<BrokerRealArgument<?>>asList(
-                new BrokerRealArgument<String>(resources.getRealResources(), "name", "Name", "The name for the new automation", new StringType(resources.getClientResources())),
-                new BrokerRealArgument<String>(resources.getRealResources(), "description", "Description", "The description for the new automation", new StringType(resources.getClientResources()))
+        return new BrokerRealCommand(resources.getRealResources(), Root.ADD_AUTOMATION, Root.ADD_AUTOMATION, "Add a new automation", Arrays.<BrokerRealParameter<?>>asList(
+                new BrokerRealParameter<String>(resources.getRealResources(), "name", "Name", "The name for the new automation", new StringType(resources.getClientResources())),
+                new BrokerRealParameter<String>(resources.getRealResources(), "description", "Description", "The description for the new automation", new StringType(resources.getClientResources()))
         )) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
@@ -144,7 +144,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                 final PO source,
                 final BrokerProxyPrimaryObject.Remover<PO> remover) {
         return new BrokerRealCommand(resources.getRealResources(), originalCommand.getId(), originalCommand.getName(), originalCommand.getDescription(),
-                new ArrayList<BrokerRealArgument<?>>()) {
+                new ArrayList<BrokerRealParameter<?>>()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 originalCommand.perform(new TypeInstances(), new CommandListener<Command<?, ?>>() {

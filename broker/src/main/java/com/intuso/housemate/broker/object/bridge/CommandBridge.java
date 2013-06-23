@@ -7,8 +7,8 @@ import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.argument.Argument;
-import com.intuso.housemate.api.object.argument.ArgumentWrappable;
+import com.intuso.housemate.api.object.parameter.Parameter;
+import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -25,25 +25,25 @@ import javax.annotation.Nullable;
  * To change this template use File | Settings | File Templates.
  */
 public class CommandBridge
-        extends BridgeObject<CommandWrappable, ListWrappable<ArgumentWrappable>,
-            ListBridge<ArgumentWrappable, Argument<?>, ArgumentBridge>, CommandBridge,
+        extends BridgeObject<CommandWrappable, ListWrappable<ParameterWrappable>,
+            ListBridge<ParameterWrappable, Parameter<?>, ParameterBridge>, CommandBridge,
         CommandListener<? super CommandBridge>>
-        implements Command<ListBridge<ArgumentWrappable, Argument<?>, ArgumentBridge>, CommandBridge> {
+        implements Command<ListBridge<ParameterWrappable, Parameter<?>, ParameterBridge>, CommandBridge> {
 
     private Command<?, ?> proxyCommand;
-    private ListBridge<ArgumentWrappable, Argument<?>, ArgumentBridge> arguments;
+    private ListBridge<ParameterWrappable, Parameter<?>, ParameterBridge> parameters;
 
-    public CommandBridge(BrokerBridgeResources resources, Command<? extends List<? extends Argument<?>>, ?> proxyCommand) {
+    public CommandBridge(BrokerBridgeResources resources, Command<? extends List<? extends Parameter<?>>, ?> proxyCommand) {
         super(resources, new CommandWrappable(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
         this.proxyCommand = proxyCommand;
-        arguments = new ListBridge<ArgumentWrappable, Argument<?>, ArgumentBridge>(resources,
-                proxyCommand.getArguments(), new ArgumentBridge.Converter(resources));
-        addWrapper(arguments);
+        parameters = new ListBridge<ParameterWrappable, Parameter<?>, ParameterBridge>(resources,
+                proxyCommand.getParameters(), new ParameterBridge.Converter(resources));
+        addWrapper(parameters);
     }
 
     @Override
-    public ListBridge<ArgumentWrappable, Argument<?>, ArgumentBridge> getArguments() {
-        return arguments;
+    public ListBridge<ParameterWrappable, Parameter<?>, ParameterBridge> getParameters() {
+        return parameters;
     }
 
     @Override

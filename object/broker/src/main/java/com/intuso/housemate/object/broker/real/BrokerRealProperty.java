@@ -27,7 +27,7 @@ public class BrokerRealProperty<O>
     public BrokerRealProperty(BrokerRealResources resources, String id, String name, String description, RealType<?, ?, O> type, O value) {
         super(resources, new PropertyWrappable(id, name, description, type.getId(), type.serialise(value)), type);
         setCommand = new BrokerRealCommand(resources, SET_COMMAND, SET_COMMAND, "The command to change the property's value",
-                Arrays.<BrokerRealArgument<?>>asList(new BrokerRealArgument<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
+                Arrays.<BrokerRealParameter<?>>asList(new BrokerRealParameter<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 O object = getType().deserialise(values.get(VALUE_PARAM));

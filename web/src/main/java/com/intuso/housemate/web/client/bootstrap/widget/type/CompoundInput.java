@@ -14,14 +14,14 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
  * Time: 23:15
  * To change this template use File | Settings | File Templates.
  */
-public class CompoundArgumentInput
+public class CompoundInput
         extends SubTypeInputList
         implements TypeInput {
 
     private final GWTProxyType type;
     private TypeInstance typeInstance;
 
-    public CompoundArgumentInput(CompoundTypeWrappable typeWrappable, GWTProxyType type) {
+    public CompoundInput(CompoundTypeWrappable typeWrappable, GWTProxyType type) {
         this.type = type;
     }
 

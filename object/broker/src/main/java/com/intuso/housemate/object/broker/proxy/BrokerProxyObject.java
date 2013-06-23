@@ -8,7 +8,7 @@ import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
+import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -38,8 +38,8 @@ public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWB
     public void setClient(RemoteClient client) throws HousemateException {
         if(this.client != null)
             throw new HousemateException("This object already has a client");
-        else if(client.getType() != ClientWrappable.Type.Real)
-            throw new HousemateException("Client is not of type " + ClientWrappable.Type.Real);
+        else if(client.getType() != ConnectionType.Real)
+            throw new HousemateException("Client is not of type " + ConnectionType.Real);
         if(clientListener != null)
             clientListener.removeListener();
         this.client = client;

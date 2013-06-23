@@ -8,7 +8,6 @@ import com.intuso.housemate.api.comms.message.StringMessageValue;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.connection.ClientWrappable;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.RootWrappable;
@@ -35,7 +34,7 @@ public class RouterRootObject
     protected RouterRootObject(Resources resources, Router router) {
         super(resources, new RootWrappable());
         this.router = router;
-        connectionManager = new ConnectionManager(router, ClientWrappable.Type.Router, ConnectionStatus.Disconnected);
+        connectionManager = new ConnectionManager(router, ConnectionType.Router, ConnectionStatus.Disconnected);
         init(null);
     }
 

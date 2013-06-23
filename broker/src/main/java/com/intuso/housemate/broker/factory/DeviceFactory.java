@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.object.real.RealArgument;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
@@ -34,15 +34,15 @@ public final class DeviceFactory implements PluginListener {
     public final static String TYPE_NAME = "Device Factory";
     public final static String TYPE_DESCRIPTION = "Available types for new devices";
 
-    public final static String NAME_ARGUMENT_ID = "name";
-    public final static String NAME_ARGUMENT_NAME = "Name";
-    public final static String NAME_ARGUMENT_DESCRIPTION = "The name of the new device";
-    public final static String DESCRIPTION_ARGUMENT_ID = "description";
-    public final static String DESCRIPTION_ARGUMENT_NAME = "Description";
-    public final static String DESCRIPTION_ARGUMENT_DESCRIPTION = "Description for the new device";
-    public final static String TYPE_ARGUMENT_ID = "type";
-    public final static String TYPE_ARGUMENT_NAME = "Type";
-    public final static String TYPE_ARGUMENT_DESCRIPTION = "The type of the new device";
+    public final static String NAME_PARAMETER_ID = "name";
+    public final static String NAME_PARAMETER_NAME = "Name";
+    public final static String NAME_PARAMETER_DESCRIPTION = "The name of the new device";
+    public final static String DESCRIPTION_PARAMETER_ID = "description";
+    public final static String DESCRIPTION_PARAMETER_NAME = "Description";
+    public final static String DESCRIPTION_PARAMETER_DESCRIPTION = "Description for the new device";
+    public final static String TYPE_PARAMETER_ID = "type";
+    public final static String TYPE_PARAMETER_NAME = "Type";
+    public final static String TYPE_PARAMETER_DESCRIPTION = "The type of the new device";
 
     private final BrokerGeneralResources resources;
     private final Map<String, RealDeviceFactory<?>> factories;
@@ -61,19 +61,19 @@ public final class DeviceFactory implements PluginListener {
 
     public RealCommand createAddDeviceCommand(String commandId, String commandName, String commandDescription, final RealList<DeviceWrappable, RealDevice> list) {
         return new RealCommand(resources.getClientResources(), commandId, commandName, commandDescription, Arrays.asList(
-                new RealArgument<String>(resources.getClientResources(), NAME_ARGUMENT_ID, NAME_ARGUMENT_NAME, NAME_ARGUMENT_DESCRIPTION, new StringType(resources.getClientResources())),
-                new RealArgument<String>(resources.getClientResources(), DESCRIPTION_ARGUMENT_ID, DESCRIPTION_ARGUMENT_NAME, DESCRIPTION_ARGUMENT_DESCRIPTION, new StringType(resources.getClientResources())),
-                new RealArgument<RealDeviceFactory<?>>(resources.getClientResources(), TYPE_ARGUMENT_ID, TYPE_ARGUMENT_NAME, TYPE_ARGUMENT_DESCRIPTION, type)
+                new RealParameter<String>(resources.getClientResources(), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
+                new RealParameter<String>(resources.getClientResources(), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
+                new RealParameter<RealDeviceFactory<?>>(resources.getClientResources(), TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
-                TypeInstance deviceType = values.get(TYPE_ARGUMENT_ID);
+                TypeInstance deviceType = values.get(TYPE_PARAMETER_ID);
                 if(deviceType == null || deviceType.getValue() == null)
                     throw new HousemateException("No device type specified");
-                TypeInstance name = values.get(NAME_ARGUMENT_ID);
+                TypeInstance name = values.get(NAME_PARAMETER_ID);
                 if(name == null || name.getValue() == null)
                     throw new HousemateException("No device name specified");
-                TypeInstance description = values.get(DESCRIPTION_ARGUMENT_ID);
+                TypeInstance description = values.get(DESCRIPTION_PARAMETER_ID);
                 if(description == null || description.getValue() == null)
                     throw new HousemateException("No device description specified");
                 RealDeviceFactory<?> deviceFactory = type.deserialise(deviceType);
