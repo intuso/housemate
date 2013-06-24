@@ -7,22 +7,43 @@ import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.value.Value;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/05/12
- * Time: 20:45
- * To change this template use File | Settings | File Templates.
+ * @param <EXECUTING_VALUE> the type of the executing value
+ * @param <ERROR_VALUE> the type of the error value
+ * @param <PROPERTIES> the type of the properties list
+ * @param <TASK> the type of the task
  */
-public interface Task<BV extends Value<?, ?>, SV extends Value<?, ?>,
-        PL extends List<? extends Property<?, ?, ?>>, C extends Task<BV, SV, PL, C>>
-        extends BaseObject<TaskListener<? super C>>, HasProperties<PL> {
+public interface Task<
+            EXECUTING_VALUE extends Value<?, ?>,
+            ERROR_VALUE extends Value<?, ?>,
+            PROPERTIES extends List<? extends Property<?, ?, ?>>,
+            TASK extends Task<EXECUTING_VALUE, ERROR_VALUE, PROPERTIES, TASK>>
+        extends BaseObject<TaskListener<? super TASK>>, HasProperties<PROPERTIES> {
 
-    public final static String EXECUTING = "executing";
-    public final static String ERROR = "error";
-    public final static String PROPERTIES = "properties";
+    public final static String EXECUTING_TYPE = "executing";
+    public final static String ERROR_ID = "error";
+    public final static String PROPERTIES_ID = "properties";
 
-    public SV getErrorValue();
+    /**
+     * Gets the error value object
+     * @return the error value object
+     */
+    public ERROR_VALUE getErrorValue();
+
+    /**
+     * Gets the error value
+     * @return the error value
+     */
     public String getError();
-    public BV getExecutingValue();
+
+    /**
+     * Gets the executing value object
+     * @return the executing value object
+     */
+    public EXECUTING_VALUE getExecutingValue();
+
+    /**
+     * Gets the executing value
+     * @return the executing value
+     */
     public boolean isExecuting();
 }

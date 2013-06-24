@@ -9,11 +9,6 @@ import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 29/05/12
- * Time: 21:27
- * To change this template use File | Settings | File Templates.
  */
 public class IntegerType extends RealSimpleType<Integer> {
 

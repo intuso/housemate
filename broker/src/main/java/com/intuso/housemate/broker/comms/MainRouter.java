@@ -14,7 +14,6 @@ import com.intuso.housemate.object.broker.RemoteClient;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * @author tclabon
  */
 public final class MainRouter extends Router {
 
@@ -83,7 +82,7 @@ public final class MainRouter extends Router {
         }
         if(client.getType() != null) {
             // intercept certain messages
-            if(message.getPath().length == 1 && message.getType().equals(Root.DISCONNECT))
+            if(message.getPath().length == 1 && message.getType().equals(Root.DISCONNECT_TYPE))
                 return resources.getRoot();
             switch(client.getType()) {
                 case Real: // the broker proxy objects are for remote real objects

@@ -10,11 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 25/03/12
- * Time: 16:31
- * To change this template use File | Settings | File Templates.
  */
 public class SocketServer {
 
@@ -60,7 +55,7 @@ public class SocketServer {
 
     /**
      * Class to accept all connections on the server port
-     * @author tclabon
+     * @author Tom Clabon
      *
      */
     private class Accepter extends Thread {

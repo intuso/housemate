@@ -20,11 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/03/12
- * Time: 09:31
- * To change this template use File | Settings | File Templates.
  */
 public class Condition extends Composite
         implements ConditionListener<GWTProxyCondition>, ObjectSelectedHandler<GWTProxyCondition> {

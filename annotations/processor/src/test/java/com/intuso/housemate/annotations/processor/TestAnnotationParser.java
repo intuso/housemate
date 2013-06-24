@@ -20,11 +20,6 @@ import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/06/13
- * Time: 11:32
- * To change this template use File | Settings | File Templates.
  */
 public class TestAnnotationParser {
 

@@ -12,11 +12,6 @@ import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealSingleChoiceType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 16/06/13
- * Time: 13:16
- * To change this template use File | Settings | File Templates.
  */
 public class ConstantType extends RealSingleChoiceType<ConstantInstance<Object>> implements ListListener<RealType<?, ?, ?>> {
 

@@ -1,7 +1,6 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
@@ -12,11 +11,6 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import javax.annotation.Nullable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/07/12
- * Time: 23:50
- * To change this template use File | Settings | File Templates.
  */
 public class PropertyBridge
         extends ValueBridgeBase<PropertyWrappable, CommandWrappable, CommandBridge,  PropertyBridge>
@@ -33,7 +27,7 @@ public class PropertyBridge
     }
 
     @Override
-    public void set(final TypeInstance value, CommandListener<? super CommandBridge> listener) throws HousemateException {
+    public void set(final TypeInstance value, CommandListener<? super CommandBridge> listener) {
         setCommand.perform(new TypeInstances() {
             {
                 put(VALUE_PARAM, value);

@@ -14,11 +14,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:21
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyValueBase<WBL extends ValueWrappableBase<SWBL>,
             SWBL extends HousemateObjectWrappable<?>,
@@ -46,7 +41,7 @@ public class BrokerProxyValueBase<WBL extends ValueWrappableBase<SWBL>,
     @Override
     public final List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(VALUE, new Receiver<ClientPayload<TypeInstance>>() {
+        result.add(addMessageListener(VALUE_ID, new Receiver<ClientPayload<TypeInstance>>() {
             @Override
             public void messageReceived(Message<ClientPayload<TypeInstance>> stringMessageValueMessage) {
                 for(ValueListener<? super V> listener : getObjectListeners())

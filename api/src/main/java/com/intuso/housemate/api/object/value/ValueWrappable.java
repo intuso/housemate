@@ -5,11 +5,8 @@ import com.intuso.housemate.api.object.NoChildrenWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:08
- * To change this template use File | Settings | File Templates.
+ *
+ * Data object for a value
  */
 public class ValueWrappable extends ValueWrappableBase<NoChildrenWrappable> {
 

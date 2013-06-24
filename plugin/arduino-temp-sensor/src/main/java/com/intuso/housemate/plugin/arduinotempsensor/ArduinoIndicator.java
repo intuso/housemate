@@ -9,11 +9,6 @@ import jssc.SerialPort;
 import jssc.SerialPortException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/05/12
- * Time: 23:31
- * To change this template use File | Settings | File Templates.
  */
 public class ArduinoIndicator extends OnOffDevice {
 

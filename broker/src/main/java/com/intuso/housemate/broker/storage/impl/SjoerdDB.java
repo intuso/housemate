@@ -25,11 +25,6 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 23/01/13
- * Time: 09:10
- * To change this template use File | Settings | File Templates.
  */
 public class SjoerdDB implements Storage {
 

@@ -4,11 +4,6 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.intuso.housemate.web.client.handler.CredentialsSubmittedHandler;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/03/12
- * Time: 23:59
- * To change this template use File | Settings | File Templates.
  */
 public class CredentialsSubmittedEvent extends GwtEvent<CredentialsSubmittedHandler> {
 

@@ -13,11 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 24/11/12
- * Time: 19:25
- * To change this template use File | Settings | File Templates.
  */
 public abstract class HousematePlace extends Place {
 

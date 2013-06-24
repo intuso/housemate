@@ -18,11 +18,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/12/12
- * Time: 23:26
- * To change this template use File | Settings | File Templates.
  */
 public class MultiSelectInput extends ListBox implements TypeInput {
 

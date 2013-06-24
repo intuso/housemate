@@ -3,12 +3,14 @@ package com.intuso.housemate.api.object.user;
 import com.intuso.housemate.api.object.list.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 21:53
- * To change this template use File | Settings | File Templates.
+ *
+ * Interface to show that the implementing object has a list of users
  */
 public interface HasUsers<L extends List<? extends User>> {
+
+    /**
+     * Gets the user list
+     * @return the user list
+     */
     public L getUsers();
 }

@@ -1,23 +1,28 @@
 package com.intuso.housemate.api.authentication;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/05/13
- * Time: 18:25
- * To change this template use File | Settings | File Templates.
+ *
+ * Authentication method to log in with a session id.
+ *
+ * @see com.intuso.housemate.api.object.root.Root#login(AuthenticationMethod)
  */
-public class Session extends AuthenticationMethod {
+public class Session implements AuthenticationMethod {
 
     private String sessionId;
 
     private Session() {}
 
-    public Session(boolean allowReconnect, String sessionId) {
-        super(allowReconnect);
+    /**
+     * @param sessionId the saved session id
+     */
+    public Session(String sessionId) {
         this.sessionId = sessionId;
     }
 
+    /**
+     * Gets the saved session id
+     * @return the saved session id
+     */
     public String getSessionId() {
         return sessionId;
     }

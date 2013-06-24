@@ -5,11 +5,8 @@ import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/06/13
- * Time: 22:28
- * To change this template use File | Settings | File Templates.
+ *
+ * Data object for a compound type
  */
 public class CompoundTypeWrappable extends TypeWrappable<ListWrappable<SubTypeWrappable>> {
 

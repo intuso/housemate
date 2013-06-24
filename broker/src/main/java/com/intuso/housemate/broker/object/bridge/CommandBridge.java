@@ -18,11 +18,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import javax.annotation.Nullable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/07/12
- * Time: 23:40
- * To change this template use File | Settings | File Templates.
  */
 public class CommandBridge
         extends BridgeObject<CommandWrappable, ListWrappable<ParameterWrappable>,
@@ -49,7 +44,7 @@ public class CommandBridge
     @Override
     protected final java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(PERFORM, new Receiver<ClientPayload<PerformMessageValue>>() {
+        result.add(addMessageListener(PERFORM_TYPE, new Receiver<ClientPayload<PerformMessageValue>>() {
             @Override
             public void messageReceived(final Message<ClientPayload<PerformMessageValue>> message) throws HousemateException {
                 perform(message.getPayload().getOriginal().getValues(), new CommandListener<CommandBridge>() {
@@ -58,7 +53,7 @@ public class CommandBridge
                         try {
                             for(CommandListener<? super CommandBridge> listener : getObjectListeners())
                                 listener.commandStarted(getThis());
-                            sendMessage(PERFORMING, new PerformingMessageValue(message.getPayload().getOriginal().getOpId(), true), message.getPayload().getClient());
+                            sendMessage(PERFORMING_TYPE, new PerformingMessageValue(message.getPayload().getOriginal().getOpId(), true), message.getPayload().getClient());
                         } catch(HousemateException e) {
                             getLog().e("Failed to send command started message to client");
                             getLog().e(e.getMessage());
@@ -70,7 +65,7 @@ public class CommandBridge
                         try {
                             for(CommandListener<? super CommandBridge> listener : getObjectListeners())
                                 listener.commandFinished(getThis());
-                            sendMessage(PERFORMING, new PerformingMessageValue(message.getPayload().getOriginal().getOpId(), false), message.getPayload().getClient());
+                            sendMessage(PERFORMING_TYPE, new PerformingMessageValue(message.getPayload().getOriginal().getOpId(), false), message.getPayload().getClient());
                         } catch(HousemateException e) {
                             getLog().e("Failed to send command finished message to client");
                             getLog().e(e.getMessage());
@@ -83,7 +78,7 @@ public class CommandBridge
 
                             for(CommandListener<? super CommandBridge> listener : getObjectListeners())
                                 listener.commandFailed(getThis(), error);
-                            sendMessage(FAILED, new FailedMessageValue(message.getPayload().getOriginal().getOpId(), error), message.getPayload().getClient());
+                            sendMessage(FAILED_TYPE, new FailedMessageValue(message.getPayload().getOriginal().getOpId(), error), message.getPayload().getClient());
                         } catch(HousemateException e) {
                             getLog().e("Failed to send command failed message to client");
                             getLog().e(e.getMessage());

@@ -7,11 +7,6 @@ import com.intuso.housemate.plugin.api.ComparisonOperator;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/06/13
- * Time: 17:33
- * To change this template use File | Settings | File Templates.
  */
 public class Comparison {
 

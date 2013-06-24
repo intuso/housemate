@@ -7,11 +7,6 @@ import org.junit.Ignore;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 16/04/13
- * Time: 08:05
- * To change this template use File | Settings | File Templates.
  */
 @Ignore
 public class TestResources implements Resources {

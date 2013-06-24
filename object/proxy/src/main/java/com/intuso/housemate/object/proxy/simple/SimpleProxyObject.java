@@ -34,18 +34,12 @@ import com.intuso.housemate.object.proxy.ProxyUser;
 import com.intuso.housemate.object.proxy.ProxyValue;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 01/06/12
- * Time: 01:16
- * To change this template use File | Settings | File Templates.
  */
 public class SimpleProxyObject {
 
     public final static class Automation extends ProxyAutomation<
             ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             ProxyResources<?>,
-            Property,
             Command,
             Value,
             Condition,

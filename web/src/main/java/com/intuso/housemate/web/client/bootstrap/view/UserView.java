@@ -10,11 +10,6 @@ import com.intuso.housemate.web.client.object.GWTProxyUser;
 import com.intuso.housemate.web.client.place.UserPlace;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/03/12
- * Time: 09:31
- * To change this template use File | Settings | File Templates.
  */
 public class UserView extends ObjectListView<GWTProxyUser, UserPlace> implements com.intuso.housemate.web.client.ui.view.UserView {
 

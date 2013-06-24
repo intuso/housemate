@@ -10,7 +10,6 @@ import java.util.Map;
 
 /**
  * Condition which is true iff the sub-condition is false
- * @author tclabon
  *
  */
 @FactoryInformation(id = "not", name = "Not", description = "Negation of the child condition")

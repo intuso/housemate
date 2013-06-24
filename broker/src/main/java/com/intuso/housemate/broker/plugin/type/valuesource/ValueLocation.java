@@ -9,11 +9,6 @@ import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 03/06/13
- * Time: 23:59
- * To change this template use File | Settings | File Templates.
  */
 public class ValueLocation extends ValueSource implements ObjectLifecycleListener {
 

@@ -3,12 +3,14 @@ package com.intuso.housemate.api.object.command;
 import com.intuso.housemate.api.object.list.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 04/07/12
- * Time: 23:36
- * To change this template use File | Settings | File Templates.
+ *
+ * Interface to show that the implementing object has a list of commands
  */
 public interface HasCommands<L extends List<? extends Command<?, ?>>> {
+
+    /**
+     * Gets the commands list
+     * @return the commands list
+     */
     public L getCommands();
 }

@@ -11,11 +11,6 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 import java.util.ArrayList;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/05/12
- * Time: 17:49
- * To change this template use File | Settings | File Templates.
  */
 public abstract class BrokerRealCondition
         extends BrokerRealObject<ConditionWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>,
@@ -36,10 +31,10 @@ public abstract class BrokerRealCondition
 
     public BrokerRealCondition(final BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
         super(resources, new ConditionWrappable(id, name, description));
-        errorValue = new BrokerRealValue<String>(resources, ERROR, ERROR, "The current error", new StringType(resources.getRealResources()), null);
-        satisfiedValue = new BrokerRealValue<Boolean>(resources, SATISFIED, SATISFIED, "Whether the condition is satisfied", new BooleanType(resources.getRealResources()), false);
-        propertyList = new BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>(resources, PROPERTIES, PROPERTIES, "The condition's properties", properties);
-        conditions = new BrokerRealList<ConditionWrappable, BrokerRealCondition>(resources, CONDITIONS, CONDITIONS, "The condition's sub-conditions");
+        errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), null);
+        satisfiedValue = new BrokerRealValue<Boolean>(resources, SATISFIED_ID, SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(resources.getRealResources()), false);
+        propertyList = new BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
+        conditions = new BrokerRealList<ConditionWrappable, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
         // add a command to add automations to the automation list
         addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions);
         addWrapper(errorValue);

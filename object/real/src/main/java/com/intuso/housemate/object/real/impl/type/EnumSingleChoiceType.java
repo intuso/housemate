@@ -15,11 +15,6 @@ import java.util.EnumMap;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 10:13
- * To change this template use File | Settings | File Templates.
  */
 public abstract class EnumSingleChoiceType<E extends Enum<E>> extends RealSingleChoiceType<E> {
 

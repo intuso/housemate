@@ -4,22 +4,12 @@ import java.io.Serializable;
 
 /**
 * Created with IntelliJ IDEA.
-* User: ravnroot
+* User: tom
 * Date: 02/05/13
 * Time: 18:25
-* To change this template use File | Settings | File Templates.
+ *
+ * Base class for all authentication methods
+ *
+ * @see com.intuso.housemate.api.object.root.Root#login(AuthenticationMethod)
 */
-public class AuthenticationMethod implements Serializable {
-
-    private boolean allowReconnect = true;
-
-    protected AuthenticationMethod() {}
-
-    public AuthenticationMethod(boolean allowReconnect) {
-        this.allowReconnect = allowReconnect;
-    }
-
-    public boolean isAllowReconnect() {
-        return allowReconnect;
-    }
-}
+public interface AuthenticationMethod extends Serializable {}

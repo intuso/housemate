@@ -13,11 +13,6 @@ import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
 import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/12/12
- * Time: 18:22
- * To change this template use File | Settings | File Templates.
  */
 public class TextInput extends TextBox implements TypeInput {
 

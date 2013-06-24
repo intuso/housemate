@@ -9,11 +9,6 @@ import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import javax.annotation.Nullable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/07/12
- * Time: 23:44
- * To change this template use File | Settings | File Templates.
  */
 public class ParameterBridge
         extends BridgeObject<ParameterWrappable, NoChildrenWrappable, NoChildrenBridgeObject, ParameterBridge, ParameterListener>

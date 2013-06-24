@@ -6,11 +6,6 @@ import com.intuso.housemate.api.object.parameter.ParameterListener;
 import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 10/07/12
- * Time: 00:57
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyParameter<
             R extends ProxyResources<NoChildrenProxyObjectFactory>,

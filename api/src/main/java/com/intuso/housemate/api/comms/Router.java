@@ -15,14 +15,15 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/03/12
- * Time: 18:49
- * To change this template use File | Settings | File Templates.
+ * A Housemate client that can have clients of its own. Each program instance should use one of these if it expects to
+ * have multiple clients of different types. Alternatively, this can be used to allow multiple clients to share a single
+ * connection to the broker, for example a selection of widgets on a mobile phone
  */
 public abstract class Router implements Sender, Receiver {
 
+    /**
+     * Enum of possible connection statuses for a router
+     */
     protected enum Status {
         Disconnected,
         Connecting,
@@ -38,13 +39,16 @@ public abstract class Router implements Sender, Receiver {
 
     private Status routerStatus = Status.Disconnected;
 
+    /**
+     * @param resources the resources
+     */
     public Router(Resources resources) {
         this.log = resources.getLog();
         root = new RouterRootObject(resources, this);
         root.addObjectListener(new RootListener<RouterRootObject>() {
             @Override
             public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
-                Message<ConnectionStatus> message = new Message<ConnectionStatus>(new String[] {""}, Root.STATUS, status);
+                Message<ConnectionStatus> message = new Message<ConnectionStatus>(new String[] {""}, Root.STATUS_TYPE, status);
                 for(Receiver receiver : receivers.values()) {
                     try {
                         receiver.messageReceived(message);
@@ -62,36 +66,64 @@ public abstract class Router implements Sender, Receiver {
         });
     }
 
-    public final Log getLog() {
+    /**
+     * Gets the log to use
+     * @return the log to use
+     */
+    protected final Log getLog() {
         return log;
     }
 
-    public final ConnectionStatus getStatus() {
-        return root.getStatus();
-    }
-
+    /**
+     * Updates the router's connection status
+     * @param routerStatus the router's new connection status
+     */
     protected final void setRouterStatus(Status routerStatus) {
         this.routerStatus = routerStatus;
         root.setRouterStatus(routerStatus);
     }
 
+    /**
+     * Adds a listener to the root object
+     * @param listener the listener to add
+     * @return the listener registration
+     */
     public ListenerRegistration addObjectListener(RootListener<? super RouterRootObject> listener) {
         return root.addObjectListener(listener);
     }
 
+    /**
+     * Logs in to the broker
+     * @param method the method to authenticate with
+     */
     public final void login(AuthenticationMethod method) {
         if(routerStatus != Status.Connected)
             throw new HousemateRuntimeException("Cannot login until the router is connected");
         root.login(method);
     }
 
+    /**
+     * Logs out of the broker
+     */
     public final void logout() {
         root.logout();
     }
 
+    /**
+     * Makes a connection to the next router in the chain, or the broker itself
+     */
     public abstract void connect();
+
+    /**
+     * Disconnects from the next router in the chain or the broker itself
+     */
     public abstract void disconnect();
-    
+
+    /**
+     * Registers a new client connection
+     * @param receiver the client's receiver implementation
+     * @return a router registration that the client can use to send messages
+     */
     public synchronized final Registration registerReceiver(Receiver<?> receiver) {
         String clientId = "" + nextId.incrementAndGet();
         receivers.put(clientId, receiver);
@@ -115,6 +147,9 @@ public abstract class Router implements Sender, Receiver {
         }
     }
 
+    /**
+     * Used by clients to send messages to the broker
+     */
     public final class Registration implements Sender {
 
         private boolean connected= true;
@@ -132,17 +167,23 @@ public abstract class Router implements Sender, Receiver {
             Router.this.sendMessage(message);
         }
 
+        /**
+         * Removes this client registration
+         */
         public synchronized final void remove() {
             connected = false;
             if(clientId != null)
                 receivers.remove(clientId);
         }
 
+        /**
+         * Notifies that this client's connection has been lost
+         */
         public synchronized final void connectionLost() {
             connected = false;
             if(clientId != null)
                 receivers.remove(clientId);
-            Router.this.sendMessage(new Message<StringMessageValue>(new String[] {""}, Root.CONNECTION_LOST,
+            Router.this.sendMessage(new Message<StringMessageValue>(new String[] {""}, Root.CONNECTION_LOST_TYPE,
                     new StringMessageValue(clientId)));
         }
     }

@@ -10,22 +10,17 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/01/13
- * Time: 23:42
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyPrimaryObject<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             SR extends ProxyResources<?>,
             WBL extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
-            P extends ProxyProperty<?, ?, ?, ?, P>,
-            C extends ProxyCommand<?, ?, ?, ?, C>, V extends ProxyValue<?, ?, V>,
-            PO extends ProxyPrimaryObject<R, SR, WBL, P, C, V, PO, L>,
+            C extends ProxyCommand<?, ?, ?, ?, C>,
+            V extends ProxyValue<?, ?, V>,
+            PO extends ProxyPrimaryObject<R, SR, WBL, C, V, PO, L>,
             L extends PrimaryListener<? super PO>>
         extends ProxyObject<R, SR, WBL, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, PO, L>
-        implements PrimaryObject<P, C, C, V, V, V, PO, L> {
+        implements PrimaryObject<C, C, V, V, V, PO, L> {
 
     private C remove;
     private V connected;
@@ -41,12 +36,12 @@ public abstract class ProxyPrimaryObject<
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        remove = (C)getWrapper(REMOVE_COMMAND);
-        connected = (V)getWrapper(CONNECTED_VALUE);
-        running = (V)getWrapper(RUNNING_VALUE);
-        start = (C)getWrapper(START_COMMAND);
-        stop = (C)getWrapper(STOP_COMMAND);
-        error = (V)getWrapper(ERROR_VALUE);
+        remove = (C)getWrapper(REMOVE_COMMAND_ID);
+        connected = (V)getWrapper(CONNECTED_VALUE_ID);
+        running = (V)getWrapper(RUNNING_VALUE_ID);
+        start = (C)getWrapper(START_COMMAND_ID);
+        stop = (C)getWrapper(STOP_COMMAND_ID);
+        error = (V)getWrapper(ERROR_VALUE_ID);
     }
 
     @Override

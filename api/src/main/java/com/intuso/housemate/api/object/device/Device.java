@@ -10,19 +10,35 @@ import com.intuso.housemate.api.object.value.HasValues;
 import com.intuso.housemate.api.object.value.Value;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/05/12
- * Time: 20:45
- * To change this template use File | Settings | File Templates.
+ * @param <REMOVE_COMMAND> the type of the command for removing the automation
+ * @param <START_STOP_COMMAND> the type of the command for stopping or starting
+ * @param <CONNECTED_VALUE> the type of the connected value
+ * @param <RUNNING_VALUE> the type of the running value
+ * @param <ERROR_VALUE> the type of the error value
+ * @param <COMMAND> the type of the commands
+ * @param <COMMANDS> the type of the commands list
+ * @param <VALUE> the type of the values
+ * @param <VALUES> the type of the values list
+ * @param <PROPERTY> the type of the properties
+ * @param <PROPERTIES> the type of the properties list
+ * @param <DEVICE> the type of the device
  */
-public interface Device<RC extends Command<?, ?>, SC extends Command<?, ?>, C extends Command<?, ?>,
-            CL extends List<? extends C>, CV extends Value<?, ?>, RV extends Value<?, ?>, SV extends Value<?, ?>, V extends Value<?, ?>,
-            VL extends List<? extends V>, SP extends Property<?, ?, ?>, P extends Property<?, ?, ?>,
-            PL extends List<? extends P>, D extends Device<RC, SC, C, CL, CV, RV, SV, V, VL, SP, P, PL, D>>
-        extends PrimaryObject<SP, RC, SC, CV, RV, SV, D, DeviceListener<? super D>>, HasCommands<CL>, HasValues<VL>, HasProperties<PL> {
+public interface Device<
+            REMOVE_COMMAND extends Command<?, ?>,
+            START_STOP_COMMAND extends Command<?, ?>,
+            COMMAND extends Command<?, ?>,
+            COMMANDS extends List<? extends COMMAND>,
+            CONNECTED_VALUE extends Value<?, ?>,
+            RUNNING_VALUE extends Value<?, ?>,
+            ERROR_VALUE extends Value<?, ?>,
+            VALUE extends Value<?, ?>,
+            VALUES extends List<? extends VALUE>,
+            PROPERTY extends Property<?, ?, ?>,
+            PROPERTIES extends List<? extends PROPERTY>,
+            DEVICE extends Device<REMOVE_COMMAND, START_STOP_COMMAND, COMMAND, COMMANDS, CONNECTED_VALUE, RUNNING_VALUE, ERROR_VALUE, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE>>
+        extends PrimaryObject<REMOVE_COMMAND, START_STOP_COMMAND, CONNECTED_VALUE, RUNNING_VALUE, ERROR_VALUE, DEVICE, DeviceListener<? super DEVICE>>, HasCommands<COMMANDS>, HasValues<VALUES>, HasProperties<PROPERTIES> {
 
-    public final static String COMMANDS = "commands";
-    public final static String VALUES = "values";
-    public final static String PROPERTIES = "properties";
+    public final static String COMMANDS_ID = "commands";
+    public final static String VALUES_ID = "values";
+    public final static String PROPERTIES_ID = "properties";
 }

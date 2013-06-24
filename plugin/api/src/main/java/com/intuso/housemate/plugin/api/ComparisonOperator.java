@@ -1,11 +1,6 @@
 package com.intuso.housemate.plugin.api;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/06/13
- * Time: 08:54
- * To change this template use File | Settings | File Templates.
  */
 public interface ComparisonOperator {
 

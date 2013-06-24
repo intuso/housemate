@@ -4,11 +4,6 @@ import com.intuso.housemate.api.object.NoChildrenWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 20/02/13
- * Time: 09:10
- * To change this template use File | Settings | File Templates.
  */
 public final class NoChildrenProxyObject
         extends ProxyObject<

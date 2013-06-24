@@ -9,11 +9,6 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 import org.junit.Ignore;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 10/07/12
- * Time: 00:48
- * To change this template use File | Settings | File Templates.
  */
 @Ignore
 public class TestRealRoot extends RealRootObject {

@@ -5,17 +5,25 @@ import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeInstance;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/02/12
- * Time: 08:17
- * To change this template use File | Settings | File Templates.
+ * @param <TYPE> the type of the value's type
+ * @param <VALUE> the type of the value
  */
-public interface Value<T extends Type, V extends Value<?, ?>>
-        extends BaseObject<ValueListener<? super V>> {
+public interface Value<
+            TYPE extends Type,
+            VALUE extends Value<?, ?>>
+        extends BaseObject<ValueListener<? super VALUE>> {
 
-    public final static String VALUE = "value";
+    public final static String VALUE_ID = "value";
 
-    public T getType();
+    /**
+     * Gets the value's type
+     * @return the value's type
+     */
+    public TYPE getType();
+
+    /**
+     * Gets the value's value
+     * @return the value's value
+     */
     public TypeInstance getTypeInstance();
 }

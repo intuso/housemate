@@ -5,11 +5,6 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 20/02/13
- * Time: 19:38
- * To change this template use File | Settings | File Templates.
  */
 public class NoChildrenProxyObjectFactory
         implements HousemateObjectFactory<ProxyResources<NoChildrenProxyObjectFactory>, NoChildrenWrappable, NoChildrenProxyObject> {

@@ -8,11 +8,6 @@ import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 15/05/13
- * Time: 08:45
- * To change this template use File | Settings | File Templates.
  */
 public class TestUtils {
 

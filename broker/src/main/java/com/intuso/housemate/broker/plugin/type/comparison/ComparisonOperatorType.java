@@ -14,11 +14,6 @@ import com.intuso.housemate.plugin.api.PluginDescriptor;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/06/13
- * Time: 22:38
- * To change this template use File | Settings | File Templates.
  */
 public class ComparisonOperatorType extends RealSingleChoiceType<ComparisonOperator> implements PluginListener {
 

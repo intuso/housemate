@@ -19,11 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 19:14
- * To change this template use File | Settings | File Templates.
  */
 public class PrimaryTest {
 

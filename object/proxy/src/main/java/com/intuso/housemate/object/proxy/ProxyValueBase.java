@@ -13,11 +13,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:21
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyValueBase<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, SWBL, SWR>>,
@@ -37,7 +32,7 @@ public abstract class ProxyValueBase<
     @Override
     public final List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(VALUE, new Receiver<TypeInstance>() {
+        result.add(addMessageListener(VALUE_ID, new Receiver<TypeInstance>() {
             @Override
             public void messageReceived(Message<TypeInstance> stringMessageValueMessage) {
                 for(ValueListener<? super V> listener : getObjectListeners())

@@ -4,7 +4,6 @@ import com.intuso.housemate.api.HousemateException;
 
 /**
  * Main class for the broker
- * @author tclabon
  *
  */
 public class App {

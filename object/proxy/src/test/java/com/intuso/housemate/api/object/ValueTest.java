@@ -21,11 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 17:54
- * To change this template use File | Settings | File Templates.
  */
 public class ValueTest {
 

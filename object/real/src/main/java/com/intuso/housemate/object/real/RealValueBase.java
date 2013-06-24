@@ -10,11 +10,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:21
- * To change this template use File | Settings | File Templates.
  */
 public abstract class RealValueBase<WBL extends ValueWrappableBase<SWBL>,
             SWBL extends HousemateObjectWrappable<?>,
@@ -49,7 +44,7 @@ public abstract class RealValueBase<WBL extends ValueWrappableBase<SWBL>,
     public final void setTypedValue(O typedValue) {
         if((this.typedValue == null && typedValue == null)
             || (this.typedValue != null && typedValue != null && this.typedValue.equals(typedValue)))
-        return;
+            return;
         for(ValueListener<? super V> listener : getObjectListeners())
             listener.valueChanging((V)this);
         this.typedValue = typedValue;
@@ -72,6 +67,6 @@ public abstract class RealValueBase<WBL extends ValueWrappableBase<SWBL>,
 
     @Override
     public final void valueChanged(RealValueBase value) {
-        sendMessage(VALUE, getTypeInstance());
+        sendMessage(VALUE_ID, getTypeInstance());
     }
 }

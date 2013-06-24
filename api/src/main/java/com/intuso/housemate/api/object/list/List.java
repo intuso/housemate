@@ -4,19 +4,31 @@ import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/05/12
- * Time: 10:18
- * To change this template use File | Settings | File Templates.
+ * @param <T> the type of the list's elements
  */
 public interface List<T> extends BaseObject<ListListener<? super T>>, Iterable<T> {
 
-    public final static String ADD = "add";
-    public final static String REMOVE = "remove";
+    public final static String ADD_TYPE = "add";
+    public final static String REMOVE_TYPE = "remove";
 
+    /**
+     * Get an element from the list by name
+     * @param name the name of the element to get
+     * @return the element for that name, or null if there is none
+     */
     public T get(String name);
+
+    /**
+     * Get the number of elements in the list
+     * @return the number of elements in the list
+     */
     public int size();
 
+    /**
+     * Add a list listener to the list object
+     * @param listener the listener to add
+     * @param callForExistingElements whether the listener should be called for elements already in the list
+     * @return the listener registration
+     */
     public ListenerRegistration addObjectListener(ListListener<? super T> listener, boolean callForExistingElements);
 }

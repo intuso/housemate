@@ -18,11 +18,6 @@ import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 22/05/13
- * Time: 23:39
- * To change this template use File | Settings | File Templates.
  */
 public interface LifecycleHandler {
     BrokerRealCommand createAddUserCommand(BrokerRealList<UserWrappable, BrokerRealUser> users);

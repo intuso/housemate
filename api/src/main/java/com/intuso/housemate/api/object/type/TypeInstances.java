@@ -6,11 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 03/06/13
- * Time: 07:25
- * To change this template use File | Settings | File Templates.
+ * Collection of type instance, mapped by type id
  */
 public class TypeInstances extends HashMap<String, TypeInstance> implements Message.Payload {
     @Override

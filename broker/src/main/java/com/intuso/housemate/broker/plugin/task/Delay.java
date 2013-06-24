@@ -11,7 +11,6 @@ import com.intuso.housemate.object.real.impl.type.TimeUnitType;
 
 /**
  * Task that waits for a specified amount of time
- * @author tclabon
  *
  */
 @FactoryInformation(id = "delay", name = "Delay", description = "Delays for a set amount of time")

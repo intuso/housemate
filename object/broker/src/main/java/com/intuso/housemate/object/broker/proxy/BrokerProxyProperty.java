@@ -8,11 +8,6 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:22
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyProperty
         extends BrokerProxyValueBase<PropertyWrappable, CommandWrappable, BrokerProxyCommand, BrokerProxyProperty>
@@ -27,7 +22,7 @@ public class BrokerProxyProperty
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        setCommand = getWrapper(SET_COMMAND);
+        setCommand = getWrapper(SET_COMMAND_ID);
     }
 
     @Override

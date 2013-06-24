@@ -10,16 +10,10 @@ import com.intuso.housemate.object.proxy.ProxyAutomation;
 import com.intuso.housemate.web.client.GWTResources;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 07/08/12
- * Time: 00:36
- * To change this template use File | Settings | File Templates.
  */
 public class GWTProxyAutomation extends ProxyAutomation<
             GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             GWTResources<?>,
-            GWTProxyProperty,
             GWTProxyCommand,
             GWTProxyValue,
             GWTProxyCondition,

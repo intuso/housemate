@@ -9,11 +9,6 @@ import com.intuso.utilities.log.Log;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 26/03/13
- * Time: 09:02
- * To change this template use File | Settings | File Templates.
  */
 public class ProxyResources<
             F extends HousemateObjectFactory<? extends ProxyResources<?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>>

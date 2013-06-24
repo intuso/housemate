@@ -15,11 +15,6 @@ import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 12/03/13
- * Time: 18:21
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerRealRootObject
         extends BrokerRealObject<RootWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>, RootListener<? super BrokerRealRootObject>>
@@ -32,8 +27,8 @@ public class BrokerRealRootObject
 
     public BrokerRealRootObject(BrokerRealResources resources) {
         super(resources, new RootWrappable());
-        users = new BrokerRealList<UserWrappable, BrokerRealUser>(resources, USERS, USERS, "The defined users");
-        automations = new BrokerRealList<AutomationWrappable, BrokerRealAutomation>(resources, AUTOMATIONS, AUTOMATIONS, "The defined automations");
+        users = new BrokerRealList<UserWrappable, BrokerRealUser>(resources, USERS_ID, USERS_ID, "The defined users");
+        automations = new BrokerRealList<AutomationWrappable, BrokerRealAutomation>(resources, AUTOMATIONS_ID, AUTOMATIONS_ID, "The defined automations");
         addUserCommand = getResources().getLifecycleHandler().createAddUserCommand(users);
         addAutomationCommand = getResources().getLifecycleHandler().createAddAutomationCommand(automations);
 

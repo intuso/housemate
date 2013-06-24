@@ -6,11 +6,6 @@ import com.intuso.housemate.plugin.api.RealDeviceFactory;
 import com.rfxcom.rfxtrx.util.HomeEasy;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 04/03/13
- * Time: 11:30
- * To change this template use File | Settings | File Templates.
  */
 public class HomeEasyApplianceFactory implements RealDeviceFactory<HomeEasyAppliance> {
 

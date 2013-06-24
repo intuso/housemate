@@ -5,11 +5,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 03/06/13
- * Time: 23:56
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ValueSource {
 

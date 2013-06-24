@@ -5,11 +5,6 @@ import com.intuso.housemate.api.object.type.RegexTypeWrappable;
 import com.intuso.housemate.api.resources.RegexMatcher;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 10:12
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyRegexType<
             R extends ProxyResources<NoChildrenProxyObjectFactory>,

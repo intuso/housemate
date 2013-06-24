@@ -17,11 +17,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 25/03/13
- * Time: 09:29
- * To change this template use File | Settings | File Templates.
+ * Root object used to handle messaging between a router and the broker
  */
 public class RouterRootObject
         extends HousemateObject<Resources, RootWrappable, HousemateObjectWrappable<?>,
@@ -31,6 +27,10 @@ public class RouterRootObject
     private final Router router;
     private final ConnectionManager connectionManager;
 
+    /**
+     * @param resources the resources
+     * @param router the router to create the root object for
+     */
     protected RouterRootObject(Resources resources, Router router) {
         super(resources, new RootWrappable());
         this.router = router;
@@ -43,6 +43,10 @@ public class RouterRootObject
         return connectionManager.getStatus();
     }
 
+    /**
+     * Updates the router's connection status
+     * @param status the router's new connection status
+     */
     protected void setRouterStatus(Router.Status status) {
         switch (status) {
             case Disconnected:
@@ -80,13 +84,13 @@ public class RouterRootObject
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
         result.add(connectionManager.addStatusChangeListener(this));
-        result.add(addMessageListener(CONNECTION_RESPONSE, new Receiver<AuthenticationResponse>() {
+        result.add(addMessageListener(CONNECTION_RESPONSE_TYPE, new Receiver<AuthenticationResponse>() {
             @Override
             public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {
                 connectionManager.authenticationResponseReceived(message.getPayload());
             }
         }));
-        result.add(addMessageListener(STATUS, new Receiver<ConnectionStatus>() {
+        result.add(addMessageListener(STATUS_TYPE, new Receiver<ConnectionStatus>() {
             @Override
             public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
                 connectionManager.routerStatusChanged(message.getPayload());
@@ -105,12 +109,21 @@ public class RouterRootObject
         router.sendMessage(message);
     }
 
-    public void sendMessage(String type, Message.Payload payload) {
+    /**
+     * Sends a message
+     * @param type the type of the message to send
+     * @param payload the message payload
+     */
+    private void sendMessage(String type, Message.Payload payload) {
         sendMessage(new Message<Message.Payload>(getPath(), type, payload));
     }
 
+    /**
+     * Tells the broker that a client key it tried to use is unknown
+     * @param key the unknown key
+     */
     public void unknownClient(String key) {
-        sendMessage(Root.CONNECTION_LOST, new StringMessageValue(key));
+        sendMessage(Root.CONNECTION_LOST_TYPE, new StringMessageValue(key));
     }
 
     @Override

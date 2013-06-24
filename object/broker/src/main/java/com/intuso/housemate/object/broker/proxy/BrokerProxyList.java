@@ -15,11 +15,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.Iterator;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 09/07/12
- * Time: 19:15
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyList<SWBL extends HousemateObjectWrappable<?>,
             SWR extends BrokerProxyObject<? extends SWBL, ?, ?, ?, ?>>
@@ -33,13 +28,13 @@ public class BrokerProxyList<SWBL extends HousemateObjectWrappable<?>,
     @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(ADD, new Receiver<ClientPayload<HousemateObjectWrappable>>() {
+        result.add(addMessageListener(ADD_TYPE, new Receiver<ClientPayload<HousemateObjectWrappable>>() {
             @Override
             public void messageReceived(Message<ClientPayload<HousemateObjectWrappable>> message) throws HousemateException {
                 add(message.getPayload().getOriginal(), message.getPayload().getClient());
             }
         }));
-        result.add(addMessageListener(REMOVE, new Receiver<ClientPayload<HousemateObjectWrappable>>() {
+        result.add(addMessageListener(REMOVE_TYPE, new Receiver<ClientPayload<HousemateObjectWrappable>>() {
             @Override
             public void messageReceived(Message<ClientPayload<HousemateObjectWrappable>> message) throws HousemateException {
                 remove(message.getPayload().getOriginal().getId());

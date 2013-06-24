@@ -6,11 +6,6 @@ import com.intuso.housemate.api.object.user.UserListener;
 import com.intuso.housemate.api.object.user.UserWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 10/07/12
- * Time: 00:58
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerRealUser
         extends BrokerRealObject<UserWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ? ,?, ?>, UserListener>

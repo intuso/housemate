@@ -1,11 +1,6 @@
 package com.intuso.housemate.object.real.impl.type;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 26/10/12
- * Time: 13:39
- * To change this template use File | Settings | File Templates.
  */
 public class Time implements Comparable<Time> {
     private int hours, minutes, seconds;

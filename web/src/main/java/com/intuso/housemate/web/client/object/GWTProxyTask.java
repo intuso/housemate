@@ -9,11 +9,6 @@ import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.GWTResources;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 07/08/12
- * Time: 00:34
- * To change this template use File | Settings | File Templates.
  */
 public class GWTProxyTask extends ProxyTask<
             GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,

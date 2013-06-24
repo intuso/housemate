@@ -16,11 +16,6 @@ import com.intuso.utilities.log.Log;
 import javax.annotation.Nullable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/07/12
- * Time: 23:45
- * To change this template use File | Settings | File Templates.
  */
 public class TypeBridge
         extends BridgeObject<TypeWrappable<HousemateObjectWrappable<?>>, HousemateObjectWrappable<?>,

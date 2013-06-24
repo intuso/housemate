@@ -11,11 +11,6 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 04/07/12
- * Time: 22:22
- * To change this template use File | Settings | File Templates.
  */
 public abstract class BrokerRealCommand
         extends BrokerRealObject<CommandWrappable, ListWrappable<ParameterWrappable>,
@@ -28,7 +23,7 @@ public abstract class BrokerRealCommand
 
     protected BrokerRealCommand(BrokerRealResources resources, String id, String name, String description, List<BrokerRealParameter<?>> parameters) {
         super(resources, new CommandWrappable(id, name, description));
-        realParameters = new BrokerRealList<ParameterWrappable, BrokerRealParameter<?>>(resources, PARAMETERS_FIELD, PARAMETERS_FIELD, PARAMETERS_DESCRIPTION, parameters);
+        realParameters = new BrokerRealList<ParameterWrappable, BrokerRealParameter<?>>(resources, PARAMETERS_ID, PARAMETERS_ID, PARAMETERS_DESCRIPTION, parameters);
         addWrapper(realParameters);
     }
 

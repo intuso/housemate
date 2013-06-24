@@ -7,11 +7,6 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import java.util.Set;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 23/01/13
- * Time: 09:08
- * To change this template use File | Settings | File Templates.
  */
 public interface Storage {
     public TypeInstance getValue(String[] path) throws DetailsNotFoundException, HousemateException;

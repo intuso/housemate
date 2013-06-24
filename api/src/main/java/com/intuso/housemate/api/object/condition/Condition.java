@@ -8,27 +8,54 @@ import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.value.Value;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/05/12
- * Time: 20:45
- * To change this template use File | Settings | File Templates.
+ * @param <ERROR_VALUE> the type of the error value
+ * @param <SATISFIED_VALUE> the type of the satisfied value
+ * @param <PROPERTIES> the type of the properties list
+ * @param <ADD_COMMAND> the type of the add command
+ * @param <CONDITION> the type of the condition
+ * @param <CONDITIONS> the type of the conditions list
  */
-public interface Condition<SV extends Value<?, ?>, BV extends Value<?, ?>,
-            PL extends List<? extends Property<?, ?, ?>>, AC extends Command<?, ?>,
-            C extends Condition<SV, BV, PL, AC, C, CL>, CL extends List<? extends C>>
-        extends BaseObject<ConditionListener<? super C>>, HasProperties<PL>, HasConditions<CL> {
+public interface Condition<
+            ERROR_VALUE extends Value<?, ?>,
+            SATISFIED_VALUE extends Value<?, ?>,
+            PROPERTIES extends List<? extends Property<?, ?, ?>>,
+            ADD_COMMAND extends Command<?, ?>,
+            CONDITION extends Condition<ERROR_VALUE, SATISFIED_VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS>,
+            CONDITIONS extends List<? extends CONDITION>>
+        extends BaseObject<ConditionListener<? super CONDITION>>, HasProperties<PROPERTIES>, HasConditions<CONDITIONS> {
 
-    public final static String SATISFIED = "satisfied";
-    public final static String ERROR = "error";
-    public final static String PROPERTIES = "properties";
-    public final static String CONDITIONS = "conditions";
+    public final static String SATISFIED_ID = "satisfied";
+    public final static String ERROR_ID = "error";
+    public final static String PROPERTIES_ID = "properties";
+    public final static String CONDITIONS_ID = "conditions";
 
-    public PL getProperties();
-    public CL getConditions();
-    public AC getAddConditionCommand();
-    public SV getErrorValue();
+    /**
+     * Gets the add condition command
+     * @return the add condition command
+     */
+    public ADD_COMMAND getAddConditionCommand();
+
+    /**
+     * Gets the error value object
+     * @return the error value object
+     */
+    public ERROR_VALUE getErrorValue();
+
+    /**
+     * Gets the current error
+     * @return the current error
+     */
     public String getError();
-    public BV getSatisfiedValue();
+
+    /**
+     * Gets the satisfied value object
+     * @return the satisfied value object
+     */
+    public SATISFIED_VALUE getSatisfiedValue();
+
+    /**
+     * Gets the current satisfied value
+     * @return the current satisfied value
+     */
     public boolean isSatisfied();
 }

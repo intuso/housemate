@@ -3,11 +3,6 @@ package com.intuso.housemate.object.broker;
 import com.intuso.housemate.api.comms.Message;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 24/04/13
- * Time: 14:00
- * To change this template use File | Settings | File Templates.
  */
 public class ClientPayload<T extends Message.Payload> implements Message.Payload {
 

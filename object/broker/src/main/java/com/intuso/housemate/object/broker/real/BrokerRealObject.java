@@ -5,11 +5,6 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 24/01/13
- * Time: 00:29
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerRealObject<WBL extends HousemateObjectWrappable<SWBL>,
             SWBL extends HousemateObjectWrappable<?>,

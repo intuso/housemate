@@ -14,11 +14,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 04/07/12
- * Time: 22:22
- * To change this template use File | Settings | File Templates.
  */
 public abstract class RealCommand
         extends RealObject<CommandWrappable, ListWrappable<ParameterWrappable>, RealList<ParameterWrappable, RealParameter<?>>,
@@ -29,30 +24,30 @@ public abstract class RealCommand
 
     protected RealCommand(RealResources resources, String id, String name, String description, List<RealParameter<?>> parameters) {
         super(resources, new CommandWrappable(id, name, description));
-        realParameters = new RealList<ParameterWrappable, RealParameter<?>>(resources, PARAMETERS_FIELD, PARAMETERS_FIELD, "The parameters required by the command", parameters);
+        realParameters = new RealList<ParameterWrappable, RealParameter<?>>(resources, PARAMETERS_ID, PARAMETERS_ID, "The parameters required by the command", parameters);
         addWrapper(realParameters);
     }
 
     @Override
     protected final List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(PERFORM, new Receiver<PerformMessageValue>() {
+        result.add(addMessageListener(PERFORM_TYPE, new Receiver<PerformMessageValue>() {
             @Override
             public void messageReceived(final Message<Command.PerformMessageValue> message) throws HousemateException {
                 perform(message.getPayload().getValues(), new CommandListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
-                        sendMessage(PERFORMING, new Command.PerformingMessageValue(message.getPayload().getOpId(), true));
+                        sendMessage(PERFORMING_TYPE, new Command.PerformingMessageValue(message.getPayload().getOpId(), true));
                     }
 
                     @Override
                     public void commandFinished(RealCommand command) {
-                        sendMessage(PERFORMING, new PerformingMessageValue(message.getPayload().getOpId(), false));
+                        sendMessage(PERFORMING_TYPE, new PerformingMessageValue(message.getPayload().getOpId(), false));
                     }
 
                     @Override
                     public void commandFailed(RealCommand command, String error) {
-                        sendMessage(FAILED, new FailedMessageValue(message.getPayload().getOpId(), error));
+                        sendMessage(FAILED_TYPE, new FailedMessageValue(message.getPayload().getOpId(), error));
                     }
                 });
             }

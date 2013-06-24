@@ -24,10 +24,6 @@ import com.intuso.housemate.web.client.ui.view.LoginView;
 import static com.google.gwt.user.client.DOM.getElementById;
 
 /**
- * Created by Ravn Systems
- * User: janvh
- * Date: 23/07/11
- * Time: 11:48
  */
 public class LoginPopup extends Composite implements LoginView {
 

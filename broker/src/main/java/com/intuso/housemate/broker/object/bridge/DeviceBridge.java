@@ -14,23 +14,31 @@ import com.intuso.housemate.api.object.value.ValueWrappable;
 import javax.annotation.Nullable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/07/12
- * Time: 23:37
- * To change this template use File | Settings | File Templates.
  */
 public class DeviceBridge
-        extends PrimaryObjectBridge<DeviceWrappable, DeviceBridge, DeviceListener<? super DeviceBridge>>
-        implements Device<CommandBridge, CommandBridge, CommandBridge, ListBridge<CommandWrappable, Command<?, ?>, CommandBridge>,
-                    ValueBridge, ValueBridge, ValueBridge, ValueBridge, ListBridge<ValueWrappable, Value<?, ?>, ValueBridge>,
-                    PropertyBridge, PropertyBridge, ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>, DeviceBridge> {
+        extends PrimaryObjectBridge<
+            DeviceWrappable,
+            DeviceBridge,
+            DeviceListener<? super DeviceBridge>>
+        implements Device<
+            CommandBridge,
+            CommandBridge,
+            CommandBridge,
+            ListBridge<CommandWrappable, Command<?, ?>, CommandBridge>,
+            ValueBridge,
+            ValueBridge,
+            ValueBridge,
+            ValueBridge,
+            ListBridge<ValueWrappable, Value<?, ?>, ValueBridge>,
+            PropertyBridge,
+            ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge>,
+            DeviceBridge> {
 
     private ListBridge<CommandWrappable, Command<?, ?>, CommandBridge> commandList;
     private ListBridge<ValueWrappable, Value<?, ?>, ValueBridge> valueList;
     private ListBridge<PropertyWrappable, Property<?, ?, ?>, PropertyBridge> propertyList;
 
-    public DeviceBridge(BrokerBridgeResources resources, Device<?, ?, ? extends Command<?, ?>, ?, ?, ?, ?, ? extends Value<?, ?>, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+    public DeviceBridge(BrokerBridgeResources resources, Device<?, ?, ? extends Command<?, ?>, ?, ?, ?, ?, ? extends Value<?, ?>, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
         super(resources, new DeviceWrappable(device.getId(), device.getName(), device.getDescription()), device);
         commandList = new ListBridge<CommandWrappable, Command<?, ?>, CommandBridge>(resources, device.getCommands(), new CommandBridge.Converter(resources));
         valueList = new ListBridge<ValueWrappable, Value<?, ?>, ValueBridge>(resources, device.getValues(), new ValueBridge.Converter(resources));
@@ -55,7 +63,7 @@ public class DeviceBridge
         return propertyList;
     }
 
-    public final static class Converter implements Function<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> {
+    public final static class Converter implements Function<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> {
 
         private BrokerBridgeResources resources;
 
@@ -64,7 +72,7 @@ public class DeviceBridge
         }
 
         @Override
-        public DeviceBridge apply(@Nullable Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
+        public DeviceBridge apply(@Nullable Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
             return new DeviceBridge(resources, device);
         }
     }

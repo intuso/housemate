@@ -16,11 +16,6 @@ import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 12/03/13
- * Time: 18:37
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyRootObject
         extends BrokerProxyObject<RootWrappable, HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>,
@@ -33,9 +28,9 @@ public class BrokerProxyRootObject
     public BrokerProxyRootObject(BrokerProxyResources<BrokerProxyFactory.All> resources) {
         super(resources, new RootWrappable());
         types = new BrokerProxyList<TypeWrappable<?>, BrokerProxyType>(
-                BrokerProxyFactory.changeFactoryType(resources, new BrokerProxyFactory.Type()), new ListWrappable(TYPES, TYPES, "Proxied types"));
+                BrokerProxyFactory.changeFactoryType(resources, new BrokerProxyFactory.Type()), new ListWrappable(TYPES_ID, TYPES_ID, "Proxied types"));
         devices = new BrokerProxyList<DeviceWrappable, BrokerProxyDevice>(
-                BrokerProxyFactory.changeFactoryType(resources, new BrokerProxyFactory.Device()), new ListWrappable<DeviceWrappable>(DEVICES, DEVICES, "Proxied devices"));
+                BrokerProxyFactory.changeFactoryType(resources, new BrokerProxyFactory.Device()), new ListWrappable<DeviceWrappable>(DEVICES_ID, DEVICES_ID, "Proxied devices"));
 
         addWrapper(types);
         addWrapper(devices);

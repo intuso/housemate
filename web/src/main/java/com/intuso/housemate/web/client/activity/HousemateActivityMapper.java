@@ -13,11 +13,6 @@ import com.intuso.housemate.web.client.place.UnsatisfiedTaskPlace;
 import com.intuso.housemate.web.client.place.UserPlace;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 24/11/12
- * Time: 19:23
- * To change this template use File | Settings | File Templates.
  */
 public class HousemateActivityMapper implements ActivityMapper {
     @Override

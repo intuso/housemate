@@ -65,7 +65,6 @@ import java.util.regex.Pattern;
  * Platform implementation for a broker. Works the same was as the PC implementation in terms of getting properties
  * and overriding based on command line arguments, Main difference is that the Comms implementation is different
  * and some methods are unsupported as they should not be used by the broker.
- * @author tclabon
  *
  */
 public class BrokerServerEnvironment {

@@ -17,11 +17,6 @@ import com.intuso.housemate.plugin.api.PluginDescriptor;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/06/13
- * Time: 17:32
- * To change this template use File | Settings | File Templates.
  */
 public class ComparisonType extends RealCompoundType<Comparison> implements PluginListener {
 

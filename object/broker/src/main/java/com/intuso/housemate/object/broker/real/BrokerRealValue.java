@@ -6,11 +6,6 @@ import com.intuso.housemate.api.object.value.ValueWrappable;
 import com.intuso.housemate.object.real.RealType;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:21
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerRealValue<O>
         extends BrokerRealValueBase<ValueWrappable, NoChildrenWrappable, NoChildrenBrokerRealObject, O, BrokerRealValue<O>>

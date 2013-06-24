@@ -18,11 +18,6 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 10:13
- * To change this template use File | Settings | File Templates.
  */
 public abstract class RealMultiChoiceType<O>
         extends RealType<MultiChoiceTypeWrappable, ListWrappable<OptionWrappable>, Set<O>>

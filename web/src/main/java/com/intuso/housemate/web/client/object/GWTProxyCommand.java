@@ -7,11 +7,6 @@ import com.intuso.housemate.object.proxy.ProxyCommand;
 import com.intuso.housemate.web.client.GWTResources;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/03/12
- * Time: 23:39
- * To change this template use File | Settings | File Templates.
  */
 public class GWTProxyCommand extends ProxyCommand<
             GWTResources<GWTProxyFactory.List<ParameterWrappable, GWTProxyParameter>>,

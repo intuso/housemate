@@ -11,11 +11,6 @@ import com.intuso.housemate.object.proxy.ProxyRootObject;
 import com.intuso.housemate.web.client.GWTResources;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 09/02/13
- * Time: 09:02
- * To change this template use File | Settings | File Templates.
  */
 public class GWTProxyRootObject
         extends ProxyRootObject<

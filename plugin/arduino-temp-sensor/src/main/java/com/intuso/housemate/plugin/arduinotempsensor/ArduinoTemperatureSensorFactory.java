@@ -6,11 +6,6 @@ import com.intuso.housemate.plugin.api.RealDeviceFactory;
 import jssc.SerialPort;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 22/06/13
- * Time: 13:13
- * To change this template use File | Settings | File Templates.
  */
 public class ArduinoTemperatureSensorFactory implements RealDeviceFactory<ArduinoTemperatureSensor> {
 

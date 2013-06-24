@@ -14,11 +14,6 @@ import com.intuso.utilities.log.LogWriter;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 14/03/12
- * Time: 23:22
- * To change this template use File | Settings | File Templates.
  */
 public class GWTEnvironment {
     

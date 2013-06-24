@@ -3,15 +3,28 @@ package com.intuso.housemate.api.object.command;
 import com.intuso.housemate.api.object.ObjectListener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 03/07/12
- * Time: 22:46
- * To change this template use File | Settings | File Templates.
+ *
+ * Listener interface for command
  */
 public interface CommandListener<C extends Command<?, ?>>
         extends ObjectListener {
+
+    /**
+     * Notifies that a command has been started
+     * @param command the command that was started
+     */
     public void commandStarted(C command);
+
+    /**
+     * Notifies that a command has finished successfully
+     * @param command the command that finished
+     */
     public void commandFinished(C command);
+
+    /**
+     * Notifies that a command failed to finish successfully
+     * @param command the command that failed
+     * @param error the cause of the failure
+     */
     public void commandFailed(C command, String error);
 }

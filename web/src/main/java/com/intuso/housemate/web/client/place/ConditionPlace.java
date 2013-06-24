@@ -9,11 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 05/12/12
- * Time: 22:52
- * To change this template use File | Settings | File Templates.
  */
 public class ConditionPlace extends AutomationPlace {
 

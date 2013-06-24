@@ -18,11 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 04/07/12
- * Time: 18:29
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyCommand<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, ListWrappable<ParameterWrappable>, PL>>,
@@ -43,15 +38,15 @@ public abstract class ProxyCommand<
 
     @Override
     protected void getChildObjects() {
-        parameters = getWrapper(PARAMETERS_FIELD);
+        parameters = getWrapper(PARAMETERS_ID);
         if(parameters == null)
-            throw new HousemateRuntimeException("Could not unwrap command " + getId() + ", " + PARAMETERS_FIELD + " value wrapper is missing");
+            throw new HousemateRuntimeException("Could not unwrap command " + getId() + ", " + PARAMETERS_ID + " value wrapper is missing");
     }
 
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(PERFORMING, new Receiver<PerformingMessageValue>() {
+        result.add(addMessageListener(PERFORMING_TYPE, new Receiver<PerformingMessageValue>() {
             @Override
             public void messageReceived(Message<PerformingMessageValue> message) throws HousemateException {
                 CommandListener<? super C> performer = listenerMap.get(message.getPayload().getOpId());
@@ -69,7 +64,7 @@ public abstract class ProxyCommand<
                 }
             }
         }));
-        result.add(addMessageListener(FAILED, new Receiver<FailedMessageValue>() {
+        result.add(addMessageListener(FAILED_TYPE, new Receiver<FailedMessageValue>() {
             @Override
             public void messageReceived(Message<FailedMessageValue> message) throws HousemateException {
                 CommandListener<? super C> performer = listenerMap.remove(message.getPayload().getOpId());
@@ -95,6 +90,6 @@ public abstract class ProxyCommand<
     public final synchronized void perform(TypeInstances values, CommandListener<? super C> listener) {
         String id = "" + nextId++;
         listenerMap.put(id, listener);
-        sendMessage(PERFORM, new PerformMessageValue(id, values));
+        sendMessage(PERFORM_TYPE, new PerformMessageValue(id, values));
     }
 }

@@ -11,11 +11,6 @@ import com.intuso.utilities.wrapper.WrapperListener;
 import java.util.Iterator;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 09/07/12
- * Time: 19:12
- * To change this template use File | Settings | File Templates.
  */
 public final class RealList<SWBL extends HousemateObjectWrappable<?>,
             SWR extends RealObject<? extends SWBL, ?, ?, ?>>
@@ -51,7 +46,7 @@ public final class RealList<SWBL extends HousemateObjectWrappable<?>,
     @Override
     public void childWrapperAdded(String childName, SWR wrapper) {
         wrapper.init(this);
-        sendMessage(ADD, wrapper.getWrappable());
+        sendMessage(ADD_TYPE, wrapper.getWrappable());
         for(ListListener<? super SWR> listener : getObjectListeners())
             listener.elementAdded(wrapper);
     }
@@ -59,7 +54,7 @@ public final class RealList<SWBL extends HousemateObjectWrappable<?>,
     @Override
     public void childWrapperRemoved(String name, SWR wrapper) {
         wrapper.uninit();
-        sendMessage(REMOVE, wrapper.getWrappable());
+        sendMessage(REMOVE_TYPE, wrapper.getWrappable());
         for(ListListener<? super SWR> listener : getObjectListeners())
             listener.elementRemoved(wrapper);
     }
@@ -102,6 +97,6 @@ public final class RealList<SWBL extends HousemateObjectWrappable<?>,
 
     public void resendElements() {
         for(SWR subWrapper : this)
-            sendMessage(ADD, subWrapper.getWrappable());
+            sendMessage(ADD_TYPE, subWrapper.getWrappable());
     }
 }

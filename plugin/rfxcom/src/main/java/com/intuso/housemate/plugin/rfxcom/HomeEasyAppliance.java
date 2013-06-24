@@ -12,7 +12,6 @@ import java.io.IOException;
 
 /**
  * Housemate device that controls a USB relay
- * @author tclabon
  *
  */
 public class HomeEasyAppliance extends OnOffDevice implements ValueListener<RealProperty<?>> {

@@ -4,11 +4,8 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:08
- * To change this template use File | Settings | File Templates.
+ *
+ * Base data object for a value
  */
 public abstract class ValueWrappableBase<WBL extends HousemateObjectWrappable<?>>
         extends HousemateObjectWrappable<WBL> {
@@ -24,14 +21,26 @@ public abstract class ValueWrappableBase<WBL extends HousemateObjectWrappable<?>
         this.value = value;
     }
 
+    /**
+     * Gets the id of the type
+     * @return the id of the type
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Gets the current value
+     * @return the current value
+     */
     public TypeInstance getValue() {
         return value;
     }
 
+    /**
+     * Sets the current value
+     * @param value the new value
+     */
     public void setValue(TypeInstance value) {
         this.value = value;
     }

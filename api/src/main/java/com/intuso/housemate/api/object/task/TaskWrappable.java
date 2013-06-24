@@ -3,11 +3,8 @@ package com.intuso.housemate.api.object.task;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 07/07/12
- * Time: 20:27
- * To change this template use File | Settings | File Templates.
+ *
+ * Data object for a task
  */
 public final class TaskWrappable extends HousemateObjectWrappable<HousemateObjectWrappable<?>> {
 

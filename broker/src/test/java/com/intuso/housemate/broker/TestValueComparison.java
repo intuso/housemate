@@ -32,11 +32,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 21/06/13
- * Time: 09:10
- * To change this template use File | Settings | File Templates.
  */
 public class TestValueComparison {
 

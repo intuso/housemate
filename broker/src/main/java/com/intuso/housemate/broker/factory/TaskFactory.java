@@ -22,10 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 21/08/12
- * Time: 12:28
  */
 public final class TaskFactory implements PluginListener {
 

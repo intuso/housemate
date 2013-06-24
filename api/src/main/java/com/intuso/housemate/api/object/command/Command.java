@@ -8,44 +8,65 @@ import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:18
- * To change this template use File | Settings | File Templates.
+ * @param <PL> the type of the propeties list
+ * @param <C> the type of the command
  */
-public interface Command<PL extends List<? extends Parameter<?>>, C extends Command<?, ?>>
+public interface Command<
+            PL extends List<? extends Parameter<?>>,
+            C extends Command<?, ?>>
         extends BaseObject<CommandListener<? super C>>, HasParameters<PL> {
 
-    public final static String PARAMETERS_FIELD = "parameters";
+    public final static String PARAMETERS_ID = "parameters";
+    public final static String PERFORM_TYPE = "perform";
+    public final static String PERFORMING_TYPE = "performing";
+    public final static String FAILED_TYPE = "failed";
 
-    public final static String PERFORM = "perform";
-    public final static String PERFORMING = "performing";
-    public final static String FAILED = "failed";
-
+    /**
+     * Performs the command
+     * @param values the values of the parameters
+     * @param listener the listener to call about progress of the command
+     */
     public void perform(TypeInstances values, CommandListener<? super C> listener);
 
+    /**
+     * Message payload for a perform command call
+     */
     public static class PerformMessageValue implements Message.Payload {
 
-        String opId;
-        TypeInstances values;
+        private String opId;
+        private TypeInstances values;
 
         private PerformMessageValue() {}
 
+        /**
+         * @param opId the operation id of the command used to associate progress messages with the original call
+         * @param values the values to perform with
+         */
         public PerformMessageValue(String opId, TypeInstances values) {
             this.opId = opId;
             this.values = values;
         }
 
+        /**
+         * Gets the operation id
+         * @return the operation id
+         */
         public String getOpId() {
             return opId;
         }
 
+        /**
+         * Gets the values
+         * @return the values
+         */
         public TypeInstances getValues() {
             return values;
         }
     }
 
+    /**
+     * Message payload for command progress
+     */
     public static class PerformingMessageValue implements Message.Payload {
 
         private String opId;
@@ -53,15 +74,27 @@ public interface Command<PL extends List<? extends Parameter<?>>, C extends Comm
 
         private PerformingMessageValue() {}
 
+        /**
+         * @param opId the operation id of the original call
+         * @param performing true if the command is currently in progress
+         */
         public PerformingMessageValue(String opId, boolean performing) {
             this.opId = opId;
             this.performing = performing;
         }
 
+        /**
+         * Gets the operation id
+         * @return the operation id
+         */
         public String getOpId() {
             return opId;
         }
 
+        /**
+         * Gets if the operation is currently in progress
+         * @return true if the operation is currently in progress
+         */
         public boolean isPerforming() {
             return performing;
         }
@@ -72,6 +105,9 @@ public interface Command<PL extends List<? extends Parameter<?>>, C extends Comm
         }
     }
 
+    /**
+     * Message payload for failed commands
+     */
     public static class FailedMessageValue implements Message.Payload {
 
         private String opId;
@@ -79,15 +115,27 @@ public interface Command<PL extends List<? extends Parameter<?>>, C extends Comm
 
         private FailedMessageValue() {}
 
+        /**
+         * @param opId the operation id of the original call
+         * @param cause the cause of the failure
+         */
         public FailedMessageValue(String opId, String cause) {
             this.opId = opId;
             this.cause = cause;
         }
 
+        /**
+         * Gets the operation id
+         * @return the operation id
+         */
         public String getOpId() {
             return opId;
         }
 
+        /**
+         * Gets the cause of the failure
+         * @return the cause of the failure
+         */
         public String getCause() {
             return cause;
         }

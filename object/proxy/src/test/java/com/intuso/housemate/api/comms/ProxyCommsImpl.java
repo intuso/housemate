@@ -5,11 +5,6 @@ import com.intuso.housemate.api.object.TestRealRoot;
 import com.intuso.housemate.api.resources.Resources;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 05/03/12
- * Time: 21:00
- * To change this template use File | Settings | File Templates.
  */
 public class ProxyCommsImpl extends Router {
 

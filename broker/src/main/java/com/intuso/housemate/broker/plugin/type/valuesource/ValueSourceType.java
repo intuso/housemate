@@ -22,11 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 03/06/13
- * Time: 07:20
- * To change this template use File | Settings | File Templates.
  */
 public class ValueSourceType extends RealSingleChoiceType<ValueSource> {
 

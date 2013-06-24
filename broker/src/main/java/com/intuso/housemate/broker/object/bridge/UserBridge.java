@@ -9,11 +9,6 @@ import com.intuso.housemate.api.object.user.UserWrappable;
 import javax.annotation.Nullable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/07/12
- * Time: 23:44
- * To change this template use File | Settings | File Templates.
  */
 public class UserBridge
         extends BridgeObject<UserWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, UserBridge, UserListener>

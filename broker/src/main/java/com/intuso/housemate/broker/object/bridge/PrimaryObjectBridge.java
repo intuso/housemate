@@ -7,16 +7,11 @@ import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 21/01/13
- * Time: 19:25
- * To change this template use File | Settings | File Templates.
  */
 public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
             PO extends PrimaryObjectBridge<WBL, PO, L>, L extends PrimaryListener<? super PO>>
         extends BridgeObject<WBL, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, PO, L>
-        implements PrimaryObject<PropertyBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge, ValueBridge, PO, L> {
+        implements PrimaryObject<CommandBridge, CommandBridge, ValueBridge, ValueBridge, ValueBridge, PO, L> {
 
     private CommandBridge removeCommand;
     private ValueBridge connectedValue;
@@ -25,7 +20,7 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<H
     private CommandBridge stopCommand;
     private ValueBridge errorValue;
 
-    protected PrimaryObjectBridge(BrokerBridgeResources resources, WBL wrappable, PrimaryObject<?, ?, ?, ?, ?, ?, ?, ?> proxyObject) {
+    protected PrimaryObjectBridge(BrokerBridgeResources resources, WBL wrappable, PrimaryObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
         super(resources,  wrappable);
         removeCommand = new CommandBridge(resources, proxyObject.getRemoveCommand());
         connectedValue = new ValueBridge(resources, proxyObject.getConnectedValue());

@@ -14,11 +14,6 @@ import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 22/04/13
- * Time: 09:07
- * To change this template use File | Settings | File Templates.
  */
 public class ObjectBrowserInput extends FlowPanel implements TypeInput {
 
@@ -39,7 +34,7 @@ public class ObjectBrowserInput extends FlowPanel implements TypeInput {
     @Override
     public void setTypeInstance(TypeInstance typeInstance) {
         if(typeInstance != null && typeInstance.getValue() != null) {
-            HousemateObject<?, ?, ?, ?, ?> object = Housemate.ENVIRONMENT.getResources().getRoot().getWrapper(
+            HousemateObject<?, ?, ?, ?, ?> object = Housemate.ENVIRONMENT.getResources().getRoot().getObject(
                     typeInstance.getValue().split("/"));
             if(object instanceof ProxyObject)
                 rootNode.showObject((ProxyObject<?, ?, ?, ?, ?, ?, ?>) object);

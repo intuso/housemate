@@ -4,11 +4,6 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 14/12/12
- * Time: 09:36
- * To change this template use File | Settings | File Templates.
  */
 public class ValueContainer extends SimplePanel {
 

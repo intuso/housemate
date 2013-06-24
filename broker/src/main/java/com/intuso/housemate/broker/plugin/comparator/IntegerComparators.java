@@ -6,11 +6,6 @@ import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.ComparisonOperator;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 19/06/13
- * Time: 22:11
- * To change this template use File | Settings | File Templates.
  */
 public class IntegerComparators {
 

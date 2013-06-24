@@ -11,34 +11,64 @@ import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 21:49
- * To change this template use File | Settings | File Templates.
+ * @param <ROOT> the type of the root
+ * @param <LISTENER> the type of the root's listener
  */
-public interface Root<R extends Root, L extends RootListener<? super R>>
-        extends BaseObject<L>, Receiver<Message.Payload>, Sender {
+public interface Root<
+            ROOT extends Root,
+            LISTENER extends RootListener<? super ROOT>>
+        extends BaseObject<LISTENER>, Receiver<Message.Payload>, Sender {
 
-    public final static String STATUS = "status";
-    public final static String CONNECTION_REQUEST = "connection-request";
-    public final static String CONNECTION_RESPONSE = "connection-response";
-    public final static String DISCONNECT = "disconnect";
-    public final static String CONNECTION_LOST = "connection-lost";
+    public final static String STATUS_TYPE = "status";
+    public final static String CONNECTION_REQUEST_TYPE = "connection-request";
+    public final static String CONNECTION_RESPONSE_TYPE = "connection-response";
+    public final static String DISCONNECT_TYPE = "disconnect";
+    public final static String CONNECTION_LOST_TYPE = "connection-lost";
 
-    public final static String USERS = "users";
-    public final static String TYPES = "types";
-    public final static String DEVICES = "devices";
-    public final static String AUTOMATIONS = "automations";
-    public final static String ADD_USER = "add-user";
-    public final static String ADD_DEVICE = "add-device";
-    public final static String ADD_AUTOMATION = "add-automation";
+    public final static String USERS_ID = "users";
+    public final static String TYPES_ID = "types";
+    public final static String DEVICES_ID = "devices";
+    public final static String AUTOMATIONS_ID = "automations";
+    public final static String ADD_USER_ID = "add-user";
+    public final static String ADD_DEVICE_ID = "add-device";
+    public final static String ADD_AUTOMATION_ID = "add-automation";
 
+    /**
+     * Gets the current connection status
+     * @return the current connection status
+     */
     public ConnectionStatus getStatus();
+
+    /**
+     * Gets the connection id
+     * @return the connection id
+     */
     public String getConnectionId();
+
+    /**
+     * Logs in to the broker
+     * @param method the method used to authenticate with
+     */
     public void login(AuthenticationMethod method);
+
+    /**
+     * Logs out of the broker
+     */
     public void logout();
+
+    /**
+     * Add a listener for lifecycle updates about an object
+     * @param path the path of the object
+     * @param listener the listener
+     * @return the listener registration
+     */
     public ListenerRegistration addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener);
-    public HousemateObject<?, ?, ?, ?, ?> getWrapper(String[] path);
+
+    /**
+     * Gets an object attached to this root
+     * @param path the path of the object to get
+     * @return the object at that path, or null if there isn't one
+     */
+    public HousemateObject<?, ?, ?, ?, ?> getObject(String[] path);
 
 }

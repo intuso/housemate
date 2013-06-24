@@ -18,11 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 04/07/12
- * Time: 18:29
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyCommand
         extends BrokerProxyObject<CommandWrappable, ListWrappable<ParameterWrappable>, BrokerProxyList<ParameterWrappable, BrokerProxyParameter>, BrokerProxyCommand, CommandListener<? super BrokerProxyCommand>>
@@ -43,13 +38,13 @@ public class BrokerProxyCommand
 
     @Override
     protected void getChildObjects() {
-        parameters = getWrapper(PARAMETERS_FIELD);
+        parameters = getWrapper(PARAMETERS_ID);
     }
 
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(PERFORMING, new Receiver<ClientPayload<PerformingMessageValue>>() {
+        result.add(addMessageListener(PERFORMING_TYPE, new Receiver<ClientPayload<PerformingMessageValue>>() {
             @Override
             public void messageReceived(Message<ClientPayload<PerformingMessageValue>> message) throws HousemateException {
                 CommandListener<? super BrokerProxyCommand> performer = listenerMap.get(message.getPayload().getOriginal().getOpId());
@@ -67,7 +62,7 @@ public class BrokerProxyCommand
                 }
             }
         }));
-        result.add(addMessageListener(FAILED, new Receiver<ClientPayload<FailedMessageValue>>() {
+        result.add(addMessageListener(FAILED_TYPE, new Receiver<ClientPayload<FailedMessageValue>>() {
             @Override
             public void messageReceived(Message<ClientPayload<FailedMessageValue>> message) throws HousemateException {
                 CommandListener<? super BrokerProxyCommand> performer = listenerMap.remove(message.getPayload().getOriginal().getOpId());
@@ -85,7 +80,7 @@ public class BrokerProxyCommand
         String id = "" + nextId++;
         listenerMap.put(id, listener);
         try {
-            sendMessage(PERFORM, new PerformMessageValue(id, values));
+            sendMessage(PERFORM_TYPE, new PerformMessageValue(id, values));
         } catch(HousemateException e) {
             listener.commandFailed(getThis(), "Failed to send message to client: " + e.getMessage());
         }

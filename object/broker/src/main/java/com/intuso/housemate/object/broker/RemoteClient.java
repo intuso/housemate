@@ -6,11 +6,6 @@ import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 30/05/13
- * Time: 09:45
- * To change this template use File | Settings | File Templates.
  */
 public interface RemoteClient {
     ConnectionType getType();

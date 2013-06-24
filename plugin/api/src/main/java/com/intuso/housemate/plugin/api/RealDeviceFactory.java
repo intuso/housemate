@@ -5,11 +5,6 @@ import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/02/13
- * Time: 09:05
- * To change this template use File | Settings | File Templates.
  */
 public interface RealDeviceFactory<D extends RealDevice> {
     public String getTypeId();

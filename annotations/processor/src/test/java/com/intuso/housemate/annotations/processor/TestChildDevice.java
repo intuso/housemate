@@ -8,11 +8,6 @@ import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/06/13
- * Time: 16:57
- * To change this template use File | Settings | File Templates.
  */
 public class TestChildDevice extends TestParentDevice {
 

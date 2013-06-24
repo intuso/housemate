@@ -13,11 +13,6 @@ import com.intuso.housemate.web.client.handler.HasObjectSelectedHandlers;
 import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 24/11/12
- * Time: 21:04
- * To change this template use File | Settings | File Templates.
  */
 public class ObjectListNavLink<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> extends NavLink
             implements ClickHandler, HasObjectSelectedHandlers<O> {

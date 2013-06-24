@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
  * A class that is created for each client that connects. This class starts threads that live as long as the client connection.
  * If a client disconnects and reconnects with the same proxy key, the connection will be handled by a different instance of
  * this class
- * @author tclabon
  *
  */
 public final class ClientHandle implements Receiver<Message.Payload> {
@@ -139,7 +138,7 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 	
 	/**
 	 * Class to read data off the socket and convert it into message objects
-	 * @author tclabon
+	 * @author Tom Clabon
 	 *
 	 */
 	private class StreamReader extends Thread {
@@ -199,7 +198,7 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 	
 	/**
 	 * Reads outgoing messages off a queue and sends them over the socket to the client
-	 * @author tclabon
+	 * @author Tom Clabon
 	 *
 	 */
 	private class MessageSender extends Thread {

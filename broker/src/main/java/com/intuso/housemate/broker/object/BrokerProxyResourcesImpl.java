@@ -14,11 +14,6 @@ import com.intuso.utilities.log.Log;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 22/05/13
- * Time: 07:17
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyResourcesImpl<F extends HousemateObjectFactory<?, ?, ?>>
         extends BrokerResourcesImpl<BrokerProxyRootObject> implements BrokerProxyResources<F> {

@@ -16,11 +16,6 @@ import jssc.SerialPortException;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 04/03/13
- * Time: 11:32
- * To change this template use File | Settings | File Templates.
  */
 public class ArduinoTemperatureSensorPlugin implements PluginDescriptor {
 

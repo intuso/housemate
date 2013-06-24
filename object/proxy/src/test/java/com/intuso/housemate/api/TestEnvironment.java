@@ -21,11 +21,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 05/03/12
- * Time: 20:56
- * To change this template use File | Settings | File Templates.
  */
 @Ignore
 public class TestEnvironment {

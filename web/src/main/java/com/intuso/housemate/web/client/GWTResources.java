@@ -11,11 +11,6 @@ import com.intuso.utilities.log.Log;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 25/02/13
- * Time: 10:26
- * To change this template use File | Settings | File Templates.
  */
 public class GWTResources<F extends HousemateObjectFactory<? extends ProxyResources<?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>> extends ProxyResources<F> {
 

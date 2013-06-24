@@ -12,11 +12,6 @@ import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/06/13
- * Time: 12:07
- * To change this template use File | Settings | File Templates.
  */
 public class TestParentDevice extends RealDevice {
 

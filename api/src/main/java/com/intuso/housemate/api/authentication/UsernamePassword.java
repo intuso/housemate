@@ -1,13 +1,12 @@
 package com.intuso.housemate.api.authentication;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/05/13
- * Time: 18:25
- * To change this template use File | Settings | File Templates.
+ *
+ * Authentication method to log in with a username and password.
+ *
+ * @see com.intuso.housemate.api.object.root.Root#login(AuthenticationMethod)
  */
-public class UsernamePassword extends AuthenticationMethod {
+public class UsernamePassword implements AuthenticationMethod {
 
     private String username;
     private String password;
@@ -15,21 +14,38 @@ public class UsernamePassword extends AuthenticationMethod {
 
     private UsernamePassword() {}
 
-    public UsernamePassword(boolean allowReconnect, String username, String password, boolean createSession) {
-        super(allowReconnect);
+    /**
+     * @param username the username to login with
+     * @param password the password to login with
+     * @param createSession true to create a session id that can be used at next login. Useful in user interfaces where
+     *                      you don't want the user to be prompted for their credentials each time
+     */
+    public UsernamePassword(String username, String password, boolean createSession) {
         this.username = username;
         this.password = password;
         this.createSession = createSession;
     }
 
+    /**
+     * Gets the username to login with
+     * @return the username to login with
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Gets the password to login with
+     * @return the password to login with
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Checks whether a session should be created for this login attempt
+     * @return true if a session should be created for this login attempt
+     */
     public boolean isCreateSession() {
         return createSession;
     }

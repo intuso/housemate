@@ -20,11 +20,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 14:52
- * To change this template use File | Settings | File Templates.
  */
 public class TypeTest {
 

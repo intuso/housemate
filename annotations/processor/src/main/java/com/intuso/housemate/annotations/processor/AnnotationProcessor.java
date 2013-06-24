@@ -35,11 +35,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/06/13
- * Time: 10:26
- * To change this template use File | Settings | File Templates.
  */
 public class AnnotationProcessor {
 

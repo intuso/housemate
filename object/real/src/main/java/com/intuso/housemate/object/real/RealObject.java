@@ -5,14 +5,9 @@ import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
-import com.intuso.housemate.api.object.root.real.RealAutomation;
+import com.intuso.housemate.api.object.root.real.RealRoot;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/05/12
- * Time: 10:18
- * To change this template use File | Settings | File Templates.
  */
 public abstract class RealObject<WBL extends HousemateObjectWrappable<SWBL>,
             SWBL extends HousemateObjectWrappable<?>,
@@ -23,7 +18,7 @@ public abstract class RealObject<WBL extends HousemateObjectWrappable<SWBL>,
 
     public final static String NAME_DESCRIPTION = "The name of this object";
 
-    private RealAutomation<?, ?, ?, ?, ?> realRoot;
+    private RealRoot<?, ?, ?, ?, ?> realRoot;
 
     protected RealObject(RealResources resources, WBL wrappable) {
         super(resources, wrappable);
@@ -34,7 +29,7 @@ public abstract class RealObject<WBL extends HousemateObjectWrappable<SWBL>,
                 getPath(), type, value));
     }
 
-    protected RealAutomation<?, ?, ?, ?, ?> getRealRoot() {
+    protected RealRoot<?, ?, ?, ?, ?> getRealRoot() {
         return realRoot;
     }
 
@@ -43,8 +38,8 @@ public abstract class RealObject<WBL extends HousemateObjectWrappable<SWBL>,
 
         // get the broker for this object
         // get the broker for this object
-        if(this instanceof RealAutomation)
-            realRoot = (RealAutomation)this;
+        if(this instanceof RealRoot)
+            realRoot = (RealRoot)this;
         else if(parent != null && parent instanceof RealObject)
             realRoot = ((RealObject)parent).realRoot;
     }

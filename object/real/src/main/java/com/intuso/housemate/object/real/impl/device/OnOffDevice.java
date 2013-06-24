@@ -12,7 +12,6 @@ import com.intuso.housemate.object.real.impl.type.BooleanType;
 import java.util.ArrayList;
 
 /**
- * @author tclabon
  * Device sub class for all devices that allow simple On/Off functionality. Can be extended again to
  * add extra commands/values and to define any properties the device needs
  */

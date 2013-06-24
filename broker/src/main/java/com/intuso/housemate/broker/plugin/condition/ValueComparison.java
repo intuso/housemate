@@ -18,7 +18,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 /**
  * Condition which is true iff the current day of the week matches
  * those specified by the user
- * @author tclabon
  *
  */
 public class ValueComparison extends BrokerRealCondition {

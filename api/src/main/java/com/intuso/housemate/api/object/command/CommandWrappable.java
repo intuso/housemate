@@ -5,11 +5,8 @@ import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 05/07/12
- * Time: 20:00
- * To change this template use File | Settings | File Templates.
+ *
+ * Data object for a command
  */
 public final class CommandWrappable extends HousemateObjectWrappable<ListWrappable<ParameterWrappable>> {
 

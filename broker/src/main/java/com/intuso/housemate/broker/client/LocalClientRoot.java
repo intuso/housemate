@@ -8,11 +8,6 @@ import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealRootObject;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 23/05/13
- * Time: 08:49
- * To change this template use File | Settings | File Templates.
  */
 public class LocalClientRoot extends RealRootObject {
 

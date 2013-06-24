@@ -6,11 +6,6 @@ import com.intuso.housemate.broker.plugin.type.constant.ConstantInstance;
 import com.intuso.housemate.object.real.RealType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 03/06/13
- * Time: 23:59
- * To change this template use File | Settings | File Templates.
  */
 public class ConstantValue extends ValueSource {
 

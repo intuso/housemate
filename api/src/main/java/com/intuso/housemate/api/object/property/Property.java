@@ -1,6 +1,5 @@
 package com.intuso.housemate.api.object.property;
 
-import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.type.Type;
@@ -8,18 +7,29 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.value.Value;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:18
- * To change this template use File | Settings | File Templates.
+ * @param <TYPE> the type of the type
+ * @param <SET_COMMAND> the type of the set command
+ * @param <PROPERTY> the type of the property
  */
-public interface Property<T extends Type, C extends Command<?, ?>, P extends Property<T, C, P>>
-        extends Value<T, P> {
+public interface Property<
+            TYPE extends Type,
+            SET_COMMAND extends Command<?, ?>,
+            PROPERTY extends Property<TYPE, SET_COMMAND, PROPERTY>>
+        extends Value<TYPE, PROPERTY> {
 
-    public final static String SET_COMMAND = "set-command";
+    public final static String SET_COMMAND_ID = "set-command";
     public final static String VALUE_PARAM = "value";
 
-    public void set(TypeInstance value, CommandListener<? super C> listener) throws HousemateException;
-    public C getSetCommand();
+    /**
+     * Sets the value of this property
+     * @param value the new value
+     * @param listener the listener to notify of progress
+     */
+    public void set(TypeInstance value, CommandListener<? super SET_COMMAND> listener);
+
+    /**
+     * Gets the set value command
+     * @return the set value command
+     */
+    public SET_COMMAND getSetCommand();
 }

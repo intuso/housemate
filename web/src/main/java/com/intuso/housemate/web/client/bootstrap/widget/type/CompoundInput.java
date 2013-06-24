@@ -8,11 +8,6 @@ import com.intuso.housemate.web.client.object.GWTProxySubType;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/06/13
- * Time: 23:15
- * To change this template use File | Settings | File Templates.
  */
 public class CompoundInput
         extends SubTypeInputList

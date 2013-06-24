@@ -11,11 +11,6 @@ import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 28/11/12
- * Time: 09:03
- * To change this template use File | Settings | File Templates.
  */
 public class PerformButton extends Button implements ClickHandler {
 

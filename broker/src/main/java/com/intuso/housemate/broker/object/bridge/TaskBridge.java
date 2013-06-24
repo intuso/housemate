@@ -13,11 +13,6 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 import javax.annotation.Nullable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/08/12
- * Time: 00:13
- * To change this template use File | Settings | File Templates.
  */
 public class TaskBridge
         extends BridgeObject<TaskWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, TaskBridge,

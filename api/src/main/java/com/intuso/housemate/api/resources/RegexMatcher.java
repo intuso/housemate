@@ -1,12 +1,11 @@
 package com.intuso.housemate.api.resources;
 
-/**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 31/03/12
- * Time: 17:48
- * To change this template use File | Settings | File Templates.
- */
 public interface RegexMatcher {
-    public boolean matches(String value);
+
+    /**
+     * Matches the string against the regex
+     * @param string the string to match against
+     * @return true if the string matches the pattern
+     */
+    public boolean matches(String string);
 }

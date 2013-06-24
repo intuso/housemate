@@ -11,11 +11,6 @@ import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/05/12
- * Time: 17:49
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyCondition<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
@@ -39,11 +34,11 @@ public abstract class ProxyCondition<
     @Override
     protected final void getChildObjects() {
         super.getChildObjects();
-        error = (V)getWrapper(ERROR);
-        satisfied = (V)getWrapper(SATISFIED);
-        propertyList = (PL)getWrapper(PROPERTIES);
-        conditionList = (CL)getWrapper(CONDITIONS);
-        addConditionCommand = (AC)getWrapper(Automation.ADD_CONDITION);
+        error = (V)getWrapper(ERROR_ID);
+        satisfied = (V)getWrapper(SATISFIED_ID);
+        propertyList = (PL)getWrapper(PROPERTIES_ID);
+        conditionList = (CL)getWrapper(CONDITIONS_ID);
+        addConditionCommand = (AC)getWrapper(Automation.ADD_CONDITION_ID);
     }
 
     @Override

@@ -16,10 +16,6 @@ import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 
 /**
- * Created by Ravn Systems
- * User: janvh
- * Date: 23/07/11
- * Time: 11:48
  */
 public class CommandPopup extends Composite {
 

@@ -8,11 +8,6 @@ import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 28/11/12
- * Time: 22:28
- * To change this template use File | Settings | File Templates.
  */
 public abstract class Value extends Composite implements ValueListener<com.intuso.housemate.api.object.value.Value<?, ?>> {
 

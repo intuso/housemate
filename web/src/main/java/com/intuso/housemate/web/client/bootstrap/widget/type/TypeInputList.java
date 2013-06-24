@@ -8,11 +8,6 @@ import com.intuso.housemate.web.client.bootstrap.widget.table.TableCol;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableColGroup;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 28/11/12
- * Time: 22:17
- * To change this template use File | Settings | File Templates.
  */
 public abstract class TypeInputList<O extends BaseObject<?>> extends TableList<O> {
 

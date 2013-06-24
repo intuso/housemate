@@ -8,11 +8,6 @@ import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 10:12
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyOption<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, ListWrappable<SubTypeWrappable>, STL>>,
@@ -31,7 +26,7 @@ public abstract class ProxyOption<
 
     @Override
     protected void getChildObjects() {
-        subTypes = getWrapper(SUB_TYPES);
+        subTypes = getWrapper(SUB_TYPES_ID);
     }
 
     @Override

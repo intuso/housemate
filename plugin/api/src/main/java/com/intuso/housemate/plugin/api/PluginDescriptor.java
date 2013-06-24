@@ -8,11 +8,6 @@ import com.intuso.housemate.object.real.RealType;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/02/13
- * Time: 09:00
- * To change this template use File | Settings | File Templates.
  */
 public interface PluginDescriptor {
 

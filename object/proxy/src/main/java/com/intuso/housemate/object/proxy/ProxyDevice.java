@@ -10,11 +10,6 @@ import com.intuso.housemate.api.object.property.PropertyWrappable;
 import com.intuso.housemate.api.object.value.ValueWrappable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/05/12
- * Time: 17:49
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyDevice<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
@@ -22,15 +17,15 @@ public abstract class ProxyDevice<
             C extends ProxyCommand<?, ?, ?, ?, C>,
             CL extends ProxyList<?, ?, CommandWrappable, C, CL>,
             V extends ProxyValue<?, ?, V>,
-            SL extends ProxyList<?, ?, ValueWrappable, V, SL>,
+            VL extends ProxyList<?, ?, ValueWrappable, V, VL>,
             P extends ProxyProperty<?, ?, ?, ?, P>,
             PL extends ProxyList<?, ?, PropertyWrappable, P, PL>,
-            D extends ProxyDevice<R, SR, C, CL, V, SL, P, PL, D>>
-        extends ProxyPrimaryObject<R, SR, DeviceWrappable, P, C, V, D, DeviceListener<? super D>>
-        implements Device<C, C, C, CL, V, V, V, V, SL, P, P, PL, D> {
+            D extends ProxyDevice<R, SR, C, CL, V, VL, P, PL, D>>
+        extends ProxyPrimaryObject<R, SR, DeviceWrappable, C, V, D, DeviceListener<? super D>>
+        implements Device<C, C, C, CL, V, V, V, V, VL, P, PL, D> {
 
     private CL commandList;
-    private SL valueList;
+    private VL valueList;
     private PL propertyList;
 
     public ProxyDevice(R resources, SR subResources, DeviceWrappable wrappable) {
@@ -40,9 +35,9 @@ public abstract class ProxyDevice<
     @Override
     protected final void getChildObjects() {
         super.getChildObjects();
-        commandList = (CL)getWrapper(COMMANDS);
-        valueList = (SL)getWrapper(VALUES);
-        propertyList = (PL)getWrapper(PROPERTIES);
+        commandList = (CL)getWrapper(COMMANDS_ID);
+        valueList = (VL)getWrapper(VALUES_ID);
+        propertyList = (PL)getWrapper(PROPERTIES_ID);
     }
 
     @Override
@@ -51,7 +46,7 @@ public abstract class ProxyDevice<
     }
 
     @Override
-    public final SL getValues() {
+    public final VL getValues() {
         return valueList;
     }
 

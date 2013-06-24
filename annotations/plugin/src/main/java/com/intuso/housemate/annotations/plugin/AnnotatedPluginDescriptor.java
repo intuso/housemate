@@ -19,11 +19,6 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/06/13
- * Time: 22:20
- * To change this template use File | Settings | File Templates.
  */
 public class AnnotatedPluginDescriptor implements PluginDescriptor {
 

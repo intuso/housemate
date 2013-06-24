@@ -22,11 +22,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 19/03/13
- * Time: 08:56
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerGeneralRootObject
         extends HousemateObject<BrokerGeneralResources, RootWrappable, HousemateObjectWrappable<?>,
@@ -77,21 +72,21 @@ public class BrokerGeneralRootObject
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(CONNECTION_REQUEST, new Receiver<ClientPayload<AuthenticationRequest>>() {
+        result.add(addMessageListener(CONNECTION_REQUEST_TYPE, new Receiver<ClientPayload<AuthenticationRequest>>() {
             @Override
             public void messageReceived(Message<ClientPayload<AuthenticationRequest>> message) throws HousemateException {
                 // process the request
                 getResources().getRemoteClientManager().processRequest(message.getPayload().getOriginal(), message.getRoute());
             }
         }));
-        result.add(addMessageListener(DISCONNECT, new Receiver<ClientPayload<NoPayload>>() {
+        result.add(addMessageListener(DISCONNECT_TYPE, new Receiver<ClientPayload<NoPayload>>() {
             @Override
             public void messageReceived(Message<ClientPayload<NoPayload>> message) throws HousemateException {
                 // build the disconnecting client's route as the router's route + the end client id
                 getResources().getRemoteClientManager().clientDisconnected(message.getRoute());
             }
         }));
-        result.add(addMessageListener(Root.CONNECTION_LOST, new Receiver<ClientPayload<StringMessageValue>>() {
+        result.add(addMessageListener(Root.CONNECTION_LOST_TYPE, new Receiver<ClientPayload<StringMessageValue>>() {
             @Override
             public void messageReceived(Message<ClientPayload<StringMessageValue>> message) throws HousemateException {
                 // process the request

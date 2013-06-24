@@ -22,11 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 13/12/12
- * Time: 22:15
- * To change this template use File | Settings | File Templates.
  */
 public final class DeviceFactory implements PluginListener {
 

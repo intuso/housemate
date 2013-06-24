@@ -27,11 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static junit.framework.Assert.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 15/05/13
- * Time: 08:44
- * To change this template use File | Settings | File Templates.
  */
 @Ignore
 public class TestClientDisconnect {
@@ -101,7 +96,7 @@ public class TestClientDisconnect {
                             // do nothing
                         }
                     });
-                    root.login(new UsernamePassword(false, "admin", "admin", false));
+                    root.login(new UsernamePassword("admin", "admin", false));
                 }
             }
 
@@ -111,7 +106,7 @@ public class TestClientDisconnect {
             }
         });
         socketClient.connect();
-        socketClient.login(new UsernamePassword(false, "admin", "admin", false));
+        socketClient.login(new UsernamePassword("admin", "admin", false));
 
         synchronized (disconnected) {
             disconnected.wait(); // wait for messages to be processed
@@ -192,7 +187,7 @@ public class TestClientDisconnect {
                             // do nothing
                         }
                     });
-                    root.login(new UsernamePassword(false, "admin", "admin", false));
+                    root.login(new UsernamePassword("admin", "admin", false));
                 }
             }
 
@@ -202,7 +197,7 @@ public class TestClientDisconnect {
             }
         });
         comms.connect();
-        comms.login(new UsernamePassword(false, "admin", "admin", false));
+        comms.login(new UsernamePassword("admin", "admin", false));
 
         synchronized (connectionLost) {
             connectionLost.wait(); // wait for messages to be processed
@@ -286,7 +281,7 @@ public class TestClientDisconnect {
             @Override
             public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
                 if(status == ConnectionStatus.Authenticated) {
-                    root.login(new UsernamePassword(false, "admin", "admin", false));
+                    root.login(new UsernamePassword("admin", "admin", false));
                 }
             }
 
@@ -296,7 +291,7 @@ public class TestClientDisconnect {
             }
         });
         comms.connect();
-        comms.login(new UsernamePassword(false, "admin", "admin", false));
+        comms.login(new UsernamePassword("admin", "admin", false));
 
         synchronized (connected) {
             connected.wait(); // wait for messages to be processed, assert that it's connected

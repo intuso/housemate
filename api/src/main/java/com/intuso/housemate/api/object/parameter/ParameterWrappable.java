@@ -4,11 +4,8 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/01/13
- * Time: 00:17
- * To change this template use File | Settings | File Templates.
+ *
+ * Data object for a parameter
  */
 public final class ParameterWrappable extends HousemateObjectWrappable<NoChildrenWrappable> {
 
@@ -26,6 +23,10 @@ public final class ParameterWrappable extends HousemateObjectWrappable<NoChildre
         return new ParameterWrappable(getId(), getName(), getDescription(), type);
     }
 
+    /**
+     * Gets the type id of the parameter
+     * @return the type if of the parameter
+     */
     public String getType() {
         return type;
     }

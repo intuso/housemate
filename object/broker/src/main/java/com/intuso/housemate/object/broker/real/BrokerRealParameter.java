@@ -7,11 +7,6 @@ import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.object.real.RealType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 10/07/12
- * Time: 00:58
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerRealParameter<O>
         extends BrokerRealObject<ParameterWrappable, NoChildrenWrappable, NoChildrenBrokerRealObject, ParameterListener>

@@ -3,12 +3,14 @@ package com.intuso.housemate.api.object.option;
 import com.intuso.housemate.api.object.list.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 16:51
- * To change this template use File | Settings | File Templates.
+ *
+ * Interface to show that the implementing object has a list of options
  */
 public interface HasOptions<L extends List<? extends Option<?>>> {
+
+    /**
+     * Gets the option list
+     * @return the option list
+     */
     public L getOptions();
 }

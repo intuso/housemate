@@ -7,11 +7,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.web.client.place.AccountPlace;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/03/12
- * Time: 09:31
- * To change this template use File | Settings | File Templates.
  */
 public class AccountView extends Composite implements com.intuso.housemate.web.client.ui.view.AccountView {
 

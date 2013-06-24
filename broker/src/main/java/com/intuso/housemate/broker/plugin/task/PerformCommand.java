@@ -19,11 +19,6 @@ import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 10/08/12
- * Time: 23:25
- * To change this template use File | Settings | File Templates.
  */
 @FactoryInformation(id = "perform-command", name = "Perform Command", description = "Perform a command in the system")
 public class PerformCommand extends BrokerRealTask implements ObjectLifecycleListener {
@@ -71,7 +66,7 @@ public class PerformCommand extends BrokerRealTask implements ObjectLifecycleLis
             public void valueChanged(BrokerRealProperty<RealObjectType.Reference<BaseObject<?>>> property) {
                 String[] path = property.getTypedValue().getPath();
                 commandLifecycleListenerRegistration = root.addObjectLifecycleListener(path, PerformCommand.this);
-                HousemateObject<?, ?, ?, ?, ?> object = root.getWrapper(path);
+                HousemateObject<?, ?, ?, ?, ?> object = root.getObject(path);
                 if(object == null)
                     setError("Cannot find an object at path " + commandPath.getTypeInstance());
                 else {

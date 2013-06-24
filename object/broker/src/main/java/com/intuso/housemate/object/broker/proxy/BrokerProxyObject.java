@@ -15,11 +15,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.wrapper.WrapperFactory;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/05/12
- * Time: 10:18
- * To change this template use File | Settings | File Templates.
  */
 public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWBL>,
             SWBL extends HousemateObjectWrappable<?>,

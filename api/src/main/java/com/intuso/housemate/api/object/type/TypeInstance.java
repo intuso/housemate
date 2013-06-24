@@ -5,38 +5,58 @@ import com.intuso.housemate.api.comms.Message;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 03/06/13
- * Time: 07:25
- * To change this template use File | Settings | File Templates.
+ * Representation of an instance of a type
  */
 public class TypeInstance implements Message.Payload {
 
     private String value;
     private TypeInstances childValues;
 
+    /**
+     * Create an empty type instance
+     */
     public TypeInstance() {
         this(null);
     }
 
+    /**
+     * Create a type instance with a value
+     * @param value the value
+     */
     public TypeInstance(String value) {
         this(value, new TypeInstances());
     }
 
+    /**
+     * Create a type instance with a value and predefined child values
+     * @param value the value
+     * @param childValues the child values
+     */
     public TypeInstance(String value, TypeInstances childValues) {
         this.value = value;
         this.childValues = (childValues != null ? childValues : new TypeInstances());
     }
 
+    /**
+     * Gets the value
+     * @return the value
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Sets the value
+     * @param value the new value
+     */
     public void setValue(String value) {
         this.value = value;
     }
 
+    /**
+     * Gets the child values
+     * @return the child values
+     */
     public TypeInstances getChildValues() {
         return childValues;
     }

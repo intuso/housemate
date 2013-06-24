@@ -4,15 +4,16 @@ import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.command.Command;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 21:49
- * To change this template use File | Settings | File Templates.
+ * @param <REMOVE_COMMAND> the type of the remove command
  */
-public interface User<RC extends Command<?, ?>> extends BaseObject<UserListener> {
+public interface User<REMOVE_COMMAND extends Command<?, ?>>
+        extends BaseObject<UserListener> {
 
-    public final static String REMOVE_COMMAND = "remove";
+    public final static String REMOVE_COMMAND_ID = "remove";
 
-    public RC getRemoveCommand();
+    /**
+     * Gets the remove command
+     * @return the remove command
+     */
+    public REMOVE_COMMAND getRemoveCommand();
 }

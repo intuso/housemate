@@ -42,11 +42,6 @@ import com.intuso.housemate.plugin.api.BrokerTaskFactory;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/02/13
- * Time: 09:02
- * To change this template use File | Settings | File Templates.
  */
 @PluginInformation(id = "main-plugin", name = "Main plugin",
         description = "Plugin containing the core types and factories", author = "Intuso")

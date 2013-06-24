@@ -6,11 +6,6 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 28/03/12
- * Time: 00:00
- * To change this template use File | Settings | File Templates.
  */
 public class PerformCommandHandler implements EventHandler {
 

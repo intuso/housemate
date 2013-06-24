@@ -9,11 +9,6 @@ import com.intuso.housemate.api.object.value.ValueWrappableBase;
 import com.intuso.housemate.object.real.RealType;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:21
- * To change this template use File | Settings | File Templates.
  */
 public abstract class BrokerRealValueBase<WBL extends ValueWrappableBase<SWBL>,
             SWBL extends HousemateObjectWrappable<?>,

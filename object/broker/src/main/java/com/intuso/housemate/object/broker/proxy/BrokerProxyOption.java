@@ -7,11 +7,6 @@ import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 27/02/13
- * Time: 08:16
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyOption
         extends BrokerProxyObject<OptionWrappable, ListWrappable<SubTypeWrappable>,
@@ -29,7 +24,7 @@ public class BrokerProxyOption
 
     @Override
     protected void getChildObjects() {
-        subTypes = getWrapper(SUB_TYPES);
+        subTypes = getWrapper(SUB_TYPES_ID);
     }
 
     @Override

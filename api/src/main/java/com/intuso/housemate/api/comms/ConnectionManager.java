@@ -12,11 +12,9 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 12/06/13
- * Time: 19:57
- * To change this template use File | Settings | File Templates.
+ *
+ * Utility class for managing a connection to a broker. Handles broker messages, reconnecting etc and calls the
+ * appropriate callbacks as state changes
  */
 public class ConnectionManager {
 
@@ -32,27 +30,49 @@ public class ConnectionManager {
     private String connectionId = null;
     private ConnectionStatus status = null;
 
+    /**
+     * @param sender the message sender the connection manager can use to communicate with the broker
+     * @param clientType the type of the client's connection
+     * @param initialStatus the initial connection status
+     */
     public ConnectionManager(Sender sender, ConnectionType clientType, ConnectionStatus initialStatus) {
         this.sender = sender;
         this.path = new String[] {""};
-        this.connectMessageType = Root.CONNECTION_REQUEST;
-        this.disconnectMessageType = Root.DISCONNECT;
+        this.connectMessageType = Root.CONNECTION_REQUEST_TYPE;
+        this.disconnectMessageType = Root.DISCONNECT_TYPE;
         this.clientType = clientType;
         this.status = initialStatus;
     }
 
+    /**
+     * Adds listener to be notified of connection status changes
+     * @param listener the listener to add
+     * @return listener registration
+     */
     public ListenerRegistration addStatusChangeListener(ConnectionStatusChangeListener listener) {
         return listeners.addListener(listener);
     }
 
+    /**
+     * Gets the current connection status
+     * @return the current connections status
+     */
     public ConnectionStatus getStatus() {
         return status;
     }
 
+    /**
+     * Gets the connection id
+     * @return the connection id
+     */
     public String getConnectionId() {
         return connectionId;
     }
 
+    /**
+     * Authenticates with the broker
+     * @param method the method to authenticate with
+     */
     public void login(AuthenticationMethod method) {
         if(status == ConnectionStatus.Disconnected || status == ConnectionStatus.Connecting)
             throw new HousemateRuntimeException("Cannot attempt authentication until connection is complete");
@@ -66,6 +86,9 @@ public class ConnectionManager {
         sender.sendMessage(new Message<AuthenticationRequest>(path, connectMessageType, new AuthenticationRequest(clientType, method)));
     }
 
+    /**
+     * Logs out of the broker
+     */
     public void logout() {
         sender.sendMessage(new Message<NoPayload>(path, disconnectMessageType, NoPayload.VALUE));
         status = ConnectionStatus.Unauthenticated;
@@ -73,6 +96,10 @@ public class ConnectionManager {
             listener.connectionStatusChanged(status);
     }
 
+    /**
+     * Processes a response to an authentication request
+     * @param response the response received
+     */
     public void authenticationResponseReceived(AuthenticationResponse response) {
         if(response instanceof ReconnectResponse)
             status = ConnectionStatus.Authenticated;
@@ -90,6 +117,10 @@ public class ConnectionManager {
             listener.connectionStatusChanged(status);
     }
 
+    /**
+     * Updates the status of the router we use to connect to the broker
+     * @param routerStatus the router's new status
+     */
     public void routerStatusChanged(ConnectionStatus routerStatus) {
         switch(routerStatus) {
             case Disconnected:

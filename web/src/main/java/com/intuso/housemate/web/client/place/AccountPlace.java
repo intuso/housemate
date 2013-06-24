@@ -4,11 +4,6 @@ import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 24/11/12
- * Time: 19:13
- * To change this template use File | Settings | File Templates.
  */
 public class AccountPlace extends HomePlace {
 

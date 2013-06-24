@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Client comms implementation that provides socket-based communications with the broker
- * @author tclabon
  *
  */
 public class SocketClient extends Router {
@@ -188,7 +187,7 @@ public class SocketClient extends Router {
 
     /**
      * Thread to read data off the socket and convert it into message objects
-     * @author tclabon
+     * @author Tom Clabon
      *
      */
     private class StreamReader extends Thread {
@@ -253,7 +252,7 @@ public class SocketClient extends Router {
 
     /**
      * Thread to read messages off the output queue and send them to the broker
-     * @author tclabon
+     * @author Tom Clabon
      *
      */
     private class MessageSender extends Thread {

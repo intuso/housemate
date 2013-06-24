@@ -1,23 +1,28 @@
 package com.intuso.housemate.api.authentication;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 31/05/13
- * Time: 18:42
- * To change this template use File | Settings | File Templates.
+ *
+ * Authentication method to reconnect with a connection id
+ *
+ * @see com.intuso.housemate.api.object.root.Root#login(AuthenticationMethod)
  */
-public class Reconnect extends AuthenticationMethod {
+public class Reconnect implements AuthenticationMethod {
 
     private String connectionId;
 
     private Reconnect() {}
 
+    /**
+     * @param connectionId the previous connection id
+     */
     public Reconnect(String connectionId) {
-        super(true);
         this.connectionId = connectionId;
     }
 
+    /**
+     * Gets the previous connection id
+     * @return the previous connection id
+     */
     public String getConnectionId() {
         return connectionId;
     }

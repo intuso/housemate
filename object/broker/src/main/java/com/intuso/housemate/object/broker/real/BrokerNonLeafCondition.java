@@ -9,11 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 28/05/12
- * Time: 20:44
- * To change this template use File | Settings | File Templates.
  */
 public abstract class BrokerNonLeafCondition extends BrokerRealCondition
         implements ConditionListener<BrokerRealCondition> {

@@ -4,11 +4,8 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 29/05/12
- * Time: 21:05
- * To change this template use File | Settings | File Templates.
+ *
+ * Data object for a regex type
  */
 public final class RegexTypeWrappable extends TypeWrappable<NoChildrenWrappable> {
 
@@ -26,6 +23,10 @@ public final class RegexTypeWrappable extends TypeWrappable<NoChildrenWrappable>
         return new RegexTypeWrappable(getId(), getName(), getDescription(), regexPattern);
     }
 
+    /**
+     * Gets the regex pattern
+     * @return the regex pattern
+     */
     public String getRegexPattern() {
         return regexPattern;
     }

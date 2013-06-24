@@ -17,11 +17,6 @@ import java.util.ArrayList;
 import static junit.framework.Assert.assertNotNull;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 16:45
- * To change this template use File | Settings | File Templates.
  */
 public class ParameterTest {
 

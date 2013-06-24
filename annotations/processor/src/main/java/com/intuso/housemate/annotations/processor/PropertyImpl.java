@@ -8,11 +8,6 @@ import com.intuso.housemate.object.real.RealType;
 import java.lang.reflect.Field;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/06/13
- * Time: 16:17
- * To change this template use File | Settings | File Templates.
  */
 public class PropertyImpl extends RealProperty<Object> {
 

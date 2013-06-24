@@ -12,15 +12,10 @@ import com.intuso.housemate.api.object.task.TaskWrappable;
 import javax.annotation.Nullable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/08/12
- * Time: 00:15
- * To change this template use File | Settings | File Templates.
  */
 public class AutomationBridge
         extends PrimaryObjectBridge<AutomationWrappable, AutomationBridge, AutomationListener<? super AutomationBridge>>
-        implements Automation<PropertyBridge, CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge, ValueBridge,
+        implements Automation<CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge, ValueBridge,
                             ConditionBridge,ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>, TaskBridge,
                             ListBridge<TaskWrappable, Task<?, ?, ?, ?>, TaskBridge>, AutomationBridge> {
 
@@ -31,7 +26,7 @@ public class AutomationBridge
     private CommandBridge addSatisfiedTask;
     private CommandBridge addUnsatisfiedTask;
     
-    public AutomationBridge(BrokerBridgeResources resources, Automation<?, ?, ?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?>, ?, ?> automation) {
+    public AutomationBridge(BrokerBridgeResources resources, Automation<?, ?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?>, ?, ?> automation) {
         super(resources, new AutomationWrappable(automation.getId(), automation.getName(), automation.getDescription()), automation);
         conditionList = new ListBridge<ConditionWrappable, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>(resources,  automation.getConditions(), new ConditionBridge.Converter(resources));
         satisfiedTaskList = new ListBridge<TaskWrappable, Task<?, ?, ?, ?>, TaskBridge>(resources, automation.getSatisfiedTasks(), new TaskBridge.Converter(resources));
@@ -77,7 +72,7 @@ public class AutomationBridge
         return conditionList;
     }
 
-    public final static class Converter implements Function<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> {
+    public final static class Converter implements Function<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> {
 
         private BrokerBridgeResources resources;
 
@@ -86,7 +81,7 @@ public class AutomationBridge
         }
 
         @Override
-        public AutomationBridge apply(@Nullable Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
+        public AutomationBridge apply(@Nullable Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
             return new AutomationBridge(resources, automation);
         }
     }

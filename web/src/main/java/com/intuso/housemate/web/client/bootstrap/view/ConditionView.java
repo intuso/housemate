@@ -15,11 +15,6 @@ import com.intuso.housemate.web.client.place.ConditionPlace;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/03/12
- * Time: 09:31
- * To change this template use File | Settings | File Templates.
  */
 public class ConditionView extends ObjectListView<GWTProxyCondition, ConditionPlace>
         implements com.intuso.housemate.web.client.ui.view.ConditionView {

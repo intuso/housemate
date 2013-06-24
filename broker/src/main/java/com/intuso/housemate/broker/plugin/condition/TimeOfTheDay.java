@@ -13,7 +13,6 @@ import java.util.Calendar;
 
 /**
  * Condition that is true during a set period of time
- * @author tclabon
  *
  */
 @FactoryInformation(id = "time-of-the-day", name = "Time of the day", description = "True between two times")
@@ -224,7 +223,7 @@ public class TimeOfTheDay extends BrokerRealCondition {
 	/**
 	 * Thread that monitors the time of the day and calls conditionSatisfied as appropriate based
 	 * on the before and after times parsed by the super class
-	 * @author tclabon
+	 * @author Tom Clabon
 	 *
 	 */
 	private class TimeMonitorThread extends Thread {

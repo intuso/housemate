@@ -12,11 +12,6 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 import java.util.ArrayList;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/05/12
- * Time: 17:49
- * To change this template use File | Settings | File Templates.
  */
 public abstract class BrokerRealTask
         extends BrokerRealObject<TaskWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>,
@@ -34,9 +29,9 @@ public abstract class BrokerRealTask
 
     public BrokerRealTask(BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
         super(resources, new TaskWrappable(id, name, description));
-        errorValue = new BrokerRealValue<String>(resources, ERROR, ERROR, "The current error", new StringType(resources.getRealResources()), null);
-        executingValue = new BrokerRealValue<Boolean>(resources, EXECUTING, EXECUTING, "Whether the task is executing", new BooleanType(resources.getRealResources()), false);
-        propertyList = new BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>(resources, PROPERTIES, PROPERTIES, "The task's properties", properties);
+        errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), null);
+        executingValue = new BrokerRealValue<Boolean>(resources, EXECUTING_TYPE, EXECUTING_TYPE, "Whether the task is executing", new BooleanType(resources.getRealResources()), false);
+        propertyList = new BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The task's properties", properties);
         addWrapper(errorValue);
         addWrapper(executingValue);
         addWrapper(propertyList);

@@ -10,15 +10,10 @@ import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/05/12
- * Time: 17:49
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerRealAutomation
         extends BrokerRealPrimaryObject<AutomationWrappable, BrokerRealAutomation, AutomationListener<? super BrokerRealAutomation>>
-        implements Automation<BrokerRealProperty<String>, BrokerRealCommand, BrokerRealCommand, BrokerRealCommand,
+        implements Automation<BrokerRealCommand, BrokerRealCommand, BrokerRealCommand,
                     BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, BrokerRealCondition, BrokerRealList<ConditionWrappable, BrokerRealCondition>,
         BrokerRealTask, BrokerRealList<TaskWrappable, BrokerRealTask>, BrokerRealAutomation>,
             ConditionListener<BrokerRealCondition> {
@@ -34,9 +29,9 @@ public class BrokerRealAutomation
 
     public BrokerRealAutomation(final BrokerRealResources resources, String id, String name, String description) {
         super(resources, new AutomationWrappable(id, name, description), "automation");
-        this.conditions = new BrokerRealList<ConditionWrappable, BrokerRealCondition>(resources, CONDITIONS, CONDITIONS, "The automation's conditions");
-        this.satisfiedTasks = new BrokerRealList<TaskWrappable, BrokerRealTask>(resources, SATISFIED_TASKS, SATISFIED_TASKS, "The tasks to run when the automation is satisfied");
-        this.unsatisfiedTasks = new BrokerRealList<TaskWrappable, BrokerRealTask>(resources, UNSATISFIED_TASKS, UNSATISFIED_TASKS, "The tasks to run when the automation is satisfied");
+        this.conditions = new BrokerRealList<ConditionWrappable, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
+        this.satisfiedTasks = new BrokerRealList<TaskWrappable, BrokerRealTask>(resources, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.unsatisfiedTasks = new BrokerRealList<TaskWrappable, BrokerRealTask>(resources, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions);
         addSatisfiedTaskCommand = getResources().getLifecycleHandler().createAddSatisfiedTaskCommand(satisfiedTasks);
         addUnsatisfiedTaskCommand = getResources().getLifecycleHandler().createAddUnsatisfiedTaskCommand(unsatisfiedTasks);

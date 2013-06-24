@@ -16,23 +16,18 @@ import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.RootWrappable;
-import com.intuso.housemate.api.object.root.real.RealAutomation;
+import com.intuso.housemate.api.object.root.real.RealRoot;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 05/08/12
- * Time: 16:51
- * To change this template use File | Settings | File Templates.
  */
 public class RealRootObject
         extends RealObject<RootWrappable, HousemateObjectWrappable<?>, RealObject<?, ? extends HousemateObjectWrappable<?>, ?, ?>, RootListener<? super RealRootObject>>
-        implements RealAutomation<RealType<?, ?, ?>, RealList<TypeWrappable<?>, RealType<?, ?, ?>>, RealDevice,
-                    RealList<DeviceWrappable, RealDevice>, RealRootObject>, ConnectionStatusChangeListener {
+        implements RealRoot<RealType<?, ?, ?>, RealList<TypeWrappable<?>, RealType<?, ?, ?>>, RealDevice,
+                            RealList<DeviceWrappable, RealDevice>, RealRootObject>, ConnectionStatusChangeListener {
 
     private final RealList<TypeWrappable<?>, RealType<?, ?, ?>> types;
     private final RealList<DeviceWrappable, RealDevice> devices;
@@ -48,8 +43,8 @@ public class RealRootObject
         routerRegistration = resources.getRouter().registerReceiver(this);
         connectionManager = new ConnectionManager(routerRegistration, ConnectionType.Real, ConnectionStatus.Unauthenticated);
 
-        types = new RealList<TypeWrappable<?>, RealType<?, ?, ?>>(resources, TYPES, TYPES, "Defined types");
-        devices = new RealList<DeviceWrappable, RealDevice>(resources, DEVICES, DEVICES, "Defined devices");
+        types = new RealList<TypeWrappable<?>, RealType<?, ?, ?>>(resources, TYPES_ID, TYPES_ID, "Defined types");
+        devices = new RealList<DeviceWrappable, RealDevice>(resources, DEVICES_ID, DEVICES_ID, "Defined devices");
 
         init(null);
 
@@ -99,13 +94,13 @@ public class RealRootObject
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
         result.add(connectionManager.addStatusChangeListener(this));
-        result.add(addMessageListener(CONNECTION_RESPONSE, new Receiver<AuthenticationResponse>() {
+        result.add(addMessageListener(CONNECTION_RESPONSE_TYPE, new Receiver<AuthenticationResponse>() {
             @Override
             public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {
                 connectionManager.authenticationResponseReceived(message.getPayload());
             }
         }));
-        result.add(addMessageListener(STATUS, new Receiver<ConnectionStatus>() {
+        result.add(addMessageListener(STATUS_TYPE, new Receiver<ConnectionStatus>() {
             @Override
             public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
                 connectionManager.routerStatusChanged(message.getPayload());

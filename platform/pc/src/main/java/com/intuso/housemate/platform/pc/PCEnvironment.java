@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 
 /**
  * Platform implementation for PCs
- * @author tclabon
  *
  */
 public class PCEnvironment {

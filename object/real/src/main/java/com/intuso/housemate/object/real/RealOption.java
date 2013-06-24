@@ -10,11 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 10:13
- * To change this template use File | Settings | File Templates.
  */
 public class RealOption
         extends RealObject<OptionWrappable, ListWrappable<SubTypeWrappable>,
@@ -29,7 +24,7 @@ public class RealOption
 
     public RealOption(RealResources resources, String id, String name, String description, List<RealSubType<?>> subTypes) {
         super(resources, new OptionWrappable(id, name,  description));
-        this.subTypes = new RealList<SubTypeWrappable, RealSubType<?>>(resources, SUB_TYPES, "Sub Types",
+        this.subTypes = new RealList<SubTypeWrappable, RealSubType<?>>(resources, SUB_TYPES_ID, "Sub Types",
                 "The sub types of this option", subTypes);
         addWrapper(this.subTypes);
     }

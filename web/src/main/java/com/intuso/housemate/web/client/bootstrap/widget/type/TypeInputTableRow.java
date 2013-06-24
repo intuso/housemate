@@ -18,11 +18,6 @@ import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/03/12
- * Time: 09:31
- * To change this template use File | Settings | File Templates.
  */
 public class TypeInputTableRow
         extends TableRow

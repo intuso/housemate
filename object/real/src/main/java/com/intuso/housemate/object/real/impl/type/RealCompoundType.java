@@ -13,11 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/06/13
- * Time: 22:28
- * To change this template use File | Settings | File Templates.
  */
 public abstract class RealCompoundType<O>
         extends RealType<CompoundTypeWrappable, ListWrappable<SubTypeWrappable>, O>

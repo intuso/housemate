@@ -1,11 +1,8 @@
 package com.intuso.housemate.api.comms;
 
 /**
-* Created with IntelliJ IDEA.
-* User: ravnroot
-* Date: 23/06/13
-* Time: 12:15
-* To change this template use File | Settings | File Templates.
+ *
+ * Enumeration of all the types of client connections
 */
 public enum ConnectionType {
     Router,

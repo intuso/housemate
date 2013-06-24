@@ -6,27 +6,29 @@ import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
 import com.intuso.housemate.object.real.impl.type.DoubleType;
 import jssc.SerialPort;
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/05/12
- * Time: 23:31
- * To change this template use File | Settings | File Templates.
  */
 public class ArduinoTemperatureSensor extends RealDevice {
     
     public final RealValue<Double> temperature = DoubleType.createValue(getResources(), "temperature", "Temperature", "The current temperature", 0.0);
     
     private final SerialPort serialPort;
+    private final SerialPortEventListener eventListener = new EventListener();
+    private PipedInputStream input;
+    private PipedOutputStream output;
     private BufferedReader in;
-    private LineReader reader = null;
-    
+    private LineReader lineReader;
+
     /**
      * Create a new device
      *
@@ -40,21 +42,55 @@ public class ArduinoTemperatureSensor extends RealDevice {
 
     @Override
     protected void start() throws HousemateException {
-        in = new BufferedReader(new SerialPortReader());
-        reader = new LineReader();
-        reader.start();
+        try {
+            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
+            serialPort.addEventListener(eventListener, SerialPort.MASK_RXCHAR);
+            input = new PipedInputStream();
+            output = new PipedOutputStream(input);
+            in = new BufferedReader(new InputStreamReader(input));
+        } catch(SerialPortException e) {
+            throw new HousemateException("Failed to add listener for Arduino data", e);
+        } catch(IOException e) {
+            throw new HousemateException("Failed to set up read of Arduino connection data", e);
+        }
+        lineReader = new LineReader();
+        lineReader.start();
     }
 
     @Override
     protected void stop() {
-        if(reader != null) {
-            reader.interrupt();
+        try {
+            serialPort.removeEventListener();
+        } catch(SerialPortException e) {
+            getLog().e("Failed to remove serial port event listener");
+            getLog().st(e);
+        }
+        if(lineReader != null) {
+            lineReader.interrupt();
             try {
-                reader.join();
+                lineReader.join();
             } catch(InterruptedException e) {
                 getLog().e("Interrupted waiting for reader to finish");
+                getLog().st(e);
             }
-            reader = null;
+            lineReader = null;
+        }
+    }
+
+    private class EventListener implements SerialPortEventListener {
+        @Override
+        public void serialEvent(SerialPortEvent serialPortEvent) {
+            int available;
+            try {
+                while((available = serialPort.getInputBufferBytesCount()) > 0)
+                    output.write(serialPort.readBytes(available));
+            } catch(IOException e) {
+                getLog().e("Failed to read data from Arduino");
+                getLog().st(e);
+            } catch(SerialPortException e) {
+                getLog().e("Failed to read data from Arduino");
+                getLog().st(e);
+            }
         }
     }
 
@@ -74,32 +110,13 @@ public class ArduinoTemperatureSensor extends RealDevice {
                 }
             } catch(IOException e) {
                 getLog().e("Error reading temperature from Arduino");
+                getLog().st(e);
             }
             try {
                 in.close();
             } catch(IOException e) {
                 getLog().e("Failed to close connection to the Arduino");
-            }
-        }
-    }
-
-    private class SerialPortReader extends Reader {
-        @Override
-        public int read(char[] chars, int offset, int length) throws IOException {
-            try {
-                chars[offset] = (char)serialPort.readBytes(1)[0];
-                return 1;
-            } catch(SerialPortException e) {
-                throw new IOException("Failed to read from serial port");
-            }
-        }
-
-        @Override
-        public void close() throws IOException {
-            try {
-                serialPort.closePort();
-            } catch(SerialPortException e) {
-                throw new IOException("Failed to close serial port", e);
+                getLog().st(e);
             }
         }
     }

@@ -1,13 +1,22 @@
 package com.intuso.housemate.api.object.type;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 09:28
- * To change this template use File | Settings | File Templates.
+ * Converts to and from an object to a {@link TypeInstance} representation of that object
+ * @param <O> the type of the object being serialised
  */
 public interface TypeSerialiser<O> {
+
+    /**
+     * Converts the object to a type instance
+     * @param o the object to convert
+     * @return the type instance representation of the object
+     */
     public TypeInstance serialise(O o);
+
+    /**
+     * Converts a type instance to an object
+     * @param instance the type instance representation of an object
+     * @return the converted object
+     */
     public O deserialise(TypeInstance instance);
 }

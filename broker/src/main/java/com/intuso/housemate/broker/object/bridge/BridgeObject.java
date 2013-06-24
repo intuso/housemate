@@ -20,11 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/05/12
- * Time: 10:18
- * To change this template use File | Settings | File Templates.
  */
 public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
             SWBL extends HousemateObjectWrappable<?>,
@@ -68,12 +63,12 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
                 if(message.getPayload().getClient().getType() != ConnectionType.Proxy)
                     getLog().e("Client requesting an object is not of type " + ConnectionType.Proxy);
                 else {
-                    BridgeObject<?, ?, ?, ?, ?> subWrapper = getWrapper(message.getPayload().getOriginal().getSubWrapperName());
+                    BridgeObject<?, ?, ?, ?, ?> subWrapper = getWrapper(message.getPayload().getOriginal().getChildWrapperId());
                     if(subWrapper != null)
                         sendMessage(LOAD_RESPONSE, subWrapper.getWrappableTree(
                                 message.getPayload().getOriginal(), message.getPayload().getClient()), message.getPayload().getClient());
                     else
-                        getLog().w("Load request received from " + Arrays.toString(message.getRoute().toArray(new String[message.getRoute().size()])) + " for non-existant object \"" + message.getPayload().getOriginal().getSubWrapperName() + "\"");
+                        getLog().w("Load request received from " + Arrays.toString(message.getRoute().toArray(new String[message.getRoute().size()])) + " for non-existant object \"" + message.getPayload().getOriginal().getChildWrapperId() + "\"");
                 }
             }
         }));

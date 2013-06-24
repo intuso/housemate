@@ -12,11 +12,6 @@ import com.intuso.utilities.wrapper.WrapperListener;
 import java.util.Iterator;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 09/07/12
- * Time: 19:12
- * To change this template use File | Settings | File Templates.
  */
 public final class BrokerRealList<SWBL extends HousemateObjectWrappable<?>,
             SWR extends BrokerRealObject<? extends SWBL, ?, ?, ?>>

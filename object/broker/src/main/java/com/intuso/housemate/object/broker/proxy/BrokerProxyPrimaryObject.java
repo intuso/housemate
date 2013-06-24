@@ -15,17 +15,12 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 20/01/13
- * Time: 00:51
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
             PO extends BrokerProxyPrimaryObject<WBL, PO, L>,
             L extends PrimaryListener<? super PO>>
         extends BrokerProxyObject<WBL, HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>, PO, L>
-        implements PrimaryObject<BrokerProxyProperty, BrokerRealCommand, BrokerProxyCommand, BrokerRealValue<Boolean>,
+        implements PrimaryObject<BrokerRealCommand, BrokerProxyCommand, BrokerRealValue<Boolean>,
             BrokerProxyValue, BrokerProxyValue, PO, L> {
 
     private BrokerProxyCommand realRemoveCommand;
@@ -40,7 +35,7 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
     protected BrokerProxyPrimaryObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, HousemateObjectWrappable<?>, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> resources,
                                        BrokerRealResources realResources, WBL wrappable) {
         super(resources, wrappable);
-        connected = new BrokerRealValue<Boolean>(realResources, CONNECTED_VALUE, CONNECTED_VALUE,
+        connected = new BrokerRealValue<Boolean>(realResources, CONNECTED_VALUE_ID, CONNECTED_VALUE_ID,
                 "Whether the server has a connection open to control the object",
                 new BooleanType(realResources.getRealResources()), true);
     }
@@ -51,11 +46,11 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
 
     @Override
     protected void getChildObjects() {
-        realRemoveCommand = (BrokerProxyCommand)getWrapper(REMOVE_COMMAND);
-        running = (BrokerProxyValue)getWrapper(RUNNING_VALUE);
-        start = (BrokerProxyCommand)getWrapper(START_COMMAND);
-        stop = (BrokerProxyCommand)getWrapper(STOP_COMMAND);
-        error = (BrokerProxyValue)getWrapper(ERROR_VALUE);
+        realRemoveCommand = (BrokerProxyCommand)getWrapper(REMOVE_COMMAND_ID);
+        running = (BrokerProxyValue)getWrapper(RUNNING_VALUE_ID);
+        start = (BrokerProxyCommand)getWrapper(START_COMMAND_ID);
+        stop = (BrokerProxyCommand)getWrapper(STOP_COMMAND_ID);
+        error = (BrokerProxyValue)getWrapper(ERROR_VALUE_ID);
         remove = getResources().getLifecycleHandler().createRemovePrimaryObjectCommand(realRemoveCommand, getThis(), remover);
     }
 

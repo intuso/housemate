@@ -6,12 +6,9 @@ import com.intuso.housemate.api.object.subtype.HasSubTypes;
 import com.intuso.housemate.api.object.subtype.SubType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 09:16
- * To change this template use File | Settings | File Templates.
+ * @param <SUB_TYPES> the type of the sub types list
  */
-public interface Option<STL extends List<? extends SubType<?>>> extends BaseObject<OptionListener>, HasSubTypes<STL> {
-    public final static String SUB_TYPES = "sub-types";
+public interface Option<SUB_TYPES extends List<? extends SubType<?>>>
+        extends BaseObject<OptionListener>, HasSubTypes<SUB_TYPES> {
+    public final static String SUB_TYPES_ID = "sub-types";
 }

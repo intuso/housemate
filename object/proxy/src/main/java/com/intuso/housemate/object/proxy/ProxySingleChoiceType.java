@@ -7,11 +7,6 @@ import com.intuso.housemate.api.object.option.HasOptions;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 10:12
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxySingleChoiceType<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, ListWrappable<OptionWrappable>, OL>>,

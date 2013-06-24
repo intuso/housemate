@@ -34,11 +34,6 @@ import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.object.proxy.ProxyResources;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 08/07/12
- * Time: 19:39
- * To change this template use File | Settings | File Templates.
  */
 public class SimpleProxyFactory {
 

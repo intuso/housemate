@@ -26,11 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/03/12
- * Time: 09:31
- * To change this template use File | Settings | File Templates.
  */
 public class HomeView extends Composite implements com.intuso.housemate.web.client.ui.view.HomeView, ListListener<GWTProxyDevice> {
 

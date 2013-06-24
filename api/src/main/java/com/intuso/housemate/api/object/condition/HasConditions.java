@@ -3,12 +3,14 @@ package com.intuso.housemate.api.object.condition;
 import com.intuso.housemate.api.object.list.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 01/06/12
- * Time: 01:08
- * To change this template use File | Settings | File Templates.
+ *
+ * Interface to show that the implementing object has a list of conditions
  */
 public interface HasConditions<L extends List<? extends Condition<?, ?, ?, ?, ?, ?>>> {
+
+    /**
+     * Gets the conditions list
+     * @return the conditions list
+     */
     public L getConditions();
 }

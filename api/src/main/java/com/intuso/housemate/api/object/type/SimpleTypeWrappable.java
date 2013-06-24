@@ -4,14 +4,14 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 29/05/12
- * Time: 21:05
- * To change this template use File | Settings | File Templates.
+ *
+ * Data object for a simple type
  */
 public final class SimpleTypeWrappable extends TypeWrappable<NoChildrenWrappable> {
 
+    /**
+     * Enumeration of all simple types
+     */
     public enum Type {
         String("string", "String", "Some text"),
         Integer("integer", "Integer", "A whole number"),

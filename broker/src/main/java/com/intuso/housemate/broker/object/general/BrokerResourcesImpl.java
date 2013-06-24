@@ -10,11 +10,6 @@ import com.intuso.utilities.log.Log;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 16/04/13
- * Time: 07:41
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerResourcesImpl<R> implements Resources, BrokerResources<R> {
 

@@ -9,11 +9,6 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 24/05/12
- * Time: 00:22
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyProperty<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, CommandWrappable, F>>,
@@ -33,14 +28,14 @@ public abstract class ProxyProperty<
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        setCommand = (F) getWrapper(SET_COMMAND);
+        setCommand = (F) getWrapper(SET_COMMAND_ID);
     }
 
     @Override
     public void set(final TypeInstance value, CommandListener<? super F> listener) {
         getSetCommand().perform(new TypeInstances() {
             {
-                put(VALUE, value);
+                put(VALUE_ID, value);
             }
         }, listener);
     }

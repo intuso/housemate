@@ -15,11 +15,6 @@ import com.intuso.housemate.object.real.RealType;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 22/04/13
- * Time: 08:43
- * To change this template use File | Settings | File Templates.
  */
 public class RealObjectType<O extends BaseObject<?>>
         extends RealType<ObjectTypeWrappable, NoChildrenWrappable, RealObjectType.Reference<O>> {
@@ -99,7 +94,7 @@ public class RealObjectType<O extends BaseObject<?>>
                 return null;
             List<String> pathList = Lists.newArrayList(SPLITTER.split(value.getValue()));
             String[] path = pathList.toArray(new String[pathList.size()]);
-            return new Reference(path, (O) root.getWrapper(path));
+            return new Reference(path, (O) root.getObject(path));
         }
     }
 }

@@ -11,11 +11,6 @@ import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 14/03/12
- * Time: 23:28
- * To change this template use File | Settings | File Templates.
  */
 public class GWTComms extends Router {
 

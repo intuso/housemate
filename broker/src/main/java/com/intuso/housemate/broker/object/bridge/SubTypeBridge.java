@@ -9,11 +9,6 @@ import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 import javax.annotation.Nullable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/07/12
- * Time: 23:44
- * To change this template use File | Settings | File Templates.
  */
 public class SubTypeBridge
         extends BridgeObject<SubTypeWrappable, NoChildrenWrappable, NoChildrenBridgeObject, SubTypeBridge, SubTypeListener>

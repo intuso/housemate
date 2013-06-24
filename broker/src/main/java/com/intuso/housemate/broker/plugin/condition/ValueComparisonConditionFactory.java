@@ -6,11 +6,6 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.plugin.api.BrokerConditionFactory;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 27/02/13
- * Time: 23:22
- * To change this template use File | Settings | File Templates.
  */
 public class ValueComparisonConditionFactory implements BrokerConditionFactory<ValueComparison> {
 

@@ -18,11 +18,6 @@ import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyProperty;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/03/12
- * Time: 09:31
- * To change this template use File | Settings | File Templates.
  */
 public class PropertyTableRow extends TableRow implements TypeInputEditedHandler {
 
@@ -31,7 +26,7 @@ public class PropertyTableRow extends TableRow implements TypeInputEditedHandler
 
     public PropertyTableRow(GWTProxyProperty property) {
         this.setCommand = property.getSetCommand();
-        values.put(Property.VALUE, property.getTypeInstance());
+        values.put(Property.VALUE_ID, property.getTypeInstance());
         addNameCell(property.getName(), property.getDescription());
         addValueCell(property);
         addSetButtonCell();
@@ -70,6 +65,6 @@ public class PropertyTableRow extends TableRow implements TypeInputEditedHandler
 
     @Override
     public void onTypeInputEdited(TypeInputEditedEvent event) {
-        values.put(Property.VALUE, event.getNewValue());
+        values.put(Property.VALUE_ID, event.getNewValue());
     }
 }

@@ -11,7 +11,6 @@ import java.util.Map;
 
 /**
  * Class which is true iff at least one of the sub-conditions is true
- * @author tclabon
  *
  */
 @FactoryInformation(id = "or", name = "Or", description = "True if any child condition is true")

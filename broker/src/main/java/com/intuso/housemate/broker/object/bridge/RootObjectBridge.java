@@ -30,11 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 12/03/13
- * Time: 18:31
- * To change this template use File | Settings | File Templates.
  */
 public class RootObjectBridge
         extends BridgeObject<RootWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>,

@@ -8,11 +8,6 @@ import com.intuso.housemate.plugin.api.RealDeviceFactory;
 import java.lang.reflect.Constructor;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/06/13
- * Time: 22:39
- * To change this template use File | Settings | File Templates.
  */
 public class SimpleDeviceFactory implements RealDeviceFactory<RealDevice> {
 

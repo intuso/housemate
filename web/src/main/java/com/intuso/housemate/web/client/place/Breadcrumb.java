@@ -1,11 +1,6 @@
 package com.intuso.housemate.web.client.place;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 29/11/12
- * Time: 00:29
- * To change this template use File | Settings | File Templates.
  */
 public class Breadcrumb {
 

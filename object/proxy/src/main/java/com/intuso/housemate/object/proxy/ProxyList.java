@@ -13,11 +13,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.Iterator;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 09/07/12
- * Time: 19:15
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyList<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, SWBL, SWR>>,
@@ -44,7 +39,7 @@ public abstract class ProxyList<
     @Override
     protected java.util.List registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(ADD, new Receiver<HousemateObjectWrappable>() {
+        result.add(addMessageListener(ADD_TYPE, new Receiver<HousemateObjectWrappable>() {
             @Override
             public void messageReceived(Message<HousemateObjectWrappable> message) throws HousemateException {
                 SWR wrapper;
@@ -59,7 +54,7 @@ public abstract class ProxyList<
                     listener.elementAdded(wrapper);
             }
         }));
-        result.add(addMessageListener(REMOVE, new Receiver<HousemateObjectWrappable>() {
+        result.add(addMessageListener(REMOVE_TYPE, new Receiver<HousemateObjectWrappable>() {
             @Override
             public void messageReceived(Message<HousemateObjectWrappable> message) throws HousemateException {
                 SWR wrapper = removeWrapper(message.getPayload().getId());

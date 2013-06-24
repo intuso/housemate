@@ -8,11 +8,6 @@ import com.intuso.housemate.plugin.api.BrokerConditionFactory;
 import java.lang.reflect.Constructor;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/06/13
- * Time: 22:39
- * To change this template use File | Settings | File Templates.
  */
 public class SimpleConditionFactory implements BrokerConditionFactory<BrokerRealCondition> {
 

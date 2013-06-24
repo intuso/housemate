@@ -17,7 +17,6 @@ import java.util.Set;
 /**
  * Condition which is true iff the current day of the week matches
  * those specified by the user
- * @author tclabon
  *
  */
 @FactoryInformation(id = "day-of-the-week", name = "Day of the Week", description = "True on certain days")
@@ -92,7 +91,7 @@ public class DayOfTheWeek extends BrokerRealCondition {
 	/**
 	 * Thread that monitors the time of the day and calls conditionSatisfied() as appropriate based on
 	 * the days that the super class parsed
-	 * @author tclabon
+	 * @author Tom Clabon
 	 *
 	 */
 	private class DayMonitorThread extends Thread {

@@ -9,25 +9,19 @@ import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.automation.AutomationListener;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/05/12
- * Time: 17:49
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyAutomation<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             SR extends ProxyResources<?>,
-            P extends ProxyProperty<?, ?, ?, ?, P>,
             AC extends ProxyCommand<?, ?, ?, ?, AC>,
             V extends ProxyValue<?, ?, V>,
             C extends ProxyCondition<?, ?, ?, ?, ?, C, CL>,
             CL extends ProxyList<?, ?, ConditionWrappable, C, CL>,
             T extends ProxyTask<?, ?, ?, ?, T>,
             TL extends ProxyList<?, ?, TaskWrappable, T, TL>,
-            A extends ProxyAutomation<R, SR, P, AC, V, C, CL, T, TL, A>>
-        extends ProxyPrimaryObject<R, SR, AutomationWrappable, P, AC, V, A, AutomationListener<? super A>>
-        implements Automation<P, AC, AC, AC, V, V, V, C, CL, T, TL, A> {
+            A extends ProxyAutomation<R, SR, AC, V, C, CL, T, TL, A>>
+        extends ProxyPrimaryObject<R, SR, AutomationWrappable, AC, V, A, AutomationListener<? super A>>
+        implements Automation<AC, AC, AC, V, V, V, C, CL, T, TL, A> {
 
     private CL conditions;
     private TL satisfiedTasks;
@@ -43,12 +37,12 @@ public abstract class ProxyAutomation<
     @Override
     protected final void getChildObjects() {
         super.getChildObjects();
-        conditions = (CL)getWrapper(CONDITIONS);
-        satisfiedTasks = (TL)getWrapper(SATISFIED_TASKS);
-        unsatisfiedTasks = (TL)getWrapper(UNSATISFIED_TASKS);
-        addConditionCommand = (AC)getWrapper(ADD_CONDITION);
-        addSatisifedTaskCommand = (AC)getWrapper(ADD_SATISFIED_TASK);
-        addUnsatisifedTaskCommand = (AC)getWrapper(ADD_UNSATISFIED_TASK);
+        conditions = (CL)getWrapper(CONDITIONS_ID);
+        satisfiedTasks = (TL)getWrapper(SATISFIED_TASKS_ID);
+        unsatisfiedTasks = (TL)getWrapper(UNSATISFIED_TASKS_ID);
+        addConditionCommand = (AC)getWrapper(ADD_CONDITION_ID);
+        addSatisifedTaskCommand = (AC)getWrapper(ADD_SATISFIED_TASK_ID);
+        addUnsatisifedTaskCommand = (AC)getWrapper(ADD_UNSATISFIED_TASK_ID);
     }
 
     @Override

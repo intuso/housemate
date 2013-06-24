@@ -10,16 +10,11 @@ import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/01/13
- * Time: 23:57
- * To change this template use File | Settings | File Templates.
  */
 public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
             PO extends BrokerRealPrimaryObject<WBL, PO, L>, L extends PrimaryListener<? super PO>>
         extends BrokerRealObject<WBL, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>, L>
-        implements PrimaryObject<BrokerRealProperty<String>, BrokerRealCommand, BrokerRealCommand,
+        implements PrimaryObject<BrokerRealCommand, BrokerRealCommand,
             BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, PO, L> {
 
     private final BrokerRealCommand remove;
@@ -31,7 +26,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
 
     public BrokerRealPrimaryObject(BrokerRealResources resources, WBL wrappable, final String objectType) {
         super(resources, wrappable);
-        this.remove = new BrokerRealCommand(resources, REMOVE_COMMAND, REMOVE_COMMAND, "Remove the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
+        this.remove = new BrokerRealCommand(resources, REMOVE_COMMAND_ID, REMOVE_COMMAND_ID, "Remove the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 if(isRunning())
@@ -39,9 +34,9 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
                 remove();
             }
         };
-        this.connected = new BrokerRealValue<Boolean>(resources, CONNECTED_VALUE, CONNECTED_VALUE, "Whether the " + objectType + " is connected or not", new BooleanType(resources.getRealResources()), true);
-        this.running = new BrokerRealValue<Boolean>(resources, RUNNING_VALUE, RUNNING_VALUE, "Whether the " + objectType + " is running or not", new BooleanType(resources.getRealResources()), false);
-        this.start = new BrokerRealCommand(resources, START_COMMAND, START_COMMAND, "Start the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
+        this.connected = new BrokerRealValue<Boolean>(resources, CONNECTED_VALUE_ID, CONNECTED_VALUE_ID, "Whether the " + objectType + " is connected or not", new BooleanType(resources.getRealResources()), true);
+        this.running = new BrokerRealValue<Boolean>(resources, RUNNING_VALUE_ID, RUNNING_VALUE_ID, "Whether the " + objectType + " is running or not", new BooleanType(resources.getRealResources()), false);
+        this.start = new BrokerRealCommand(resources, START_COMMAND_ID, START_COMMAND_ID, "Start the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 if(!isRunning()) {
@@ -50,7 +45,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
                 }
             }
         };
-        this.stop = new BrokerRealCommand(resources, STOP_COMMAND, STOP_COMMAND, "Stop the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
+        this.stop = new BrokerRealCommand(resources, STOP_COMMAND_ID, STOP_COMMAND_ID, "Stop the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 if(isRunning()) {
@@ -59,7 +54,7 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
                 }
             }
         };
-        this.error = new BrokerRealValue<String>(resources, ERROR_VALUE, ERROR_VALUE, "Current error for the " + objectType, new StringType(resources.getRealResources()), null);
+        this.error = new BrokerRealValue<String>(resources, ERROR_VALUE_ID, ERROR_VALUE_ID, "Current error for the " + objectType, new StringType(resources.getRealResources()), null);
         addWrapper(this.remove);
         addWrapper(this.running);
         addWrapper(this.start);

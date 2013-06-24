@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 /**
  * Housemate device that will start and stop a program
- * @author tclabon
  *
  */
 public class RunProgramDevice extends RealDevice {
@@ -170,7 +169,7 @@ public class RunProgramDevice extends RealDevice {
 
 	/**
 	 * Thread that monitors whethe the program is running or not
-	 * @author tclabon
+	 * @author Tom Clabon
 	 *
 	 */
 	private class Monitor extends Thread {

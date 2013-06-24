@@ -10,11 +10,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 17/07/12
- * Time: 23:48
- * To change this template use File | Settings | File Templates.
  */
 public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
             SWBL extends HousemateObjectWrappable<?>,
@@ -58,7 +53,7 @@ public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
                 getWrappable().setValue(value.getTypeInstance());
                 for(ValueListener<? super V> listener : getObjectListeners())
                     listener.valueChanged(getThis());
-                broadcastMessage(VALUE, value.getTypeInstance());
+                broadcastMessage(VALUE_ID, value.getTypeInstance());
             }}));
         return result;
     }

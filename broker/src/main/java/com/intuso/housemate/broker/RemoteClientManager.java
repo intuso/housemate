@@ -28,11 +28,6 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 13/05/13
- * Time: 08:36
- * To change this template use File | Settings | File Templates.
  */
 public class RemoteClientManager {
 
@@ -70,7 +65,7 @@ public class RemoteClientManager {
         }
         try {
             resources.getLog().d("Reconnect succeeded");
-            client.sendMessage(new String[] {""}, Root.CONNECTION_RESPONSE, new ReconnectResponse());
+            client.sendMessage(new String[] {""}, Root.CONNECTION_RESPONSE_TYPE, new ReconnectResponse());
         } catch(HousemateException e) {
             resources.getLog().e("Failed to send authentication response to client at route " + Message.routeToString(route));
             return false;
@@ -108,7 +103,7 @@ public class RemoteClientManager {
         try {
             if(response != null) {
                 resources.getLog().d("Authentication succeeded");
-                client.sendMessage(new String[]{""}, Root.CONNECTION_RESPONSE, response);
+                client.sendMessage(new String[]{""}, Root.CONNECTION_RESPONSE_TYPE, response);
             }
         } catch(HousemateException e) {
             resources.getLog().e("Failed to send authentication response to client at route " + Message.routeToString(route));

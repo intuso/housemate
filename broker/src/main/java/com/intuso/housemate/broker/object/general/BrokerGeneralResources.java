@@ -27,11 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 18/02/13
- * Time: 09:26
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerGeneralResources implements Resources {
 

@@ -10,18 +10,25 @@ import com.intuso.housemate.object.broker.real.BrokerRealCommand;
 import com.intuso.housemate.object.broker.real.BrokerRealValue;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/05/12
- * Time: 17:49
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyDevice
-        extends BrokerProxyPrimaryObject<DeviceWrappable, BrokerProxyDevice, DeviceListener<? super BrokerProxyDevice>>
-        implements Device<BrokerRealCommand, BrokerProxyCommand, BrokerProxyCommand,
-            BrokerProxyList<CommandWrappable, BrokerProxyCommand>, BrokerRealValue<Boolean>, BrokerProxyValue, BrokerProxyValue, BrokerProxyValue,
-            BrokerProxyList<ValueWrappable, BrokerProxyValue>, BrokerProxyProperty, BrokerProxyProperty,
-            BrokerProxyList<PropertyWrappable, BrokerProxyProperty>, BrokerProxyDevice> {
+        extends BrokerProxyPrimaryObject<
+            DeviceWrappable,
+            BrokerProxyDevice,
+            DeviceListener<? super BrokerProxyDevice>>
+        implements Device<
+            BrokerRealCommand,
+            BrokerProxyCommand,
+            BrokerProxyCommand,
+            BrokerProxyList<CommandWrappable, BrokerProxyCommand>,
+            BrokerRealValue<Boolean>,
+            BrokerProxyValue,
+            BrokerProxyValue,
+            BrokerProxyValue,
+            BrokerProxyList<ValueWrappable, BrokerProxyValue>,
+            BrokerProxyProperty,
+            BrokerProxyList<PropertyWrappable, BrokerProxyProperty>,
+            BrokerProxyDevice> {
 
     private BrokerProxyList<CommandWrappable, BrokerProxyCommand> commands;
     private BrokerProxyList<ValueWrappable, BrokerProxyValue> values;
@@ -34,9 +41,9 @@ public class BrokerProxyDevice
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        commands = (BrokerProxyList<CommandWrappable, BrokerProxyCommand>)getWrapper(COMMANDS);
-        values = (BrokerProxyList<ValueWrappable, BrokerProxyValue>)getWrapper(VALUES);
-        properties = (BrokerProxyList<PropertyWrappable, BrokerProxyProperty>)getWrapper(PROPERTIES);
+        commands = (BrokerProxyList<CommandWrappable, BrokerProxyCommand>)getWrapper(COMMANDS_ID);
+        values = (BrokerProxyList<ValueWrappable, BrokerProxyValue>)getWrapper(VALUES_ID);
+        properties = (BrokerProxyList<PropertyWrappable, BrokerProxyProperty>)getWrapper(PROPERTIES_ID);
     }
 
     @Override

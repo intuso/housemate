@@ -24,11 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 24/11/12
- * Time: 21:04
- * To change this template use File | Settings | File Templates.
  */
 public class ObjectNavs<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> extends Composite
             implements ListListener<O>, ObjectSelectedHandler<O>, HasObjectSelectedHandlers<O> {

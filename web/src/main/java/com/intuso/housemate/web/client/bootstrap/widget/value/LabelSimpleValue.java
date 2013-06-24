@@ -7,11 +7,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 28/11/12
- * Time: 22:28
- * To change this template use File | Settings | File Templates.
  */
 public class LabelSimpleValue extends Value {
 

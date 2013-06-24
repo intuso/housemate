@@ -12,11 +12,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 24/11/12
- * Time: 11:14
- * To change this template use File | Settings | File Templates.
  */
 public class ContextListener implements ServletContextListener {
 
@@ -35,7 +30,7 @@ public class ContextListener implements ServletContextListener {
             }
             RESOURCES.getRouter().connect();
             RESOURCES.getRouter().login(
-                    new UsernamePassword(false, RESOURCES.getProperties().get("username"), RESOURCES.getProperties().get("password"), false));
+                    new UsernamePassword(RESOURCES.getProperties().get("username"), RESOURCES.getProperties().get("password"), false));
             RESOURCES.getRouter().addObjectListener(new RootListener<RouterRootObject>() {
                 @Override
                 public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
@@ -45,7 +40,7 @@ public class ContextListener implements ServletContextListener {
                 @Override
                 public void brokerInstanceChanged(RouterRootObject root) {
                     RESOURCES.getRouter().login(
-                            new UsernamePassword(false, RESOURCES.getProperties().get("username"), RESOURCES.getProperties().get("password"), false)
+                            new UsernamePassword(RESOURCES.getProperties().get("username"), RESOURCES.getProperties().get("password"), false)
                     );
                 }
             });

@@ -19,11 +19,6 @@ import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.place.HousematePlace;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 25/11/12
- * Time: 00:03
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ObjectListView<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>, P extends HousematePlace> extends Composite
         implements ObjectSelectedHandler<O> {

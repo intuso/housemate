@@ -6,11 +6,6 @@ import com.intuso.housemate.api.object.type.TypeListener;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 28/01/13
- * Time: 09:01
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerProxyType
         extends BrokerProxyObject<TypeWrappable<HousemateObjectWrappable<?>>,

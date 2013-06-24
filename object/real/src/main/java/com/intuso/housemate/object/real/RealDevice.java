@@ -12,17 +12,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/05/12
- * Time: 17:49
- * To change this template use File | Settings | File Templates.
  */
 public class RealDevice
-        extends RealPrimaryObject<DeviceWrappable, RealDevice, DeviceListener<? super RealDevice>>
-        implements Device<RealCommand, RealCommand, RealCommand, RealList<CommandWrappable, RealCommand>,
-            RealValue<Boolean>, RealValue<Boolean>, RealValue<String>, RealValue<?>, RealList<ValueWrappable, RealValue<?>>,
-            RealProperty<String>, RealProperty<?>, RealList<PropertyWrappable, RealProperty<?>>, RealDevice> {
+        extends RealPrimaryObject<
+            DeviceWrappable,
+            RealDevice,
+            DeviceListener<? super RealDevice>>
+        implements Device<
+            RealCommand,
+            RealCommand,
+            RealCommand,
+            RealList<CommandWrappable, RealCommand>,
+            RealValue<Boolean>,
+            RealValue<Boolean>,
+            RealValue<String>,
+            RealValue<?>,
+            RealList<ValueWrappable, RealValue<?>>,
+            RealProperty<?>,
+            RealList<PropertyWrappable, RealProperty<?>>,
+            RealDevice> {
 
     private final static String COMMANDS_DESCRIPTION = "The device's commands";
     private final static String VALUES_DESCRIPTION = "The device's values";
@@ -40,9 +48,9 @@ public class RealDevice
 
     public RealDevice(RealResources resources, String id, String name, String description, List<RealCommand> commands, List<RealValue<?>> values, List<RealProperty<?>> properties) {
         super(resources, new DeviceWrappable(id, name, description), OBJECT_TYPE);
-        this.commands = new RealList<CommandWrappable, RealCommand>(resources, COMMANDS, COMMANDS, COMMANDS_DESCRIPTION, commands);
-        this.values = new RealList<ValueWrappable, RealValue<?>>(resources, VALUES, VALUES, VALUES_DESCRIPTION, values);
-        this.properties = new RealList<PropertyWrappable, RealProperty<?>>(resources, PROPERTIES, PROPERTIES, PROPERTIES_DESCRIPTION, properties);
+        this.commands = new RealList<CommandWrappable, RealCommand>(resources, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION, commands);
+        this.values = new RealList<ValueWrappable, RealValue<?>>(resources, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION, values);
+        this.properties = new RealList<PropertyWrappable, RealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION, properties);
         addWrapper(this.commands);
         addWrapper(this.values);
         addWrapper(this.properties);

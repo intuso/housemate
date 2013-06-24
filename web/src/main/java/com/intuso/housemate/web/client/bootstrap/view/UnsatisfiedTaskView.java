@@ -12,11 +12,6 @@ import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.place.UnsatisfiedTaskPlace;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/03/12
- * Time: 09:31
- * To change this template use File | Settings | File Templates.
  */
 public class UnsatisfiedTaskView extends ObjectListView<GWTProxyTask, UnsatisfiedTaskPlace>
         implements com.intuso.housemate.web.client.ui.view.UnsatisfiedTaskView {

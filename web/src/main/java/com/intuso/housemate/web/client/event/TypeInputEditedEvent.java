@@ -5,11 +5,6 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/03/12
- * Time: 23:59
- * To change this template use File | Settings | File Templates.
  */
 public class TypeInputEditedEvent extends GwtEvent<TypeInputEditedHandler> {
 

@@ -32,11 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 05/08/12
- * Time: 16:51
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyRootObject<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
@@ -47,7 +42,7 @@ public abstract class ProxyRootObject<
             PTL extends ProxyList<?, ?, ?, T, PTL>,
             D extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?, ?>,
             PDL extends ProxyList<?, ?, ?, D, PDL>,
-            Ru extends ProxyAutomation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
+            Ru extends ProxyAutomation<?, ?, ?, ?, ?, ?, ?, ?, ?>,
             PRL extends ProxyList<?, ?, ?, Ru, PRL>,
             C extends ProxyCommand<?, ?, ?, ?, C>,
             RO extends ProxyRootObject<R, SR, U, PUL, T, PTL, D, PDL, Ru, PRL, C, RO>>
@@ -113,7 +108,7 @@ public abstract class ProxyRootObject<
         List<ListenerRegistration> result = super.registerListeners();
         result.add(addWrapperListener(this));
         result.add(connectionManager.addStatusChangeListener(this));
-        result.add(addMessageListener(CONNECTION_RESPONSE, new Receiver<AuthenticationResponse>() {
+        result.add(addMessageListener(CONNECTION_RESPONSE_TYPE, new Receiver<AuthenticationResponse>() {
             @Override
             public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {
                 connectionManager.authenticationResponseReceived(message.getPayload());
@@ -142,13 +137,13 @@ public abstract class ProxyRootObject<
                             // do nothing
                         }
                     });
-                    toLoad.addAll(Lists.newArrayList(USERS, TYPES, DEVICES, AUTOMATIONS, ADD_USER, ADD_DEVICE, ADD_AUTOMATION));
+                    toLoad.addAll(Lists.newArrayList(USERS_ID, TYPES_ID, DEVICES_ID, AUTOMATIONS_ID, ADD_USER_ID, ADD_DEVICE_ID, ADD_AUTOMATION_ID));
                     for(String name : toLoad)
                         load(name);
                 }
             }
         }));
-        result.add(addMessageListener(STATUS, new Receiver<ConnectionStatus>() {
+        result.add(addMessageListener(STATUS_TYPE, new Receiver<ConnectionStatus>() {
             @Override
             public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
                 connectionManager.routerStatusChanged(message.getPayload());
@@ -167,13 +162,13 @@ public abstract class ProxyRootObject<
     @Override
     public void getChildObjects() {
         super.getChildObjects();
-        proxyConnectionList = (PUL)getWrapper(USERS);
-        proxyTypeList = (PTL)getWrapper(TYPES);
-        proxyDeviceList = (PDL)getWrapper(DEVICES);
-        proxyAutomationList = (PRL)getWrapper(AUTOMATIONS);
-        addUserCommand = (C)getWrapper(ADD_USER);
-        addDeviceCommand = (C)getWrapper(ADD_DEVICE);
-        addAutomationCommand = (C)getWrapper(ADD_AUTOMATION);
+        proxyConnectionList = (PUL)getWrapper(USERS_ID);
+        proxyTypeList = (PTL)getWrapper(TYPES_ID);
+        proxyDeviceList = (PDL)getWrapper(DEVICES_ID);
+        proxyAutomationList = (PRL)getWrapper(AUTOMATIONS_ID);
+        addUserCommand = (C)getWrapper(ADD_USER_ID);
+        addDeviceCommand = (C)getWrapper(ADD_DEVICE_ID);
+        addAutomationCommand = (C)getWrapper(ADD_AUTOMATION_ID);
     }
 
     @Override

@@ -6,11 +6,6 @@ import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.plugin.api.BrokerTaskFactory;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 27/02/13
- * Time: 23:22
- * To change this template use File | Settings | File Templates.
  */
 public class PerformCommandTaskFactory implements BrokerTaskFactory<PerformCommand> {
 

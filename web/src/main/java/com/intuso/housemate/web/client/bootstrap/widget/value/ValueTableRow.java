@@ -6,11 +6,6 @@ import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 10/03/12
- * Time: 09:31
- * To change this template use File | Settings | File Templates.
  */
 public class ValueTableRow extends TableRow {
 

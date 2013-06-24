@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * @author tclabon
  * Main class for "tweeting" Housemate events
  */
 public class HousemateTweeter {
@@ -121,11 +120,11 @@ public class HousemateTweeter {
             @Override
             public void brokerInstanceChanged(SimpleProxyObject.Root root) {
                 tweet("Broker instance changed. Reconnecting");
-                root.login(new UsernamePassword(true, resources.getProperties().get("username"), resources.getProperties().get("password"), true));
+                root.login(new UsernamePassword(resources.getProperties().get("username"), resources.getProperties().get("password"), true));
             }
         });
 
-        root.login(new UsernamePassword(true, resources.getProperties().get("username"), resources.getProperties().get("password"), true));
+        root.login(new UsernamePassword(resources.getProperties().get("username"), resources.getProperties().get("password"), true));
 	}
 
 	/**

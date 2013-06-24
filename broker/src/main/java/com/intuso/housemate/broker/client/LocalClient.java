@@ -10,11 +10,6 @@ import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 28/01/13
- * Time: 18:20
- * To change this template use File | Settings | File Templates.
  */
 public class LocalClient implements PluginListener {
 
@@ -52,11 +47,7 @@ public class LocalClient implements PluginListener {
         // todo remove types added by this plugin
     }
 
-    public final class InternalConnectMethod extends AuthenticationMethod {
-        private InternalConnectMethod() {
-            super(false);
-        }
-
+    public final class InternalConnectMethod implements AuthenticationMethod {
         @Override
         public String toString() {
             return "internal";

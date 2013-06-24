@@ -17,11 +17,6 @@ import com.intuso.utilities.wrapper.WrapperFactory;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/05/12
- * Time: 10:18
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyObject<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, SWBL, SWR>>,

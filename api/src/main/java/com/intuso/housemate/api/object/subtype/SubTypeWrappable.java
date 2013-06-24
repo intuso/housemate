@@ -4,11 +4,8 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 29/05/12
- * Time: 21:05
- * To change this template use File | Settings | File Templates.
+ *
+ * Data object for a sub type
  */
 public final class SubTypeWrappable extends HousemateObjectWrappable<NoChildrenWrappable> {
 
@@ -21,6 +18,10 @@ public final class SubTypeWrappable extends HousemateObjectWrappable<NoChildrenW
         this.type = type;
     }
 
+    /**
+     * Gets the type id
+     * @return the type id
+     */
     public String getType() {
         return type;
     }

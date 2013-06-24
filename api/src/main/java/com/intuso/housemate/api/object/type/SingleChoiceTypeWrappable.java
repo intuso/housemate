@@ -5,11 +5,8 @@ import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 29/05/12
- * Time: 21:05
- * To change this template use File | Settings | File Templates.
+ *
+ * Data object for a single-choice type
  */
 public final class SingleChoiceTypeWrappable extends TypeWrappable<ListWrappable<OptionWrappable>> {
 

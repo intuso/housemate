@@ -12,11 +12,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 02/06/13
- * Time: 10:45
- * To change this template use File | Settings | File Templates.
  */
 public class CommandImpl extends RealCommand {
 

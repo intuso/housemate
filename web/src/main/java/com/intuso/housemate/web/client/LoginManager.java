@@ -11,11 +11,6 @@ import com.intuso.housemate.web.client.event.CredentialsSubmittedEvent;
 import com.intuso.housemate.web.client.handler.CredentialsSubmittedHandler;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 07/05/13
- * Time: 09:01
- * To change this template use File | Settings | File Templates.
  */
 public class LoginManager implements CredentialsSubmittedHandler {
 
@@ -55,7 +50,7 @@ public class LoginManager implements CredentialsSubmittedHandler {
     public void startLogin() {
         if(Cookies.getCookieNames().contains(SESSION_COOKIE))
             Housemate.ENVIRONMENT.getResources().getRouter().login(
-                    new Session(true, Cookies.getCookie(SESSION_COOKIE)));
+                    new Session(Cookies.getCookie(SESSION_COOKIE)));
         else {
             Housemate.FACTORY.getLoginView().show(null);
             Housemate.FACTORY.getLoginView().enable();
@@ -74,10 +69,10 @@ public class LoginManager implements CredentialsSubmittedHandler {
     public void onCredentialsSubmitted(CredentialsSubmittedEvent event) {
         if(!isLoggedIn)
             Housemate.ENVIRONMENT.getResources().getRouter().login(
-                    new UsernamePassword(true, event.getUsername(), event.getPassword(), true));
+                    new UsernamePassword(event.getUsername(), event.getPassword(), true));
     }
 
     public AuthenticationMethod getLoginMethod() {
-        return new Session(true, Cookies.getCookie(SESSION_COOKIE));
+        return new Session(Cookies.getCookie(SESSION_COOKIE));
     }
 }

@@ -3,11 +3,7 @@ package com.intuso.housemate.api.object;
 import com.intuso.utilities.listener.Listener;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 03/07/12
- * Time: 22:47
- * To change this template use File | Settings | File Templates.
+ *
+ * Base listener interface for objects
  */
-public interface ObjectListener extends Listener {
-}
+public interface ObjectListener extends Listener {}

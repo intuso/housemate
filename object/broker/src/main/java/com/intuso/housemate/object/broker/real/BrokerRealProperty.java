@@ -12,11 +12,6 @@ import com.intuso.housemate.object.real.RealType;
 import java.util.Arrays;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/05/12
- * Time: 14:10
- * To change this template use File | Settings | File Templates.
  */
 public class BrokerRealProperty<O>
         extends BrokerRealValueBase<PropertyWrappable, CommandWrappable, BrokerRealCommand, O, BrokerRealProperty<O>>
@@ -26,7 +21,7 @@ public class BrokerRealProperty<O>
 
     public BrokerRealProperty(BrokerRealResources resources, String id, String name, String description, RealType<?, ?, O> type, O value) {
         super(resources, new PropertyWrappable(id, name, description, type.getId(), type.serialise(value)), type);
-        setCommand = new BrokerRealCommand(resources, SET_COMMAND, SET_COMMAND, "The command to change the property's value",
+        setCommand = new BrokerRealCommand(resources, SET_COMMAND_ID, SET_COMMAND_ID, "The command to change the property's value",
                 Arrays.<BrokerRealParameter<?>>asList(new BrokerRealParameter<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
@@ -41,7 +36,7 @@ public class BrokerRealProperty<O>
     public void set(final TypeInstance value, CommandListener<? super BrokerRealCommand> listener) {
         getSetCommand().perform(new TypeInstances() {
             {
-                put(VALUE, value);
+                put(VALUE_ID, value);
             }
         }, listener);
     }

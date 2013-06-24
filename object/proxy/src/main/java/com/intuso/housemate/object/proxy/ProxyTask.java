@@ -10,11 +10,6 @@ import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 27/05/12
- * Time: 17:49
- * To change this template use File | Settings | File Templates.
  */
 public abstract class ProxyTask<
             R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
@@ -36,9 +31,9 @@ public abstract class ProxyTask<
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        error = (V)getWrapper(ERROR);
-        executing = (V)getWrapper(EXECUTING);
-        propertyList = (PL)getWrapper(PROPERTIES);
+        error = (V)getWrapper(ERROR_ID);
+        executing = (V)getWrapper(EXECUTING_TYPE);
+        propertyList = (PL)getWrapper(PROPERTIES_ID);
     }
 
     @Override

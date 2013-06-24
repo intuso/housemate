@@ -11,11 +11,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by IntelliJ IDEA.
- * User: tomc
- * Date: 26/03/12
- * Time: 23:53
- * To change this template use File | Settings | File Templates.
  */
 public class GWTClientEndpoint implements Receiver, Sender {
     

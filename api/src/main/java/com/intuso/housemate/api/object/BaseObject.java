@@ -3,16 +3,39 @@ package com.intuso.housemate.api.object;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 16/01/13
- * Time: 16:12
- * To change this template use File | Settings | File Templates.
+ * Base interface for all other object interfaces
+ * @param <L> the type of the object's listeners
  */
 public interface BaseObject<L extends ObjectListener> {
+
+    /**
+     * Gets the object's id
+     * @return the object's id
+     */
     public String getId();
-    public String[] getPath();
-    public ListenerRegistration addObjectListener(L listener);
+
+    /**
+     * Gets the object's name
+     * @return the object's name
+     */
     public String getName();
+
+    /**
+     * Gets the object's description
+     * @return the object's id description
+     */
     public String getDescription();
+
+    /**
+     * Gets the object's path
+     * @return the object's path
+     */
+    public String[] getPath();
+
+    /**
+     * Adds a listener to this object
+     * @param listener the listener to add
+     * @return the listener registration
+     */
+    public ListenerRegistration addObjectListener(L listener);
 }

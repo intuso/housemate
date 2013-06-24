@@ -14,11 +14,6 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created with IntelliJ IDEA.
- * User: ravnroot
- * Date: 13/05/13
- * Time: 17:22
- * To change this template use File | Settings | File Templates.
  */
 public class RemoteClientImpl implements RemoteClient {
 

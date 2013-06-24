@@ -11,7 +11,6 @@ import java.util.Map;
 
 /**
  * Part of a condition tree whose node is true iff all child nodes are true
- * @author tclabon
  *
  */
 @FactoryInformation(id = "and", name = "And", description = "True only when all child conditions are true")

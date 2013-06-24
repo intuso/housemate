@@ -10,7 +10,6 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 import java.io.IOException;
 
 /**
- * @author tclabon
  * Device that allows On/Off functionality by performing a system command.
  */
 @FactoryInformation(id = "on-off-command", name = "On Off By Command", description = "Device which runs a configured command to turn things on and off")
