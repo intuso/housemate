@@ -17,48 +17,82 @@ import com.intuso.utilities.wrapper.WrapperFactory;
 import java.util.List;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the child resources
+ * @param <DATA> the type of the data
+ * @param <CHILD_DATA> the type of the child data
+ * @param <CHILD> the type of the children
+ * @param <OBJECT> the type of the object
+ * @param <LISTENER> the type of the listener
  */
 public abstract class ProxyObject<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, SWBL, SWR>>,
-            SR extends ProxyResources<?>,
-            WBL extends HousemateObjectWrappable<SWBL>,
-            SWBL extends HousemateObjectWrappable<?>,
-            SWR extends ProxyObject<?, ?, ? extends SWBL, ?, ?, ?, ?>,
-            PBO extends ProxyObject<?, SR, WBL, SWBL, SWR, PBO, L>,
-            L extends ObjectListener>
-        extends HousemateObject<R, WBL, SWBL, SWR, L> implements BaseObject<L> {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>>,
+            CHILD_RESOURCES extends ProxyResources<?>,
+            DATA extends HousemateObjectWrappable<CHILD_DATA>,
+            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
+            OBJECT extends ProxyObject<?, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, OBJECT, LISTENER>,
+            LISTENER extends ObjectListener>
+        extends HousemateObject<RESOURCES, DATA, CHILD_DATA, CHILD, LISTENER> implements BaseObject<LISTENER> {
 
     private ProxyRoot<?, ?, ?, ?, ?, ?> proxyRoot;
-    private final SR subResources;
+    private final CHILD_RESOURCES childResources;
 
-    protected ProxyObject(R resources, SR subResources, WBL wrappable) {
+    /**
+     * @param resources the resources
+     * @param childResources the child resources
+     * @param wrappable the data object
+     */
+    protected ProxyObject(RESOURCES resources, CHILD_RESOURCES childResources, DATA wrappable) {
         super(resources, wrappable);
-        this.subResources = subResources;
+        this.childResources = childResources;
     }
 
+    /**
+     * Gets the root object
+      * @return the root object
+     */
     protected ProxyRoot<?, ?, ?, ?, ?, ?> getProxyRoot() {
         return proxyRoot;
     }
 
-    protected SR getSubResources() {
-        return subResources;
+    /**
+     * Gets the child resources
+     * @return the child resources
+     */
+    protected CHILD_RESOURCES getSubResources() {
+        return childResources;
     }
 
-    public void load(String name) {
-        sendMessage(LOAD_REQUEST, new LoadRequest(name));
+    /**
+     * Makes a request to load the child object for the given id
+     * @param id the id to load
+     */
+    public void load(String id) {
+        sendMessage(LOAD_REQUEST, new LoadRequest(id));
     }
 
-    protected final <MV extends Message.Payload> void sendMessage(String type, MV value) {
-        proxyRoot.sendMessage(new Message<MV>(getPath(), type, value));
+    /**
+     * Sends a message to the broker
+     * @param type the type of the message to send
+     * @param payload the message payload
+     * @param <MV> the type of the message payload
+     */
+    protected final <MV extends Message.Payload> void sendMessage(String type, MV payload) {
+        proxyRoot.sendMessage(new Message<MV>(getPath(), type, payload));
     }
 
+    /**
+     * Registers the listeners this object requires
+     * @return the registrations for the added listeners
+     */
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = Lists.newArrayList();
         result.add(addMessageListener(LOAD_RESPONSE, new Receiver<HousemateObjectWrappable>() {
             @Override
             public void messageReceived(Message<HousemateObjectWrappable> message) throws HousemateException {
                 try {
-                    SWR object = getResources().getObjectFactory().create(getSubResources(), (SWBL)message.getPayload());
+                    CHILD object = getResources().getObjectFactory().create(getSubResources(), (CHILD_DATA)message.getPayload());
                     object.init(ProxyObject.this);
                     addWrapper(object);
                 } catch(HousemateException e) {
@@ -81,9 +115,9 @@ public abstract class ProxyObject<
 
         // unwrap children
         try {
-            unwrapChildren(new WrapperFactory<SWBL, SWR, HousemateException>() {
+            unwrapChildren(new WrapperFactory<CHILD_DATA, CHILD, HousemateException>() {
                 @Override
-                public SWR create(SWBL wrappable) throws HousemateException {
+                public CHILD create(CHILD_DATA wrappable) throws HousemateException {
                     return getResources().getObjectFactory().create(getSubResources(), wrappable);
                 }
             });
@@ -97,9 +131,16 @@ public abstract class ProxyObject<
         getChildObjects();
     }
 
+    /**
+     * Once created and loaded, gets the child objects this object requires
+     */
     protected void getChildObjects() {}
 
-    protected final PBO getThis() {
-        return (PBO)this;
+    /**
+     * Gets this object as its sub class type
+     * @return this object as its sub class type
+     */
+    protected final OBJECT getThis() {
+        return (OBJECT)this;
     }
 }

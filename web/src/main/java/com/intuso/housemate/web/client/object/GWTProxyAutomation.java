@@ -22,8 +22,8 @@ public class GWTProxyAutomation extends ProxyAutomation<
             GWTProxyList<TaskWrappable, GWTProxyTask>,
         GWTProxyAutomation> {
     public GWTProxyAutomation(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                              GWTResources<?> subResources,
+                              GWTResources<?> childResources,
                               AutomationWrappable wrappable) {
-        super(resources, subResources, wrappable);
+        super(resources, childResources, wrappable);
     }
 }

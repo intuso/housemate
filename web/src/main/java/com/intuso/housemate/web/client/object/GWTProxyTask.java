@@ -17,8 +17,8 @@ public class GWTProxyTask extends ProxyTask<
             GWTProxyList<PropertyWrappable, GWTProxyProperty>,
         GWTProxyTask> {
     public GWTProxyTask(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                        GWTResources<?> subResources,
+                        GWTResources<?> childResources,
                         TaskWrappable wrappable) {
-        super(resources, subResources, wrappable);
+        super(resources, childResources, wrappable);
     }
 }

@@ -9,30 +9,40 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the chil resources
+ * @param <TYPE> the type of the type
+ * @param <SET_COMMAND> the type of the set command
+ * @param <PROPERTY> the type of the property
  */
 public abstract class ProxyProperty<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, CommandWrappable, F>>,
-            SR extends ProxyResources<?>,
-            T extends ProxyType<?, ?, ?, ?, ?, ?>,
-            F extends ProxyCommand<?, ?, ?, ?, F>,
-            P extends ProxyProperty<R, SR, T, F, P>>
-        extends ProxyValueBase<R, SR, PropertyWrappable, CommandWrappable, F, T, P>
-        implements Property<T, F, P> {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CommandWrappable, SET_COMMAND>>,
+            CHILD_RESOURCES extends ProxyResources<?>,
+            TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
+            SET_COMMAND extends ProxyCommand<?, ?, ?, ?, SET_COMMAND>,
+            PROPERTY extends ProxyProperty<RESOURCES, CHILD_RESOURCES, TYPE, SET_COMMAND, PROPERTY>>
+        extends ProxyValueBase<RESOURCES, CHILD_RESOURCES, PropertyWrappable, CommandWrappable, SET_COMMAND, TYPE, PROPERTY>
+        implements Property<TYPE, SET_COMMAND, PROPERTY> {
 
-    private F setCommand;
+    private SET_COMMAND setCommand;
 
-    public ProxyProperty(R resources, SR subResources, PropertyWrappable wrappable) {
-        super(resources, subResources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyProperty(RESOURCES resources, CHILD_RESOURCES childResources, PropertyWrappable wrappable) {
+        super(resources, childResources, wrappable);
     }
 
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        setCommand = (F) getWrapper(SET_COMMAND_ID);
+        setCommand = (SET_COMMAND) getWrapper(SET_COMMAND_ID);
     }
 
     @Override
-    public void set(final TypeInstance value, CommandListener<? super F> listener) {
+    public void set(final TypeInstance value, CommandListener<? super SET_COMMAND> listener) {
         getSetCommand().perform(new TypeInstances() {
             {
                 put(VALUE_ID, value);
@@ -41,7 +51,7 @@ public abstract class ProxyProperty<
     }
 
     @Override
-    public F getSetCommand() {
+    public SET_COMMAND getSetCommand() {
         return setCommand;
     }
 }

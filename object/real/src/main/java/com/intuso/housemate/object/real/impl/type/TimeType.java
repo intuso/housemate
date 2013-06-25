@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.object.real.RealResources;
 
 /**
+ * Type for a time
  */
 public class TimeType extends RealRegexType<Time> {
 
@@ -13,6 +14,9 @@ public class TimeType extends RealRegexType<Time> {
     public final static String DESCRIPTION = "A time in 24 hour format, eg 01:23:45";
     public final static String REGEX = "([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]";
 
+    /**
+     * @param resources the resources
+     */
     public TimeType(RealResources resources) {
         super(resources, ID, NAME, DESCRIPTION, REGEX);
     }

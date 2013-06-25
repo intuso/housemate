@@ -7,31 +7,42 @@ import com.intuso.housemate.api.object.option.HasOptions;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the child resources
+ * @param <OPTION> the type of the options
+ * @param <OPTIONS> the type of the options list
+ * @param <TYPE> the type of the type
  */
 public abstract class ProxySingleChoiceType<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, ListWrappable<OptionWrappable>, OL>>,
-            SR extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, OptionWrappable, ? extends O>>,
-            O extends ProxyOption<?, ?, ?, ?, O>,
-            OL extends ProxyList<?, ?, OptionWrappable, O, OL>,
-            T extends ProxySingleChoiceType<R, SR, O, OL, T>>
-        extends ProxyType<R, SR, SingleChoiceTypeWrappable, ListWrappable<OptionWrappable>, OL, T>
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListWrappable<OptionWrappable>, OPTIONS>>,
+            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, OptionWrappable, ? extends OPTION>>,
+            OPTION extends ProxyOption<?, ?, ?, ?, OPTION>,
+            OPTIONS extends ProxyList<?, ?, OptionWrappable, OPTION, OPTIONS>,
+            TYPE extends ProxySingleChoiceType<RESOURCES, CHILD_RESOURCES, OPTION, OPTIONS, TYPE>>
+        extends ProxyType<RESOURCES, CHILD_RESOURCES, SingleChoiceTypeWrappable, ListWrappable<OptionWrappable>, OPTIONS, TYPE>
         implements HasOptions {
 
     private static final String OPTIONS = "options";
 
-    private OL options;
+    private OPTIONS options;
 
-    public ProxySingleChoiceType(R resources, SR subResources, SingleChoiceTypeWrappable wrappable) {
-        super(resources, subResources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxySingleChoiceType(RESOURCES resources, CHILD_RESOURCES childResources, SingleChoiceTypeWrappable wrappable) {
+        super(resources, childResources, wrappable);
     }
 
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        options = (OL)getWrapper(OPTIONS);
+        options = (OPTIONS)getWrapper(OPTIONS);
     }
 
-    public OL getOptions() {
+    @Override
+    public OPTIONS getOptions() {
         return options;
     }
 }

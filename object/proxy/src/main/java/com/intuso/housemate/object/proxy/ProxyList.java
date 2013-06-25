@@ -13,25 +13,35 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.Iterator;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the child's resources
+ * @param <CHILD_DATA> the type of the child's data object
+ * @param <CHILD> the type of the child
+ * @param <LIST> the type of the list
  */
 public abstract class ProxyList<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, SWBL, SWR>>,
-            SR extends ProxyResources<?>,
-            SWBL extends HousemateObjectWrappable<?>,
-            SWR extends ProxyObject<?, ?, ? extends SWBL, ?, ?, ?, ?>,
-            L extends ProxyList<R, SR, SWBL, SWR, L>>
-        extends ProxyObject<R, SR, ListWrappable<SWBL>, SWBL, SWR, L, ListListener<? super SWR>>
-        implements List<SWR> {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>>,
+            CHILD_RESOURCES extends ProxyResources<?>,
+            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
+            LIST extends ProxyList<RESOURCES, CHILD_RESOURCES, CHILD_DATA, CHILD, LIST>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, ListWrappable<CHILD_DATA>, CHILD_DATA, CHILD, LIST, ListListener<? super CHILD>>
+        implements List<CHILD> {
 
-    public ProxyList(R resources, SR subResources, ListWrappable listWrappable) {
-        super(resources, subResources, listWrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyList(RESOURCES resources, CHILD_RESOURCES childResources, ListWrappable wrappable) {
+        super(resources, childResources, wrappable);
     }
 
     @Override
-    public ListenerRegistration addObjectListener(ListListener<? super SWR> listener, boolean callForExistingElements) {
+    public ListenerRegistration addObjectListener(ListListener<? super CHILD> listener, boolean callForExistingElements) {
         ListenerRegistration listenerRegistration = addObjectListener(listener);
         if(callForExistingElements)
-            for(SWR element : this)
+            for(CHILD element : this)
                 listener.elementAdded(element);
         return listenerRegistration;
     }
@@ -42,25 +52,25 @@ public abstract class ProxyList<
         result.add(addMessageListener(ADD_TYPE, new Receiver<HousemateObjectWrappable>() {
             @Override
             public void messageReceived(Message<HousemateObjectWrappable> message) throws HousemateException {
-                SWR wrapper;
+                CHILD wrapper;
                 try {
-                    wrapper = getResources().getObjectFactory().create(getSubResources(), (SWBL)message.getPayload());
+                    wrapper = getResources().getObjectFactory().create(getSubResources(), (CHILD_DATA)message.getPayload());
                 } catch(HousemateException e) {
                     throw new HousemateException("Could not create new list element", e);
                 }
                 wrapper.init(ProxyList.this);
                 addWrapper(wrapper);
-                for(ListListener<? super SWR> listener : getObjectListeners())
+                for(ListListener<? super CHILD> listener : getObjectListeners())
                     listener.elementAdded(wrapper);
             }
         }));
         result.add(addMessageListener(REMOVE_TYPE, new Receiver<HousemateObjectWrappable>() {
             @Override
             public void messageReceived(Message<HousemateObjectWrappable> message) throws HousemateException {
-                SWR wrapper = removeWrapper(message.getPayload().getId());
+                CHILD wrapper = removeWrapper(message.getPayload().getId());
                 if(wrapper != null) {
                     wrapper.uninit();
-                    for(ListListener<? super SWR> listener : getObjectListeners())
+                    for(ListListener<? super CHILD> listener : getObjectListeners())
                         listener.elementRemoved(wrapper);
                 }
             }
@@ -69,8 +79,8 @@ public abstract class ProxyList<
     }
 
     @Override
-    public final SWR get(String name) {
-        return (SWR)getWrapper(name);
+    public final CHILD get(String name) {
+        return (CHILD)getWrapper(name);
     }
 
     @Override
@@ -79,7 +89,7 @@ public abstract class ProxyList<
     }
 
     @Override
-    public Iterator<SWR> iterator() {
+    public Iterator<CHILD> iterator() {
         return getWrappers().iterator();
     }
 }

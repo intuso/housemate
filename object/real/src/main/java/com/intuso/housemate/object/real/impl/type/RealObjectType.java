@@ -15,6 +15,7 @@ import com.intuso.housemate.object.real.RealType;
 import java.util.List;
 
 /**
+ * Type for an object from the object tree
  */
 public class RealObjectType<O extends BaseObject<?>>
         extends RealType<ObjectTypeWrappable, NoChildrenWrappable, RealObjectType.Reference<O>> {
@@ -27,6 +28,10 @@ public class RealObjectType<O extends BaseObject<?>>
 
     private final Serialiser<O> serialiser;
 
+    /**
+     * @param resources the resources
+     * @param root the root to get the object from
+     */
     public RealObjectType(RealResources resources, Root<?, ?> root) {
         super(resources, new ObjectTypeWrappable(ID, NAME, "Path to an object"));
         serialiser = new Serialiser<O>(root);
@@ -42,41 +47,75 @@ public class RealObjectType<O extends BaseObject<?>>
         return serialiser.deserialise(instance);
     }
 
+    /**
+     * Reference for an object containing the object's path, and the object if it exists
+     * @param <O>
+     */
     public static class Reference<O extends BaseObject<?>> {
 
         private final String[] path;
         private O object;
 
+        /**
+         * @param path the path to the object
+         */
         public Reference(String[] path) {
             this(path, null);
         }
 
+        /**
+         * @param object the object
+         */
         public Reference(O object) {
             this(object == null ? null : object.getPath(), object);
         }
 
+        /**
+         * @param path the object's path
+         * @param object the object
+         */
         private Reference(String[] path, O object) {
             this.path = path;
             this.object = object;
         }
 
+        /**
+         * Gets the path
+         * @return the path
+         */
         public String[] getPath() {
             return path;
         }
 
+        /**
+         * Gets the object
+         * @return the object
+         */
         public O getObject() {
             return object;
         }
 
+        /**
+         * Sets the object
+         * @param object the object
+         */
         public void setObject(O object) {
+            // todo check the object's path matches the path inside this reference
             this.object = object;
         }
     }
 
+    /**
+     * Serialiser for an object reference
+     * @param <O> the type of the object to serialise
+     */
     public static class Serialiser<O extends BaseObject<?>> implements TypeSerialiser<Reference<O>> {
 
         private final Root<?, ?> root;
 
+        /**
+         * @param root the root to get the object from
+         */
         public Serialiser(Root<?, ?> root) {
             this.root = root;
         }

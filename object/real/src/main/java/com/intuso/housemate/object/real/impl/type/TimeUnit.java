@@ -2,7 +2,6 @@ package com.intuso.housemate.object.real.impl.type;
 
 /**
  * Enum of time units
- *
  */
 public enum TimeUnit {
 

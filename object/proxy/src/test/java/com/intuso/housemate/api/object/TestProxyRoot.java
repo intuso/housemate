@@ -24,12 +24,12 @@ public class TestProxyRoot extends ProxyRootObject<
         SimpleProxyObject.Automation, SimpleProxyObject.List<AutomationWrappable, SimpleProxyObject.Automation>,
             SimpleProxyObject.Command, TestProxyRoot> {
 
-    public TestProxyRoot(ProxyResources<SimpleProxyFactory.All> resources, ProxyResources<?> subResources) {
-        super(resources, subResources);
+    public TestProxyRoot(ProxyResources<SimpleProxyFactory.All> resources, ProxyResources<?> childResources) {
+        super(resources, childResources);
         super.addWrapper(new SimpleProxyObject.List<TypeWrappable<?>, SimpleProxyObject.Type>(
-                SimpleProxyFactory.changeFactoryType(getResources(), new SimpleProxyFactory.Type()), subResources, new ListWrappable(TYPES_ID, TYPES_ID, TYPES_ID)));
+                SimpleProxyFactory.changeFactoryType(getResources(), new SimpleProxyFactory.Type()), childResources, new ListWrappable(TYPES_ID, TYPES_ID, TYPES_ID)));
         super.addWrapper(new SimpleProxyObject.List<DeviceWrappable, SimpleProxyObject.Device>(
-                SimpleProxyFactory.changeFactoryType(getResources(), new SimpleProxyFactory.Device()), subResources, new ListWrappable(DEVICES_ID, DEVICES_ID, DEVICES_ID)));
+                SimpleProxyFactory.changeFactoryType(getResources(), new SimpleProxyFactory.Device()), childResources, new ListWrappable(DEVICES_ID, DEVICES_ID, DEVICES_ID)));
         init(null);
     }
 

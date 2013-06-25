@@ -34,6 +34,7 @@ import com.intuso.housemate.object.proxy.ProxyUser;
 import com.intuso.housemate.object.proxy.ProxyValue;
 
 /**
+ * Container class for a simple implementation of all the proxy objects
  */
 public class SimpleProxyObject {
 
@@ -45,9 +46,9 @@ public class SimpleProxyObject {
             Condition,
             List<ConditionWrappable, Condition>, Task, List<TaskWrappable, Task>, Automation> {
         public Automation(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                          ProxyResources<?> subResources,
+                          ProxyResources<?> childResources,
                           AutomationWrappable wrappable) {
-            super(resources, subResources, wrappable);
+            super(resources, childResources, wrappable);
         }
     }
 
@@ -57,9 +58,9 @@ public class SimpleProxyObject {
                 List<ParameterWrappable, Parameter>,
                 Command> {
         public Command(ProxyResources<SimpleProxyFactory.List<ParameterWrappable, Parameter>> resources,
-                       ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, ParameterWrappable, Parameter>> subResources,
+                       ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, ParameterWrappable, Parameter>> childResources,
                        CommandWrappable wrappable) {
-            super(resources, subResources, wrappable);
+            super(resources, childResources, wrappable);
         }
     }
 
@@ -71,9 +72,9 @@ public class SimpleProxyObject {
                 Condition,
                 List<ConditionWrappable, Condition>> {
         public Condition(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                         ProxyResources<?> subResources,
+                         ProxyResources<?> childResources,
                          ConditionWrappable wrappable) {
-            super(resources, subResources, wrappable);
+            super(resources, childResources, wrappable);
         }
     }
 
@@ -83,9 +84,9 @@ public class SimpleProxyObject {
                 List<CommandWrappable, Command>, Value, List<ValueWrappable, Value>, Property,
                 List<PropertyWrappable, Property>, Device> {
         public Device(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                      ProxyResources<?> subResources,
+                      ProxyResources<?> childResources,
                       DeviceWrappable wrappable) {
-            super(resources, subResources, wrappable);
+            super(resources, childResources, wrappable);
         }
     }
 
@@ -96,9 +97,9 @@ public class SimpleProxyObject {
                 WR,
                 List<WBL, WR>> {
         public List(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, WBL, WR>> resources,
-                    ProxyResources<?> subResources,
+                    ProxyResources<?> childResources,
                     ListWrappable<WBL> listWrappable) {
-            super(resources, subResources, listWrappable);
+            super(resources, childResources, listWrappable);
         }
     }
 
@@ -109,9 +110,9 @@ public class SimpleProxyObject {
             List<SubTypeWrappable, SubType>,
             Option> {
         public Option(ProxyResources<SimpleProxyFactory.List<SubTypeWrappable, SubType>> resources,
-                      ProxyResources<SimpleProxyFactory.SubType> subResources,
+                      ProxyResources<SimpleProxyFactory.SubType> childResources,
                       OptionWrappable wrappable) {
-            super(resources, subResources, wrappable);
+            super(resources, childResources, wrappable);
         }
     }
 
@@ -127,9 +128,9 @@ public class SimpleProxyObject {
             Command,
             Property> {
         public Property(ProxyResources<SimpleProxyFactory.Command> resources,
-                        ProxyResources<SimpleProxyFactory.List<ParameterWrappable, Parameter>> subResources,
+                        ProxyResources<SimpleProxyFactory.List<ParameterWrappable, Parameter>> childResources,
                         PropertyWrappable wrappable) {
-            super(resources, subResources, wrappable);
+            super(resources, childResources, wrappable);
         }
     }
 
@@ -142,8 +143,8 @@ public class SimpleProxyObject {
             Automation, List<AutomationWrappable, Automation>,
             Command, Root> {
         public Root(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                    ProxyResources<?> subResources) {
-            super(resources, subResources);
+                    ProxyResources<?> childResources) {
+            super(resources, childResources);
         }
     }
 
@@ -159,9 +160,9 @@ public class SimpleProxyObject {
             List<PropertyWrappable, Property>,
             Task> {
         public Task(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                    ProxyResources<?> subResources,
+                    ProxyResources<?> childResources,
                     TaskWrappable wrappable) {
-            super(resources, subResources, wrappable);
+            super(resources, childResources, wrappable);
         }
     }
 
@@ -173,18 +174,18 @@ public class SimpleProxyObject {
                 ProxyObject<?, ?, ?, ?, ?, ?, ?>,
                 Type> {
         public Type(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                    ProxyResources<?> subResources,
+                    ProxyResources<?> childResources,
                     TypeWrappable wrappable) {
-            super(resources, subResources, wrappable);
+            super(resources, childResources, wrappable);
         }
     }
 
     public final static class User extends ProxyUser<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             ProxyResources<?>, Command, User> {
         public User(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                    ProxyResources<?> subResources,
+                    ProxyResources<?> childResources,
                     UserWrappable wrappable) {
-            super(resources, subResources, wrappable);
+            super(resources, childResources, wrappable);
         }
     }
 

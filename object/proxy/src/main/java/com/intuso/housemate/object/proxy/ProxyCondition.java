@@ -11,61 +11,75 @@ import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the child resources
+ * @param <VALUE> the type of the value
+ * @param <PROPERTIES> the type of the properties list
+ * @param <ADD_COMMAND> the type of the add command
+ * @param <CONDITION> the type of the conditions
+ * @param <CONDITIONS> the type of the conditions list
  */
 public abstract class ProxyCondition<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            SR extends ProxyResources<?>,
-            V extends ProxyValue<?, ?, V>,
-            PL extends ProxyList<?, ?, PropertyWrappable, ? extends ProxyProperty<?, ?, ?, ?, ?>, PL>, AC extends ProxyCommand<?, ?, ?, ?, AC>,
-            C extends ProxyCondition<R, SR, V, PL, AC, C, CL>, CL extends ProxyList<?, ?, ConditionWrappable, C, CL>>
-        extends ProxyObject<R, SR, ConditionWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, C, ConditionListener<? super C>>
-        implements Condition<V, V, PL, AC, C, CL> {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            CHILD_RESOURCES extends ProxyResources<?>,
+            VALUE extends ProxyValue<?, ?, VALUE>,
+            PROPERTIES extends ProxyList<?, ?, PropertyWrappable, ? extends ProxyProperty<?, ?, ?, ?, ?>, PROPERTIES>,
+            ADD_COMMAND extends ProxyCommand<?, ?, ?, ?, ADD_COMMAND>,
+            CONDITION extends ProxyCondition<RESOURCES, CHILD_RESOURCES, VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS>,
+            CONDITIONS extends ProxyList<?, ?, ConditionWrappable, CONDITION, CONDITIONS>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, ConditionWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, CONDITION, ConditionListener<? super CONDITION>>
+        implements Condition<VALUE, VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS> {
 
-    private V error;
-    private V satisfied;
-    private PL propertyList;
-    private CL conditionList;
-    private AC addConditionCommand;
+    private VALUE error;
+    private VALUE satisfied;
+    private PROPERTIES propertyList;
+    private CONDITIONS conditionList;
+    private ADD_COMMAND addConditionCommand;
 
-    public ProxyCondition(R resources, SR subResources, ConditionWrappable wrappable) {
-        super(resources, subResources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyCondition(RESOURCES resources, CHILD_RESOURCES childResources, ConditionWrappable wrappable) {
+        super(resources, childResources, wrappable);
     }
 
     @Override
     protected final void getChildObjects() {
         super.getChildObjects();
-        error = (V)getWrapper(ERROR_ID);
-        satisfied = (V)getWrapper(SATISFIED_ID);
-        propertyList = (PL)getWrapper(PROPERTIES_ID);
-        conditionList = (CL)getWrapper(CONDITIONS_ID);
-        addConditionCommand = (AC)getWrapper(Automation.ADD_CONDITION_ID);
+        error = (VALUE)getWrapper(ERROR_ID);
+        satisfied = (VALUE)getWrapper(SATISFIED_ID);
+        propertyList = (PROPERTIES)getWrapper(PROPERTIES_ID);
+        conditionList = (CONDITIONS)getWrapper(CONDITIONS_ID);
+        addConditionCommand = (ADD_COMMAND)getWrapper(Automation.ADD_CONDITION_ID);
     }
 
     @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(satisfied.addObjectListener(new ValueListener<V>() {
+        result.add(satisfied.addObjectListener(new ValueListener<VALUE>() {
 
             @Override
-            public void valueChanging(V value) {
+            public void valueChanging(VALUE value) {
                 // do nothing
             }
 
             @Override
-            public void valueChanged(V value) {
+            public void valueChanged(VALUE value) {
                 for(ConditionListener listener : getObjectListeners())
                     listener.conditionSatisfied(getThis(), isSatisfied());
             }
         }));
-        result.add(error.addObjectListener(new ValueListener<V>() {
+        result.add(error.addObjectListener(new ValueListener<VALUE>() {
 
             @Override
-            public void valueChanging(V value) {
+            public void valueChanging(VALUE value) {
                 // do nothing
             }
 
             @Override
-            public void valueChanged(V value) {
+            public void valueChanged(VALUE value) {
                 for(ConditionListener listener : getObjectListeners())
                     listener.conditionError(getThis(), getError());
             }
@@ -74,31 +88,36 @@ public abstract class ProxyCondition<
     }
 
     @Override
-    public final PL getProperties() {
+    public final PROPERTIES getProperties() {
         return propertyList;
     }
 
     @Override
-    public CL getConditions() {
+    public CONDITIONS getConditions() {
         return conditionList;
     }
 
-    public AC getAddConditionCommand() {
+    @Override
+    public ADD_COMMAND getAddConditionCommand() {
         return addConditionCommand;
     }
 
-    public final V getErrorValue() {
+    @Override
+    public final VALUE getErrorValue() {
         return error;
     }
 
+    @Override
     public final String getError() {
         return error.getTypeInstance() != null ? error.getTypeInstance().getValue() : null;
     }
 
-    public final V getSatisfiedValue() {
+    @Override
+    public final VALUE getSatisfiedValue() {
         return satisfied;
     }
 
+    @Override
     public final boolean isSatisfied() {
         return satisfied.getTypeInstance() != null ? Boolean.parseBoolean(satisfied.getTypeInstance().getValue()) : null;
     }

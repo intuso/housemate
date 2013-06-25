@@ -9,6 +9,7 @@ import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealValue;
 
 /**
+ * Type for a double
  */
 public class DoubleType extends RealSimpleType<Double> {
 
@@ -24,18 +25,47 @@ public class DoubleType extends RealSimpleType<Double> {
         }
     };
 
+    /**
+     * @param resources {@inheritDoc}
+     */
     public DoubleType(RealResources resources) {
         super(resources, SimpleTypeWrappable.Type.Double, SERIALISER);
     }
 
+    /**
+     * Creates a double value object
+     * @param resources the resources
+     * @param id the value's id
+     * @param name the value's name
+     * @param description the value's description
+     * @param value the initial value
+     * @return a double value object
+     */
     public static RealValue<Double> createValue(RealResources resources, String id, String name, String description, Double value) {
         return new RealValue<Double>(resources, id, name, description, new DoubleType(resources), value);
     }
 
+    /**
+     * Creates a double property object
+     * @param resources the resources
+     * @param id the property's id
+     * @param name the property's name
+     * @param description the property's description
+     * @param value the initial value
+     * @return a double property object
+     */
     public static RealProperty<Double> createProperty(RealResources resources, String id, String name, String description, Double value) {
         return new RealProperty<Double>(resources, id, name, description, new DoubleType(resources), value);
     }
 
+    /**
+     * Creates a double parameter object
+     * @param resources the resources
+     * @param id the parameter's id
+     * @param name the parameter's name
+     * @param description the parameter's description
+     * @return a double parameter object
+     */
     public static RealParameter<Double> createParameter(RealResources resources, String id, String name, String description) {
         return new RealParameter<Double>(resources, id, name, description, new DoubleType(resources));
     }

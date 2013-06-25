@@ -17,9 +17,6 @@ import java.util.ArrayList;
  */
 public abstract class OnOffDevice extends RealDevice {
 
-	/**
-	 * The On command
-	 */
 	private final RealCommand onCommand = new RealCommand(getResources(), "on", "Turn On", "Turn the device on", new ArrayList<RealParameter<?>>()) {
 		@Override
 		public void perform(TypeInstances values) throws HousemateException {
@@ -28,9 +25,6 @@ public abstract class OnOffDevice extends RealDevice {
 		}
 	};
 
-	/**
-	 * The Off command
-	 */
 	private final RealCommand offCommand = new RealCommand(getResources(), "off", "Turn Off", "Turn the device off", new ArrayList<RealParameter<?>>()) {
 		@Override
 		public void perform(TypeInstances values) throws HousemateException {
@@ -39,16 +33,14 @@ public abstract class OnOffDevice extends RealDevice {
 		}
 	};
 
-	/**
-	 * The On value
-	 */
 	private final RealValue<Boolean> onValue = BooleanType.createValue(getResources(), "is-on", "Is On", "True if the device is currently on", false);
 
-	/**
-	 * Construct the device
-	 * @param id the name of the device
-	 * @throws com.intuso.housemate.api.HousemateException if an error occurs creating the device
-	 */
+    /**
+     * @param resources {@inheritDoc}
+     * @param id {@inheritDoc}
+     * @param name {@inheritDoc}
+     * @param description {@inheritDoc}
+     */
 	public OnOffDevice(RealResources resources, String id, String name, String description) {
 		super(resources, id, name, description);
         getCommands().add(onCommand);
@@ -57,28 +49,28 @@ public abstract class OnOffDevice extends RealDevice {
 	}
 
 	/**
-	 * Set the device to be on
+	 * Sets the device to be on
 	 */
 	public final void setOn() {
 		onValue.setTypedValue(true);
 	}
 
 	/**
-	 * Set the device to be off
+	 * Sets the device to be off
 	 */
 	public final void setOff() {
         onValue.setTypedValue(false);
 	}
 
 	/**
-	 * Turn the device on
-	 * @throws com.intuso.housemate.api.HousemateException
+	 * Turns the device on
+	 * @throws HousemateException if an error occurs
 	 */
 	protected abstract void turnOn() throws HousemateException;
 
 	/**
-	 * Turn the device off
-	 * @throws com.intuso.housemate.api.HousemateException
+	 * Turns the device off
+	 * @throws HousemateException if an error occurs
 	 */
 	protected abstract void turnOff() throws HousemateException;
 }

@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Real type for types that are made up of a collection of other types. For example, a GPS position is made up of two
+ * double sub types, one for latitude, one for longitude
+ * @param <O> the type of the type's value
  */
 public abstract class RealCompoundType<O>
         extends RealType<CompoundTypeWrappable, ListWrappable<SubTypeWrappable>, O>
@@ -24,11 +27,25 @@ public abstract class RealCompoundType<O>
 
     private final RealList<SubTypeWrappable, RealSubType<?>> subTypes;
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the compound type's id
+     * @param name the compound type's name
+     * @param description the compound type's description
+     * @param subTypes the compound type's sub types
+     */
     protected RealCompoundType(RealResources resources, String id, String name, String description,
                                RealSubType<?> ... subTypes) {
         this(resources, id, name, description, Arrays.asList(subTypes));
     }
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the compound type's id
+     * @param name the compound type's name
+     * @param description the compound type's description
+     * @param subTypes the compound type's sub types
+     */
     protected RealCompoundType(RealResources resources, String id, String name, String description,
                                List<RealSubType<?>> subTypes) {
         super(resources, new CompoundTypeWrappable(id, name, description));

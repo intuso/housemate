@@ -5,24 +5,31 @@ import com.intuso.housemate.api.object.type.RegexTypeWrappable;
 import com.intuso.housemate.api.resources.RegexMatcher;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <TYPE> the type of the type
  */
 public abstract class ProxyRegexType<
-            R extends ProxyResources<NoChildrenProxyObjectFactory>,
-            T extends ProxyRegexType<R, T>>
-        extends ProxyType<R, ProxyResources<NoChildrenProxyObjectFactory>, RegexTypeWrappable, NoChildrenWrappable, NoChildrenProxyObject, T> {
+            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
+            TYPE extends ProxyRegexType<RESOURCES, TYPE>>
+        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, RegexTypeWrappable, NoChildrenWrappable, NoChildrenProxyObject, TYPE> {
 
     private RegexMatcher regexMatcher;
 
-    public ProxyRegexType(R resources, RegexTypeWrappable wrappable) {
+    /**
+     * @param resources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyRegexType(RESOURCES resources, RegexTypeWrappable wrappable) {
         super(resources, null, wrappable);
         regexMatcher = resources.getRegexMatcherFactory().createRegexMatcher(getWrappable().getRegexPattern());
     }
 
+    /**
+     * Checks that the given value matches the regex for this type
+     * @param value the value to check
+     * @return true if the value matches the regex
+     */
     public final boolean isCorrectFormat(String value) {
         return regexMatcher.matches(value);
-    }
-
-    public String getRegexPattern() {
-        return getWrappable().getRegexPattern();
     }
 }

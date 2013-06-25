@@ -11,6 +11,7 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import java.util.Arrays;
 
 /**
+ * @param <O> the type of the property's value
  */
 public class RealProperty<O>
         extends RealValueBase<PropertyWrappable, CommandWrappable, RealCommand, O, RealProperty<O>>
@@ -18,6 +19,14 @@ public class RealProperty<O>
 
     private RealCommand setCommand;
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the property's id
+     * @param name the property's name
+     * @param description the property's description
+     * @param type the property's type
+     * @param value the property's initial value
+     */
     public RealProperty(RealResources resources, String id, String name, String description, RealType<?, ?, O> type, O value) {
         super(resources, new PropertyWrappable(id, name, description, type.getId(), type.serialise(value)), type);
         setCommand = new RealCommand(resources, SET_COMMAND_ID, SET_COMMAND_ID, "The function to change the property's value",

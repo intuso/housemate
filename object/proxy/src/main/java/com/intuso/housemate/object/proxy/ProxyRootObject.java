@@ -32,30 +32,42 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the child resources
+ * @param <USER> the type of the users
+ * @param <USERS> the type of the users list
+ * @param <TYPE> the type of the types
+ * @param <TYPES> the type of the types list
+ * @param <DEVICE> the type of the devices
+ * @param <DEVICES> the type of the devices list
+ * @param <AUTOMATION> the type of the automations
+ * @param <AUTOMATIONS> the type of the automations list
+ * @param <COMMAND> the type of the command
+ * @param <ROOT> the type of the root
  */
 public abstract class ProxyRootObject<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            SR extends ProxyResources<?>,
-            U extends ProxyUser<?, ?, ?, U>,
-            PUL extends ProxyList<?, ?, ?, U, PUL>,
-            T extends ProxyType<?, ?, ?, ?, ?, ?>,
-            PTL extends ProxyList<?, ?, ?, T, PTL>,
-            D extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?, ?>,
-            PDL extends ProxyList<?, ?, ?, D, PDL>,
-            Ru extends ProxyAutomation<?, ?, ?, ?, ?, ?, ?, ?, ?>,
-            PRL extends ProxyList<?, ?, ?, Ru, PRL>,
-            C extends ProxyCommand<?, ?, ?, ?, C>,
-            RO extends ProxyRootObject<R, SR, U, PUL, T, PTL, D, PDL, Ru, PRL, C, RO>>
-        extends ProxyObject<R, SR, RootWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, RO, ProxyRootListener<? super RO>>
-        implements ProxyRoot<PUL, PTL, PDL, PRL, C, RO>, WrapperListener<HousemateObject<?, ?, ?, ?, ?>>, ConnectionStatusChangeListener {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            CHILD_RESOURCES extends ProxyResources<?>,
+            USER extends ProxyUser<?, ?, ?, USER>,
+            USERS extends ProxyList<?, ?, ?, USER, USERS>,
+            TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
+            TYPES extends ProxyList<?, ?, ?, TYPE, TYPES>,
+            DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?, ?>,
+            DEVICES extends ProxyList<?, ?, ?, DEVICE, DEVICES>,
+            AUTOMATION extends ProxyAutomation<?, ?, ?, ?, ?, ?, ?, ?, ?>,
+            AUTOMATIONS extends ProxyList<?, ?, ?, AUTOMATION, AUTOMATIONS>,
+            COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
+            ROOT extends ProxyRootObject<RESOURCES, CHILD_RESOURCES, USER, USERS, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, RootWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, ROOT, ProxyRootListener<? super ROOT>>
+        implements ProxyRoot<USERS, TYPES, DEVICES, AUTOMATIONS, COMMAND, ROOT>, WrapperListener<HousemateObject<?, ?, ?, ?, ?>>, ConnectionStatusChangeListener {
 
-    private PUL proxyConnectionList;
-    private PTL proxyTypeList;
-    private PDL proxyDeviceList;
-    private PRL proxyAutomationList;
-    private C addUserCommand;
-    private C addDeviceCommand;
-    private C addAutomationCommand;
+    private USERS proxyConnectionList;
+    private TYPES proxyTypeList;
+    private DEVICES proxyDeviceList;
+    private AUTOMATIONS proxyAutomationList;
+    private COMMAND addUserCommand;
+    private COMMAND addDeviceCommand;
+    private COMMAND addAutomationCommand;
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
@@ -65,8 +77,12 @@ public abstract class ProxyRootObject<
     private final static Set<String> toLoad = Sets.newHashSet();
     private ListenerRegistration loadRegistration;
 
-    public ProxyRootObject(R resources, SR subResources) {
-        super(resources, subResources, new RootWrappable());
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     */
+    public ProxyRootObject(RESOURCES resources, CHILD_RESOURCES childResources) {
+        super(resources, childResources, new RootWrappable());
         routerRegistration = resources.getRouter().registerReceiver(this);
         connectionManager = new ConnectionManager(routerRegistration, ConnectionType.Proxy, ConnectionStatus.Unauthenticated);
         init(null);
@@ -152,57 +168,60 @@ public abstract class ProxyRootObject<
         return result;
     }
 
+    /**
+     * Notifies that all the objects required by the root have been loaded
+     */
     private void allLoaded() {
         loadRegistration.removeListener();
         getChildObjects();
-        for(ProxyRootListener<? super RO> listener : getObjectListeners())
+        for(ProxyRootListener<? super ROOT> listener : getObjectListeners())
             listener.loaded(getThis());
     }
 
     @Override
     public void getChildObjects() {
         super.getChildObjects();
-        proxyConnectionList = (PUL)getWrapper(USERS_ID);
-        proxyTypeList = (PTL)getWrapper(TYPES_ID);
-        proxyDeviceList = (PDL)getWrapper(DEVICES_ID);
-        proxyAutomationList = (PRL)getWrapper(AUTOMATIONS_ID);
-        addUserCommand = (C)getWrapper(ADD_USER_ID);
-        addDeviceCommand = (C)getWrapper(ADD_DEVICE_ID);
-        addAutomationCommand = (C)getWrapper(ADD_AUTOMATION_ID);
+        proxyConnectionList = (USERS)getWrapper(USERS_ID);
+        proxyTypeList = (TYPES)getWrapper(TYPES_ID);
+        proxyDeviceList = (DEVICES)getWrapper(DEVICES_ID);
+        proxyAutomationList = (AUTOMATIONS)getWrapper(AUTOMATIONS_ID);
+        addUserCommand = (COMMAND)getWrapper(ADD_USER_ID);
+        addDeviceCommand = (COMMAND)getWrapper(ADD_DEVICE_ID);
+        addAutomationCommand = (COMMAND)getWrapper(ADD_AUTOMATION_ID);
     }
 
     @Override
-    public PUL getUsers() {
+    public USERS getUsers() {
         return proxyConnectionList;
     }
 
     @Override
-    public PTL getTypes() {
+    public TYPES getTypes() {
         return proxyTypeList;
     }
 
     @Override
-    public PDL getDevices() {
+    public DEVICES getDevices() {
         return proxyDeviceList;
     }
 
     @Override
-    public PRL getAutomations() {
+    public AUTOMATIONS getAutomations() {
         return proxyAutomationList;
     }
 
     @Override
-    public C getAddUserCommand() {
+    public COMMAND getAddUserCommand() {
         return addUserCommand;
     }
 
     @Override
-    public C getAddDeviceCommand() {
+    public COMMAND getAddDeviceCommand() {
         return addDeviceCommand;
     }
 
     @Override
-    public C getAddAutomationCommand() {
+    public COMMAND getAddAutomationCommand() {
         return addAutomationCommand;
     }
 
@@ -222,13 +241,18 @@ public abstract class ProxyRootObject<
             objectWrapperAdded(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) wrapper);
     }
 
-    private void objectWrapperAdded(String path, HousemateObject<?, ?, ?, ?, ?> objectWrapper) {
+    /**
+     * Notifies that an object was added
+     * @param path the path of the object
+     * @param object the object
+     */
+    private void objectWrapperAdded(String path, HousemateObject<?, ?, ?, ?, ?> object) {
         if(objectLifecycleListeners.get(path) != null && objectLifecycleListeners.get(path).getListeners().size() > 0) {
             String splitPath[] = path.split(PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
-                listener.objectCreated(splitPath, objectWrapper);
+                listener.objectCreated(splitPath, object);
         }
-        for(HousemateObject<?, ?, ?, ?, ?> child : objectWrapper.getWrappers())
+        for(HousemateObject<?, ?, ?, ?, ?> child : object.getWrappers())
             objectWrapperAdded(path + PATH_SEPARATOR + child.getId(), child);
     }
 
@@ -238,13 +262,18 @@ public abstract class ProxyRootObject<
             objectWrapperRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) wrapper);
     }
 
-    private void objectWrapperRemoved(String path, HousemateObject<?, ?, ?, ?, ?> objectWrapper) {
+    /**
+     * Notifies that an object was removed
+     * @param path the path of the object
+     * @param object the object
+     */
+    private void objectWrapperRemoved(String path, HousemateObject<?, ?, ?, ?, ?> object) {
         if(objectLifecycleListeners.get(path) != null && objectLifecycleListeners.get(path).getListeners().size() > 0) {
             String splitPath[] = path.split(PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
-                listener.objectRemoved(splitPath, objectWrapper);
+                listener.objectRemoved(splitPath, object);
         }
-        for(HousemateObject<?, ?, ?, ?, ?> child : objectWrapper.getWrappers())
+        for(HousemateObject<?, ?, ?, ?, ?> child : object.getWrappers())
             objectWrapperRemoved(path + PATH_SEPARATOR + child.getId(), child);
     }
 
@@ -261,7 +290,7 @@ public abstract class ProxyRootObject<
 
     @Override
     public final void connectionStatusChanged(ConnectionStatus status) {
-        for(ProxyRootListener<? super RO> listener : getObjectListeners())
+        for(ProxyRootListener<? super ROOT> listener : getObjectListeners())
             listener.connectionStatusChanged(getThis(), status);
     }
 
@@ -274,7 +303,7 @@ public abstract class ProxyRootObject<
         }
         for(String id : ids)
             removeWrapper(id);
-        for(ProxyRootListener<? super RO> listener : getObjectListeners())
+        for(ProxyRootListener<? super ROOT> listener : getObjectListeners())
             listener.brokerInstanceChanged(getThis());
     }
 }

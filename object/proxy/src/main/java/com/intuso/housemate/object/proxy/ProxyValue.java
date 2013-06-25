@@ -4,17 +4,21 @@ import com.intuso.housemate.api.object.NoChildrenWrappable;
 import com.intuso.housemate.api.object.value.ValueWrappable;
 
 /**
-* Created with IntelliJ IDEA.
-* User: ravnroot
-* Date: 10/05/13
-* Time: 00:09
-* To change this template use File | Settings | File Templates.
-*/
+ * @param <RESOURCES> the type of the resources
+ * @param <TYPE> the type of the type
+ * @param <VALUE> the type of the value
+ */
 public class ProxyValue<
-            R extends ProxyResources<NoChildrenProxyObjectFactory>,
-            T extends ProxyType<?, ?, ?, ?, ?, ?>, V extends ProxyValue<R, T, V>>
-        extends ProxyValueBase<R, ProxyResources<NoChildrenProxyObjectFactory>, ValueWrappable, NoChildrenWrappable, NoChildrenProxyObject, T, V> {
-    public ProxyValue(R resources, ValueWrappable value) {
-        super(resources, null, value);
+            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
+            TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
+            VALUE extends ProxyValue<RESOURCES, TYPE, VALUE>>
+        extends ProxyValueBase<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, ValueWrappable, NoChildrenWrappable, NoChildrenProxyObject, TYPE, VALUE> {
+
+    /**
+     * @param resources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyValue(RESOURCES resources, ValueWrappable wrappable) {
+        super(resources, null, wrappable);
     }
 }

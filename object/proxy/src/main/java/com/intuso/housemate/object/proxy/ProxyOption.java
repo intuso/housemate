@@ -8,20 +8,30 @@ import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the child resources
+ * @param <SUB_TYPE> the type of the sub type
+ * @param <SUB_TYPES> the type of the sub types
+ * @param <OPTION> the type of the option
  */
 public abstract class ProxyOption<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, ListWrappable<SubTypeWrappable>, STL>>,
-            SR extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, SubTypeWrappable, ST>>,
-            ST extends ProxySubType<?, ?, ?>,
-            STL extends ProxyList<SR, ?, SubTypeWrappable, ST, STL>,
-            O extends ProxyOption<R, SR, ST, STL, O>>
-        extends ProxyObject<R, SR, OptionWrappable, ListWrappable<SubTypeWrappable>, STL, O, OptionListener>
-        implements Option<STL> {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListWrappable<SubTypeWrappable>, SUB_TYPES>>,
+            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, SubTypeWrappable, SUB_TYPE>>,
+            SUB_TYPE extends ProxySubType<?, ?, ?>,
+            SUB_TYPES extends ProxyList<CHILD_RESOURCES, ?, SubTypeWrappable, SUB_TYPE, SUB_TYPES>,
+            OPTION extends ProxyOption<RESOURCES, CHILD_RESOURCES, SUB_TYPE, SUB_TYPES, OPTION>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, OptionWrappable, ListWrappable<SubTypeWrappable>, SUB_TYPES, OPTION, OptionListener>
+        implements Option<SUB_TYPES> {
 
-    private STL subTypes;
+    private SUB_TYPES subTypes;
 
-    public ProxyOption(R resources, SR subResources, OptionWrappable wrappable) {
-        super(resources, subResources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyOption(RESOURCES resources, CHILD_RESOURCES childResources, OptionWrappable wrappable) {
+        super(resources, childResources, wrappable);
     }
 
     @Override
@@ -30,7 +40,7 @@ public abstract class ProxyOption<
     }
 
     @Override
-    public STL getSubTypes() {
+    public SUB_TYPES getSubTypes() {
         return subTypes;
     }
 }

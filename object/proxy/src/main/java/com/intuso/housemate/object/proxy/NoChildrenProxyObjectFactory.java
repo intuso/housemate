@@ -4,8 +4,6 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
 
-/**
- */
 public class NoChildrenProxyObjectFactory
         implements HousemateObjectFactory<ProxyResources<NoChildrenProxyObjectFactory>, NoChildrenWrappable, NoChildrenProxyObject> {
     @Override

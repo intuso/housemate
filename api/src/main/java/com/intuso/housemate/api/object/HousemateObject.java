@@ -19,27 +19,28 @@ import java.util.Set;
 /**
  * Base class for all Housemate object implementations
  *
- * @param <R> the type of the resources
- * @param <WBL> the type of this object's data object
- * @param <SWBL> the type of this object's children's data objects
- * @param <SWR> the type of this object's children objects
- * @param <L> the type of this object's listener
+ * @param <RESOURCES> the type of the resources
+ * @param <DATA> the type of this object's data object
+ * @param <CHILD_DATA> the type of this object's children's data objects
+ * @param <CHILD> the type of this object's children objects
+ * @param <LISTENER> the type of this object's listener
  */
-public abstract class HousemateObject<R extends Resources,
-            WBL extends HousemateObjectWrappable<SWBL>,
-            SWBL extends HousemateObjectWrappable<?>,
-            SWR extends HousemateObject<?, ? extends SWBL, ?, ?, ?>,
-            L extends ObjectListener>
-        extends Wrapper<WBL, SWBL, SWR, HousemateException>
-        implements BaseObject<L> {
+public abstract class HousemateObject<
+            RESOURCES extends Resources,
+            DATA extends HousemateObjectWrappable<CHILD_DATA>,
+            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD extends HousemateObject<?, ? extends CHILD_DATA, ?, ?, ?>,
+            LISTENER extends ObjectListener>
+        extends Wrapper<DATA, CHILD_DATA, CHILD, HousemateException>
+        implements BaseObject<LISTENER> {
 
     public final static String LOAD_REQUEST = "load-request";
     public final static String LOAD_RESPONSE = "load-response";
 
-    private final R resources;
+    private final RESOURCES resources;
 
     private String path[];
-    private final Listeners<L> objectListeners = new Listeners<L>();
+    private final Listeners<LISTENER> objectListeners = new Listeners<LISTENER>();
     private final Map<String, Listeners<Receiver<?>>> messageListeners = Maps.newHashMap();
     private final List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
 
@@ -47,7 +48,7 @@ public abstract class HousemateObject<R extends Resources,
      * @param resources the resources
      * @param wrappable the data object
      */
-    protected HousemateObject(R resources, WBL wrappable) {
+    protected HousemateObject(RESOURCES resources, DATA wrappable) {
         super(wrappable);
         this.resources = resources;
     }
@@ -72,7 +73,7 @@ public abstract class HousemateObject<R extends Resources,
      * Gets this object's resources
      * @return this object's resources
      */
-    public final R getResources() {
+    public final RESOURCES getResources() {
         return resources;
     }
 
@@ -96,7 +97,7 @@ public abstract class HousemateObject<R extends Resources,
      * Gets this object's listeners
      * @return this object's listeners
      */
-    public Set<L> getObjectListeners() {
+    public Set<LISTENER> getObjectListeners() {
         return objectListeners.getListeners();
     }
 
@@ -105,7 +106,7 @@ public abstract class HousemateObject<R extends Resources,
      * @param listener the listener to add
      * @return the listener registration
      */
-    public ListenerRegistration addObjectListener(L listener) {
+    public ListenerRegistration addObjectListener(LISTENER listener) {
         return objectListeners.addListener(listener);
     }
 
@@ -164,7 +165,7 @@ public abstract class HousemateObject<R extends Resources,
         initPreRecurseHook(parent);
 
         // recurse
-        for(SWR baseWrapper : getWrappers())
+        for(CHILD baseWrapper : getWrappers())
             baseWrapper.init(this);
 
         initPostRecurseHook(parent);
@@ -199,7 +200,7 @@ public abstract class HousemateObject<R extends Resources,
         for(ListenerRegistration listenerRegistration : listenerRegistrations)
             listenerRegistration.removeListener();
         listenerRegistrations.clear();
-        for(SWR baseWrapper : getWrappers())
+        for(CHILD baseWrapper : getWrappers())
             baseWrapper.uninit();
     }
 

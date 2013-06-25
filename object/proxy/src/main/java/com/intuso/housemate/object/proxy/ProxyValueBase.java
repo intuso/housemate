@@ -13,20 +13,32 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the child resources
+ * @param <DATA> the type of the data
+ * @param <CHILD_DATA> the type of the child data
+ * @param <CHILD> the type of the children
+ * @param <TYPE> the type of the type
+ * @param <VALUE> the type of the value
  */
 public abstract class ProxyValueBase<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, SWBL, SWR>>,
-            SR extends ProxyResources<?>,
-            WBL extends ValueWrappableBase<SWBL>,
-            SWBL extends HousemateObjectWrappable<?>,
-            SWR extends ProxyObject<?, ?, ? extends SWBL, ?, ?, ?, ?>,
-            T extends ProxyType<?, ?, ?, ?, ?, ?>,
-            V extends ProxyValueBase<R, SR, WBL, SWBL, SWR, T, V>>
-        extends ProxyObject<R, SR, WBL, SWBL, SWR, V, ValueListener<? super V>>
-        implements Value<T, V> {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>>,
+            CHILD_RESOURCES extends ProxyResources<?>,
+            DATA extends ValueWrappableBase<CHILD_DATA>,
+            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
+            TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
+            VALUE extends ProxyValueBase<RESOURCES, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, TYPE, VALUE>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, VALUE, ValueListener<? super VALUE>>
+        implements Value<TYPE, VALUE> {
 
-    public ProxyValueBase(R resources, SR subResources, WBL value) {
-        super(resources, subResources, value);
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyValueBase(RESOURCES resources, CHILD_RESOURCES childResources, DATA wrappable) {
+        super(resources, childResources, wrappable);
     }
 
     @Override
@@ -35,10 +47,10 @@ public abstract class ProxyValueBase<
         result.add(addMessageListener(VALUE_ID, new Receiver<TypeInstance>() {
             @Override
             public void messageReceived(Message<TypeInstance> stringMessageValueMessage) {
-                for(ValueListener<? super V> listener : getObjectListeners())
+                for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanging(getThis());
                 getWrappable().setValue(stringMessageValueMessage.getPayload());
-                for(ValueListener<? super V> listener : getObjectListeners())
+                for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanged(getThis());
             }
         }));
@@ -46,8 +58,8 @@ public abstract class ProxyValueBase<
     }
 
     @Override
-    public T getType() {
-        return (T) getProxyRoot().getTypes().get(getWrappable().getType());
+    public TYPE getType() {
+        return (TYPE) getProxyRoot().getTypes().get(getWrappable().getType());
     }
 
     @Override

@@ -13,8 +13,8 @@ public class GWTProxyCommand extends ProxyCommand<
             GWTResources<? extends HousemateObjectFactory<GWTResources<?>, ParameterWrappable, GWTProxyParameter>>,
         GWTProxyParameter, GWTProxyList<ParameterWrappable, GWTProxyParameter>, GWTProxyCommand> {
     public GWTProxyCommand(GWTResources<GWTProxyFactory.List<ParameterWrappable, GWTProxyParameter>> resources,
-                           GWTResources<GWTProxyFactory.Parameter> subResources,
+                           GWTResources<GWTProxyFactory.Parameter> childResources,
                            CommandWrappable wrappable) {
-        super(resources, subResources, wrappable);
+        super(resources, childResources, wrappable);
     }
 }

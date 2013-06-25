@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Type for selecting multiple options from a set
  */
 public abstract class RealMultiChoiceType<O>
         extends RealType<MultiChoiceTypeWrappable, ListWrappable<OptionWrappable>, Set<O>>
@@ -27,10 +28,24 @@ public abstract class RealMultiChoiceType<O>
 
     private RealList<OptionWrappable, RealOption> options;
 
+    /**
+     * @param resources the resources
+     * @param id the type's id
+     * @param name the type's name
+     * @param description the type's description
+     * @param options the type's options
+     */
     protected RealMultiChoiceType(RealResources resources, String id, String name, String description, RealOption ... options) {
         this(resources, id, name, description, Arrays.asList(options));
     }
 
+    /**
+     * @param resources the resources
+     * @param id the type's id
+     * @param name the type's name
+     * @param description the type's description
+     * @param options the type's options
+     */
     protected RealMultiChoiceType(RealResources resources, String id, String name, String description, List<RealOption> options) {
         super(resources, new MultiChoiceTypeWrappable(id, name, description));
         this.options = new RealList<OptionWrappable, RealOption>(resources, OPTIONS, OPTIONS, "The options for the choice", options);
@@ -42,10 +57,17 @@ public abstract class RealMultiChoiceType<O>
         return options;
     }
 
+    /**
+     * Serialiser for a set of objects
+     * @param <O> the type of the objects in the set
+     */
     protected static class MultiChoiceSerialiser<O> implements TypeSerialiser<Set<O>> {
 
         private final TypeSerialiser<O> elementSerialiser;
 
+        /**
+         * @param elementSerialiser the serialiser for each element
+         */
         protected MultiChoiceSerialiser(TypeSerialiser<O> elementSerialiser) {
             this.elementSerialiser = elementSerialiser;
         }

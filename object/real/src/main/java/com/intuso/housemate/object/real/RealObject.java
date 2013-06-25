@@ -7,28 +7,40 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.api.object.root.real.RealRoot;
 
-/**
- */
-public abstract class RealObject<WBL extends HousemateObjectWrappable<SWBL>,
-            SWBL extends HousemateObjectWrappable<?>,
-            SWR extends RealObject<? extends SWBL, ?, ?, ?>,
-            L extends ObjectListener>
-        extends HousemateObject<RealResources, WBL, SWBL, SWR, L>
-        implements BaseObject<L> {
 
-    public final static String NAME_DESCRIPTION = "The name of this object";
+public abstract class RealObject<
+            DATA extends HousemateObjectWrappable<CHILD_DATA>,
+            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD extends RealObject<? extends CHILD_DATA, ?, ?, ?>,
+            LISTENER extends ObjectListener>
+        extends HousemateObject<RealResources, DATA, CHILD_DATA, CHILD, LISTENER>
+        implements BaseObject<LISTENER> {
 
     private RealRoot<?, ?, ?, ?, ?> realRoot;
 
-    protected RealObject(RealResources resources, WBL wrappable) {
+    /**
+     * @param resources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    protected RealObject(RealResources resources, DATA wrappable) {
         super(resources, wrappable);
     }
 
-    protected final <MV extends Message.Payload> void sendMessage(String type, MV value) {
+    /**
+     * Sends a message to the broker
+     * @param type the type of the message
+     * @param payload the message payload
+     * @param <MV> the type of the message's payload
+     */
+    protected final <MV extends Message.Payload> void sendMessage(String type, MV payload) {
         getRealRoot().sendMessage(new Message<MV>(
-                getPath(), type, value));
+                getPath(), type, payload));
     }
 
+    /**
+     * Gets the root object for this object
+     * @return the root object for this object
+     */
     protected RealRoot<?, ?, ?, ?, ?> getRealRoot() {
         return realRoot;
     }

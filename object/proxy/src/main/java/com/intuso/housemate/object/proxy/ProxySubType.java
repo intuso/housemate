@@ -6,20 +6,27 @@ import com.intuso.housemate.api.object.subtype.SubTypeListener;
 import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <TYPE> the type of the type
+ * @param <SUB_TYPE> the type of the sub type
  */
 public abstract class ProxySubType<
-            R extends ProxyResources<NoChildrenProxyObjectFactory>,
-            T extends ProxyType<?, ?, ?, ?, ?, ?>,
-            P extends ProxySubType<?, T, P>>
-        extends ProxyObject<R, ProxyResources<NoChildrenProxyObjectFactory>, SubTypeWrappable, NoChildrenWrappable, NoChildrenProxyObject, P, SubTypeListener>
-        implements SubType<T> {
+            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
+            TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
+            SUB_TYPE extends ProxySubType<?, TYPE, SUB_TYPE>>
+        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, SubTypeWrappable, NoChildrenWrappable, NoChildrenProxyObject, SUB_TYPE, SubTypeListener>
+        implements SubType<TYPE> {
 
-    public ProxySubType(R resources, SubTypeWrappable wrappable) {
+    /**
+     * @param resources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxySubType(RESOURCES resources, SubTypeWrappable wrappable) {
         super(resources, null, wrappable);
     }
 
     @Override
-    public final T getType() {
-        return (T) getProxyRoot().getTypes().get(getWrappable().getType());
+    public final TYPE getType() {
+        return (TYPE) getProxyRoot().getTypes().get(getWrappable().getType());
     }
 }

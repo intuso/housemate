@@ -22,7 +22,7 @@ public class GWTProxyRootObject
         GWTProxyAutomation, GWTProxyList<AutomationWrappable, GWTProxyAutomation>,
                     GWTProxyCommand, GWTProxyRootObject> {
     public GWTProxyRootObject(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                              GWTResources<?> subResources) {
-        super(resources, subResources);
+                              GWTResources<?> childResources) {
+        super(resources, childResources);
     }
 }

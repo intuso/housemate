@@ -6,20 +6,27 @@ import com.intuso.housemate.api.object.parameter.ParameterListener;
 import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <TYPE> the type of the type
+ * @param <PARAMETER> the type of the parameter
  */
 public abstract class ProxyParameter<
-            R extends ProxyResources<NoChildrenProxyObjectFactory>,
-            T extends ProxyType<?, ?, ?, ?, ?, ?>,
-            P extends ProxyParameter<?, T, P>>
-        extends ProxyObject<R, ProxyResources<NoChildrenProxyObjectFactory>, ParameterWrappable, NoChildrenWrappable, NoChildrenProxyObject, P, ParameterListener>
-        implements Parameter<T> {
+            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
+            TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
+            PARAMETER extends ProxyParameter<?, TYPE, PARAMETER>>
+        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, ParameterWrappable, NoChildrenWrappable, NoChildrenProxyObject, PARAMETER, ParameterListener>
+        implements Parameter<TYPE> {
 
-    public ProxyParameter(R resources, ParameterWrappable wrappable) {
+    /**
+     * @param resources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyParameter(RESOURCES resources, ParameterWrappable wrappable) {
         super(resources, null, wrappable);
     }
 
     @Override
-    public final T getType() {
-        return (T) getProxyRoot().getTypes().get(getWrappable().getType());
+    public final TYPE getType() {
+        return (TYPE) getProxyRoot().getTypes().get(getWrappable().getType());
     }
 }

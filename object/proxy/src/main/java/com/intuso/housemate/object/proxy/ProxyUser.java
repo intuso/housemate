@@ -7,29 +7,38 @@ import com.intuso.housemate.api.object.user.UserListener;
 import com.intuso.housemate.api.object.user.UserWrappable;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the chil resources
+ * @param <COMMAND> the type of the command
+ * @param <USER> the type of the user
  */
 public abstract class ProxyUser<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            SR extends ProxyResources<?>,
-            C extends ProxyCommand<?, ?, ?, ?, C>,
-            U extends ProxyUser<R, SR, C, U>>
-        extends ProxyObject<R, SR, UserWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, U, UserListener>
-        implements User<C> {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            CHILD_RESOURCES extends ProxyResources<?>,
+            COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
+            USER extends ProxyUser<RESOURCES, CHILD_RESOURCES, COMMAND, USER>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, UserWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, USER, UserListener>
+        implements User<COMMAND> {
 
-    private C removeCommand;
+    private COMMAND removeCommand;
 
-    public ProxyUser(R resources, SR subResources, UserWrappable wrappable) {
-        super(resources, subResources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyUser(RESOURCES resources, CHILD_RESOURCES childResources, UserWrappable wrappable) {
+        super(resources, childResources, wrappable);
     }
 
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        removeCommand = (C) getWrapper(REMOVE_COMMAND_ID);
+        removeCommand = (COMMAND) getWrapper(REMOVE_COMMAND_ID);
     }
 
     @Override
-    public C getRemoveCommand() {
+    public COMMAND getRemoveCommand() {
         return removeCommand;
     }
 }

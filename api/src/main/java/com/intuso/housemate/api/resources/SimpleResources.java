@@ -19,12 +19,12 @@ public class SimpleResources implements Resources {
     }
 
     @Override
-    public Log getLog() {
+    public final Log getLog() {
         return log;
     }
 
     @Override
-    public Map<String, String> getProperties() {
+    public final Map<String, String> getProperties() {
         return properties;
     }
 }

@@ -10,57 +10,67 @@ import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the child resources
+ * @param <VALUE> the type of the value
+ * @param <PROPERTIES> the type of the properties list
+ * @param <TASK> the type of the task
  */
 public abstract class ProxyTask<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            SR extends ProxyResources<?>,
-            V extends ProxyValue<?, ?, V>,
-            PL extends ProxyList<?, ?, PropertyWrappable, ? extends ProxyProperty<?, ?, ?, ?, ?>, PL>,
-            T extends ProxyTask<R, SR, V, PL, T>>
-        extends ProxyObject<R, SR, TaskWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, T, TaskListener<? super T>>
-        implements Task<V, V, PL, T> {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            CHILD_RESOURCES extends ProxyResources<?>,
+            VALUE extends ProxyValue<?, ?, VALUE>,
+            PROPERTIES extends ProxyList<?, ?, PropertyWrappable, ? extends ProxyProperty<?, ?, ?, ?, ?>, PROPERTIES>,
+            TASK extends ProxyTask<RESOURCES, CHILD_RESOURCES, VALUE, PROPERTIES, TASK>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, TaskWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, TASK, TaskListener<? super TASK>>
+        implements Task<VALUE, VALUE, PROPERTIES, TASK> {
 
-    private V executing;
-    private V error;
-    private PL propertyList;
+    private VALUE executing;
+    private VALUE error;
+    private PROPERTIES propertyList;
 
-    public ProxyTask(R resources, SR subResources, TaskWrappable wrappable) {
-        super(resources, subResources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyTask(RESOURCES resources, CHILD_RESOURCES childResources, TaskWrappable wrappable) {
+        super(resources, childResources, wrappable);
     }
 
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        error = (V)getWrapper(ERROR_ID);
-        executing = (V)getWrapper(EXECUTING_TYPE);
-        propertyList = (PL)getWrapper(PROPERTIES_ID);
+        error = (VALUE)getWrapper(ERROR_ID);
+        executing = (VALUE)getWrapper(EXECUTING_TYPE);
+        propertyList = (PROPERTIES)getWrapper(PROPERTIES_ID);
     }
 
     @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration>result = super.registerListeners();
-        result.add(executing.addObjectListener(new ValueListener<V>() {
+        result.add(executing.addObjectListener(new ValueListener<VALUE>() {
 
             @Override
-            public void valueChanging(V value) {
+            public void valueChanging(VALUE value) {
                 // do nothing
             }
 
             @Override
-            public void valueChanged(V value) {
+            public void valueChanged(VALUE value) {
                 for(TaskListener listener : getObjectListeners())
                     listener.taskExecuting(getThis(), isExecuting());
             }
         }));
-        result.add(error.addObjectListener(new ValueListener<V>() {
+        result.add(error.addObjectListener(new ValueListener<VALUE>() {
 
             @Override
-            public void valueChanging(V value) {
+            public void valueChanging(VALUE value) {
                 // do nothing
             }
 
             @Override
-            public void valueChanged(V value) {
+            public void valueChanged(VALUE value) {
                 for(TaskListener listener : getObjectListeners())
                     listener.taskError(getThis(), getError());
             }
@@ -69,22 +79,26 @@ public abstract class ProxyTask<
     }
 
     @Override
-    public final PL getProperties() {
+    public final PROPERTIES getProperties() {
         return propertyList;
     }
 
-    public final V getErrorValue() {
+    @Override
+    public final VALUE getErrorValue() {
         return error;
     }
 
+    @Override
     public final String getError() {
         return error.getTypeInstance() != null ? error.getTypeInstance().getValue() : null;
     }
 
-    public final V getExecutingValue() {
+    @Override
+    public final VALUE getExecutingValue() {
         return executing;
     }
 
+    @Override
     public final boolean isExecuting() {
         return executing.getTypeInstance() != null ? Boolean.parseBoolean(executing.getTypeInstance().getValue()) : null;
     }

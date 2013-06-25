@@ -18,8 +18,8 @@ public class GWTProxyList<SWBL extends HousemateObjectWrappable<?>,
                     GWTProxyList<SWBL, SWR>> {
 
     public GWTProxyList(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, SWBL, SWR>> resources,
-                        GWTResources<?> subResources,
+                        GWTResources<?> childResources,
                         ListWrappable wblListWrappable) {
-        super(resources, subResources, wblListWrappable);
+        super(resources, childResources, wblListWrappable);
     }
 }

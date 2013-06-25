@@ -11,6 +11,7 @@ import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.utilities.listener.ListenerRegistration;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,6 +23,25 @@ public abstract class RealCommand
 
     private RealList<ParameterWrappable, RealParameter<?>> realParameters;
 
+
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the command's id
+     * @param name the command's name
+     * @param description the command's description
+     * @param parameters the command's parameters
+     */
+    protected RealCommand(RealResources resources, String id, String name, String description, RealParameter<?> ... parameters) {
+        this(resources, id, name, description, Arrays.asList(parameters));
+    }
+
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the command's id
+     * @param name the command's name
+     * @param description the command's description
+     * @param parameters the command's parameters
+     */
     protected RealCommand(RealResources resources, String id, String name, String description, List<RealParameter<?>> parameters) {
         super(resources, new CommandWrappable(id, name, description));
         realParameters = new RealList<ParameterWrappable, RealParameter<?>>(resources, PARAMETERS_ID, PARAMETERS_ID, "The parameters required by the command", parameters);
@@ -73,5 +93,10 @@ public abstract class RealCommand
         }
     }
 
+    /**
+     * Performs the command
+     * @param values the values of the parameters to use
+     * @throws HousemateException if the command fails
+     */
     public abstract void perform(TypeInstances values) throws HousemateException;
 }

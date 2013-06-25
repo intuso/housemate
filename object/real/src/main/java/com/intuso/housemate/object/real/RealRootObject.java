@@ -22,8 +22,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
 
-/**
- */
 public class RealRootObject
         extends RealObject<RootWrappable, HousemateObjectWrappable<?>, RealObject<?, ? extends HousemateObjectWrappable<?>, ?, ?>, RootListener<? super RealRootObject>>
         implements RealRoot<RealType<?, ?, ?>, RealList<TypeWrappable<?>, RealType<?, ?, ?>>, RealDevice,
@@ -37,6 +35,9 @@ public class RealRootObject
 
     private boolean resend = false;
 
+    /**
+     * @param resources {@inheritDoc}
+     */
     public RealRootObject(RealResources resources) {
         super(resources, new RootWrappable());
 

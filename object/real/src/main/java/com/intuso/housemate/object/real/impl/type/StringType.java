@@ -9,6 +9,7 @@ import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealValue;
 
 /**
+ * Type for a string
  */
 public class StringType extends RealSimpleType<String> {
 
@@ -24,18 +25,47 @@ public class StringType extends RealSimpleType<String> {
         }
     };
 
+    /**
+     * @param resources {@inheritDoc}
+     */
     public StringType(RealResources resources) {
         super(resources, SimpleTypeWrappable.Type.String, SERIALISER);
     }
 
+    /**
+     * Creates an string value object
+     * @param resources the resources
+     * @param id the value's id
+     * @param name the value's name
+     * @param description the value's description
+     * @param value the initial value
+     * @return a string value object
+     */
     public static RealValue<String> createValue(RealResources resources, String id, String name, String description, String value) {
         return new RealValue<String>(resources, id, name, description, new StringType(resources), value);
     }
 
+    /**
+     * Creates a string property object
+     * @param resources the resources
+     * @param id the property's id
+     * @param name the property's name
+     * @param description the property's description
+     * @param value the initial value
+     * @return a string property object
+     */
     public static RealProperty<String> createProperty(RealResources resources, String id, String name, String description, String value) {
         return new RealProperty<String>(resources, id, name, description, new StringType(resources), value);
     }
 
+    /**
+     * Creates a string parameter object
+     * @param resources the resources
+     * @param id the parameter's id
+     * @param name the parameter's name
+     * @param description the parameter's description
+     * @return a string parameter object
+     */
     public static RealParameter<String> createParameter(RealResources resources, String id, String name, String description) {
         return new RealParameter<String>(resources, id, name, description, new StringType(resources));
     }

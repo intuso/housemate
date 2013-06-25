@@ -4,46 +4,55 @@ import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.housemate.api.resources.RegexMatcherFactory;
+import com.intuso.housemate.api.resources.SimpleResources;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 
 /**
+ * Resources class for proxy objects
+ *
+ * @param <FACTORY> the type of the factory
  */
 public class ProxyResources<
-            F extends HousemateObjectFactory<? extends ProxyResources<?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>>
-        implements ClientResources {
+            FACTORY extends HousemateObjectFactory<? extends ProxyResources<?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>>
+        extends SimpleResources implements ClientResources{
 
-    private final Log log;
-    private final Map<String, String> properties;
     private final Router router;
-    private final F objectFactory;
+    private final FACTORY objectFactory;
     private final RegexMatcherFactory regexMatcherFactory;
 
-    public ProxyResources(Log log, Map<String, String> properties, Router router, F objectFactory, RegexMatcherFactory regexMatcherFactory) {
-        this.log = log;
-        this.properties = properties;
+    /**
+     * @param log the log instance to use
+     * @param properties the properties
+     * @param router the router to connect through
+     * @param objectFactory the object factory to use to create child objects
+     * @param regexMatcherFactory the regex matcher factory to use to create regex matchers
+     */
+    public ProxyResources(Log log, Map<String, String> properties, Router router, FACTORY objectFactory, RegexMatcherFactory regexMatcherFactory) {
+        super(log, properties);
         this.router = router;
         this.objectFactory = objectFactory;
         this.regexMatcherFactory = regexMatcherFactory;
     }
 
-    public Log getLog() {
-        return log;
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
+    @Override
     public Router getRouter() {
         return router;
     }
 
-    public F getObjectFactory() {
+    /**
+     * Gets the object factory
+     * @return the object factory
+     */
+    public FACTORY getObjectFactory() {
         return objectFactory;
     }
 
+    /**
+     * Gets the regex matcher factory
+     * @return the regex matcher factory
+     */
     public RegexMatcherFactory getRegexMatcherFactory() {
         return regexMatcherFactory;
     }

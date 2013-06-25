@@ -34,6 +34,9 @@ import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.object.proxy.ProxyResources;
 
 /**
+ * Container class for factories of all the simple proxy object implementations.
+ *
+ * @see SimpleProxyObject
  */
 public class SimpleProxyFactory {
 

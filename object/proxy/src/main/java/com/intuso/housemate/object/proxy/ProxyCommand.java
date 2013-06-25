@@ -18,22 +18,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the child resources
+ * @param <PARAMETER> the type of the parameters
+ * @param <PARAMETERS> the type of the parameters list
+ * @param <COMMAND> the type of the command
  */
 public abstract class ProxyCommand<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, ListWrappable<ParameterWrappable>, PL>>,
-            SR extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, ParameterWrappable, ? extends P>>,
-            P extends ProxyParameter<?, ?, P>,
-            PL extends ProxyList<?, ?, ParameterWrappable, P, PL>,
-            C extends ProxyCommand<R, SR, P, PL, C>>
-        extends ProxyObject<R, SR, CommandWrappable, ListWrappable<ParameterWrappable>, PL, C, CommandListener<? super C>>
-        implements Command<PL, C> {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListWrappable<ParameterWrappable>, PARAMETERS>>,
+            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, ParameterWrappable, ? extends PARAMETER>>,
+            PARAMETER extends ProxyParameter<?, ?, PARAMETER>,
+            PARAMETERS extends ProxyList<?, ?, ParameterWrappable, PARAMETER, PARAMETERS>,
+            COMMAND extends ProxyCommand<RESOURCES, CHILD_RESOURCES, PARAMETER, PARAMETERS, COMMAND>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, CommandWrappable, ListWrappable<ParameterWrappable>, PARAMETERS, COMMAND, CommandListener<? super COMMAND>>
+        implements Command<PARAMETERS, COMMAND> {
 
     private int nextId;
-    private Map<String, CommandListener<? super C>> listenerMap = new HashMap<String, CommandListener<? super C>>();
-    private PL parameters;
+    private Map<String, CommandListener<? super COMMAND>> listenerMap = new HashMap<String, CommandListener<? super COMMAND>>();
+    private PARAMETERS parameters;
 
-    protected ProxyCommand(R resources, SR subResources, CommandWrappable wrappable) {
-        super(resources, subResources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    protected ProxyCommand(RESOURCES resources, CHILD_RESOURCES childResources, CommandWrappable wrappable) {
+        super(resources, childResources, wrappable);
     }
 
     @Override
@@ -49,17 +59,17 @@ public abstract class ProxyCommand<
         result.add(addMessageListener(PERFORMING_TYPE, new Receiver<PerformingMessageValue>() {
             @Override
             public void messageReceived(Message<PerformingMessageValue> message) throws HousemateException {
-                CommandListener<? super C> performer = listenerMap.get(message.getPayload().getOpId());
+                CommandListener<? super COMMAND> performer = listenerMap.get(message.getPayload().getOpId());
                 if(message.getPayload().isPerforming()) {
                     if(performer != null)
                         performer.commandStarted(getThis());
-                    for(CommandListener<? super C> listener : getObjectListeners())
+                    for(CommandListener<? super COMMAND> listener : getObjectListeners())
                         listener.commandStarted(getThis());
                 } else {
                     listenerMap.remove(message.getPayload().getOpId());
                     if(performer != null)
                         performer.commandFinished(getThis());
-                    for(CommandListener<? super C> listener : getObjectListeners())
+                    for(CommandListener<? super COMMAND> listener : getObjectListeners())
                         listener.commandFinished(getThis());
                 }
             }
@@ -67,10 +77,10 @@ public abstract class ProxyCommand<
         result.add(addMessageListener(FAILED_TYPE, new Receiver<FailedMessageValue>() {
             @Override
             public void messageReceived(Message<FailedMessageValue> message) throws HousemateException {
-                CommandListener<? super C> performer = listenerMap.remove(message.getPayload().getOpId());
+                CommandListener<? super COMMAND> performer = listenerMap.remove(message.getPayload().getOpId());
                 if(performer != null)
                     performer.commandFailed(getThis(), message.getPayload().getCause());
-                for(CommandListener<? super C> listener : getObjectListeners())
+                for(CommandListener<? super COMMAND> listener : getObjectListeners())
                     listener.commandFailed(getThis(), message.getPayload().getCause());
             }
         }));
@@ -78,16 +88,20 @@ public abstract class ProxyCommand<
     }
 
     @Override
-    public PL getParameters() {
+    public PARAMETERS getParameters() {
         return parameters;
     }
 
-    public final synchronized void perform(CommandListener<? super C> listener) {
+    /**
+     * Performs the command without any type values. It is not correct to use this method on a command that has parameters
+     * @param listener the listener for progress of the command
+     */
+    public final synchronized void perform(CommandListener<? super COMMAND> listener) {
         perform(new TypeInstances(), listener);
     }
 
     @Override
-    public final synchronized void perform(TypeInstances values, CommandListener<? super C> listener) {
+    public final synchronized void perform(TypeInstances values, CommandListener<? super COMMAND> listener) {
         String id = "" + nextId++;
         listenerMap.put(id, listener);
         sendMessage(PERFORM_TYPE, new PerformMessageValue(id, values));

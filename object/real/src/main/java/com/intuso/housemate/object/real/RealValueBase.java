@@ -10,19 +10,30 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
+ * @param <DATA> the type of the data object
+ * @param <CHILD_DATA> the type of the child's data object
+ * @param <CHILD> the type of the child
+ * @param <O> the type of the value's value
+ * @param <VALUE> the type of the value
  */
-public abstract class RealValueBase<WBL extends ValueWrappableBase<SWBL>,
-            SWBL extends HousemateObjectWrappable<?>,
-            SWR extends RealObject<? extends SWBL, ?, ?, ?>,
+public abstract class RealValueBase<
+            DATA extends ValueWrappableBase<CHILD_DATA>,
+            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD extends RealObject<? extends CHILD_DATA, ?, ?, ?>,
             O,
-            V extends RealValueBase<WBL, SWBL, SWR, O, V>>
-        extends RealObject<WBL, SWBL, SWR, ValueListener<? super V>>
-        implements Value<RealType<?, ?, O>, V>, ValueListener<V> {
+            VALUE extends RealValueBase<DATA, CHILD_DATA, CHILD, O, VALUE>>
+        extends RealObject<DATA, CHILD_DATA, CHILD, ValueListener<? super VALUE>>
+        implements Value<RealType<?, ?, O>, VALUE>, ValueListener<VALUE> {
 
     private RealType<?, ?, O> type;
     private O typedValue;
 
-    public RealValueBase(RealResources resources, WBL wrappable, RealType<?, ?, O> type) {
+    /**
+     * @param resources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     * @param type the type of the value's value
+     */
+    public RealValueBase(RealResources resources, DATA wrappable, RealType<?, ?, O> type) {
         super(resources, wrappable);
         this.type = type;
     }
@@ -32,25 +43,33 @@ public abstract class RealValueBase<WBL extends ValueWrappableBase<SWBL>,
         return type;
     }
 
-    public O getTypedValue() {
-        return typedValue;
-    }
-
     @Override
     public TypeInstance getTypeInstance() {
         return getWrappable().getValue();
     }
 
+    /**
+     * Gets the object representation of this value
+     * @return
+     */
+    public O getTypedValue() {
+        return typedValue;
+    }
+
+    /**
+     * Sets the object representation of this value
+     * @param typedValue the new value
+     */
     public final void setTypedValue(O typedValue) {
         if((this.typedValue == null && typedValue == null)
             || (this.typedValue != null && typedValue != null && this.typedValue.equals(typedValue)))
             return;
-        for(ValueListener<? super V> listener : getObjectListeners())
-            listener.valueChanging((V)this);
+        for(ValueListener<? super VALUE> listener : getObjectListeners())
+            listener.valueChanging((VALUE)this);
         this.typedValue = typedValue;
         this.getWrappable().setValue(getType().serialise(typedValue));
-        for(ValueListener<? super V> listener : getObjectListeners())
-            listener.valueChanged((V)this);
+        for(ValueListener<? super VALUE> listener : getObjectListeners())
+            listener.valueChanged((VALUE)this);
     }
 
     @Override
@@ -61,7 +80,7 @@ public abstract class RealValueBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     @Override
-    public void valueChanging(V value) {
+    public void valueChanging(VALUE value) {
         // do nothing
     }
 

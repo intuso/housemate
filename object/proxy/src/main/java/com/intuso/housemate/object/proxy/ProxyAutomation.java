@@ -9,64 +9,83 @@ import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.automation.AutomationListener;
 
 /**
+ * @param <RESOURCES> the type of the resources
+ * @param <CHILD_RESOURCES> the type of the child resources
+ * @param <ADD_COMMAND> the type of the add command
+ * @param <VALUE> the type of the value
+ * @param <CONDITION> the type of the conditions
+ * @param <CONDITIONS> the type of the conditions list
+ * @param <TASK> the type of the tasks
+ * @param <TASKS> the type of the tasks list
+ * @param <AUTOMATION> the type of the automation
  */
 public abstract class ProxyAutomation<
-            R extends ProxyResources<? extends HousemateObjectFactory<SR, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            SR extends ProxyResources<?>,
-            AC extends ProxyCommand<?, ?, ?, ?, AC>,
-            V extends ProxyValue<?, ?, V>,
-            C extends ProxyCondition<?, ?, ?, ?, ?, C, CL>,
-            CL extends ProxyList<?, ?, ConditionWrappable, C, CL>,
-            T extends ProxyTask<?, ?, ?, ?, T>,
-            TL extends ProxyList<?, ?, TaskWrappable, T, TL>,
-            A extends ProxyAutomation<R, SR, AC, V, C, CL, T, TL, A>>
-        extends ProxyPrimaryObject<R, SR, AutomationWrappable, AC, V, A, AutomationListener<? super A>>
-        implements Automation<AC, AC, AC, V, V, V, C, CL, T, TL, A> {
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            CHILD_RESOURCES extends ProxyResources<?>,
+            ADD_COMMAND extends ProxyCommand<?, ?, ?, ?, ADD_COMMAND>,
+            VALUE extends ProxyValue<?, ?, VALUE>,
+            CONDITION extends ProxyCondition<?, ?, ?, ?, ?, CONDITION, CONDITIONS>,
+            CONDITIONS extends ProxyList<?, ?, ConditionWrappable, CONDITION, CONDITIONS>,
+            TASK extends ProxyTask<?, ?, ?, ?, TASK>,
+            TASKS extends ProxyList<?, ?, TaskWrappable, TASK, TASKS>,
+            AUTOMATION extends ProxyAutomation<RESOURCES, CHILD_RESOURCES, ADD_COMMAND, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION>>
+        extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, AutomationWrappable, ADD_COMMAND, VALUE, AUTOMATION, AutomationListener<? super AUTOMATION>>
+        implements Automation<ADD_COMMAND, ADD_COMMAND, ADD_COMMAND, VALUE, VALUE, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION> {
 
-    private CL conditions;
-    private TL satisfiedTasks;
-    private TL unsatisfiedTasks;
-    private AC addConditionCommand;
-    private AC addSatisifedTaskCommand;
-    private AC addUnsatisifedTaskCommand;
+    private CONDITIONS conditions;
+    private TASKS satisfiedTasks;
+    private TASKS unsatisfiedTasks;
+    private ADD_COMMAND addConditionCommand;
+    private ADD_COMMAND addSatisifedTaskCommand;
+    private ADD_COMMAND addUnsatisifedTaskCommand;
 
-    public ProxyAutomation(R resources, SR subResources, AutomationWrappable wrappable) {
-        super(resources, subResources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param childResources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     */
+    public ProxyAutomation(RESOURCES resources, CHILD_RESOURCES childResources, AutomationWrappable wrappable) {
+        super(resources, childResources, wrappable);
     }
 
     @Override
     protected final void getChildObjects() {
         super.getChildObjects();
-        conditions = (CL)getWrapper(CONDITIONS_ID);
-        satisfiedTasks = (TL)getWrapper(SATISFIED_TASKS_ID);
-        unsatisfiedTasks = (TL)getWrapper(UNSATISFIED_TASKS_ID);
-        addConditionCommand = (AC)getWrapper(ADD_CONDITION_ID);
-        addSatisifedTaskCommand = (AC)getWrapper(ADD_SATISFIED_TASK_ID);
-        addUnsatisifedTaskCommand = (AC)getWrapper(ADD_UNSATISFIED_TASK_ID);
+        conditions = (CONDITIONS)getWrapper(CONDITIONS_ID);
+        satisfiedTasks = (TASKS)getWrapper(SATISFIED_TASKS_ID);
+        unsatisfiedTasks = (TASKS)getWrapper(UNSATISFIED_TASKS_ID);
+        addConditionCommand = (ADD_COMMAND)getWrapper(ADD_CONDITION_ID);
+        addSatisifedTaskCommand = (ADD_COMMAND)getWrapper(ADD_SATISFIED_TASK_ID);
+        addUnsatisifedTaskCommand = (ADD_COMMAND)getWrapper(ADD_UNSATISFIED_TASK_ID);
     }
 
     @Override
-    public CL getConditions() {
+    public CONDITIONS getConditions() {
         return conditions;
     }
 
-    public TL getSatisfiedTasks() {
+    @Override
+    public TASKS getSatisfiedTasks() {
         return satisfiedTasks;
     }
 
-    public TL getUnsatisfiedTasks() {
+    @Override
+    public TASKS getUnsatisfiedTasks() {
         return unsatisfiedTasks;
     }
 
-    public AC getAddConditionCommand() {
+    @Override
+    public ADD_COMMAND getAddConditionCommand() {
         return addConditionCommand;
     }
 
-    public AC getAddSatisifedTaskCommand() {
+    @Override
+    public ADD_COMMAND getAddSatisifedTaskCommand() {
         return addSatisifedTaskCommand;
     }
 
-    public AC getAddUnsatisifedTaskCommand() {
+    @Override
+    public ADD_COMMAND getAddUnsatisifedTaskCommand() {
         return addUnsatisifedTaskCommand;
     }
 }

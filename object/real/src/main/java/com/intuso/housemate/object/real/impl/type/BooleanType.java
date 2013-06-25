@@ -9,6 +9,7 @@ import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
 
 /**
+ * Type for a boolean
  */
 public class BooleanType extends RealSimpleType<Boolean> {
 
@@ -24,18 +25,47 @@ public class BooleanType extends RealSimpleType<Boolean> {
         }
     };
 
+    /**
+     * @param resources {@inheritDoc}
+     */
     public BooleanType(RealResources resources) {
         super(resources, SimpleTypeWrappable.Type.Boolean, SERIALISER);
     }
 
+    /**
+     * Creates a boolean value object
+     * @param resources the resources
+     * @param id the value's id
+     * @param name the value's name
+     * @param description the value's description
+     * @param value the initial value
+     * @return a boolean value object
+     */
     public static RealValue<Boolean> createValue(RealResources resources, String id, String name, String description, Boolean value) {
         return new RealValue<Boolean>(resources, id, name, description, new BooleanType(resources), value);
     }
 
+    /**
+     * Creates a boolean property object
+     * @param resources the resources
+     * @param id the property's id
+     * @param name the property's name
+     * @param description the property's description
+     * @param value the initial value
+     * @return a boolean property object
+     */
     public static RealProperty<Boolean> createProperty(RealResources resources, String id, String name, String description, Boolean value) {
         return new RealProperty<Boolean>(resources, id, name, description, new BooleanType(resources), value);
     }
 
+    /**
+     * Creates a boolean parameter object
+     * @param resources the resources
+     * @param id the parameter's id
+     * @param name the parameter's name
+     * @param description the parameter's description
+     * @return a boolean parameter object
+     */
     public static RealParameter<Boolean> createParameter(RealResources resources, String id, String name, String description) {
         return new RealParameter<Boolean>(resources, id, name, description, new BooleanType(resources));
     }

@@ -11,12 +11,16 @@ import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
 /**
+ * @param <DATA> the type of the data object
+ * @param <PRIMARY_OBJECT> the type of the primary object
+ * @param <LISTENER> the type of this object's listener
  */
-public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
-            PO extends RealPrimaryObject<WBL, PO, L>,
-            L extends PrimaryListener<? super PO>>
-        extends RealObject<WBL, HousemateObjectWrappable<?>, RealObject<?, ?, ?, ?>, L>
-        implements PrimaryObject<RealCommand, RealCommand, RealValue<Boolean>, RealValue<Boolean>, RealValue<String>, PO, L> {
+public abstract class RealPrimaryObject<
+            DATA extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
+            PRIMARY_OBJECT extends RealPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
+            LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
+        extends RealObject<DATA, HousemateObjectWrappable<?>, RealObject<?, ?, ?, ?>, LISTENER>
+        implements PrimaryObject<RealCommand, RealCommand, RealValue<Boolean>, RealValue<Boolean>, RealValue<String>, PRIMARY_OBJECT, LISTENER> {
 
     private final RealCommand remove;
     private final RealValue<Boolean> running;
@@ -24,7 +28,12 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
     private final RealCommand stop;
     private final RealValue<String> error;
 
-    public RealPrimaryObject(RealResources resources, WBL wrappable, final String objectType) {
+    /**
+     * @param resources {@inheritDoc}
+     * @param wrappable {@inheritDoc}
+     * @param objectType the name of this object type, used child descriptions and log messages
+     */
+    public RealPrimaryObject(RealResources resources, DATA wrappable, final String objectType) {
         super(resources, wrappable);
         this.remove = new RealCommand(resources, REMOVE_COMMAND_ID, REMOVE_COMMAND_ID, "Remove the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
@@ -106,7 +115,18 @@ public abstract class RealPrimaryObject<WBL extends HousemateObjectWrappable<Hou
         return running.getTypedValue() != null ? running.getTypedValue() : false;
     }
 
+    /**
+     * Removes this objects
+     */
     protected abstract void remove();
-    protected abstract void _start() throws HousemateException;
+
+    /**
+     * Starts the object
+     */
+    protected abstract void _start();
+
+    /**
+     * Stops the object
+     */
     protected abstract void _stop();
 }

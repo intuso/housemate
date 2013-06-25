@@ -17,8 +17,8 @@ public class GWTProxyType extends ProxyType<
             ProxyObject<?, ?, ?, ?, ?, ?, ?>,
             GWTProxyType> {
     public GWTProxyType(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                        GWTResources<?> subResources,
+                        GWTResources<?> childResources,
                         TypeWrappable wrappable) {
-        super(resources, subResources, wrappable);
+        super(resources, childResources, wrappable);
     }
 }
