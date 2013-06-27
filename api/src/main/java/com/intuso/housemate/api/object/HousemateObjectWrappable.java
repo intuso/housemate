@@ -1,7 +1,7 @@
 package com.intuso.housemate.api.object;
 
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.utilities.wrapper.Wrappable;
+import com.intuso.utilities.wrapper.Data;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.Map;
  * @param <WBL> the type of the data object for the children of this Housemate object
  */
 public abstract class HousemateObjectWrappable<WBL extends HousemateObjectWrappable<?>>
-        extends Wrappable<WBL>
+        extends Data<WBL>
         implements Message.Payload {
 
     private String name;
@@ -24,7 +24,7 @@ public abstract class HousemateObjectWrappable<WBL extends HousemateObjectWrappa
      * @param id object's id
      * @param name object's name
      * @param description object's description
-     * @param subWrappables object's child wrappables
+     * @param subWrappables object's child datas
      */
     public HousemateObjectWrappable(String id, String name, String description, WBL ... subWrappables) {
         this(id, name, description, Arrays.asList(subWrappables));
@@ -34,7 +34,7 @@ public abstract class HousemateObjectWrappable<WBL extends HousemateObjectWrappa
      * @param id object's id
      * @param name object's name
      * @param description object's description
-     * @param subWrappables object's child wrappables
+     * @param subWrappables object's child datas
      */
     public HousemateObjectWrappable(String id, String name, String description, List<WBL> subWrappables) {
         super(id, subWrappables);

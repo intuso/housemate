@@ -4,7 +4,6 @@ import com.intuso.housemate.annotations.basic.Value;
 import com.intuso.housemate.annotations.basic.Values;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.impl.type.DoubleType;
 
 /**
  */
@@ -18,7 +17,7 @@ public class TestDevice extends RealDevice {
     }
 
     public interface MyValues {
-        @Value(id = "dv", name = "DV", description = "DV", type = DoubleType.class)
+        @Value(id = "dv", name = "DV", description = "DV", typeId = "double")
         public void doubleValue(double value);
     }
 }

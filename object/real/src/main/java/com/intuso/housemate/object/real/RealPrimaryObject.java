@@ -30,11 +30,11 @@ public abstract class RealPrimaryObject<
 
     /**
      * @param resources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      * @param objectType the name of this object type, used child descriptions and log messages
      */
-    public RealPrimaryObject(RealResources resources, DATA wrappable, final String objectType) {
-        super(resources, wrappable);
+    public RealPrimaryObject(RealResources resources, DATA data, final String objectType) {
+        super(resources, data);
         this.remove = new RealCommand(resources, REMOVE_COMMAND_ID, REMOVE_COMMAND_ID, "Remove the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {

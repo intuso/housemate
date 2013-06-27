@@ -8,18 +8,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
 public abstract class BrokerNonLeafCondition extends BrokerRealCondition
         implements ConditionListener<BrokerRealCondition> {
 
     private final Map<BrokerRealCondition, Boolean> satisfied = new HashMap<BrokerRealCondition, Boolean>();
     private final Map<BrokerRealCondition, ListenerRegistration> conditionListenerRegistrations = Maps.newHashMap();
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the object's id
+     * @param name the object's name
+     * @param description the object's description
+     */
     public BrokerNonLeafCondition(BrokerRealResources resources, String id, String name, String description) {
         this(resources, id, name, description, new ArrayList<BrokerRealProperty<?>>());
     }
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the object's id
+     * @param name the object's name
+     * @param description the object's description
+     * @param properties the properties of the condition
+     */
     public BrokerNonLeafCondition(BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
         super(resources, id, name, description, properties);
     }
@@ -53,6 +64,11 @@ public abstract class BrokerNonLeafCondition extends BrokerRealCondition
         this.satisfied.put((BrokerRealCondition) condition, satisfied);
         conditionSatisfied(checkIfSatisfied(this.satisfied));
     }
-    
+
+    /**
+     * Checks if this condition is satisfied, given the satisfied state of the children
+     * @param satisfiedMap the map of children to their satisfied value
+     * @return true if this condition is currently satisfied
+     */
     protected abstract boolean checkIfSatisfied(Map<BrokerRealCondition, Boolean> satisfiedMap);
 }

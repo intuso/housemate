@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
 public class BrokerProxyCommand
         extends BrokerProxyObject<CommandWrappable, ListWrappable<ParameterWrappable>, BrokerProxyList<ParameterWrappable, BrokerProxyParameter>, BrokerProxyCommand, CommandListener<? super BrokerProxyCommand>>
         implements Command<BrokerProxyList<ParameterWrappable, BrokerProxyParameter>, BrokerProxyCommand> {
@@ -27,8 +25,12 @@ public class BrokerProxyCommand
     private int nextId;
     private Map<String, CommandListener<? super BrokerProxyCommand>> listenerMap = new HashMap<String, CommandListener<? super BrokerProxyCommand>>();
 
-    protected BrokerProxyCommand(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, ListWrappable<ParameterWrappable>, ? extends BrokerProxyList<ParameterWrappable, BrokerProxyParameter>>> resources, CommandWrappable wrappable) {
-        super(resources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param data {@inheritDoc}
+     */
+    protected BrokerProxyCommand(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, ListWrappable<ParameterWrappable>, ? extends BrokerProxyList<ParameterWrappable, BrokerProxyParameter>>> resources, CommandWrappable data) {
+        super(resources, data);
     }
 
     @Override

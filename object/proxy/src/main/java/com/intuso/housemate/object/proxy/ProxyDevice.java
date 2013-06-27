@@ -40,10 +40,10 @@ public abstract class ProxyDevice<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyDevice(RESOURCES resources, CHILD_RESOURCES childResources, DeviceWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyDevice(RESOURCES resources, CHILD_RESOURCES childResources, DeviceWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

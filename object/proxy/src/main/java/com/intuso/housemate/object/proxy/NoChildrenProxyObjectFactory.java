@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.NoChildrenWrappable;
 public class NoChildrenProxyObjectFactory
         implements HousemateObjectFactory<ProxyResources<NoChildrenProxyObjectFactory>, NoChildrenWrappable, NoChildrenProxyObject> {
     @Override
-    public NoChildrenProxyObject create(ProxyResources<NoChildrenProxyObjectFactory> resources, NoChildrenWrappable wrappable) throws HousemateException {
+    public NoChildrenProxyObject create(ProxyResources<NoChildrenProxyObjectFactory> resources, NoChildrenWrappable data) throws HousemateException {
         throw new HousemateException("Cannot create a child for an object that has no children");
     }
 }

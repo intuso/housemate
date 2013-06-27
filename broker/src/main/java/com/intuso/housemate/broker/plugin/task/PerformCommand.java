@@ -30,17 +30,16 @@ public class PerformCommand extends BrokerRealTask implements ObjectLifecycleLis
     private CommandListener listener = new CommandListener<Command<?, ?>>() {
         @Override
         public void commandStarted(Command<?, ?> command) {
-            taskExecuting(true);
+            // do nothing
         }
 
         @Override
         public void commandFinished(Command<?, ?> command) {
-            taskExecuting(false);
+            // do nothing
         }
 
         @Override
         public void commandFailed(Command<?, ?> command, String error) {
-            taskExecuting(false);
             setError("Failed to perform command: " + error);
         }
     };

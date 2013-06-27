@@ -23,6 +23,7 @@ import com.intuso.housemate.api.object.value.ValueFactory;
 import com.intuso.housemate.api.object.value.ValueWrappable;
 
 /**
+ * Container class for all factories for broker objects that are proxies of those on a client
  */
 public class BrokerProxyFactory {
 
@@ -39,52 +40,52 @@ public class BrokerProxyFactory {
 
     public static class All implements HousemateObjectFactory<BrokerProxyResources<?>, HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>> {
         @Override
-        public BrokerProxyObject<?, ?, ?, ?, ?> create(BrokerProxyResources<?> resources, HousemateObjectWrappable<?> wrappable) throws HousemateException {
-            if(wrappable instanceof ParameterWrappable)
-                return parameterFactory.create(resources, (ParameterWrappable) wrappable);
-            else if(wrappable instanceof CommandWrappable)
-                return commandFactory.create(resources, (CommandWrappable) wrappable);
-            else if(wrappable instanceof DeviceWrappable)
-                return deviceFactory.create(resources, (DeviceWrappable) wrappable);
-            else if(wrappable instanceof ListWrappable)
-                return listFactory.create(resources, (ListWrappable<HousemateObjectWrappable<?>>) wrappable);
-            else if(wrappable instanceof OptionWrappable)
-                return optionFactory.create(resources, (OptionWrappable) wrappable);
-            else if(wrappable instanceof PropertyWrappable)
-                return propertyFactory.create(resources, (PropertyWrappable) wrappable);
-            else if(wrappable instanceof SubTypeWrappable)
-                return subTypeFactory.create(resources, (SubTypeWrappable) wrappable);
-            else if(wrappable instanceof TypeWrappable)
-                return typeFactory.create(resources, (TypeWrappable) wrappable);
-            else if(wrappable instanceof ValueWrappable)
-                return valueFactory.create(resources, (ValueWrappable) wrappable);
+        public BrokerProxyObject<?, ?, ?, ?, ?> create(BrokerProxyResources<?> resources, HousemateObjectWrappable<?> data) throws HousemateException {
+            if(data instanceof ParameterWrappable)
+                return parameterFactory.create(resources, (ParameterWrappable) data);
+            else if(data instanceof CommandWrappable)
+                return commandFactory.create(resources, (CommandWrappable) data);
+            else if(data instanceof DeviceWrappable)
+                return deviceFactory.create(resources, (DeviceWrappable) data);
+            else if(data instanceof ListWrappable)
+                return listFactory.create(resources, (ListWrappable<HousemateObjectWrappable<?>>) data);
+            else if(data instanceof OptionWrappable)
+                return optionFactory.create(resources, (OptionWrappable) data);
+            else if(data instanceof PropertyWrappable)
+                return propertyFactory.create(resources, (PropertyWrappable) data);
+            else if(data instanceof SubTypeWrappable)
+                return subTypeFactory.create(resources, (SubTypeWrappable) data);
+            else if(data instanceof TypeWrappable)
+                return typeFactory.create(resources, (TypeWrappable) data);
+            else if(data instanceof ValueWrappable)
+                return valueFactory.create(resources, (ValueWrappable) data);
             else
-                throw new HousemateException("Don't know how to create an object from " + wrappable.getClass().getName());
+                throw new HousemateException("Don't know how to create an object from " + data.getClass().getName());
         }
     }
 
     public static class Parameter implements ParameterFactory<BrokerProxyResources<?>, BrokerProxyParameter> {
         @Override
-        public BrokerProxyParameter create(BrokerProxyResources<?> resources, ParameterWrappable wrappable) throws HousemateException {
-            return new BrokerProxyParameter(noFactoryType(resources), wrappable);
+        public BrokerProxyParameter create(BrokerProxyResources<?> resources, ParameterWrappable data) throws HousemateException {
+            return new BrokerProxyParameter(noFactoryType(resources), data);
         }
     }
 
     public static class Command implements CommandFactory<BrokerProxyResources<?>, BrokerProxyCommand> {
         @Override
-        public BrokerProxyCommand create(BrokerProxyResources<?> resources, CommandWrappable wrappable) throws HousemateException {
+        public BrokerProxyCommand create(BrokerProxyResources<?> resources, CommandWrappable data) throws HousemateException {
             BrokerProxyResources<List<ParameterWrappable, BrokerProxyParameter>> r
                     = changeFactoryType(resources,
                     new List<ParameterWrappable, BrokerProxyParameter>(changeFactoryType(resources, parameterFactory)));
-            return new BrokerProxyCommand(r, wrappable);
+            return new BrokerProxyCommand(r, data);
         }
     }
 
     public static class Device implements DeviceFactory<BrokerProxyResources<?>, BrokerProxyDevice> {
         @Override
-        public BrokerProxyDevice create(BrokerProxyResources<?> resources, DeviceWrappable wrappable) throws HousemateException {
+        public BrokerProxyDevice create(BrokerProxyResources<?> resources, DeviceWrappable data) throws HousemateException {
             BrokerProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new BrokerProxyDevice(r, wrappable);
+            return new BrokerProxyDevice(r, data);
         }
     }
 
@@ -93,9 +94,9 @@ public class BrokerProxyFactory {
             BrokerProxyList<HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>>> {
 
         @Override
-        public BrokerProxyList<HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>> create(BrokerProxyResources<?> resources, ListWrappable<HousemateObjectWrappable<?>> wrappable) throws HousemateException {
+        public BrokerProxyList<HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>> create(BrokerProxyResources<?> resources, ListWrappable<HousemateObjectWrappable<?>> data) throws HousemateException {
             BrokerProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new BrokerProxyList<HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>>(r, wrappable);
+            return new BrokerProxyList<HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>>(r, data);
         }
     }
 
@@ -112,49 +113,49 @@ public class BrokerProxyFactory {
 
         @Override
         public BrokerProxyList<SWBL, SWR> create(BrokerProxyResources<?> r,
-                                                        ListWrappable<SWBL> wrappable) throws HousemateException {
-            return new BrokerProxyList<SWBL, SWR>(resources, wrappable);
+                                                        ListWrappable<SWBL> data) throws HousemateException {
+            return new BrokerProxyList<SWBL, SWR>(resources, data);
         }
     }
 
     public static class Option implements OptionFactory<BrokerProxyResources<?>, BrokerProxyOption> {
         @Override
-        public BrokerProxyOption create(BrokerProxyResources<?> resources, OptionWrappable wrappable) throws HousemateException {
+        public BrokerProxyOption create(BrokerProxyResources<?> resources, OptionWrappable data) throws HousemateException {
             BrokerProxyResources<List<SubTypeWrappable, BrokerProxySubType>> r
                     = changeFactoryType(resources,
                     new List<SubTypeWrappable, BrokerProxySubType>(changeFactoryType(resources, subTypeFactory)));
-            return new BrokerProxyOption(r, wrappable);
+            return new BrokerProxyOption(r, data);
         }
     }
 
     public static class Property implements PropertyFactory<BrokerProxyResources<?>, BrokerProxyProperty> {
         @Override
-        public BrokerProxyProperty create(BrokerProxyResources<?> resources, PropertyWrappable wrappable) throws HousemateException {
+        public BrokerProxyProperty create(BrokerProxyResources<?> resources, PropertyWrappable data) throws HousemateException {
             BrokerProxyResources<Command> r = changeFactoryType(resources, commandFactory);
-            return new BrokerProxyProperty(r, wrappable);
+            return new BrokerProxyProperty(r, data);
         }
     }
 
     public static class SubType implements SubTypeFactory<BrokerProxyResources<?>, BrokerProxySubType> {
         @Override
-        public BrokerProxySubType create(BrokerProxyResources<?> resources, SubTypeWrappable wrappable) throws HousemateException {
-            return new BrokerProxySubType(noFactoryType(resources), wrappable);
+        public BrokerProxySubType create(BrokerProxyResources<?> resources, SubTypeWrappable data) throws HousemateException {
+            return new BrokerProxySubType(noFactoryType(resources), data);
         }
     }
 
     public static class Type implements TypeFactory<BrokerProxyResources<?>, BrokerProxyType> {
         @Override
         public BrokerProxyType create(BrokerProxyResources<?> resources,
-                                             TypeWrappable<?> wrappable) throws HousemateException {
+                                             TypeWrappable<?> data) throws HousemateException {
             BrokerProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new BrokerProxyType(r, wrappable);
+            return new BrokerProxyType(r, data);
         }
     }
 
     public static class Value implements ValueFactory<BrokerProxyResources<?>, BrokerProxyValue> {
         @Override
-        public BrokerProxyValue create(BrokerProxyResources<?> resources, ValueWrappable wrappable) throws HousemateException {
-            return new BrokerProxyValue(noFactoryType(resources), wrappable);
+        public BrokerProxyValue create(BrokerProxyResources<?> resources, ValueWrappable data) throws HousemateException {
+            return new BrokerProxyValue(noFactoryType(resources), data);
         }
     }
 

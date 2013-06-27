@@ -14,18 +14,27 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
+ * @param <DATA> the type of the data
+ * @param <CHILD_DATA> the type of the child data
+ * @param <CHILD> the type of the child
+ * @param <VALUE> the type of the value
  */
-public class BrokerProxyValueBase<WBL extends ValueWrappableBase<SWBL>,
-            SWBL extends HousemateObjectWrappable<?>,
-            SWR extends BrokerProxyObject<? extends SWBL, ?, ?, ?, ?>,
-            V extends BrokerProxyValueBase<WBL, SWBL, SWR, V>>
-        extends BrokerProxyObject<WBL, SWBL, SWR, V, ValueListener<? super V>>
-        implements Value<BrokerProxyType, V> {
+public class BrokerProxyValueBase<
+            DATA extends ValueWrappableBase<CHILD_DATA>,
+            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD extends BrokerProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
+            VALUE extends BrokerProxyValueBase<DATA, CHILD_DATA, CHILD, VALUE>>
+        extends BrokerProxyObject<DATA, CHILD_DATA, CHILD, VALUE, ValueListener<? super VALUE>>
+        implements Value<BrokerProxyType, VALUE> {
 
     private BrokerProxyType type;
 
-    public BrokerProxyValueBase(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, SWBL, ? extends SWR>> resources, WBL value) {
-        super(resources, value);
+    /**
+     * @param resources {@inheritDoc}
+     * @param data {@inheritDoc}
+     */
+    public BrokerProxyValueBase(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, CHILD_DATA, ? extends CHILD>> resources, DATA data) {
+        super(resources, data);
     }
 
     @Override
@@ -35,7 +44,7 @@ public class BrokerProxyValueBase<WBL extends ValueWrappableBase<SWBL>,
 
     @Override
     public TypeInstance getTypeInstance() {
-        return getWrappable().getValue();
+        return getData().getValue();
     }
 
     @Override
@@ -44,10 +53,10 @@ public class BrokerProxyValueBase<WBL extends ValueWrappableBase<SWBL>,
         result.add(addMessageListener(VALUE_ID, new Receiver<ClientPayload<TypeInstance>>() {
             @Override
             public void messageReceived(Message<ClientPayload<TypeInstance>> stringMessageValueMessage) {
-                for(ValueListener<? super V> listener : getObjectListeners())
+                for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanging(getThis());
-                getWrappable().setValue(stringMessageValueMessage.getPayload().getOriginal());
-                for(ValueListener<? super V> listener : getObjectListeners())
+                getData().setValue(stringMessageValueMessage.getPayload().getOriginal());
+                for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanged(getThis());
             }
         }));
@@ -57,9 +66,8 @@ public class BrokerProxyValueBase<WBL extends ValueWrappableBase<SWBL>,
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        type = getResources().getRoot().getTypes().get(getWrappable().getType());
+        type = getResources().getRoot().getTypes().get(getData().getType());
         if(type == null)
-            getLog().e("Could not unwrap value, value type \"" + getWrappable().getType() + "\" is not known");
+            getLog().e("Could not unwrap value, value type \"" + getData().getType() + "\" is not known");
     }
-
 }

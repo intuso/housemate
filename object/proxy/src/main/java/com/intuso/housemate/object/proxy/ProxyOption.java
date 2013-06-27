@@ -28,10 +28,10 @@ public abstract class ProxyOption<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyOption(RESOURCES resources, CHILD_RESOURCES childResources, OptionWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyOption(RESOURCES resources, CHILD_RESOURCES childResources, OptionWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

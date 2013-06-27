@@ -25,8 +25,8 @@ public class GWTProxyDevice
             GWTProxyDevice> {
     public GWTProxyDevice(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                           GWTResources<?> childResources,
-                          DeviceWrappable wrappable) {
-        super(resources, childResources, wrappable);
+                          DeviceWrappable data) {
+        super(resources, childResources, data);
     }
 
 

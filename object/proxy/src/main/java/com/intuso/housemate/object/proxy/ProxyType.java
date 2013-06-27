@@ -27,9 +27,9 @@ public abstract class ProxyType<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyType(RESOURCES resources, CHILD_RESOURCES childResources, DATA wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyType(RESOURCES resources, CHILD_RESOURCES childResources, DATA data) {
+        super(resources, childResources, data);
     }
 }

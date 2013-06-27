@@ -5,10 +5,36 @@ import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
 
 /**
+ * @param <DEVICE> the type of the devices created by this factory
  */
-public interface RealDeviceFactory<D extends RealDevice> {
+public interface RealDeviceFactory<DEVICE extends RealDevice> {
+
+    /**
+     * Gets the id for this factory
+     * @return the id for this factory
+     */
     public String getTypeId();
+
+    /**
+     * Gets the name for this factory
+     * @return the name for this factory
+     */
     public String getTypeName();
+
+    /**
+     * Gets the description for this factory
+     * @return the description for this factory
+     */
     public String getTypeDescription();
-    public D create(RealResources resources, String id, String name, String description) throws HousemateException;
+
+    /**
+     * Creates a device
+     * @param resources the resources for the device
+     * @param id the device's id
+     * @param name the device's name
+     * @param description the device's description
+     * @return a new device
+     * @throws HousemateException if the device cannot be created
+     */
+    public DEVICE create(RealResources resources, String id, String name, String description) throws HousemateException;
 }

@@ -18,7 +18,7 @@ public class SubTypeBridge
 
     public SubTypeBridge(BrokerBridgeResources resources, SubType<?> subType) {
         super(resources, new SubTypeWrappable(subType.getId(), subType.getName(), subType.getDescription(), subType.getType().getId()));
-        type = resources.getGeneralResources().getBridgeResources().getRoot().getTypes().get(getWrappable().getType());
+        type = resources.getGeneralResources().getBridgeResources().getRoot().getTypes().get(getData().getType());
     }
 
     @Override

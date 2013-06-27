@@ -15,21 +15,36 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.wrapper.WrapperFactory;
 
 /**
+ * @param <DATA> the type of the data
+ * @param <CHILD_DATA> the type of the child data
+ * @param <CHILD> the type of the child
+ * @param <OBJECT> the type of the object
+ * @param <LISTENER> the type of the listener
  */
-public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWBL>,
-            SWBL extends HousemateObjectWrappable<?>,
-            SWR extends BrokerProxyObject<? extends SWBL, ?, ?, ?, ?>,
-            PBO extends BrokerProxyObject<?, ?, ?, ?, ?>,
-            L extends ObjectListener>
-        extends HousemateObject<BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, SWBL, ? extends SWR>>, WBL, SWBL, SWR, L> implements BaseObject<L>, RemoteClientListener {
+public abstract class BrokerProxyObject<
+            DATA extends HousemateObjectWrappable<CHILD_DATA>,
+            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD extends BrokerProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
+            OBJECT extends BrokerProxyObject<?, ?, ?, ?, ?>,
+            LISTENER extends ObjectListener>
+        extends HousemateObject<BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, CHILD_DATA, ? extends CHILD>>, DATA, CHILD_DATA, CHILD, LISTENER> implements BaseObject<LISTENER>, RemoteClientListener {
 
     private RemoteClient client;
     private ListenerRegistration clientListener;
 
-    protected BrokerProxyObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, SWBL, ? extends SWR>> resources, WBL wrappable) {
-        super(resources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param data {@inheritDoc}
+     */
+    protected BrokerProxyObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, CHILD_DATA, ? extends CHILD>> resources, DATA data) {
+        super(resources, data);
     }
 
+    /**
+     * Sets the client that this object is a proxy to
+     * @param client the client
+     * @throws HousemateException
+     */
     public void setClient(RemoteClient client) throws HousemateException {
         if(this.client != null)
             throw new HousemateException("This object already has a client");
@@ -43,6 +58,12 @@ public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWB
                 ((BrokerProxyObject)child).setClient(client);
     }
 
+    /**
+     * Sends a message to the client this object is a proxy to
+     * @param type the type of the message
+     * @param payload the message payload
+     * @throws HousemateException if an error occurs sending the message, for example the client is not connected
+     */
     protected final void sendMessage(String type, Message.Payload payload) throws HousemateException {
         if(client == null)
             throw new HousemateException("Client has disconnected. This object should no longer be used");
@@ -56,10 +77,10 @@ public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWB
     protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {
         // unwrap children
         try {
-            unwrapChildren(new WrapperFactory<SWBL, SWR, HousemateException>() {
+            unwrapChildren(new WrapperFactory<CHILD_DATA, CHILD, HousemateException>() {
                 @Override
-                public SWR create(SWBL wrappable) throws HousemateException {
-                    return getResources().getFactory().create(getResources(), wrappable);
+                public CHILD create(CHILD_DATA data) throws HousemateException {
+                    return getResources().getFactory().create(getResources(), data);
                 }
             });
         } catch(HousemateException e) {
@@ -72,10 +93,17 @@ public abstract class BrokerProxyObject<WBL extends HousemateObjectWrappable<SWB
         getChildObjects();
     }
 
+    /**
+     * Gets the child objects required by this object
+     */
     protected void getChildObjects() {}
 
-    protected final PBO getThis() {
-        return (PBO)this;
+    /**
+     * Gets this object as an instance of its actual class
+     * @return
+     */
+    protected final OBJECT getThis() {
+        return (OBJECT)this;
     }
 
     @Override

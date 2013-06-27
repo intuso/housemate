@@ -5,7 +5,6 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.broker.real.BrokerRealCommand;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.BrokerRealValue;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
@@ -15,47 +14,49 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
+ * @param <DATA> the type of the data
+ * @param <PRIMARY_OBJECT> the type of the primary object
+ * @param <LISTENER> the type of the listener
  */
-public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
-            PO extends BrokerProxyPrimaryObject<WBL, PO, L>,
-            L extends PrimaryListener<? super PO>>
-        extends BrokerProxyObject<WBL, HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>, PO, L>
-        implements PrimaryObject<BrokerRealCommand, BrokerProxyCommand, BrokerRealValue<Boolean>,
-            BrokerProxyValue, BrokerProxyValue, PO, L> {
+public class BrokerProxyPrimaryObject<
+            DATA extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
+            PRIMARY_OBJECT extends BrokerProxyPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
+            LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
+        extends BrokerProxyObject<DATA, HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
+        implements PrimaryObject<BrokerProxyCommand, BrokerProxyCommand, BrokerRealValue<Boolean>,
+            BrokerProxyValue, BrokerProxyValue, PRIMARY_OBJECT, LISTENER> {
 
-    private BrokerProxyCommand realRemoveCommand;
-    private BrokerRealCommand remove;
+    private BrokerProxyCommand remove;
     private BrokerRealValue<Boolean> connected;
     private BrokerProxyValue running;
     private BrokerProxyCommand start;
     private BrokerProxyCommand stop;
     private BrokerProxyValue error;
-    private Remover<PO> remover;
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param realResources the resources for real objects
+     * @param data {@inheritDoc}
+     */
     protected BrokerProxyPrimaryObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, HousemateObjectWrappable<?>, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> resources,
-                                       BrokerRealResources realResources, WBL wrappable) {
-        super(resources, wrappable);
+                                       BrokerRealResources realResources, DATA data) {
+        super(resources, data);
         connected = new BrokerRealValue<Boolean>(realResources, CONNECTED_VALUE_ID, CONNECTED_VALUE_ID,
                 "Whether the server has a connection open to control the object",
                 new BooleanType(realResources.getRealResources()), true);
     }
 
-    public void setRemover(Remover<PO> remover) {
-        this.remover = remover;
-    }
-
     @Override
     protected void getChildObjects() {
-        realRemoveCommand = (BrokerProxyCommand)getWrapper(REMOVE_COMMAND_ID);
+        remove = (BrokerProxyCommand)getWrapper(REMOVE_COMMAND_ID);
         running = (BrokerProxyValue)getWrapper(RUNNING_VALUE_ID);
         start = (BrokerProxyCommand)getWrapper(START_COMMAND_ID);
         stop = (BrokerProxyCommand)getWrapper(STOP_COMMAND_ID);
         error = (BrokerProxyValue)getWrapper(ERROR_VALUE_ID);
-        remove = getResources().getLifecycleHandler().createRemovePrimaryObjectCommand(realRemoveCommand, getThis(), remover);
     }
 
     @Override
-    public BrokerRealCommand getRemoveCommand() {
+    public BrokerProxyCommand getRemoveCommand() {
         return remove;
     }
 
@@ -113,7 +114,7 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
 
                 @Override
                 public void valueChanged(BrokerProxyValue value) {
-                    for(PrimaryListener<? super PO> listener : getObjectListeners())
+                    for(PrimaryListener<? super PRIMARY_OBJECT> listener : getObjectListeners())
                         listener.running(getThis(), isRunning());
                 }
             }));
@@ -128,15 +129,11 @@ public class BrokerProxyPrimaryObject<WBL extends HousemateObjectWrappable<House
 
                 @Override
                 public void valueChanged(BrokerProxyValue value) {
-                    for (PrimaryListener<? super PO> listener : getObjectListeners())
+                    for (PrimaryListener<? super PRIMARY_OBJECT> listener : getObjectListeners())
                         listener.error(getThis(), getError());
                 }
             }));
         }
         return result;
-    }
-
-    public static interface Remover<PO extends BrokerProxyPrimaryObject<?, ?, ?>> {
-        public void remove(PO primaryObject);
     }
 }

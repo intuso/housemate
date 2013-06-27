@@ -14,7 +14,7 @@ public class GWTProxyCommand extends ProxyCommand<
         GWTProxyParameter, GWTProxyList<ParameterWrappable, GWTProxyParameter>, GWTProxyCommand> {
     public GWTProxyCommand(GWTResources<GWTProxyFactory.List<ParameterWrappable, GWTProxyParameter>> resources,
                            GWTResources<GWTProxyFactory.Parameter> childResources,
-                           CommandWrappable wrappable) {
-        super(resources, childResources, wrappable);
+                           CommandWrappable data) {
+        super(resources, childResources, data);
     }
 }

@@ -46,10 +46,10 @@ public abstract class HousemateObject<
 
     /**
      * @param resources the resources
-     * @param wrappable the data object
+     * @param data the data object
      */
-    protected HousemateObject(RESOURCES resources, DATA wrappable) {
-        super(wrappable);
+    protected HousemateObject(RESOURCES resources, DATA data) {
+        super(data);
         this.resources = resources;
     }
 
@@ -58,7 +58,7 @@ public abstract class HousemateObject<
      * @return this object's description
      */
     public final String getDescription() {
-        return getWrappable().getDescription();
+        return getData().getDescription();
     }
 
     /**
@@ -66,7 +66,7 @@ public abstract class HousemateObject<
      * @return this object's name
      */
     public final String getName() {
-        return getWrappable().getName();
+        return getData().getName();
     }
 
     /**

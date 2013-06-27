@@ -42,10 +42,10 @@ public abstract class ProxyAutomation<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyAutomation(RESOURCES resources, CHILD_RESOURCES childResources, AutomationWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyAutomation(RESOURCES resources, CHILD_RESOURCES childResources, AutomationWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

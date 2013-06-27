@@ -72,9 +72,11 @@ public class MainPlugin extends AnnotatedPluginDescriptor {
         CONSTANT_TYPE = new ConstantType(generalResources.getClientResources(), generalResources.getClient().getRoot().getTypes());
         result.add(CONSTANT_TYPE);
         result.add(new RealObjectType<BaseObject<?>>(resources, generalResources.getBridgeResources().getRoot()));
-        result.add(new ValueSourceType(resources, generalResources.getBridgeResources().getRoot(), generalResources.getClient().getRoot().getTypes()));
-        result.add(new ComparisonOperatorType(resources, generalResources));
-        result.add(new ComparisonType(resources, generalResources));
+        ComparisonOperatorType operatorType = new ComparisonOperatorType(resources, generalResources);
+        ValueSourceType sourceType = new ValueSourceType(resources, generalResources.getBridgeResources().getRoot(), generalResources.getClient().getRoot().getTypes());
+        result.add(sourceType);
+        result.add(operatorType);
+        result.add(new ComparisonType(resources, generalResources, operatorType, sourceType));
         return result;
     }
 

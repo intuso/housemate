@@ -6,8 +6,6 @@ import com.intuso.housemate.api.object.option.OptionListener;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
-/**
- */
 public class BrokerProxyOption
         extends BrokerProxyObject<OptionWrappable, ListWrappable<SubTypeWrappable>,
             BrokerProxyList<SubTypeWrappable, BrokerProxySubType>,
@@ -17,9 +15,13 @@ public class BrokerProxyOption
 
     private BrokerProxyList<SubTypeWrappable, BrokerProxySubType> subTypes;
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param data {@inheritDoc}
+     */
     public BrokerProxyOption(BrokerProxyResources<BrokerProxyFactory.List<SubTypeWrappable, BrokerProxySubType>> resources,
-                             OptionWrappable wrappable) {
-        super(resources, wrappable);
+                             OptionWrappable data) {
+        super(resources, data);
     }
 
     @Override

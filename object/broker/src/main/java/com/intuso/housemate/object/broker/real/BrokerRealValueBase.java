@@ -9,20 +9,31 @@ import com.intuso.housemate.api.object.value.ValueWrappableBase;
 import com.intuso.housemate.object.real.RealType;
 
 /**
+ * @param <DATA> the type of the data
+ * @param <CHILD_DATA> the type of the child data
+ * @param <CHILD> the type of the child
+ * @param <O> the type of the value
+ * @param <VALUE> the type of the value object
  */
-public abstract class BrokerRealValueBase<WBL extends ValueWrappableBase<SWBL>,
-            SWBL extends HousemateObjectWrappable<?>,
-            SWR extends HousemateObject<?, ? extends SWBL, ?, ?, ?>,
+public abstract class BrokerRealValueBase<
+            DATA extends ValueWrappableBase<CHILD_DATA>,
+            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD extends HousemateObject<?, ? extends CHILD_DATA, ?, ?, ?>,
             O,
-            V extends BrokerRealValueBase<WBL, SWBL, SWR, O, V>>
-        extends BrokerRealObject<WBL, SWBL, SWR, ValueListener<? super V>>
-        implements Value<RealType<?, ?, O>, V> {
+            VALUE extends BrokerRealValueBase<DATA, CHILD_DATA, CHILD, O, VALUE>>
+        extends BrokerRealObject<DATA, CHILD_DATA, CHILD, ValueListener<? super VALUE>>
+        implements Value<RealType<?, ?, O>, VALUE> {
 
     private RealType<?, ?, O> type;
     private O typedValue;
 
-    public BrokerRealValueBase(BrokerRealResources resources, WBL wrappable, RealType<?, ?, O> type) {
-        super(resources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param data {@inheritDoc}
+     * @param type the type of the value
+     */
+    public BrokerRealValueBase(BrokerRealResources resources, DATA data, RealType<?, ?, O> type) {
+        super(resources, data);
         this.type = type;
     }
 
@@ -31,24 +42,32 @@ public abstract class BrokerRealValueBase<WBL extends ValueWrappableBase<SWBL>,
         return type;
     }
 
+    /**
+     * Get the value instance as its real type
+     * @return the value instance as its real type
+     */
     public O getTypedValue() {
         return typedValue;
     }
 
     @Override
     public TypeInstance getTypeInstance() {
-        return getWrappable().getValue();
+        return getData().getValue();
     }
 
+    /**
+     * Sets the value as its real type
+     * @param typedValue the value as its real type
+     */
     public final void setTypedValue(O typedValue) {
         if((this.typedValue == null && typedValue == null)
                 || (this.typedValue != null && typedValue != null && this.typedValue.equals(typedValue)))
             return;
-        for(ValueListener<? super V> listener : getObjectListeners())
-            listener.valueChanging((V)this);
+        for(ValueListener<? super VALUE> listener : getObjectListeners())
+            listener.valueChanging((VALUE)this);
         this.typedValue = typedValue;
-        this.getWrappable().setValue(getType().serialise(typedValue));
-        for(ValueListener<? super V> listener : getObjectListeners())
-            listener.valueChanged((V)this);
+        this.getData().setValue(getType().serialise(typedValue));
+        for(ValueListener<? super VALUE> listener : getObjectListeners())
+            listener.valueChanged((VALUE)this);
     }
 }

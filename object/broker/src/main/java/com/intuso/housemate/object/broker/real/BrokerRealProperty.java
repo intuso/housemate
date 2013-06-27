@@ -12,6 +12,7 @@ import com.intuso.housemate.object.real.RealType;
 import java.util.Arrays;
 
 /**
+ * @param <O> the type of the property
  */
 public class BrokerRealProperty<O>
         extends BrokerRealValueBase<PropertyWrappable, CommandWrappable, BrokerRealCommand, O, BrokerRealProperty<O>>
@@ -19,6 +20,14 @@ public class BrokerRealProperty<O>
 
     private BrokerRealCommand setCommand;
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the object's id
+     * @param name the object's name
+     * @param description the object's description
+     * @param type the type of the property
+     * @param value the initial value of the property
+     */
     public BrokerRealProperty(BrokerRealResources resources, String id, String name, String description, RealType<?, ?, O> type, O value) {
         super(resources, new PropertyWrappable(id, name, description, type.getId(), type.serialise(value)), type);
         setCommand = new BrokerRealCommand(resources, SET_COMMAND_ID, SET_COMMAND_ID, "The command to change the property's value",

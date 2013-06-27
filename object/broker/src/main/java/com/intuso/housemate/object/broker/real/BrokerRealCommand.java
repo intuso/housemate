@@ -10,8 +10,6 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 
 import java.util.List;
 
-/**
- */
 public abstract class BrokerRealCommand
         extends BrokerRealObject<CommandWrappable, ListWrappable<ParameterWrappable>,
             BrokerRealList<ParameterWrappable, BrokerRealParameter<?>>, CommandListener<? super BrokerRealCommand>>
@@ -21,6 +19,13 @@ public abstract class BrokerRealCommand
 
     private BrokerRealList<ParameterWrappable, BrokerRealParameter<?>> realParameters;
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the object's id
+     * @param name the object's name
+     * @param description the object's description
+     * @param parameters the command's parameters
+     */
     protected BrokerRealCommand(BrokerRealResources resources, String id, String name, String description, List<BrokerRealParameter<?>> parameters) {
         super(resources, new CommandWrappable(id, name, description));
         realParameters = new BrokerRealList<ParameterWrappable, BrokerRealParameter<?>>(resources, PARAMETERS_ID, PARAMETERS_ID, PARAMETERS_DESCRIPTION, parameters);
@@ -45,5 +50,10 @@ public abstract class BrokerRealCommand
         }
     }
 
+    /**
+     * Perform the command
+     * @param values the values of the parameters
+     * @throws HousemateException
+     */
     public abstract void perform(TypeInstances values) throws HousemateException;
 }

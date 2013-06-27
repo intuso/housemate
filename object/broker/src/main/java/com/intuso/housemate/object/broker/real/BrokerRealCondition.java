@@ -10,8 +10,6 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 
 import java.util.ArrayList;
 
-/**
- */
 public abstract class BrokerRealCondition
         extends BrokerRealObject<ConditionWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>,
             ConditionListener<? super BrokerRealCondition>>
@@ -25,10 +23,23 @@ public abstract class BrokerRealCondition
     private BrokerRealCommand addConditionCommand;
     private BrokerRealList<ConditionWrappable, BrokerRealCondition> conditions;
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the object's id
+     * @param name the object's name
+     * @param description the object's description
+     */
     public BrokerRealCondition(BrokerRealResources resources, String id, String name, String description) {
         this(resources, id, name, description, new ArrayList<BrokerRealProperty<?>>(0));
     }
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the object's id
+     * @param name the object's name
+     * @param description the object's description
+     * @param properties the condition's properties
+     */
     public BrokerRealCondition(final BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
         super(resources, new ConditionWrappable(id, name, description));
         errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), null);
@@ -79,10 +90,20 @@ public abstract class BrokerRealCondition
         return satisfiedValue.getTypedValue() != null ? satisfiedValue.getTypedValue() : false;
     }
 
+    /**
+     * Sets the error message for the object
+     * @param error
+     */
     public final void setError(String error) {
         getErrorValue().setTypedValue(error);
     }
 
+    /**
+     * Updates the satisfied value of the condition. If different, it will propagate to the parent. If It affects the
+     * parent's satisfied value then it will propagate again until either it does not affect a parent condition or it
+     * gets to the automation, in which case the tasks for the new value will be executed
+     * @param satisfied
+     */
     protected void conditionSatisfied(boolean satisfied) {
         if(satisfied != isSatisfied()) {
             getSatisfiedValue().setTypedValue(satisfied);
@@ -91,6 +112,13 @@ public abstract class BrokerRealCondition
         }
     }
 
+    /**
+     * Starts the condition
+     */
     public abstract void start();
+
+    /**
+     * Stops the condition
+     */
     public abstract void stop();
 }

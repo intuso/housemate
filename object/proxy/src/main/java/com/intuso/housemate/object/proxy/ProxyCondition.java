@@ -39,10 +39,10 @@ public abstract class ProxyCondition<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyCondition(RESOURCES resources, CHILD_RESOURCES childResources, ConditionWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyCondition(RESOURCES resources, CHILD_RESOURCES childResources, ConditionWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

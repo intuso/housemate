@@ -16,7 +16,7 @@ public class GWTProxyOption extends ProxyOption<
             GWTProxyOption> {
     public GWTProxyOption(GWTResources<GWTProxyFactory.List<SubTypeWrappable, GWTProxySubType>> resources,
                           GWTResources<? extends HousemateObjectFactory<GWTResources<?>, SubTypeWrappable, GWTProxySubType>> childResources,
-                          OptionWrappable wrappable) {
-        super(resources, childResources, wrappable);
+                          OptionWrappable data) {
+        super(resources, childResources, data);
     }
 }

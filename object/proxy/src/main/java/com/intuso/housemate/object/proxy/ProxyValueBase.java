@@ -35,10 +35,10 @@ public abstract class ProxyValueBase<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyValueBase(RESOURCES resources, CHILD_RESOURCES childResources, DATA wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyValueBase(RESOURCES resources, CHILD_RESOURCES childResources, DATA data) {
+        super(resources, childResources, data);
     }
 
     @Override
@@ -49,7 +49,7 @@ public abstract class ProxyValueBase<
             public void messageReceived(Message<TypeInstance> stringMessageValueMessage) {
                 for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanging(getThis());
-                getWrappable().setValue(stringMessageValueMessage.getPayload());
+                getData().setValue(stringMessageValueMessage.getPayload());
                 for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanged(getThis());
             }
@@ -59,12 +59,12 @@ public abstract class ProxyValueBase<
 
     @Override
     public TYPE getType() {
-        return (TYPE) getProxyRoot().getTypes().get(getWrappable().getType());
+        return (TYPE) getProxyRoot().getTypes().get(getData().getType());
     }
 
     @Override
     public final TypeInstance getTypeInstance() {
-        return getWrappable().getValue();
+        return getData().getValue();
     }
 
 }

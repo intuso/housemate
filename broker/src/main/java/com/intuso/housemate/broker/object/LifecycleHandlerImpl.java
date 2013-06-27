@@ -4,12 +4,10 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.automation.AutomationWrappable;
-import com.intuso.housemate.api.object.command.Command;
-import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.User;
@@ -18,14 +16,13 @@ import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.LifecycleHandler;
-import com.intuso.housemate.object.broker.proxy.BrokerProxyPrimaryObject;
-import com.intuso.housemate.object.broker.real.BrokerRealParameter;
 import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
 import com.intuso.housemate.object.broker.real.BrokerRealCommand;
-import com.intuso.housemate.object.broker.real.BrokerRealList;
-import com.intuso.housemate.object.broker.real.BrokerRealUser;
 import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealList;
+import com.intuso.housemate.object.broker.real.BrokerRealParameter;
 import com.intuso.housemate.object.broker.real.BrokerRealTask;
+import com.intuso.housemate.object.broker.real.BrokerRealUser;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
@@ -33,7 +30,6 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -131,41 +127,6 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
         } catch(HousemateException e) {
             resources.getLog().e("Failed to remove stored details for automation " + Arrays.toString(path));
         }
-    }
-
-    @Override
-    public <PO extends BrokerProxyPrimaryObject<?, ?, ?>> BrokerRealCommand createRemovePrimaryObjectCommand(
-                final Command<?, ?> originalCommand,
-                final PO source,
-                final BrokerProxyPrimaryObject.Remover<PO> remover) {
-        return new BrokerRealCommand(resources.getRealResources(), originalCommand.getId(), originalCommand.getName(), originalCommand.getDescription(),
-                new ArrayList<BrokerRealParameter<?>>()) {
-            @Override
-            public void perform(TypeInstances values) throws HousemateException {
-                originalCommand.perform(new TypeInstances(), new CommandListener<Command<?, ?>>() {
-                    @Override
-                    public void commandStarted(Command<?, ?> command) {
-                        // do nothing
-                    }
-
-                    @Override
-                    public void commandFinished(Command<?, ?> command) {
-                        remover.remove(source);
-                    }
-
-                    @Override
-                    public void commandFailed(Command<?, ?> command, String error) {
-                        getLog().d("Failed to remove device on client: " + error);
-                        remover.remove(source);
-                    }
-                });
-                try {
-                    resources.getStorage().removeValues(source.getPath());
-                } catch(HousemateException e) {
-                    getResources().getLog().e("Failed to remove stored details for primary object " + Arrays.toString(source.getPath()));
-                }
-            }
-        };
     }
 
     @Override

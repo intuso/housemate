@@ -40,10 +40,10 @@ public abstract class ProxyCommand<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    protected ProxyCommand(RESOURCES resources, CHILD_RESOURCES childResources, CommandWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    protected ProxyCommand(RESOURCES resources, CHILD_RESOURCES childResources, CommandWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

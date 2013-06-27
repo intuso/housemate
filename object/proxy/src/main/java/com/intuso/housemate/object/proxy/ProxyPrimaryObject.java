@@ -39,10 +39,10 @@ public abstract class ProxyPrimaryObject<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    protected ProxyPrimaryObject(RESOURCES resources, CHILD_RESOURCES childResources, DATA wrappable) {
-        super(resources, childResources, wrappable);
+    protected ProxyPrimaryObject(RESOURCES resources, CHILD_RESOURCES childResources, DATA data) {
+        super(resources, childResources, data);
     }
 
     @Override

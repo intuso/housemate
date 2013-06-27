@@ -1,9 +1,13 @@
 package com.intuso.housemate.plugin.api;
 
 /**
+ * Representation of a way of comparing value
  */
 public interface ComparisonOperator {
 
+    /**
+     * Enumerator of simple operations
+     */
     public enum Simple implements ComparisonOperator {
 
         Equals("equal", "Equal", "True if two values are equal"),
@@ -38,7 +42,21 @@ public interface ComparisonOperator {
         }
     }
 
+    /**
+     * Gets the id of the operator
+     * @return the id of the operator
+     */
     public String getId();
+
+    /**
+     * Gets the name of the operator
+     * @return the name of the operator
+     */
     public String getName();
+
+    /**
+     * Gets the description of the operator
+     * @return the description of the operator
+     */
     public String getDescription();
 }

@@ -18,7 +18,7 @@ public class ParameterBridge
 
     public ParameterBridge(BrokerBridgeResources resources, Parameter<?> parameter) {
         super(resources, new ParameterWrappable(parameter.getId(), parameter.getName(), parameter.getDescription(), parameter.getType().getId()));
-        type = resources.getGeneralResources().getBridgeResources().getRoot().getTypes().get(getWrappable().getType());
+        type = resources.getGeneralResources().getBridgeResources().getRoot().getTypes().get(getData().getType());
     }
 
     @Override

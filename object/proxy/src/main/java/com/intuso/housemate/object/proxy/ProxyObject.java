@@ -41,10 +41,10 @@ public abstract class ProxyObject<
     /**
      * @param resources the resources
      * @param childResources the child resources
-     * @param wrappable the data object
+     * @param data the data object
      */
-    protected ProxyObject(RESOURCES resources, CHILD_RESOURCES childResources, DATA wrappable) {
-        super(resources, wrappable);
+    protected ProxyObject(RESOURCES resources, CHILD_RESOURCES childResources, DATA data) {
+        super(resources, data);
         this.childResources = childResources;
     }
 
@@ -117,8 +117,8 @@ public abstract class ProxyObject<
         try {
             unwrapChildren(new WrapperFactory<CHILD_DATA, CHILD, HousemateException>() {
                 @Override
-                public CHILD create(CHILD_DATA wrappable) throws HousemateException {
-                    return getResources().getObjectFactory().create(getSubResources(), wrappable);
+                public CHILD create(CHILD_DATA data) throws HousemateException {
+                    return getResources().getObjectFactory().create(getSubResources(), data);
                 }
             });
         } catch(HousemateException e) {

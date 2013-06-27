@@ -29,10 +29,10 @@ public abstract class ProxyProperty<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyProperty(RESOURCES resources, CHILD_RESOURCES childResources, PropertyWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyProperty(RESOURCES resources, CHILD_RESOURCES childResources, PropertyWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

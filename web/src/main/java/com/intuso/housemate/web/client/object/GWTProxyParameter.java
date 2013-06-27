@@ -9,7 +9,7 @@ import com.intuso.housemate.web.client.GWTResources;
  */
 public class GWTProxyParameter extends ProxyParameter<GWTResources<NoChildrenProxyObjectFactory>, GWTProxyType,
         GWTProxyParameter> {
-    public GWTProxyParameter(GWTResources<NoChildrenProxyObjectFactory> resources, ParameterWrappable wrappable) {
-        super(resources, wrappable);
+    public GWTProxyParameter(GWTResources<NoChildrenProxyObjectFactory> resources, ParameterWrappable data) {
+        super(resources, data);
     }
 }

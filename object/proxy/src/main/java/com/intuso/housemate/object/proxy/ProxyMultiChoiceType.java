@@ -29,10 +29,10 @@ public abstract class ProxyMultiChoiceType<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyMultiChoiceType(RESOURCES resources, CHILD_RESOURCES childResources, MultiChoiceTypeWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyMultiChoiceType(RESOURCES resources, CHILD_RESOURCES childResources, MultiChoiceTypeWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

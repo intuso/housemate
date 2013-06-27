@@ -20,10 +20,10 @@ public abstract class RealObject<
 
     /**
      * @param resources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    protected RealObject(RealResources resources, DATA wrappable) {
-        super(resources, wrappable);
+    protected RealObject(RealResources resources, DATA data) {
+        super(resources, data);
     }
 
     /**

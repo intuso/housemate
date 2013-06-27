@@ -19,14 +19,14 @@ public abstract class ProxySubType<
 
     /**
      * @param resources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxySubType(RESOURCES resources, SubTypeWrappable wrappable) {
-        super(resources, null, wrappable);
+    public ProxySubType(RESOURCES resources, SubTypeWrappable data) {
+        super(resources, null, data);
     }
 
     @Override
     public final TYPE getType() {
-        return (TYPE) getProxyRoot().getTypes().get(getWrappable().getType());
+        return (TYPE) getProxyRoot().getTypes().get(getData().getType());
     }
 }

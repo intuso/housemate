@@ -32,8 +32,8 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
     private final List<RemoteClient> loadedByClients = Lists.newArrayList();
     private final Map<RemoteClient, ListenerRegistration> clientListeners= Maps.newHashMap();
 
-    protected BridgeObject(BrokerBridgeResources resources, WBL wrappable) {
-        super(resources, wrappable);
+    protected BridgeObject(BrokerBridgeResources resources, WBL data) {
+        super(resources, data);
     }
 
     protected void sendMessage(String type, Message.Payload payload, RemoteClient client) throws HousemateException {
@@ -78,7 +78,7 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
     private HousemateObjectWrappable getWrappableTree(LoadRequest loadRequest, RemoteClient client) {
         if(!matchesFilter(loadRequest))
             return null;
-        HousemateObjectWrappable result = getWrappable().clone();
+        HousemateObjectWrappable result = getData().clone();
         for(BridgeObject<?, ?, ?, ?, ?> subWrapper : getWrappers()) {
             HousemateObjectWrappable child = subWrapper.getWrappableTree(loadRequest, client);
             if(child != null)

@@ -20,8 +20,8 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<H
     private CommandBridge stopCommand;
     private ValueBridge errorValue;
 
-    protected PrimaryObjectBridge(BrokerBridgeResources resources, WBL wrappable, PrimaryObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
-        super(resources,  wrappable);
+    protected PrimaryObjectBridge(BrokerBridgeResources resources, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+        super(resources,  data);
         removeCommand = new CommandBridge(resources, proxyObject.getRemoveCommand());
         connectedValue = new ValueBridge(resources, proxyObject.getConnectedValue());
         runningValue = new ValueBridge(resources, proxyObject.getRunningValue());

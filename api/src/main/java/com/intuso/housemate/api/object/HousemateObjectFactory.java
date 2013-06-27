@@ -14,9 +14,9 @@ public interface HousemateObjectFactory<
     /**
      * Create a new instance of an object
      * @param resources the resources
-     * @param wrappable the object's data
+     * @param data the object's data
      * @return a new object
      * @throws HousemateException
      */
-    public O create(R resources, WBL wrappable) throws HousemateException;
+    public O create(R resources, WBL data) throws HousemateException;
 }

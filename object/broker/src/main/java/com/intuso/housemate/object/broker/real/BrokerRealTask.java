@@ -11,8 +11,6 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 
 import java.util.ArrayList;
 
-/**
- */
 public abstract class BrokerRealTask
         extends BrokerRealObject<TaskWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>,
         TaskListener<? super BrokerRealTask>>
@@ -23,10 +21,23 @@ public abstract class BrokerRealTask
     private BrokerRealValue<Boolean> executingValue;
     private BrokerRealList<PropertyWrappable, BrokerRealProperty<?>> propertyList;
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the object's id
+     * @param name the object's name
+     * @param description the object's description
+     */
     public BrokerRealTask(BrokerRealResources resources, String id, String name, String description) {
         this(resources, id, name, description, new ArrayList<BrokerRealProperty<?>>(0));
     }
 
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the object's id
+     * @param name the object's name
+     * @param description the object's description
+     * @param properties the task's properties
+     */
     public BrokerRealTask(BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
         super(resources, new TaskWrappable(id, name, description));
         errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), null);
@@ -62,11 +73,19 @@ public abstract class BrokerRealTask
         return executingValue.getTypedValue() != null ? executingValue.getTypedValue() : false;
     }
 
+    /**
+     * Sets the error message for this task
+     * @param error the error message for this task
+     */
     public final void setError(String error) {
         getErrorValue().setTypedValue(error);
     }
 
-    protected void taskExecuting(boolean executing) {
+    /**
+     * Sets the executing value for this task
+     * @param executing the executing value for this task
+     */
+    private void taskExecuting(boolean executing) {
         if(executing != isExecuting()) {
             getExecutingValue().setTypedValue(executing);
             for(TaskListener listener : getObjectListeners())
@@ -74,10 +93,20 @@ public abstract class BrokerRealTask
         }
     }
 
+    /**
+     * Executes this task
+     * @throws HousemateException if execution fails
+     */
     public void execute() throws HousemateException {
         getLog().d("Performing task " + getId());
+        taskExecuting(true);
         _execute();
+        taskExecuting(false);
     }
 
-    public abstract void _execute() throws HousemateException;
+    /**
+     * Executes this task
+     * @throws HousemateException if execution fails
+     */
+    protected abstract void _execute() throws HousemateException;
 }

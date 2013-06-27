@@ -3,8 +3,6 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.device.OnOffDevice;
-import com.intuso.housemate.object.real.impl.type.IntegerType;
-import com.intuso.housemate.object.real.impl.type.StringType;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 
@@ -14,10 +12,10 @@ public class ArduinoIndicator extends OnOffDevice {
 
     private final SerialPort serialPort;
 
-    @Property(id = "colour", name = "Colour", description = "Colour of the indicator", type = StringType.class)
+    @Property(id = "colour", name = "Colour", description = "Colour of the indicator", typeId = "string")
     public String colour;
 
-    @Property(id = "intensity", name = "Intensity", description = "Intensity of the indicator", type = IntegerType.class)
+    @Property(id = "intensity", name = "Intensity", description = "Intensity of the indicator", typeId = "integer")
     public int intensity;
     
     /**

@@ -30,11 +30,11 @@ public abstract class RealValueBase<
 
     /**
      * @param resources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      * @param type the type of the value's value
      */
-    public RealValueBase(RealResources resources, DATA wrappable, RealType<?, ?, O> type) {
-        super(resources, wrappable);
+    public RealValueBase(RealResources resources, DATA data, RealType<?, ?, O> type) {
+        super(resources, data);
         this.type = type;
     }
 
@@ -45,7 +45,7 @@ public abstract class RealValueBase<
 
     @Override
     public TypeInstance getTypeInstance() {
-        return getWrappable().getValue();
+        return getData().getValue();
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class RealValueBase<
         for(ValueListener<? super VALUE> listener : getObjectListeners())
             listener.valueChanging((VALUE)this);
         this.typedValue = typedValue;
-        this.getWrappable().setValue(getType().serialise(typedValue));
+        this.getData().setValue(getType().serialise(typedValue));
         for(ValueListener<? super VALUE> listener : getObjectListeners())
             listener.valueChanged((VALUE)this);
     }

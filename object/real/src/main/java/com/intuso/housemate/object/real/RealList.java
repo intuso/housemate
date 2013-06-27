@@ -60,7 +60,7 @@ public final class RealList<
     @Override
     public void childWrapperAdded(String childName, CHILD wrapper) {
         wrapper.init(this);
-        sendMessage(ADD_TYPE, wrapper.getWrappable());
+        sendMessage(ADD_TYPE, wrapper.getData());
         for(ListListener<? super CHILD> listener : getObjectListeners())
             listener.elementAdded(wrapper);
     }
@@ -68,7 +68,7 @@ public final class RealList<
     @Override
     public void childWrapperRemoved(String name, CHILD wrapper) {
         wrapper.uninit();
-        sendMessage(REMOVE_TYPE, wrapper.getWrappable());
+        sendMessage(REMOVE_TYPE, wrapper.getData());
         for(ListListener<? super CHILD> listener : getObjectListeners())
             listener.elementRemoved(wrapper);
     }
@@ -124,6 +124,6 @@ public final class RealList<
      */
     public void resendElements() {
         for(CHILD subWrapper : this)
-            sendMessage(ADD_TYPE, subWrapper.getWrappable());
+            sendMessage(ADD_TYPE, subWrapper.getData());
     }
 }

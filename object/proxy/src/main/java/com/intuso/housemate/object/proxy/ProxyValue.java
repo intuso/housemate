@@ -16,9 +16,9 @@ public class ProxyValue<
 
     /**
      * @param resources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyValue(RESOURCES resources, ValueWrappable wrappable) {
-        super(resources, null, wrappable);
+    public ProxyValue(RESOURCES resources, ValueWrappable data) {
+        super(resources, null, data);
     }
 }

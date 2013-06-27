@@ -10,12 +10,17 @@ import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
 /**
+ * @param <DATA> the type of the data
+ * @param <PRIMARY_OBJECT> the type of the primary object
+ * @param <LISTENER> the type of the listener
  */
-public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
-            PO extends BrokerRealPrimaryObject<WBL, PO, L>, L extends PrimaryListener<? super PO>>
-        extends BrokerRealObject<WBL, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>, L>
+public abstract class BrokerRealPrimaryObject<
+            DATA extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
+            PRIMARY_OBJECT extends BrokerRealPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
+            LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
+        extends BrokerRealObject<DATA, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>, LISTENER>
         implements PrimaryObject<BrokerRealCommand, BrokerRealCommand,
-            BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, PO, L> {
+            BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, PRIMARY_OBJECT, LISTENER> {
 
     private final BrokerRealCommand remove;
     private final BrokerRealValue<Boolean> connected;
@@ -24,8 +29,13 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
     private final BrokerRealCommand stop;
     private final BrokerRealValue<String> error;
 
-    public BrokerRealPrimaryObject(BrokerRealResources resources, WBL wrappable, final String objectType) {
-        super(resources, wrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param data {@inheritDoc}
+     * @param objectType the name of the object type used for descriptions and logging
+     */
+    public BrokerRealPrimaryObject(BrokerRealResources resources, DATA data, final String objectType) {
+        super(resources, data);
         this.remove = new BrokerRealCommand(resources, REMOVE_COMMAND_ID, REMOVE_COMMAND_ID, "Remove the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
@@ -107,7 +117,19 @@ public abstract class BrokerRealPrimaryObject<WBL extends HousemateObjectWrappab
         return running.getTypedValue() != null ? running.getTypedValue() : false;
     }
 
+    /**
+     * Removes the primary object
+     */
     protected abstract void remove();
+
+    /**
+     * Starts the primary object
+     * @throws HousemateException if start fails
+     */
     protected abstract void start() throws HousemateException;
+
+    /**
+     * Stops the primary object
+     */
     protected abstract void stop();
 }

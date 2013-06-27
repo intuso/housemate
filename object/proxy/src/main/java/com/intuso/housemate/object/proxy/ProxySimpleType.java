@@ -14,10 +14,10 @@ public abstract class ProxySimpleType<
 
     /**
      * @param resources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxySimpleType(RESOURCES resources, SimpleTypeWrappable wrappable) {
-        super(resources, null, wrappable);
+    public ProxySimpleType(RESOURCES resources, SimpleTypeWrappable data) {
+        super(resources, null, data);
     }
 
     /**
@@ -25,6 +25,6 @@ public abstract class ProxySimpleType<
      * @return the simple type enum value of this type
      */
     public SimpleTypeWrappable.Type getType() {
-        return getWrappable().getType();
+        return getData().getType();
     }
 }

@@ -14,8 +14,6 @@ import com.intuso.housemate.api.object.root.RootWrappable;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
-/**
- */
 public class BrokerRealRootObject
         extends BrokerRealObject<RootWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>, RootListener<? super BrokerRealRootObject>>
         implements Root<BrokerRealRootObject, RootListener<? super BrokerRealRootObject>> {
@@ -25,6 +23,9 @@ public class BrokerRealRootObject
     private final BrokerRealCommand addUserCommand;
     private final BrokerRealCommand addAutomationCommand;
 
+    /**
+     * @param resources {@inheritDoc}
+     */
     public BrokerRealRootObject(BrokerRealResources resources) {
         super(resources, new RootWrappable());
         users = new BrokerRealList<UserWrappable, BrokerRealUser>(resources, USERS_ID, USERS_ID, "The defined users");
@@ -75,18 +76,34 @@ public class BrokerRealRootObject
         throw new HousemateRuntimeException("Whatever");
     }
 
+    /**
+     * Gets the users list
+     * @return the users list
+     */
     public BrokerRealList<UserWrappable, BrokerRealUser> getUsers() {
         return users;
     }
 
+    /**
+     * Gets the automations list
+     * @return the automations list
+     */
     public BrokerRealList<AutomationWrappable, BrokerRealAutomation> getAutomations() {
         return automations;
     }
 
+    /**
+     * Gets the add user command
+     * @return the add user command
+     */
     public BrokerRealCommand getAddUserCommand() {
         return addUserCommand;
     }
 
+    /**
+     * Gets the add automation command
+     * @return the add automation command
+     */
     public BrokerRealCommand getAddAutomationCommand() {
         return addAutomationCommand;
     }

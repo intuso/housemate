@@ -57,35 +57,35 @@ public class SimpleProxyFactory {
 
     public static class All implements HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
         @Override
-        public ProxyObject<?, ?, ?, ?, ?, ?, ?> create(ProxyResources<?> resources, HousemateObjectWrappable<?> wrappable) throws HousemateException {
-            if(wrappable instanceof ParameterWrappable)
-                return parameterFactory.create(resources, (ParameterWrappable) wrappable);
-            else if(wrappable instanceof CommandWrappable)
-                return commandFactory.create(resources, (CommandWrappable) wrappable);
-            else if(wrappable instanceof ConditionWrappable)
-                return conditionFactory.create(resources, (ConditionWrappable) wrappable);
-            else if(wrappable instanceof UserWrappable)
-                return userFactory.create(resources, (UserWrappable) wrappable);
-            else if(wrappable instanceof TaskWrappable)
-                return taskFactory.create(resources, (TaskWrappable) wrappable);
-            else if(wrappable instanceof DeviceWrappable)
-                return deviceFactory.create(resources, (DeviceWrappable) wrappable);
-            else if(wrappable instanceof ListWrappable)
-                return listFactory.create(resources, (ListWrappable<HousemateObjectWrappable<?>>) wrappable);
-            else if(wrappable instanceof OptionWrappable)
-                return optionFactory.create(resources, (OptionWrappable) wrappable);
-            else if(wrappable instanceof PropertyWrappable)
-                return propertyFactory.create(resources, (PropertyWrappable) wrappable);
-            else if(wrappable instanceof AutomationWrappable)
-                return automationFactory.create(resources, (AutomationWrappable) wrappable);
-            else if(wrappable instanceof SubTypeWrappable)
-                return subTypeFactory.create(resources, (SubTypeWrappable) wrappable);
-            else if(wrappable instanceof TypeWrappable)
-                return typeFactory.create(resources, (TypeWrappable) wrappable);
-            else if(wrappable instanceof ValueWrappable)
-                return valueFactory.create(resources, (ValueWrappable) wrappable);
+        public ProxyObject<?, ?, ?, ?, ?, ?, ?> create(ProxyResources<?> resources, HousemateObjectWrappable<?> data) throws HousemateException {
+            if(data instanceof ParameterWrappable)
+                return parameterFactory.create(resources, (ParameterWrappable) data);
+            else if(data instanceof CommandWrappable)
+                return commandFactory.create(resources, (CommandWrappable) data);
+            else if(data instanceof ConditionWrappable)
+                return conditionFactory.create(resources, (ConditionWrappable) data);
+            else if(data instanceof UserWrappable)
+                return userFactory.create(resources, (UserWrappable) data);
+            else if(data instanceof TaskWrappable)
+                return taskFactory.create(resources, (TaskWrappable) data);
+            else if(data instanceof DeviceWrappable)
+                return deviceFactory.create(resources, (DeviceWrappable) data);
+            else if(data instanceof ListWrappable)
+                return listFactory.create(resources, (ListWrappable<HousemateObjectWrappable<?>>) data);
+            else if(data instanceof OptionWrappable)
+                return optionFactory.create(resources, (OptionWrappable) data);
+            else if(data instanceof PropertyWrappable)
+                return propertyFactory.create(resources, (PropertyWrappable) data);
+            else if(data instanceof AutomationWrappable)
+                return automationFactory.create(resources, (AutomationWrappable) data);
+            else if(data instanceof SubTypeWrappable)
+                return subTypeFactory.create(resources, (SubTypeWrappable) data);
+            else if(data instanceof TypeWrappable)
+                return typeFactory.create(resources, (TypeWrappable) data);
+            else if(data instanceof ValueWrappable)
+                return valueFactory.create(resources, (ValueWrappable) data);
             else
-                throw new HousemateException("Don't know how to create an object from " + wrappable.getClass().getName());
+                throw new HousemateException("Don't know how to create an object from " + data.getClass().getName());
         }
     }
 
@@ -93,34 +93,34 @@ public class SimpleProxyFactory {
             ProxyResources<?>,
             SimpleProxyObject.Automation> {
         @Override
-        public SimpleProxyObject.Automation create(ProxyResources<?> resources, AutomationWrappable wrappable) throws HousemateException {
+        public SimpleProxyObject.Automation create(ProxyResources<?> resources, AutomationWrappable data) throws HousemateException {
             ProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new SimpleProxyObject.Automation(r, resources, wrappable);
+            return new SimpleProxyObject.Automation(r, resources, data);
         }
     }
 
     public static class Command implements CommandFactory<ProxyResources<?>, SimpleProxyObject.Command> {
         @Override
-        public SimpleProxyObject.Command create(ProxyResources<?> resources, CommandWrappable wrappable) throws HousemateException {
+        public SimpleProxyObject.Command create(ProxyResources<?> resources, CommandWrappable data) throws HousemateException {
             ProxyResources<List<ParameterWrappable, SimpleProxyObject.Parameter>> r = changeFactoryType(resources, new List<ParameterWrappable, SimpleProxyObject.Parameter>());
             ProxyResources<Parameter> sr = changeFactoryType(resources, parameterFactory);
-            return new SimpleProxyObject.Command(r, sr, wrappable);
+            return new SimpleProxyObject.Command(r, sr, data);
         }
     }
 
     public static class Condition implements ConditionFactory<ProxyResources<?>, SimpleProxyObject.Condition> {
         @Override
-        public SimpleProxyObject.Condition create(ProxyResources<?> resources, ConditionWrappable wrappable) throws HousemateException {
+        public SimpleProxyObject.Condition create(ProxyResources<?> resources, ConditionWrappable data) throws HousemateException {
             ProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new SimpleProxyObject.Condition(r, resources, wrappable);
+            return new SimpleProxyObject.Condition(r, resources, data);
         }
     }
 
     public static class Device implements DeviceFactory<ProxyResources<?>, SimpleProxyObject.Device> {
         @Override
-        public SimpleProxyObject.Device create(ProxyResources<?> resources, DeviceWrappable wrappable) throws HousemateException {
+        public SimpleProxyObject.Device create(ProxyResources<?> resources, DeviceWrappable data) throws HousemateException {
             ProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new SimpleProxyObject.Device(r, resources, wrappable);
+            return new SimpleProxyObject.Device(r, resources, data);
         }
     }
 
@@ -129,9 +129,9 @@ public class SimpleProxyFactory {
             SimpleProxyObject.List<HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> {
 
         @Override
-        public SimpleProxyObject.List<HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> create(ProxyResources<?> resources, ListWrappable<HousemateObjectWrappable<?>> wrappable) throws HousemateException {
+        public SimpleProxyObject.List<HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> create(ProxyResources<?> resources, ListWrappable<HousemateObjectWrappable<?>> data) throws HousemateException {
             ProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new SimpleProxyObject.List<HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>(r, resources, wrappable);
+            return new SimpleProxyObject.List<HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>(r, resources, data);
         }
     }
 
@@ -142,73 +142,73 @@ public class SimpleProxyFactory {
 
         @Override
         public SimpleProxyObject.List<SWBL, SWR> create(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, SWBL, SWR>> resources,
-                                                        ListWrappable<SWBL> wrappable) throws HousemateException {
-            return new SimpleProxyObject.List<SWBL, SWR>(resources, resources, wrappable);
+                                                        ListWrappable<SWBL> data) throws HousemateException {
+            return new SimpleProxyObject.List<SWBL, SWR>(resources, resources, data);
         }
     }
 
     public static class Option implements OptionFactory<ProxyResources<?>, SimpleProxyObject.Option> {
         @Override
-        public SimpleProxyObject.Option create(ProxyResources<?> resources, OptionWrappable wrappable) throws HousemateException {
+        public SimpleProxyObject.Option create(ProxyResources<?> resources, OptionWrappable data) throws HousemateException {
             ProxyResources<List<SubTypeWrappable, SimpleProxyObject.SubType>> r = changeFactoryType(resources,
                     new List<SubTypeWrappable, SimpleProxyObject.SubType>());
             ProxyResources<SubType> sr = changeFactoryType(resources, subTypeFactory);
-            return new SimpleProxyObject.Option(r, sr, wrappable);
+            return new SimpleProxyObject.Option(r, sr, data);
         }
     }
 
     public static class Parameter implements ParameterFactory<ProxyResources<?>, SimpleProxyObject.Parameter> {
         @Override
-        public SimpleProxyObject.Parameter create(ProxyResources<?> resources, ParameterWrappable wrappable) throws HousemateException {
-            return new SimpleProxyObject.Parameter(noFactoryType(resources), wrappable);
+        public SimpleProxyObject.Parameter create(ProxyResources<?> resources, ParameterWrappable data) throws HousemateException {
+            return new SimpleProxyObject.Parameter(noFactoryType(resources), data);
         }
     }
 
     public static class Property implements PropertyFactory<ProxyResources<?>, SimpleProxyObject.Property> {
         @Override
-        public SimpleProxyObject.Property create(ProxyResources<?> resources, PropertyWrappable wrappable) throws HousemateException {
+        public SimpleProxyObject.Property create(ProxyResources<?> resources, PropertyWrappable data) throws HousemateException {
             ProxyResources<Command> r = changeFactoryType(resources, commandFactory);
             ProxyResources<List<ParameterWrappable, SimpleProxyObject.Parameter>> sr = changeFactoryType(resources, new List<ParameterWrappable, SimpleProxyObject.Parameter>());
-            return new SimpleProxyObject.Property(r, sr, wrappable);
+            return new SimpleProxyObject.Property(r, sr, data);
         }
     }
 
     public static class SubType implements SubTypeFactory<ProxyResources<?>, SimpleProxyObject.SubType> {
         @Override
-        public SimpleProxyObject.SubType create(ProxyResources<?> resources, SubTypeWrappable wrappable) throws HousemateException {
-            return new SimpleProxyObject.SubType(noFactoryType(resources), wrappable);
+        public SimpleProxyObject.SubType create(ProxyResources<?> resources, SubTypeWrappable data) throws HousemateException {
+            return new SimpleProxyObject.SubType(noFactoryType(resources), data);
         }
     }
 
     public static class Task implements TaskFactory<ProxyResources<?>, SimpleProxyObject.Task> {
         @Override
-        public SimpleProxyObject.Task create(ProxyResources<?> resources, TaskWrappable wrappable) throws HousemateException {
+        public SimpleProxyObject.Task create(ProxyResources<?> resources, TaskWrappable data) throws HousemateException {
             ProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new SimpleProxyObject.Task(r, resources, wrappable);
+            return new SimpleProxyObject.Task(r, resources, data);
         }
     }
 
     public static class Type implements TypeFactory<ProxyResources<?>, SimpleProxyObject.Type> {
         @Override
         public SimpleProxyObject.Type create(ProxyResources<?> resources,
-                                             TypeWrappable<?> wrappable) throws HousemateException {
+                                             TypeWrappable<?> data) throws HousemateException {
             ProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new SimpleProxyObject.Type(r, resources, wrappable);
+            return new SimpleProxyObject.Type(r, resources, data);
         }
     }
 
     public static class User implements UserFactory<ProxyResources<?>, SimpleProxyObject.User> {
         @Override
-        public SimpleProxyObject.User create(ProxyResources<?> resources, UserWrappable wrappable) throws HousemateException {
+        public SimpleProxyObject.User create(ProxyResources<?> resources, UserWrappable data) throws HousemateException {
             ProxyResources<All> r = changeFactoryType(resources, allFactory);
-            return new SimpleProxyObject.User(r, resources, wrappable);
+            return new SimpleProxyObject.User(r, resources, data);
         }
     }
 
     public static class Value implements ValueFactory<ProxyResources<?>, SimpleProxyObject.Value> {
         @Override
-        public SimpleProxyObject.Value create(ProxyResources<?> resources, ValueWrappable wrappable) throws HousemateException {
-            return new SimpleProxyObject.Value(noFactoryType(resources), wrappable);
+        public SimpleProxyObject.Value create(ProxyResources<?> resources, ValueWrappable data) throws HousemateException {
+            return new SimpleProxyObject.Value(noFactoryType(resources), data);
         }
     }
 

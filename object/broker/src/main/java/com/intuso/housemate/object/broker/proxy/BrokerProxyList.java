@@ -15,14 +15,21 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.Iterator;
 
 /**
+ * @param <CHILD_DATA> the type of the child data
+ * @param <CHILD> the type of the child
  */
-public class BrokerProxyList<SWBL extends HousemateObjectWrappable<?>,
-            SWR extends BrokerProxyObject<? extends SWBL, ?, ?, ?, ?>>
-        extends BrokerProxyObject<ListWrappable<SWBL>, SWBL, SWR, BrokerProxyList<SWBL, SWR>, ListListener<? super SWR>>
-        implements List<SWR> {
+public class BrokerProxyList<
+            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD extends BrokerProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>>
+        extends BrokerProxyObject<ListWrappable<CHILD_DATA>, CHILD_DATA, CHILD, BrokerProxyList<CHILD_DATA, CHILD>, ListListener<? super CHILD>>
+        implements List<CHILD> {
 
-    public BrokerProxyList(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, SWBL, ? extends SWR>> resources, ListWrappable<SWBL> listWrappable) {
-        super(resources, listWrappable);
+    /**
+     * @param resources {@inheritDoc}
+     * @param data {@inheritDoc}
+     */
+    public BrokerProxyList(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, CHILD_DATA, ? extends CHILD>> resources, ListWrappable<CHILD_DATA> data) {
+        super(resources, data);
     }
 
     @Override
@@ -43,39 +50,49 @@ public class BrokerProxyList<SWBL extends HousemateObjectWrappable<?>,
         return result;
     }
 
-    public void add(HousemateObjectWrappable wrappable, RemoteClient clientId) throws HousemateException {
-        SWR wrapper = null;
+    /**
+     * Adds an element to the list
+     * @param data the data for the new object
+     * @param clientId the id of the client
+     * @throws HousemateException
+     */
+    public void add(HousemateObjectWrappable data, RemoteClient clientId) throws HousemateException {
+        CHILD wrapper = null;
         try {
-            wrapper = getResources().getFactory().create(getResources(), (SWBL)wrappable);
+            wrapper = getResources().getFactory().create(getResources(), (CHILD_DATA)data);
         } catch(HousemateException e) {
             throw new HousemateException("Failed to create new list element", e);
         }
         wrapper.init(BrokerProxyList.this);
         wrapper.setClient(clientId);
         addWrapper(wrapper);
-        for(ListListener<? super SWR> listener : getObjectListeners())
+        for(ListListener<? super CHILD> listener : getObjectListeners())
             listener.elementAdded(wrapper);
     }
 
+    /**
+     * Removes an element from the list
+     * @param id the id of the element to remove
+     */
     public void remove(String id) {
-        SWR wrapper = removeWrapper(id);
+        CHILD wrapper = removeWrapper(id);
         if(wrapper != null) {
-            for(ListListener<? super SWR> listener : getObjectListeners())
+            for(ListListener<? super CHILD> listener : getObjectListeners())
                 listener.elementRemoved(wrapper);
         }
     }
 
     @Override
-    public ListenerRegistration addObjectListener(ListListener<? super SWR> listener, boolean callForExistingElements) {
+    public ListenerRegistration addObjectListener(ListListener<? super CHILD> listener, boolean callForExistingElements) {
         ListenerRegistration listenerRegistration = addObjectListener(listener);
         if(callForExistingElements)
-            for(SWR element : this)
+            for(CHILD element : this)
                 listener.elementAdded(element);
         return listenerRegistration;
     }
 
     @Override
-    public final SWR get(String name) {
+    public final CHILD get(String name) {
         return getWrapper(name);
     }
 
@@ -85,7 +102,7 @@ public class BrokerProxyList<SWBL extends HousemateObjectWrappable<?>,
     }
 
     @Override
-    public Iterator<SWR> iterator() {
+    public Iterator<CHILD> iterator() {
         return getWrappers().iterator();
     }
 }

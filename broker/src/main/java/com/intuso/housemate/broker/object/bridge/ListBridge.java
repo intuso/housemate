@@ -60,7 +60,7 @@ public class ListBridge<
     public void childWrapperAdded(String childName, WR wrapper) {
         wrapper.init(this);
         addLoadedBy(wrapper);
-        broadcastMessage(ADD_TYPE, wrapper.getWrappable().deepClone());
+        broadcastMessage(ADD_TYPE, wrapper.getData().deepClone());
         for(ListListener<? super WR> listener : getObjectListeners())
             listener.elementAdded(wrapper);
     }
@@ -68,7 +68,7 @@ public class ListBridge<
     @Override
     public void childWrapperRemoved(String name, WR wrapper) {
         wrapper.uninit();
-        broadcastMessage(REMOVE_TYPE, wrapper.getWrappable());
+        broadcastMessage(REMOVE_TYPE, wrapper.getData());
         for(ListListener<? super WR> listener : getObjectListeners())
             listener.elementRemoved(wrapper);
     }

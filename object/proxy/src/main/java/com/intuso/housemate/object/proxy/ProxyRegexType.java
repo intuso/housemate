@@ -17,11 +17,11 @@ public abstract class ProxyRegexType<
 
     /**
      * @param resources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyRegexType(RESOURCES resources, RegexTypeWrappable wrappable) {
-        super(resources, null, wrappable);
-        regexMatcher = resources.getRegexMatcherFactory().createRegexMatcher(getWrappable().getRegexPattern());
+    public ProxyRegexType(RESOURCES resources, RegexTypeWrappable data) {
+        super(resources, null, data);
+        regexMatcher = resources.getRegexMatcherFactory().createRegexMatcher(getData().getRegexPattern());
     }
 
     /**

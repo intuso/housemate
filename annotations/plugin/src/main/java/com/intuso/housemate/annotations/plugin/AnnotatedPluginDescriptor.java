@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 /**
+ * Base class for all plugins that wish to use annotations to describe the provided features
  */
 public class AnnotatedPluginDescriptor implements PluginDescriptor {
 

@@ -19,7 +19,7 @@ public class GWTProxyCondition extends ProxyCondition<
             GWTProxyCondition, GWTProxyList<ConditionWrappable, GWTProxyCondition>> {
     public GWTProxyCondition(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                              GWTResources childResources,
-                             ConditionWrappable wrappable) {
-        super(resources, childResources, wrappable);
+                             ConditionWrappable data) {
+        super(resources, childResources, data);
     }
 }

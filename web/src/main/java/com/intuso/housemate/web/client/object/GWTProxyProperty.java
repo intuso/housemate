@@ -7,7 +7,7 @@ import com.intuso.housemate.web.client.GWTResources;
 /**
  */
 public class GWTProxyProperty extends ProxyProperty<GWTResources<GWTProxyFactory.Command>, GWTResources<?>, GWTProxyType, GWTProxyCommand, GWTProxyProperty> {
-    public GWTProxyProperty(GWTResources<GWTProxyFactory.Command> resources, GWTResources<?> childResources, PropertyWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public GWTProxyProperty(GWTResources<GWTProxyFactory.Command> resources, GWTResources<?> childResources, PropertyWrappable data) {
+        super(resources, childResources, data);
     }
 }

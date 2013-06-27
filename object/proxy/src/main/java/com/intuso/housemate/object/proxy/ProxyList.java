@@ -31,10 +31,10 @@ public abstract class ProxyList<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyList(RESOURCES resources, CHILD_RESOURCES childResources, ListWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyList(RESOURCES resources, CHILD_RESOURCES childResources, ListWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

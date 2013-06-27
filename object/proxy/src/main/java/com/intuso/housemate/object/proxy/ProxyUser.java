@@ -25,10 +25,10 @@ public abstract class ProxyUser<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyUser(RESOURCES resources, CHILD_RESOURCES childResources, UserWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyUser(RESOURCES resources, CHILD_RESOURCES childResources, UserWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

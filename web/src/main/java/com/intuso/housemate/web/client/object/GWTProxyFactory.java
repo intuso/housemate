@@ -55,35 +55,35 @@ public class GWTProxyFactory {
 
     public static class All implements HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
         @Override
-        public ProxyObject<?, ?, ?, ?, ?, ?, ?> create(GWTResources<?> resources, HousemateObjectWrappable<?> wrappable) throws HousemateException {
-            if(wrappable instanceof ParameterWrappable)
-                return parameterFactory.create(resources, (ParameterWrappable) wrappable);
-            else if(wrappable instanceof CommandWrappable)
-                return commandFactory.create(resources, (CommandWrappable) wrappable);
-            else if(wrappable instanceof ConditionWrappable)
-                return conditionFactory.create(resources, (ConditionWrappable) wrappable);
-            else if(wrappable instanceof UserWrappable)
-                return userFactory.create(resources, (UserWrappable) wrappable);
-            else if(wrappable instanceof TaskWrappable)
-                return taskFactory.create(resources, (TaskWrappable) wrappable);
-            else if(wrappable instanceof DeviceWrappable)
-                return deviceFactory.create(resources, (DeviceWrappable) wrappable);
-            else if(wrappable instanceof ListWrappable)
-                return listFactory.create(resources, (ListWrappable<HousemateObjectWrappable<?>>) wrappable);
-            else if(wrappable instanceof OptionWrappable)
-                return optionFactory.create(resources, (OptionWrappable) wrappable);
-            else if(wrappable instanceof PropertyWrappable)
-                return propertyFactory.create(resources, (PropertyWrappable) wrappable);
-            else if(wrappable instanceof AutomationWrappable)
-                return automationFactory.create(resources, (AutomationWrappable) wrappable);
-            else if(wrappable instanceof SubTypeWrappable)
-                return subTypeFactory.create(resources, (SubTypeWrappable) wrappable);
-            else if(wrappable instanceof TypeWrappable)
-                return typeFactory.create(resources, (TypeWrappable) wrappable);
-            else if(wrappable instanceof ValueWrappable)
-                return valueFactory.create(resources, (ValueWrappable) wrappable);
+        public ProxyObject<?, ?, ?, ?, ?, ?, ?> create(GWTResources<?> resources, HousemateObjectWrappable<?> data) throws HousemateException {
+            if(data instanceof ParameterWrappable)
+                return parameterFactory.create(resources, (ParameterWrappable) data);
+            else if(data instanceof CommandWrappable)
+                return commandFactory.create(resources, (CommandWrappable) data);
+            else if(data instanceof ConditionWrappable)
+                return conditionFactory.create(resources, (ConditionWrappable) data);
+            else if(data instanceof UserWrappable)
+                return userFactory.create(resources, (UserWrappable) data);
+            else if(data instanceof TaskWrappable)
+                return taskFactory.create(resources, (TaskWrappable) data);
+            else if(data instanceof DeviceWrappable)
+                return deviceFactory.create(resources, (DeviceWrappable) data);
+            else if(data instanceof ListWrappable)
+                return listFactory.create(resources, (ListWrappable<HousemateObjectWrappable<?>>) data);
+            else if(data instanceof OptionWrappable)
+                return optionFactory.create(resources, (OptionWrappable) data);
+            else if(data instanceof PropertyWrappable)
+                return propertyFactory.create(resources, (PropertyWrappable) data);
+            else if(data instanceof AutomationWrappable)
+                return automationFactory.create(resources, (AutomationWrappable) data);
+            else if(data instanceof SubTypeWrappable)
+                return subTypeFactory.create(resources, (SubTypeWrappable) data);
+            else if(data instanceof TypeWrappable)
+                return typeFactory.create(resources, (TypeWrappable) data);
+            else if(data instanceof ValueWrappable)
+                return valueFactory.create(resources, (ValueWrappable) data);
             else
-                throw new HousemateException("Don't know how to create an object from " + wrappable.getClass().getName());
+                throw new HousemateException("Don't know how to create an object from " + data.getClass().getName());
         }
     }
 
@@ -91,34 +91,34 @@ public class GWTProxyFactory {
             GWTResources<?>,
             GWTProxyAutomation> {
         @Override
-        public GWTProxyAutomation create(GWTResources<?> resources, AutomationWrappable wrappable) throws HousemateException {
+        public GWTProxyAutomation create(GWTResources<?> resources, AutomationWrappable data) throws HousemateException {
             GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyAutomation(r, resources, wrappable);
+            return new GWTProxyAutomation(r, resources, data);
         }
     }
 
     public static class Command implements CommandFactory<GWTResources<?>, GWTProxyCommand> {
         @Override
-        public GWTProxyCommand create(GWTResources<?> resources, CommandWrappable wrappable) throws HousemateException {
+        public GWTProxyCommand create(GWTResources<?> resources, CommandWrappable data) throws HousemateException {
             GWTResources<List<ParameterWrappable, GWTProxyParameter>> r = changeFactoryType(resources, new List<ParameterWrappable, GWTProxyParameter>());
             GWTResources<Parameter> sr = changeFactoryType(resources, parameterFactory);
-            return new GWTProxyCommand(r, sr, wrappable);
+            return new GWTProxyCommand(r, sr, data);
         }
     }
 
     public static class Condition implements ConditionFactory<GWTResources<?>, GWTProxyCondition> {
         @Override
-        public GWTProxyCondition create(GWTResources<?> resources, ConditionWrappable wrappable) throws HousemateException {
+        public GWTProxyCondition create(GWTResources<?> resources, ConditionWrappable data) throws HousemateException {
             GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyCondition(r, resources, wrappable);
+            return new GWTProxyCondition(r, resources, data);
         }
     }
 
     public static class Device implements DeviceFactory<GWTResources<?>, GWTProxyDevice> {
         @Override
-        public GWTProxyDevice create(GWTResources<?> resources, DeviceWrappable wrappable) throws HousemateException {
+        public GWTProxyDevice create(GWTResources<?> resources, DeviceWrappable data) throws HousemateException {
             GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyDevice(r, resources, wrappable);
+            return new GWTProxyDevice(r, resources, data);
         }
     }
 
@@ -127,9 +127,9 @@ public class GWTProxyFactory {
             GWTProxyList<HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> {
 
         @Override
-        public GWTProxyList<HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> create(GWTResources<?> resources, ListWrappable<HousemateObjectWrappable<?>> wrappable) throws HousemateException {
+        public GWTProxyList<HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> create(GWTResources<?> resources, ListWrappable<HousemateObjectWrappable<?>> data) throws HousemateException {
             GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyList<HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>(r, resources, wrappable);
+            return new GWTProxyList<HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>(r, resources, data);
         }
     }
 
@@ -140,72 +140,72 @@ public class GWTProxyFactory {
 
         @Override
         public GWTProxyList<SWBL, SWR> create(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, SWBL, SWR>> resources,
-                                                        ListWrappable<SWBL> wrappable) throws HousemateException {
-            return new GWTProxyList<SWBL, SWR>(resources, resources, wrappable);
+                                                        ListWrappable<SWBL> data) throws HousemateException {
+            return new GWTProxyList<SWBL, SWR>(resources, resources, data);
         }
     }
 
     public static class Option implements OptionFactory<GWTResources<?>, GWTProxyOption> {
         @Override
-        public GWTProxyOption create(GWTResources<?> resources, OptionWrappable wrappable) throws HousemateException {
+        public GWTProxyOption create(GWTResources<?> resources, OptionWrappable data) throws HousemateException {
             GWTResources<List<SubTypeWrappable, GWTProxySubType>> r = changeFactoryType(resources, new List<SubTypeWrappable, GWTProxySubType>());
             GWTResources<SubType> sr = changeFactoryType(resources, subTypeFactory);
-            return new GWTProxyOption(r, sr, wrappable);
+            return new GWTProxyOption(r, sr, data);
         }
     }
 
     public static class Parameter implements ParameterFactory<GWTResources<?>, GWTProxyParameter> {
         @Override
-        public GWTProxyParameter create(GWTResources<?> resources, ParameterWrappable wrappable) throws HousemateException {
-            return new GWTProxyParameter(noFactoryType(resources), wrappable);
+        public GWTProxyParameter create(GWTResources<?> resources, ParameterWrappable data) throws HousemateException {
+            return new GWTProxyParameter(noFactoryType(resources), data);
         }
     }
 
     public static class Property implements PropertyFactory<GWTResources<?>, GWTProxyProperty> {
         @Override
-        public GWTProxyProperty create(GWTResources<?> resources, PropertyWrappable wrappable) throws HousemateException {
+        public GWTProxyProperty create(GWTResources<?> resources, PropertyWrappable data) throws HousemateException {
             GWTResources<Command> r = changeFactoryType(resources, commandFactory);
             GWTResources<List<ParameterWrappable, GWTProxyParameter>> sr = changeFactoryType(resources, new List<ParameterWrappable, GWTProxyParameter>());
-            return new GWTProxyProperty(r, sr, wrappable);
+            return new GWTProxyProperty(r, sr, data);
         }
     }
 
     public static class SubType implements SubTypeFactory<GWTResources<?>, GWTProxySubType> {
         @Override
-        public GWTProxySubType create(GWTResources<?> resources, SubTypeWrappable wrappable) throws HousemateException {
-            return new GWTProxySubType(noFactoryType(resources), wrappable);
+        public GWTProxySubType create(GWTResources<?> resources, SubTypeWrappable data) throws HousemateException {
+            return new GWTProxySubType(noFactoryType(resources), data);
         }
     }
 
     public static class Task implements TaskFactory<GWTResources<?>, GWTProxyTask> {
         @Override
-        public GWTProxyTask create(GWTResources<?> resources, TaskWrappable wrappable) throws HousemateException {
+        public GWTProxyTask create(GWTResources<?> resources, TaskWrappable data) throws HousemateException {
             GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyTask(r, resources, wrappable);
+            return new GWTProxyTask(r, resources, data);
         }
     }
 
     public static class Type implements TypeFactory<GWTResources<?>, GWTProxyType> {
         @Override
         public GWTProxyType create(GWTResources<?> resources,
-                                             TypeWrappable<?> wrappable) throws HousemateException {
+                                             TypeWrappable<?> data) throws HousemateException {
             GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyType(r, resources, wrappable);
+            return new GWTProxyType(r, resources, data);
         }
     }
 
     public static class User implements UserFactory<GWTResources<?>, GWTProxyUser> {
         @Override
-        public GWTProxyUser create(GWTResources<?> resources, UserWrappable wrappable) throws HousemateException {
+        public GWTProxyUser create(GWTResources<?> resources, UserWrappable data) throws HousemateException {
             GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyUser(r, resources, wrappable);
+            return new GWTProxyUser(r, resources, data);
         }
     }
 
     public static class Value implements ValueFactory<GWTResources<?>, GWTProxyValue> {
         @Override
-        public GWTProxyValue create(GWTResources<?> resources, ValueWrappable wrappable) throws HousemateException {
-            return new GWTProxyValue(noFactoryType(resources), wrappable);
+        public GWTProxyValue create(GWTResources<?> resources, ValueWrappable data) throws HousemateException {
+            return new GWTProxyValue(noFactoryType(resources), data);
         }
     }
 

@@ -15,8 +15,6 @@ import com.intuso.housemate.api.object.root.RootWrappable;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
-/**
- */
 public class BrokerProxyRootObject
         extends BrokerProxyObject<RootWrappable, HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>,
             BrokerProxyRootObject, RootListener<? super BrokerProxyRootObject>>
@@ -25,6 +23,9 @@ public class BrokerProxyRootObject
     private BrokerProxyList<TypeWrappable<?>, BrokerProxyType> types;
     private BrokerProxyList<DeviceWrappable, BrokerProxyDevice> devices;
 
+    /**
+     * @param resources {@inheritDoc}
+     */
     public BrokerProxyRootObject(BrokerProxyResources<BrokerProxyFactory.All> resources) {
         super(resources, new RootWrappable());
         types = new BrokerProxyList<TypeWrappable<?>, BrokerProxyType>(
@@ -73,10 +74,18 @@ public class BrokerProxyRootObject
         throw new HousemateRuntimeException("Whatever");
     }
 
+    /**
+     * Gets proxy types for the remote client's types
+     * @return proxy types for the remove client's types
+     */
     public BrokerProxyList<TypeWrappable<?>, BrokerProxyType> getTypes() {
         return types;
     }
 
+    /**
+     * Gets proxy devices for the remote client's devices
+     * @return proxy devices for the remote client's devices
+     */
     public BrokerProxyList<DeviceWrappable, BrokerProxyDevice> getDevices() {
         return devices;
     }

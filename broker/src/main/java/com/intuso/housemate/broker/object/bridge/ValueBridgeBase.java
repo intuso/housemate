@@ -21,10 +21,10 @@ public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
     private Value proxyValue;
     private final TypeBridge type;
 
-    public ValueBridgeBase(BrokerBridgeResources resources, WBL wrappable, Value<?, ?> value) {
-        super(resources, wrappable);
+    public ValueBridgeBase(BrokerBridgeResources resources, WBL data, Value<?, ?> value) {
+        super(resources, data);
         proxyValue = value;
-        type = resources.getGeneralResources().getBridgeResources().getRoot().getTypes().get(getWrappable().getType());
+        type = resources.getGeneralResources().getBridgeResources().getRoot().getTypes().get(getData().getType());
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
 
     @Override
     public TypeInstance getTypeInstance() {
-        return getWrappable().getValue();
+        return getData().getValue();
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
 
             @Override
             public void valueChanged(Value<?, ?> value) {
-                getWrappable().setValue(value.getTypeInstance());
+                getData().setValue(value.getTypeInstance());
                 for(ValueListener<? super V> listener : getObjectListeners())
                     listener.valueChanged(getThis());
                 broadcastMessage(VALUE_ID, value.getTypeInstance());

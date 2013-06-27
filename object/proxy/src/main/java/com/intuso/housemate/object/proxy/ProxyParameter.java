@@ -19,14 +19,14 @@ public abstract class ProxyParameter<
 
     /**
      * @param resources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyParameter(RESOURCES resources, ParameterWrappable wrappable) {
-        super(resources, null, wrappable);
+    public ProxyParameter(RESOURCES resources, ParameterWrappable data) {
+        super(resources, null, data);
     }
 
     @Override
     public final TYPE getType() {
-        return (TYPE) getProxyRoot().getTypes().get(getWrappable().getType());
+        return (TYPE) getProxyRoot().getTypes().get(getData().getType());
     }
 }

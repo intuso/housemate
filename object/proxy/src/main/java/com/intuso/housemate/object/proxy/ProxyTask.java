@@ -32,10 +32,10 @@ public abstract class ProxyTask<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxyTask(RESOURCES resources, CHILD_RESOURCES childResources, TaskWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxyTask(RESOURCES resources, CHILD_RESOURCES childResources, TaskWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

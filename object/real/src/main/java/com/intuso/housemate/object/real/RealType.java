@@ -20,9 +20,9 @@ public abstract class RealType<
 
     /**
      * @param resources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    protected RealType(RealResources resources, DATA wrappable) {
-        super(resources, wrappable);
+    protected RealType(RealResources resources, DATA data) {
+        super(resources, data);
     }
 }

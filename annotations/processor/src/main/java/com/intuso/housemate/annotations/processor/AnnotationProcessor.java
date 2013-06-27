@@ -39,19 +39,19 @@ import java.util.Map;
 public class AnnotationProcessor {
 
     private final Log log;
-    private final Map<Class<?>, RealType<?, ?, ?>> registeredTypes = Maps.newHashMap();
+    private final Map<String, RealType<?, ?, ?>> registeredTypes = Maps.newHashMap();
 
     public AnnotationProcessor(Log log, RealList<TypeWrappable<?>, RealType<?, ?, ?>> registeredTypes) {
         this.log = log;
         registeredTypes.addObjectListener(new ListListener<RealType<?, ?, ?>>() {
             @Override
             public void elementAdded(RealType<?, ?, ?> type) {
-                AnnotationProcessor.this.registeredTypes.put(type.getClass(), type);
+                AnnotationProcessor.this.registeredTypes.put(type.getId(), type);
             }
 
             @Override
             public void elementRemoved(RealType<?, ?, ?> type) {
-                AnnotationProcessor.this.registeredTypes.remove(type.getClass());
+                AnnotationProcessor.this.registeredTypes.remove(type.getId());
             }
         }, true);
     }
@@ -80,10 +80,10 @@ public class AnnotationProcessor {
             if(parameterAnnotation == null)
                 throw new HousemateException("Parameter " + a + " of command method " + method.getName()
                         + " is not annotated with " + Parameter.class.getName());
-            if(registeredTypes.get(parameterAnnotation.type()) == null)
-                throw new HousemateException(parameterAnnotation.type().getName() + " does not exist");
+            if(registeredTypes.get(parameterAnnotation.typeId()) == null)
+                throw new HousemateException(parameterAnnotation.typeId() + " type does not exist");
             result.add(new RealParameter(resources, parameterAnnotation.id(), parameterAnnotation.name(),
-                    parameterAnnotation.description(), registeredTypes.get(parameterAnnotation.type())));
+                    parameterAnnotation.description(), registeredTypes.get(parameterAnnotation.typeId())));
         }
         return result;
     }
@@ -96,11 +96,11 @@ public class AnnotationProcessor {
             } catch(IllegalAccessException e) {
                 log.w("Failed to get initial value of annotated property field " + propertyField.getKey().getName());
             }
-            if(registeredTypes.get(propertyField.getValue().type()) == null)
-                throw new HousemateException(propertyField.getValue().type().getName() + " does not exist");
+            if(registeredTypes.get(propertyField.getValue().typeId()) == null)
+                throw new HousemateException(propertyField.getValue().typeId() + " type does not exist");
             properties.add(new PropertyImpl(object.getResources(), propertyField.getValue().id(),
                     propertyField.getValue().name(), propertyField.getValue().description(),
-                    (RealType<?, ?, Object>) registeredTypes.get(propertyField.getValue().type()), value,
+                    (RealType<?, ?, Object>) registeredTypes.get(propertyField.getValue().typeId()), value,
                     propertyField.getKey(), object));
         }
     }
@@ -118,11 +118,11 @@ public class AnnotationProcessor {
                 throw new HousemateException("Failed to assign proxy instance to " + valuesField.getKey().getName());
             }
             for(Map.Entry<Method, Value> valueMethod : getAnnotatedMethods(valuesField.getKey().getType(), Value.class).entrySet()) {
-                if(registeredTypes.get(valueMethod.getValue().type()) == null)
-                    throw new HousemateException(valueMethod.getValue().type().getName() + " does not exist");
+                if(registeredTypes.get(valueMethod.getValue().typeId()) == null)
+                    throw new HousemateException(valueMethod.getValue().typeId() + " type does not exist");
                 RealValue<Object> value = new RealValue<Object>(object.getResources(), valueMethod.getValue().id(),
                         valueMethod.getValue().name(), valueMethod.getValue().description(),
-                        (RealType<?,?,Object>) registeredTypes.get(valueMethod.getValue().type()), null);
+                        (RealType<?,?,Object>) registeredTypes.get(valueMethod.getValue().typeId()), null);
                 valuesFunctions.put(valueMethod.getKey(), value);
                 values.add(value);
             }

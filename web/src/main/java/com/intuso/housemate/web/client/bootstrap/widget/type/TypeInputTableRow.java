@@ -67,7 +67,7 @@ public class TypeInputTableRow
     public static TypeInput getInput(GWTProxyType type) {
         if(type == null)
             return null;
-        TypeWrappable typeWrappable = type.getWrappable();
+        TypeWrappable typeWrappable = type.getData();
         if(typeWrappable instanceof SimpleTypeWrappable) {
             if(((SimpleTypeWrappable)typeWrappable).getType() == SimpleTypeWrappable.Type.Boolean)
                 return new CheckBoxInput();

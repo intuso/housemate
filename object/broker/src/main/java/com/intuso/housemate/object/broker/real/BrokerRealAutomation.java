@@ -9,8 +9,6 @@ import com.intuso.housemate.api.object.condition.ConditionWrappable;
 import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
-/**
- */
 public class BrokerRealAutomation
         extends BrokerRealPrimaryObject<AutomationWrappable, BrokerRealAutomation, AutomationListener<? super BrokerRealAutomation>>
         implements Automation<BrokerRealCommand, BrokerRealCommand, BrokerRealCommand,

@@ -49,9 +49,9 @@ public class TypeBridge
 
     private static TypeWrappable<HousemateObjectWrappable<?>> cloneWrappable(Log log, Type type) {
         if(type instanceof HousemateObject)
-            return (TypeWrappable<HousemateObjectWrappable<?>>) ((HousemateObject<?, ?, ?, ?, ?>)type).getWrappable().clone();
+            return (TypeWrappable<HousemateObjectWrappable<?>>) ((HousemateObject<?, ?, ?, ?, ?>)type).getData().clone();
         else {
-            log.e("Cannot bridge to a non-real type. Bridged type will have a null wrappable");
+            log.e("Cannot bridge to a non-real type. Bridged type will have a null data");
             return null;
         }
     }

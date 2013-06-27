@@ -65,7 +65,7 @@ public class TypeTest {
 
     @Test
     public void testCustomFormat() throws HousemateException {
-        ProxyRegexType pt = new MyProxyType(TestEnvironment.TEST_INSTANCE.getProxyNoChildrenResources(), new MyRealType(TestEnvironment.TEST_INSTANCE.getRealResources()).getWrappable());
+        ProxyRegexType pt = new MyProxyType(TestEnvironment.TEST_INSTANCE.getProxyNoChildrenResources(), new MyRealType(TestEnvironment.TEST_INSTANCE.getRealResources()).getData());
         assertFalse(pt.isCorrectFormat("some string"));
         assertFalse(pt.isCorrectFormat(";two"));
         assertFalse(pt.isCorrectFormat("one;"));
@@ -128,8 +128,8 @@ public class TypeTest {
     }
 
     private class MyProxyType extends ProxyRegexType<ProxyResources<NoChildrenProxyObjectFactory>, MyProxyType> {
-        public MyProxyType(ProxyResources<NoChildrenProxyObjectFactory> resources, RegexTypeWrappable wrappable) {
-            super(resources, wrappable);
+        public MyProxyType(ProxyResources<NoChildrenProxyObjectFactory> resources, RegexTypeWrappable data) {
+            super(resources, data);
         }
     }
 }

@@ -40,17 +40,24 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     private final BrokerGeneralResources generalResources;
 
     public ComparisonType(RealResources resources, BrokerGeneralResources generalResources) {
+        this(resources,  generalResources,
+                (ComparisonOperatorType) generalResources.getClient().getRoot().getTypes().get(ComparisonOperatorType.ID),
+                (ValueSourceType) generalResources.getClient().getRoot().getTypes().get(ValueSourceType.ID));
+    }
+
+    public ComparisonType(RealResources resources, BrokerGeneralResources generalResources,
+                          ComparisonOperatorType operatorType, ValueSourceType sourceType) {
         super(resources, ID, NAME, DESCRIPTION);
         this.generalResources = generalResources;
-        generalResources.addPluginListener(this, true);
-        operatorType = (ComparisonOperatorType) generalResources.getClient().getRoot().getTypes().get(ComparisonOperatorType.ID);
-        sourceType = (ValueSourceType) generalResources.getClient().getRoot().getTypes().get(ComparisonOperatorType.ID);
+        this.operatorType = operatorType;
+        this.sourceType = sourceType;
         getSubTypes().add(new RealSubType<ComparisonOperator>(resources, OPERATOR_ID, OPERATOR_NAME,
                 OPERATOR_DESCRIPTION, operatorType));
         getSubTypes().add(new RealSubType<ValueSource>(resources, VALUE_0_ID, VALUE_0_NAME, VALUE_0_DESCRIPTION,
                 sourceType));
         getSubTypes().add(new RealSubType<ValueSource>(resources, VALUE_1_ID, VALUE_1_NAME, VALUE_1_DESCRIPTION,
                 sourceType));
+        generalResources.addPluginListener(this, true);
     }
 
     @Override

@@ -29,10 +29,10 @@ public abstract class ProxySingleChoiceType<
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
-     * @param wrappable {@inheritDoc}
+     * @param data {@inheritDoc}
      */
-    public ProxySingleChoiceType(RESOURCES resources, CHILD_RESOURCES childResources, SingleChoiceTypeWrappable wrappable) {
-        super(resources, childResources, wrappable);
+    public ProxySingleChoiceType(RESOURCES resources, CHILD_RESOURCES childResources, SingleChoiceTypeWrappable data) {
+        super(resources, childResources, data);
     }
 
     @Override

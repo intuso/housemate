@@ -5,7 +5,6 @@ import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.annotations.basic.Value;
 import com.intuso.housemate.annotations.basic.Values;
 import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.impl.type.IntegerType;
 
 /**
  */
@@ -15,7 +14,7 @@ public class TestChildDevice extends TestParentDevice {
     TestDeviceValues values;
 
     @Property(id = "increment-amount", name = "Increment Amount", description = "Amount to increase/decrease volume by",
-              type = IntegerType.class)
+              typeId = "integer")
     int incrementAmount = 0;
 
     int currentVolume = 0;
@@ -37,7 +36,7 @@ public class TestChildDevice extends TestParentDevice {
     }
 
     protected interface TestDeviceValues {
-        @Value(id="volume", name = "Volume", description = "Current volume", type = IntegerType.class)
+        @Value(id="volume", name = "Volume", description = "Current volume", typeId = "integer")
         void volume(int value);
     }
 }
