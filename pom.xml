@@ -25,9 +25,10 @@
         <module>api</module>
         <module>broker</module>
         <module>comms</module>
-        <module>object</module>
-	    <module>platform</module>
-        <module>plugin</module>
+        <module>objects</module>
+	    <module>platforms</module>
+        <module>plugins</module>
+        <module>samples</module>
         <module>web</module>
     </modules>
 
