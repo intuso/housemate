@@ -41,7 +41,7 @@ public class Delay extends BrokerRealTask {
 	}
 	
 	@Override
-	public final void _execute() {
+	public final void execute() {
         long delay = amount.getTypedValue() * unit.getTypedValue().getFactor();
         getLog().d("Executing delay of " + amount + " " + unit + " which is " + delay + " milliseconds");
 		

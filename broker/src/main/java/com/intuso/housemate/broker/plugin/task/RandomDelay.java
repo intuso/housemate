@@ -41,7 +41,7 @@ public class RandomDelay extends BrokerRealTask {
     }
 
     @Override
-    public final void _execute() {
+    public final void execute() {
         long delay = maxAmount.getTypedValue() * unit.getTypedValue().getFactor();
         long actual_delay = (long)(delay * Math.random());
         getLog().d("Executing random delay of up to " + maxAmount + " " + unit + " which is " + delay + " milliseconds");

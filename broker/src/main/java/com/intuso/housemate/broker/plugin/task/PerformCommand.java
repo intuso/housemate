@@ -95,7 +95,7 @@ public class PerformCommand extends BrokerRealTask implements ObjectLifecycleLis
     }
 
     @Override
-    public void _execute() throws HousemateException {
+    public void execute() throws HousemateException {
         if(command != null) {
             getLog().w("Executing " + Joiner.on("/").join(commandPath.getTypedValue().getPath()));
             command.perform(new TypeInstances(), listener);

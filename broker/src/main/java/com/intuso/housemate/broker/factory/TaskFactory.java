@@ -63,6 +63,7 @@ public final class TaskFactory implements PluginListener {
             @Override
             public void perform(TypeInstances values) throws HousemateException {
                 BrokerRealTask task = createTask(values);
+                // todo process annotations
                 list.add(task);
                 resources.getStorage().saveValues(list.getPath(), task.getId(), values);
             }

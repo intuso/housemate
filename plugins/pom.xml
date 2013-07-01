@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.intuso.housemate</groupId>
+        <artifactId>housemate</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>plugins</artifactId>
+    <packaging>pom</packaging>
+    <name>Housemate Plugins</name>
+    <description>Plugins for the Housemate framework</description>
+
+    <modules>
+        <module>api</module>
+        <module>arduino-temp-sensor</module>
+        <module>rfxcom</module>
+        <module>run-program-device</module>
+        <module>twitter</module>
+    </modules>
+
+</project>
