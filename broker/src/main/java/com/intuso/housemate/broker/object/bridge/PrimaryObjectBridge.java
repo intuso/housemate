@@ -3,8 +3,11 @@ package com.intuso.housemate.broker.object.bridge;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+
+import java.util.List;
 
 /**
  */
@@ -43,8 +46,8 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<H
 
     @Override
     public boolean isConnected() {
-        Boolean value = BooleanType.SERIALISER.deserialise(connectedValue.getTypeInstance());
-        return value != null ? value : false;
+        List<Boolean> connecteds = RealType.deserialiseAll(BooleanType.SERIALISER, connectedValue.getTypeInstances());
+        return connecteds != null && connecteds.size() > 0 && connecteds.get(0) != null ? connecteds.get(0) : false;
     }
 
     @Override
@@ -54,8 +57,8 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<H
 
     @Override
     public boolean isRunning() {
-        Boolean value = BooleanType.SERIALISER.deserialise(runningValue.getTypeInstance());
-        return value != null ? value : false;
+        List<Boolean> isRunnings = RealType.deserialiseAll(BooleanType.SERIALISER, runningValue.getTypeInstances());
+        return isRunnings != null && isRunnings.size() > 0 && isRunnings.get(0) != null ? isRunnings.get(0) : false;
     }
 
     @Override
@@ -75,7 +78,8 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<H
 
     @Override
     public String getError() {
-        return StringType.SERIALISER.deserialise(errorValue.getTypeInstance());
+        List<String> errors = RealType.deserialiseAll(StringType.SERIALISER, errorValue.getTypeInstances());
+        return errors != null && errors.size() > 0 ? errors.get(0) : null;
     }
 
     @Override

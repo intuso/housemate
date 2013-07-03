@@ -48,7 +48,7 @@ public class ArduinoTemperatureSensorPlugin implements PluginDescriptor {
         try {
             if(!serialPort.openPort())
                 throw new HousemateException("No suitable port found for Arduino Temperature Sensor devices");
-            if(!serialPort.setParams(SerialPort.BAUDRATE_9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE))
+            if(!serialPort.setParams(SerialPort.BAUDRATE_115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE))
                 throw new HousemateException("Failed to properly configure port for Arduino Temperature Sensor devices");
         } catch(SerialPortException e) {
             throw new HousemateException("Failed to open connection to Arduino", e);

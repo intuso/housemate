@@ -8,6 +8,7 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.intuso.housemate.api.object.type.RegexTypeWrappable;
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
 import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
@@ -22,7 +23,7 @@ public class TextInput extends TextBox implements TypeInput {
             @Override
             public void onChange(ChangeEvent event) {
                 if(validator.isValid(getText()))
-                    fireEvent(new TypeInputEditedEvent(new TypeInstance(getText())));
+                    fireEvent(new TypeInputEditedEvent(new TypeInstances(new TypeInstance(getText()))));
                 else {
                     // TODO show invalid input
                 }
@@ -31,11 +32,11 @@ public class TextInput extends TextBox implements TypeInput {
     }
 
     @Override
-    public void setTypeInstance(TypeInstance typeInstance) {
-        if(typeInstance == null || typeInstance.getValue() == null)
+    public void setTypeInstances(TypeInstances typeInstance) {
+        if(typeInstance == null || typeInstance.getFirstValue() == null)
             setText("");
         else
-            setText(typeInstance.getValue());
+            setText(typeInstance.getFirstValue());
     }
 
     @Override

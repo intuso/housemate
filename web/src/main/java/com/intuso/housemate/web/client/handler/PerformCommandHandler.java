@@ -3,7 +3,7 @@ package com.intuso.housemate.web.client.handler;
 import com.google.gwt.event.shared.EventHandler;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 
 /**
  */
@@ -29,7 +29,7 @@ public class PerformCommandHandler implements EventHandler {
         }
     };
 
-    public void performCommand(Command<?, ?> command, TypeInstances values) {
+    public void performCommand(Command<?, ?> command, TypeInstanceMap values) {
         command.perform(values, commandListener);
     }
 }

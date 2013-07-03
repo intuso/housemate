@@ -9,7 +9,7 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -78,7 +78,7 @@ public class BrokerProxyCommand
     }
 
     @Override
-    public final synchronized void perform(TypeInstances values, CommandListener<? super BrokerProxyCommand> listener) {
+    public final synchronized void perform(TypeInstanceMap values, CommandListener<? super BrokerProxyCommand> listener) {
         String id = "" + nextId++;
         listenerMap.put(id, listener);
         try {

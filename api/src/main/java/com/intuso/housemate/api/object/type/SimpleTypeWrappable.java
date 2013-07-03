@@ -45,8 +45,11 @@ public final class SimpleTypeWrappable extends TypeWrappable<NoChildrenWrappable
 
     private SimpleTypeWrappable() {}
 
+    /**
+     * @param type the type of the type
+     */
     public SimpleTypeWrappable(Type type) {
-        super(type.getId(), type.getName(), type.getDescription());
+        super(type.getId(), type.getName(), type.getDescription(), 1, 1);
         this.type = type;
     }
 

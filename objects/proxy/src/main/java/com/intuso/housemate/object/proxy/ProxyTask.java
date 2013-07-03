@@ -90,7 +90,7 @@ public abstract class ProxyTask<
 
     @Override
     public final String getError() {
-        return error.getTypeInstance() != null ? error.getTypeInstance().getValue() : null;
+        return error.getTypeInstances() != null ? error.getTypeInstances().getFirstValue() : null;
     }
 
     @Override
@@ -100,6 +100,7 @@ public abstract class ProxyTask<
 
     @Override
     public final boolean isExecuting() {
-        return executing.getTypeInstance() != null ? Boolean.parseBoolean(executing.getTypeInstance().getValue()) : null;
+        return executing.getTypeInstances() != null && executing.getTypeInstances().getFirstValue() != null
+                ? Boolean.parseBoolean(executing.getTypeInstances().getFirstValue()) : false;
     }
 }

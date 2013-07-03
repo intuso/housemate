@@ -1,18 +1,17 @@
 package com.intuso.housemate.broker.plugin.condition;
 
+import com.google.common.collect.Lists;
 import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.object.real.impl.type.Day;
 import com.intuso.housemate.object.real.impl.type.DaysType;
 
 import java.util.Calendar;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Condition which is true iff the current day of the week matches
@@ -40,7 +39,7 @@ public class DayOfTheWeek extends BrokerRealCondition {
 	 * The days that the condition is satisfied for. Left-most bit isn't used, next one is sunday,
 	 * then monday etc. Right-most bit is saturday
 	 */
-	private final BrokerRealProperty<Set<Day>> days;
+	private final BrokerRealProperty<Day> days;
 	
 	/**
 	 * thread to monitor the day of the week
@@ -54,7 +53,7 @@ public class DayOfTheWeek extends BrokerRealCondition {
 	 */
 	public DayOfTheWeek(BrokerRealResources resources, String id, String name, String description) throws HousemateException {
 		super(resources, id, name, description);
-        days = new BrokerRealProperty<Set<Day>>(resources, DAYS_FIELD, DAYS_FIELD, "The days that satisfy the condition", new DaysType(resources.getRealResources()), EnumSet.noneOf(Day.class));
+        days = new BrokerRealProperty<Day>(resources, DAYS_FIELD, DAYS_FIELD, "The days that satisfy the condition", new DaysType(resources.getRealResources()), Lists.<Day>newArrayList());
         getProperties().add(days);
     }
 
@@ -65,7 +64,7 @@ public class DayOfTheWeek extends BrokerRealCondition {
 	private final boolean doesTodaySatisfy() {
         int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 		boolean result = false;
-        for(Day day : days.getTypedValue())
+        for(Day day : days.getTypedValues())
             result |= DAY_MAP.get(day) == currentDay;
 		getLog().d("Current day of the week is " + Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + " (1 is Sunday). Condition is " + (result ? "" : "un") + "satisfied");
 		return result;

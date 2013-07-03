@@ -15,9 +15,9 @@ import java.util.EnumMap;
 import java.util.List;
 
 /**
- * Type for a single selection of the values of an enum
+ * Type for a multiple selection of the values of an enum
  */
-public abstract class EnumSingleChoiceType<E extends Enum<E>> extends RealSingleChoiceType<E> {
+public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
 
     private final TypeSerialiser<E> serialiser;
 
@@ -26,12 +26,15 @@ public abstract class EnumSingleChoiceType<E extends Enum<E>> extends RealSingle
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
+     * @param minValues the minimum number of values the type can have
+     * @param maxValues the maximum number of values the type can have
      * @param enumClass the class of the enum
      * @param values the values of the enum
      */
-    protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
-                                   Class<E> enumClass, E[] values) {
-        this(resources, id, name, description, values, new EnumMap<E, List<RealSubType<?>>>(enumClass),
+    protected EnumChoiceType(RealResources resources, String id, String name, String description, int minValues,
+                             int maxValues, Class<E> enumClass, E[] values) {
+        this(resources, id, name, description, minValues, maxValues, values,
+                new EnumMap<E, List<RealSubType<?>>>(enumClass),
                 new EnumInstanceSerialiser<E>(enumClass));
     }
 
@@ -40,41 +43,50 @@ public abstract class EnumSingleChoiceType<E extends Enum<E>> extends RealSingle
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
+     * @param minValues the minimum number of values the type can have
+     * @param maxValues the maximum number of values the type can have
      * @param enumClass the class of the enum
      * @param values the values of the enum
-     * @param elementSerialiser the serialiser for the enum elements
+     * @param optionSubTypes the subtypes for each enum value
      */
-    protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
-                                   Class<E> enumClass, E[] values, TypeSerialiser<E> elementSerialiser) {
-        this(resources, id, name, description, values, new EnumMap<E, List<RealSubType<?>>>(enumClass),
-                elementSerialiser);
+    protected EnumChoiceType(RealResources resources, String id, String name, String description, int minValues,
+                             int maxValues, Class<E> enumClass, E[] values,
+                             EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
+        this(resources, id, name, description, minValues, maxValues, values, optionSubTypes,
+                new EnumInstanceSerialiser<E>(enumClass));
     }
     /**
      * @param resources {@inheritDoc}
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
+     * @param minValues the minimum number of values the type can have
+     * @param maxValues the maximum number of values the type can have
      * @param enumClass the class of the enum
      * @param values the values of the enum
-     * @param optionSubTypes the subtypes for each enum value
+     * @param elementSerialiser the serialiser for the enum elements
      */
-    protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
-                                   Class<E> enumClass, E[] values, EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
-        this(resources, id, name, description, values, optionSubTypes, new EnumInstanceSerialiser<E>(enumClass));
+    protected EnumChoiceType(RealResources resources, String id, String name, String description, int minValues,
+                             int maxValues, Class<E> enumClass, E[] values, TypeSerialiser<E> elementSerialiser) {
+        this(resources, id, name, description, minValues, maxValues, values,
+                new EnumMap<E, List<RealSubType<?>>>(enumClass), elementSerialiser);
     }
     /**
      * @param resources {@inheritDoc}
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
+     * @param minValues the minimum number of values the type can have
+     * @param maxValues the maximum number of values the type can have
      * @param values the values of the enum
      * @param optionSubTypes the subtypes for each enum value
      * @param elementSerialiser the serialiser for the enum elements
      */
-    protected EnumSingleChoiceType(RealResources resources, String id, String name, String description,
-                                   E[] values, EnumMap<E, List<RealSubType<?>>> optionSubTypes,
-                                   TypeSerialiser<E> elementSerialiser) {
-        super(resources, id, name, description, convertValuesToOptions(resources, values, optionSubTypes));
+    protected EnumChoiceType(RealResources resources, String id, String name, String description, int minValues,
+                             int maxValues, E[] values, EnumMap<E, List<RealSubType<?>>> optionSubTypes,
+                             TypeSerialiser<E> elementSerialiser) {
+        super(resources, id, name, description, minValues, maxValues,
+                convertValuesToOptions(resources, values, optionSubTypes));
         this.serialiser = elementSerialiser;
     }
 
@@ -96,8 +108,8 @@ public abstract class EnumSingleChoiceType<E extends Enum<E>> extends RealSingle
      * @param <E> the type of the enum
      * @return a list of option objects, one for each value of the enum
      */
-    public static <E extends Enum<E>> List<RealOption> convertValuesToOptions(final RealResources resources, E[] values,
-                                                          final EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
+    private static <E extends Enum<E>> List<RealOption> convertValuesToOptions(final RealResources resources, E[] values,
+                                                                              final EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
         return Lists.transform(Arrays.asList(values), new Function<E, RealOption>() {
             @Override
             public RealOption apply(@Nullable E value) {
@@ -113,7 +125,7 @@ public abstract class EnumSingleChoiceType<E extends Enum<E>> extends RealSingle
      * Serialiser for enum values
      * @param <E> the enum type
      */
-    public static class EnumInstanceSerialiser<E extends Enum<E>> implements TypeSerialiser<E> {
+    private static class EnumInstanceSerialiser<E extends Enum<E>> implements TypeSerialiser<E> {
 
         private final Class<E> enumClass;
 

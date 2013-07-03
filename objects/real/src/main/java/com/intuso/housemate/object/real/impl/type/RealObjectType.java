@@ -33,7 +33,7 @@ public class RealObjectType<O extends BaseObject<?>>
      * @param root the root to get the object from
      */
     public RealObjectType(RealResources resources, Root<?, ?> root) {
-        super(resources, new ObjectTypeWrappable(ID, NAME, "Path to an object"));
+        super(resources, new ObjectTypeWrappable(ID, NAME, "Path to an object", 1, 1));
         serialiser = new Serialiser<O>(root);
     }
 

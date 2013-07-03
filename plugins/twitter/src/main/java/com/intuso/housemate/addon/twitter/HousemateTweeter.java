@@ -329,7 +329,7 @@ public class HousemateTweeter {
 
         @Override
         public void valueChanged(SimpleProxyObject.Value value) {
-            tweet("\"" + device.getName() + "\" value \"" + value.getId() + "\" is \"" + value.getTypeInstance() + "\"");
+            tweet("\"" + device.getName() + "\" value \"" + value.getId() + "\" is \"" + value.getTypeInstances() + "\"");
         }
     }
 
@@ -373,7 +373,7 @@ public class HousemateTweeter {
 
         @Override
         public void valueChanged(SimpleProxyObject.Property property) {
-            tweet("\"" + device.getName() + "\" property \"" + property.getId() + "\" is now set to \"" + property.getTypeInstance() + "\"");
+            tweet("\"" + device.getName() + "\" property \"" + property.getId() + "\" is now set to \"" + property.getTypeInstances() + "\"");
         }
     }
 }

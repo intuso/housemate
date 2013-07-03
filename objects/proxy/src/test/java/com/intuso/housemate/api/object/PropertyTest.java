@@ -6,6 +6,7 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
@@ -16,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
@@ -43,7 +45,7 @@ public class PropertyTest {
     public void addLists() throws HousemateException {
         TestEnvironment.TEST_INSTANCE.getProxyRoot().addWrapper(proxyList);
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
-        realProperty = IntegerType.createProperty(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-property", "My Property", "description", 1234);
+        realProperty = IntegerType.createProperty(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-property", "My Property", "description", Arrays.asList(1234));
         realList.add(realProperty);
         proxyProperty = proxyList.get("my-property");
     }
@@ -55,7 +57,7 @@ public class PropertyTest {
 
     @Test
     public void testSetProxyProperty() throws HousemateException {
-        proxyProperty.set(new TypeInstance("-1234"), new CommandListener<SimpleProxyObject.Command>() {
+        proxyProperty.set(new TypeInstances(new TypeInstance("-1234")), new CommandListener<SimpleProxyObject.Command>() {
             @Override
             public void commandStarted(SimpleProxyObject.Command function) {
                 //To change body of implemented methods use File | Settings | File Templates.
@@ -89,7 +91,7 @@ public class PropertyTest {
                 called.set(true);
             }
         });
-        realProperty.setTypedValue(-1234);
+        realProperty.setTypedValues(-1234);
         assertEquals(true, called.get());
     }
 }

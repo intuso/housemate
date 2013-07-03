@@ -2,6 +2,7 @@ package com.intuso.housemate.broker.plugin.type.valuesource;
 
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.api.object.type.TypeWrappable;
@@ -14,8 +15,8 @@ import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealSubType;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
-import com.intuso.housemate.object.real.impl.type.RealSingleChoiceType;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -23,7 +24,7 @@ import java.util.List;
 
 /**
  */
-public class ValueSourceType extends RealSingleChoiceType<ValueSource> {
+public class ValueSourceType extends RealChoiceType<ValueSource> {
 
     public final static String ID = "value-source";
     public final static String NAME = "Value Source";
@@ -40,7 +41,7 @@ public class ValueSourceType extends RealSingleChoiceType<ValueSource> {
     private final Serialiser serialiser;
 
     public ValueSourceType(RealResources resources, Root<?, ?> root, RealList<TypeWrappable<?>, RealType<?, ?, ?>> types) {
-        super(resources, ID, NAME, DESCRIPTION, createOptions(resources, root));
+        super(resources, ID, NAME, DESCRIPTION, 1, 1, createOptions(resources, root));
         serialiser = new Serialiser(resources.getLog(), new RealObjectType.Serialiser<Value<?, ?>>(root), root, types);
     }
 
@@ -82,14 +83,14 @@ public class ValueSourceType extends RealSingleChoiceType<ValueSource> {
         @Override
         public TypeInstance serialise(ValueSource source) {
             if(source instanceof ConstantValue) {
-                TypeInstances childValues = new TypeInstances();
+                TypeInstanceMap childValues = new TypeInstanceMap();
                 TypeInstance typeInstance = new TypeInstance(source.getValue().getType().getId());
-                typeInstance.getChildValues().put(ConstantType.SUB_TYPE_ID, source.getValue().getTypeInstance());
-                childValues.put("type", typeInstance);
+                typeInstance.getChildValues().put(ConstantType.SUB_TYPE_ID, source.getValue().getTypeInstances());
+                childValues.put("type", new TypeInstances(typeInstance));
                 return new TypeInstance(CONSTANT_VALUE_ID, childValues);
             } else if(source instanceof ValueLocation) {
-                TypeInstances childValues = new TypeInstances();
-                childValues.put("path", realObjectTypeSerialiser.serialise(((ValueLocation) source).getObjectReference()));
+                TypeInstanceMap childValues = new TypeInstanceMap();
+                childValues.put("path", new TypeInstances(realObjectTypeSerialiser.serialise(((ValueLocation) source).getObjectReference())));
                 return new TypeInstance(VALUE_LOCATION_ID, childValues);
             } else
                 return null;
@@ -100,10 +101,10 @@ public class ValueSourceType extends RealSingleChoiceType<ValueSource> {
             if(value == null || value.getValue() == null)
                 return null;
             if(value.getValue().equals(CONSTANT_VALUE_ID)) {
-                TypeInstance typeValue = value.getChildValues().get("type");
+                TypeInstances typeValue = value.getChildValues().get("type");
                 if(typeValue == null)
                     return null;
-                String typeId = typeValue.getValue();
+                String typeId = typeValue.getFirstValue();
                 if(typeId == null) {
                     log.w("Cannot deserialise constant, type id is null");
                     return null;
@@ -113,9 +114,12 @@ public class ValueSourceType extends RealSingleChoiceType<ValueSource> {
                     log.w("Cannot deserialise constant, no type for id " + typeId);
                     return null;
                 }
-                return new ConstantValue((RealType<?,?,Object>) type, typeValue.getChildValues().get(ConstantType.SUB_TYPE_ID));
+                return new ConstantValue((RealType<?,?,Object>) type, typeValue.get(0).getChildValues().get(ConstantType.SUB_TYPE_ID));
             } else if(value.getValue().equals(VALUE_LOCATION_ID)) {
-                return new ValueLocation(realObjectTypeSerialiser.deserialise(value.getChildValues().get("path")), root);
+                if(value.getChildValues().get("path") != null && value.getChildValues().get("path").size() > 0)
+                    return new ValueLocation(realObjectTypeSerialiser.deserialise(value.getChildValues().get("path").get(0)), root);
+                else
+                    return null;
             } else
                 return null;
         }

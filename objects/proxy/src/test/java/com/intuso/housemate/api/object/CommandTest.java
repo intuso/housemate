@@ -6,6 +6,7 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
@@ -58,7 +59,7 @@ public class CommandTest {
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
         realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-command", "My Command", "description", new ArrayList<RealParameter<?>>()) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
+            public void perform(TypeInstanceMap values) throws HousemateException {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
         };
@@ -76,13 +77,13 @@ public class CommandTest {
         final AtomicBoolean called = new AtomicBoolean(false);
         RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-other-command", "My Other Command", "description", new ArrayList<RealParameter<?>>()) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
+            public void perform(TypeInstanceMap values) throws HousemateException {
                 called.set(true);
             }
         };
         realList.add(realCommand);
         SimpleProxyObject.Command proxyCommand = proxyList.get("my-other-command");
-        proxyCommand.perform(new TypeInstances(), EMPTY_FUNCTION_LISTENER);
+        proxyCommand.perform(new TypeInstanceMap(), EMPTY_FUNCTION_LISTENER);
         assertEquals(true, called.get());
     }
 
@@ -92,17 +93,17 @@ public class CommandTest {
         RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-other-command", "My Other Command", "description",
                 Arrays.<RealParameter<?>>asList(IntegerType.createParameter(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-parameter", "My Parameter", "description"))) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
+            public void perform(TypeInstanceMap values) throws HousemateException {
                 correctParam.set(values.get("my-parameter") != null
-                        && values.get("my-parameter").getValue() != null
-                        && values.get("my-parameter").getValue().equals("1234"));
+                        && values.get("my-parameter").getFirstValue() != null
+                        && values.get("my-parameter").getFirstValue().equals("1234"));
             }
         };
         realList.add(realCommand);
         SimpleProxyObject.Command proxyCommand = proxyList.get("my-other-command");
-        proxyCommand.perform(new TypeInstances() {
+        proxyCommand.perform(new TypeInstanceMap() {
             {
-                put("my-parameter", new TypeInstance("1234"));
+                put("my-parameter", new TypeInstances(new TypeInstance("1234")));
             }
         }, EMPTY_FUNCTION_LISTENER);
         assertEquals(true, correctParam.get());
@@ -112,7 +113,7 @@ public class CommandTest {
     public void testPerformListenerCalled() throws HousemateException {
         final AtomicBoolean functionStartedCalled = new AtomicBoolean(false);
         final AtomicBoolean functionFinishedCalled = new AtomicBoolean(false);
-        proxyCommand.perform(new TypeInstances(), new CommandListener<SimpleProxyObject.Command>() {
+        proxyCommand.perform(new TypeInstanceMap(), new CommandListener<SimpleProxyObject.Command>() {
             @Override
             public void commandStarted(SimpleProxyObject.Command function) {
                 functionStartedCalled.set(true);

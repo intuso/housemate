@@ -2,7 +2,7 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.google.gwt.dom.client.Style;
 import com.intuso.housemate.api.object.BaseObject;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.web.client.bootstrap.widget.list.TableList;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableCol;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableColGroup;
@@ -11,17 +11,17 @@ import com.intuso.housemate.web.client.bootstrap.widget.table.TableColGroup;
  */
 public abstract class TypeInputList<O extends BaseObject<?>> extends TableList<O> {
 
-    private TypeInstances instances;
+    private TypeInstanceMap instances;
 
     public TypeInputList() {
         addColGroup();
     }
 
-    public void setTypeInstances(TypeInstances instances) {
-        this.instances = instances != null ? instances : new TypeInstances();
+    public void setTypeInstances(TypeInstanceMap instances) {
+        this.instances = instances != null ? instances : new TypeInstanceMap();
     }
 
-    protected TypeInstances getInstances() {
+    protected TypeInstanceMap getInstances() {
         return instances;
     }
 

@@ -30,9 +30,9 @@ public class LabelSimpleValue extends Value {
 
     @Override
     public void valueChanged(com.intuso.housemate.api.object.value.Value<?, ?> value) {
-        if(value.getTypeInstance() == null || value.getTypeInstance().getValue() == null)
+        if(value.getTypeInstances() == null || value.getTypeInstances().getFirstValue() == null)
             label.setText("");
         else
-            label.setText(value.getTypeInstance().getValue());
+            label.setText(value.getTypeInstances().getFirstValue());
     }
 }

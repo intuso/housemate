@@ -5,7 +5,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
@@ -38,7 +38,7 @@ public abstract class BrokerRealPrimaryObject<
         super(resources, data);
         this.remove = new BrokerRealCommand(resources, REMOVE_COMMAND_ID, REMOVE_COMMAND_ID, "Remove the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
+            public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning())
                     throw new HousemateException("Cannot remove while " + objectType + " is still running");
                 remove();
@@ -48,7 +48,7 @@ public abstract class BrokerRealPrimaryObject<
         this.running = new BrokerRealValue<Boolean>(resources, RUNNING_VALUE_ID, RUNNING_VALUE_ID, "Whether the " + objectType + " is running or not", new BooleanType(resources.getRealResources()), false);
         this.start = new BrokerRealCommand(resources, START_COMMAND_ID, START_COMMAND_ID, "Start the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
+            public void perform(TypeInstanceMap values) throws HousemateException {
                 if(!isRunning()) {
                     start();
                     running.setTypedValue(true);
@@ -57,7 +57,7 @@ public abstract class BrokerRealPrimaryObject<
         };
         this.stop = new BrokerRealCommand(resources, STOP_COMMAND_ID, STOP_COMMAND_ID, "Stop the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
+            public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning()) {
                     stop();
                     running.setTypedValue(false);

@@ -6,6 +6,7 @@ import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.bridge.ValueBridge;
@@ -47,16 +48,16 @@ public class TestValueComparison {
     @Test
     public void testTwoConstantsEqualsTrue() {
         RealType<?, ?, ?> integerType = new IntegerType(SERVER_ENVIRONMENT.getGeneralResources().getClientResources());
-        ConstantValue valueOne = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstance("1"));
-        ConstantValue valueTwo = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstance("1"));
+        ConstantValue valueOne = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstances(new TypeInstance("1")));
+        ConstantValue valueTwo = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstances(new TypeInstance("1")));
         assertValueComparisonSatisfied(ComparisonOperator.Simple.Equals, valueOne, valueTwo, true);
     }
 
     @Test
     public void testTwoConstantsEqualsFalse() {
         RealType<?, ?, ?> integerType = new IntegerType(SERVER_ENVIRONMENT.getGeneralResources().getClientResources());
-        ConstantValue valueOne = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstance("1"));
-        ConstantValue valueTwo = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstance("2"));
+        ConstantValue valueOne = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstances(new TypeInstance("1")));
+        ConstantValue valueTwo = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstances(new TypeInstance("2")));
         assertValueComparisonSatisfied(ComparisonOperator.Simple.Equals, valueOne, valueTwo, false);
     }
 
@@ -64,7 +65,7 @@ public class TestValueComparison {
     public void testConstantAndLocationGreaterThan() throws HousemateException, InterruptedException {
         final Object lock = new Object();
         RealType<?, ?, ?> doubleType = new DoubleType(SERVER_ENVIRONMENT.getGeneralResources().getClientResources());
-        ConstantValue valueOne = new ConstantValue((RealType<?, ?, Object>) doubleType, new TypeInstance("2.0"));
+        ConstantValue valueOne = new ConstantValue((RealType<?, ?, Object>) doubleType, new TypeInstances(new TypeInstance("2.0")));
         String[] valuePath = new String[] {"", "devices", "device", "values", "dv"};
         ValueLocation valueTwo = new ValueLocation(
                 new RealObjectType.Reference<Value<?, ?>>(valuePath),

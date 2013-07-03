@@ -1,6 +1,6 @@
 package com.intuso.housemate.broker.plugin.type.constant;
 
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.real.RealType;
@@ -17,12 +17,12 @@ import com.intuso.utilities.listener.Listeners;
 public class ConstantInstance<O> implements Value<RealType<?, ?, O>, ConstantInstance<O>> {
 
     private final RealType<?, ?, O> type;
-    private final TypeInstance value;
+    private final TypeInstances values;
     private Listeners<ValueListener<? super ConstantInstance<O>>> listeners = new Listeners<ValueListener<? super ConstantInstance<O>>>();
 
-    public ConstantInstance(RealType<?, ?, O> type, TypeInstance value) {
+    public ConstantInstance(RealType<?, ?, O> type, TypeInstances values) {
         this.type = type;
-        this.value = value;
+        this.values = values;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ConstantInstance<O> implements Value<RealType<?, ?, O>, ConstantIns
     }
 
     @Override
-    public TypeInstance getTypeInstance() {
-        return value;
+    public TypeInstances getTypeInstances() {
+        return values;
     }
 }

@@ -7,13 +7,14 @@ import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.authentication.Reconnect;
 import com.intuso.housemate.api.authentication.Session;
 import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.comms.ConnectionType;
+import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.message.AuthenticationRequest;
 import com.intuso.housemate.api.comms.message.AuthenticationResponse;
-import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.message.ReconnectResponse;
-import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.client.LocalClient;
 import com.intuso.housemate.broker.comms.RemoteClientImpl;
@@ -204,8 +205,8 @@ public class RemoteClientManager {
 
     private BrokerRealUser getUserForSession(String sessionId) throws HousemateException {
         try {
-            TypeInstances details = resources.getStorage().getValues(new String[]{"sessions"}, sessionId);
-            String userId = details.get("user-id").getValue();
+            TypeInstanceMap details = resources.getStorage().getValues(new String[]{"sessions"}, sessionId);
+            String userId = details.get("user-id").getFirstValue();
             return resources.getRealResources().getRoot().getUsers().get(userId);
         } catch(DetailsNotFoundException e) {
             return null;
@@ -213,8 +214,8 @@ public class RemoteClientManager {
     }
 
     private void saveUserSession(String sessionId, BrokerRealUser user) throws HousemateException {
-        TypeInstances details = new TypeInstances();
-        details.put("user-id", new TypeInstance(user.getId()));
+        TypeInstanceMap details = new TypeInstanceMap();
+        details.put("user-id", new TypeInstances(new TypeInstance(user.getId())));
         resources.getStorage().saveValues(new String[]{"sessions"}, sessionId, details);
     }
 
@@ -228,11 +229,11 @@ public class RemoteClientManager {
         // todo look up the id of the user with that username
         String userId = username;
         try {
-            TypeInstances details = resources.getStorage().getValues(resources.getRealResources().getRoot().getUsers().getPath(), userId);
-            TypeInstance storedPasswordHash = details.get("password-hash");
+            TypeInstanceMap details = resources.getStorage().getValues(resources.getRealResources().getRoot().getUsers().getPath(), userId);
+            TypeInstances storedPasswordHash = details.get("password-hash");
             if(storedPasswordHash != null
-                    && storedPasswordHash.getValue() != null
-                    && storedPasswordHash.getValue().equals(passwordHash))
+                    && storedPasswordHash.getFirstValue() != null
+                    && storedPasswordHash.getFirstValue().equals(passwordHash))
                 return resources.getRealResources().getRoot().getUsers().get(userId);
             else
                 return null;

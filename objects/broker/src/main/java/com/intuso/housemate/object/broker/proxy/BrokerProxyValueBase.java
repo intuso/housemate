@@ -4,7 +4,7 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueWrappableBase;
@@ -43,19 +43,19 @@ public class BrokerProxyValueBase<
     }
 
     @Override
-    public TypeInstance getTypeInstance() {
-        return getData().getValue();
+    public TypeInstances getTypeInstances() {
+        return getData().getValues();
     }
 
     @Override
     public final List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(VALUE_ID, new Receiver<ClientPayload<TypeInstance>>() {
+        result.add(addMessageListener(VALUE_ID, new Receiver<ClientPayload<TypeInstances>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<TypeInstance>> stringMessageValueMessage) {
+            public void messageReceived(Message<ClientPayload<TypeInstances>> stringMessageValueMessage) {
                 for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanging(getThis());
-                getData().setValue(stringMessageValueMessage.getPayload().getOriginal());
+                getData().setValues(stringMessageValueMessage.getPayload().getOriginal());
                 for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanged(getThis());
             }

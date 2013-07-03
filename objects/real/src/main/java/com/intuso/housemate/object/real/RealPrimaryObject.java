@@ -6,7 +6,7 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
@@ -37,7 +37,7 @@ public abstract class RealPrimaryObject<
         super(resources, data);
         this.remove = new RealCommand(resources, REMOVE_COMMAND_ID, REMOVE_COMMAND_ID, "Remove the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
+            public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning())
                     throw new HousemateException("Cannot remove while " + objectType + " is still running");
                 remove();
@@ -46,19 +46,19 @@ public abstract class RealPrimaryObject<
         this.running = BooleanType.createValue(resources, RUNNING_VALUE_ID, RUNNING_VALUE_ID, "Whether the " + objectType + " is running or not", false);
         this.start = new RealCommand(resources, START_COMMAND_ID, START_COMMAND_ID, "Start the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
+            public void perform(TypeInstanceMap values) throws HousemateException {
                 if(!isRunning()) {
                     _start();
-                    running.setTypedValue(true);
+                    running.setTypedValues(true);
                 }
             }
         };
         this.stop = new RealCommand(resources, STOP_COMMAND_ID, STOP_COMMAND_ID, "Stop the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
+            public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning()) {
                     _stop();
-                    running.setTypedValue(false);
+                    running.setTypedValues(false);
                 }
             }
         };

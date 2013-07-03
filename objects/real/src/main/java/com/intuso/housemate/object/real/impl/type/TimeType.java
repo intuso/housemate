@@ -18,7 +18,7 @@ public class TimeType extends RealRegexType<Time> {
      * @param resources the resources
      */
     public TimeType(RealResources resources) {
-        super(resources, ID, NAME, DESCRIPTION, REGEX);
+        super(resources, ID, NAME, DESCRIPTION, 1, 1, REGEX);
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.intuso.housemate.api.object.property;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.type.Type;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 
 /**
@@ -22,10 +22,10 @@ public interface Property<
 
     /**
      * Sets the value of this property
-     * @param value the new value
+     * @param values the new values
      * @param listener the listener to notify of progress
      */
-    public void set(TypeInstance value, CommandListener<? super SET_COMMAND> listener);
+    public void set(TypeInstances values, CommandListener<? super SET_COMMAND> listener);
 
     /**
      * Gets the set value command

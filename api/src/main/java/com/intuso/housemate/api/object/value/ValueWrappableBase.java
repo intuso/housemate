@@ -1,7 +1,7 @@
 package com.intuso.housemate.api.object.value;
 
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 
 /**
  *
@@ -11,14 +11,14 @@ public abstract class ValueWrappableBase<WBL extends HousemateObjectWrappable<?>
         extends HousemateObjectWrappable<WBL> {
     
     private String type;
-    private TypeInstance value;
+    private TypeInstances values;
 
     protected ValueWrappableBase() {}
 
-    public ValueWrappableBase(String id, String name, String description, String type, TypeInstance value) {
+    public ValueWrappableBase(String id, String name, String description, String type, TypeInstances values) {
         super(id, name,  description);
         this.type = type;
-        this.value = value;
+        this.values = values;
     }
 
     /**
@@ -33,15 +33,15 @@ public abstract class ValueWrappableBase<WBL extends HousemateObjectWrappable<?>
      * Gets the current value
      * @return the current value
      */
-    public TypeInstance getValue() {
-        return value;
+    public TypeInstances getValues() {
+        return values;
     }
 
     /**
      * Sets the current value
-     * @param value the new value
+     * @param values the new value
      */
-    public void setValue(TypeInstance value) {
-        this.value = value;
+    public void setValues(TypeInstances values) {
+        this.values = values;
     }
 }

@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
 import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -37,10 +38,10 @@ public class MultiSelectInput extends ListBox implements TypeInput {
                 for(int i = 0; i < getItemCount(); i++)
                     if(isItemSelected(i))
                         selectedOptions.add(getItemText(i));
-                TypeInstance typeInstance = new TypeInstance();
+                TypeInstances typeInstances = new TypeInstances();
                 for(String selectedOption : selectedOptions)
-                    typeInstance.getChildValues().put(selectedOption, new TypeInstance());
-                fireEvent(new TypeInputEditedEvent(typeInstance));
+                    typeInstances.add(new TypeInstance(selectedOption));
+                fireEvent(new TypeInputEditedEvent(typeInstances));
             }
         });
         optionIndices.clear();
@@ -64,9 +65,10 @@ public class MultiSelectInput extends ListBox implements TypeInput {
     }
 
     @Override
-    public void setTypeInstance(TypeInstance typeInstance) {
+    public void setTypeInstances(TypeInstances typeInstances) {
         selectedOptions.clear();
-        selectedOptions.addAll(typeInstance.getChildValues().keySet());
+        for(TypeInstance typeInstance : typeInstances)
+            selectedOptions.add(typeInstance.getValue());
         for(int i = 0; i < options.size(); i++)
             setItemSelected(i, false);
         for(String id : selectedOptions) {

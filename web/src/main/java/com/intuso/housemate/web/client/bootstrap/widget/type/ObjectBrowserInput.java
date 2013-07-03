@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
@@ -25,17 +26,17 @@ public class ObjectBrowserInput extends FlowPanel implements TypeInput {
         rootNode.addObjectSelectedHandler(new ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
             @Override
             public void objectSelected(ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?, ?, ?>> event) {
-                fireEvent(new TypeInputEditedEvent(new TypeInstance(Joiner.on("/").join(event.getObject().getPath()))));
+                fireEvent(new TypeInputEditedEvent(new TypeInstances(new TypeInstance(Joiner.on("/").join(event.getObject().getPath())))));
             }
         });
         add(rootNode);
     }
 
     @Override
-    public void setTypeInstance(TypeInstance typeInstance) {
-        if(typeInstance != null && typeInstance.getValue() != null) {
+    public void setTypeInstances(TypeInstances typeInstance) {
+        if(typeInstance != null && typeInstance.getFirstValue() != null) {
             HousemateObject<?, ?, ?, ?, ?> object = Housemate.ENVIRONMENT.getResources().getRoot().getObject(
-                    typeInstance.getValue().split("/"));
+                    typeInstance.getFirstValue().split("/"));
             if(object instanceof ProxyObject)
                 rootNode.showObject((ProxyObject<?, ?, ?, ?, ?, ?, ?>) object);
         }

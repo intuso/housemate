@@ -94,7 +94,7 @@ public class RealDevice
         try {
             start();
         } catch (HousemateException e) {
-            getErrorValue().setTypedValue("Could not start device: " + e.getMessage());
+            getErrorValue().setTypedValues("Could not start device: " + e.getMessage());
         }
     }
 

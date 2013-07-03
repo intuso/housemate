@@ -1,6 +1,7 @@
 package com.intuso.housemate.sample.plugin.type;
 
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealSubType;
 import com.intuso.housemate.object.real.impl.type.DoubleType;
@@ -21,7 +22,7 @@ public class LocationType extends RealCompoundType<Location> {
     public final static String LONGITUDE_DESCRIPTION = "The location's longitude";
 
     protected LocationType(RealResources resources) {
-        super(resources, ID, NAME, DESCRIPTION, makeLatitudeSubType(resources), makeLongitudeSubType(resources));
+        super(resources, ID, NAME, DESCRIPTION, 1, 1, makeLatitudeSubType(resources), makeLongitudeSubType(resources));
     }
 
     private static RealSubType<Double> makeLatitudeSubType(RealResources resources) {
@@ -35,8 +36,8 @@ public class LocationType extends RealCompoundType<Location> {
     @Override
     public TypeInstance serialise(Location location) {
         TypeInstance result = new TypeInstance();
-        result.getChildValues().put(LATITUDE_ID, new TypeInstance(Double.toString(location.getLatitiude())));
-        result.getChildValues().put(LONGITUDE_ID, new TypeInstance(Double.toString(location.getLongitude())));
+        result.getChildValues().put(LATITUDE_ID, new TypeInstances(new TypeInstance(Double.toString(location.getLatitiude()))));
+        result.getChildValues().put(LONGITUDE_ID, new TypeInstances(new TypeInstance(Double.toString(location.getLongitude()))));
         return result;
     }
 
@@ -47,8 +48,8 @@ public class LocationType extends RealCompoundType<Location> {
                 || instance.getChildValues().get(LONGITUDE_ID) == null)
             return null;
         try {
-            return new Location(Double.parseDouble(instance.getChildValues().get(LATITUDE_ID).getValue()),
-                    Double.parseDouble(instance.getChildValues().get(LONGITUDE_ID).getValue()));
+            return new Location(Double.parseDouble(instance.getChildValues().get(LATITUDE_ID).getFirstValue()),
+                    Double.parseDouble(instance.getChildValues().get(LONGITUDE_ID).getFirstValue()));
         } catch(NumberFormatException e) {
             getLog().e("Failed to deserialise location lat/long to double form");
             return null;

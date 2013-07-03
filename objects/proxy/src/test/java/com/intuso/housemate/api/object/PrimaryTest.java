@@ -64,9 +64,9 @@ public class PrimaryTest {
     @Test
     public void testStartStopPrimary() throws HousemateException {
         assertFalse(proxyPrimary.isRunning());
-        realPrimary.getRunningValue().setTypedValue(Boolean.TRUE);
+        realPrimary.getRunningValue().setTypedValues(Boolean.TRUE);
         assertTrue(proxyPrimary.isRunning());
-        realPrimary.getRunningValue().setTypedValue(Boolean.FALSE);
+        realPrimary.getRunningValue().setTypedValues(Boolean.FALSE);
         assertFalse(proxyPrimary.isRunning());
         proxyPrimary.getStartCommand().perform(EMPTY_LISTENER);
         assertTrue(proxyPrimary.isRunning());
@@ -77,9 +77,9 @@ public class PrimaryTest {
     @Test
     public void testError() {
         assertNull(proxyPrimary.getError());
-        realPrimary.getErrorValue().setTypedValue("error");
+        realPrimary.getErrorValue().setTypedValues("error");
         assertEquals("error", proxyPrimary.getError());
-        realPrimary.getErrorValue().setTypedValue(null);
+        realPrimary.getErrorValue().setTypedValues((String)null);
         assertNull(proxyPrimary.getError());
     }
 
@@ -101,7 +101,7 @@ public class PrimaryTest {
         });
         proxyPrimary.getStartCommand().perform(EMPTY_LISTENER);
         proxyPrimary.getStopCommand().perform(EMPTY_LISTENER);
-        realPrimary.getErrorValue().setTypedValue("error");
+        realPrimary.getErrorValue().setTypedValues("error");
         proxyPrimary.getRemoveCommand().perform(EMPTY_LISTENER);
         assertTrue(errorUpdated.get());
         assertTrue(runningUpdated.get());

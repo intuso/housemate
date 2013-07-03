@@ -22,7 +22,7 @@ public class ValuesInvocationHandler implements InvocationHandler {
         RealValue<Object> value = values.get(method);
         if(value == null)
             throw new HousemateException("Could not find value instance for annotated method " + method.getName());
-        value.setTypedValue(objects[0]);
+        value.setTypedValues(objects[0]);
         return null;
     }
 }

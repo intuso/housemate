@@ -4,7 +4,6 @@ import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.NoChildrenWrappable;
 
 /**
- *
  * Data object for a parameter
  */
 public final class ParameterWrappable extends HousemateObjectWrappable<NoChildrenWrappable> {

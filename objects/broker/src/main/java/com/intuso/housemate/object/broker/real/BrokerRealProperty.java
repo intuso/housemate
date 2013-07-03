@@ -5,11 +5,12 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealType;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @param <O> the type of the property
@@ -26,24 +27,39 @@ public class BrokerRealProperty<O>
      * @param name the object's name
      * @param description the object's description
      * @param type the type of the property
-     * @param value the initial value of the property
+     * @param values the initial values of the property
      */
-    public BrokerRealProperty(BrokerRealResources resources, String id, String name, String description, RealType<?, ?, O> type, O value) {
-        super(resources, new PropertyWrappable(id, name, description, type.getId(), type.serialise(value)), type);
-        setCommand = new BrokerRealCommand(resources, SET_COMMAND_ID, SET_COMMAND_ID, "The command to change the property's value",
-                Arrays.<BrokerRealParameter<?>>asList(new BrokerRealParameter<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
+    public BrokerRealProperty(BrokerRealResources resources, String id, String name, String description,
+                              RealType<?, ?, O> type, O ... values) {
+        this(resources, id, name, description, type, Arrays.asList(values));
+    }
+
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the object's id
+     * @param name the object's name
+     * @param description the object's description
+     * @param type the type of the property
+     * @param values the initial values of the property
+     */
+    public BrokerRealProperty(BrokerRealResources resources, String id, String name, String description,
+                              RealType<?, ?, O> type, List<O> values) {
+        super(resources, new PropertyWrappable(id, name, description, type.getId(),
+                RealType.serialiseAll(type, values)), type);
+        setCommand = new BrokerRealCommand(resources, SET_COMMAND_ID, SET_COMMAND_ID, "The command to change the property's values",
+                Arrays.<BrokerRealParameter<?>>asList(new BrokerRealParameter<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new values for the property", type))) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
-                O object = getType().deserialise(values.get(VALUE_PARAM));
-                BrokerRealProperty.this.setTypedValue(object);
+            public void perform(TypeInstanceMap values) throws HousemateException {
+                List<O> objects = RealType.deserialiseAll(getType(), values.get(VALUE_PARAM));
+                BrokerRealProperty.this.setTypedValues(objects);
             }
         };
         addWrapper(setCommand);
     }
 
     @Override
-    public void set(final TypeInstance value, CommandListener<? super BrokerRealCommand> listener) {
-        getSetCommand().perform(new TypeInstances() {
+    public void set(final TypeInstances value, CommandListener<? super BrokerRealCommand> listener) {
+        getSetCommand().perform(new TypeInstanceMap() {
             {
                 put(VALUE_ID, value);
             }

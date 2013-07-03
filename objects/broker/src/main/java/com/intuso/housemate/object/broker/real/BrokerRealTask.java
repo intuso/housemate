@@ -1,15 +1,16 @@
 package com.intuso.housemate.object.broker.real;
 
-import com.intuso.housemate.api.object.task.Task;
-import com.intuso.housemate.api.object.task.TaskListener;
-import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.task.Task;
+import com.intuso.housemate.api.object.task.TaskListener;
+import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BrokerRealTask
         extends BrokerRealObject<TaskWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>,
@@ -40,7 +41,7 @@ public abstract class BrokerRealTask
      */
     public BrokerRealTask(BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
         super(resources, new TaskWrappable(id, name, description));
-        errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), null);
+        errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), (List)null);
         executingValue = new BrokerRealValue<Boolean>(resources, EXECUTING_TYPE, EXECUTING_TYPE, "Whether the task is executing", new BooleanType(resources.getRealResources()), false);
         propertyList = new BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The task's properties", properties);
         addWrapper(errorValue);

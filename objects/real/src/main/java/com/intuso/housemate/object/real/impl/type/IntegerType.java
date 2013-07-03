@@ -8,6 +8,8 @@ import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
 
+import java.util.List;
+
 /**
  * Type for an integer
  */
@@ -51,11 +53,11 @@ public class IntegerType extends RealSimpleType<Integer> {
      * @param id the property's id
      * @param name the property's name
      * @param description the property's description
-     * @param value the initial value
+     * @param values the initial values
      * @return an integer property object
      */
-    public static RealProperty<Integer> createProperty(RealResources resources, String id, String name, String description, Integer value) {
-        return new RealProperty<Integer>(resources, id, name, description, new IntegerType(resources), value);
+    public static RealProperty<Integer> createProperty(RealResources resources, String id, String name, String description, List<Integer> values) {
+        return new RealProperty<Integer>(resources, id, name, description, new IntegerType(resources), values);
     }
 
     /**

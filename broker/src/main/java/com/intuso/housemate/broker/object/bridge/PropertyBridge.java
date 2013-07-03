@@ -5,7 +5,7 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
 import javax.annotation.Nullable;
@@ -20,15 +20,15 @@ public class PropertyBridge
 
     public PropertyBridge(BrokerBridgeResources resources, Property<?, ?, ?> property) {
         super(resources,
-            new PropertyWrappable(property.getId(), property.getName(), property.getDescription(), property.getType().getId(), property.getTypeInstance()),
+            new PropertyWrappable(property.getId(), property.getName(), property.getDescription(), property.getType().getId(), property.getTypeInstances()),
             property);
         setCommand = new CommandBridge(resources, property.getSetCommand());
         addWrapper(setCommand);
     }
 
     @Override
-    public void set(final TypeInstance value, CommandListener<? super CommandBridge> listener) {
-        setCommand.perform(new TypeInstances() {
+    public void set(final TypeInstances value, CommandListener<? super CommandBridge> listener) {
+        setCommand.perform(new TypeInstanceMap() {
             {
                 put(VALUE_PARAM, value);
             }

@@ -5,6 +5,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
 import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 
@@ -16,7 +17,7 @@ public class CheckBoxInput extends CheckBox implements TypeInput {
         addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
-                fireEvent(new TypeInputEditedEvent(new TypeInstance(Boolean.toString(event.getValue()))));
+                fireEvent(new TypeInputEditedEvent(new TypeInstances(new TypeInstance(Boolean.toString(event.getValue())))));
             }
         });
     }
@@ -27,10 +28,10 @@ public class CheckBoxInput extends CheckBox implements TypeInput {
     }
 
     @Override
-    public void setTypeInstance(TypeInstance typeInstance) {
-        if(typeInstance == null || typeInstance.getValue() == null)
+    public void setTypeInstances(TypeInstances typeInstances) {
+        if(typeInstances == null || typeInstances.getFirstValue() == null)
             setValue(Boolean.FALSE);
         else
-            setValue(Boolean.parseBoolean(typeInstance.getValue()), false);
+            setValue(Boolean.parseBoolean(typeInstances.getFirstValue()), false);
     }
 }

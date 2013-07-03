@@ -1,10 +1,10 @@
 package com.intuso.housemate.annotations.processor;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealCommand;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealResources;
 
 import java.lang.reflect.InvocationTargetException;
@@ -27,7 +27,7 @@ public class CommandImpl extends RealCommand {
     }
 
     @Override
-    public void perform(TypeInstances values) throws HousemateException {
+    public void perform(TypeInstanceMap values) throws HousemateException {
         try {
             method.invoke(instance, parameterConverter.convert(values));
         } catch(InvocationTargetException e) {
@@ -45,14 +45,14 @@ public class CommandImpl extends RealCommand {
             this.parameters = parameters;
         }
 
-        public Object[] convert(TypeInstances values) {
+        public Object[] convert(TypeInstanceMap values) {
             Object[] result = new Object[parameters.size()];
             for(int i = 0; i < result.length; i++) {
-                TypeInstance value = values.get(parameters.get(i).getId());
-                if(value == null)
+                TypeInstances typeInstances = values.get(parameters.get(i).getId());
+                if(typeInstances == null || typeInstances.size() == 0)
                     result[i] = null;
                 else
-                    result[i] = parameters.get(i).getType().deserialise(value);
+                    result[i] = parameters.get(i).getType().deserialise(typeInstances.get(0));
             }
             return result;
         }

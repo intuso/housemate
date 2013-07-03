@@ -113,7 +113,7 @@ public class TypeTest {
     private class MyRealType extends RealRegexType<MyClass> {
 
         protected MyRealType(RealResources resources) throws HousemateException {
-            super(resources, ID, NAME, DESCRIPTION, REGEX);
+            super(resources, ID, NAME, DESCRIPTION, 1, 1, REGEX);
         }
 
         @Override

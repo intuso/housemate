@@ -7,10 +7,12 @@ import com.intuso.housemate.api.object.task.TaskListener;
 import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  */
@@ -42,7 +44,8 @@ public class TaskBridge
 
     @Override
     public String getError() {
-        return StringType.SERIALISER.deserialise(errorValue.getTypeInstance());
+        List<String> errors = RealType.deserialiseAll(StringType.SERIALISER, errorValue.getTypeInstances());
+        return errors != null && errors.size() > 0 ? errors.get(0) : null;
     }
 
     @Override
@@ -52,8 +55,8 @@ public class TaskBridge
 
     @Override
     public boolean isExecuting() {
-        Boolean value = BooleanType.SERIALISER.deserialise(executingValue.getTypeInstance());
-        return value != null ? value : false;
+        List<Boolean> executings = RealType.deserialiseAll(BooleanType.SERIALISER, executingValue.getTypeInstances());
+        return executings != null && executings.size() > 0 && executings.get(0) != null ? executings.get(0) : false;
     }
 
     @Override

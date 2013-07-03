@@ -9,6 +9,7 @@ import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.rfxcom.rfxtrx.util.HomeEasy;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Housemate device that controls a USB relay
@@ -26,12 +27,12 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
     /**
      * The number of the relay this device "controls"
      */
-    public final RealProperty<Integer> houseId = IntegerType.createProperty(getResources(), "house-id", "House ID", "HomeEasy house ID (in decimal)", 0);
+    public final RealProperty<Integer> houseId = IntegerType.createProperty(getResources(), "house-id", "House ID", "HomeEasy house ID (in decimal)", Arrays.asList(0));
 
     /**
      * The number of the relay this device "controls"
      */
-    public final RealProperty<Integer> unitId = IntegerType.createProperty(getResources(), "unit-id", "Unit ID", "HomeEasy unit ID", 1);
+    public final RealProperty<Integer> unitId = IntegerType.createProperty(getResources(), "unit-id", "Unit ID", "HomeEasy unit ID", Arrays.asList(1));
 
 	/**
 	 * Create a new USB relay device
@@ -82,29 +83,29 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
     public void valueChanged(RealProperty<?> property) {
         Integer houseId = this.houseId.getTypedValue();
         if(houseId == null) {
-            getErrorValue().setTypedValue(this.houseId.getName() + " has not been set");
+            getErrorValue().setTypedValues(this.houseId.getName() + " has not been set");
             return;
         }
 
         Integer unitId = this.unitId.getTypedValue();
         if(unitId == null) {
-            getErrorValue().setTypedValue(this.unitId.getName() + " has not been set");
+            getErrorValue().setTypedValues(this.unitId.getName() + " has not been set");
             return;
         }
 		
         // check the port value is a positive number
         if(houseId < 0 || houseId > 0x03FFFFFF) {
-            getErrorValue().setTypedValue("House id must be between 0 and " + 0x03FFFFFF);
+            getErrorValue().setTypedValues("House id must be between 0 and " + 0x03FFFFFF);
             return;
         }
 			
 		// check the relay value is a number between 1 and 8
 		if(unitId < 1 || unitId > 16) {
-            getErrorValue().setTypedValue("Unitcode must be between 1 and 16 (inclusive)");
+            getErrorValue().setTypedValues("Unitcode must be between 1 and 16 (inclusive)");
             return;
         }
 
-        getErrorValue().setTypedValue(null);
+        getErrorValue().setTypedValues((String)null);
         createHed(houseId, unitId);
 	}
 	

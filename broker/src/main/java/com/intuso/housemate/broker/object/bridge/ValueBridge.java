@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 public class ValueBridge extends ValueBridgeBase<ValueWrappable, NoChildrenWrappable,
                 NoChildrenBridgeObject, ValueBridge> {
     public ValueBridge(BrokerBridgeResources resources, Value<?, ?> proxyValue) {
-        super(resources, new ValueWrappable(proxyValue.getId(), proxyValue.getName(), proxyValue.getDescription(), proxyValue.getType().getId(), proxyValue.getTypeInstance()), proxyValue);
+        super(resources, new ValueWrappable(proxyValue.getId(), proxyValue.getName(), proxyValue.getDescription(), proxyValue.getType().getId(), proxyValue.getTypeInstances()), proxyValue);
     }
 
     public static class Converter implements Function<Value<?, ?>, ValueBridge> {

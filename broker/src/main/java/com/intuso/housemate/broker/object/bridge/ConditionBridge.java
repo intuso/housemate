@@ -7,10 +7,12 @@ import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  */
@@ -62,7 +64,8 @@ public class ConditionBridge
 
     @Override
     public String getError() {
-        return StringType.SERIALISER.deserialise(errorValue.getTypeInstance());
+        List<String> errors = RealType.deserialiseAll(StringType.SERIALISER, errorValue.getTypeInstances());
+        return errors != null && errors.size() > 0 ? errors.get(0) : null;
     }
 
     @Override
@@ -72,8 +75,8 @@ public class ConditionBridge
 
     @Override
     public boolean isSatisfied() {
-        Boolean value = BooleanType.SERIALISER.deserialise(satisfiedValue.getTypeInstance());
-        return value != null ? value : false;
+        List<Boolean> satisfieds = RealType.deserialiseAll(BooleanType.SERIALISER, satisfiedValue.getTypeInstances());
+        return satisfieds != null && satisfieds.size() > 0 && satisfieds.get(0) != null ? satisfieds.get(0) : false;
     }
 
     public static class Converter implements Function<Condition<?, ?, ?, ?, ?, ?>, ConditionBridge> {

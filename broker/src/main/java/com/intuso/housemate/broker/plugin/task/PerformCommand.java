@@ -9,7 +9,7 @@ import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.bridge.RootObjectBridge;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
@@ -17,6 +17,9 @@ import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.BrokerRealTask;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.utilities.listener.ListenerRegistration;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  */
@@ -47,7 +50,7 @@ public class PerformCommand extends BrokerRealTask implements ObjectLifecycleLis
     public PerformCommand(BrokerRealResources resources, String id, String name, String description, RootObjectBridge root) {
         super(resources, id, name, description);
         commandPath = new BrokerRealProperty<RealObjectType.Reference<BaseObject<?>>>(resources, "command-path", "Command Path", "The path to the command to perform",
-                new RealObjectType(resources.getRealResources(), root), null);
+                new RealObjectType(resources.getRealResources(), root), (List)null);
         getProperties().add(commandPath);
         addPropertyListener(root);
     }
@@ -67,7 +70,7 @@ public class PerformCommand extends BrokerRealTask implements ObjectLifecycleLis
                 commandLifecycleListenerRegistration = root.addObjectLifecycleListener(path, PerformCommand.this);
                 HousemateObject<?, ?, ?, ?, ?> object = root.getObject(path);
                 if(object == null)
-                    setError("Cannot find an object at path " + commandPath.getTypeInstance());
+                    setError("Cannot find an object at path " + Arrays.toString(path));
                 else {
                     objectCreated(path, object);
                 }
@@ -98,7 +101,7 @@ public class PerformCommand extends BrokerRealTask implements ObjectLifecycleLis
     public void execute() throws HousemateException {
         if(command != null) {
             getLog().w("Executing " + Joiner.on("/").join(commandPath.getTypedValue().getPath()));
-            command.perform(new TypeInstances(), listener);
+            command.perform(new TypeInstanceMap(), listener);
         } else
             getLog().w("Cannot execute task, no command at " + Joiner.on("/").join(commandPath.getTypedValue().getPath()));
     }

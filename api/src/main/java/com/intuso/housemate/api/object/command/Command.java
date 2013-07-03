@@ -5,7 +5,7 @@ import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.parameter.HasParameters;
 import com.intuso.housemate.api.object.list.List;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 
 /**
  * @param <PL> the type of the propeties list
@@ -26,7 +26,7 @@ public interface Command<
      * @param values the values of the parameters
      * @param listener the listener to call about progress of the command
      */
-    public void perform(TypeInstances values, CommandListener<? super C> listener);
+    public void perform(TypeInstanceMap values, CommandListener<? super C> listener);
 
     /**
      * Message payload for a perform command call
@@ -34,7 +34,7 @@ public interface Command<
     public static class PerformMessageValue implements Message.Payload {
 
         private String opId;
-        private TypeInstances values;
+        private TypeInstanceMap values;
 
         private PerformMessageValue() {}
 
@@ -42,7 +42,7 @@ public interface Command<
          * @param opId the operation id of the command used to associate progress messages with the original call
          * @param values the values to perform with
          */
-        public PerformMessageValue(String opId, TypeInstances values) {
+        public PerformMessageValue(String opId, TypeInstanceMap values) {
             this.opId = opId;
             this.values = values;
         }
@@ -59,7 +59,7 @@ public interface Command<
          * Gets the values
          * @return the values
          */
-        public TypeInstances getValues() {
+        public TypeInstanceMap getValues() {
             return values;
         }
     }

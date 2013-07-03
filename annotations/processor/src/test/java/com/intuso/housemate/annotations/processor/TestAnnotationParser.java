@@ -3,6 +3,7 @@ package com.intuso.housemate.annotations.processor;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.object.real.RealList;
@@ -65,20 +66,20 @@ public class TestAnnotationParser {
         assertNotNull(testDevice.getProperties().get("increment-amount"));
 
         // test parent device element instances
-        ((RealProperty<Integer>)testDevice.getProperties().get("switch-number")).setTypedValue(new Integer(2));
-        TypeInstances values = new TypeInstances();
-        values.put("on", new TypeInstance("true"));
+        ((RealProperty<Integer>)testDevice.getProperties().get("switch-number")).setTypedValues(new Integer(2));
+        TypeInstanceMap values = new TypeInstanceMap();
+        values.put("on", new TypeInstances(new TypeInstance("true")));
         testDevice.getCommands().get("command").perform(values);
-        assertEquals("On 2", testDevice.getValues().get("last-command").getTypeInstance().getValue());
+        assertEquals("On 2", testDevice.getValues().get("last-command").getTypeInstances().getFirstValue());
 
         // test child device element instances
-        ((RealProperty<Integer>)testDevice.getProperties().get("increment-amount")).setTypedValue(2);
-        values = new TypeInstances();
+        ((RealProperty<Integer>)testDevice.getProperties().get("increment-amount")).setTypedValues(2);
+        values = new TypeInstanceMap();
         testDevice.getCommands().get("turn-up").perform(values);
         testDevice.getCommands().get("turn-up").perform(values);
         testDevice.getCommands().get("turn-up").perform(values);
         testDevice.getCommands().get("turn-up").perform(values);
         testDevice.getCommands().get("turn-down").perform(values);
-        assertEquals("6", testDevice.getValues().get("volume").getTypeInstance().getValue());
+        assertEquals("6", testDevice.getValues().get("volume").getTypeInstances().getFirstValue());
     }
 }

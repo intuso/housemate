@@ -1,12 +1,13 @@
 package com.intuso.housemate.object.real;
 
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueWrappableBase;
 import com.intuso.utilities.listener.ListenerRegistration;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ public abstract class RealValueBase<
         implements Value<RealType<?, ?, O>, VALUE>, ValueListener<VALUE> {
 
     private RealType<?, ?, O> type;
-    private O typedValue;
+    private List<O> typedValues;
 
     /**
      * @param resources {@inheritDoc}
@@ -44,8 +45,8 @@ public abstract class RealValueBase<
     }
 
     @Override
-    public TypeInstance getTypeInstance() {
-        return getData().getValue();
+    public TypeInstances getTypeInstances() {
+        return getData().getValues();
     }
 
     /**
@@ -53,21 +54,40 @@ public abstract class RealValueBase<
      * @return
      */
     public O getTypedValue() {
-        return typedValue;
+        return typedValues != null && typedValues.size() != 0 ? typedValues.get(0) : null;
+    }
+
+    /**
+     * Gets the object representation of this value
+     * @return
+     */
+    public List<O> getTypedValues() {
+        return typedValues;
     }
 
     /**
      * Sets the object representation of this value
-     * @param typedValue the new value
+     * @param typedValues the new value
      */
-    public final void setTypedValue(O typedValue) {
-        if((this.typedValue == null && typedValue == null)
-            || (this.typedValue != null && typedValue != null && this.typedValue.equals(typedValue)))
+    public final void setTypedValues(O ... typedValues) {
+        if(typedValues == null)
+            setTypedValues((List)null);
+        else
+            setTypedValues(Arrays.asList(typedValues));
+    }
+
+    /**
+     * Sets the object representation of this value
+     * @param typedValues the new value
+     */
+    public final void setTypedValues(List<O> typedValues) {
+        if((this.typedValues == null && typedValues == null)
+            || (this.typedValues != null && typedValues != null && this.typedValues.equals(typedValues)))
             return;
         for(ValueListener<? super VALUE> listener : getObjectListeners())
             listener.valueChanging((VALUE)this);
-        this.typedValue = typedValue;
-        this.getData().setValue(getType().serialise(typedValue));
+        this.typedValues = typedValues;
+        this.getData().setValues(RealType.serialiseAll(getType(), typedValues));
         for(ValueListener<? super VALUE> listener : getObjectListeners())
             listener.valueChanged((VALUE)this);
     }
@@ -86,6 +106,6 @@ public abstract class RealValueBase<
 
     @Override
     public final void valueChanged(RealValueBase value) {
-        sendMessage(VALUE_ID, getTypeInstance());
+        sendMessage(VALUE_ID, getTypeInstances());
     }
 }

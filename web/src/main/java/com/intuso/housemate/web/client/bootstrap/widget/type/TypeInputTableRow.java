@@ -2,13 +2,12 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Label;
+import com.intuso.housemate.api.object.type.ChoiceTypeWrappable;
 import com.intuso.housemate.api.object.type.CompoundTypeWrappable;
-import com.intuso.housemate.api.object.type.MultiChoiceTypeWrappable;
 import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
 import com.intuso.housemate.api.object.type.RegexTypeWrappable;
 import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
-import com.intuso.housemate.api.object.type.SingleChoiceTypeWrappable;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableCell;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
@@ -24,9 +23,9 @@ public class TypeInputTableRow
         implements HasTypeInputEditedHandlers, TypeInputEditedHandler {
 
     private final String id;
-    private final TypeInstances instances;
+    private final TypeInstanceMap instances;
 
-    public TypeInputTableRow(String id, String name, String description, GWTProxyType type, TypeInstances instances) {
+    public TypeInputTableRow(String id, String name, String description, GWTProxyType type, TypeInstanceMap instances) {
         this.id = id;
         this.instances = instances;
         addNameCell(name, description);
@@ -46,7 +45,7 @@ public class TypeInputTableRow
         if(input != null) {
             input.addTypeInputEditedHandler(this);
             if(instances != null)
-                input.setTypeInstance(instances.get(id));
+                input.setTypeInstances(instances.get(id));
             valueCell.add(input);
         }
         add(valueCell);
@@ -60,7 +59,7 @@ public class TypeInputTableRow
     @Override
     public void onTypeInputEdited(TypeInputEditedEvent event) {
         if(instances != null)
-            instances.put(id, event.getNewValue());
+            instances.put(id, event.getTypeInstances());
         fireEvent(event);
     }
 
@@ -73,11 +72,12 @@ public class TypeInputTableRow
                 return new CheckBoxInput();
             else
                 return new TextInput(typeWrappable);
-        } else if(typeWrappable instanceof SingleChoiceTypeWrappable)
-            return new SingleSelectInput(type);
-        else if(typeWrappable instanceof MultiChoiceTypeWrappable)
-            return new MultiSelectInput(type);
-        else if(typeWrappable instanceof RegexTypeWrappable)
+        } else if(typeWrappable instanceof ChoiceTypeWrappable) {
+            if(typeWrappable.getMinValues() == 1 && typeWrappable.getMaxValues() == 1)
+                return new SingleSelectInput(type);
+            else
+                return new MultiSelectInput(type);
+        } else if(typeWrappable instanceof RegexTypeWrappable)
             return new TextInput(typeWrappable);
         else if(typeWrappable instanceof ObjectTypeWrappable)
             return new ObjectBrowserInput((ObjectTypeWrappable) typeWrappable);

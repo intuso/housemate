@@ -13,7 +13,7 @@ public class ComplexLocationType extends RealCompoundType<Location> {
     public final static String DESCRIPTION = "A location type that is complex";
 
     public ComplexLocationType(RealResources resources, Object extraArg) {
-        super(resources, ID, NAME, DESCRIPTION, /* Add sub types here */ Lists.<RealSubType<?>>newArrayList());
+        super(resources, ID, NAME, DESCRIPTION, 1, 1, /* Add sub types here */ Lists.<RealSubType<?>>newArrayList());
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.type.MultiChoiceTypeWrappable;
+import com.intuso.housemate.api.object.type.ChoiceTypeWrappable;
 import com.intuso.housemate.api.object.option.HasOptions;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 
@@ -19,7 +19,7 @@ public abstract class ProxyMultiChoiceType<
             OPTION extends ProxyOption<?, ?, ?, ?, OPTION>,
             OPTIONS extends ProxyList<?, ?, OptionWrappable, OPTION, OPTIONS>,
             TYPE extends ProxyMultiChoiceType<RESOURCES, CHILD_RESOURCES, OPTION, OPTIONS, TYPE>>
-        extends ProxyType<RESOURCES, CHILD_RESOURCES, MultiChoiceTypeWrappable, ListWrappable<OptionWrappable>, OPTIONS, TYPE>
+        extends ProxyType<RESOURCES, CHILD_RESOURCES, ChoiceTypeWrappable, ListWrappable<OptionWrappable>, OPTIONS, TYPE>
         implements HasOptions {
 
     private static final String OPTIONS_ID = "options";
@@ -31,7 +31,7 @@ public abstract class ProxyMultiChoiceType<
      * @param childResources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyMultiChoiceType(RESOURCES resources, CHILD_RESOURCES childResources, MultiChoiceTypeWrappable data) {
+    public ProxyMultiChoiceType(RESOURCES resources, CHILD_RESOURCES childResources, ChoiceTypeWrappable data) {
         super(resources, childResources, data);
     }
 

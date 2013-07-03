@@ -32,11 +32,13 @@ public abstract class RealCompoundType<O>
      * @param id the compound type's id
      * @param name the compound type's name
      * @param description the compound type's description
+     * @param minValues the minimum number of values the type can have
+     * @param maxValues the maximum number of values the type can have
      * @param subTypes the compound type's sub types
      */
-    protected RealCompoundType(RealResources resources, String id, String name, String description,
-                               RealSubType<?> ... subTypes) {
-        this(resources, id, name, description, Arrays.asList(subTypes));
+    protected RealCompoundType(RealResources resources, String id, String name, String description, int minValues,
+                               int maxValues, RealSubType<?> ... subTypes) {
+        this(resources, id, name, description, minValues, maxValues, Arrays.asList(subTypes));
     }
 
     /**
@@ -44,11 +46,13 @@ public abstract class RealCompoundType<O>
      * @param id the compound type's id
      * @param name the compound type's name
      * @param description the compound type's description
+     * @param minValues the minimum number of values the type can have
+     * @param maxValues the maximum number of values the type can have
      * @param subTypes the compound type's sub types
      */
-    protected RealCompoundType(RealResources resources, String id, String name, String description,
-                               List<RealSubType<?>> subTypes) {
-        super(resources, new CompoundTypeWrappable(id, name, description));
+    protected RealCompoundType(RealResources resources, String id, String name, String description, int minValues,
+                               int maxValues, List<RealSubType<?>> subTypes) {
+        super(resources, new CompoundTypeWrappable(id, name, description, minValues, maxValues));
         this.subTypes = new RealList<SubTypeWrappable, RealSubType<?>>(resources, SUB_TYPES_ID, SUB_TYPES_NAME, SUB_TYPES_DESCRIPTION);
         addWrapper(this.subTypes);
         for(RealSubType<?> subType : subTypes)

@@ -5,6 +5,9 @@ import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueWrappable;
 import com.intuso.housemate.object.real.RealType;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @param <O> the type of the value
  */
@@ -18,9 +21,24 @@ public class BrokerRealValue<O>
      * @param name the object's name
      * @param description the object's description
      * @param type the type of the value
-     * @param value the initial value
+     * @param values the initial values
      */
-    public BrokerRealValue(BrokerRealResources resources, String id, String name, String description, RealType<?, ?, O> type, O value) {
-        super(resources, new ValueWrappable(id, name, description, type.getId(), type.serialise(value)), type);
+    public BrokerRealValue(BrokerRealResources resources, String id, String name, String description,
+                           RealType<?, ?, O> type, O ... values) {
+        this(resources, id, name, description, type, Arrays.asList(values));
+    }
+
+    /**
+     * @param resources {@inheritDoc}
+     * @param id the object's id
+     * @param name the object's name
+     * @param description the object's description
+     * @param type the type of the value
+     * @param values the initial values
+     */
+    public BrokerRealValue(BrokerRealResources resources, String id, String name, String description,
+                           RealType<?, ?, O> type, List<O> values) {
+        super(resources, new ValueWrappable(id, name, description, type.getId(),
+                RealType.serialiseAll(type, values)), type);
     }
 }

@@ -9,11 +9,11 @@ import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealSubType;
 import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.RealSingleChoiceType;
+import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 
 /**
  */
-public class ConstantType extends RealSingleChoiceType<ConstantInstance<Object>> implements ListListener<RealType<?, ?, ?>> {
+public class ConstantType extends RealChoiceType<ConstantInstance<Object>> implements ListListener<RealType<?, ?, ?>> {
 
     public final static String ID = "constant";
     public final static String NAME = "Constant";
@@ -26,7 +26,7 @@ public class ConstantType extends RealSingleChoiceType<ConstantInstance<Object>>
     private final RealList<TypeWrappable<?>, RealType<?, ?, ?>> types;
 
     public ConstantType(RealResources resources, RealList<TypeWrappable<?>, RealType<?, ?, ?>> types) {
-        super(resources, ID, NAME, DESCRIPTION);
+        super(resources, ID, NAME, DESCRIPTION, 1, 1);
         this.types = types;
         types.addObjectListener(this);
     }

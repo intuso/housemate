@@ -102,7 +102,7 @@ public class ArduinoTemperatureSensor extends RealDevice {
                 while(!isInterrupted() && (line = in.readLine()) != null) {
                     getLog().d("Read line");
                     try {
-                        temperature.setTypedValue(Double.parseDouble(line));
+                        temperature.setTypedValues(Double.parseDouble(line));
                         getLog().d("Set temperature");
                     } catch(NumberFormatException e) {
                         getLog().w("Could not parse temperature value \"" + line + "\"");

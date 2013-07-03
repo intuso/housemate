@@ -8,6 +8,8 @@ import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
 
+import java.util.List;
+
 /**
  * Type for a boolean
  */
@@ -51,11 +53,11 @@ public class BooleanType extends RealSimpleType<Boolean> {
      * @param id the property's id
      * @param name the property's name
      * @param description the property's description
-     * @param value the initial value
+     * @param values the initial values
      * @return a boolean property object
      */
-    public static RealProperty<Boolean> createProperty(RealResources resources, String id, String name, String description, Boolean value) {
-        return new RealProperty<Boolean>(resources, id, name, description, new BooleanType(resources), value);
+    public static RealProperty<Boolean> createProperty(RealResources resources, String id, String name, String description, List<Boolean> values) {
+        return new RealProperty<Boolean>(resources, id, name, description, new BooleanType(resources), values);
     }
 
     /**

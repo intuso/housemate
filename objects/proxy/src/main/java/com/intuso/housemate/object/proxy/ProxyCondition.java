@@ -109,7 +109,7 @@ public abstract class ProxyCondition<
 
     @Override
     public final String getError() {
-        return error.getTypeInstance() != null ? error.getTypeInstance().getValue() : null;
+        return error.getTypeInstances() != null ? error.getTypeInstances().getFirstValue() : null;
     }
 
     @Override
@@ -119,6 +119,7 @@ public abstract class ProxyCondition<
 
     @Override
     public final boolean isSatisfied() {
-        return satisfied.getTypeInstance() != null ? Boolean.parseBoolean(satisfied.getTypeInstance().getValue()) : null;
+        return satisfied.getTypeInstances() != null && satisfied.getTypeInstances().getFirstValue() != null
+                ? Boolean.parseBoolean(satisfied.getTypeInstances().getFirstValue()) : false;
     }
 }

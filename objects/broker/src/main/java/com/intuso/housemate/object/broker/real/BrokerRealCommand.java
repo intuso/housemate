@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public abstract class BrokerRealCommand
     }
 
     @Override
-    public void perform(TypeInstances values, CommandListener<? super BrokerRealCommand> listener) {
+    public void perform(TypeInstanceMap values, CommandListener<? super BrokerRealCommand> listener) {
         try {
             listener.commandStarted(this);
             perform(values);
@@ -55,5 +55,5 @@ public abstract class BrokerRealCommand
      * @param values the values of the parameters
      * @throws HousemateException
      */
-    public abstract void perform(TypeInstances values) throws HousemateException;
+    public abstract void perform(TypeInstanceMap values) throws HousemateException;
 }

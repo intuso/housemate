@@ -3,16 +3,17 @@ package com.intuso.housemate.broker.factory;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealOption;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.impl.type.RealSingleChoiceType;
+import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
@@ -61,20 +62,20 @@ public final class DeviceFactory implements PluginListener {
                 new RealParameter<RealDeviceFactory<?>>(resources.getClientResources(), TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
-                TypeInstance deviceType = values.get(TYPE_PARAMETER_ID);
-                if(deviceType == null || deviceType.getValue() == null)
+            public void perform(TypeInstanceMap values) throws HousemateException {
+                TypeInstances deviceType = values.get(TYPE_PARAMETER_ID);
+                if(deviceType == null || deviceType.getFirstValue() == null)
                     throw new HousemateException("No device type specified");
-                TypeInstance name = values.get(NAME_PARAMETER_ID);
-                if(name == null || name.getValue() == null)
+                TypeInstances name = values.get(NAME_PARAMETER_ID);
+                if(name == null || name.getFirstValue() == null)
                     throw new HousemateException("No device name specified");
-                TypeInstance description = values.get(DESCRIPTION_PARAMETER_ID);
-                if(description == null || description.getValue() == null)
+                TypeInstances description = values.get(DESCRIPTION_PARAMETER_ID);
+                if(description == null || description.getFirstValue() == null)
                     throw new HousemateException("No device description specified");
-                RealDeviceFactory<?> deviceFactory = type.deserialise(deviceType);
+                RealDeviceFactory<?> deviceFactory = type.deserialise(deviceType.get(0));
                 if(deviceFactory == null)
                     throw new HousemateException("No factory known for device type " + deviceType);
-                RealDevice device = deviceFactory.create(resources.getClientResources(), name.getValue(), name.getValue(), description.getValue());
+                RealDevice device = deviceFactory.create(resources.getClientResources(), name.getFirstValue(), name.getFirstValue(), description.getFirstValue());
                 resources.getAnnotationProcessor().process(device);
                 list.add(device);
                 resources.getStorage().saveValues(list.getPath(), device.getId(), values);
@@ -99,9 +100,9 @@ public final class DeviceFactory implements PluginListener {
         }
     }
 
-    private class DeviceFactoryType extends RealSingleChoiceType<RealDeviceFactory<?>> {
+    private class DeviceFactoryType extends RealChoiceType<RealDeviceFactory<?>> {
         protected DeviceFactoryType(RealResources resources) {
-            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Arrays.<RealOption>asList());
+            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
         }
 
         @Override

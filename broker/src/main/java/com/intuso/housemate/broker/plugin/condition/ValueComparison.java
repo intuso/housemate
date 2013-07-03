@@ -8,12 +8,14 @@ import com.intuso.housemate.broker.plugin.type.comparison.Comparison;
 import com.intuso.housemate.broker.plugin.type.comparison.ComparisonType;
 import com.intuso.housemate.broker.plugin.type.valuesource.ValueAvailableListener;
 import com.intuso.housemate.broker.plugin.type.valuesource.ValueSource;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.utilities.listener.ListenerRegistration;
+
+import java.util.List;
 
 /**
  * Condition which is true iff the current day of the week matches
@@ -44,7 +46,7 @@ public class ValueComparison extends BrokerRealCondition {
         super(resources, id, name, description);
         this.generalResources = generalResources;
         comparisonProperty = new BrokerRealProperty<Comparison>(resources, COMPARISON_ID, COMPARISON_NAME,
-                COMPARISON_DESCRIPTION, new ComparisonType(resources.getRealResources(), generalResources), null);
+                COMPARISON_DESCRIPTION, new ComparisonType(resources.getRealResources(), generalResources), (List)null);
         getProperties().add(comparisonProperty);
         propertyListener = new PropertyListener();
     }
@@ -93,10 +95,13 @@ public class ValueComparison extends BrokerRealCondition {
             try {
                 RealType<?, ?, ?> type = generalResources.getClient().getRoot().getTypes().get(firstValue.getType().getId());
                 Comparator<Object> comparator = (Comparator<Object>) comparison.getComparatorsByType().get(firstValue.getType().getId());
-                conditionSatisfied(
-                        comparator.compare(
-                                type.deserialise(firstValue.getTypeInstance()),
-                                type.deserialise(secondValue.getTypeInstance())));
+                Object first = firstValue.getTypeInstances() != null && firstValue.getTypeInstances().size() > 0
+                        ? type.deserialise(firstValue.getTypeInstances().get(0))
+                        : null;
+                Object second = secondValue.getTypeInstances() != null && secondValue.getTypeInstances().size() > 0
+                        ? type.deserialise(secondValue.getTypeInstances().get(0))
+                        : null;
+                conditionSatisfied(comparator.compare(first, second));
                 setError(null);
             } catch(HousemateException e) {
                 setError("Error comparing values: " + e.getMessage());

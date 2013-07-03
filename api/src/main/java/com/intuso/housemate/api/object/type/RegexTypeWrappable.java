@@ -13,14 +13,22 @@ public final class RegexTypeWrappable extends TypeWrappable<NoChildrenWrappable>
 
     private RegexTypeWrappable() {}
 
-    public RegexTypeWrappable(String id, String name, String description, String regexPattern) {
-        super(id, name, description);
+    /**
+     * @param id {@inheritDoc}
+     * @param name {@inheritDoc}
+     * @param description {@inheritDoc}
+     * @param minValues {@inheritDoc}
+     * @param maxValues {@inheritDoc}
+     * @param regexPattern the regex pattern that values of this type must match
+     */
+    public RegexTypeWrappable(String id, String name, String description, int minValues, int maxValues, String regexPattern) {
+        super(id, name, description, minValues, maxValues);
         this.regexPattern = regexPattern;
     }
 
     @Override
     public HousemateObjectWrappable clone() {
-        return new RegexTypeWrappable(getId(), getName(), getDescription(), regexPattern);
+        return new RegexTypeWrappable(getId(), getName(), getDescription(), getMinValues(), getMaxValues(), regexPattern);
     }
 
     /**

@@ -5,7 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Label;
 import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.type.TypeInput;
 import com.intuso.housemate.web.client.bootstrap.widget.type.TypeInputTableRow;
@@ -22,11 +22,11 @@ import com.intuso.housemate.web.client.object.GWTProxyProperty;
 public class PropertyTableRow extends TableRow implements TypeInputEditedHandler {
 
     private final GWTProxyCommand setCommand;
-    private final TypeInstances values = new TypeInstances();
+    private final TypeInstanceMap values = new TypeInstanceMap();
 
     public PropertyTableRow(GWTProxyProperty property) {
         this.setCommand = property.getSetCommand();
-        values.put(Property.VALUE_ID, property.getTypeInstance());
+        values.put(Property.VALUE_ID, property.getTypeInstances());
         addNameCell(property.getName(), property.getDescription());
         addValueCell(property);
         addSetButtonCell();
@@ -43,7 +43,7 @@ public class PropertyTableRow extends TableRow implements TypeInputEditedHandler
         TableCell valueCell = new TableCell();
         TypeInput input = TypeInputTableRow.getInput(value.getType());
         if(input != null) {
-            input.setTypeInstance(value.getTypeInstance());
+            input.setTypeInstances(value.getTypeInstances());
             input.addTypeInputEditedHandler(this);
             valueCell.add(input);
         }
@@ -65,6 +65,6 @@ public class PropertyTableRow extends TableRow implements TypeInputEditedHandler
 
     @Override
     public void onTypeInputEdited(TypeInputEditedEvent event) {
-        values.put(Property.VALUE_ID, event.getNewValue());
+        values.put(Property.VALUE_ID, event.getTypeInstances());
     }
 }

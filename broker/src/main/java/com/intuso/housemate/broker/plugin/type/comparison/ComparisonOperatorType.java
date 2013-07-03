@@ -6,7 +6,7 @@ import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.impl.type.RealSingleChoiceType;
+import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.ComparisonOperator;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  */
-public class ComparisonOperatorType extends RealSingleChoiceType<ComparisonOperator> implements PluginListener {
+public class ComparisonOperatorType extends RealChoiceType<ComparisonOperator> implements PluginListener {
 
     public final static String ID = "comparison-operator";
     public final static String NAME = "Comparison Operator";
@@ -26,7 +26,7 @@ public class ComparisonOperatorType extends RealSingleChoiceType<ComparisonOpera
     private final Map<String, ComparisonOperator> operators = Maps.newHashMap();
 
     public ComparisonOperatorType(RealResources resources, BrokerGeneralResources generalResources) {
-        super(resources, ID, NAME, DESCRIPTION);
+        super(resources, ID, NAME, DESCRIPTION, 1, 1);
         this.generalResources = generalResources;
         generalResources.addPluginListener(this, true);
     }

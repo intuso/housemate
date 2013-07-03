@@ -11,12 +11,19 @@ public class ObjectTypeWrappable extends TypeWrappable<NoChildrenWrappable> {
 
     private ObjectTypeWrappable() {}
 
-    public ObjectTypeWrappable(String id, String name, String description) {
-        super(id, name,  description);
+    /**
+     * @param id {@inheritDoc}
+     * @param name {@inheritDoc}
+     * @param description {@inheritDoc}
+     * @param minValues {@inheritDoc}
+     * @param maxValues {@inheritDoc}
+     */
+    public ObjectTypeWrappable(String id, String name, String description, int minValues, int maxValues) {
+        super(id, name,  description, minValues, maxValues);
     }
 
     @Override
     public HousemateObjectWrappable clone() {
-        return new ObjectTypeWrappable(getId(), getName(), getDescription());
+        return new ObjectTypeWrappable(getId(), getName(), getDescription(), getMinValues(), getMaxValues());
     }
 }

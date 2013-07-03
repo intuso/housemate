@@ -122,7 +122,7 @@ public class AnnotationProcessor {
                     throw new HousemateException(valueMethod.getValue().typeId() + " type does not exist");
                 RealValue<Object> value = new RealValue<Object>(object.getResources(), valueMethod.getValue().id(),
                         valueMethod.getValue().name(), valueMethod.getValue().description(),
-                        (RealType<?,?,Object>) registeredTypes.get(valueMethod.getValue().typeId()), null);
+                        (RealType<?,?,Object>) registeredTypes.get(valueMethod.getValue().typeId()), (List)null);
                 valuesFunctions.put(valueMethod.getKey(), value);
                 values.add(value);
             }

@@ -10,7 +10,7 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.HashMap;
@@ -97,11 +97,11 @@ public abstract class ProxyCommand<
      * @param listener the listener for progress of the command
      */
     public final synchronized void perform(CommandListener<? super COMMAND> listener) {
-        perform(new TypeInstances(), listener);
+        perform(new TypeInstanceMap(), listener);
     }
 
     @Override
-    public final synchronized void perform(TypeInstances values, CommandListener<? super COMMAND> listener) {
+    public final synchronized void perform(TypeInstanceMap values, CommandListener<? super COMMAND> listener) {
         String id = "" + nextId++;
         listenerMap.put(id, listener);
         sendMessage(PERFORM_TYPE, new PerformMessageValue(id, values));

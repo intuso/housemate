@@ -1,7 +1,7 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueWrappableBase;
@@ -33,8 +33,8 @@ public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
     }
 
     @Override
-    public TypeInstance getTypeInstance() {
-        return getData().getValue();
+    public TypeInstances getTypeInstances() {
+        return getData().getValues();
     }
 
     @Override
@@ -50,10 +50,10 @@ public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
 
             @Override
             public void valueChanged(Value<?, ?> value) {
-                getData().setValue(value.getTypeInstance());
+                getData().setValues(value.getTypeInstances());
                 for(ValueListener<? super V> listener : getObjectListeners())
                     listener.valueChanged(getThis());
-                broadcastMessage(VALUE_ID, value.getTypeInstance());
+                broadcastMessage(VALUE_ID, value.getTypeInstances());
             }}));
         return result;
     }

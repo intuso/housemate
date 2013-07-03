@@ -4,9 +4,11 @@ import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealParameter;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealProperty;
+import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
+
+import java.util.List;
 
 /**
  * Type for a string
@@ -51,11 +53,11 @@ public class StringType extends RealSimpleType<String> {
      * @param id the property's id
      * @param name the property's name
      * @param description the property's description
-     * @param value the initial value
+     * @param values the initial values
      * @return a string property object
      */
-    public static RealProperty<String> createProperty(RealResources resources, String id, String name, String description, String value) {
-        return new RealProperty<String>(resources, id, name, description, new StringType(resources), value);
+    public static RealProperty<String> createProperty(RealResources resources, String id, String name, String description, List<String> values) {
+        return new RealProperty<String>(resources, id, name, description, new StringType(resources), values);
     }
 
     /**

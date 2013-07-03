@@ -1,10 +1,10 @@
 package com.intuso.housemate.device;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.real.RealParameter;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Housemate device that will start and stop a program
@@ -30,18 +31,18 @@ public class RunProgramDevice extends RealDevice {
 	/**
 	 * Property that describes the command to start the program
 	 */
-    private final RealProperty<String> command = StringType.createProperty(getResources(), "command", "Command", "The command for the program", "");
+    private final RealProperty<String> command = StringType.createProperty(getResources(), "command", "Command", "The command for the program", Arrays.asList(""));
 
 	/**
 	 * The command to start the program
 	 */
     private final RealCommand start = new RealCommand(getResources(), "start", "Start", "Start the program", new ArrayList<RealParameter<?>>()) {
 		@Override
-		public void perform(TypeInstances values) throws HousemateException {
+		public void perform(TypeInstanceMap values) throws HousemateException {
 			try {
-				if(command.getTypeInstance().toString().length() == 0)
+				if(command.getTypedValue() ==  null || command.getTypedValue().length() == 0)
 					throw new HousemateException("No command has been set");
-				Runtime.getRuntime().exec(command.getTypeInstance().toString());
+				Runtime.getRuntime().exec(command.getTypedValue());
 			} catch (Throwable t) {
 				getLog().e("Could not start program: " + t.getMessage());
 				getLog().st(t);
@@ -55,7 +56,7 @@ public class RunProgramDevice extends RealDevice {
 	 */
 	private final RealCommand stop = new RealCommand(getResources(), "stop", "Stop", "Stop the program", new ArrayList<RealParameter<?>>()) {
 		@Override
-		public void perform(TypeInstances values) throws HousemateException {
+		public void perform(TypeInstanceMap values) throws HousemateException {
 			Integer pid = getFirstPID();
 			if(pid != null) {
 				try {
@@ -96,7 +97,7 @@ public class RunProgramDevice extends RealDevice {
 			String[] cmd = {
 					"/bin/sh",
 					"-c",
-					"ps -eopid,comm,user | grep -v grep | grep \"" + command.getTypeInstance() + "\" | cut -c1-5"
+					"ps -eopid,comm,user | grep -v grep | grep \"" + command.getTypedValue() + "\" | cut -c1-5"
 			};
 			p = Runtime.getRuntime().exec(cmd);
 		} catch (IOException e) {
@@ -186,7 +187,7 @@ public class RunProgramDevice extends RealDevice {
 				is_running = getFirstPID() != null;
 				if(is_running != isRunning) {
 					isRunning = is_running;
-					runningValue.setTypedValue(is_running);
+					runningValue.setTypedValues(is_running);
 				}
 
 				try {

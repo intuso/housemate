@@ -10,7 +10,7 @@ import java.util.Map;
 public class TypeInstance implements Message.Payload {
 
     private String value;
-    private TypeInstances childValues;
+    private TypeInstanceMap childValues;
 
     /**
      * Create an empty type instance
@@ -24,7 +24,7 @@ public class TypeInstance implements Message.Payload {
      * @param value the value
      */
     public TypeInstance(String value) {
-        this(value, new TypeInstances());
+        this(value, new TypeInstanceMap());
     }
 
     /**
@@ -32,9 +32,9 @@ public class TypeInstance implements Message.Payload {
      * @param value the value
      * @param childValues the child values
      */
-    public TypeInstance(String value, TypeInstances childValues) {
+    public TypeInstance(String value, TypeInstanceMap childValues) {
         this.value = value;
-        this.childValues = (childValues != null ? childValues : new TypeInstances());
+        this.childValues = (childValues != null ? childValues : new TypeInstanceMap());
     }
 
     /**
@@ -57,7 +57,7 @@ public class TypeInstance implements Message.Payload {
      * Gets the child values
      * @return the child values
      */
-    public TypeInstances getChildValues() {
+    public TypeInstanceMap getChildValues() {
         return childValues;
     }
 
@@ -71,7 +71,7 @@ public class TypeInstance implements Message.Payload {
             return false;
         if(childValues.size() != other.childValues.size())
             return false;
-        for(Map.Entry<String, TypeInstance> entry : childValues.entrySet())
+        for(Map.Entry<String, TypeInstances> entry : childValues.entrySet())
             if(!other.childValues.containsKey(entry.getKey()) || !entry.getValue().equals(other.childValues.get(entry.getKey())))
                 return false;
         return true;

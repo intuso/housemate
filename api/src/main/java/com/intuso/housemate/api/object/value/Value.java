@@ -2,7 +2,7 @@ package com.intuso.housemate.api.object.value;
 
 import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.type.Type;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 
 /**
  * @param <TYPE> the type of the value's type
@@ -25,5 +25,5 @@ public interface Value<
      * Gets the value's value
      * @return the value's value
      */
-    public TypeInstance getTypeInstance();
+    public TypeInstances getTypeInstances();
 }

@@ -7,24 +7,25 @@ import com.intuso.housemate.api.object.automation.AutomationWrappable;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.condition.Condition;
 import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.task.Task;
-import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.task.Task;
+import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.UserWrappable;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
-import com.intuso.housemate.object.broker.real.BrokerRealList;
-import com.intuso.housemate.object.broker.real.BrokerRealUser;
 import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealList;
 import com.intuso.housemate.object.broker.real.BrokerRealTask;
+import com.intuso.housemate.object.broker.real.BrokerRealUser;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
@@ -66,9 +67,9 @@ public class BrokerObjectStorage implements Storage {
         BrokerRealList<UserWrappable, BrokerRealUser> realUsers = resources.getRealResources().getRoot().getUsers();
         try {
             for(String key : storage.getValuesKeys(realUsers.getPath())) {
-                TypeInstances details = getValues(realUsers.getPath(), key);
-                BrokerRealUser user = new BrokerRealUser(resources.getRealResources(), details.get("id").getValue(),
-                        details.get("name").getValue(), details.get("description").getValue());
+                TypeInstanceMap details = getValues(realUsers.getPath(), key);
+                BrokerRealUser user = new BrokerRealUser(resources.getRealResources(), details.get("id").getFirstValue(),
+                        details.get("name").getFirstValue(), details.get("description").getFirstValue());
                 realUsers.add(user);
             }
         } catch(DetailsNotFoundException e) {
@@ -78,16 +79,16 @@ public class BrokerObjectStorage implements Storage {
             log.st(e);
         }
         if(realUsers.getWrappers().size() == 0) {
-            TypeInstances toSave = new TypeInstances();
+            TypeInstanceMap toSave = new TypeInstanceMap();
             try {
-                toSave.put("password-hash", new TypeInstance(new String(MessageDigest.getInstance("MD5").digest(
-                        "admin".getBytes()))));
+                toSave.put("password-hash", new TypeInstances(new TypeInstance(new String(
+                        MessageDigest.getInstance("MD5").digest("admin".getBytes())))));
             } catch(NoSuchAlgorithmException e) {
                 resources.getLog().e("Unable to hash the password for the default user to save it securely");
             }
-            toSave.put("id", new TypeInstance("admin"));
-            toSave.put("name", new TypeInstance("admin"));
-            toSave.put("description", new TypeInstance("admin"));
+            toSave.put("id", new TypeInstances(new TypeInstance("admin")));
+            toSave.put("name", new TypeInstances(new TypeInstance("admin")));
+            toSave.put("description", new TypeInstances(new TypeInstance("admin")));
 
             BrokerRealUser user = new BrokerRealUser(resources.getRealResources(), "admin", "admin", "Default admin user");
             try {
@@ -123,9 +124,9 @@ public class BrokerObjectStorage implements Storage {
         try {
             for(String id : storage.getValuesKeys(realAutomations.getPath())) {
                 try {
-                    TypeInstances details = getValues(realAutomations.getPath(), id);
-                    BrokerRealAutomation automation = new BrokerRealAutomation(resources.getRealResources(), details.get("id").getValue(),
-                            details.get("name").getValue(), details.get("description").getValue());
+                    TypeInstanceMap details = getValues(realAutomations.getPath(), id);
+                    BrokerRealAutomation automation = new BrokerRealAutomation(resources.getRealResources(), details.get("id").getFirstValue(),
+                            details.get("name").getFirstValue(), details.get("description").getFirstValue());
                     automation.init(realAutomations);
                     loadAutomationInfo(automation);
                     realAutomations.add(automation);
@@ -152,7 +153,7 @@ public class BrokerObjectStorage implements Storage {
         try {
             for(String conditionName : storage.getValuesKeys(conditions.getPath())) {
                 try {
-                    TypeInstances details = storage.getValues(conditions.getPath(), conditionName);
+                    TypeInstanceMap details = storage.getValues(conditions.getPath(), conditionName);
                     BrokerRealCondition condition = resources.getConditionFactory().createCondition(details);
                     conditions.add(condition);
                     loadConditions(condition.getConditions());
@@ -173,7 +174,7 @@ public class BrokerObjectStorage implements Storage {
         try {
             for(String taskName : storage.getValuesKeys(tasks.getPath())) {
                 try {
-                    TypeInstances details = storage.getValues(tasks.getPath(), taskName);
+                    TypeInstanceMap details = storage.getValues(tasks.getPath(), taskName);
                     tasks.add(resources.getTaskFactory().createTask(details));
                 } catch(HousemateException e) {
                     log.e("Failed to load task");
@@ -199,13 +200,13 @@ public class BrokerObjectStorage implements Storage {
     }
 
     @Override
-    public TypeInstance getValue(String[] path) throws DetailsNotFoundException, HousemateException {
-        return storage.getValue(path);
+    public TypeInstances getTypeInstances(String[] path) throws DetailsNotFoundException, HousemateException {
+        return storage.getTypeInstances(path);
     }
 
     @Override
-    public void saveValue(String[] path, TypeInstance value) throws HousemateException {
-        storage.saveValue(path, value);
+    public void saveTypeInstances(String[] path, TypeInstances value) throws HousemateException {
+        storage.saveTypeInstances(path, value);
     }
 
     @Override
@@ -214,12 +215,12 @@ public class BrokerObjectStorage implements Storage {
     }
 
     @Override
-    public TypeInstances getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
+    public TypeInstanceMap getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
         return storage.getValues(path, detailsKey);
     }
 
     @Override
-    public void saveValues(String[] path, String detailsKey, TypeInstances details) throws HousemateException {
+    public void saveValues(String[] path, String detailsKey, TypeInstanceMap details) throws HousemateException {
         storage.saveValues(path, detailsKey, details);
     }
 
@@ -237,9 +238,9 @@ public class BrokerObjectStorage implements Storage {
             runningListeners.put(device, device.getRunningValue().addObjectListener(watchValueListener));
             propertyListeners.put(device, device.getProperties().addObjectListener(watchPropertyListListener, true));
             try {
-                TypeInstance value = storage.getValue(device.getRunningValue().getPath());
-                if(BooleanType.SERIALISER.deserialise(value))
-                    device.getStartCommand().perform(new TypeInstances(),
+                TypeInstances instances = storage.getTypeInstances(device.getRunningValue().getPath());
+                if(instances.size() > 0 && BooleanType.SERIALISER.deserialise(instances.get(0)))
+                    device.getStartCommand().perform(new TypeInstanceMap(),
                             new CommandListener("Start device \"" + device.getId() + "\""));
             } catch(DetailsNotFoundException e) {
                 log.w("No details found for whether the device was previously running" + Arrays.toString(device.getPath()));
@@ -278,9 +279,9 @@ public class BrokerObjectStorage implements Storage {
             satisfiedTaskListeners.put(automation, automation.getSatisfiedTasks().addObjectListener(watchTaskListListener, true));
             unsatisfiedTaskListeners.put(automation, automation.getUnsatisfiedTasks().addObjectListener(watchTaskListListener, true));
             try {
-                TypeInstance value = storage.getValue(automation.getRunningValue().getPath());
-                if(BooleanType.SERIALISER.deserialise(value))
-                    automation.getStartCommand().perform(new TypeInstances(),
+                TypeInstances instances = storage.getTypeInstances(automation.getRunningValue().getPath());
+                if(instances.size() > 0 && BooleanType.SERIALISER.deserialise(instances.get(0)))
+                    automation.getStartCommand().perform(new TypeInstanceMap(),
                             new CommandListener("Start automation \"" + automation.getId() + "\""));
             } catch(DetailsNotFoundException e) {
                 log.w("No details found for whether the device was previously running" + Arrays.toString(automation.getPath()));
@@ -356,7 +357,7 @@ public class BrokerObjectStorage implements Storage {
         @Override
         public void elementAdded(Property<?, ?, ?> property) {
             try {
-                property.set(storage.getValue(property.getPath()),
+                property.set(storage.getTypeInstances(property.getPath()),
                         new CommandListener("Set property value " + Arrays.toString(property.getPath())));
             } catch(DetailsNotFoundException e) {
                 log.w("No details found for property value " + Arrays.toString(property.getPath()));
@@ -385,7 +386,7 @@ public class BrokerObjectStorage implements Storage {
         @Override
         public void valueChanged(Value<?, ?> property) {
             try {
-                storage.saveValue(property.getPath(), property.getTypeInstance());
+                storage.saveTypeInstances(property.getPath(), property.getTypeInstances());
             } catch(HousemateException e) {
                 log.e("Failed to save property value");
                 log.st(e);

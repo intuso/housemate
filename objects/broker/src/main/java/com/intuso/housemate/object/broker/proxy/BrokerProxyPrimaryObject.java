@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.BrokerRealValue;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -72,8 +73,8 @@ public class BrokerProxyPrimaryObject<
 
     @Override
     public final boolean isRunning() {
-        Boolean value = BooleanType.SERIALISER.deserialise(running.getTypeInstance());
-        return value != null ? value : false;
+        List<Boolean> isRunnings = RealType.deserialiseAll(BooleanType.SERIALISER, running.getTypeInstances());
+        return isRunnings != null && isRunnings.size() > 0 && isRunnings.get(0) != null ? isRunnings.get(0) : false;
     }
 
     @Override
@@ -93,7 +94,8 @@ public class BrokerProxyPrimaryObject<
 
     @Override
     public final String getError() {
-        return StringType.SERIALISER.deserialise(error.getTypeInstance());
+        List<String> errors = RealType.deserialiseAll(StringType.SERIALISER, error.getTypeInstances());
+        return errors != null && errors.size() > 0 ? errors.get(0) : null;
     }
 
     @Override

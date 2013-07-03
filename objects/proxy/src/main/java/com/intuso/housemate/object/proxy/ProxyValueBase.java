@@ -4,7 +4,7 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueWrappableBase;
@@ -44,12 +44,12 @@ public abstract class ProxyValueBase<
     @Override
     public final List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(VALUE_ID, new Receiver<TypeInstance>() {
+        result.add(addMessageListener(VALUE_ID, new Receiver<TypeInstances>() {
             @Override
-            public void messageReceived(Message<TypeInstance> stringMessageValueMessage) {
+            public void messageReceived(Message<TypeInstances> stringMessageValueMessage) {
                 for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanging(getThis());
-                getData().setValue(stringMessageValueMessage.getPayload());
+                getData().setValues(stringMessageValueMessage.getPayload());
                 for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanged(getThis());
             }
@@ -63,8 +63,8 @@ public abstract class ProxyValueBase<
     }
 
     @Override
-    public final TypeInstance getTypeInstance() {
-        return getData().getValue();
+    public final TypeInstances getTypeInstances() {
+        return getData().getValues();
     }
 
 }

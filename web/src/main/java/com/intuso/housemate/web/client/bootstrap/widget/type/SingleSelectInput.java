@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.option.OptionWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
 import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -38,7 +39,7 @@ public class SingleSelectInput extends Composite implements TypeInput {
 
     private final GWTProxyList<OptionWrappable, GWTProxyOption> options;
     private final BiMap<GWTProxyOption, Integer> optionMap = HashBiMap.create();
-    private TypeInstance typeInstance = new TypeInstance();
+    private TypeInstances typeInstances = new TypeInstances(new TypeInstance());
 
     public SingleSelectInput(GWTProxyType type) {
 
@@ -49,7 +50,7 @@ public class SingleSelectInput extends Composite implements TypeInput {
         listBox.addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                typeInstance.setValue(optionMap.inverse().get(listBox.getSelectedIndex()).getId());
+                typeInstances.get(0).setValue(optionMap.inverse().get(listBox.getSelectedIndex()).getId());
                 selectedOptionChanged();
             }
         });
@@ -70,35 +71,37 @@ public class SingleSelectInput extends Composite implements TypeInput {
     }
 
     @Override
-    public void setTypeInstance(TypeInstance typeInstance) {
-        this.typeInstance = typeInstance != null ? typeInstance : new TypeInstance();
-        if(this.typeInstance.getValue() == null) {
+    public void setTypeInstances(TypeInstances typeInstances) {
+        this.typeInstances = typeInstances != null ? typeInstances : new TypeInstances();
+        if(this.typeInstances.size() == 0)
+            this.typeInstances.add(new TypeInstance());
+        if(this.typeInstances.get(0).getValue() == null) {
             if(options.size() > 0)
-                this.typeInstance.setValue(options.getWrappers().iterator().next().getId());
-            listBox.setSelectedIndex(optionMap.get(options.get(this.typeInstance.getValue())));
-        } else if(options.getWrapper(this.typeInstance.getValue()) == null)
+                this.typeInstances.get(0).setValue(options.getWrappers().iterator().next().getId());
+            listBox.setSelectedIndex(optionMap.get(options.get(this.typeInstances.get(0).getValue())));
+        } else if(options.getWrapper(this.typeInstances.get(0).getValue()) == null)
             listBox.setSelectedIndex(0);
         else
-            listBox.setSelectedIndex(optionMap.get(options.get(this.typeInstance.getValue())));
+            listBox.setSelectedIndex(optionMap.get(options.get(this.typeInstances.get(0).getValue())));
         selectedOptionChanged();
     }
 
     private void selectedOptionChanged() {
         showOptions();
-        fireEvent(new TypeInputEditedEvent(typeInstance));
+        fireEvent(new TypeInputEditedEvent(typeInstances));
     }
 
     private void showOptions() {
         subTypesPanel.clear();
-        GWTProxyOption option = options.get(typeInstance.getValue());
+        GWTProxyOption option = options.get(typeInstances.get(0).getValue());
         if(option != null && option.getSubTypes() != null) {
             for(GWTProxySubType subType : option.getSubTypes()) {
                 TypeInput input = TypeInputTableRow.getInput(subType.getType());
-                input.addTypeInputEditedHandler(new SubTypeEditedHandler(subType.getId(), typeInstance));
+                input.addTypeInputEditedHandler(new SubTypeEditedHandler(subType.getId(), typeInstances.get(0)));
                 subTypesPanel.add(input);
-                if(typeInstance.getChildValues().get(subType.getId()) == null)
-                    typeInstance.getChildValues().put(subType.getId(), new TypeInstance());
-                input.setTypeInstance(typeInstance.getChildValues().get(subType.getId()));
+                if(typeInstances.get(0).getChildValues().get(subType.getId()) == null)
+                    typeInstances.get(0).getChildValues().put(subType.getId(), new TypeInstances());
+                input.setTypeInstances(typeInstances.get(0).getChildValues().get(subType.getId()));
             }
         }
     }
@@ -115,7 +118,7 @@ public class SingleSelectInput extends Composite implements TypeInput {
 
         @Override
         public void onTypeInputEdited(TypeInputEditedEvent event) {
-            typeInstance.getChildValues().put(typeId, event.getNewValue());
+            typeInstance.getChildValues().put(typeId, event.getTypeInstances());
         }
     }
 }

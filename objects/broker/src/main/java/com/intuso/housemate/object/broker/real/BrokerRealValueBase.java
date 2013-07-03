@@ -2,11 +2,14 @@ package com.intuso.housemate.object.broker.real;
 
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueWrappableBase;
 import com.intuso.housemate.object.real.RealType;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @param <DATA> the type of the data
@@ -25,7 +28,7 @@ public abstract class BrokerRealValueBase<
         implements Value<RealType<?, ?, O>, VALUE> {
 
     private RealType<?, ?, O> type;
-    private O typedValue;
+    private List<O> typedValues;
 
     /**
      * @param resources {@inheritDoc}
@@ -42,31 +45,47 @@ public abstract class BrokerRealValueBase<
         return type;
     }
 
-    /**
-     * Get the value instance as its real type
-     * @return the value instance as its real type
-     */
-    public O getTypedValue() {
-        return typedValue;
+    @Override
+    public TypeInstances getTypeInstances() {
+        return getData().getValues();
     }
 
-    @Override
-    public TypeInstance getTypeInstance() {
-        return getData().getValue();
+    /**
+     * Gets the object representation of this value
+     * @return
+     */
+    public O getTypedValue() {
+        return typedValues != null && typedValues.size() != 0 ? typedValues.get(0) : null;
+    }
+
+    /**
+     * Gets the object representation of this value
+     * @return
+     */
+    public List<O> getTypedValues() {
+        return typedValues;
+    }
+
+    /**
+     * Sets the object representation of this value
+     * @param typedValues the new value
+     */
+    public final void setTypedValue(O ... typedValues) {
+        setTypedValues(Arrays.asList(typedValues));
     }
 
     /**
      * Sets the value as its real type
-     * @param typedValue the value as its real type
+     * @param typedValues the value as its real type
      */
-    public final void setTypedValue(O typedValue) {
-        if((this.typedValue == null && typedValue == null)
-                || (this.typedValue != null && typedValue != null && this.typedValue.equals(typedValue)))
+    public final void setTypedValues(List<O> typedValues) {
+        if((this.typedValues == null && typedValues == null)
+                || (this.typedValues != null && typedValues != null && this.typedValues.equals(typedValues)))
             return;
         for(ValueListener<? super VALUE> listener : getObjectListeners())
             listener.valueChanging((VALUE)this);
-        this.typedValue = typedValue;
-        this.getData().setValue(getType().serialise(typedValue));
+        this.typedValues = typedValues;
+        this.getData().setValues(RealType.serialiseAll(getType(), typedValues));
         for(ValueListener<? super VALUE> listener : getObjectListeners())
             listener.valueChanged((VALUE)this);
     }

@@ -4,7 +4,7 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
 public class BrokerProxyProperty
@@ -28,8 +28,8 @@ public class BrokerProxyProperty
     }
 
     @Override
-    public void set(final TypeInstance value, CommandListener<? super BrokerProxyCommand> listener) {
-        getSetCommand().perform(new TypeInstances() {
+    public void set(final TypeInstances value, CommandListener<? super BrokerProxyCommand> listener) {
+        getSetCommand().perform(new TypeInstanceMap() {
             {
                 put(VALUE_PARAM, value);
             }

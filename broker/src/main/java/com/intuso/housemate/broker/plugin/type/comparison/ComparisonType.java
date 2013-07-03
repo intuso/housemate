@@ -2,6 +2,7 @@ package com.intuso.housemate.broker.plugin.type.comparison;
 
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.broker.plugin.type.valuesource.ValueSource;
@@ -47,7 +48,7 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
 
     public ComparisonType(RealResources resources, BrokerGeneralResources generalResources,
                           ComparisonOperatorType operatorType, ValueSourceType sourceType) {
-        super(resources, ID, NAME, DESCRIPTION);
+        super(resources, ID, NAME, DESCRIPTION, 1, 1);
         this.generalResources = generalResources;
         this.operatorType = operatorType;
         this.sourceType = sourceType;
@@ -65,20 +66,26 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
         if(comparisonInstance == null)
             return null;
         TypeInstance result = new TypeInstance();
-        result.getChildValues().put(OPERATOR_ID, operatorType.serialise(comparisonInstance.getOperator()));
-        result.getChildValues().put(VALUE_0_ID, sourceType.serialise(comparisonInstance.getFirstValueSource()));
-        result.getChildValues().put(VALUE_1_ID, sourceType.serialise(comparisonInstance.getSecondValueSource()));
+        result.getChildValues().put(OPERATOR_ID, new TypeInstances(operatorType.serialise(comparisonInstance.getOperator())));
+        result.getChildValues().put(VALUE_0_ID, new TypeInstances(sourceType.serialise(comparisonInstance.getFirstValueSource())));
+        result.getChildValues().put(VALUE_1_ID, new TypeInstances(sourceType.serialise(comparisonInstance.getSecondValueSource())));
         return result;
     }
 
     @Override
     public Comparison deserialise(TypeInstance instance) {
-        if(instance == null)
+        if(instance == null
+                || instance.getChildValues().get(OPERATOR_ID) == null
+                || instance.getChildValues().get(OPERATOR_ID).size() == 0)
             return null;
-        ComparisonOperator operator = operatorType.deserialise(instance.getChildValues().get(OPERATOR_ID));
-        return new Comparison(operator, comparators.get(operator),
-                sourceType.deserialise(instance.getChildValues().get(VALUE_0_ID)),
-                sourceType.deserialise(instance.getChildValues().get(VALUE_1_ID)));
+        ValueSource value0 = null;
+        if(instance.getChildValues().get(VALUE_0_ID) != null && instance.getChildValues().get(VALUE_0_ID).size() != 0)
+            value0 = sourceType.deserialise(instance.getChildValues().get(VALUE_0_ID).get(0));
+        ValueSource value1 = null;
+        if(instance.getChildValues().get(VALUE_1_ID) != null && instance.getChildValues().get(VALUE_1_ID).size() != 0)
+            value1 = sourceType.deserialise(instance.getChildValues().get(VALUE_1_ID).get(0));
+        ComparisonOperator operator = operatorType.deserialise(instance.getChildValues().get(OPERATOR_ID).get(0));
+        return new Comparison(operator, comparators.get(operator), value0, value1);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.storage.DetailsNotFoundException;
 import com.intuso.housemate.broker.storage.Storage;
@@ -51,8 +52,8 @@ public class SjoerdDB implements Storage {
     }
 
     @Override
-    public TypeInstance getValue(String[] path) throws DetailsNotFoundException, HousemateException {
-        TypeInstances details = null;
+    public TypeInstances getTypeInstances(String[] path) throws DetailsNotFoundException, HousemateException {
+        TypeInstanceMap details = null;
         try {
             details = getDetails(getFile(false, path, VALUE_FILENAME));
         }  catch(FileNotFoundException e) {
@@ -60,13 +61,13 @@ public class SjoerdDB implements Storage {
         } catch(IOException e) {
             throw new HousemateException("Failed to get value", e);
         }
-        TypeInstance value = details.get(PROPERTY_VALUE_KEY);
-        return value;
+        TypeInstances instances = details.get(PROPERTY_VALUE_KEY);
+        return instances;
     }
 
     @Override
-    public void saveValue(String[] path, TypeInstance value) throws HousemateException {
-        TypeInstances details = new TypeInstances();
+    public void saveTypeInstances(String[] path, TypeInstances value) throws HousemateException {
+        TypeInstanceMap details = new TypeInstanceMap();
         details.put(PROPERTY_VALUE_KEY, value);
         try {
             saveDetails(getFile(true, path, VALUE_FILENAME), details);
@@ -99,7 +100,7 @@ public class SjoerdDB implements Storage {
     }
 
     @Override
-    public TypeInstances getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
+    public TypeInstanceMap getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
         try {
             return readDetailsFile(path, detailsKey);
         } catch(FileNotFoundException e) {
@@ -110,7 +111,7 @@ public class SjoerdDB implements Storage {
     }
 
     @Override
-    public void saveValues(String[] path, String detailsKey, TypeInstances details) throws HousemateException {
+    public void saveValues(String[] path, String detailsKey, TypeInstanceMap details) throws HousemateException {
         try {
             saveDetails(getFile(true, path, detailsKey + PROPERTIES_EXTENSION), details);
         } catch(IOException e) {
@@ -136,52 +137,69 @@ public class SjoerdDB implements Storage {
         file.delete();
     }
 
-    private TypeInstances readDetailsFile(String[] path, String detailsKey) throws IOException {
+    private TypeInstanceMap readDetailsFile(String[] path, String detailsKey) throws IOException {
         return getDetails(getFile(false, path, detailsKey + PROPERTIES_EXTENSION));
     }
 
-    private TypeInstances getDetails(File file) throws IOException {
+    private TypeInstanceMap getDetails(File file) throws IOException {
         Properties properties = new Properties();
         properties.load(new FileInputStream(file));
-        TypeInstances result = new TypeInstances();
+        TypeInstanceMap result = new TypeInstanceMap();
         for(Map.Entry<Object, Object> entry : properties.entrySet())
             if(entry.getKey() instanceof String && entry.getValue() instanceof String)
                 addValue(result, (String) entry.getKey(), (String) entry.getValue());
         return result;
     }
 
-    private void addValue(TypeInstances typeInstances, String path, String value) {
+    private void addValue(TypeInstanceMap typeInstanceMap, String path, String value) {
         List<String> pathElements = Lists.newArrayList(SPLITTER.split(path));
-        for(int i = 0; i < pathElements.size() - 1; i++) {
-            if(!typeInstances.containsKey(pathElements.get(i)))
-                typeInstances.put(pathElements.get(i), new TypeInstance());
-            typeInstances = typeInstances.get(pathElements.get(i)).getChildValues();
+        for(int i = 0; i < pathElements.size() - 2; i += 2) {
+            TypeInstances typeInstances = typeInstanceMap.get(pathElements.get(i));
+            if(typeInstances == null) {
+                typeInstances = new TypeInstances();
+                typeInstanceMap.put(pathElements.get(i), typeInstances);
+            }
+            int index = Integer.parseInt(pathElements.get(i + 1));
+            while(typeInstances.size() <= index)
+                typeInstances.add(new TypeInstance());
+            typeInstanceMap = typeInstances.get(index).getChildValues();
         }
-        if(!typeInstances.containsKey(pathElements.get(pathElements.size() - 1)))
-            typeInstances.put(pathElements.get(pathElements.size() - 1), new TypeInstance());
-        typeInstances.get(pathElements.get(pathElements.size() - 1)).setValue(value);
+        TypeInstances typeInstances = typeInstanceMap.get(pathElements.get(pathElements.size() - 2));
+        if(typeInstances == null) {
+            typeInstances = new TypeInstances();
+            typeInstanceMap.put(pathElements.get(pathElements.size() - 2), typeInstances);
+        }
+        int index = Integer.parseInt(pathElements.get(pathElements.size() - 1));
+        while(typeInstances.size() <= index)
+            typeInstances.add(new TypeInstance());
+        typeInstances.get(index).setValue(value);
     }
 
-    private void saveDetails(File file, TypeInstances details) throws IOException {
+    private void saveDetails(File file, TypeInstanceMap details) throws IOException {
         Properties properties = new Properties();
         List<String> path = Lists.newArrayList();
         addValues(properties, path, details);
         properties.store(new FileOutputStream(file), "");
     }
 
-    private void addValues(Properties properties, List<String> path, TypeInstances typeInstances) {
-        for(Map.Entry<String, TypeInstance> entry : typeInstances.entrySet()) {
+    private void addValues(Properties properties, List<String> path, TypeInstanceMap typeInstances) {
+        for(Map.Entry<String, TypeInstances> entry : typeInstances.entrySet()) {
             path.add(entry.getKey());
             addValue(properties, path, entry.getValue());
             path.remove(path.size() - 1);
         }
     }
 
-    private void addValue(Properties properties, List<String> path, TypeInstance typeInstance) {
-        if(typeInstance != null) {
-            if(typeInstance.getValue() != null)
-                properties.put(JOINER.join(path), typeInstance.getValue());
-            addValues(properties, path, typeInstance.getChildValues());
+    private void addValue(Properties properties, List<String> path, TypeInstances typeInstances) {
+        if(typeInstances != null) {
+            for(int i = 0; i < typeInstances.size(); i++) {
+                path.add(Integer.toString(i));
+                TypeInstance typeInstance = typeInstances.get(i);
+                if(typeInstance.getValue() != null)
+                    properties.put(JOINER.join(path), typeInstance.getValue());
+                addValues(properties, path, typeInstance.getChildValues());
+                path.remove(path.size() - 1);
+            }
         }
     }
 

@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.device.DeviceWrappable;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserWrappable;
@@ -48,7 +49,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
         @Override
         public void valueChanged(Value<?, ?> value) {
             try {
-                resources.getStorage().saveValue(value.getPath(), value.getTypeInstance());
+                resources.getStorage().saveTypeInstances(value.getPath(), value.getTypeInstances());
             } catch(HousemateException e) {
                 resources.getLog().e("Failed to save running value of device");
                 resources.getLog().st(e);
@@ -67,19 +68,19 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                 new BrokerRealParameter<String>(resources.getRealResources(), "password", "Password", "The password for the new user", new StringType(resources.getClientResources()))
         )) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
-                TypeInstances toSave = new TypeInstances();
+            public void perform(TypeInstanceMap values) throws HousemateException {
+                TypeInstanceMap toSave = new TypeInstanceMap();
                 try {
-                    toSave.put("password-hash", new TypeInstance(new String(MessageDigest.getInstance("MD5").digest(
-                            values.get("password").getValue().getBytes()))));
+                    toSave.put("password-hash", new TypeInstances(new TypeInstance(new String(
+                            MessageDigest.getInstance("MD5").digest(values.get("password").getFirstValue().getBytes())))));
                 } catch(NoSuchAlgorithmException e) {
                     throw new HousemateException("Unable to hash the password to save it securely");
                 }
                 toSave.put("id", values.get("username"));
                 toSave.put("name", values.get("username"));
                 toSave.put("description", values.get("username"));
-                BrokerRealUser user = new BrokerRealUser(getResources(), toSave.get("id").getValue(),
-                        toSave.get("name").getValue(), toSave.get("description").getValue());
+                BrokerRealUser user = new BrokerRealUser(getResources(), toSave.get("id").getFirstValue(),
+                        toSave.get("name").getFirstValue(), toSave.get("description").getFirstValue());
                 users.add(user);
                 resources.getStorage().saveValues(users.getPath(), user.getId(), toSave);
             }
@@ -90,7 +91,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     public BrokerRealCommand createRemoveUserCommand(final BrokerRealUser user) {
         return new BrokerRealCommand(resources.getRealResources(), User.REMOVE_COMMAND_ID, User.REMOVE_COMMAND_ID, "Remove the user", Lists.<BrokerRealParameter<?>>newArrayList()) {
                     @Override
-                    public void perform(TypeInstances values) throws HousemateException {
+                    public void perform(TypeInstanceMap values) throws HousemateException {
                         getResources().getRoot().getUsers().remove(user.getId());
                         resources.getStorage().removeValues(user.getPath());
                     }
@@ -109,10 +110,10 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                 new BrokerRealParameter<String>(resources.getRealResources(), "description", "Description", "The description for the new automation", new StringType(resources.getClientResources()))
         )) {
             @Override
-            public void perform(TypeInstances values) throws HousemateException {
+            public void perform(TypeInstanceMap values) throws HousemateException {
                 values.put("id", values.get("name")); // todo figure out a better way of getting an id
-                BrokerRealAutomation automation = new BrokerRealAutomation(getResources(), values.get("id").getValue(),
-                        values.get("name").getValue(), values.get("description").getValue());
+                BrokerRealAutomation automation = new BrokerRealAutomation(getResources(), values.get("id").getFirstValue(),
+                        values.get("name").getFirstValue(), values.get("description").getFirstValue());
                 automations.add(automation);
                 resources.getStorage().saveValues(automations.getPath(), automation.getId(), values);
                 automation.getRunningValue().addObjectListener(runningListener);
