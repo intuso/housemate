@@ -1,15 +1,15 @@
 package com.intuso.housemate.object.real;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.subtype.SubType;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.subtype.SubTypeListener;
-import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 /**
  * @param <O> the type of the sub type's value
  */
 public class RealSubType<O>
-        extends RealObject<SubTypeWrappable, NoChildrenWrappable, RealObject<NoChildrenWrappable, ? ,?, ?>, SubTypeListener>
+        extends RealObject<SubTypeData, NoChildrenData, RealObject<NoChildrenData, ? ,?, ?>, SubTypeListener>
         implements SubType<RealType<?, ?, O>> {
 
     private final RealType<?, ?, O> type;
@@ -22,7 +22,7 @@ public class RealSubType<O>
      * @param type the type of the sub type's value
      */
     public RealSubType(RealResources resources, String id, String name, String description, RealType<?, ?, O> type) {
-        super(resources, new SubTypeWrappable(id, name, description, type.getId()));
+        super(resources, new SubTypeData(id, name, description, type.getId()));
         this.type = type;
     }
 

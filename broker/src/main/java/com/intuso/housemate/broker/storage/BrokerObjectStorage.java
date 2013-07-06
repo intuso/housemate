@@ -3,21 +3,21 @@ package com.intuso.housemate.broker.storage;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.automation.Automation;
-import com.intuso.housemate.api.object.automation.AutomationWrappable;
+import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.condition.Condition;
-import com.intuso.housemate.api.object.condition.ConditionWrappable;
+import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.task.Task;
-import com.intuso.housemate.api.object.task.TaskWrappable;
+import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.user.UserWrappable;
+import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
@@ -64,7 +64,7 @@ public class BrokerObjectStorage implements Storage {
     }
 
     private void loadUsers() {
-        BrokerRealList<UserWrappable, BrokerRealUser> realUsers = resources.getRealResources().getRoot().getUsers();
+        BrokerRealList<UserData, BrokerRealUser> realUsers = resources.getRealResources().getRoot().getUsers();
         try {
             for(String key : storage.getValuesKeys(realUsers.getPath())) {
                 TypeInstanceMap details = getValues(realUsers.getPath(), key);
@@ -120,7 +120,7 @@ public class BrokerObjectStorage implements Storage {
     }
 
     private void loadAutomations() {
-        BrokerRealList<AutomationWrappable, BrokerRealAutomation> realAutomations = resources.getRealResources().getRoot().getAutomations();
+        BrokerRealList<AutomationData, BrokerRealAutomation> realAutomations = resources.getRealResources().getRoot().getAutomations();
         try {
             for(String id : storage.getValuesKeys(realAutomations.getPath())) {
                 try {
@@ -149,7 +149,7 @@ public class BrokerObjectStorage implements Storage {
         loadTasks(automation.getUnsatisfiedTasks());
     }
 
-    private void loadConditions(BrokerRealList<ConditionWrappable, BrokerRealCondition> conditions) {
+    private void loadConditions(BrokerRealList<ConditionData, BrokerRealCondition> conditions) {
         try {
             for(String conditionName : storage.getValuesKeys(conditions.getPath())) {
                 try {
@@ -170,7 +170,7 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    private void loadTasks(BrokerRealList<TaskWrappable, BrokerRealTask> tasks) {
+    private void loadTasks(BrokerRealList<TaskData, BrokerRealTask> tasks) {
         try {
             for(String taskName : storage.getValuesKeys(tasks.getPath())) {
                 try {

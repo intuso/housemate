@@ -2,8 +2,8 @@ package com.intuso.housemate.api.object;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.TestEnvironment;
-import com.intuso.housemate.api.object.parameter.ParameterWrappable;
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
 import com.intuso.housemate.object.real.RealParameter;
@@ -22,12 +22,12 @@ public class ParameterTest {
 
     public final static String PARAMETER = "parameters";
 
-    private SimpleProxyObject.List<ParameterWrappable, SimpleProxyObject.Parameter> proxyList
-            = new SimpleProxyObject.List<ParameterWrappable, SimpleProxyObject.Parameter>(
+    private SimpleProxyObject.List<ParameterData, SimpleProxyObject.Parameter> proxyList
+            = new SimpleProxyObject.List<ParameterData, SimpleProxyObject.Parameter>(
             SimpleProxyFactory.changeFactoryType(TestEnvironment.TEST_INSTANCE.getProxyResources(), new SimpleProxyFactory.Parameter()),
             TestEnvironment.TEST_INSTANCE.getProxyResources(),
-            new ListWrappable(PARAMETER, PARAMETER, PARAMETER));
-    private RealList<ParameterWrappable, RealParameter<?>> realList = new RealList<ParameterWrappable, RealParameter<?>>(TestEnvironment.TEST_INSTANCE.getRealResources(), PARAMETER, PARAMETER, PARAMETER, new ArrayList<RealParameter<?>>());
+            new ListData(PARAMETER, PARAMETER, PARAMETER));
+    private RealList<ParameterData, RealParameter<?>> realList = new RealList<ParameterData, RealParameter<?>>(TestEnvironment.TEST_INSTANCE.getRealResources(), PARAMETER, PARAMETER, PARAMETER, new ArrayList<RealParameter<?>>());
     private RealParameter realParameter;
     private SimpleProxyObject.Parameter proxyParameter;
 

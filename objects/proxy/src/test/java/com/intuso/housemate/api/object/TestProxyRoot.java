@@ -1,10 +1,10 @@
 package com.intuso.housemate.api.object;
 
-import com.intuso.housemate.api.object.automation.AutomationWrappable;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
-import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.type.TypeWrappable;
-import com.intuso.housemate.api.object.user.UserWrappable;
+import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.ProxyRootObject;
@@ -18,18 +18,18 @@ import org.junit.Ignore;
 public class TestProxyRoot extends ProxyRootObject<
             ProxyResources<SimpleProxyFactory.All>,
             ProxyResources<?>,
-            SimpleProxyObject.User, SimpleProxyObject.List<UserWrappable, SimpleProxyObject.User>,
-            SimpleProxyObject.Type, SimpleProxyObject.List<TypeWrappable<?>, SimpleProxyObject.Type>,
-            SimpleProxyObject.Device, SimpleProxyObject.List<DeviceWrappable, SimpleProxyObject.Device>,
-        SimpleProxyObject.Automation, SimpleProxyObject.List<AutomationWrappable, SimpleProxyObject.Automation>,
+            SimpleProxyObject.User, SimpleProxyObject.List<UserData, SimpleProxyObject.User>,
+            SimpleProxyObject.Type, SimpleProxyObject.List<TypeData<?>, SimpleProxyObject.Type>,
+            SimpleProxyObject.Device, SimpleProxyObject.List<DeviceData, SimpleProxyObject.Device>,
+        SimpleProxyObject.Automation, SimpleProxyObject.List<AutomationData, SimpleProxyObject.Automation>,
             SimpleProxyObject.Command, TestProxyRoot> {
 
     public TestProxyRoot(ProxyResources<SimpleProxyFactory.All> resources, ProxyResources<?> childResources) {
         super(resources, childResources);
-        super.addWrapper(new SimpleProxyObject.List<TypeWrappable<?>, SimpleProxyObject.Type>(
-                SimpleProxyFactory.changeFactoryType(getResources(), new SimpleProxyFactory.Type()), childResources, new ListWrappable(TYPES_ID, TYPES_ID, TYPES_ID)));
-        super.addWrapper(new SimpleProxyObject.List<DeviceWrappable, SimpleProxyObject.Device>(
-                SimpleProxyFactory.changeFactoryType(getResources(), new SimpleProxyFactory.Device()), childResources, new ListWrappable(DEVICES_ID, DEVICES_ID, DEVICES_ID)));
+        super.addWrapper(new SimpleProxyObject.List<TypeData<?>, SimpleProxyObject.Type>(
+                SimpleProxyFactory.changeFactoryType(getResources(), new SimpleProxyFactory.Type()), childResources, new ListData(TYPES_ID, TYPES_ID, TYPES_ID)));
+        super.addWrapper(new SimpleProxyObject.List<DeviceData, SimpleProxyObject.Device>(
+                SimpleProxyFactory.changeFactoryType(getResources(), new SimpleProxyFactory.Device()), childResources, new ListData(DEVICES_ID, DEVICES_ID, DEVICES_ID)));
         init(null);
     }
 

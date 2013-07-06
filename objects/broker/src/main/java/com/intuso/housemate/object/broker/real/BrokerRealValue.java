@@ -1,8 +1,8 @@
 package com.intuso.housemate.object.broker.real;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.api.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.real.RealType;
 
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.List;
  * @param <O> the type of the value
  */
 public class BrokerRealValue<O>
-        extends BrokerRealValueBase<ValueWrappable, NoChildrenWrappable, NoChildrenBrokerRealObject, O, BrokerRealValue<O>>
+        extends BrokerRealValueBase<ValueData, NoChildrenData, NoChildrenBrokerRealObject, O, BrokerRealValue<O>>
         implements Value<RealType<?, ?, O>, BrokerRealValue<O>> {
 
     /**
@@ -38,7 +38,7 @@ public class BrokerRealValue<O>
      */
     public BrokerRealValue(BrokerRealResources resources, String id, String name, String description,
                            RealType<?, ?, O> type, List<O> values) {
-        super(resources, new ValueWrappable(id, name, description, type.getId(),
+        super(resources, new ValueData(id, name, description, type.getId(),
                 RealType.serialiseAll(type, values)), type);
     }
 }

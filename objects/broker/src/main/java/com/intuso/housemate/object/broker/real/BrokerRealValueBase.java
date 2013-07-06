@@ -1,11 +1,11 @@
 package com.intuso.housemate.object.broker.real;
 
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
+import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.api.object.value.ValueWrappableBase;
 import com.intuso.housemate.object.real.RealType;
 
 import java.util.Arrays;
@@ -19,8 +19,8 @@ import java.util.List;
  * @param <VALUE> the type of the value object
  */
 public abstract class BrokerRealValueBase<
-            DATA extends ValueWrappableBase<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends ValueBaseData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends HousemateObject<?, ? extends CHILD_DATA, ?, ?, ?>,
             O,
             VALUE extends BrokerRealValueBase<DATA, CHILD_DATA, CHILD, O, VALUE>>

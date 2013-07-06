@@ -1,14 +1,14 @@
 package com.intuso.housemate.object.real.impl.type;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.type.RegexTypeWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
+import com.intuso.housemate.api.object.type.RegexTypeData;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 
 /**
  * Type for text input restricted to text that matches a regex
  */
-public abstract class RealRegexType<O> extends RealType<RegexTypeWrappable, NoChildrenWrappable, O> {
+public abstract class RealRegexType<O> extends RealType<RegexTypeData, NoChildrenData, O> {
 
     /**
      * @param resources the resources
@@ -21,6 +21,6 @@ public abstract class RealRegexType<O> extends RealType<RegexTypeWrappable, NoCh
      */
     protected RealRegexType(RealResources resources, String id, String name, String description, int minValues,
                             int maxValues, String regexPattern) {
-        super(resources, new RegexTypeWrappable(id, name, description, minValues, maxValues, regexPattern));
+        super(resources, new RegexTypeData(id, name, description, minValues, maxValues, regexPattern));
     }
 }

@@ -11,11 +11,11 @@ import com.intuso.housemate.api.comms.message.AuthenticationRequest;
 import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.comms.message.StringMessageValue;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.root.RootWrappable;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -24,12 +24,12 @@ import java.util.List;
 /**
  */
 public class BrokerGeneralRootObject
-        extends HousemateObject<BrokerGeneralResources, RootWrappable, HousemateObjectWrappable<?>,
+        extends HousemateObject<BrokerGeneralResources, RootData, HousemateData<?>,
                     HousemateObject<?, ?, ?, ?, ?>, RootListener<? super BrokerGeneralRootObject>>
-        implements Root<BrokerGeneralRootObject, RootListener<? super BrokerGeneralRootObject>> {
+        implements Root<BrokerGeneralRootObject> {
 
     public BrokerGeneralRootObject(BrokerGeneralResources resources) {
-        super(resources, new RootWrappable());
+        super(resources, new RootData());
 
         init(null);
     }

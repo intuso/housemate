@@ -1,23 +1,23 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.user.User;
+import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.user.UserListener;
-import com.intuso.housemate.api.object.user.UserWrappable;
 
 import javax.annotation.Nullable;
 
 /**
  */
 public class UserBridge
-        extends BridgeObject<UserWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, UserBridge, UserListener>
+        extends BridgeObject<UserData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, UserBridge, UserListener>
         implements User<CommandBridge> {
 
     private final CommandBridge removeCommand;
 
     public UserBridge(BrokerBridgeResources resources, User user) {
-        super(resources, new UserWrappable(user.getId(), user.getName(), user.getDescription()));
+        super(resources, new UserData(user.getId(), user.getName(), user.getDescription()));
         removeCommand = new CommandBridge(resources, user.getRemoveCommand());
         addWrapper(removeCommand);
     }

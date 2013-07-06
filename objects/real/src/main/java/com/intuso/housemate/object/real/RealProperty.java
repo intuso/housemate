@@ -1,10 +1,10 @@
 package com.intuso.housemate.object.real;
 
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
@@ -15,7 +15,7 @@ import java.util.List;
  * @param <O> the type of the property's value
  */
 public class RealProperty<O>
-        extends RealValueBase<PropertyWrappable, CommandWrappable, RealCommand, O, RealProperty<O>>
+        extends RealValueBase<PropertyData, CommandData, RealCommand, O, RealProperty<O>>
         implements Property<RealType<?, ?, O>, RealCommand, RealProperty<O>> {
 
     private RealCommand setCommand;
@@ -43,7 +43,7 @@ public class RealProperty<O>
      */
     public RealProperty(RealResources resources, String id, String name, String description, RealType<?, ?, O> type,
                         List<O> values) {
-        super(resources, new PropertyWrappable(id, name, description, type.getId(),
+        super(resources, new PropertyData(id, name, description, type.getId(),
                 RealType.serialiseAll(type, values)), type);
         setCommand = new RealCommand(resources, SET_COMMAND_ID, SET_COMMAND_ID, "The function to change the property's value",
                 Arrays.<RealParameter<?>>asList(new RealParameter<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {

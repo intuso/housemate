@@ -1,7 +1,7 @@
 package com.intuso.housemate.object.real;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
+import com.intuso.housemate.api.object.value.ValueData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @param <O> the type of this value's value
  */
-public class RealValue<O> extends RealValueBase<ValueWrappable, NoChildrenWrappable, RealObject<NoChildrenWrappable, ?, ?, ?>, O,
+public class RealValue<O> extends RealValueBase<ValueData, NoChildrenData, RealObject<NoChildrenData, ?, ?, ?>, O,
         RealValue<O>> {
 
     /**
@@ -36,6 +36,6 @@ public class RealValue<O> extends RealValueBase<ValueWrappable, NoChildrenWrappa
     public RealValue(RealResources resources, String id, String name, String description,
                      RealType<?, ?, O> type, List<O> values) {
         super(resources,
-                new ValueWrappable(id, name, description, type.getId(), RealType.serialiseAll(type, values)), type);
+                new ValueData(id, name, description, type.getId(), RealType.serialiseAll(type, values)), type);
     }
 }

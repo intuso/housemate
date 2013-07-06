@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.intuso.housemate.api.object.list.List;
-import com.intuso.housemate.api.object.type.CompoundTypeWrappable;
+import com.intuso.housemate.api.object.type.CompoundTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
@@ -17,7 +17,7 @@ public class CompoundInput
     private final GWTProxyType type;
     private TypeInstances typeInstances;
 
-    public CompoundInput(CompoundTypeWrappable typeWrappable, GWTProxyType type) {
+    public CompoundInput(CompoundTypeData typeWrappable, GWTProxyType type) {
         this.type = type;
     }
 

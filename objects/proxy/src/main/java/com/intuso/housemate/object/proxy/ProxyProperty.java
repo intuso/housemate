@@ -1,10 +1,10 @@
 package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
@@ -16,12 +16,12 @@ import com.intuso.housemate.api.object.type.TypeInstances;
  * @param <PROPERTY> the type of the property
  */
 public abstract class ProxyProperty<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CommandWrappable, SET_COMMAND>>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CommandData, SET_COMMAND>>,
             CHILD_RESOURCES extends ProxyResources<?>,
             TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
             SET_COMMAND extends ProxyCommand<?, ?, ?, ?, SET_COMMAND>,
             PROPERTY extends ProxyProperty<RESOURCES, CHILD_RESOURCES, TYPE, SET_COMMAND, PROPERTY>>
-        extends ProxyValueBase<RESOURCES, CHILD_RESOURCES, PropertyWrappable, CommandWrappable, SET_COMMAND, TYPE, PROPERTY>
+        extends ProxyValueBase<RESOURCES, CHILD_RESOURCES, PropertyData, CommandData, SET_COMMAND, TYPE, PROPERTY>
         implements Property<TYPE, SET_COMMAND, PROPERTY> {
 
     private SET_COMMAND setCommand;
@@ -31,7 +31,7 @@ public abstract class ProxyProperty<
      * @param childResources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyProperty(RESOURCES resources, CHILD_RESOURCES childResources, PropertyWrappable data) {
+    public ProxyProperty(RESOURCES resources, CHILD_RESOURCES childResources, PropertyData data) {
         super(resources, childResources, data);
     }
 

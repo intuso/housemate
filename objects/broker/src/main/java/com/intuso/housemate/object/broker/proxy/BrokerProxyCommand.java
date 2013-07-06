@@ -5,10 +5,10 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.Command;
+import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.parameter.ParameterWrappable;
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 public class BrokerProxyCommand
-        extends BrokerProxyObject<CommandWrappable, ListWrappable<ParameterWrappable>, BrokerProxyList<ParameterWrappable, BrokerProxyParameter>, BrokerProxyCommand, CommandListener<? super BrokerProxyCommand>>
-        implements Command<BrokerProxyList<ParameterWrappable, BrokerProxyParameter>, BrokerProxyCommand> {
+        extends BrokerProxyObject<CommandData, ListData<ParameterData>, BrokerProxyList<ParameterData, BrokerProxyParameter>, BrokerProxyCommand, CommandListener<? super BrokerProxyCommand>>
+        implements Command<BrokerProxyList<ParameterData, BrokerProxyParameter>, BrokerProxyCommand> {
 
-    private BrokerProxyList<ParameterWrappable, BrokerProxyParameter> parameters;
+    private BrokerProxyList<ParameterData, BrokerProxyParameter> parameters;
     private int nextId;
     private Map<String, CommandListener<? super BrokerProxyCommand>> listenerMap = new HashMap<String, CommandListener<? super BrokerProxyCommand>>();
 
@@ -29,12 +29,12 @@ public class BrokerProxyCommand
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected BrokerProxyCommand(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, ListWrappable<ParameterWrappable>, ? extends BrokerProxyList<ParameterWrappable, BrokerProxyParameter>>> resources, CommandWrappable data) {
+    protected BrokerProxyCommand(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, ListData<ParameterData>, ? extends BrokerProxyList<ParameterData, BrokerProxyParameter>>> resources, CommandData data) {
         super(resources, data);
     }
 
     @Override
-    public BrokerProxyList<ParameterWrappable, BrokerProxyParameter> getParameters() {
+    public BrokerProxyList<ParameterData, BrokerProxyParameter> getParameters() {
         return parameters;
     }
 

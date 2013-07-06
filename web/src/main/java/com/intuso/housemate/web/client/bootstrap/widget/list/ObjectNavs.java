@@ -61,7 +61,8 @@ public class ObjectNavs<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> extends Comp
         elementWidgets.clear();
 
         // add the new listener and make it call us for each existing element
-        listenerRegistration = list.addObjectListener(this, true);
+        if(list != null)
+            listenerRegistration = list.addObjectListener(this, true);
 
         if(addCommand != null) {
             addButton.setCommand(addCommand);

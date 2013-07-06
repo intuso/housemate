@@ -4,7 +4,6 @@ import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.RouterRootObject;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
 import com.intuso.housemate.comms.transport.socket.client.SocketClient;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
@@ -50,15 +49,12 @@ public class TestClientDisconnect {
             @Override
             public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
                 if(status == ConnectionStatus.Authenticated) {
-                    root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
+                    root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {
 
                         @Override
                         public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
-
-                        }
-
-                        @Override
-                        public void loaded(SimpleProxyObject.Root root) {
+                            if(status != ConnectionStatus.Authenticated)
+                                return;
                             synchronized(disconnected) {
                                 disconnected.set(false);
                                 disconnected.notify();
@@ -141,15 +137,12 @@ public class TestClientDisconnect {
             @Override
             public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
                 if(status == ConnectionStatus.Authenticated) {
-                    root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
+                    root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {
 
                         @Override
                         public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
-
-                        }
-
-                        @Override
-                        public void loaded(SimpleProxyObject.Root root) {
+                            if(status != ConnectionStatus.Authenticated)
+                                return;
                             synchronized (connectionLost) {
                                 connectionLost.set(false);
                                 connectionLost.notify();
@@ -230,15 +223,12 @@ public class TestClientDisconnect {
         resources = new ProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
-        ListenerRegistration rootListenerRegistration = root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
+        ListenerRegistration rootListenerRegistration = root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {
 
             @Override
             public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
-
-            }
-
-            @Override
-            public void loaded(SimpleProxyObject.Root root) {
+                if(status != ConnectionStatus.Authenticated)
+                    return;
                 synchronized(connected) {
                     connected.set(true);
                     connected.notify();

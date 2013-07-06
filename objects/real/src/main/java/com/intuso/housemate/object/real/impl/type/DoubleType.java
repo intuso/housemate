@@ -1,6 +1,6 @@
 package com.intuso.housemate.object.real.impl.type;
 
-import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.SimpleTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealParameter;
@@ -31,7 +31,7 @@ public class DoubleType extends RealSimpleType<Double> {
      * @param resources {@inheritDoc}
      */
     public DoubleType(RealResources resources) {
-        super(resources, SimpleTypeWrappable.Type.Double, SERIALISER);
+        super(resources, SimpleTypeData.Type.Double, SERIALISER);
     }
 
     /**

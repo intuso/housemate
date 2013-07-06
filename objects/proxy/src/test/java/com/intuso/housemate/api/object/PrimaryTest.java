@@ -3,9 +3,9 @@ package com.intuso.housemate.api.object;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.TestEnvironment;
 import com.intuso.housemate.api.object.command.CommandListener;
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceListener;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
 import com.intuso.housemate.object.real.RealDevice;
@@ -35,12 +35,12 @@ public class PrimaryTest {
         public void commandFailed(SimpleProxyObject.Command function, String error) {}
     };
 
-    private SimpleProxyObject.List<DeviceWrappable, SimpleProxyObject.Device> proxyList
-            = new SimpleProxyObject.List<DeviceWrappable, SimpleProxyObject.Device>(
+    private SimpleProxyObject.List<DeviceData, SimpleProxyObject.Device> proxyList
+            = new SimpleProxyObject.List<DeviceData, SimpleProxyObject.Device>(
             SimpleProxyFactory.changeFactoryType(TestEnvironment.TEST_INSTANCE.getProxyResources(), new SimpleProxyFactory.Device()),
             TestEnvironment.TEST_INSTANCE.getProxyResources(),
-            new ListWrappable(PRIMARIES, PRIMARIES, PRIMARIES));
-    private RealList<DeviceWrappable, RealDevice> realList = new RealList<DeviceWrappable, RealDevice>(TestEnvironment.TEST_INSTANCE.getRealResources(), PRIMARIES, PRIMARIES, PRIMARIES, new ArrayList<RealDevice>());
+            new ListData(PRIMARIES, PRIMARIES, PRIMARIES));
+    private RealList<DeviceData, RealDevice> realList = new RealList<DeviceData, RealDevice>(TestEnvironment.TEST_INSTANCE.getRealResources(), PRIMARIES, PRIMARIES, PRIMARIES, new ArrayList<RealDevice>());
     private RealDevice realPrimary;
     private SimpleProxyObject.Device proxyPrimary;
 

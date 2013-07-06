@@ -9,6 +9,7 @@ import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.wrapper.Data;
 import com.intuso.utilities.wrapper.Wrapper;
 
 import java.util.Arrays;
@@ -27,8 +28,8 @@ import java.util.Set;
  */
 public abstract class HousemateObject<
             RESOURCES extends Resources,
-            DATA extends HousemateObjectWrappable<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends HousemateData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends HousemateObject<?, ? extends CHILD_DATA, ?, ?, ?>,
             LISTENER extends ObjectListener>
         extends Wrapper<DATA, CHILD_DATA, CHILD, HousemateException>
@@ -240,28 +241,77 @@ public abstract class HousemateObject<
      */
     protected static class LoadRequest implements Message.Payload {
 
-        private String childWrapperId;
+        private String childId;
 
         private LoadRequest() {}
 
         /**
-         * @param childWrapperId the id of the child wrapper to load
+         * @param childId the id of the child wrapper to load
          */
-        public LoadRequest(String childWrapperId) {
-            this.childWrapperId = childWrapperId;
+        public LoadRequest(String childId) {
+            this.childId = childId;
         }
 
         /**
          * Gets the id of the child wrapper to load
          * @return the id of the child wrapper to load
          */
-        public String getChildWrapperId() {
-            return childWrapperId;
+        public String getChildId() {
+            return childId;
         }
 
         @Override
         public String toString() {
-            return childWrapperId;
+            return childId;
+        }
+    }
+
+    /**
+     * Message payload for a load request of a remote object
+     */
+    protected static class LoadResponse<DATA extends Data<?>> implements Message.Payload {
+
+        private String childId;
+        private DATA data;
+        private String error;
+
+        private LoadResponse() {}
+
+        /**
+         * @param childId the id of the child wrapper to load
+         */
+        public LoadResponse(String childId, DATA data) {
+            this.childId = childId;
+            this.data = data;
+        }
+
+        /**
+         * @param childId the id of the child wrapper to load
+         */
+        public LoadResponse(String childId, String error) {
+            this.childId = childId;
+            this.error = error;
+        }
+
+        /**
+         * Gets the id of the child wrapper to load
+         * @return the id of the child wrapper to load
+         */
+        public String getChildId() {
+            return childId;
+        }
+
+        public DATA getData() {
+            return data;
+        }
+
+        public String getError() {
+            return error;
+        }
+
+        @Override
+        public String toString() {
+            return data != null ? childId + " data" : childId + " failed because " + error;
         }
     }
 }

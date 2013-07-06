@@ -1,9 +1,9 @@
 package com.intuso.housemate.web.client.bootstrap.widget.value;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.SimpleTypeData;
 import com.intuso.housemate.api.object.type.Type;
-import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
@@ -17,9 +17,9 @@ public abstract class Value extends Composite implements ValueListener<com.intus
             Type type = value.getType();
             if(type instanceof GWTProxyType) {
                 GWTProxyType proxyType = (GWTProxyType)type;
-                TypeWrappable typeWrappable = proxyType.getData();
-                if(typeWrappable instanceof SimpleTypeWrappable) {
-                    switch(((SimpleTypeWrappable) typeWrappable).getType()) {
+                TypeData typeWrappable = proxyType.getData();
+                if(typeWrappable instanceof SimpleTypeData) {
+                    switch(((SimpleTypeData) typeWrappable).getType()) {
                         case String:
                         case Integer:
                         case Double:

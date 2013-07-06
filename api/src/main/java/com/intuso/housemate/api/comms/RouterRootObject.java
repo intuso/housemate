@@ -5,12 +5,12 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.comms.message.AuthenticationResponse;
 import com.intuso.housemate.api.comms.message.StringMessageValue;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.root.RootWrappable;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -20,9 +20,9 @@ import java.util.List;
  * Root object used to handle messaging between a router and the broker
  */
 public class RouterRootObject
-        extends HousemateObject<Resources, RootWrappable, HousemateObjectWrappable<?>,
+        extends HousemateObject<Resources, RootData, HousemateData<?>,
             HousemateObject<?, ?, ?, ?, ?>, RootListener<? super RouterRootObject>>
-        implements Root<RouterRootObject, RootListener<? super RouterRootObject>>, ConnectionStatusChangeListener {
+        implements Root<RouterRootObject>, ConnectionStatusChangeListener {
 
     private final Router router;
     private final ConnectionManager connectionManager;
@@ -32,7 +32,7 @@ public class RouterRootObject
      * @param router the router to create the root object for
      */
     protected RouterRootObject(Resources resources, Router router) {
-        super(resources, new RootWrappable());
+        super(resources, new RootData());
         this.router = router;
         connectionManager = new ConnectionManager(router, ConnectionType.Router, ConnectionStatus.Disconnected);
         init(null);

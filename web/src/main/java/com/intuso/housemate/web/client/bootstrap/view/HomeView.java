@@ -80,7 +80,8 @@ public class HomeView extends Composite implements com.intuso.housemate.web.clie
             }
         });
 
-        root.getDevices().addObjectListener(this, true);
+        if(root.getDevices() != null)
+            root.getDevices().addObjectListener(this, true);
     }
 
     @Override

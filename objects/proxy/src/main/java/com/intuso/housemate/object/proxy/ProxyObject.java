@@ -1,20 +1,24 @@
 package com.intuso.housemate.object.proxy;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.wrapper.WrapperFactory;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @param <RESOURCES> the type of the resources
@@ -28,8 +32,8 @@ import java.util.List;
 public abstract class ProxyObject<
             RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>>,
             CHILD_RESOURCES extends ProxyResources<?>,
-            DATA extends HousemateObjectWrappable<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends HousemateData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
             OBJECT extends ProxyObject<?, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, OBJECT, LISTENER>,
             LISTENER extends ObjectListener>
@@ -37,6 +41,7 @@ public abstract class ProxyObject<
 
     private ProxyRoot<?, ?, ?, ?, ?, ?> proxyRoot;
     private final CHILD_RESOURCES childResources;
+    private final Map<String, Set<LoadManager>> pendingLoads = Maps.newHashMap();
 
     /**
      * @param resources the resources
@@ -66,10 +71,26 @@ public abstract class ProxyObject<
 
     /**
      * Makes a request to load the child object for the given id
-     * @param id the id to load
+     * @param manager the load manager used to specify what to load and notify about failures or when objects are loaded
      */
-    public void load(String id) {
-        sendMessage(LOAD_REQUEST, new LoadRequest(id));
+    public void load(LoadManager manager) {
+        if(manager == null)
+            throw new HousemateRuntimeException("Null manager");
+        else {
+            for(String id : manager.getToLoad()) {
+                if(getWrapper(id) != null)
+                    manager.finished(id);
+                else {
+                    if(pendingLoads.get(id) != null)
+                        pendingLoads.get(id).add(manager);
+                    else {
+                        pendingLoads.put(id, Sets.<LoadManager>newHashSet());
+                        pendingLoads.get(id).add(manager);
+                        sendMessage(LOAD_REQUEST, new LoadRequest(id));
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -88,16 +109,37 @@ public abstract class ProxyObject<
      */
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = Lists.newArrayList();
-        result.add(addMessageListener(LOAD_RESPONSE, new Receiver<HousemateObjectWrappable>() {
+        result.add(addMessageListener(LOAD_RESPONSE, new Receiver<LoadResponse<CHILD_DATA>>() {
             @Override
-            public void messageReceived(Message<HousemateObjectWrappable> message) throws HousemateException {
+            public void messageReceived(Message<LoadResponse<CHILD_DATA>> message) throws HousemateException {
+                String id = message.getPayload().getChildId();
+                if(message.getPayload().getError() != null) {
+                    getLog().e("Failed to load " + id + ". " + message.getPayload().getError());
+                    if(pendingLoads.get(id) != null) {
+                        for(LoadManager manager : pendingLoads.get(id)) {
+                            manager.failed(id);
+                            manager.finished(id);
+                        }
+                    }
+                }
                 try {
-                    CHILD object = getResources().getObjectFactory().create(getSubResources(), (CHILD_DATA)message.getPayload());
+                    CHILD object = getResources().getObjectFactory().create(getSubResources(), message.getPayload().getData());
                     object.init(ProxyObject.this);
                     addWrapper(object);
+                    getChildObjects();
+                    if(pendingLoads.get(object.getId()) != null) {
+                        for(LoadManager manager : pendingLoads.get(object.getId()))
+                            manager.finished(object.getId());
+                    }
                 } catch(HousemateException e) {
                     getLog().e("Failed to unwrap load response");
                     getLog().st(e);
+                    if(pendingLoads.get(id) != null) {
+                        for(LoadManager manager : pendingLoads.get(id)) {
+                            manager.failed(id);
+                            manager.finished(id);
+                        }
+                    }
                 }
             }
         }));

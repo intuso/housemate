@@ -1,9 +1,9 @@
 package com.intuso.housemate.web.client.object;
 
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.condition.ConditionData;
+import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.object.proxy.ProxyCondition;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.GWTResources;
@@ -11,15 +11,15 @@ import com.intuso.housemate.web.client.GWTResources;
 /**
  */
 public class GWTProxyCondition extends ProxyCondition<
-            GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             GWTResources<?>,
             GWTProxyValue,
-            GWTProxyList<PropertyWrappable, GWTProxyProperty>,
+            GWTProxyList<PropertyData, GWTProxyProperty>,
             GWTProxyCommand,
-            GWTProxyCondition, GWTProxyList<ConditionWrappable, GWTProxyCondition>> {
-    public GWTProxyCondition(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+            GWTProxyCondition, GWTProxyList<ConditionData, GWTProxyCondition>> {
+    public GWTProxyCondition(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                              GWTResources childResources,
-                             ConditionWrappable data) {
+                             ConditionData data) {
         super(resources, childResources, data);
     }
 }

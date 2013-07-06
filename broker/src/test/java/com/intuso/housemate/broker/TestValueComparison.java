@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.SimpleTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
@@ -41,8 +41,8 @@ public class TestValueComparison {
     private final static Map<ComparisonOperator, Map<String, Comparator<?>>> COMPARISONS_BY_TYPE = Maps.newHashMap();
     static {
         COMPARISONS_BY_TYPE.put(ComparisonOperator.Simple.Equals, Maps.<String, Comparator<?>>newHashMap());
-        COMPARISONS_BY_TYPE.get(ComparisonOperator.Simple.Equals).put(SimpleTypeWrappable.Type.Integer.getId(), new IntegerComparators.Equals());
-        COMPARISONS_BY_TYPE.get(ComparisonOperator.Simple.Equals).put(SimpleTypeWrappable.Type.Double.getId(), new DoubleComparators.Equals());
+        COMPARISONS_BY_TYPE.get(ComparisonOperator.Simple.Equals).put(SimpleTypeData.Type.Integer.getId(), new IntegerComparators.Equals());
+        COMPARISONS_BY_TYPE.get(ComparisonOperator.Simple.Equals).put(SimpleTypeData.Type.Double.getId(), new DoubleComparators.Equals());
     }
 
     @Test

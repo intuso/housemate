@@ -1,12 +1,12 @@
 package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.condition.Condition;
+import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.condition.ConditionListener;
-import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -20,14 +20,14 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * @param <CONDITIONS> the type of the conditions list
  */
 public abstract class ProxyCondition<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             CHILD_RESOURCES extends ProxyResources<?>,
             VALUE extends ProxyValue<?, ?, VALUE>,
-            PROPERTIES extends ProxyList<?, ?, PropertyWrappable, ? extends ProxyProperty<?, ?, ?, ?, ?>, PROPERTIES>,
+            PROPERTIES extends ProxyList<?, ?, PropertyData, ? extends ProxyProperty<?, ?, ?, ?, ?>, PROPERTIES>,
             ADD_COMMAND extends ProxyCommand<?, ?, ?, ?, ADD_COMMAND>,
             CONDITION extends ProxyCondition<RESOURCES, CHILD_RESOURCES, VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS>,
-            CONDITIONS extends ProxyList<?, ?, ConditionWrappable, CONDITION, CONDITIONS>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, ConditionWrappable, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, CONDITION, ConditionListener<? super CONDITION>>
+            CONDITIONS extends ProxyList<?, ?, ConditionData, CONDITION, CONDITIONS>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, ConditionData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, CONDITION, ConditionListener<? super CONDITION>>
         implements Condition<VALUE, VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS> {
 
     private VALUE error;
@@ -41,7 +41,7 @@ public abstract class ProxyCondition<
      * @param childResources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyCondition(RESOURCES resources, CHILD_RESOURCES childResources, ConditionWrappable data) {
+    public ProxyCondition(RESOURCES resources, CHILD_RESOURCES childResources, ConditionData data) {
         super(resources, childResources, data);
     }
 

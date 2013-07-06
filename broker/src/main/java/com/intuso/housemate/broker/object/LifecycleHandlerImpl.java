@@ -3,16 +3,16 @@ package com.intuso.housemate.broker.object;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.automation.Automation;
-import com.intuso.housemate.api.object.automation.AutomationWrappable;
-import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
+import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.condition.ConditionData;
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.task.TaskWrappable;
+import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.User;
-import com.intuso.housemate.api.object.user.UserWrappable;
+import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
@@ -62,7 +62,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     }
 
     @Override
-    public BrokerRealCommand createAddUserCommand(final BrokerRealList<UserWrappable, BrokerRealUser> users) {
+    public BrokerRealCommand createAddUserCommand(final BrokerRealList<UserData, BrokerRealUser> users) {
         return new BrokerRealCommand(resources.getRealResources(), Root.ADD_USER_ID, Root.ADD_USER_ID, "Add a new user", Arrays.<BrokerRealParameter<?>>asList(
                 new BrokerRealParameter<String>(resources.getRealResources(), "username", "Username", "The username for the new user", new StringType(resources.getClientResources())),
                 new BrokerRealParameter<String>(resources.getRealResources(), "password", "Password", "The password for the new user", new StringType(resources.getClientResources()))
@@ -99,12 +99,12 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     }
 
     @Override
-    public RealCommand createAddDeviceCommand(final RealList<DeviceWrappable, RealDevice> devices) {
+    public RealCommand createAddDeviceCommand(final RealList<DeviceData, RealDevice> devices) {
         return resources.getDeviceFactory().createAddDeviceCommand(Root.ADD_DEVICE_ID, Root.ADD_DEVICE_ID, "Add a new device", devices);
     }
 
     @Override
-    public BrokerRealCommand createAddAutomationCommand(final BrokerRealList<AutomationWrappable, BrokerRealAutomation> automations) {
+    public BrokerRealCommand createAddAutomationCommand(final BrokerRealList<AutomationData, BrokerRealAutomation> automations) {
         return new BrokerRealCommand(resources.getRealResources(), Root.ADD_AUTOMATION_ID, Root.ADD_AUTOMATION_ID, "Add a new automation", Arrays.<BrokerRealParameter<?>>asList(
                 new BrokerRealParameter<String>(resources.getRealResources(), "name", "Name", "The name for the new automation", new StringType(resources.getClientResources())),
                 new BrokerRealParameter<String>(resources.getRealResources(), "description", "Description", "The description for the new automation", new StringType(resources.getClientResources()))
@@ -131,17 +131,17 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     }
 
     @Override
-    public BrokerRealCommand createAddConditionCommand(BrokerRealList<ConditionWrappable, BrokerRealCondition> conditions) {
+    public BrokerRealCommand createAddConditionCommand(BrokerRealList<ConditionData, BrokerRealCondition> conditions) {
         return resources.getConditionFactory().createAddConditionCommand(Automation.ADD_CONDITION_ID, Automation.ADD_CONDITION_ID, "Add a new condition", conditions);
     }
 
     @Override
-    public BrokerRealCommand createAddSatisfiedTaskCommand(BrokerRealList<TaskWrappable, BrokerRealTask> tasks) {
+    public BrokerRealCommand createAddSatisfiedTaskCommand(BrokerRealList<TaskData, BrokerRealTask> tasks) {
         return resources.getTaskFactory().createAddTaskCommand(Automation.ADD_SATISFIED_TASK_ID, Automation.ADD_SATISFIED_TASK_ID, "Add a new satisfied task", tasks);
     }
 
     @Override
-    public BrokerRealCommand createAddUnsatisfiedTaskCommand(BrokerRealList<TaskWrappable, BrokerRealTask> tasks) {
+    public BrokerRealCommand createAddUnsatisfiedTaskCommand(BrokerRealList<TaskData, BrokerRealTask> tasks) {
         return resources.getTaskFactory().createAddTaskCommand(Automation.ADD_UNSATISFIED_TASK_ID, Automation.ADD_UNSATISFIED_TASK_ID, "Add a new unsatisfied task", tasks);
     }
 }

@@ -2,7 +2,7 @@ package com.intuso.housemate.broker.client;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealRootObject;
@@ -25,9 +25,9 @@ public class LocalClientRoot extends RealRootObject {
 
     @Override
     public void messageReceived(Message<Message.Payload> message) throws HousemateException {
-        if(message.getPayload() instanceof HousemateObjectWrappable)
+        if(message.getPayload() instanceof HousemateData)
             super.messageReceived(new Message(message.getPath(), message.getType(),
-                    ((HousemateObjectWrappable)message.getPayload()).deepClone(),
+                    ((HousemateData)message.getPayload()).deepClone(),
                     message.getRoute()));
         else
             super.messageReceived(message);
@@ -35,9 +35,9 @@ public class LocalClientRoot extends RealRootObject {
 
     @Override
     public void sendMessage(Message<?> message) {
-        if(message.getPayload() instanceof HousemateObjectWrappable)
+        if(message.getPayload() instanceof HousemateData)
             super.sendMessage(new Message(message.getPath(), message.getType(),
-                    ((HousemateObjectWrappable)message.getPayload()).deepClone(),
+                    ((HousemateData)message.getPayload()).deepClone(),
                     message.getRoute()));
         else
             super.sendMessage(message);

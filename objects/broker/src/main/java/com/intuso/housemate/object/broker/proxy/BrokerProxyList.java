@@ -3,11 +3,11 @@ package com.intuso.housemate.object.broker.proxy;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -19,31 +19,31 @@ import java.util.Iterator;
  * @param <CHILD> the type of the child
  */
 public class BrokerProxyList<
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends BrokerProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>>
-        extends BrokerProxyObject<ListWrappable<CHILD_DATA>, CHILD_DATA, CHILD, BrokerProxyList<CHILD_DATA, CHILD>, ListListener<? super CHILD>>
+        extends BrokerProxyObject<ListData<CHILD_DATA>, CHILD_DATA, CHILD, BrokerProxyList<CHILD_DATA, CHILD>, ListListener<? super CHILD>>
         implements List<CHILD> {
 
     /**
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public BrokerProxyList(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, CHILD_DATA, ? extends CHILD>> resources, ListWrappable<CHILD_DATA> data) {
+    public BrokerProxyList(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, CHILD_DATA, ? extends CHILD>> resources, ListData<CHILD_DATA> data) {
         super(resources, data);
     }
 
     @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(ADD_TYPE, new Receiver<ClientPayload<HousemateObjectWrappable>>() {
+        result.add(addMessageListener(ADD_TYPE, new Receiver<ClientPayload<HousemateData>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<HousemateObjectWrappable>> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<HousemateData>> message) throws HousemateException {
                 add(message.getPayload().getOriginal(), message.getPayload().getClient());
             }
         }));
-        result.add(addMessageListener(REMOVE_TYPE, new Receiver<ClientPayload<HousemateObjectWrappable>>() {
+        result.add(addMessageListener(REMOVE_TYPE, new Receiver<ClientPayload<HousemateData>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<HousemateObjectWrappable>> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<HousemateData>> message) throws HousemateException {
                 remove(message.getPayload().getOriginal().getId());
             }
         }));
@@ -56,7 +56,7 @@ public class BrokerProxyList<
      * @param clientId the id of the client
      * @throws HousemateException
      */
-    public void add(HousemateObjectWrappable data, RemoteClient clientId) throws HousemateException {
+    public void add(HousemateData data, RemoteClient clientId) throws HousemateException {
         CHILD wrapper = null;
         try {
             wrapper = getResources().getFactory().create(getResources(), (CHILD_DATA)data);

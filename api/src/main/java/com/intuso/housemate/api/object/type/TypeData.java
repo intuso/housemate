@@ -1,19 +1,19 @@
 package com.intuso.housemate.api.object.type;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 
 /**
  * Base data object for a type
  *
  * @param <WBL> the type of the sub wrappable objects
  */
-public abstract class TypeWrappable<WBL extends HousemateObjectWrappable<?>>
-        extends HousemateObjectWrappable<WBL> {
+public abstract class TypeData<WBL extends HousemateData<?>>
+        extends HousemateData<WBL> {
 
     private int minValues;
     private int maxValues;
 
-    protected TypeWrappable() {}
+    protected TypeData() {}
 
     /**
      * @param id the type's id
@@ -22,7 +22,7 @@ public abstract class TypeWrappable<WBL extends HousemateObjectWrappable<?>>
      * @param minValues the minimum number of values the type can have
      * @param maxValues the maximum number of values the type can have
      */
-    public TypeWrappable(String id, String name, String description, int minValues, int maxValues) {
+    public TypeData(String id, String name, String description, int minValues, int maxValues) {
         super(id, name, description);
         this.minValues = minValues;
         this.maxValues = maxValues;

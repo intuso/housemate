@@ -10,5 +10,5 @@ import com.intuso.housemate.api.resources.Resources;
 public interface UserFactory<
             R extends Resources,
             U extends User<?>>
-        extends HousemateObjectFactory<R, UserWrappable, U> {
+        extends HousemateObjectFactory<R, UserData, U> {
 }

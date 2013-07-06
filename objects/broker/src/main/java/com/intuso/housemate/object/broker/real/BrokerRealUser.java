@@ -1,12 +1,12 @@
 package com.intuso.housemate.object.broker.real;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.user.User;
+import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.user.UserListener;
-import com.intuso.housemate.api.object.user.UserWrappable;
 
 public class BrokerRealUser
-        extends BrokerRealObject<UserWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ? ,?, ?>, UserListener>
+        extends BrokerRealObject<UserData, HousemateData<?>, BrokerRealObject<?, ? ,?, ?>, UserListener>
         implements User<BrokerRealCommand> {
 
     private final BrokerRealCommand remove;
@@ -18,7 +18,7 @@ public class BrokerRealUser
      * @param description the object's description
      */
     public BrokerRealUser(BrokerRealResources resources, String id, String name, String description) {
-        super(resources, new UserWrappable(id, name, description));
+        super(resources, new UserData(id, name, description));
         this.remove = getResources().getLifecycleHandler().createRemoveUserCommand(this);
     }
 

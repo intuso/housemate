@@ -3,11 +3,11 @@ package com.intuso.housemate.object.broker.proxy;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
+import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.api.object.value.ValueWrappableBase;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -20,8 +20,8 @@ import java.util.List;
  * @param <VALUE> the type of the value
  */
 public class BrokerProxyValueBase<
-            DATA extends ValueWrappableBase<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends ValueBaseData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends BrokerProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
             VALUE extends BrokerProxyValueBase<DATA, CHILD_DATA, CHILD, VALUE>>
         extends BrokerProxyObject<DATA, CHILD_DATA, CHILD, VALUE, ValueListener<? super VALUE>>

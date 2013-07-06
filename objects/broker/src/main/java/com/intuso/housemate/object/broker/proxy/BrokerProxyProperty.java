@@ -1,14 +1,14 @@
 package com.intuso.housemate.object.broker.proxy;
 
+import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
 public class BrokerProxyProperty
-        extends BrokerProxyValueBase<PropertyWrappable, CommandWrappable, BrokerProxyCommand, BrokerProxyProperty>
+        extends BrokerProxyValueBase<PropertyData, CommandData, BrokerProxyCommand, BrokerProxyProperty>
         implements Property<BrokerProxyType, BrokerProxyCommand, BrokerProxyProperty> {
 
     private BrokerProxyCommand setCommand;
@@ -17,7 +17,7 @@ public class BrokerProxyProperty
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public BrokerProxyProperty(BrokerProxyResources<BrokerProxyFactory.Command> resources, PropertyWrappable data) {
+    public BrokerProxyProperty(BrokerProxyResources<BrokerProxyFactory.Command> resources, PropertyData data) {
         super(resources, data);
     }
 

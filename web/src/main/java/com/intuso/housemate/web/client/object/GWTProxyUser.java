@@ -1,6 +1,6 @@
 package com.intuso.housemate.web.client.object;
 
-import com.intuso.housemate.api.object.user.UserWrappable;
+import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.proxy.ProxyUser;
 import com.intuso.housemate.web.client.GWTResources;
 
@@ -8,7 +8,7 @@ import com.intuso.housemate.web.client.GWTResources;
  */
 public class GWTProxyUser extends ProxyUser<GWTResources<GWTProxyFactory.All>, GWTResources<?>, GWTProxyCommand,
         GWTProxyUser> {
-    public GWTProxyUser(GWTResources<GWTProxyFactory.All> resources, GWTResources<?> childResources, UserWrappable data) {
+    public GWTProxyUser(GWTResources<GWTProxyFactory.All> resources, GWTResources<?> childResources, UserData data) {
         super(resources, childResources, data);
     }
 }

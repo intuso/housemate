@@ -1,12 +1,12 @@
 package com.intuso.housemate.object.broker.proxy;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.parameter.Parameter;
+import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterListener;
-import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 
 public class BrokerProxyParameter
-        extends BrokerProxyObject<ParameterWrappable, NoChildrenWrappable, NoChildrenBrokerProxyObject, BrokerProxyParameter, ParameterListener>
+        extends BrokerProxyObject<ParameterData, NoChildrenData, NoChildrenBrokerProxyObject, BrokerProxyParameter, ParameterListener>
         implements Parameter<BrokerProxyType> {
 
     private BrokerProxyType type;
@@ -15,7 +15,7 @@ public class BrokerProxyParameter
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public BrokerProxyParameter(BrokerProxyResources<NoChildrenBrokerProxyObjectFactory> resources, ParameterWrappable data) {
+    public BrokerProxyParameter(BrokerProxyResources<NoChildrenBrokerProxyObjectFactory> resources, ParameterData data) {
         super(resources, data);
     }
 

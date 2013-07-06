@@ -2,15 +2,15 @@ package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.option.Option;
-import com.intuso.housemate.api.object.option.OptionWrappable;
+import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.subtype.SubType;
-import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeListener;
-import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.utilities.log.Log;
 
 import javax.annotation.Nullable;
@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 /**
  */
 public class TypeBridge
-        extends BridgeObject<TypeWrappable<HousemateObjectWrappable<?>>, HousemateObjectWrappable<?>,
+        extends BridgeObject<TypeData<HousemateData<?>>, HousemateData<?>,
             BridgeObject<?, ?, ?, ?, ?>, TypeBridge, TypeListener>
         implements Type {
 
@@ -28,7 +28,7 @@ public class TypeBridge
     public TypeBridge(final BrokerBridgeResources resources, Type type) {
         super(resources, cloneWrappable(resources.getLog(), type));
         if(type instanceof HousemateObject && ((HousemateObject)type).getWrapper(OPTIONS) != null) {
-            addWrapper(new ListBridge<OptionWrappable, Option<ListBridge<SubTypeWrappable, SubType<?>, SubTypeBridge>>, OptionBridge>(resources, (List)((HousemateObject)(type)).getWrapper(OPTIONS),
+            addWrapper(new ListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(resources, (List)((HousemateObject)(type)).getWrapper(OPTIONS),
                     new Function<Option, OptionBridge>() {
                         @Override
                         public OptionBridge apply(@Nullable Option option) {
@@ -37,7 +37,7 @@ public class TypeBridge
                     }));
         }
         if(type instanceof HousemateObject && ((HousemateObject)type).getWrapper(SUB_TYPES) != null) {
-            addWrapper(new ListBridge<SubTypeWrappable, SubType<?>, SubTypeBridge>(resources, (List)((HousemateObject)(type)).getWrapper(SUB_TYPES),
+            addWrapper(new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(resources, (List)((HousemateObject)(type)).getWrapper(SUB_TYPES),
                     new Function<SubType<?>, SubTypeBridge>() {
                         @Override
                         public SubTypeBridge apply(@Nullable SubType<?> subType) {
@@ -47,9 +47,9 @@ public class TypeBridge
         }
     }
 
-    private static TypeWrappable<HousemateObjectWrappable<?>> cloneWrappable(Log log, Type type) {
+    private static TypeData<HousemateData<?>> cloneWrappable(Log log, Type type) {
         if(type instanceof HousemateObject)
-            return (TypeWrappable<HousemateObjectWrappable<?>>) ((HousemateObject<?, ?, ?, ?, ?>)type).getData().clone();
+            return (TypeData<HousemateData<?>>) ((HousemateObject<?, ?, ?, ?, ?>)type).getData().clone();
         else {
             log.e("Cannot bridge to a non-real type. Bridged type will have a null data");
             return null;

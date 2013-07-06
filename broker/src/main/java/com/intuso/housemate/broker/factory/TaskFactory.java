@@ -1,7 +1,7 @@
 package com.intuso.housemate.broker.factory;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.task.TaskWrappable;
+import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -55,7 +55,7 @@ public final class TaskFactory implements PluginListener {
         return type;
     }
 
-    public BrokerRealCommand createAddTaskCommand(String commandId, String commandName, String commandDescription, final BrokerRealList<TaskWrappable, BrokerRealTask> list) {
+    public BrokerRealCommand createAddTaskCommand(String commandId, String commandName, String commandDescription, final BrokerRealList<TaskData, BrokerRealTask> list) {
         return new BrokerRealCommand(resources.getRealResources(), commandId, commandName, commandDescription, Arrays.asList(
                 new BrokerRealParameter<String>(resources.getRealResources(), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
                 new BrokerRealParameter<String>(resources.getRealResources(), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),

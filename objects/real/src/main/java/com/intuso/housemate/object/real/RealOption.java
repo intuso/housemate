@@ -1,20 +1,20 @@
 package com.intuso.housemate.object.real;
 
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.Option;
+import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.option.OptionListener;
-import com.intuso.housemate.api.object.option.OptionWrappable;
-import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class RealOption
-        extends RealObject<OptionWrappable, ListWrappable<SubTypeWrappable>,
-            RealList<SubTypeWrappable, RealSubType<?>>, OptionListener>
-        implements Option<RealList<SubTypeWrappable, RealSubType<?>>> {
+        extends RealObject<OptionData, ListData<SubTypeData>,
+            RealList<SubTypeData, RealSubType<?>>, OptionListener>
+        implements Option<RealList<SubTypeData, RealSubType<?>>> {
 
-    private final RealList<SubTypeWrappable, RealSubType<?>> subTypes;
+    private final RealList<SubTypeData, RealSubType<?>> subTypes;
 
     /**
      * @param resources {@inheritDoc}
@@ -35,14 +35,14 @@ public class RealOption
      * @param subTypes the option's sub types
      */
     public RealOption(RealResources resources, String id, String name, String description, List<RealSubType<?>> subTypes) {
-        super(resources, new OptionWrappable(id, name,  description));
-        this.subTypes = new RealList<SubTypeWrappable, RealSubType<?>>(resources, SUB_TYPES_ID, "Sub Types",
+        super(resources, new OptionData(id, name,  description));
+        this.subTypes = new RealList<SubTypeData, RealSubType<?>>(resources, SUB_TYPES_ID, "Sub Types",
                 "The sub types of this option", subTypes);
         addWrapper(this.subTypes);
     }
 
     @Override
-    public final RealList<SubTypeWrappable, RealSubType<?>> getSubTypes() {
+    public final RealList<SubTypeData, RealSubType<?>> getSubTypes() {
         return subTypes;
     }
 }

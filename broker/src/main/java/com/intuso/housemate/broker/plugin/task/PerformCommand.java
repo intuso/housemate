@@ -55,7 +55,7 @@ public class PerformCommand extends BrokerRealTask implements ObjectLifecycleLis
         addPropertyListener(root);
     }
 
-    private void addPropertyListener(final Root<?, ?> root) {
+    private void addPropertyListener(final Root<?> root) {
         commandPath.addObjectListener(new ValueListener<BrokerRealProperty<RealObjectType.Reference<BaseObject<?>>>>() {
 
             @Override

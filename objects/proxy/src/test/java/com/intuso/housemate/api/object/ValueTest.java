@@ -2,10 +2,10 @@ package com.intuso.housemate.api.object;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.TestEnvironment;
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.value.ValueBaseData;
+import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.api.object.value.ValueWrappable;
-import com.intuso.housemate.api.object.value.ValueWrappableBase;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
 import com.intuso.housemate.object.real.RealList;
@@ -26,12 +26,12 @@ public class ValueTest {
 
     public final static String VALUES = "values";
 
-    private SimpleProxyObject.List<ValueWrappable, SimpleProxyObject.Value> proxyList
-            = new SimpleProxyObject.List<ValueWrappable, SimpleProxyObject.Value>(
+    private SimpleProxyObject.List<ValueData, SimpleProxyObject.Value> proxyList
+            = new SimpleProxyObject.List<ValueData, SimpleProxyObject.Value>(
                 SimpleProxyFactory.changeFactoryType(TestEnvironment.TEST_INSTANCE.getProxyResources(), new SimpleProxyFactory.Value()),
                 TestEnvironment.TEST_INSTANCE.getProxyResources(),
-            new ListWrappable(VALUES, VALUES, VALUES));
-    private RealList<ValueWrappableBase<NoChildrenWrappable>, RealValue<?>> realList = new RealList<ValueWrappableBase<NoChildrenWrappable>, RealValue<?>>(TestEnvironment.TEST_INSTANCE.getRealResources(), VALUES, VALUES, VALUES, new ArrayList<RealValue<?>>());
+            new ListData(VALUES, VALUES, VALUES));
+    private RealList<ValueBaseData<NoChildrenData>, RealValue<?>> realList = new RealList<ValueBaseData<NoChildrenData>, RealValue<?>>(TestEnvironment.TEST_INSTANCE.getRealResources(), VALUES, VALUES, VALUES, new ArrayList<RealValue<?>>());
     private RealValue<Integer> realValue;
     private SimpleProxyObject.Value proxyValue;
 

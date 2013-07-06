@@ -2,8 +2,8 @@ package com.intuso.housemate.web.client.bootstrap.view;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.automation.AutomationWrappable;
-import com.intuso.housemate.api.object.condition.ConditionWrappable;
+import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.web.client.GWTResources;
 import com.intuso.housemate.web.client.bootstrap.widget.condition.Condition;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ConditionView extends ObjectListView<GWTProxyCondition, ConditionPlace>
         implements com.intuso.housemate.web.client.ui.view.ConditionView {
 
-    private GWTProxyList<ConditionWrappable, GWTProxyCondition> list;
+    private GWTProxyList<ConditionData, GWTProxyCondition> list;
     private GWTProxyCommand addCommand;
 
     public ConditionView(GWTResources<?> resources) {
@@ -30,7 +30,7 @@ public class ConditionView extends ObjectListView<GWTProxyCondition, ConditionPl
     public void newPlace(ConditionPlace place) {
         list = null;
         addCommand = null;
-        GWTProxyList<AutomationWrappable, GWTProxyAutomation> automations = resources.getRoot().getAutomations();
+        GWTProxyList<AutomationData, GWTProxyAutomation> automations = resources.getRoot().getAutomations();
         if(automations.get(place.getAutomationName()) != null) {
             list = automations.get(place.getAutomationName()).getConditions();
             addCommand = automations.get(place.getAutomationName()).getAddConditionCommand();
@@ -53,7 +53,7 @@ public class ConditionView extends ObjectListView<GWTProxyCondition, ConditionPl
     }
 
     @Override
-    protected GWTProxyList<ConditionWrappable, GWTProxyCondition> getList(ConditionPlace place) {
+    protected GWTProxyList<ConditionData, GWTProxyCondition> getList(ConditionPlace place) {
         return list;
     }
 

@@ -1,21 +1,20 @@
 package com.intuso.housemate.api.object.value;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
 /**
- *
  * Base data object for a value
  */
-public abstract class ValueWrappableBase<WBL extends HousemateObjectWrappable<?>>
-        extends HousemateObjectWrappable<WBL> {
+public abstract class ValueBaseData<WBL extends HousemateData<?>>
+        extends HousemateData<WBL> {
     
     private String type;
     private TypeInstances values;
 
-    protected ValueWrappableBase() {}
+    protected ValueBaseData() {}
 
-    public ValueWrappableBase(String id, String name, String description, String type, TypeInstances values) {
+    public ValueBaseData(String id, String name, String description, String type, TypeInstances values) {
         super(id, name,  description);
         this.type = type;
         this.values = values;

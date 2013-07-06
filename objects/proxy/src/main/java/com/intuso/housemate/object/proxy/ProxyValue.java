@@ -1,7 +1,7 @@
 package com.intuso.housemate.object.proxy;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
+import com.intuso.housemate.api.object.value.ValueData;
 
 /**
  * @param <RESOURCES> the type of the resources
@@ -12,13 +12,13 @@ public class ProxyValue<
             RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
             TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
             VALUE extends ProxyValue<RESOURCES, TYPE, VALUE>>
-        extends ProxyValueBase<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, ValueWrappable, NoChildrenWrappable, NoChildrenProxyObject, TYPE, VALUE> {
+        extends ProxyValueBase<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, ValueData, NoChildrenData, NoChildrenProxyObject, TYPE, VALUE> {
 
     /**
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyValue(RESOURCES resources, ValueWrappable data) {
+    public ProxyValue(RESOURCES resources, ValueData data) {
         super(resources, null, data);
     }
 }

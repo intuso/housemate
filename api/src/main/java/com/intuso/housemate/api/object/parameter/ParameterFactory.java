@@ -10,5 +10,5 @@ import com.intuso.housemate.api.resources.Resources;
 public interface ParameterFactory<
             R extends Resources,
             P extends Parameter<?>>
-        extends HousemateObjectFactory<R, ParameterWrappable, P> {
+        extends HousemateObjectFactory<R, ParameterData, P> {
 }

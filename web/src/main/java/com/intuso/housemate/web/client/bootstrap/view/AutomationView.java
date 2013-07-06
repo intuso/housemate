@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.automation.AutomationWrappable;
+import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.web.client.GWTResources;
 import com.intuso.housemate.web.client.bootstrap.widget.automation.Automation;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
@@ -18,7 +18,7 @@ public class AutomationView extends ObjectListView<GWTProxyAutomation, Automatio
     }
 
     @Override
-    protected GWTProxyList<AutomationWrappable, GWTProxyAutomation> getList(AutomationPlace place) {
+    protected GWTProxyList<AutomationData, GWTProxyAutomation> getList(AutomationPlace place) {
         return resources.getRoot().getAutomations();
     }
 

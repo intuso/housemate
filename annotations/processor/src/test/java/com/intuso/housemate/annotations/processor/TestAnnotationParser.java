@@ -5,7 +5,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealResources;
@@ -28,8 +28,8 @@ public class TestAnnotationParser {
         return new RealResources(new Log("testLog"), Maps.<String, String>newHashMap(), null);
     }
 
-    private static RealList<TypeWrappable<?>, RealType<?, ?, ?>> createAvailableTypes(RealResources resources) {
-        RealList<TypeWrappable<?>, RealType<?, ?, ?>> availableTypes = new RealList<TypeWrappable<?>, RealType<?, ?, ?>>(
+    private static RealList<TypeData<?>, RealType<?, ?, ?>> createAvailableTypes(RealResources resources) {
+        RealList<TypeData<?>, RealType<?, ?, ?>> availableTypes = new RealList<TypeData<?>, RealType<?, ?, ?>>(
                 resources, "types", "types", "types");
         availableTypes.add(new StringType(resources));
         availableTypes.add(new BooleanType(resources));

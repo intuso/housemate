@@ -9,16 +9,16 @@ import java.util.Map;
 
 /**
  * Base data object for any Housemate object
- * @param <WBL> the type of the data object for the children of this Housemate object
+ * @param <DATA> the type of the data object for the children of this Housemate object
  */
-public abstract class HousemateObjectWrappable<WBL extends HousemateObjectWrappable<?>>
-        extends Data<WBL>
+public abstract class HousemateData<DATA extends HousemateData<?>>
+        extends Data<DATA>
         implements Message.Payload {
 
     private String name;
     private String description;
 
-    protected HousemateObjectWrappable() {}
+    protected HousemateData() {}
 
     /**
      * @param id object's id
@@ -26,7 +26,7 @@ public abstract class HousemateObjectWrappable<WBL extends HousemateObjectWrappa
      * @param description object's description
      * @param subWrappables object's child datas
      */
-    public HousemateObjectWrappable(String id, String name, String description, WBL ... subWrappables) {
+    public HousemateData(String id, String name, String description, DATA... subWrappables) {
         this(id, name, description, Arrays.asList(subWrappables));
     }
 
@@ -36,7 +36,7 @@ public abstract class HousemateObjectWrappable<WBL extends HousemateObjectWrappa
      * @param description object's description
      * @param subWrappables object's child datas
      */
-    public HousemateObjectWrappable(String id, String name, String description, List<WBL> subWrappables) {
+    public HousemateData(String id, String name, String description, List<DATA> subWrappables) {
         super(id, subWrappables);
         this.name = name;
         this.description = description;
@@ -62,15 +62,15 @@ public abstract class HousemateObjectWrappable<WBL extends HousemateObjectWrappa
      * Clone the Housemate data object
      * @return a clone of this object
      */
-    public abstract HousemateObjectWrappable clone();
+    public abstract HousemateData clone();
 
     /**
      * Deep clone this object, by also cloning all of its child data objects
      * @return a deep cloned copy of this data object
      */
-    public final HousemateObjectWrappable deepClone() {
-        HousemateObjectWrappable result = clone();
-        for(Map.Entry<String, WBL> child : getSubWrappables().entrySet())
+    public final HousemateData deepClone() {
+        HousemateData result = clone();
+        for(Map.Entry<String, DATA> child : getSubWrappables().entrySet())
             result.addWrappable(child.getValue().deepClone());
         return result;
     }

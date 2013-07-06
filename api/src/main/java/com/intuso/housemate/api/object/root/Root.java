@@ -12,12 +12,9 @@ import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * @param <ROOT> the type of the root
- * @param <LISTENER> the type of the root's listener
  */
-public interface Root<
-            ROOT extends Root,
-            LISTENER extends RootListener<? super ROOT>>
-        extends BaseObject<LISTENER>, Receiver<Message.Payload>, Sender {
+public interface Root<ROOT extends Root>
+        extends BaseObject<RootListener<? super ROOT>>, Receiver<Message.Payload>, Sender {
 
     public final static String STATUS_TYPE = "status";
     public final static String CONNECTION_REQUEST_TYPE = "connection-request";

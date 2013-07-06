@@ -10,25 +10,25 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.AuthenticationResponse;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.comms.ConnectionType;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
+import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.root.RootWrappable;
 import com.intuso.housemate.api.object.root.real.RealRoot;
-import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
 
 public class RealRootObject
-        extends RealObject<RootWrappable, HousemateObjectWrappable<?>, RealObject<?, ? extends HousemateObjectWrappable<?>, ?, ?>, RootListener<? super RealRootObject>>
-        implements RealRoot<RealType<?, ?, ?>, RealList<TypeWrappable<?>, RealType<?, ?, ?>>, RealDevice,
-                            RealList<DeviceWrappable, RealDevice>, RealRootObject>, ConnectionStatusChangeListener {
+        extends RealObject<RootData, HousemateData<?>, RealObject<?, ? extends HousemateData<?>, ?, ?>, RootListener<? super RealRootObject>>
+        implements RealRoot<RealType<?, ?, ?>, RealList<TypeData<?>, RealType<?, ?, ?>>, RealDevice,
+                            RealList<DeviceData, RealDevice>, RealRootObject>, ConnectionStatusChangeListener {
 
-    private final RealList<TypeWrappable<?>, RealType<?, ?, ?>> types;
-    private final RealList<DeviceWrappable, RealDevice> devices;
+    private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
+    private final RealList<DeviceData, RealDevice> devices;
 
     private final Router.Registration routerRegistration;
     private final ConnectionManager connectionManager;
@@ -39,13 +39,13 @@ public class RealRootObject
      * @param resources {@inheritDoc}
      */
     public RealRootObject(RealResources resources) {
-        super(resources, new RootWrappable());
+        super(resources, new RootData());
 
         routerRegistration = resources.getRouter().registerReceiver(this);
         connectionManager = new ConnectionManager(routerRegistration, ConnectionType.Real, ConnectionStatus.Unauthenticated);
 
-        types = new RealList<TypeWrappable<?>, RealType<?, ?, ?>>(resources, TYPES_ID, TYPES_ID, "Defined types");
-        devices = new RealList<DeviceWrappable, RealDevice>(resources, DEVICES_ID, DEVICES_ID, "Defined devices");
+        types = new RealList<TypeData<?>, RealType<?, ?, ?>>(resources, TYPES_ID, TYPES_ID, "Defined types");
+        devices = new RealList<DeviceData, RealDevice>(resources, DEVICES_ID, DEVICES_ID, "Defined devices");
 
         init(null);
 
@@ -111,7 +111,7 @@ public class RealRootObject
     }
 
     @Override
-    public final RealList<TypeWrappable<?>, RealType<?, ?, ?>> getTypes() {
+    public final RealList<TypeData<?>, RealType<?, ?, ?>> getTypes() {
         return types;
     }
 
@@ -126,7 +126,7 @@ public class RealRootObject
     }
 
     @Override
-    public final RealList<DeviceWrappable, RealDevice> getDevices() {
+    public final RealList<DeviceData, RealDevice> getDevices() {
         return devices;
     }
 

@@ -8,8 +8,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.RouterRootObject;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
+import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.handler.PerformCommandHandler;
 import com.intuso.housemate.web.client.object.GWTProxyRootObject;
@@ -70,15 +71,24 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                 // add the main view to the root panel of the page
                 RootPanel.get().add(FACTORY.getPage());
                 // connect the root object
-                ENVIRONMENT.getResources().getRoot().addObjectListener(new ProxyRootListener<GWTProxyRootObject>() {
-                    @Override
-                    public void loaded(GWTProxyRootObject root) {
-                        FACTORY.getPlaceHistoryHandler().handleCurrentHistory();
-                    }
-
+                ENVIRONMENT.getResources().getRoot().addObjectListener(new RootListener<GWTProxyRootObject>() {
                     @Override
                     public void connectionStatusChanged(GWTProxyRootObject root, ConnectionStatus status) {
-                        // do nothing
+                        if(status == ConnectionStatus.Authenticated) {
+                            ENVIRONMENT.getResources().getRoot().load(new LoadManager(
+                                    Root.DEVICES_ID, Root.ADD_DEVICE_ID, Root.AUTOMATIONS_ID, Root.ADD_AUTOMATION_ID,
+                                    Root.USERS_ID, Root.ADD_USER_ID, Root.TYPES_ID) {
+                                @Override
+                                protected void failed(String id) {
+                                    // todo show error
+                                }
+
+                                @Override
+                                protected void allLoaded() {
+                                    FACTORY.getPlaceHistoryHandler().handleCurrentHistory();
+                                }
+                            });
+                        }
                     }
 
                     @Override

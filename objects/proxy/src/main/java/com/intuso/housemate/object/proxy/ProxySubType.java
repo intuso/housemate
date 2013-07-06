@@ -1,9 +1,9 @@
 package com.intuso.housemate.object.proxy;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.subtype.SubType;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.subtype.SubTypeListener;
-import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 /**
  * @param <RESOURCES> the type of the resources
@@ -14,14 +14,14 @@ public abstract class ProxySubType<
             RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
             TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
             SUB_TYPE extends ProxySubType<?, TYPE, SUB_TYPE>>
-        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, SubTypeWrappable, NoChildrenWrappable, NoChildrenProxyObject, SUB_TYPE, SubTypeListener>
+        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, SubTypeData, NoChildrenData, NoChildrenProxyObject, SUB_TYPE, SubTypeListener>
         implements SubType<TYPE> {
 
     /**
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxySubType(RESOURCES resources, SubTypeWrappable data) {
+    public ProxySubType(RESOURCES resources, SubTypeData data) {
         super(resources, null, data);
     }
 

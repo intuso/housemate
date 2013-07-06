@@ -1,12 +1,12 @@
 package com.intuso.housemate.object.broker.proxy;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.subtype.SubType;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.subtype.SubTypeListener;
-import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 public class BrokerProxySubType
-        extends BrokerProxyObject<SubTypeWrappable, NoChildrenWrappable, NoChildrenBrokerProxyObject, BrokerProxySubType, SubTypeListener>
+        extends BrokerProxyObject<SubTypeData, NoChildrenData, NoChildrenBrokerProxyObject, BrokerProxySubType, SubTypeListener>
         implements SubType<BrokerProxyType> {
 
     private BrokerProxyType type;
@@ -15,7 +15,7 @@ public class BrokerProxySubType
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public BrokerProxySubType(BrokerProxyResources<NoChildrenBrokerProxyObjectFactory> resources, SubTypeWrappable data) {
+    public BrokerProxySubType(BrokerProxyResources<NoChildrenBrokerProxyObjectFactory> resources, SubTypeData data) {
         super(resources, data);
     }
 

@@ -73,7 +73,7 @@ public final class MainRouter extends Router {
         }
 	}
 
-    private Root<?, ?> getRoot(RemoteClient client, Message<?> message) throws HousemateException {
+    private Root<?> getRoot(RemoteClient client, Message<?> message) throws HousemateException {
         if(client == null) {
             if(message.getPayload() instanceof AuthenticationRequest)
                 return resources.getRoot();
@@ -115,7 +115,7 @@ public final class MainRouter extends Router {
                 getLog().d("Message received " + message.toString());
                 try {
                     RemoteClientImpl client = resources.getRemoteClientManager().getClient(message.getRoute());
-                    Root<?, ?> root = getRoot(client, message);
+                    Root<?> root = getRoot(client, message);
                     // wrap payload in new payload in which we can put the client's id
                     message = new Message<Message.Payload>(message.getPath(), message.getType(),
                             new ClientPayload<Message.Payload>(client, message.getPayload()), message.getRoute());

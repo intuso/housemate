@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.user.UserWrappable;
+import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.web.client.GWTResources;
 import com.intuso.housemate.web.client.bootstrap.widget.user.User;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
@@ -18,7 +18,7 @@ public class UserView extends ObjectListView<GWTProxyUser, UserPlace> implements
     }
 
     @Override
-    protected GWTProxyList<UserWrappable, GWTProxyUser> getList(UserPlace place) {
+    protected GWTProxyList<UserData, GWTProxyUser> getList(UserPlace place) {
         return resources.getRoot().getUsers();
     }
 

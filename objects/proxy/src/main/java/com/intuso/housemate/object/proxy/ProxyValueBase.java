@@ -3,11 +3,11 @@ package com.intuso.housemate.object.proxy;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.api.object.value.ValueWrappableBase;
+import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
@@ -24,8 +24,8 @@ import java.util.List;
 public abstract class ProxyValueBase<
             RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>>,
             CHILD_RESOURCES extends ProxyResources<?>,
-            DATA extends ValueWrappableBase<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends ValueBaseData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
             TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
             VALUE extends ProxyValueBase<RESOURCES, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, TYPE, VALUE>>

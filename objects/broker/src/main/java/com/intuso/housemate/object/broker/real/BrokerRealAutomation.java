@@ -2,23 +2,23 @@ package com.intuso.housemate.object.broker.real;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.automation.Automation;
+import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.automation.AutomationListener;
-import com.intuso.housemate.api.object.automation.AutomationWrappable;
+import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.condition.ConditionListener;
-import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.task.TaskWrappable;
+import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 public class BrokerRealAutomation
-        extends BrokerRealPrimaryObject<AutomationWrappable, BrokerRealAutomation, AutomationListener<? super BrokerRealAutomation>>
+        extends BrokerRealPrimaryObject<AutomationData, BrokerRealAutomation, AutomationListener<? super BrokerRealAutomation>>
         implements Automation<BrokerRealCommand, BrokerRealCommand, BrokerRealCommand,
-                    BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, BrokerRealCondition, BrokerRealList<ConditionWrappable, BrokerRealCondition>,
-        BrokerRealTask, BrokerRealList<TaskWrappable, BrokerRealTask>, BrokerRealAutomation>,
+                    BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, BrokerRealCondition, BrokerRealList<ConditionData, BrokerRealCondition>,
+        BrokerRealTask, BrokerRealList<TaskData, BrokerRealTask>, BrokerRealAutomation>,
             ConditionListener<BrokerRealCondition> {
 
-    private BrokerRealList<ConditionWrappable, BrokerRealCondition> conditions;
-    private BrokerRealList<TaskWrappable, BrokerRealTask> satisfiedTasks;
-    private BrokerRealList<TaskWrappable, BrokerRealTask> unsatisfiedTasks;
+    private BrokerRealList<ConditionData, BrokerRealCondition> conditions;
+    private BrokerRealList<TaskData, BrokerRealTask> satisfiedTasks;
+    private BrokerRealList<TaskData, BrokerRealTask> unsatisfiedTasks;
     private BrokerRealCommand addConditionCommand;
     private BrokerRealCommand addSatisfiedTaskCommand;
     private BrokerRealCommand addUnsatisfiedTaskCommand;
@@ -26,10 +26,10 @@ public class BrokerRealAutomation
     private ListenerRegistration conditionListenerRegistration;
 
     public BrokerRealAutomation(final BrokerRealResources resources, String id, String name, String description) {
-        super(resources, new AutomationWrappable(id, name, description), "automation");
-        this.conditions = new BrokerRealList<ConditionWrappable, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
-        this.satisfiedTasks = new BrokerRealList<TaskWrappable, BrokerRealTask>(resources, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
-        this.unsatisfiedTasks = new BrokerRealList<TaskWrappable, BrokerRealTask>(resources, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        super(resources, new AutomationData(id, name, description), "automation");
+        this.conditions = new BrokerRealList<ConditionData, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
+        this.satisfiedTasks = new BrokerRealList<TaskData, BrokerRealTask>(resources, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.unsatisfiedTasks = new BrokerRealList<TaskData, BrokerRealTask>(resources, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions);
         addSatisfiedTaskCommand = getResources().getLifecycleHandler().createAddSatisfiedTaskCommand(satisfiedTasks);
         addUnsatisfiedTaskCommand = getResources().getLifecycleHandler().createAddUnsatisfiedTaskCommand(unsatisfiedTasks);
@@ -48,12 +48,12 @@ public class BrokerRealAutomation
     }
 
     @Override
-    public BrokerRealList<TaskWrappable, BrokerRealTask> getSatisfiedTasks() {
+    public BrokerRealList<TaskData, BrokerRealTask> getSatisfiedTasks() {
         return satisfiedTasks;
     }
 
     @Override
-    public BrokerRealList<TaskWrappable, BrokerRealTask> getUnsatisfiedTasks() {
+    public BrokerRealList<TaskData, BrokerRealTask> getUnsatisfiedTasks() {
         return unsatisfiedTasks;
     }
 
@@ -73,7 +73,7 @@ public class BrokerRealAutomation
     }
 
     @Override
-    public BrokerRealList<ConditionWrappable, BrokerRealCondition> getConditions() {
+    public BrokerRealList<ConditionData, BrokerRealCondition> getConditions() {
         return conditions;
     }
 

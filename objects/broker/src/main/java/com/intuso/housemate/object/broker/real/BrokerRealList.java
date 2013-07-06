@@ -1,9 +1,9 @@
 package com.intuso.housemate.object.broker.real;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.wrapper.Wrapper;
 import com.intuso.utilities.wrapper.WrapperListener;
@@ -15,9 +15,9 @@ import java.util.Iterator;
  * @param <CHILD> the type of the child
  */
 public final class BrokerRealList<
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends BrokerRealObject<? extends CHILD_DATA, ?, ?, ?>>
-        extends BrokerRealObject<ListWrappable<CHILD_DATA>, CHILD_DATA, CHILD, ListListener<? super CHILD>>
+        extends BrokerRealObject<ListData<CHILD_DATA>, CHILD_DATA, CHILD, ListListener<? super CHILD>>
         implements List<CHILD>, WrapperListener<CHILD> {
 
     /**
@@ -27,7 +27,7 @@ public final class BrokerRealList<
      * @param description the object's description
      */
     public BrokerRealList(BrokerRealResources resources, String id, String name, String description) {
-        super(resources, new ListWrappable<CHILD_DATA>(id, name, description));
+        super(resources, new ListData<CHILD_DATA>(id, name, description));
     }
 
     /**

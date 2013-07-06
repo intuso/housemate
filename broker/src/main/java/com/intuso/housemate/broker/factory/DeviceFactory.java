@@ -1,7 +1,7 @@
 package com.intuso.housemate.broker.factory;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -55,7 +55,7 @@ public final class DeviceFactory implements PluginListener {
         return type;
     }
 
-    public RealCommand createAddDeviceCommand(String commandId, String commandName, String commandDescription, final RealList<DeviceWrappable, RealDevice> list) {
+    public RealCommand createAddDeviceCommand(String commandId, String commandName, String commandDescription, final RealList<DeviceData, RealDevice> list) {
         return new RealCommand(resources.getClientResources(), commandId, commandName, commandDescription, Arrays.asList(
                 new RealParameter<String>(resources.getClientResources(), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
                 new RealParameter<String>(resources.getClientResources(), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),

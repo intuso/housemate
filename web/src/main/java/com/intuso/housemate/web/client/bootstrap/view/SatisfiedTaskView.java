@@ -1,8 +1,8 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.automation.AutomationWrappable;
-import com.intuso.housemate.api.object.task.TaskWrappable;
+import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.web.client.GWTResources;
 import com.intuso.housemate.web.client.bootstrap.widget.task.Task;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
@@ -28,7 +28,7 @@ public class SatisfiedTaskView extends ObjectListView<GWTProxyTask, SatisfiedTas
         automation = null;
 
         if(place.getAutomationName() != null) {
-            GWTProxyList<AutomationWrappable, GWTProxyAutomation> automations = resources.getRoot().getAutomations();
+            GWTProxyList<AutomationData, GWTProxyAutomation> automations = resources.getRoot().getAutomations();
             if(automations.get(place.getAutomationName()) != null)
                 automation = automations.get(place.getAutomationName());
         }
@@ -37,7 +37,7 @@ public class SatisfiedTaskView extends ObjectListView<GWTProxyTask, SatisfiedTas
     }
 
     @Override
-    protected GWTProxyList<TaskWrappable, GWTProxyTask> getList(SatisfiedTaskPlace place) {
+    protected GWTProxyList<TaskData, GWTProxyTask> getList(SatisfiedTaskPlace place) {
         return automation.getSatisfiedTasks();
     }
 

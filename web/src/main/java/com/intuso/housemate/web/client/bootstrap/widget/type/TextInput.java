@@ -5,11 +5,11 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
-import com.intuso.housemate.api.object.type.RegexTypeWrappable;
-import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.RegexTypeData;
+import com.intuso.housemate.api.object.type.SimpleTypeData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
 import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 
@@ -17,7 +17,7 @@ import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
  */
 public class TextInput extends TextBox implements TypeInput {
 
-    public TextInput(TypeWrappable typeWrappable) {
+    public TextInput(TypeData typeWrappable) {
         final Validator validator = getValidator(typeWrappable);
         addChangeHandler(new ChangeHandler() {
             @Override
@@ -44,9 +44,9 @@ public class TextInput extends TextBox implements TypeInput {
         return addHandler(handler, TypeInputEditedEvent.TYPE);
     }
 
-    private Validator getValidator(TypeWrappable typeWrappable) {
-        if(typeWrappable instanceof SimpleTypeWrappable) {
-            switch (((SimpleTypeWrappable)typeWrappable).getType()) {
+    private Validator getValidator(TypeData typeWrappable) {
+        if(typeWrappable instanceof SimpleTypeData) {
+            switch (((SimpleTypeData)typeWrappable).getType()) {
                 case String:
                     return new StringValidator();
                 case Integer:
@@ -56,8 +56,8 @@ public class TextInput extends TextBox implements TypeInput {
                 case Boolean:
                     return new BooleanValidator();
             }
-        } else if(typeWrappable instanceof RegexTypeWrappable) {
-            RegexTypeWrappable regexTypeWrappable = (RegexTypeWrappable)typeWrappable;
+        } else if(typeWrappable instanceof RegexTypeData) {
+            RegexTypeData regexTypeWrappable = (RegexTypeData)typeWrappable;
             return new RegexValidator(regexTypeWrappable.getRegexPattern(), regexTypeWrappable.getDescription());
         }
         return new StringValidator();

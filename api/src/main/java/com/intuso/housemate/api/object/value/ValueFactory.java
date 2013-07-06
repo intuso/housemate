@@ -10,5 +10,5 @@ import com.intuso.housemate.api.resources.Resources;
 public interface ValueFactory<
             R extends Resources,
             V extends Value<?, ?>>
-        extends HousemateObjectFactory<R, ValueWrappable, V> {
+        extends HousemateObjectFactory<R, ValueData, V> {
 }

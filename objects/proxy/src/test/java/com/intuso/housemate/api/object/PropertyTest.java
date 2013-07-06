@@ -3,8 +3,8 @@ package com.intuso.housemate.api.object;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.TestEnvironment;
 import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.ValueListener;
@@ -29,12 +29,12 @@ public class PropertyTest {
 
     public final static String PROPERTIES = "properties";
 
-    private SimpleProxyObject.List<PropertyWrappable, SimpleProxyObject.Property> proxyList
-            = new SimpleProxyObject.List<PropertyWrappable, SimpleProxyObject.Property>(
+    private SimpleProxyObject.List<PropertyData, SimpleProxyObject.Property> proxyList
+            = new SimpleProxyObject.List<PropertyData, SimpleProxyObject.Property>(
             SimpleProxyFactory.changeFactoryType(TestEnvironment.TEST_INSTANCE.getProxyResources(), new SimpleProxyFactory.Property()),
             TestEnvironment.TEST_INSTANCE.getProxyResources(),
-            new ListWrappable(PROPERTIES, PROPERTIES, PROPERTIES));
-    private RealList<PropertyWrappable, RealProperty<?>> realList = new RealList<PropertyWrappable, RealProperty<?>>(TestEnvironment.TEST_INSTANCE.getRealResources(), PROPERTIES, PROPERTIES, PROPERTIES, new ArrayList<RealProperty<?>>());
+            new ListData(PROPERTIES, PROPERTIES, PROPERTIES));
+    private RealList<PropertyData, RealProperty<?>> realList = new RealList<PropertyData, RealProperty<?>>(TestEnvironment.TEST_INSTANCE.getRealResources(), PROPERTIES, PROPERTIES, PROPERTIES, new ArrayList<RealProperty<?>>());
     private RealProperty<Integer> realProperty;
     private SimpleProxyObject.Property proxyProperty;
 

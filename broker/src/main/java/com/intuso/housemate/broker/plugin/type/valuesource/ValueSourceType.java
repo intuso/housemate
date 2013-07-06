@@ -1,11 +1,11 @@
 package com.intuso.housemate.broker.plugin.type.valuesource;
 
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.broker.plugin.MainPlugin;
 import com.intuso.housemate.broker.plugin.type.constant.ConstantInstance;
@@ -40,12 +40,12 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
 
     private final Serialiser serialiser;
 
-    public ValueSourceType(RealResources resources, Root<?, ?> root, RealList<TypeWrappable<?>, RealType<?, ?, ?>> types) {
+    public ValueSourceType(RealResources resources, Root<?> root, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
         super(resources, ID, NAME, DESCRIPTION, 1, 1, createOptions(resources, root));
         serialiser = new Serialiser(resources.getLog(), new RealObjectType.Serialiser<Value<?, ?>>(root), root, types);
     }
 
-    private static List<RealOption> createOptions(RealResources resources, Root<?, ?> root) {
+    private static List<RealOption> createOptions(RealResources resources, Root<?> root) {
         return Arrays.asList(
                 new RealOption(resources, CONSTANT_VALUE_ID, CONSTANT_VALUE_NAME, CONSTANT_VALUE_DESCRIPTION,
                         Arrays.<RealSubType<?>>asList(
@@ -69,11 +69,11 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
 
         private final Log log;
         private final RealObjectType.Serialiser<Value<?, ?>> realObjectTypeSerialiser;
-        private final Root<?, ?> root;
-        private final RealList<TypeWrappable<?>, RealType<?, ?, ?>> types;
+        private final Root<?> root;
+        private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
 
-        public Serialiser(Log log, RealObjectType.Serialiser<Value<?, ?>> realObjectTypeSerialiser, Root<?, ?> root,
-                          RealList<TypeWrappable<?>, RealType<?, ?, ?>> types) {
+        public Serialiser(Log log, RealObjectType.Serialiser<Value<?, ?>> realObjectTypeSerialiser, Root<?> root,
+                          RealList<TypeData<?>, RealType<?, ?, ?>> types) {
             this.log = log;
             this.realObjectTypeSerialiser = realObjectTypeSerialiser;
             this.root = root;

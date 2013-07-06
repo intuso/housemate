@@ -53,13 +53,15 @@ public abstract class ObjectListView<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>,
 
         // get the new list and give it to the list object
         list = getList(place);
-        listContainer.setList(list, getAddCommand(place));
+        if(list != null) {
+            listContainer.setList(list, getAddCommand(place));
 
-        // if an object is selected, then show it
-        if(getSelectedObjectName(place) != null)
-            selectObject(list.get(getSelectedObjectName(place)));
-        else
-            selectObject(null);
+            // if an object is selected, then show it
+            if(getSelectedObjectName(place) != null)
+                selectObject(list.get(getSelectedObjectName(place)));
+            else
+                selectObject(null);
+        }
     }
 
     protected abstract Widget getObjectWidget(P place, O object);

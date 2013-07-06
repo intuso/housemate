@@ -1,11 +1,11 @@
 package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.Option;
+import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.option.OptionListener;
-import com.intuso.housemate.api.object.option.OptionWrappable;
-import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
 
 /**
  * @param <RESOURCES> the type of the resources
@@ -15,12 +15,12 @@ import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
  * @param <OPTION> the type of the option
  */
 public abstract class ProxyOption<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListWrappable<SubTypeWrappable>, SUB_TYPES>>,
-            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, SubTypeWrappable, SUB_TYPE>>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListData<SubTypeData>, SUB_TYPES>>,
+            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, SubTypeData, SUB_TYPE>>,
             SUB_TYPE extends ProxySubType<?, ?, ?>,
-            SUB_TYPES extends ProxyList<CHILD_RESOURCES, ?, SubTypeWrappable, SUB_TYPE, SUB_TYPES>,
+            SUB_TYPES extends ProxyList<CHILD_RESOURCES, ?, SubTypeData, SUB_TYPE, SUB_TYPES>,
             OPTION extends ProxyOption<RESOURCES, CHILD_RESOURCES, SUB_TYPE, SUB_TYPES, OPTION>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, OptionWrappable, ListWrappable<SubTypeWrappable>, SUB_TYPES, OPTION, OptionListener>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, OptionData, ListData<SubTypeData>, SUB_TYPES, OPTION, OptionListener>
         implements Option<SUB_TYPES> {
 
     private SUB_TYPES subTypes;
@@ -30,12 +30,13 @@ public abstract class ProxyOption<
      * @param childResources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyOption(RESOURCES resources, CHILD_RESOURCES childResources, OptionWrappable data) {
+    public ProxyOption(RESOURCES resources, CHILD_RESOURCES childResources, OptionData data) {
         super(resources, childResources, data);
     }
 
     @Override
     protected void getChildObjects() {
+        super.getChildObjects();
         subTypes = getWrapper(SUB_TYPES_ID);
     }
 

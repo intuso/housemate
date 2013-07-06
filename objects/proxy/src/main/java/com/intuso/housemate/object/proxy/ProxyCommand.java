@@ -1,15 +1,14 @@
 package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.Command;
+import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.parameter.ParameterWrappable;
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -25,12 +24,12 @@ import java.util.Map;
  * @param <COMMAND> the type of the command
  */
 public abstract class ProxyCommand<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListWrappable<ParameterWrappable>, PARAMETERS>>,
-            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, ParameterWrappable, ? extends PARAMETER>>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListData<ParameterData>, PARAMETERS>>,
+            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, ParameterData, ? extends PARAMETER>>,
             PARAMETER extends ProxyParameter<?, ?, PARAMETER>,
-            PARAMETERS extends ProxyList<?, ?, ParameterWrappable, PARAMETER, PARAMETERS>,
+            PARAMETERS extends ProxyList<?, ?, ParameterData, PARAMETER, PARAMETERS>,
             COMMAND extends ProxyCommand<RESOURCES, CHILD_RESOURCES, PARAMETER, PARAMETERS, COMMAND>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, CommandWrappable, ListWrappable<ParameterWrappable>, PARAMETERS, COMMAND, CommandListener<? super COMMAND>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, CommandData, ListData<ParameterData>, PARAMETERS, COMMAND, CommandListener<? super COMMAND>>
         implements Command<PARAMETERS, COMMAND> {
 
     private int nextId;
@@ -42,15 +41,14 @@ public abstract class ProxyCommand<
      * @param childResources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected ProxyCommand(RESOURCES resources, CHILD_RESOURCES childResources, CommandWrappable data) {
+    protected ProxyCommand(RESOURCES resources, CHILD_RESOURCES childResources, CommandData data) {
         super(resources, childResources, data);
     }
 
     @Override
     protected void getChildObjects() {
+        super.getChildObjects();
         parameters = getWrapper(PARAMETERS_ID);
-        if(parameters == null)
-            throw new HousemateRuntimeException("Could not unwrap command " + getId() + ", " + PARAMETERS_ID + " value wrapper is missing");
     }
 
     @Override

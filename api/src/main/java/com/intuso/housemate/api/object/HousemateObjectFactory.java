@@ -9,7 +9,7 @@ import com.intuso.housemate.api.resources.Resources;
  */
 public interface HousemateObjectFactory<
             R extends Resources,
-            WBL extends HousemateObjectWrappable<?>,
+            WBL extends HousemateData<?>,
             O extends BaseObject<?>> {
     /**
      * Create a new instance of an object

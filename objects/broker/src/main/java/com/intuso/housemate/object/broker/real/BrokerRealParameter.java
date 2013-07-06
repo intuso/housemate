@@ -1,16 +1,16 @@
 package com.intuso.housemate.object.broker.real;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.parameter.Parameter;
+import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterListener;
-import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 import com.intuso.housemate.object.real.RealType;
 
 /**
  * @param <O>  the type of the parameter
  */
 public class BrokerRealParameter<O>
-        extends BrokerRealObject<ParameterWrappable, NoChildrenWrappable, NoChildrenBrokerRealObject, ParameterListener>
+        extends BrokerRealObject<ParameterData, NoChildrenData, NoChildrenBrokerRealObject, ParameterListener>
         implements Parameter<RealType<?, ?, O>> {
 
     private RealType<?, ?, O> type;
@@ -23,7 +23,7 @@ public class BrokerRealParameter<O>
      * @param type the type of the value
      */
     public BrokerRealParameter(BrokerRealResources resources, String id, String name, String description, RealType<?, ?, O> type) {
-        super(resources, new ParameterWrappable(id, name, description, type.getId()));
+        super(resources, new ParameterData(id, name, description, type.getId()));
         this.type = type;
     }
 

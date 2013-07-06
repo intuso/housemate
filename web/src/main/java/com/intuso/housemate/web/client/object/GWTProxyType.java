@@ -1,8 +1,8 @@
 package com.intuso.housemate.web.client.object;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.object.proxy.ProxyType;
 import com.intuso.housemate.web.client.GWTResources;
@@ -10,15 +10,15 @@ import com.intuso.housemate.web.client.GWTResources;
 /**
  */
 public class GWTProxyType extends ProxyType<
-            GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             GWTResources<?>,
-            TypeWrappable<HousemateObjectWrappable<?>>,
-            HousemateObjectWrappable<?>,
+        TypeData<HousemateData<?>>,
+        HousemateData<?>,
             ProxyObject<?, ?, ?, ?, ?, ?, ?>,
             GWTProxyType> {
-    public GWTProxyType(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+    public GWTProxyType(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                         GWTResources<?> childResources,
-                        TypeWrappable data) {
+                        TypeData data) {
         super(resources, childResources, data);
     }
 }

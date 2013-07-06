@@ -4,9 +4,9 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.object.BaseObject;
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
+import com.intuso.housemate.api.object.type.ObjectTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealResources;
@@ -18,7 +18,7 @@ import java.util.List;
  * Type for an object from the object tree
  */
 public class RealObjectType<O extends BaseObject<?>>
-        extends RealType<ObjectTypeWrappable, NoChildrenWrappable, RealObjectType.Reference<O>> {
+        extends RealType<ObjectTypeData, NoChildrenData, RealObjectType.Reference<O>> {
 
     public final static String ID = "object";
     public final static String NAME = "Object";
@@ -32,8 +32,8 @@ public class RealObjectType<O extends BaseObject<?>>
      * @param resources the resources
      * @param root the root to get the object from
      */
-    public RealObjectType(RealResources resources, Root<?, ?> root) {
-        super(resources, new ObjectTypeWrappable(ID, NAME, "Path to an object", 1, 1));
+    public RealObjectType(RealResources resources, Root<?> root) {
+        super(resources, new ObjectTypeData(ID, NAME, "Path to an object", 1, 1));
         serialiser = new Serialiser<O>(root);
     }
 
@@ -111,12 +111,12 @@ public class RealObjectType<O extends BaseObject<?>>
      */
     public static class Serialiser<O extends BaseObject<?>> implements TypeSerialiser<Reference<O>> {
 
-        private final Root<?, ?> root;
+        private final Root<?> root;
 
         /**
          * @param root the root to get the object from
          */
-        public Serialiser(Root<?, ?> root) {
+        public Serialiser(Root<?> root) {
             this.root = root;
         }
 

@@ -1,11 +1,11 @@
 package com.intuso.housemate.object.broker.real;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.task.Task;
+import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.task.TaskListener;
-import com.intuso.housemate.api.object.task.TaskWrappable;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
@@ -13,14 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BrokerRealTask
-        extends BrokerRealObject<TaskWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>,
+        extends BrokerRealObject<TaskData, HousemateData<?>, BrokerRealObject<?, ?, ?, ?>,
         TaskListener<? super BrokerRealTask>>
         implements Task<BrokerRealValue<Boolean>, BrokerRealValue<String>,
-                    BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>, BrokerRealTask> {
+                    BrokerRealList<PropertyData, BrokerRealProperty<?>>, BrokerRealTask> {
 
     private BrokerRealValue<String> errorValue;
     private BrokerRealValue<Boolean> executingValue;
-    private BrokerRealList<PropertyWrappable, BrokerRealProperty<?>> propertyList;
+    private BrokerRealList<PropertyData, BrokerRealProperty<?>> propertyList;
 
     /**
      * @param resources {@inheritDoc}
@@ -40,17 +40,17 @@ public abstract class BrokerRealTask
      * @param properties the task's properties
      */
     public BrokerRealTask(BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
-        super(resources, new TaskWrappable(id, name, description));
+        super(resources, new TaskData(id, name, description));
         errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), (List)null);
         executingValue = new BrokerRealValue<Boolean>(resources, EXECUTING_TYPE, EXECUTING_TYPE, "Whether the task is executing", new BooleanType(resources.getRealResources()), false);
-        propertyList = new BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The task's properties", properties);
+        propertyList = new BrokerRealList<PropertyData, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The task's properties", properties);
         addWrapper(errorValue);
         addWrapper(executingValue);
         addWrapper(propertyList);
     }
 
     @Override
-    public BrokerRealList<PropertyWrappable, BrokerRealProperty<?>> getProperties() {
+    public BrokerRealList<PropertyData, BrokerRealProperty<?>> getProperties() {
         return propertyList;
     }
 

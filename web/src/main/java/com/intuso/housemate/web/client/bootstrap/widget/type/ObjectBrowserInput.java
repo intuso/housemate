@@ -4,7 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
+import com.intuso.housemate.api.object.type.ObjectTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.proxy.ProxyObject;
@@ -20,7 +20,7 @@ public class ObjectBrowserInput extends FlowPanel implements TypeInput {
 
     private final ObjectNode rootNode;
 
-    public ObjectBrowserInput(ObjectTypeWrappable typeWrappable) {
+    public ObjectBrowserInput(ObjectTypeData typeWrappable) {
         super();
         rootNode = new ObjectNode(Housemate.ENVIRONMENT.getResources().getRoot());
         rootNode.addObjectSelectedHandler(new ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {

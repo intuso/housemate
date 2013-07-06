@@ -1,13 +1,13 @@
 package com.intuso.housemate.object.real;
 
 import com.google.common.collect.Lists;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeListener;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.type.TypeData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,8 +18,8 @@ import java.util.List;
  * @param <O> the type of the type instances
  */
 public abstract class RealType<
-            DATA extends TypeWrappable<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends TypeData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             O>
         extends RealObject<DATA, CHILD_DATA, RealObject<CHILD_DATA, ?, ?, ?>, TypeListener>
         implements Type, TypeSerialiser<O> {

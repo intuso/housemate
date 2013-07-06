@@ -8,14 +8,14 @@ import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.annotations.basic.Value;
 import com.intuso.housemate.annotations.basic.Values;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.command.CommandWrappable;
+import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.HasCommands;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.property.HasProperties;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.HasValues;
-import com.intuso.housemate.api.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealObject;
@@ -41,7 +41,7 @@ public class AnnotationProcessor {
     private final Log log;
     private final Map<String, RealType<?, ?, ?>> registeredTypes = Maps.newHashMap();
 
-    public AnnotationProcessor(Log log, RealList<TypeWrappable<?>, RealType<?, ?, ?>> registeredTypes) {
+    public AnnotationProcessor(Log log, RealList<TypeData<?>, RealType<?, ?, ?>> registeredTypes) {
         this.log = log;
         registeredTypes.addObjectListener(new ListListener<RealType<?, ?, ?>>() {
             @Override
@@ -58,14 +58,14 @@ public class AnnotationProcessor {
 
     public void process(RealObject<?, ?, ?, ?> object) throws HousemateException {
         if(object instanceof HasCommands)
-            parseCommands(object, ((HasCommands<RealList<CommandWrappable, RealCommand>>)object).getCommands());
+            parseCommands(object, ((HasCommands<RealList<CommandData, RealCommand>>)object).getCommands());
         if(object instanceof HasProperties)
-            parseProperties(object, ((HasProperties<RealList<PropertyWrappable, RealProperty<?>>>) object).getProperties());
+            parseProperties(object, ((HasProperties<RealList<PropertyData, RealProperty<?>>>) object).getProperties());
         if(object instanceof HasValues)
-            parseValues(object, ((HasValues<RealList<ValueWrappable, RealValue<?>>>) object).getValues());
+            parseValues(object, ((HasValues<RealList<ValueData, RealValue<?>>>) object).getValues());
     }
     
-    private void parseCommands(RealObject<?, ?, ?, ?> object, RealList<CommandWrappable, RealCommand> commands) throws HousemateException {
+    private void parseCommands(RealObject<?, ?, ?, ?> object, RealList<CommandData, RealCommand> commands) throws HousemateException {
         for(Map.Entry<Method, Command> commandMethod : getAnnotatedMethods(object.getClass(), Command.class).entrySet())
             commands.add(new CommandImpl(object.getResources(), commandMethod.getValue().id(),
                     commandMethod.getValue().name(), commandMethod.getValue().description(),
@@ -88,7 +88,7 @@ public class AnnotationProcessor {
         return result;
     }
 
-    private void parseProperties(RealObject<?, ?, ?, ?> object, RealList<PropertyWrappable, RealProperty<?>> properties) throws HousemateException {
+    private void parseProperties(RealObject<?, ?, ?, ?> object, RealList<PropertyData, RealProperty<?>> properties) throws HousemateException {
         for(Map.Entry<Field, Property> propertyField : getAnnotatedFields(object.getClass(), Property.class).entrySet()) {
             Object value = null;
             try {
@@ -105,7 +105,7 @@ public class AnnotationProcessor {
         }
     }
 
-    private void parseValues(RealObject<?, ?, ?, ?> object, RealList<ValueWrappable, RealValue<?>> values) throws HousemateException {
+    private void parseValues(RealObject<?, ?, ?, ?> object, RealList<ValueData, RealValue<?>> values) throws HousemateException {
         for(Map.Entry<Field, Values> valuesField : getAnnotatedFields(object.getClass(), Values.class).entrySet()) {
             Map<Method, RealValue<Object>> valuesFunctions = Maps.newHashMap();
             InvocationHandler invocationHandler = new ValuesInvocationHandler(valuesFunctions);

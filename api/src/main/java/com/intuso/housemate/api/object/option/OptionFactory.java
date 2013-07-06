@@ -10,5 +10,5 @@ import com.intuso.housemate.api.resources.Resources;
 public interface OptionFactory<
             R extends Resources,
             O extends Option<?>>
-        extends HousemateObjectFactory<R, OptionWrappable, O> {
+        extends HousemateObjectFactory<R, OptionData, O> {
 }

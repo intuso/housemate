@@ -1,7 +1,7 @@
 package com.intuso.housemate.object.proxy;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
+import com.intuso.housemate.api.object.type.SimpleTypeData;
 
 /**
  * @param <RESOURCES> the type of the resources
@@ -10,13 +10,13 @@ import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
 public abstract class ProxySimpleType<
             RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
             TYPE extends ProxySimpleType<RESOURCES, TYPE>>
-        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, SimpleTypeWrappable, NoChildrenWrappable, NoChildrenProxyObject, TYPE> {
+        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, SimpleTypeData, NoChildrenData, NoChildrenProxyObject, TYPE> {
 
     /**
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxySimpleType(RESOURCES resources, SimpleTypeWrappable data) {
+    public ProxySimpleType(RESOURCES resources, SimpleTypeData data) {
         super(resources, null, data);
     }
 
@@ -24,7 +24,7 @@ public abstract class ProxySimpleType<
      * Gets the simple type enum value of this type
      * @return the simple type enum value of this type
      */
-    public SimpleTypeWrappable.Type getType() {
+    public SimpleTypeData.Type getType() {
         return getData().getType();
     }
 }

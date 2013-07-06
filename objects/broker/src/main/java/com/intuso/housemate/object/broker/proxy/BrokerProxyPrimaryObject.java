@@ -1,7 +1,7 @@
 package com.intuso.housemate.object.broker.proxy;
 
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.value.ValueListener;
@@ -20,10 +20,10 @@ import java.util.List;
  * @param <LISTENER> the type of the listener
  */
 public class BrokerProxyPrimaryObject<
-            DATA extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
+            DATA extends HousemateData<HousemateData<?>>,
             PRIMARY_OBJECT extends BrokerProxyPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
-        extends BrokerProxyObject<DATA, HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
+        extends BrokerProxyObject<DATA, HousemateData<?>, BrokerProxyObject<?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
         implements PrimaryObject<BrokerProxyCommand, BrokerProxyCommand, BrokerRealValue<Boolean>,
             BrokerProxyValue, BrokerProxyValue, PRIMARY_OBJECT, LISTENER> {
 
@@ -39,7 +39,7 @@ public class BrokerProxyPrimaryObject<
      * @param realResources the resources for real objects
      * @param data {@inheritDoc}
      */
-    protected BrokerProxyPrimaryObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, HousemateObjectWrappable<?>, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> resources,
+    protected BrokerProxyPrimaryObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, HousemateData<?>, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> resources,
                                        BrokerRealResources realResources, DATA data) {
         super(resources, data);
         connected = new BrokerRealValue<Boolean>(realResources, CONNECTED_VALUE_ID, CONNECTED_VALUE_ID,

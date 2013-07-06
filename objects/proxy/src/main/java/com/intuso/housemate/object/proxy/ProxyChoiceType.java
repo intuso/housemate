@@ -1,10 +1,10 @@
 package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.type.ChoiceTypeWrappable;
+import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.option.OptionData;
+import com.intuso.housemate.api.object.type.ChoiceTypeData;
 import com.intuso.housemate.api.object.option.HasOptions;
-import com.intuso.housemate.api.object.option.OptionWrappable;
 
 /**
  * @param <RESOURCES> the type of the resources
@@ -13,13 +13,13 @@ import com.intuso.housemate.api.object.option.OptionWrappable;
  * @param <OPTIONS> the type of the options list
  * @param <TYPE> the type of the type
  */
-public abstract class ProxyMultiChoiceType<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListWrappable<OptionWrappable>, OPTIONS>>,
-            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, OptionWrappable, ? extends OPTION>>,
+public abstract class ProxyChoiceType<
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListData<OptionData>, OPTIONS>>,
+            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, OptionData, ? extends OPTION>>,
             OPTION extends ProxyOption<?, ?, ?, ?, OPTION>,
-            OPTIONS extends ProxyList<?, ?, OptionWrappable, OPTION, OPTIONS>,
-            TYPE extends ProxyMultiChoiceType<RESOURCES, CHILD_RESOURCES, OPTION, OPTIONS, TYPE>>
-        extends ProxyType<RESOURCES, CHILD_RESOURCES, ChoiceTypeWrappable, ListWrappable<OptionWrappable>, OPTIONS, TYPE>
+            OPTIONS extends ProxyList<?, ?, OptionData, OPTION, OPTIONS>,
+            TYPE extends ProxyChoiceType<RESOURCES, CHILD_RESOURCES, OPTION, OPTIONS, TYPE>>
+        extends ProxyType<RESOURCES, CHILD_RESOURCES, ChoiceTypeData, ListData<OptionData>, OPTIONS, TYPE>
         implements HasOptions {
 
     private static final String OPTIONS_ID = "options";
@@ -31,7 +31,7 @@ public abstract class ProxyMultiChoiceType<
      * @param childResources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyMultiChoiceType(RESOURCES resources, CHILD_RESOURCES childResources, ChoiceTypeWrappable data) {
+    public ProxyChoiceType(RESOURCES resources, CHILD_RESOURCES childResources, ChoiceTypeData data) {
         super(resources, childResources, data);
     }
 

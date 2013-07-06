@@ -15,7 +15,7 @@ public class ValueLocation extends ValueSource implements ObjectLifecycleListene
     private final RealObjectType.Reference<Value<?, ?>> objectReference;
     private final ListenerRegistration lifecycleListenerRegistration;
 
-    public ValueLocation(RealObjectType.Reference<Value<?, ?>> objectReference, Root<?, ?> root) {
+    public ValueLocation(RealObjectType.Reference<Value<?, ?>> objectReference, Root<?> root) {
         this.objectReference = objectReference;
         lifecycleListenerRegistration = objectReference != null
                 ? root.addObjectLifecycleListener(objectReference.getPath(), this)

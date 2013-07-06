@@ -1,26 +1,26 @@
 package com.intuso.housemate.object.broker.proxy;
 
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.Option;
+import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.option.OptionListener;
-import com.intuso.housemate.api.object.option.OptionWrappable;
-import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
 
 public class BrokerProxyOption
-        extends BrokerProxyObject<OptionWrappable, ListWrappable<SubTypeWrappable>,
-            BrokerProxyList<SubTypeWrappable, BrokerProxySubType>,
+        extends BrokerProxyObject<OptionData, ListData<SubTypeData>,
+            BrokerProxyList<SubTypeData, BrokerProxySubType>,
             BrokerProxyOption,
             OptionListener>
-        implements Option<BrokerProxyList<SubTypeWrappable, BrokerProxySubType>> {
+        implements Option<BrokerProxyList<SubTypeData, BrokerProxySubType>> {
 
-    private BrokerProxyList<SubTypeWrappable, BrokerProxySubType> subTypes;
+    private BrokerProxyList<SubTypeData, BrokerProxySubType> subTypes;
 
     /**
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public BrokerProxyOption(BrokerProxyResources<BrokerProxyFactory.List<SubTypeWrappable, BrokerProxySubType>> resources,
-                             OptionWrappable data) {
+    public BrokerProxyOption(BrokerProxyResources<BrokerProxyFactory.List<SubTypeData, BrokerProxySubType>> resources,
+                             OptionData data) {
         super(resources, data);
     }
 
@@ -30,7 +30,7 @@ public class BrokerProxyOption
     }
 
     @Override
-    public BrokerProxyList<SubTypeWrappable, BrokerProxySubType> getSubTypes() {
+    public BrokerProxyList<SubTypeData, BrokerProxySubType> getSubTypes() {
         return subTypes;
     }
 }

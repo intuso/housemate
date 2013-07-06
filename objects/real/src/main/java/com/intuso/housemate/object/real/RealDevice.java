@@ -1,33 +1,33 @@
 package com.intuso.housemate.object.real;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.command.CommandWrappable;
+import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.device.Device;
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceListener;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.value.ValueData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RealDevice
         extends RealPrimaryObject<
-            DeviceWrappable,
+        DeviceData,
             RealDevice,
             DeviceListener<? super RealDevice>>
         implements Device<
             RealCommand,
             RealCommand,
             RealCommand,
-            RealList<CommandWrappable, RealCommand>,
+            RealList<CommandData, RealCommand>,
             RealValue<Boolean>,
             RealValue<Boolean>,
             RealValue<String>,
             RealValue<?>,
-            RealList<ValueWrappable, RealValue<?>>,
+            RealList<ValueData, RealValue<?>>,
             RealProperty<?>,
-            RealList<PropertyWrappable, RealProperty<?>>,
+            RealList<PropertyData, RealProperty<?>>,
             RealDevice> {
 
     private final static String COMMANDS_DESCRIPTION = "The device's commands";
@@ -36,9 +36,9 @@ public class RealDevice
 
     public final static String OBJECT_TYPE = "device";
 
-    private RealList<CommandWrappable, RealCommand> commands;
-    private RealList<ValueWrappable, RealValue<?>> values;
-    private RealList<PropertyWrappable, RealProperty<?>> properties;
+    private RealList<CommandData, RealCommand> commands;
+    private RealList<ValueData, RealValue<?>> values;
+    private RealList<PropertyData, RealProperty<?>> properties;
 
     /**
      * @param resources {@inheritDoc}
@@ -60,27 +60,27 @@ public class RealDevice
      * @param properties the device's properties
      */
     public RealDevice(RealResources resources, String id, String name, String description, List<RealCommand> commands, List<RealValue<?>> values, List<RealProperty<?>> properties) {
-        super(resources, new DeviceWrappable(id, name, description), OBJECT_TYPE);
-        this.commands = new RealList<CommandWrappable, RealCommand>(resources, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION, commands);
-        this.values = new RealList<ValueWrappable, RealValue<?>>(resources, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION, values);
-        this.properties = new RealList<PropertyWrappable, RealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION, properties);
+        super(resources, new DeviceData(id, name, description), OBJECT_TYPE);
+        this.commands = new RealList<CommandData, RealCommand>(resources, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION, commands);
+        this.values = new RealList<ValueData, RealValue<?>>(resources, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION, values);
+        this.properties = new RealList<PropertyData, RealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION, properties);
         addWrapper(this.commands);
         addWrapper(this.values);
         addWrapper(this.properties);
     }
 
     @Override
-    public final RealList<CommandWrappable, RealCommand> getCommands() {
+    public final RealList<CommandData, RealCommand> getCommands() {
         return commands;
     }
 
     @Override
-    public final RealList<ValueWrappable, RealValue<?>> getValues() {
+    public final RealList<ValueData, RealValue<?>> getValues() {
         return values;
     }
 
     @Override
-    public final RealList<PropertyWrappable, RealProperty<?>> getProperties() {
+    public final RealList<PropertyData, RealProperty<?>> getProperties() {
         return properties;
     }
 

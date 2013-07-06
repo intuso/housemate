@@ -2,7 +2,7 @@ package com.intuso.housemate.object.broker.real;
 
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
@@ -15,10 +15,10 @@ import com.intuso.housemate.object.real.impl.type.StringType;
  * @param <LISTENER> the type of the listener
  */
 public abstract class BrokerRealPrimaryObject<
-            DATA extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
+            DATA extends HousemateData<HousemateData<?>>,
             PRIMARY_OBJECT extends BrokerRealPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
-        extends BrokerRealObject<DATA, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>, LISTENER>
+        extends BrokerRealObject<DATA, HousemateData<?>, BrokerRealObject<?, ?, ?, ?>, LISTENER>
         implements PrimaryObject<BrokerRealCommand, BrokerRealCommand,
             BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, PRIMARY_OBJECT, LISTENER> {
 

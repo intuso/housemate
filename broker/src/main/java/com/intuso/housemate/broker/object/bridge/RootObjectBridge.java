@@ -6,16 +6,16 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.automation.AutomationWrappable;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
+import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.root.RootWrappable;
-import com.intuso.housemate.api.object.type.TypeWrappable;
-import com.intuso.housemate.api.object.user.UserWrappable;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyDevice;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
@@ -32,14 +32,14 @@ import java.util.Map;
 /**
  */
 public class RootObjectBridge
-        extends BridgeObject<RootWrappable, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>,
+        extends BridgeObject<RootData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>,
             RootObjectBridge, RootListener<? super RootObjectBridge>>
-        implements Root<RootObjectBridge, RootListener<? super RootObjectBridge>>, WrapperListener<HousemateObject<?, ?, ?, ?, ?>> {
+        implements Root<RootObjectBridge>, WrapperListener<HousemateObject<?, ?, ?, ?, ?>> {
 
-    private ListBridge<UserWrappable, BrokerRealUser, UserBridge> users;
-    private ListBridge<TypeWrappable<?>, BrokerProxyType, TypeBridge> types;
-    private ListBridge<DeviceWrappable, BrokerProxyDevice, DeviceBridge> devices;
-    private ListBridge<AutomationWrappable, BrokerRealAutomation, AutomationBridge> automations;
+    private ListBridge<UserData, BrokerRealUser, UserBridge> users;
+    private ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types;
+    private ListBridge<DeviceData, BrokerProxyDevice, DeviceBridge> devices;
+    private ListBridge<AutomationData, BrokerRealAutomation, AutomationBridge> automations;
     private CommandBridge addUser;
     private CommandBridge addDevice;
     private CommandBridge addAutomation;
@@ -47,18 +47,18 @@ public class RootObjectBridge
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
     public RootObjectBridge(final BrokerBridgeResources resources) {
-        super(resources, new RootWrappable());
+        super(resources, new RootData());
         resources.setRoot(this);
-        users = new ListBridge<UserWrappable, BrokerRealUser, UserBridge>(resources,
+        users = new ListBridge<UserData, BrokerRealUser, UserBridge>(resources,
                 resources.getGeneralResources().getRealResources().getRoot().getUsers(),
                 new UserBridge.Converter(resources));
-        types = new ListBridge<TypeWrappable<?>, BrokerProxyType, TypeBridge>(resources,
+        types = new ListBridge<TypeData<?>, BrokerProxyType, TypeBridge>(resources,
                 resources.getGeneralResources().getProxyResources().getRoot().getTypes(),
                 new TypeBridge.Converter(resources));
-        devices = new ListBridge<DeviceWrappable, BrokerProxyDevice, DeviceBridge>(resources,
+        devices = new ListBridge<DeviceData, BrokerProxyDevice, DeviceBridge>(resources,
                 resources.getGeneralResources().getProxyResources().getRoot().getDevices(),
                 new DeviceBridge.Converter(resources));
-        automations = new ListBridge<AutomationWrappable, BrokerRealAutomation, AutomationBridge>(resources,
+        automations = new ListBridge<AutomationData, BrokerRealAutomation, AutomationBridge>(resources,
                 resources.getGeneralResources().getRealResources().getRoot().getAutomations(),
                 new AutomationBridge.Converter(resources));
         addUser = new CommandBridge(resources, resources.getGeneralResources().getRealResources().getRoot().getAddUserCommand());
@@ -106,19 +106,19 @@ public class RootObjectBridge
         throw new HousemateRuntimeException("Whatever");
     }
 
-    public ListBridge<UserWrappable, BrokerRealUser, UserBridge> getUsers() {
+    public ListBridge<UserData, BrokerRealUser, UserBridge> getUsers() {
         return users;
     }
 
-    public ListBridge<TypeWrappable<?>, BrokerProxyType, TypeBridge> getTypes() {
+    public ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> getTypes() {
         return types;
     }
 
-    public ListBridge<DeviceWrappable, BrokerProxyDevice, DeviceBridge> getDevices() {
+    public ListBridge<DeviceData, BrokerProxyDevice, DeviceBridge> getDevices() {
         return devices;
     }
 
-    public ListBridge<AutomationWrappable, BrokerRealAutomation, AutomationBridge> getAutomations() {
+    public ListBridge<AutomationData, BrokerRealAutomation, AutomationBridge> getAutomations() {
         return automations;
     }
 

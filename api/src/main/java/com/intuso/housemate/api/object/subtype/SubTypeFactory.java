@@ -10,5 +10,5 @@ import com.intuso.housemate.api.resources.Resources;
 public interface SubTypeFactory<
             R extends Resources,
             ST extends SubType<?>>
-        extends HousemateObjectFactory<R, SubTypeWrappable, ST> {
+        extends HousemateObjectFactory<R, SubTypeData, ST> {
 }

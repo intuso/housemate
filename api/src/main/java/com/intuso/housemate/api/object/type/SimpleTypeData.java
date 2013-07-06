@@ -1,13 +1,13 @@
 package com.intuso.housemate.api.object.type;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.NoChildrenData;
 
 /**
  *
  * Data object for a simple type
  */
-public final class SimpleTypeWrappable extends TypeWrappable<NoChildrenWrappable> {
+public final class SimpleTypeData extends TypeData<NoChildrenData> {
 
     /**
      * Enumeration of all simple types
@@ -43,19 +43,19 @@ public final class SimpleTypeWrappable extends TypeWrappable<NoChildrenWrappable
 
     private Type type;
 
-    private SimpleTypeWrappable() {}
+    private SimpleTypeData() {}
 
     /**
      * @param type the type of the type
      */
-    public SimpleTypeWrappable(Type type) {
+    public SimpleTypeData(Type type) {
         super(type.getId(), type.getName(), type.getDescription(), 1, 1);
         this.type = type;
     }
 
     @Override
-    public HousemateObjectWrappable clone() {
-        return new SimpleTypeWrappable(type);
+    public HousemateData clone() {
+        return new SimpleTypeData(type);
     }
 
     public final Type getType() {

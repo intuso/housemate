@@ -27,7 +27,7 @@ public interface ProxyRoot<
             AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
             ADD_COMMAND extends Command<?, ?>,
             ROOT extends ProxyRoot<USERS, TYPES, DEVICES, AUTOMATIONS, ADD_COMMAND, ROOT>>
-        extends Root<ROOT, ProxyRootListener<? super ROOT>>, HasUsers<USERS>, HasTypes<TYPES>, HasDevices<DEVICES>, HasAutomations<AUTOMATIONS> {
+        extends Root<ROOT>, HasUsers<USERS>, HasTypes<TYPES>, HasDevices<DEVICES>, HasAutomations<AUTOMATIONS> {
 
     /**
      * Gets the add user command

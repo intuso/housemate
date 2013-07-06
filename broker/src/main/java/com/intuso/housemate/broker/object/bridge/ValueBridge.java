@@ -1,9 +1,9 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.api.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.value.ValueData;
 
 import javax.annotation.Nullable;
 
@@ -14,10 +14,10 @@ import javax.annotation.Nullable;
 * Time: 09:01
 * To change this template use File | Settings | File Templates.
 */
-public class ValueBridge extends ValueBridgeBase<ValueWrappable, NoChildrenWrappable,
+public class ValueBridge extends ValueBridgeBase<ValueData, NoChildrenData,
                 NoChildrenBridgeObject, ValueBridge> {
     public ValueBridge(BrokerBridgeResources resources, Value<?, ?> proxyValue) {
-        super(resources, new ValueWrappable(proxyValue.getId(), proxyValue.getName(), proxyValue.getDescription(), proxyValue.getType().getId(), proxyValue.getTypeInstances()), proxyValue);
+        super(resources, new ValueData(proxyValue.getId(), proxyValue.getName(), proxyValue.getDescription(), proxyValue.getType().getId(), proxyValue.getTypeInstances()), proxyValue);
     }
 
     public static class Converter implements Function<Value<?, ?>, ValueBridge> {

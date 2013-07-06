@@ -5,33 +5,33 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.root.RootWrappable;
-import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 public class BrokerProxyRootObject
-        extends BrokerProxyObject<RootWrappable, HousemateObjectWrappable<?>, BrokerProxyObject<?, ?, ?, ?, ?>,
+        extends BrokerProxyObject<RootData, HousemateData<?>, BrokerProxyObject<?, ?, ?, ?, ?>,
             BrokerProxyRootObject, RootListener<? super BrokerProxyRootObject>>
-        implements Root<BrokerProxyRootObject, RootListener<? super BrokerProxyRootObject>> {
+        implements Root<BrokerProxyRootObject> {
 
-    private BrokerProxyList<TypeWrappable<?>, BrokerProxyType> types;
-    private BrokerProxyList<DeviceWrappable, BrokerProxyDevice> devices;
+    private BrokerProxyList<TypeData<?>, BrokerProxyType> types;
+    private BrokerProxyList<DeviceData, BrokerProxyDevice> devices;
 
     /**
      * @param resources {@inheritDoc}
      */
     public BrokerProxyRootObject(BrokerProxyResources<BrokerProxyFactory.All> resources) {
-        super(resources, new RootWrappable());
-        types = new BrokerProxyList<TypeWrappable<?>, BrokerProxyType>(
-                BrokerProxyFactory.changeFactoryType(resources, new BrokerProxyFactory.Type()), new ListWrappable(TYPES_ID, TYPES_ID, "Proxied types"));
-        devices = new BrokerProxyList<DeviceWrappable, BrokerProxyDevice>(
-                BrokerProxyFactory.changeFactoryType(resources, new BrokerProxyFactory.Device()), new ListWrappable<DeviceWrappable>(DEVICES_ID, DEVICES_ID, "Proxied devices"));
+        super(resources, new RootData());
+        types = new BrokerProxyList<TypeData<?>, BrokerProxyType>(
+                BrokerProxyFactory.changeFactoryType(resources, new BrokerProxyFactory.Type()), new ListData(TYPES_ID, TYPES_ID, "Proxied types"));
+        devices = new BrokerProxyList<DeviceData, BrokerProxyDevice>(
+                BrokerProxyFactory.changeFactoryType(resources, new BrokerProxyFactory.Device()), new ListData<DeviceData>(DEVICES_ID, DEVICES_ID, "Proxied devices"));
 
         addWrapper(types);
         addWrapper(devices);
@@ -78,7 +78,7 @@ public class BrokerProxyRootObject
      * Gets proxy types for the remote client's types
      * @return proxy types for the remove client's types
      */
-    public BrokerProxyList<TypeWrappable<?>, BrokerProxyType> getTypes() {
+    public BrokerProxyList<TypeData<?>, BrokerProxyType> getTypes() {
         return types;
     }
 
@@ -86,7 +86,7 @@ public class BrokerProxyRootObject
      * Gets proxy devices for the remote client's devices
      * @return proxy devices for the remote client's devices
      */
-    public BrokerProxyList<DeviceWrappable, BrokerProxyDevice> getDevices() {
+    public BrokerProxyList<DeviceData, BrokerProxyDevice> getDevices() {
         return devices;
     }
 }

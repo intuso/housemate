@@ -1,13 +1,13 @@
 package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.command.CommandWrappable;
+import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.device.Device;
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceListener;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.value.ValueData;
 
 /**
  * @param <RESOURCES> the type of the resources
@@ -21,16 +21,16 @@ import com.intuso.housemate.api.object.value.ValueWrappable;
  * @param <DEVICE> the type of the device
  */
 public abstract class ProxyDevice<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             CHILD_RESOURCES extends ProxyResources<?>,
             COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
-            COMMANDS extends ProxyList<?, ?, CommandWrappable, COMMAND, COMMANDS>,
+            COMMANDS extends ProxyList<?, ?, CommandData, COMMAND, COMMANDS>,
             VALUE extends ProxyValue<?, ?, VALUE>,
-            VALUES extends ProxyList<?, ?, ValueWrappable, VALUE, VALUES>,
+            VALUES extends ProxyList<?, ?, ValueData, VALUE, VALUES>,
             PROPERTY extends ProxyProperty<?, ?, ?, ?, PROPERTY>,
-            PROPERTIES extends ProxyList<?, ?, PropertyWrappable, PROPERTY, PROPERTIES>,
+            PROPERTIES extends ProxyList<?, ?, PropertyData, PROPERTY, PROPERTIES>,
             DEVICE extends ProxyDevice<RESOURCES, CHILD_RESOURCES, COMMAND, COMMANDS, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE>>
-        extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, DeviceWrappable, COMMAND, VALUE, DEVICE, DeviceListener<? super DEVICE>>
+        extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, DeviceData, COMMAND, VALUE, DEVICE, DeviceListener<? super DEVICE>>
         implements Device<COMMAND, COMMAND, COMMAND, COMMANDS, VALUE, VALUE, VALUE, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE> {
 
     private COMMANDS commandList;
@@ -42,7 +42,7 @@ public abstract class ProxyDevice<
      * @param childResources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyDevice(RESOURCES resources, CHILD_RESOURCES childResources, DeviceWrappable data) {
+    public ProxyDevice(RESOURCES resources, CHILD_RESOURCES childResources, DeviceData data) {
         super(resources, childResources, data);
     }
 

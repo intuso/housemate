@@ -1,11 +1,11 @@
 package com.intuso.housemate.object.broker.real;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.ObjectListener;
 
-public class NoChildrenBrokerRealObject extends BrokerRealObject<NoChildrenWrappable, NoChildrenWrappable,
+public class NoChildrenBrokerRealObject extends BrokerRealObject<NoChildrenData, NoChildrenData,
         NoChildrenBrokerRealObject, ObjectListener> {
-    private NoChildrenBrokerRealObject(BrokerRealResources resources, NoChildrenWrappable data) {
+    private NoChildrenBrokerRealObject(BrokerRealResources resources, NoChildrenData data) {
         super(resources, data);
     }
 }

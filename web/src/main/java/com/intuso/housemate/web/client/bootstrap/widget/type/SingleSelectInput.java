@@ -11,7 +11,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.intuso.housemate.api.object.option.OptionWrappable;
+import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
@@ -37,13 +37,13 @@ public class SingleSelectInput extends Composite implements TypeInput {
     @UiField
     protected FlowPanel subTypesPanel;
 
-    private final GWTProxyList<OptionWrappable, GWTProxyOption> options;
+    private final GWTProxyList<OptionData, GWTProxyOption> options;
     private final BiMap<GWTProxyOption, Integer> optionMap = HashBiMap.create();
     private TypeInstances typeInstances = new TypeInstances(new TypeInstance());
 
     public SingleSelectInput(GWTProxyType type) {
 
-        options = (GWTProxyList<OptionWrappable, GWTProxyOption>) type.getWrapper(OPTIONS);
+        options = (GWTProxyList<OptionData, GWTProxyOption>) type.getWrapper(OPTIONS);
 
         listBox = new ListBox(false);
         initWidget(ourUiBinder.createAndBindUi(this));

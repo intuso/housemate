@@ -1,18 +1,18 @@
 package com.intuso.housemate.broker.object.bridge;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.api.object.value.ValueWrappableBase;
+import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
 
 /**
  */
-public class ValueBridgeBase<WBL extends ValueWrappableBase<SWBL>,
-            SWBL extends HousemateObjectWrappable<?>,
+public class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
+            SWBL extends HousemateData<?>,
             SWR extends BridgeObject<? extends SWBL, ?, ?, ?, ?>,
             V extends ValueBridgeBase<WBL, SWBL, SWR, V>>
         extends BridgeObject<WBL, SWBL, SWR, V, ValueListener<? super V>>

@@ -2,13 +2,13 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Label;
-import com.intuso.housemate.api.object.type.ChoiceTypeWrappable;
-import com.intuso.housemate.api.object.type.CompoundTypeWrappable;
-import com.intuso.housemate.api.object.type.ObjectTypeWrappable;
-import com.intuso.housemate.api.object.type.RegexTypeWrappable;
-import com.intuso.housemate.api.object.type.SimpleTypeWrappable;
+import com.intuso.housemate.api.object.type.ChoiceTypeData;
+import com.intuso.housemate.api.object.type.CompoundTypeData;
+import com.intuso.housemate.api.object.type.ObjectTypeData;
+import com.intuso.housemate.api.object.type.RegexTypeData;
+import com.intuso.housemate.api.object.type.SimpleTypeData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
-import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableCell;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
 import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
@@ -66,23 +66,23 @@ public class TypeInputTableRow
     public static TypeInput getInput(GWTProxyType type) {
         if(type == null)
             return null;
-        TypeWrappable typeWrappable = type.getData();
-        if(typeWrappable instanceof SimpleTypeWrappable) {
-            if(((SimpleTypeWrappable)typeWrappable).getType() == SimpleTypeWrappable.Type.Boolean)
+        TypeData typeWrappable = type.getData();
+        if(typeWrappable instanceof SimpleTypeData) {
+            if(((SimpleTypeData)typeWrappable).getType() == SimpleTypeData.Type.Boolean)
                 return new CheckBoxInput();
             else
                 return new TextInput(typeWrappable);
-        } else if(typeWrappable instanceof ChoiceTypeWrappable) {
+        } else if(typeWrappable instanceof ChoiceTypeData) {
             if(typeWrappable.getMinValues() == 1 && typeWrappable.getMaxValues() == 1)
                 return new SingleSelectInput(type);
             else
                 return new MultiSelectInput(type);
-        } else if(typeWrappable instanceof RegexTypeWrappable)
+        } else if(typeWrappable instanceof RegexTypeData)
             return new TextInput(typeWrappable);
-        else if(typeWrappable instanceof ObjectTypeWrappable)
-            return new ObjectBrowserInput((ObjectTypeWrappable) typeWrappable);
-        else if(typeWrappable instanceof CompoundTypeWrappable)
-            return new CompoundInput((CompoundTypeWrappable) typeWrappable, type);
+        else if(typeWrappable instanceof ObjectTypeData)
+            return new ObjectBrowserInput((ObjectTypeData) typeWrappable);
+        else if(typeWrappable instanceof CompoundTypeData)
+            return new CompoundInput((CompoundTypeData) typeWrappable, type);
         return null;
     }
 }

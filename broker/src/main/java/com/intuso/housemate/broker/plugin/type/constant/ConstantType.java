@@ -2,8 +2,8 @@ package com.intuso.housemate.broker.plugin.type.constant;
 
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.object.list.ListListener;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeWrappable;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
@@ -23,9 +23,9 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
     public final static String SUB_TYPE_NAME = "Value";
     public final static String SUB_TYPE_DESCRIPTION = "The value of the constant";
 
-    private final RealList<TypeWrappable<?>, RealType<?, ?, ?>> types;
+    private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
 
-    public ConstantType(RealResources resources, RealList<TypeWrappable<?>, RealType<?, ?, ?>> types) {
+    public ConstantType(RealResources resources, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
         super(resources, ID, NAME, DESCRIPTION, 1, 1);
         this.types = types;
         types.addObjectListener(this);

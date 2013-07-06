@@ -3,11 +3,11 @@ package com.intuso.housemate.object.proxy;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.Iterator;
@@ -22,10 +22,10 @@ import java.util.Iterator;
 public abstract class ProxyList<
             RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>>,
             CHILD_RESOURCES extends ProxyResources<?>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
             LIST extends ProxyList<RESOURCES, CHILD_RESOURCES, CHILD_DATA, CHILD, LIST>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, ListWrappable<CHILD_DATA>, CHILD_DATA, CHILD, LIST, ListListener<? super CHILD>>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, ListData<CHILD_DATA>, CHILD_DATA, CHILD, LIST, ListListener<? super CHILD>>
         implements List<CHILD> {
 
     /**
@@ -33,7 +33,7 @@ public abstract class ProxyList<
      * @param childResources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyList(RESOURCES resources, CHILD_RESOURCES childResources, ListWrappable data) {
+    public ProxyList(RESOURCES resources, CHILD_RESOURCES childResources, ListData data) {
         super(resources, childResources, data);
     }
 
@@ -49,9 +49,9 @@ public abstract class ProxyList<
     @Override
     protected java.util.List registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(ADD_TYPE, new Receiver<HousemateObjectWrappable>() {
+        result.add(addMessageListener(ADD_TYPE, new Receiver<HousemateData>() {
             @Override
-            public void messageReceived(Message<HousemateObjectWrappable> message) throws HousemateException {
+            public void messageReceived(Message<HousemateData> message) throws HousemateException {
                 CHILD wrapper;
                 try {
                     wrapper = getResources().getObjectFactory().create(getSubResources(), (CHILD_DATA)message.getPayload());
@@ -64,9 +64,9 @@ public abstract class ProxyList<
                     listener.elementAdded(wrapper);
             }
         }));
-        result.add(addMessageListener(REMOVE_TYPE, new Receiver<HousemateObjectWrappable>() {
+        result.add(addMessageListener(REMOVE_TYPE, new Receiver<HousemateData>() {
             @Override
-            public void messageReceived(Message<HousemateObjectWrappable> message) throws HousemateException {
+            public void messageReceived(Message<HousemateData> message) throws HousemateException {
                 CHILD wrapper = removeWrapper(message.getPayload().getId());
                 if(wrapper != null) {
                     wrapper.uninit();

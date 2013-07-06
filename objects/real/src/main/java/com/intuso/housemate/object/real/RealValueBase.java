@@ -1,10 +1,10 @@
 package com.intuso.housemate.object.real;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.api.object.value.ValueWrappableBase;
+import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.Arrays;
@@ -18,8 +18,8 @@ import java.util.List;
  * @param <VALUE> the type of the value
  */
 public abstract class RealValueBase<
-            DATA extends ValueWrappableBase<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends ValueBaseData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends RealObject<? extends CHILD_DATA, ?, ?, ?>,
             O,
             VALUE extends RealValueBase<DATA, CHILD_DATA, CHILD, O, VALUE>>

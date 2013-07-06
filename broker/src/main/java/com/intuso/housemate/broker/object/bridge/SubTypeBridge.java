@@ -1,23 +1,23 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.subtype.SubType;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.subtype.SubTypeListener;
-import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
 
 import javax.annotation.Nullable;
 
 /**
  */
 public class SubTypeBridge
-        extends BridgeObject<SubTypeWrappable, NoChildrenWrappable, NoChildrenBridgeObject, SubTypeBridge, SubTypeListener>
+        extends BridgeObject<SubTypeData, NoChildrenData, NoChildrenBridgeObject, SubTypeBridge, SubTypeListener>
         implements SubType<TypeBridge> {
 
     private final TypeBridge type;
 
     public SubTypeBridge(BrokerBridgeResources resources, SubType<?> subType) {
-        super(resources, new SubTypeWrappable(subType.getId(), subType.getName(), subType.getDescription(), subType.getType().getId()));
+        super(resources, new SubTypeData(subType.getId(), subType.getName(), subType.getDescription(), subType.getType().getId()));
         type = resources.getGeneralResources().getBridgeResources().getRoot().getTypes().get(getData().getType());
     }
 

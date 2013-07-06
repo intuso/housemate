@@ -10,5 +10,5 @@ import com.intuso.housemate.api.resources.Resources;
 public interface CommandFactory<
             R extends Resources,
             C extends Command<?, ?>>
-        extends HousemateObjectFactory<R, CommandWrappable, C> {
+        extends HousemateObjectFactory<R, CommandData, C> {
 }

@@ -2,7 +2,7 @@ package com.intuso.housemate.api.object;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.TestEnvironment;
-import com.intuso.housemate.api.object.type.RegexTypeWrappable;
+import com.intuso.housemate.api.object.type.RegexTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
@@ -128,7 +128,7 @@ public class TypeTest {
     }
 
     private class MyProxyType extends ProxyRegexType<ProxyResources<NoChildrenProxyObjectFactory>, MyProxyType> {
-        public MyProxyType(ProxyResources<NoChildrenProxyObjectFactory> resources, RegexTypeWrappable data) {
+        public MyProxyType(ProxyResources<NoChildrenProxyObjectFactory> resources, RegexTypeData data) {
             super(resources, data);
         }
     }

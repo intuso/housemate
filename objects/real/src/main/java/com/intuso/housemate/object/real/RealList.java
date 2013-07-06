@@ -1,9 +1,9 @@
 package com.intuso.housemate.object.real;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.wrapper.Wrapper;
 import com.intuso.utilities.wrapper.WrapperListener;
@@ -13,9 +13,9 @@ import java.util.Iterator;
 /**
  */
 public final class RealList<
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends RealObject<? extends CHILD_DATA, ?, ?, ?>>
-        extends RealObject<ListWrappable<CHILD_DATA>, CHILD_DATA, CHILD, ListListener<? super CHILD>>
+        extends RealObject<ListData<CHILD_DATA>, CHILD_DATA, CHILD, ListListener<? super CHILD>>
         implements List<CHILD>, WrapperListener<CHILD> {
 
     /**
@@ -25,7 +25,7 @@ public final class RealList<
      * @param description the list's description
      */
     public RealList(RealResources resources, String id, String name, String description) {
-        super(resources, new ListWrappable<CHILD_DATA>(id, name, description));
+        super(resources, new ListData<CHILD_DATA>(id, name, description));
     }
 
     /**

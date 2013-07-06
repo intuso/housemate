@@ -10,5 +10,5 @@ import com.intuso.housemate.api.resources.Resources;
 public interface TaskFactory<
             R extends Resources,
             T extends Task<?, ?, ?, ?>>
-        extends HousemateObjectFactory<R, TaskWrappable, T> {
+        extends HousemateObjectFactory<R, TaskData, T> {
 }

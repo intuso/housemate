@@ -4,7 +4,7 @@ import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.intuso.housemate.api.object.option.OptionWrappable;
+import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
@@ -26,7 +26,7 @@ public class MultiSelectInput extends ListBox implements TypeInput {
 
     private Map<GWTProxyOption, Integer> optionIndices = new HashMap<GWTProxyOption, Integer>();
     private Set<String> selectedOptions = new HashSet<String>();
-    private GWTProxyList<OptionWrappable, GWTProxyOption> options;
+    private GWTProxyList<OptionData, GWTProxyOption> options;
     private Map<String, GWTProxyOption> optionsByName = new HashMap<String, GWTProxyOption>();
 
     public MultiSelectInput(GWTProxyType type) {
@@ -48,7 +48,7 @@ public class MultiSelectInput extends ListBox implements TypeInput {
         options = null;
         optionsByName.clear();
         if(type.getWrapper(OPTIONS) != null) {
-            options = (GWTProxyList<OptionWrappable, GWTProxyOption>) type.getWrapper(OPTIONS);
+            options = (GWTProxyList<OptionData, GWTProxyOption>) type.getWrapper(OPTIONS);
             int i = 0;
             for(GWTProxyOption option : options) {
                 optionIndices.put(option, i);

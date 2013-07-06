@@ -1,17 +1,17 @@
 package com.intuso.housemate.api.object.type;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.NoChildrenData;
 
 /**
  *
  * Data object for a regex type
  */
-public final class RegexTypeWrappable extends TypeWrappable<NoChildrenWrappable> {
+public final class RegexTypeData extends TypeData<NoChildrenData> {
 
     private String regexPattern;
 
-    private RegexTypeWrappable() {}
+    private RegexTypeData() {}
 
     /**
      * @param id {@inheritDoc}
@@ -21,14 +21,14 @@ public final class RegexTypeWrappable extends TypeWrappable<NoChildrenWrappable>
      * @param maxValues {@inheritDoc}
      * @param regexPattern the regex pattern that values of this type must match
      */
-    public RegexTypeWrappable(String id, String name, String description, int minValues, int maxValues, String regexPattern) {
+    public RegexTypeData(String id, String name, String description, int minValues, int maxValues, String regexPattern) {
         super(id, name, description, minValues, maxValues);
         this.regexPattern = regexPattern;
     }
 
     @Override
-    public HousemateObjectWrappable clone() {
-        return new RegexTypeWrappable(getId(), getName(), getDescription(), getMinValues(), getMaxValues(), regexPattern);
+    public HousemateData clone() {
+        return new RegexTypeData(getId(), getName(), getDescription(), getMinValues(), getMaxValues(), regexPattern);
     }
 
     /**

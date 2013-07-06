@@ -5,8 +5,10 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.root.proxy.ProxyRootListener;
+import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.resources.Resources;
+import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
@@ -89,10 +91,10 @@ public class HousemateTweeter {
 
 		// setup the housemate stuff
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources,  resources);
-        root.addObjectListener(new ProxyRootListener<SimpleProxyObject.Root>() {
+        root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {
 
             @Override
-            public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
+            public void connectionStatusChanged(final SimpleProxyObject.Root root, ConnectionStatus status) {
                 switch (status) {
                     case Disconnected:
                         resources.getLog().d("Disconnected from server");
@@ -108,13 +110,19 @@ public class HousemateTweeter {
                         break;
                     case Authenticated:
                         resources.getLog().e("Authenticated with server");
+                        root.load(new LoadManager(Root.DEVICES_ID) {
+                            @Override
+                            protected void failed(String id) {
+                                tweet("Could not load devices from server. Do you have permission?");
+                            }
+
+                            @Override
+                            protected void allLoaded() {
+                                root.getDevices().addObjectListener(deviceListListener, true);
+                            }
+                        });
                         break;
                 }
-            }
-
-            @Override
-            public void loaded(SimpleProxyObject.Root root) {
-                root.getDevices().addObjectListener(deviceListListener, true);
             }
 
             @Override

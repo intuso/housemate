@@ -1,11 +1,11 @@
 package com.intuso.housemate.web.client.object;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.command.CommandData;
+import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.proxy.ProxyDevice;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.GWTResources;
@@ -14,18 +14,18 @@ import com.intuso.housemate.web.client.GWTResources;
  */
 public class GWTProxyDevice
         extends ProxyDevice<
-            GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             GWTResources<?>,
             GWTProxyCommand,
-            GWTProxyList<CommandWrappable, GWTProxyCommand>,
+            GWTProxyList<CommandData, GWTProxyCommand>,
             GWTProxyValue,
-            GWTProxyList<ValueWrappable, GWTProxyValue>,
+            GWTProxyList<ValueData, GWTProxyValue>,
             GWTProxyProperty,
-            GWTProxyList<PropertyWrappable, GWTProxyProperty>,
+            GWTProxyList<PropertyData, GWTProxyProperty>,
             GWTProxyDevice> {
-    public GWTProxyDevice(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+    public GWTProxyDevice(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                           GWTResources<?> childResources,
-                          DeviceWrappable data) {
+                          DeviceData data) {
         super(resources, childResources, data);
     }
 

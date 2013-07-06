@@ -4,7 +4,6 @@ import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.device.HasDevices;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.HasTypes;
 import com.intuso.housemate.api.object.type.Type;
 
@@ -21,7 +20,7 @@ public interface RealRoot<
             DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
             DEVICES extends List<DEVICE>,
             ROOT extends RealRoot<TYPE, TYPES, DEVICE, DEVICES, ROOT>>
-        extends Root<ROOT, RootListener<? super ROOT>>, HasTypes<TYPES>, HasDevices<DEVICES> {
+        extends Root<ROOT>, HasTypes<TYPES>, HasDevices<DEVICES> {
 
     /**
      * Adds a new type

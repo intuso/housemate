@@ -10,5 +10,5 @@ import com.intuso.housemate.api.resources.Resources;
 public interface ConditionFactory<
             R extends Resources,
             C extends Condition<?, ?, ?, ?, ?, ?>>
-        extends HousemateObjectFactory<R, ConditionWrappable, C> {
+        extends HousemateObjectFactory<R, ConditionData, C> {
 }

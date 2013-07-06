@@ -1,7 +1,7 @@
 package com.intuso.housemate.object.proxy;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
-import com.intuso.housemate.api.object.type.RegexTypeWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
+import com.intuso.housemate.api.object.type.RegexTypeData;
 import com.intuso.housemate.api.resources.RegexMatcher;
 
 /**
@@ -11,7 +11,7 @@ import com.intuso.housemate.api.resources.RegexMatcher;
 public abstract class ProxyRegexType<
             RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
             TYPE extends ProxyRegexType<RESOURCES, TYPE>>
-        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, RegexTypeWrappable, NoChildrenWrappable, NoChildrenProxyObject, TYPE> {
+        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, RegexTypeData, NoChildrenData, NoChildrenProxyObject, TYPE> {
 
     private RegexMatcher regexMatcher;
 
@@ -19,7 +19,7 @@ public abstract class ProxyRegexType<
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyRegexType(RESOURCES resources, RegexTypeWrappable data) {
+    public ProxyRegexType(RESOURCES resources, RegexTypeData data) {
         super(resources, null, data);
         regexMatcher = resources.getRegexMatcherFactory().createRegexMatcher(getData().getRegexPattern());
     }

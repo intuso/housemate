@@ -1,10 +1,10 @@
 package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeListener;
-import com.intuso.housemate.api.object.type.TypeWrappable;
+import com.intuso.housemate.api.object.type.TypeData;
 
 /**
  * @param <RESOURCES> the type of the resources
@@ -17,8 +17,8 @@ import com.intuso.housemate.api.object.type.TypeWrappable;
 public abstract class ProxyType<
             RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>>,
             CHILD_RESOURCES extends ProxyResources<?>,
-            DATA extends TypeWrappable<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends TypeData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
             TYPE extends ProxyType<RESOURCES, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, TYPE>>
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, TYPE, TypeListener>

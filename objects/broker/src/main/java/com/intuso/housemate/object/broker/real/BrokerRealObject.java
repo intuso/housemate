@@ -1,7 +1,7 @@
 package com.intuso.housemate.object.broker.real;
 
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectListener;
 
 /**
@@ -11,8 +11,8 @@ import com.intuso.housemate.api.object.ObjectListener;
  * @param <LISTENER> the type of the listener
  */
 public class BrokerRealObject<
-            DATA extends HousemateObjectWrappable<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends HousemateData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends HousemateObject<?, ? extends CHILD_DATA, ?, ?, ?>,
             LISTENER extends ObjectListener>
         extends HousemateObject<BrokerRealResources, DATA, CHILD_DATA, CHILD, LISTENER> {

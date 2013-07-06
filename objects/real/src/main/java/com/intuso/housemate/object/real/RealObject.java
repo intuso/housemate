@@ -2,15 +2,15 @@ package com.intuso.housemate.object.real;
 
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.api.object.root.real.RealRoot;
 
 
 public abstract class RealObject<
-            DATA extends HousemateObjectWrappable<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends HousemateData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends RealObject<? extends CHILD_DATA, ?, ?, ?>,
             LISTENER extends ObjectListener>
         extends HousemateObject<RealResources, DATA, CHILD_DATA, CHILD, LISTENER>

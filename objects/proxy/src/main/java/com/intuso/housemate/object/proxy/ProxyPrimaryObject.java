@@ -1,7 +1,7 @@
 package com.intuso.housemate.object.proxy;
 
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.value.ValueListener;
@@ -19,14 +19,14 @@ import java.util.List;
  * @param <LISTENER> the type of the listener
  */
 public abstract class ProxyPrimaryObject<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             CHILD_RESOURCES extends ProxyResources<?>,
-            DATA extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
+            DATA extends HousemateData<HousemateData<?>>,
             COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
             VALUE extends ProxyValue<?, ?, VALUE>,
             PRIMARY_OBJECT extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, DATA, COMMAND, VALUE, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, DATA, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
+        extends ProxyObject<RESOURCES, CHILD_RESOURCES, DATA, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
         implements PrimaryObject<COMMAND, COMMAND, VALUE, VALUE, VALUE, PRIMARY_OBJECT, LISTENER> {
 
     private COMMAND remove;

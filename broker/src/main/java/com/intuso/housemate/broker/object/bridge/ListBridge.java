@@ -2,10 +2,10 @@ package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
 import com.intuso.housemate.api.object.BaseObject;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.list.ListWrappable;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.wrapper.Wrapper;
 import com.intuso.utilities.wrapper.WrapperListener;
@@ -15,16 +15,16 @@ import java.util.Iterator;
 /**
  */
 public class ListBridge<
-            WBL extends HousemateObjectWrappable<?>,
+            WBL extends HousemateData<?>,
             OWR extends BaseObject<?>,
             WR extends BridgeObject<? extends WBL, ?, ?, ?, ?>>
-        extends BridgeObject<ListWrappable<WBL>, WBL, WR, ListBridge<WBL, OWR, WR>, ListListener<? super WR>>
+        extends BridgeObject<ListData<WBL>, WBL, WR, ListBridge<WBL, OWR, WR>, ListListener<? super WR>>
         implements List<WR>, WrapperListener<WR> {
 
     private ListenerRegistration otherListListener;
 
     public ListBridge(BrokerBridgeResources resources, List<? extends OWR> list, final Function<? super OWR, ? extends WR> converter) {
-        super(resources, new ListWrappable(list.getId(), list.getName(), list.getDescription()));
+        super(resources, new ListData(list.getId(), list.getName(), list.getDescription()));
         otherListListener = list.addObjectListener(new ListListener<OWR>() {
             @Override
             public void elementAdded(OWR element) {

@@ -1,6 +1,6 @@
 package com.intuso.housemate.broker.object.bridge;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.object.real.RealType;
@@ -11,9 +11,9 @@ import java.util.List;
 
 /**
  */
-public abstract class PrimaryObjectBridge<WBL extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
+public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateData<?>>,
             PO extends PrimaryObjectBridge<WBL, PO, L>, L extends PrimaryListener<? super PO>>
-        extends BridgeObject<WBL, HousemateObjectWrappable<?>, BridgeObject<?, ?, ?, ?, ?>, PO, L>
+        extends BridgeObject<WBL, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, PO, L>
         implements PrimaryObject<CommandBridge, CommandBridge, ValueBridge, ValueBridge, ValueBridge, PO, L> {
 
     private CommandBridge removeCommand;

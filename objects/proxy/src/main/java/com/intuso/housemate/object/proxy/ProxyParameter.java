@@ -1,9 +1,9 @@
 package com.intuso.housemate.object.proxy;
 
-import com.intuso.housemate.api.object.NoChildrenWrappable;
+import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.parameter.Parameter;
+import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterListener;
-import com.intuso.housemate.api.object.parameter.ParameterWrappable;
 
 /**
  * @param <RESOURCES> the type of the resources
@@ -14,14 +14,14 @@ public abstract class ProxyParameter<
             RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
             TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
             PARAMETER extends ProxyParameter<?, TYPE, PARAMETER>>
-        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, ParameterWrappable, NoChildrenWrappable, NoChildrenProxyObject, PARAMETER, ParameterListener>
+        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, ParameterData, NoChildrenData, NoChildrenProxyObject, PARAMETER, ParameterListener>
         implements Parameter<TYPE> {
 
     /**
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyParameter(RESOURCES resources, ParameterWrappable data) {
+    public ProxyParameter(RESOURCES resources, ParameterData data) {
         super(resources, null, data);
     }
 

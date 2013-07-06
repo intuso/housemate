@@ -5,12 +5,12 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.command.Command;
+import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.command.CommandWrappable;
 import com.intuso.housemate.api.object.parameter.Parameter;
-import com.intuso.housemate.api.object.parameter.ParameterWrappable;
+import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.list.List;
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -20,24 +20,24 @@ import javax.annotation.Nullable;
 /**
  */
 public class CommandBridge
-        extends BridgeObject<CommandWrappable, ListWrappable<ParameterWrappable>,
-            ListBridge<ParameterWrappable, Parameter<?>, ParameterBridge>, CommandBridge,
+        extends BridgeObject<CommandData, ListData<ParameterData>,
+            ListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge,
         CommandListener<? super CommandBridge>>
-        implements Command<ListBridge<ParameterWrappable, Parameter<?>, ParameterBridge>, CommandBridge> {
+        implements Command<ListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge> {
 
     private Command<?, ?> proxyCommand;
-    private ListBridge<ParameterWrappable, Parameter<?>, ParameterBridge> parameters;
+    private ListBridge<ParameterData, Parameter<?>, ParameterBridge> parameters;
 
     public CommandBridge(BrokerBridgeResources resources, Command<? extends List<? extends Parameter<?>>, ?> proxyCommand) {
-        super(resources, new CommandWrappable(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
+        super(resources, new CommandData(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
         this.proxyCommand = proxyCommand;
-        parameters = new ListBridge<ParameterWrappable, Parameter<?>, ParameterBridge>(resources,
+        parameters = new ListBridge<ParameterData, Parameter<?>, ParameterBridge>(resources,
                 proxyCommand.getParameters(), new ParameterBridge.Converter(resources));
         addWrapper(parameters);
     }
 
     @Override
-    public ListBridge<ParameterWrappable, Parameter<?>, ParameterBridge> getParameters() {
+    public ListBridge<ParameterData, Parameter<?>, ParameterBridge> getParameters() {
         return parameters;
     }
 

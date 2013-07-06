@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.web.client.GWTResources;
 import com.intuso.housemate.web.client.bootstrap.widget.device.Device;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
@@ -18,7 +18,7 @@ public class DeviceView extends ObjectListView<GWTProxyDevice, DevicePlace> impl
     }
 
     @Override
-    protected GWTProxyList<DeviceWrappable, GWTProxyDevice> getList(DevicePlace place) {
+    protected GWTProxyList<DeviceData, GWTProxyDevice> getList(DevicePlace place) {
         return resources.getRoot().getDevices();
     }
 

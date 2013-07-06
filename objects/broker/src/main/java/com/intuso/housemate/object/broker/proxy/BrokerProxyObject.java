@@ -6,7 +6,7 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.object.broker.RemoteClient;
@@ -22,8 +22,8 @@ import com.intuso.utilities.wrapper.WrapperFactory;
  * @param <LISTENER> the type of the listener
  */
 public abstract class BrokerProxyObject<
-            DATA extends HousemateObjectWrappable<CHILD_DATA>,
-            CHILD_DATA extends HousemateObjectWrappable<?>,
+            DATA extends HousemateData<CHILD_DATA>,
+            CHILD_DATA extends HousemateData<?>,
             CHILD extends BrokerProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
             OBJECT extends BrokerProxyObject<?, ?, ?, ?, ?>,
             LISTENER extends ObjectListener>

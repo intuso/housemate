@@ -3,7 +3,7 @@ package com.intuso.housemate.object.real;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
@@ -16,10 +16,10 @@ import com.intuso.housemate.object.real.impl.type.StringType;
  * @param <LISTENER> the type of this object's listener
  */
 public abstract class RealPrimaryObject<
-            DATA extends HousemateObjectWrappable<HousemateObjectWrappable<?>>,
+            DATA extends HousemateData<HousemateData<?>>,
             PRIMARY_OBJECT extends RealPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
-        extends RealObject<DATA, HousemateObjectWrappable<?>, RealObject<?, ?, ?, ?>, LISTENER>
+        extends RealObject<DATA, HousemateData<?>, RealObject<?, ?, ?, ?>, LISTENER>
         implements PrimaryObject<RealCommand, RealCommand, RealValue<Boolean>, RealValue<Boolean>, RealValue<String>, PRIMARY_OBJECT, LISTENER> {
 
     private final RealCommand remove;

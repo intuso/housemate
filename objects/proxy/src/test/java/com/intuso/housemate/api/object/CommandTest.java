@@ -2,9 +2,9 @@ package com.intuso.housemate.api.object;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.TestEnvironment;
+import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.list.ListWrappable;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -41,12 +41,12 @@ public class CommandTest {
         public void commandFailed(SimpleProxyObject.Command function, String error) {}
     };
 
-    private SimpleProxyObject.List<CommandWrappable, SimpleProxyObject.Command> proxyList
-            = new SimpleProxyObject.List<CommandWrappable, SimpleProxyObject.Command>(
+    private SimpleProxyObject.List<CommandData, SimpleProxyObject.Command> proxyList
+            = new SimpleProxyObject.List<CommandData, SimpleProxyObject.Command>(
             SimpleProxyFactory.changeFactoryType(TestEnvironment.TEST_INSTANCE.getProxyResources(), new SimpleProxyFactory.Command()),
             TestEnvironment.TEST_INSTANCE.getProxyResources(),
-            new ListWrappable(COMMANDS, COMMANDS, COMMANDS));
-    private RealList<CommandWrappable, RealCommand> realList = new RealList<CommandWrappable, RealCommand>(TestEnvironment.TEST_INSTANCE.getRealResources(), COMMANDS, COMMANDS, COMMANDS, new ArrayList<RealCommand>());
+            new ListData(COMMANDS, COMMANDS, COMMANDS));
+    private RealList<CommandData, RealCommand> realList = new RealList<CommandData, RealCommand>(TestEnvironment.TEST_INSTANCE.getRealResources(), COMMANDS, COMMANDS, COMMANDS, new ArrayList<RealCommand>());
     private RealCommand realCommand;
     private SimpleProxyObject.Command proxyCommand;
 

@@ -1,10 +1,10 @@
 package com.intuso.housemate.object.broker.real;
 
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.condition.Condition;
+import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.condition.ConditionListener;
-import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
+import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
@@ -12,17 +12,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class BrokerRealCondition
-        extends BrokerRealObject<ConditionWrappable, HousemateObjectWrappable<?>, BrokerRealObject<?, ?, ?, ?>,
+        extends BrokerRealObject<ConditionData, HousemateData<?>, BrokerRealObject<?, ?, ?, ?>,
             ConditionListener<? super BrokerRealCondition>>
         implements Condition<BrokerRealValue<String>, BrokerRealValue<Boolean>,
-            BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>, BrokerRealCommand, BrokerRealCondition,
-            BrokerRealList<ConditionWrappable, BrokerRealCondition>> {
+            BrokerRealList<PropertyData, BrokerRealProperty<?>>, BrokerRealCommand, BrokerRealCondition,
+            BrokerRealList<ConditionData, BrokerRealCondition>> {
 
     private BrokerRealValue<String> errorValue;
     private BrokerRealValue<Boolean> satisfiedValue;
-    private BrokerRealList<PropertyWrappable, BrokerRealProperty<?>> propertyList;
+    private BrokerRealList<PropertyData, BrokerRealProperty<?>> propertyList;
     private BrokerRealCommand addConditionCommand;
-    private BrokerRealList<ConditionWrappable, BrokerRealCondition> conditions;
+    private BrokerRealList<ConditionData, BrokerRealCondition> conditions;
 
     /**
      * @param resources {@inheritDoc}
@@ -43,11 +43,11 @@ public abstract class BrokerRealCondition
      * @param properties the condition's properties
      */
     public BrokerRealCondition(final BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
-        super(resources, new ConditionWrappable(id, name, description));
+        super(resources, new ConditionData(id, name, description));
         errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), (List)null);
         satisfiedValue = new BrokerRealValue<Boolean>(resources, SATISFIED_ID, SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(resources.getRealResources()), false);
-        propertyList = new BrokerRealList<PropertyWrappable, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
-        conditions = new BrokerRealList<ConditionWrappable, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
+        propertyList = new BrokerRealList<PropertyData, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
+        conditions = new BrokerRealList<ConditionData, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
         // add a command to add automations to the automation list
         addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions);
         addWrapper(errorValue);
@@ -58,12 +58,12 @@ public abstract class BrokerRealCondition
     }
 
     @Override
-    public BrokerRealList<PropertyWrappable, BrokerRealProperty<?>> getProperties() {
+    public BrokerRealList<PropertyData, BrokerRealProperty<?>> getProperties() {
         return propertyList;
     }
 
     @Override
-    public BrokerRealList<ConditionWrappable, BrokerRealCondition> getConditions() {
+    public BrokerRealList<ConditionData, BrokerRealCondition> getConditions() {
         return conditions;
     }
 

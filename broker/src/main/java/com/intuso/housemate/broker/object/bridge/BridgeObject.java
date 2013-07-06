@@ -3,17 +3,18 @@ package com.intuso.housemate.broker.object.bridge;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
 import com.intuso.housemate.api.object.ObjectListener;
-import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.wrapper.Data;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,8 +22,8 @@ import java.util.Map;
 
 /**
  */
-public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
-            SWBL extends HousemateObjectWrappable<?>,
+public abstract class BridgeObject<WBL extends HousemateData<SWBL>,
+            SWBL extends HousemateData<?>,
             SWR extends BridgeObject<? extends SWBL, ?, ?, ?, ?>,
             PBO extends BridgeObject<WBL, SWBL, SWR, PBO, L>,
             L extends ObjectListener>
@@ -60,27 +61,33 @@ public abstract class BridgeObject<WBL extends HousemateObjectWrappable<SWBL>,
         result.add(addMessageListener(LOAD_REQUEST, new Receiver<ClientPayload<LoadRequest>>() {
             @Override
             public void messageReceived(Message<ClientPayload<LoadRequest>> message) throws HousemateException {
-                if(message.getPayload().getClient().getType() != ConnectionType.Proxy)
+                String childId = message.getPayload().getOriginal().getChildId();
+                if(message.getPayload().getClient().getType() != ConnectionType.Proxy) {
                     getLog().e("Client requesting an object is not of type " + ConnectionType.Proxy);
-                else {
-                    BridgeObject<?, ?, ?, ?, ?> subWrapper = getWrapper(message.getPayload().getOriginal().getChildWrapperId());
-                    if(subWrapper != null)
-                        sendMessage(LOAD_RESPONSE, subWrapper.getWrappableTree(
-                                message.getPayload().getOriginal(), message.getPayload().getClient()), message.getPayload().getClient());
-                    else
-                        getLog().w("Load request received from " + Arrays.toString(message.getRoute().toArray(new String[message.getRoute().size()])) + " for non-existant object \"" + message.getPayload().getOriginal().getChildWrapperId() + "\"");
+                    sendMessage(LOAD_RESPONSE, new LoadResponse<Data<?>>(childId, "Connection type is not " + ConnectionType.Proxy.name()), message.getPayload().getClient());
+                } else {
+                    BridgeObject<?, ?, ?, ?, ?> subWrapper = getWrapper(message.getPayload().getOriginal().getChildId());
+                    if(subWrapper != null) {
+                        long start = System.currentTimeMillis();
+                        Data<?> data = subWrapper.getData(message.getPayload().getOriginal(), message.getPayload().getClient());
+                        getLog().d("Got data for " + childId + " in " + (System.currentTimeMillis() - start) + "ms");
+                        sendMessage(LOAD_RESPONSE, new LoadResponse<Data<?>>(childId, data), message.getPayload().getClient());
+                    } else {
+                        getLog().w("Load request received from " + Arrays.toString(message.getRoute().toArray(new String[message.getRoute().size()])) + " for non-existant object \"" + message.getPayload().getOriginal().getChildId() + "\"");
+                        sendMessage(LOAD_RESPONSE, new LoadResponse<Data<?>>(childId, "Object does not exist or you do not have permission to see it"), message.getPayload().getClient());
+                    }
                 }
             }
         }));
         return result;
     }
 
-    private HousemateObjectWrappable getWrappableTree(LoadRequest loadRequest, RemoteClient client) {
+    private HousemateData getData(LoadRequest loadRequest, RemoteClient client) {
         if(!matchesFilter(loadRequest))
             return null;
-        HousemateObjectWrappable result = getData().clone();
+        HousemateData result = getData().clone();
         for(BridgeObject<?, ?, ?, ?, ?> subWrapper : getWrappers()) {
-            HousemateObjectWrappable child = subWrapper.getWrappableTree(loadRequest, client);
+            HousemateData child = subWrapper.getData(loadRequest, client);
             if(child != null)
                 result.addWrappable(child);
         }

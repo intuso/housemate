@@ -1,20 +1,20 @@
 package com.intuso.housemate.object.proxy.simple;
 
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateObjectWrappable;
-import com.intuso.housemate.api.object.parameter.ParameterWrappable;
-import com.intuso.housemate.api.object.automation.AutomationWrappable;
-import com.intuso.housemate.api.object.command.CommandWrappable;
-import com.intuso.housemate.api.object.condition.ConditionWrappable;
-import com.intuso.housemate.api.object.task.TaskWrappable;
-import com.intuso.housemate.api.object.device.DeviceWrappable;
-import com.intuso.housemate.api.object.list.ListWrappable;
-import com.intuso.housemate.api.object.option.OptionWrappable;
-import com.intuso.housemate.api.object.property.PropertyWrappable;
-import com.intuso.housemate.api.object.subtype.SubTypeWrappable;
-import com.intuso.housemate.api.object.type.TypeWrappable;
-import com.intuso.housemate.api.object.user.UserWrappable;
-import com.intuso.housemate.api.object.value.ValueWrappable;
+import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.command.CommandData;
+import com.intuso.housemate.api.object.condition.ConditionData;
+import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.option.OptionData;
+import com.intuso.housemate.api.object.parameter.ParameterData;
+import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
+import com.intuso.housemate.api.object.task.TaskData;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.api.object.user.UserData;
+import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
 import com.intuso.housemate.object.proxy.ProxyParameter;
 import com.intuso.housemate.object.proxy.ProxyAutomation;
@@ -39,58 +39,58 @@ import com.intuso.housemate.object.proxy.ProxyValue;
 public class SimpleProxyObject {
 
     public final static class Automation extends ProxyAutomation<
-            ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             ProxyResources<?>,
             Command,
             Value,
             Condition,
-            List<ConditionWrappable, Condition>, Task, List<TaskWrappable, Task>, Automation> {
-        public Automation(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+            List<ConditionData, Condition>, Task, List<TaskData, Task>, Automation> {
+        public Automation(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                           ProxyResources<?> childResources,
-                          AutomationWrappable data) {
+                          AutomationData data) {
             super(resources, childResources, data);
         }
     }
 
-    public final static class Command extends ProxyCommand<ProxyResources<SimpleProxyFactory.List<ParameterWrappable, Parameter>>,
-                ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, ParameterWrappable, Parameter>>,
+    public final static class Command extends ProxyCommand<ProxyResources<SimpleProxyFactory.List<ParameterData, Parameter>>,
+                ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, ParameterData, Parameter>>,
             Parameter,
-                List<ParameterWrappable, Parameter>,
+                List<ParameterData, Parameter>,
                 Command> {
-        public Command(ProxyResources<SimpleProxyFactory.List<ParameterWrappable, Parameter>> resources,
-                       ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, ParameterWrappable, Parameter>> childResources,
-                       CommandWrappable data) {
+        public Command(ProxyResources<SimpleProxyFactory.List<ParameterData, Parameter>> resources,
+                       ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, ParameterData, Parameter>> childResources,
+                       CommandData data) {
             super(resources, childResources, data);
         }
     }
 
-    public final static class Condition extends ProxyCondition<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+    public final static class Condition extends ProxyCondition<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
                 ProxyResources<?>,
                 Value,
-                List<PropertyWrappable, Property>,
+                List<PropertyData, Property>,
                 Command,
                 Condition,
-                List<ConditionWrappable, Condition>> {
-        public Condition(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+                List<ConditionData, Condition>> {
+        public Condition(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                          ProxyResources<?> childResources,
-                         ConditionWrappable data) {
+                         ConditionData data) {
             super(resources, childResources, data);
         }
     }
 
-    public final static class Device extends ProxyDevice<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+    public final static class Device extends ProxyDevice<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
                 ProxyResources<?>,
                 Command,
-                List<CommandWrappable, Command>, Value, List<ValueWrappable, Value>, Property,
-                List<PropertyWrappable, Property>, Device> {
-        public Device(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+                List<CommandData, Command>, Value, List<ValueData, Value>, Property,
+                List<PropertyData, Property>, Device> {
+        public Device(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                       ProxyResources<?> childResources,
-                      DeviceWrappable data) {
+                      DeviceData data) {
             super(resources, childResources, data);
         }
     }
 
-    public final static class List<WBL extends HousemateObjectWrappable<?>, WR extends ProxyObject<?, ?, ? extends WBL, ?, ?, ?, ?>>
+    public final static class List<WBL extends HousemateData<?>, WR extends ProxyObject<?, ?, ? extends WBL, ?, ?, ?, ?>>
             extends ProxyList<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, WBL, WR>>,
                 ProxyResources<?>,
                 WBL,
@@ -98,26 +98,26 @@ public class SimpleProxyObject {
                 List<WBL, WR>> {
         public List(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, WBL, WR>> resources,
                     ProxyResources<?> childResources,
-                    ListWrappable<WBL> listWrappable) {
+                    ListData<WBL> listWrappable) {
             super(resources, childResources, listWrappable);
         }
     }
 
     public final static class Option extends ProxyOption<
-            ProxyResources<SimpleProxyFactory.List<SubTypeWrappable, SubType>>,
-            ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, SubTypeWrappable, SubType>>,
+            ProxyResources<SimpleProxyFactory.List<SubTypeData, SubType>>,
+            ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, SubTypeData, SubType>>,
             SubType,
-            List<SubTypeWrappable, SubType>,
+            List<SubTypeData, SubType>,
             Option> {
-        public Option(ProxyResources<SimpleProxyFactory.List<SubTypeWrappable, SubType>> resources,
+        public Option(ProxyResources<SimpleProxyFactory.List<SubTypeData, SubType>> resources,
                       ProxyResources<SimpleProxyFactory.SubType> childResources,
-                      OptionWrappable data) {
+                      OptionData data) {
             super(resources, childResources, data);
         }
     }
 
     public final static class Parameter extends ProxyParameter<ProxyResources<NoChildrenProxyObjectFactory>, Type, Parameter> {
-        public Parameter(ProxyResources<NoChildrenProxyObjectFactory> resources, ParameterWrappable data) {
+        public Parameter(ProxyResources<NoChildrenProxyObjectFactory> resources, ParameterData data) {
             super(resources, data);
         }
     }
@@ -128,69 +128,69 @@ public class SimpleProxyObject {
             Command,
             Property> {
         public Property(ProxyResources<SimpleProxyFactory.Command> resources,
-                        ProxyResources<SimpleProxyFactory.List<ParameterWrappable, Parameter>> childResources,
-                        PropertyWrappable data) {
+                        ProxyResources<SimpleProxyFactory.List<ParameterData, Parameter>> childResources,
+                        PropertyData data) {
             super(resources, childResources, data);
         }
     }
 
     public final static class Root extends ProxyRootObject<
-            ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+            ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             ProxyResources<?>,
-            User, List<UserWrappable, User>,
-            Type, List<TypeWrappable<?>, Type>,
-            Device, List<DeviceWrappable, Device>,
-            Automation, List<AutomationWrappable, Automation>,
+            User, List<UserData, User>,
+            Type, List<TypeData<?>, Type>,
+            Device, List<DeviceData, Device>,
+            Automation, List<AutomationData, Automation>,
             Command, Root> {
-        public Root(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+        public Root(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                     ProxyResources<?> childResources) {
             super(resources, childResources);
         }
     }
 
     public final static class SubType extends ProxySubType<ProxyResources<NoChildrenProxyObjectFactory>, Type, SubType> {
-        public SubType(ProxyResources<NoChildrenProxyObjectFactory> resources, SubTypeWrappable data) {
+        public SubType(ProxyResources<NoChildrenProxyObjectFactory> resources, SubTypeData data) {
             super(resources, data);
         }
     }
 
-    public final static class Task extends ProxyTask<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+    public final static class Task extends ProxyTask<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             ProxyResources<?>,
             Value,
-            List<PropertyWrappable, Property>,
+            List<PropertyData, Property>,
             Task> {
-        public Task(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+        public Task(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                     ProxyResources<?> childResources,
-                    TaskWrappable data) {
+                    TaskData data) {
             super(resources, childResources, data);
         }
     }
 
     public final static class Type extends ProxyType<
-                ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+                ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
                 ProxyResources<?>,
-                TypeWrappable<HousemateObjectWrappable<?>>,
-                HousemateObjectWrappable<?>,
+            TypeData<HousemateData<?>>,
+            HousemateData<?>,
                 ProxyObject<?, ?, ?, ?, ?, ?, ?>,
                 Type> {
-        public Type(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+        public Type(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                     ProxyResources<?> childResources,
-                    TypeWrappable data) {
+                    TypeData data) {
             super(resources, childResources, data);
         }
     }
 
-    public final static class User extends ProxyUser<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
+    public final static class User extends ProxyUser<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             ProxyResources<?>, Command, User> {
-        public User(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateObjectWrappable<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
+        public User(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                     ProxyResources<?> childResources,
-                    UserWrappable data) {
+                    UserData data) {
             super(resources, childResources, data);
         }
     }
 
     public final static class Value extends ProxyValue<ProxyResources<NoChildrenProxyObjectFactory>, Type, Value> {
-        public Value(ProxyResources<NoChildrenProxyObjectFactory> resources, ValueWrappable value) {
+        public Value(ProxyResources<NoChildrenProxyObjectFactory> resources, ValueData value) {
             super(resources, value);
         }
     }
