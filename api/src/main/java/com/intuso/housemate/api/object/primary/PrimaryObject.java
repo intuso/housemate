@@ -1,6 +1,6 @@
 package com.intuso.housemate.api.object.primary;
 
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.value.Value;
 
@@ -21,7 +21,7 @@ public interface PrimaryObject<
             ERROR_VALUE extends Value<?, ?>,
             PRIMARY_OBJECT extends PrimaryObject<REMOVE_COMMAND, START_STOP_COMMAND, CONNECTED_VALUE, RUNNING_VALUE, ERROR_VALUE, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
-        extends BaseObject<LISTENER> {
+        extends BaseHousemateObject<LISTENER> {
 
     public final static String REMOVE_COMMAND_ID = "remove";
     public final static String CONNECTED_VALUE_ID = "connected";

@@ -5,7 +5,7 @@ import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Sender;
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -14,7 +14,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * @param <ROOT> the type of the root
  */
 public interface Root<ROOT extends Root>
-        extends BaseObject<RootListener<? super ROOT>>, Receiver<Message.Payload>, Sender {
+        extends BaseHousemateObject<RootListener<? super ROOT>>, Receiver<Message.Payload>, Sender {
 
     public final static String STATUS_TYPE = "status";
     public final static String CONNECTION_REQUEST_TYPE = "connection-request";

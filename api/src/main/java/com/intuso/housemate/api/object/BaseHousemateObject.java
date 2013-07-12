@@ -6,7 +6,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * Base interface for all other object interfaces
  * @param <L> the type of the object's listeners
  */
-public interface BaseObject<L extends ObjectListener> {
+public interface BaseHousemateObject<L extends ObjectListener> {
 
     /**
      * Gets the object's id

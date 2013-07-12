@@ -2,13 +2,12 @@ package com.intuso.housemate.object.broker.proxy;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
+import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectListener;
-import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -27,7 +26,8 @@ public abstract class BrokerProxyObject<
             CHILD extends BrokerProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
             OBJECT extends BrokerProxyObject<?, ?, ?, ?, ?>,
             LISTENER extends ObjectListener>
-        extends HousemateObject<BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, CHILD_DATA, ? extends CHILD>>, DATA, CHILD_DATA, CHILD, LISTENER> implements BaseObject<LISTENER>, RemoteClientListener {
+        extends HousemateObject<BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, CHILD_DATA, ? extends CHILD>>, DATA, CHILD_DATA, CHILD, LISTENER>
+        implements RemoteClientListener {
 
     private RemoteClient client;
     private ListenerRegistration clientListener;

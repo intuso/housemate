@@ -6,7 +6,6 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.ChildData;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
@@ -14,8 +13,8 @@ import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.Data;
-import com.intuso.utilities.object.Object;
 import com.intuso.utilities.object.ObjectListener;
 
 import java.util.Arrays;
@@ -30,7 +29,7 @@ public abstract class BridgeObject<DATA extends HousemateData<SWBL>,
             PBO extends BridgeObject<DATA, SWBL, SWR, PBO, L>,
             L extends com.intuso.housemate.api.object.ObjectListener>
         extends HousemateObject<BrokerBridgeResources, DATA, SWBL, SWR, L>
-        implements BaseObject<L>, RemoteClientListener, ObjectListener<SWR> {
+        implements RemoteClientListener, ObjectListener<SWR> {
 
     private final List<RemoteClient> loadedByClients = Lists.newArrayList();
     private final Map<RemoteClient, ListenerRegistration> clientListeners= Maps.newHashMap();
@@ -95,12 +94,12 @@ public abstract class BridgeObject<DATA extends HousemateData<SWBL>,
     }
 
     @Override
-    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         // do nothing
     }
 
     @Override
-    public void ancestorObjectRemoved(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         // do nothing
     }
 

@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.object.*;
-import com.intuso.utilities.object.Object;
+import com.intuso.utilities.object.BaseObject;
 
 import java.util.Iterator;
 
@@ -74,12 +74,12 @@ public final class RealList<
     }
 
     @Override
-    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         // don't need to worry about ancestors other than children, handled above
     }
 
     @Override
-    public void ancestorObjectRemoved(String ancestorPath, com.intuso.utilities.object.Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         // don't need to worry about ancestors other than children, handled above
     }
 

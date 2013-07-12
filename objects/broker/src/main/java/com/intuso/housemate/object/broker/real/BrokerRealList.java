@@ -5,7 +5,7 @@ import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.object.Object;
+import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectListener;
 
 import java.util.Iterator;
@@ -74,12 +74,12 @@ public final class BrokerRealList<
     }
 
     @Override
-    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         // don't need to worry about ancestors other than children, handled above
     }
 
     @Override
-    public void ancestorObjectRemoved(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         // don't need to worry about ancestors other than children, handled above
     }
 

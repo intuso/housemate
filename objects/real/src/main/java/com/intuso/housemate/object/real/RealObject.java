@@ -1,7 +1,6 @@
 package com.intuso.housemate.object.real;
 
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectListener;
@@ -13,8 +12,7 @@ public abstract class RealObject<
             CHILD_DATA extends HousemateData<?>,
             CHILD extends RealObject<? extends CHILD_DATA, ?, ?, ?>,
             LISTENER extends ObjectListener>
-        extends HousemateObject<RealResources, DATA, CHILD_DATA, CHILD, LISTENER>
-        implements BaseObject<LISTENER> {
+        extends HousemateObject<RealResources, DATA, CHILD_DATA, CHILD, LISTENER> {
 
     private RealRoot<?, ?, ?, ?, ?> realRoot;
 

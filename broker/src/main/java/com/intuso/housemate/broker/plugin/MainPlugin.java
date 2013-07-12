@@ -7,7 +7,7 @@ import com.intuso.housemate.annotations.plugin.Tasks;
 import com.intuso.housemate.annotations.plugin.Devices;
 import com.intuso.housemate.annotations.plugin.PluginInformation;
 import com.intuso.housemate.annotations.plugin.Types;
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.broker.plugin.comparator.BooleanComparators;
 import com.intuso.housemate.broker.plugin.comparator.DoubleComparators;
@@ -71,7 +71,7 @@ public class MainPlugin extends AnnotatedPluginDescriptor {
         List<RealType<?, ?, ?>> result = super.getTypes(resources);
         CONSTANT_TYPE = new ConstantType(generalResources.getClientResources(), generalResources.getClient().getRoot().getTypes());
         result.add(CONSTANT_TYPE);
-        result.add(new RealObjectType<BaseObject<?>>(resources, generalResources.getBridgeResources().getRoot()));
+        result.add(new RealObjectType<BaseHousemateObject<?>>(resources, generalResources.getBridgeResources().getRoot()));
         ComparisonOperatorType operatorType = new ComparisonOperatorType(resources, generalResources);
         ValueSourceType sourceType = new ValueSourceType(resources, generalResources.getBridgeResources().getRoot(), generalResources.getClient().getRoot().getTypes());
         result.add(sourceType);

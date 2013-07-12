@@ -31,8 +31,8 @@ public abstract class HousemateObject<
             CHILD_DATA extends HousemateData<?>,
             CHILD extends HousemateObject<?, ? extends CHILD_DATA, ?, ?, ?>,
             LISTENER extends ObjectListener>
-        extends com.intuso.utilities.object.Object<DATA, CHILD_DATA, CHILD, HousemateException>
-        implements BaseObject<LISTENER> {
+        extends BaseObject<DATA, CHILD_DATA, CHILD, HousemateException>
+        implements BaseHousemateObject<LISTENER> {
 
     public final static String CHILD_ADDED = "child-added";
     public final static String CHILD_REMOVED = "child-removed";

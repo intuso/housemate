@@ -1,6 +1,6 @@
 package com.intuso.housemate.api.object.condition;
 
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.property.HasProperties;
@@ -22,7 +22,7 @@ public interface Condition<
             ADD_COMMAND extends Command<?, ?>,
             CONDITION extends Condition<ERROR_VALUE, SATISFIED_VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS>,
             CONDITIONS extends List<? extends CONDITION>>
-        extends BaseObject<ConditionListener<? super CONDITION>>, HasProperties<PROPERTIES>, HasConditions<CONDITIONS> {
+        extends BaseHousemateObject<ConditionListener<? super CONDITION>>, HasProperties<PROPERTIES>, HasConditions<CONDITIONS> {
 
     public final static String SATISFIED_ID = "satisfied";
     public final static String ERROR_ID = "error";

@@ -7,7 +7,6 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.ChildData;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
@@ -15,8 +14,9 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.object.*;
-import com.intuso.utilities.object.Object;
+import com.intuso.utilities.object.BaseObject;
+import com.intuso.utilities.object.ObjectFactory;
+import com.intuso.utilities.object.ObjectListener;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +40,7 @@ public abstract class ProxyObject<
             OBJECT extends ProxyObject<?, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, OBJECT, LISTENER>,
             LISTENER extends com.intuso.housemate.api.object.ObjectListener>
         extends HousemateObject<RESOURCES, DATA, CHILD_DATA, CHILD, LISTENER>
-        implements BaseObject<LISTENER>, ObjectListener<CHILD> {
+        implements ObjectListener<CHILD> {
 
     private ProxyRoot<?, ?, ?, ?, ?, ?> proxyRoot;
     private final CHILD_RESOURCES childResources;
@@ -250,12 +250,12 @@ public abstract class ProxyObject<
     }
 
     @Override
-    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         // do nothing
     }
 
     @Override
-    public void ancestorObjectRemoved(String ancestorPath, com.intuso.utilities.object.Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         // do nothing
     }
 }

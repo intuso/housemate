@@ -22,7 +22,7 @@ import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.object.*;
-import com.intuso.utilities.object.Object;
+import com.intuso.utilities.object.BaseObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -172,7 +172,7 @@ public abstract class ProxyRootObject<
     }
 
     @Override
-    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         if(ancestor instanceof HousemateObject)
             objectAdded(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) ancestor);
     }
@@ -193,7 +193,7 @@ public abstract class ProxyRootObject<
     }
 
     @Override
-    public void ancestorObjectRemoved(String ancestorPath, com.intuso.utilities.object.Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         if(ancestor instanceof HousemateObject)
             objectRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) ancestor);
     }

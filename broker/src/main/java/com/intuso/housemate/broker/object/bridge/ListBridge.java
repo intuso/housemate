@@ -1,13 +1,13 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.object.Object;
+import com.intuso.utilities.object.BaseObject;
 
 import java.util.Iterator;
 
@@ -15,7 +15,7 @@ import java.util.Iterator;
  */
 public class ListBridge<
             WBL extends HousemateData<?>,
-            OWR extends BaseObject<?>,
+            OWR extends BaseHousemateObject<?>,
             WR extends BridgeObject<? extends WBL, ?, ?, ?, ?>>
         extends BridgeObject<ListData<WBL>, WBL, WR, ListBridge<WBL, OWR, WR>, ListListener<? super WR>>
         implements List<WR> {
@@ -73,12 +73,12 @@ public class ListBridge<
     }
 
     @Override
-    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         // don't need to worry about ancestors other than children, handled above
     }
 
     @Override
-    public void ancestorObjectRemoved(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         // don't need to worry about ancestors other than children, handled above
     }
 

@@ -1,7 +1,7 @@
 package com.intuso.housemate.api.object.command;
 
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.parameter.HasParameters;
 import com.intuso.housemate.api.object.list.List;
@@ -14,7 +14,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 public interface Command<
             PL extends List<? extends Parameter<?>>,
             C extends Command<?, ?>>
-        extends BaseObject<CommandListener<? super C>>, HasParameters<PL> {
+        extends BaseHousemateObject<CommandListener<? super C>>, HasParameters<PL> {
 
     public final static String PARAMETERS_ID = "parameters";
     public final static String PERFORM_TYPE = "perform";

@@ -1,12 +1,12 @@
 package com.intuso.housemate.api.object.parameter;
 
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.type.Type;
 
 /**
  * @param <TYPE> the type of the parameter's type
  */
-public interface Parameter<TYPE extends Type> extends BaseObject<ParameterListener> {
+public interface Parameter<TYPE extends Type> extends BaseHousemateObject<ParameterListener> {
 
     /**
      * Gets the type of the parameter

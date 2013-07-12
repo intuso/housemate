@@ -1,12 +1,12 @@
 package com.intuso.housemate.api.object.list;
 
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * @param <T> the type of the list's elements
  */
-public interface List<T> extends BaseObject<ListListener<? super T>>, Iterable<T> {
+public interface List<T> extends BaseHousemateObject<ListListener<? super T>>, Iterable<T> {
 
     public final static String ADD_TYPE = "add";
     public final static String REMOVE_TYPE = "remove";

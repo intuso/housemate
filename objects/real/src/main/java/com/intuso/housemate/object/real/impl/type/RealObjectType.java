@@ -3,7 +3,7 @@ package com.intuso.housemate.object.real.impl.type;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.ObjectTypeData;
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Type for an object from the object tree
  */
-public class RealObjectType<O extends BaseObject<?>>
+public class RealObjectType<O extends BaseHousemateObject<?>>
         extends RealType<ObjectTypeData, NoChildrenData, RealObjectType.Reference<O>> {
 
     public final static String ID = "object";
@@ -51,7 +51,7 @@ public class RealObjectType<O extends BaseObject<?>>
      * Reference for an object containing the object's path, and the object if it exists
      * @param <O>
      */
-    public static class Reference<O extends BaseObject<?>> {
+    public static class Reference<O extends BaseHousemateObject<?>> {
 
         private final String[] path;
         private O object;
@@ -109,7 +109,7 @@ public class RealObjectType<O extends BaseObject<?>>
      * Serialiser for an object reference
      * @param <O> the type of the object to serialise
      */
-    public static class Serialiser<O extends BaseObject<?>> implements TypeSerialiser<Reference<O>> {
+    public static class Serialiser<O extends BaseHousemateObject<?>> implements TypeSerialiser<Reference<O>> {
 
         private final Root<?> root;
 

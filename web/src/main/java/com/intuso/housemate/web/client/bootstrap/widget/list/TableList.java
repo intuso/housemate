@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.widget.list;
 
 import com.github.gwtbootstrap.client.ui.incubator.Table;
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 /**
  */
-public abstract class TableList<O extends BaseObject<?>> extends Table implements ListListener<O> {
+public abstract class TableList<O extends BaseHousemateObject<?>> extends Table implements ListListener<O> {
 
     private Map<O, TableRow> widgetMap = new HashMap<O, TableRow>();
 

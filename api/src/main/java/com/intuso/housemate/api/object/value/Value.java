@@ -1,6 +1,6 @@
 package com.intuso.housemate.api.object.value;
 
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
@@ -11,7 +11,7 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 public interface Value<
             TYPE extends Type,
             VALUE extends Value<?, ?>>
-        extends BaseObject<ValueListener<? super VALUE>> {
+        extends BaseHousemateObject<ValueListener<? super VALUE>> {
 
     public final static String VALUE_ID = "value";
 

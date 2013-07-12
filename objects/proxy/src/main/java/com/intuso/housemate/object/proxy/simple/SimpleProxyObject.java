@@ -169,8 +169,8 @@ public class SimpleProxyObject {
     public final static class Type extends ProxyType<
                 ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
                 ProxyResources<?>,
-            TypeData<HousemateData<?>>,
-            HousemateData<?>,
+                TypeData<HousemateData<?>>,
+                HousemateData<?>,
                 ProxyObject<?, ?, ?, ?, ?, ?, ?>,
                 Type> {
         public Type(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,

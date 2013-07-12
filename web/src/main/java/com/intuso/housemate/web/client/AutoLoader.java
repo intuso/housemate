@@ -7,7 +7,7 @@ import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.object.*;
-import com.intuso.utilities.object.Object;
+import com.intuso.utilities.object.BaseObject;
 
 import java.util.Map;
 
@@ -28,7 +28,7 @@ public class AutoLoader
     }
 
     @Override
-    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         if(ancestor instanceof ProxyObject) {
             ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject = (ProxyObject<?, ?, ?, ?, ?, ?, ?>) ancestor;
             listenerRegistrations.put(ancestorPath, proxyObject.addAvailableChildrenListener(this, true));
@@ -36,7 +36,7 @@ public class AutoLoader
     }
 
     @Override
-    public void ancestorObjectRemoved(String ancestorPath, com.intuso.utilities.object.Object<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         if(listenerRegistrations.containsKey(ancestorPath));
             listenerRegistrations.remove(ancestorPath).removeListener();
     }

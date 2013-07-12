@@ -1,6 +1,6 @@
 package com.intuso.housemate.api.object.task;
 
-import com.intuso.housemate.api.object.BaseObject;
+import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.property.HasProperties;
 import com.intuso.housemate.api.object.property.Property;
@@ -17,7 +17,7 @@ public interface Task<
             ERROR_VALUE extends Value<?, ?>,
             PROPERTIES extends List<? extends Property<?, ?, ?>>,
             TASK extends Task<EXECUTING_VALUE, ERROR_VALUE, PROPERTIES, TASK>>
-        extends BaseObject<TaskListener<? super TASK>>, HasProperties<PROPERTIES> {
+        extends BaseHousemateObject<TaskListener<? super TASK>>, HasProperties<PROPERTIES> {
 
     public final static String EXECUTING_ID = "executing";
     public final static String ERROR_ID = "error";
