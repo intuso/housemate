@@ -35,6 +35,6 @@ public abstract class ProxyChoiceType<
 
     @Override
     public OPTIONS getOptions() {
-        return getWrapper(OPTIONS_ID);
+        return getChild(OPTIONS_ID);
     }
 }

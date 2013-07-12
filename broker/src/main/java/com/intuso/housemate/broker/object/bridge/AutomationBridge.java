@@ -34,12 +34,12 @@ public class AutomationBridge
         addCondition = new CommandBridge(resources, automation.getAddConditionCommand());
         addSatisfiedTask = new CommandBridge(resources, automation.getAddSatisifedTaskCommand());
         addUnsatisfiedTask = new CommandBridge(resources, automation.getAddUnsatisifedTaskCommand());
-        addWrapper(conditionList);
-        addWrapper(satisfiedTaskList);
-        addWrapper(unsatisfiedTaskList);
-        addWrapper(addCondition);
-        addWrapper(addSatisfiedTask);
-        addWrapper(addUnsatisfiedTask);
+        addChild(conditionList);
+        addChild(satisfiedTaskList);
+        addChild(unsatisfiedTaskList);
+        addChild(addCondition);
+        addChild(addSatisfiedTask);
+        addChild(addUnsatisfiedTask);
     }
 
     @Override

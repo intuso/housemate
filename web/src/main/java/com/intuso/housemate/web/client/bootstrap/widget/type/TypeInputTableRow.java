@@ -66,23 +66,23 @@ public class TypeInputTableRow
     public static TypeInput getInput(GWTProxyType type) {
         if(type == null)
             return null;
-        TypeData typeWrappable = type.getData();
-        if(typeWrappable instanceof SimpleTypeData) {
-            if(((SimpleTypeData)typeWrappable).getType() == SimpleTypeData.Type.Boolean)
+        TypeData typeData = type.getData();
+        if(typeData instanceof SimpleTypeData) {
+            if(((SimpleTypeData)typeData).getType() == SimpleTypeData.Type.Boolean)
                 return new CheckBoxInput();
             else
-                return new TextInput(typeWrappable);
-        } else if(typeWrappable instanceof ChoiceTypeData) {
-            if(typeWrappable.getMinValues() == 1 && typeWrappable.getMaxValues() == 1)
+                return new TextInput(typeData);
+        } else if(typeData instanceof ChoiceTypeData) {
+            if(typeData.getMinValues() == 1 && typeData.getMaxValues() == 1)
                 return new SingleSelectInput(type);
             else
                 return new MultiSelectInput(type);
-        } else if(typeWrappable instanceof RegexTypeData)
-            return new TextInput(typeWrappable);
-        else if(typeWrappable instanceof ObjectTypeData)
-            return new ObjectBrowserInput((ObjectTypeData) typeWrappable);
-        else if(typeWrappable instanceof CompoundTypeData)
-            return new CompoundInput((CompoundTypeData) typeWrappable, type);
+        } else if(typeData instanceof RegexTypeData)
+            return new TextInput(typeData);
+        else if(typeData instanceof ObjectTypeData)
+            return new ObjectBrowserInput((ObjectTypeData) typeData);
+        else if(typeData instanceof CompoundTypeData)
+            return new CompoundInput((CompoundTypeData) typeData, type);
         return null;
     }
 }

@@ -38,7 +38,7 @@ public class TreeBrowser extends CellTree {
 
             ListDataProvider<ProxyObject<?, ?, ?, ?, ?, ?, ?>> dataProvider = new ListDataProvider<ProxyObject<?, ?, ?, ?, ?, ?, ?>>();
             List<ProxyObject<?, ?, ?, ?, ?, ?, ?>> children = Lists.newArrayList();
-            for(ProxyObject<?, ?, ?, ?, ?, ?, ?> child : ((ProxyObject<?, ?, ?, ?, ?, ?, ?>)value).getWrappers())
+            for(ProxyObject<?, ?, ?, ?, ?, ?, ?> child : ((ProxyObject<?, ?, ?, ?, ?, ?, ?>)value).getChildren())
                 children.add(child);
             Collections.sort(children, new Comparator<HousemateObject<?, ?, ?, ?, ?>>() {
                 @Override
@@ -54,7 +54,7 @@ public class TreeBrowser extends CellTree {
 
         @Override
         public boolean isLeaf(Object value) {
-            return !(value instanceof HousemateObject) || ((HousemateObject)value).getWrappers().size() == 0;
+            return !(value instanceof HousemateObject) || ((HousemateObject)value).getChildren().size() == 0;
         }
     }
 

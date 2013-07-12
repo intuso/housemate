@@ -42,9 +42,9 @@ public class BrokerProxyDevice
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        commands = (BrokerProxyList<CommandData, BrokerProxyCommand>)getWrapper(COMMANDS_ID);
-        values = (BrokerProxyList<ValueData, BrokerProxyValue>)getWrapper(VALUES_ID);
-        properties = (BrokerProxyList<PropertyData, BrokerProxyProperty>)getWrapper(PROPERTIES_ID);
+        commands = (BrokerProxyList<CommandData, BrokerProxyCommand>) getChild(COMMANDS_ID);
+        values = (BrokerProxyList<ValueData, BrokerProxyValue>) getChild(VALUES_ID);
+        properties = (BrokerProxyList<PropertyData, BrokerProxyProperty>) getChild(PROPERTIES_ID);
     }
 
     @Override

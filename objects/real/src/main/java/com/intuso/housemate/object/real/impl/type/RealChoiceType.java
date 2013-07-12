@@ -50,7 +50,7 @@ public abstract class RealChoiceType<O>
                              int maxValues, List<RealOption> options) {
         super(resources, new ChoiceTypeData(id, name, description, minValues, maxValues));
         this.options = new RealList<OptionData, RealOption>(resources, OPTIONS, OPTIONS, "The options for the choice", options);
-        addWrapper(this.options);
+        addChild(this.options);
     }
 
     @Override

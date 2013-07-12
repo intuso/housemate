@@ -10,14 +10,13 @@ import com.intuso.housemate.api.object.BaseObject;
 import com.intuso.housemate.api.object.ChildData;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.wrapper.Data;
-import com.intuso.utilities.wrapper.Wrapper;
-import com.intuso.utilities.wrapper.WrapperListener;
+import com.intuso.utilities.object.Data;
+import com.intuso.utilities.object.Object;
+import com.intuso.utilities.object.ObjectListener;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,9 +28,9 @@ public abstract class BridgeObject<DATA extends HousemateData<SWBL>,
             SWBL extends HousemateData<?>,
             SWR extends BridgeObject<? extends SWBL, ?, ?, ?, ?>,
             PBO extends BridgeObject<DATA, SWBL, SWR, PBO, L>,
-            L extends ObjectListener>
+            L extends com.intuso.housemate.api.object.ObjectListener>
         extends HousemateObject<BrokerBridgeResources, DATA, SWBL, SWR, L>
-        implements BaseObject<L>, RemoteClientListener, WrapperListener<SWR> {
+        implements BaseObject<L>, RemoteClientListener, ObjectListener<SWR> {
 
     private final List<RemoteClient> loadedByClients = Lists.newArrayList();
     private final Map<RemoteClient, ListenerRegistration> clientListeners= Maps.newHashMap();
@@ -51,7 +50,7 @@ public abstract class BridgeObject<DATA extends HousemateData<SWBL>,
                     getLog().e("Client requesting an object is not of type " + ConnectionType.Proxy);
                     sendMessage(LOAD_RESPONSE, new LoadResponse<Data<?>>(childId, "Connection type is not " + ConnectionType.Proxy.name()), message.getPayload().getClient());
                 } else {
-                    BridgeObject<?, ?, ?, ?, ?> child = getWrapper(childId);
+                    BridgeObject<?, ?, ?, ?, ?> child = getChild(childId);
                     if(child == null) {
                         getLog().w("Load request received from " + Arrays.toString(message.getRoute().toArray(new String[message.getRoute().size()])) + " for non-existant object \"" + message.getPayload().getOriginal().getChildId() + "\"");
                         sendMessage(LOAD_RESPONSE, new LoadResponse<Data<?>>(childId, "Object does not exist or you do not have permission to see it"), message.getPayload().getClient());
@@ -64,7 +63,7 @@ public abstract class BridgeObject<DATA extends HousemateData<SWBL>,
                 }
             }
         }));
-        result.add(addWrapperListener(this));
+        result.add(addChildListener(this));
         return result;
     }
 
@@ -86,22 +85,22 @@ public abstract class BridgeObject<DATA extends HousemateData<SWBL>,
     }
 
     @Override
-    public void childWrapperAdded(String childId, SWR child) {
+    public void childObjectAdded(String childId, SWR child) {
         broadcastMessage(CHILD_ADDED, new ChildData(child.getId(), child.getName(), child.getDescription()));
     }
 
     @Override
-    public void childWrapperRemoved(String childId, SWR child) {
+    public void childObjectRemoved(String childId, SWR child) {
         broadcastMessage(CHILD_REMOVED, new ChildData(child.getId(), child.getName(), child.getDescription()));
     }
 
     @Override
-    public void ancestorAdded(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
+    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
         // do nothing
     }
 
     @Override
-    public void ancestorRemoved(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
+    public void ancestorObjectRemoved(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
         // do nothing
     }
 
@@ -138,7 +137,7 @@ public abstract class BridgeObject<DATA extends HousemateData<SWBL>,
 
     protected void addLoadedBy(BridgeObject<?, ?, ?, ?, ?> element) {
         element.loadedByClients.addAll(loadedByClients);
-        for(BridgeObject<?, ?, ?, ?, ?> child : element.getWrappers())
+        for(BridgeObject<?, ?, ?, ?, ?> child : element.getChildren())
             addLoadedBy(child);
     }
 

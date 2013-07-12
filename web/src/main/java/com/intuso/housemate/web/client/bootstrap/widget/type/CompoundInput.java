@@ -17,7 +17,7 @@ public class CompoundInput
     private final GWTProxyType type;
     private TypeInstances typeInstances;
 
-    public CompoundInput(CompoundTypeData typeWrappable, GWTProxyType type) {
+    public CompoundInput(CompoundTypeData typeData, GWTProxyType type) {
         this.type = type;
     }
 
@@ -27,7 +27,7 @@ public class CompoundInput
         if(typeInstances.size() == 0)
             typeInstances.add(new TypeInstance());
         super.setTypeInstances(this.typeInstances.get(0).getChildValues());
-        List<GWTProxySubType> list = (List<GWTProxySubType>) type.getWrapper("sub-types");
+        List<GWTProxySubType> list = (List<GWTProxySubType>) type.getChild("sub-types");
         if(list != null)
             setList(list);
     }

@@ -17,9 +17,9 @@ public abstract class Value extends Composite implements ValueListener<com.intus
             Type type = value.getType();
             if(type instanceof GWTProxyType) {
                 GWTProxyType proxyType = (GWTProxyType)type;
-                TypeData typeWrappable = proxyType.getData();
-                if(typeWrappable instanceof SimpleTypeData) {
-                    switch(((SimpleTypeData) typeWrappable).getType()) {
+                TypeData typeData = proxyType.getData();
+                if(typeData instanceof SimpleTypeData) {
+                    switch(((SimpleTypeData) typeData).getType()) {
                         case String:
                         case Integer:
                         case Double:

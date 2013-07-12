@@ -26,9 +26,9 @@ public class TypeBridge
     private final static String SUB_TYPES = "sub-types";
 
     public TypeBridge(final BrokerBridgeResources resources, Type type) {
-        super(resources, cloneWrappable(resources.getLog(), type));
-        if(type instanceof HousemateObject && ((HousemateObject)type).getWrapper(OPTIONS) != null) {
-            addWrapper(new ListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(resources, (List)((HousemateObject)(type)).getWrapper(OPTIONS),
+        super(resources, cloneData(resources.getLog(), type));
+        if(type instanceof HousemateObject && ((HousemateObject)type).getChild(OPTIONS) != null) {
+            addChild(new ListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(resources, (List) ((HousemateObject) (type)).getChild(OPTIONS),
                     new Function<Option, OptionBridge>() {
                         @Override
                         public OptionBridge apply(@Nullable Option option) {
@@ -36,8 +36,8 @@ public class TypeBridge
                         }
                     }));
         }
-        if(type instanceof HousemateObject && ((HousemateObject)type).getWrapper(SUB_TYPES) != null) {
-            addWrapper(new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(resources, (List)((HousemateObject)(type)).getWrapper(SUB_TYPES),
+        if(type instanceof HousemateObject && ((HousemateObject)type).getChild(SUB_TYPES) != null) {
+            addChild(new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(resources, (List) ((HousemateObject) (type)).getChild(SUB_TYPES),
                     new Function<SubType<?>, SubTypeBridge>() {
                         @Override
                         public SubTypeBridge apply(@Nullable SubType<?> subType) {
@@ -47,7 +47,7 @@ public class TypeBridge
         }
     }
 
-    private static TypeData<HousemateData<?>> cloneWrappable(Log log, Type type) {
+    private static TypeData<HousemateData<?>> cloneData(Log log, Type type) {
         if(type instanceof HousemateObject)
             return (TypeData<HousemateData<?>>) ((HousemateObject<?, ?, ?, ?, ?>)type).getData().clone();
         else {

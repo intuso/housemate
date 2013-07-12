@@ -57,17 +57,17 @@ public class BrokerProxyList<
      * @throws HousemateException
      */
     public void add(HousemateData data, RemoteClient clientId) throws HousemateException {
-        CHILD wrapper = null;
+        CHILD child = null;
         try {
-            wrapper = getResources().getFactory().create(getResources(), (CHILD_DATA)data);
+            child = getResources().getFactory().create(getResources(), (CHILD_DATA)data);
         } catch(HousemateException e) {
             throw new HousemateException("Failed to create new list element", e);
         }
-        wrapper.init(BrokerProxyList.this);
-        wrapper.setClient(clientId);
-        addWrapper(wrapper);
+        child.init(BrokerProxyList.this);
+        child.setClient(clientId);
+        addChild(child);
         for(ListListener<? super CHILD> listener : getObjectListeners())
-            listener.elementAdded(wrapper);
+            listener.elementAdded(child);
     }
 
     /**
@@ -75,10 +75,10 @@ public class BrokerProxyList<
      * @param id the id of the element to remove
      */
     public void remove(String id) {
-        CHILD wrapper = removeWrapper(id);
-        if(wrapper != null) {
+        CHILD child = removeChild(id);
+        if(child != null) {
             for(ListListener<? super CHILD> listener : getObjectListeners())
-                listener.elementRemoved(wrapper);
+                listener.elementRemoved(child);
         }
     }
 
@@ -93,16 +93,16 @@ public class BrokerProxyList<
 
     @Override
     public final CHILD get(String name) {
-        return getWrapper(name);
+        return getChild(name);
     }
 
     @Override
     public int size() {
-        return getWrappers().size();
+        return getChildren().size();
     }
 
     @Override
     public Iterator<CHILD> iterator() {
-        return getWrappers().iterator();
+        return getChildren().iterator();
     }
 }

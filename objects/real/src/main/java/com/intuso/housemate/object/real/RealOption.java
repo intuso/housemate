@@ -38,7 +38,7 @@ public class RealOption
         super(resources, new OptionData(id, name,  description));
         this.subTypes = new RealList<SubTypeData, RealSubType<?>>(resources, SUB_TYPES_ID, "Sub Types",
                 "The sub types of this option", subTypes);
-        addWrapper(this.subTypes);
+        addChild(this.subTypes);
     }
 
     @Override

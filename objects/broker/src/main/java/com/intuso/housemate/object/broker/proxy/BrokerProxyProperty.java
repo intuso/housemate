@@ -24,7 +24,7 @@ public class BrokerProxyProperty
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        setCommand = getWrapper(SET_COMMAND_ID);
+        setCommand = getChild(SET_COMMAND_ID);
     }
 
     @Override

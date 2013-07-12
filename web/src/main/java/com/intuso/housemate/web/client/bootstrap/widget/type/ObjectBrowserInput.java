@@ -20,7 +20,7 @@ public class ObjectBrowserInput extends FlowPanel implements TypeInput {
 
     private final ObjectNode rootNode;
 
-    public ObjectBrowserInput(ObjectTypeData typeWrappable) {
+    public ObjectBrowserInput(ObjectTypeData typeData) {
         super();
         rootNode = new ObjectNode(Housemate.ENVIRONMENT.getResources().getRoot());
         rootNode.addObjectSelectedHandler(new ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {

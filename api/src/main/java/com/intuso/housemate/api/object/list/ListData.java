@@ -12,12 +12,12 @@ public final class ListData<DATA extends HousemateData<?>> extends HousemateData
 
     private ListData() {}
 
-    public ListData(String id, String name, String description, DATA... subWrappables) {
-        this(id, name, description, Arrays.asList(subWrappables));
+    public ListData(String id, String name, String description, DATA... childData) {
+        this(id, name, description, Arrays.asList(childData));
     }
 
-    public ListData(String id, String name, String description, java.util.List<DATA> subWrappables) {
-        super(id, name, description, subWrappables);
+    public ListData(String id, String name, String description, java.util.List<DATA> childData) {
+        super(id, name, description, childData);
     }
 
     @Override

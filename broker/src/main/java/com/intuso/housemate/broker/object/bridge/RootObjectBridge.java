@@ -22,7 +22,7 @@ import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.wrapper.Wrapper;
+import com.intuso.utilities.object.Object;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,13 +62,13 @@ public class RootObjectBridge
         addUser = new CommandBridge(resources, resources.getGeneralResources().getRealResources().getRoot().getAddUserCommand());
         addDevice = new CommandBridge(resources, resources.getGeneralResources().getClient().getAddDeviceCommand());
         addAutomation = new CommandBridge(resources, resources.getGeneralResources().getRealResources().getRoot().getAddAutomationCommand());
-        addWrapper(users);
-        addWrapper(types);
-        addWrapper(devices);
-        addWrapper(automations);
-        addWrapper(addUser);
-        addWrapper(addDevice);
-        addWrapper(addAutomation);
+        addChild(users);
+        addChild(types);
+        addChild(devices);
+        addChild(automations);
+        addChild(addUser);
+        addChild(addDevice);
+        addChild(addAutomation);
         getResources().getGeneralResources().getStorage().watchDevices(devices);
         getResources().getGeneralResources().getStorage().watchAutomations(automations);
         init(null);
@@ -121,41 +121,41 @@ public class RootObjectBridge
     }
 
     @Override
-    public void ancestorAdded(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
-        super.ancestorAdded(ancestorPath, wrapper);
-        if(wrapper instanceof HousemateObject)
-            objectWrapperAdded(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) wrapper);
+    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+        super.ancestorObjectAdded(ancestorPath, ancestor);
+        if(ancestor instanceof HousemateObject)
+            objectAdded(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) ancestor);
     }
 
     @Override
-    public void ancestorRemoved(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
-        super.ancestorRemoved(ancestorPath, wrapper);
-        if(wrapper instanceof HousemateObject)
-            objectWrapperRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) wrapper);
+    public void ancestorObjectRemoved(String ancestorPath, com.intuso.utilities.object.Object<?, ?, ?, ?> ancestor) {
+        super.ancestorObjectRemoved(ancestorPath, ancestor);
+        if(ancestor instanceof HousemateObject)
+            objectRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) ancestor);
     }
 
-    private void objectWrapperAdded(String path, HousemateObject<?, ?, ?, ?, ?> objectWrapper) {
+    private void objectAdded(String path, HousemateObject<?, ?, ?, ?, ?> object) {
         if(objectLifecycleListeners.get(path) != null && objectLifecycleListeners.get(path).getListeners().size() > 0) {
-            String splitPath[] = path.split(Wrapper.PATH_SEPARATOR);
+            String splitPath[] = path.split(Object.PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
-                listener.objectCreated(splitPath, objectWrapper);
+                listener.objectCreated(splitPath, object);
         }
-        for(HousemateObject<?, ?, ?, ?, ?> child : objectWrapper.getWrappers())
-            objectWrapperAdded(path + Wrapper.PATH_SEPARATOR + child.getId(), child);
+        for(HousemateObject<?, ?, ?, ?, ?> child : object.getChildren())
+            objectAdded(path + Object.PATH_SEPARATOR + child.getId(), child);
     }
 
-    private void objectWrapperRemoved(String path, HousemateObject<?, ?, ?, ?, ?> objectWrapper) {
+    private void objectRemoved(String path, HousemateObject<?, ?, ?, ?, ?> object) {
         if(objectLifecycleListeners.get(path) != null && objectLifecycleListeners.get(path).getListeners().size() > 0) {
-            String splitPath[] = path.split(Wrapper.PATH_SEPARATOR);
+            String splitPath[] = path.split(Object.PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
-                listener.objectRemoved(splitPath, objectWrapper);
+                listener.objectRemoved(splitPath, object);
         }
-        for(HousemateObject<?, ?, ?, ?, ?> child : objectWrapper.getWrappers())
-            objectWrapperRemoved(path + Wrapper.PATH_SEPARATOR + child.getId(), child);
+        for(HousemateObject<?, ?, ?, ?, ?> child : object.getChildren())
+            objectRemoved(path + Object.PATH_SEPARATOR + child.getId(), child);
     }
 
     public final ListenerRegistration addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener) {
-        String path = Joiner.on(Wrapper.PATH_SEPARATOR).join(ancestorPath);
+        String path = Joiner.on(Object.PATH_SEPARATOR).join(ancestorPath);
         Listeners<ObjectLifecycleListener> listeners = objectLifecycleListeners.get(path);
         if(listeners == null) {
             listeners = new Listeners<ObjectLifecycleListener>();

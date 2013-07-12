@@ -64,9 +64,9 @@ public class RealDevice
         this.commands = new RealList<CommandData, RealCommand>(resources, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION, commands);
         this.values = new RealList<ValueData, RealValue<?>>(resources, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION, values);
         this.properties = new RealList<PropertyData, RealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION, properties);
-        addWrapper(this.commands);
-        addWrapper(this.values);
-        addWrapper(this.properties);
+        addChild(this.commands);
+        addChild(this.values);
+        addChild(this.properties);
     }
 
     @Override

@@ -6,37 +6,37 @@ import com.intuso.housemate.object.proxy.AvailableChildrenListener;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.wrapper.Wrapper;
-import com.intuso.utilities.wrapper.WrapperListener;
+import com.intuso.utilities.object.*;
+import com.intuso.utilities.object.Object;
 
 import java.util.Map;
 
 public class AutoLoader
-        implements WrapperListener<ProxyObject<?, ?, ?, ?, ?, ?, ?>>,
+        implements ObjectListener<ProxyObject<?, ?, ?, ?, ?, ?, ?>>,
         AvailableChildrenListener<ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
 
     private Map<String, ListenerRegistration> listenerRegistrations = Maps.newHashMap();
 
     @Override
-    public void childWrapperAdded(String childId, ProxyObject<?, ?, ?, ?, ?, ?, ?> wrapper) {
+    public void childObjectAdded(String childId, ProxyObject<?, ?, ?, ?, ?, ?, ?> child) {
         // do nothing
     }
 
     @Override
-    public void childWrapperRemoved(String childId, ProxyObject<?, ?, ?, ?, ?, ?, ?> wrapper) {
+    public void childObjectRemoved(String childId, ProxyObject<?, ?, ?, ?, ?, ?, ?> child) {
         // do nothing
     }
 
     @Override
-    public void ancestorAdded(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
-        if(wrapper instanceof ProxyObject) {
-            ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject = (ProxyObject<?, ?, ?, ?, ?, ?, ?>)wrapper;
+    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+        if(ancestor instanceof ProxyObject) {
+            ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject = (ProxyObject<?, ?, ?, ?, ?, ?, ?>) ancestor;
             listenerRegistrations.put(ancestorPath, proxyObject.addAvailableChildrenListener(this, true));
         }
     }
 
     @Override
-    public void ancestorRemoved(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
+    public void ancestorObjectRemoved(String ancestorPath, com.intuso.utilities.object.Object<?, ?, ?, ?> ancestor) {
         if(listenerRegistrations.containsKey(ancestorPath));
             listenerRegistrations.remove(ancestorPath).removeListener();
     }

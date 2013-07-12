@@ -53,7 +53,7 @@ public class RealProperty<O>
                 RealProperty.this.setTypedValues(typedValues);
             }
         };
-        addWrapper(setCommand);
+        addChild(setCommand);
     }
 
     @Override

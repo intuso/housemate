@@ -26,16 +26,16 @@ public class TestProxyRoot extends ProxyRootObject<
 
     public TestProxyRoot(ProxyResources<SimpleProxyFactory.All> resources, ProxyResources<?> childResources) {
         super(resources, childResources);
-        super.addWrapper(new SimpleProxyObject.List<TypeData<?>, SimpleProxyObject.Type>(
+        super.addChild(new SimpleProxyObject.List<TypeData<?>, SimpleProxyObject.Type>(
                 SimpleProxyFactory.changeFactoryType(getResources(), new SimpleProxyFactory.Type()), childResources, new ListData(TYPES_ID, TYPES_ID, TYPES_ID)));
-        super.addWrapper(new SimpleProxyObject.List<DeviceData, SimpleProxyObject.Device>(
+        super.addChild(new SimpleProxyObject.List<DeviceData, SimpleProxyObject.Device>(
                 SimpleProxyFactory.changeFactoryType(getResources(), new SimpleProxyFactory.Device()), childResources, new ListData(DEVICES_ID, DEVICES_ID, DEVICES_ID)));
         init(null);
     }
 
-    public void addWrapper(ProxyObject<?, ?, ?, ?, ?, ?, ?> wrapper) {
-        removeWrapper(wrapper.getId());
-        super.addWrapper(wrapper);
-        wrapper.init(this);
+    public void addChild(ProxyObject<?, ?, ?, ?, ?, ?, ?> child) {
+        removeChild(child.getId());
+        super.addChild(child);
+        child.init(this);
     }
 }

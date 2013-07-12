@@ -36,7 +36,7 @@ public class ParameterTest {
 
     @Before
     public void addLists() throws HousemateException {
-        TestEnvironment.TEST_INSTANCE.getProxyRoot().addWrapper(proxyList);
+        TestEnvironment.TEST_INSTANCE.getProxyRoot().addChild(proxyList);
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
         realParameter = BooleanType.createParameter(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-parameter", "My Parameter", "description");
         realList.add(realParameter);

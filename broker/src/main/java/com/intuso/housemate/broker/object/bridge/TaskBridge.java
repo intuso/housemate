@@ -32,9 +32,9 @@ public class TaskBridge
         executingValue = new ValueBridge(resources,task.getExecutingValue());
         errorValue = new ValueBridge(resources,task.getErrorValue());
         propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, task.getProperties(), new PropertyBridge.Converter(resources));
-        addWrapper(executingValue);
-        addWrapper(errorValue);
-        addWrapper(propertyList);
+        addChild(executingValue);
+        addChild(errorValue);
+        addChild(propertyList);
     }
 
     @Override

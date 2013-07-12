@@ -54,7 +54,7 @@ public class BrokerRealProperty<O>
                 BrokerRealProperty.this.setTypedValues(objects);
             }
         };
-        addWrapper(setCommand);
+        addChild(setCommand);
     }
 
     @Override

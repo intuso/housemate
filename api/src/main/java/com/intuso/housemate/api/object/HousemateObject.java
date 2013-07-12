@@ -9,8 +9,7 @@ import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.wrapper.Data;
-import com.intuso.utilities.wrapper.Wrapper;
+import com.intuso.utilities.object.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +31,7 @@ public abstract class HousemateObject<
             CHILD_DATA extends HousemateData<?>,
             CHILD extends HousemateObject<?, ? extends CHILD_DATA, ?, ?, ?>,
             LISTENER extends ObjectListener>
-        extends Wrapper<DATA, CHILD_DATA, CHILD, HousemateException>
+        extends com.intuso.utilities.object.Object<DATA, CHILD_DATA, CHILD, HousemateException>
         implements BaseObject<LISTENER> {
 
     public final static String CHILD_ADDED = "child-added";
@@ -142,10 +141,10 @@ public abstract class HousemateObject<
                 listener.messageReceived(message);
         } else if(message.getPath().length > path.length) {
             String childName = message.getPath()[path.length];
-            HousemateObject<?, ?, ?, ?, ?> subWrapper = getWrapper(childName);
-            if(subWrapper == null)
+            HousemateObject<?, ?, ?, ?, ?> child = getChild(childName);
+            if(child == null)
                 throw new HousemateException("Unknown child \"" + childName + "\" at depth " + path.length + " of " + Arrays.toString(message.getPath()));
-            subWrapper.distributeMessage(message);
+            child.distributeMessage(message);
         } else
             throw new HousemateException("Message received for path that is a parent of this element. It should not have got here! Oops!");
     }
@@ -168,8 +167,8 @@ public abstract class HousemateObject<
         initPreRecurseHook(parent);
 
         // recurse
-        for(CHILD baseWrapper : getWrappers())
-            baseWrapper.init(this);
+        for(CHILD child : getChildren())
+            child.init(this);
 
         initPostRecurseHook(parent);
 
@@ -203,8 +202,8 @@ public abstract class HousemateObject<
         for(ListenerRegistration listenerRegistration : listenerRegistrations)
             listenerRegistration.removeListener();
         listenerRegistrations.clear();
-        for(CHILD baseWrapper : getWrappers())
-            baseWrapper.uninit();
+        for(CHILD child : getChildren())
+            child.uninit();
     }
 
     /**
@@ -213,7 +212,7 @@ public abstract class HousemateObject<
      * @return the object at that path, or null if none exists
      */
     public final HousemateObject<?, ?, ?, ?, ?> getObject(String[] path) {
-        return getWrapper(path, this);
+        return getChild(path, this);
     }
 
     /**
@@ -222,7 +221,7 @@ public abstract class HousemateObject<
      * @param current the object the path is relative to
      * @return the object at the path relative to the other object, or null if none exists
      */
-    public final static HousemateObject<?, ?, ?, ?, ?> getWrapper(String[] path, HousemateObject<?, ?, ?, ?, ?> current) {
+    public final static HousemateObject<?, ?, ?, ?, ?> getChild(String[] path, HousemateObject<?, ?, ?, ?, ?> current) {
         String[] currentPath = current.getPath();
         if(path.length < currentPath.length)
             throw new RuntimeException("Object requested is at a higher level than this object");
@@ -230,11 +229,11 @@ public abstract class HousemateObject<
             return current;
         else {
             String childName = path[currentPath.length];
-            HousemateObject<?, ?, ?, ?, ?> child = current.getWrapper(childName);
+            HousemateObject<?, ?, ?, ?, ?> child = current.getChild(childName);
             if(child == null)
                 return null;
             else
-                return getWrapper(path, child);
+                return getChild(path, child);
         }
     }
 
@@ -248,15 +247,15 @@ public abstract class HousemateObject<
         private LoadRequest() {}
 
         /**
-         * @param childId the id of the child wrapper to load
+         * @param childId the id of the child object to load
          */
         public LoadRequest(String childId) {
             this.childId = childId;
         }
 
         /**
-         * Gets the id of the child wrapper to load
-         * @return the id of the child wrapper to load
+         * Gets the id of the child object to load
+         * @return the id of the child object to load
          */
         public String getChildId() {
             return childId;
@@ -281,7 +280,7 @@ public abstract class HousemateObject<
         private LoadResponse() {}
 
         /**
-         * @param childId the id of the child wrapper to load
+         * @param childId the id of the child object to load
          */
         public LoadResponse(String childId, DATA data, List<ChildData> childData) {
             this.childId = childId;
@@ -290,7 +289,7 @@ public abstract class HousemateObject<
         }
 
         /**
-         * @param childId the id of the child wrapper to load
+         * @param childId the id of the child object to load
          */
         public LoadResponse(String childId, String error) {
             this.childId = childId;
@@ -298,8 +297,8 @@ public abstract class HousemateObject<
         }
 
         /**
-         * Gets the id of the child wrapper to load
-         * @return the id of the child wrapper to load
+         * Gets the id of the child object to load
+         * @return the id of the child object to load
          */
         public String getChildId() {
             return childId;

@@ -68,12 +68,12 @@ public abstract class ProxyTask<
 
     @Override
     public final PROPERTIES getProperties() {
-        return (PROPERTIES) getWrapper(PROPERTIES_ID);
+        return (PROPERTIES) getChild(PROPERTIES_ID);
     }
 
     @Override
     public final VALUE getErrorValue() {
-        return (VALUE) getWrapper(ERROR_ID);
+        return (VALUE) getChild(ERROR_ID);
     }
 
     @Override
@@ -84,7 +84,7 @@ public abstract class ProxyTask<
 
     @Override
     public final VALUE getExecutingValue() {
-        return (VALUE) getWrapper(EXECUTING_ID);
+        return (VALUE) getChild(EXECUTING_ID);
     }
 
     @Override

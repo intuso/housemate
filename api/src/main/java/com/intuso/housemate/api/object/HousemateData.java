@@ -1,7 +1,7 @@
 package com.intuso.housemate.api.object;
 
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.utilities.wrapper.Data;
+import com.intuso.utilities.object.Data;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,20 +24,20 @@ public abstract class HousemateData<DATA extends HousemateData<?>>
      * @param id object's id
      * @param name object's name
      * @param description object's description
-     * @param subWrappables object's child datas
+     * @param childData object's child datas
      */
-    public HousemateData(String id, String name, String description, DATA... subWrappables) {
-        this(id, name, description, Arrays.asList(subWrappables));
+    public HousemateData(String id, String name, String description, DATA... childData) {
+        this(id, name, description, Arrays.asList(childData));
     }
 
     /**
      * @param id object's id
      * @param name object's name
      * @param description object's description
-     * @param subWrappables object's child datas
+     * @param childData object's child datas
      */
-    public HousemateData(String id, String name, String description, List<DATA> subWrappables) {
-        super(id, subWrappables);
+    public HousemateData(String id, String name, String description, List<DATA> childData) {
+        super(id, childData);
         this.name = name;
         this.description = description;
     }

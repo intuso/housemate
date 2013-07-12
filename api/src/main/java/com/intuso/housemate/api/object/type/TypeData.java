@@ -5,10 +5,10 @@ import com.intuso.housemate.api.object.HousemateData;
 /**
  * Base data object for a type
  *
- * @param <WBL> the type of the sub wrappable objects
+ * @param <CHILD_DATA> the type of the child data objects
  */
-public abstract class TypeData<WBL extends HousemateData<?>>
-        extends HousemateData<WBL> {
+public abstract class TypeData<CHILD_DATA extends HousemateData<?>>
+        extends HousemateData<CHILD_DATA> {
 
     private int minValues;
     private int maxValues;

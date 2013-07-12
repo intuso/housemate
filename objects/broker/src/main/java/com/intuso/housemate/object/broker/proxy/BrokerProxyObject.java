@@ -12,7 +12,7 @@ import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.wrapper.WrapperFactory;
+import com.intuso.utilities.object.ObjectFactory;
 
 /**
  * @param <DATA> the type of the data
@@ -54,7 +54,7 @@ public abstract class BrokerProxyObject<
             clientListener.removeListener();
         this.client = client;
         clientListener = client.addListener(this);
-        for(BrokerProxyObject<?, ?, ?, ?, ?> child : getWrappers())
+        for(BrokerProxyObject<?, ?, ?, ?, ?> child : getChildren())
                 ((BrokerProxyObject)child).setClient(client);
     }
 
@@ -77,7 +77,7 @@ public abstract class BrokerProxyObject<
     protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {
         // unwrap children
         try {
-            unwrapChildren(new WrapperFactory<CHILD_DATA, CHILD, HousemateException>() {
+            createChildren(new ObjectFactory<CHILD_DATA, CHILD, HousemateException>() {
                 @Override
                 public CHILD create(CHILD_DATA data) throws HousemateException {
                     return getResources().getFactory().create(getResources(), data);

@@ -23,7 +23,7 @@ public class PropertyBridge
             new PropertyData(property.getId(), property.getName(), property.getDescription(), property.getType().getId(), property.getTypeInstances()),
             property);
         setCommand = new CommandBridge(resources, property.getSetCommand());
-        addWrapper(setCommand);
+        addChild(setCommand);
     }
 
     @Override

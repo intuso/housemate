@@ -47,8 +47,8 @@ public class MultiSelectInput extends ListBox implements TypeInput {
         optionIndices.clear();
         options = null;
         optionsByName.clear();
-        if(type.getWrapper(OPTIONS) != null) {
-            options = (GWTProxyList<OptionData, GWTProxyOption>) type.getWrapper(OPTIONS);
+        if(type.getChild(OPTIONS) != null) {
+            options = (GWTProxyList<OptionData, GWTProxyOption>) type.getChild(OPTIONS);
             int i = 0;
             for(GWTProxyOption option : options) {
                 optionIndices.put(option, i);

@@ -33,7 +33,7 @@ public class CommandBridge
         this.proxyCommand = proxyCommand;
         parameters = new ListBridge<ParameterData, Parameter<?>, ParameterBridge>(resources,
                 proxyCommand.getParameters(), new ParameterBridge.Converter(resources));
-        addWrapper(parameters);
+        addChild(parameters);
     }
 
     @Override

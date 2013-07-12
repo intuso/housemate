@@ -43,31 +43,31 @@ public abstract class ProxyAutomation<
 
     @Override
     public CONDITIONS getConditions() {
-        return (CONDITIONS) getWrapper(CONDITIONS_ID);
+        return (CONDITIONS) getChild(CONDITIONS_ID);
     }
 
     @Override
     public TASKS getSatisfiedTasks() {
-        return (TASKS) getWrapper(SATISFIED_TASKS_ID);
+        return (TASKS) getChild(SATISFIED_TASKS_ID);
     }
 
     @Override
     public TASKS getUnsatisfiedTasks() {
-        return (TASKS) getWrapper(UNSATISFIED_TASKS_ID);
+        return (TASKS) getChild(UNSATISFIED_TASKS_ID);
     }
 
     @Override
     public ADD_COMMAND getAddConditionCommand() {
-        return (ADD_COMMAND) getWrapper(ADD_CONDITION_ID);
+        return (ADD_COMMAND) getChild(ADD_CONDITION_ID);
     }
 
     @Override
     public ADD_COMMAND getAddSatisifedTaskCommand() {
-        return (ADD_COMMAND) getWrapper(ADD_SATISFIED_TASK_ID);
+        return (ADD_COMMAND) getChild(ADD_SATISFIED_TASK_ID);
     }
 
     @Override
     public ADD_COMMAND getAddUnsatisifedTaskCommand() {
-        return (ADD_COMMAND) getWrapper(ADD_UNSATISFIED_TASK_ID);
+        return (ADD_COMMAND) getChild(ADD_UNSATISFIED_TASK_ID);
     }
 }

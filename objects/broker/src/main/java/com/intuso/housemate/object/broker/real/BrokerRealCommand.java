@@ -29,7 +29,7 @@ public abstract class BrokerRealCommand
     protected BrokerRealCommand(BrokerRealResources resources, String id, String name, String description, List<BrokerRealParameter<?>> parameters) {
         super(resources, new CommandData(id, name, description));
         realParameters = new BrokerRealList<ParameterData, BrokerRealParameter<?>>(resources, PARAMETERS_ID, PARAMETERS_ID, PARAMETERS_DESCRIPTION, parameters);
-        addWrapper(realParameters);
+        addChild(realParameters);
     }
 
     @Override

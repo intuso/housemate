@@ -50,11 +50,11 @@ public abstract class BrokerRealCondition
         conditions = new BrokerRealList<ConditionData, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
         // add a command to add automations to the automation list
         addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions);
-        addWrapper(errorValue);
-        addWrapper(satisfiedValue);
-        addWrapper(propertyList);
-        addWrapper(addConditionCommand);
-        addWrapper(conditions);
+        addChild(errorValue);
+        addChild(satisfiedValue);
+        addChild(propertyList);
+        addChild(addConditionCommand);
+        addChild(conditions);
     }
 
     @Override

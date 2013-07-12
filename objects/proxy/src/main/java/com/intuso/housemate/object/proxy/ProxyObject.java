@@ -12,13 +12,11 @@ import com.intuso.housemate.api.object.ChildData;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.wrapper.Wrapper;
-import com.intuso.utilities.wrapper.WrapperFactory;
-import com.intuso.utilities.wrapper.WrapperListener;
+import com.intuso.utilities.object.*;
+import com.intuso.utilities.object.Object;
 
 import java.util.List;
 import java.util.Map;
@@ -40,9 +38,9 @@ public abstract class ProxyObject<
             CHILD_DATA extends HousemateData<?>,
             CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
             OBJECT extends ProxyObject<?, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, OBJECT, LISTENER>,
-            LISTENER extends ObjectListener>
+            LISTENER extends com.intuso.housemate.api.object.ObjectListener>
         extends HousemateObject<RESOURCES, DATA, CHILD_DATA, CHILD, LISTENER>
-        implements BaseObject<LISTENER>, WrapperListener<CHILD> {
+        implements BaseObject<LISTENER>, ObjectListener<CHILD> {
 
     private ProxyRoot<?, ?, ?, ?, ?, ?> proxyRoot;
     private final CHILD_RESOURCES childResources;
@@ -64,7 +62,7 @@ public abstract class ProxyObject<
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = Lists.newArrayList();
-        result.add(addWrapperListener(this));
+        result.add(addChildListener(this));
         result.add(addMessageListener(CHILD_ADDED, new Receiver<ChildData>() {
             @Override
             public void messageReceived(Message<ChildData> message) throws HousemateException {
@@ -103,7 +101,7 @@ public abstract class ProxyObject<
                         for(ChildData cd : message.getPayload().getChildData())
                             ((ProxyObject)object).childData.put(cd.getId(), cd);
                         object.init(ProxyObject.this);
-                        addWrapper(object);
+                        addChild(object);
                         if(pendingLoads.get(object.getId()) != null) {
                             for(LoadManager manager : pendingLoads.get(object.getId()))
                                 manager.finished(object.getId());
@@ -135,7 +133,7 @@ public abstract class ProxyObject<
 
         // unwrap children
         try {
-            unwrapChildren(new WrapperFactory<CHILD_DATA, CHILD, HousemateException>() {
+            createChildren(new ObjectFactory<CHILD_DATA, CHILD, HousemateException>() {
                 @Override
                 public CHILD create(CHILD_DATA data) throws HousemateException {
                     return getResources().getObjectFactory().create(getSubResources(), data);
@@ -192,7 +190,7 @@ public abstract class ProxyObject<
     }
 
     public void addChildLoadedListener(String childId, ChildLoadedListener<? super OBJECT, ? super CHILD> listener) {
-        CHILD object = getWrapper(childId);
+        CHILD object = getChild(childId);
         if(object != null)
             listener.childLoaded(getThis(), object);
         else {
@@ -214,7 +212,7 @@ public abstract class ProxyObject<
             throw new HousemateRuntimeException("Null manager");
         else {
             for(String id : manager.getToLoad()) {
-                if(getWrapper(id) != null)
+                if(getChild(id) != null)
                     manager.finished(id);
                 else {
                     if(pendingLoads.get(id) != null)
@@ -238,26 +236,26 @@ public abstract class ProxyObject<
     }
 
     @Override
-    public void childWrapperAdded(String childId, CHILD wrapper) {
-        Listeners<ChildLoadedListener<? super OBJECT, ? super CHILD>> listeners = childLoadedListeners.get(wrapper.getId());
+    public void childObjectAdded(String childId, CHILD child) {
+        Listeners<ChildLoadedListener<? super OBJECT, ? super CHILD>> listeners = childLoadedListeners.get(child.getId());
         if(listeners != null) {
             for(ChildLoadedListener<? super OBJECT, ? super CHILD> listener : listeners)
-                listener.childLoaded(getThis(), wrapper);
+                listener.childLoaded(getThis(), child);
         }
     }
 
     @Override
-    public void childWrapperRemoved(String childId, CHILD wrapper) {
+    public void childObjectRemoved(String childId, CHILD child) {
         // do nothing
     }
 
     @Override
-    public void ancestorAdded(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
+    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
         // do nothing
     }
 
     @Override
-    public void ancestorRemoved(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
+    public void ancestorObjectRemoved(String ancestorPath, com.intuso.utilities.object.Object<?, ?, ?, ?> ancestor) {
         // do nothing
     }
 }

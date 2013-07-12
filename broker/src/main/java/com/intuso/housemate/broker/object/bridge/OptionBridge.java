@@ -23,7 +23,7 @@ public class OptionBridge
         super(resources, new OptionData(option.getId(), option.getName(), option.getDescription()));
         if(option.getSubTypes() != null) {
             types = new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(resources, option.getSubTypes(), new SubTypeBridge.Converter(resources));
-            addWrapper(types);
+            addChild(types);
         }
     }
 

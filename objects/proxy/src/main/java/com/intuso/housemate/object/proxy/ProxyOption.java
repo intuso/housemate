@@ -34,6 +34,6 @@ public abstract class ProxyOption<
 
     @Override
     public SUB_TYPES getSubTypes() {
-        return getWrapper(SUB_TYPES_ID);
+        return getChild(SUB_TYPES_ID);
     }
 }

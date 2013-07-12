@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.wrapper.Wrapper;
+import com.intuso.utilities.object.Object;
 
 import java.util.Iterator;
 
@@ -27,12 +27,12 @@ public class ListBridge<
         otherListListener = list.addObjectListener(new ListListener<OWR>() {
             @Override
             public void elementAdded(OWR element) {
-                addWrapper(converter.apply(element));
+                addChild(converter.apply(element));
             }
 
             @Override
             public void elementRemoved(OWR element) {
-                removeWrapper(element.getId());
+                removeChild(element.getId());
             }
         }, true);
     }
@@ -54,8 +54,8 @@ public class ListBridge<
     }
 
     @Override
-    public void childWrapperAdded(String childId, WR child) {
-        super.childWrapperAdded(childId, child);
+    public void childObjectAdded(String childId, WR child) {
+        super.childObjectAdded(childId, child);
         child.init(this);
         addLoadedBy(child);
         broadcastMessage(ADD_TYPE, child.getData().deepClone());
@@ -64,8 +64,8 @@ public class ListBridge<
     }
 
     @Override
-    public void childWrapperRemoved(String childId, WR child) {
-        super.childWrapperRemoved(childId, child);
+    public void childObjectRemoved(String childId, WR child) {
+        super.childObjectRemoved(childId, child);
         child.uninit();
         broadcastMessage(REMOVE_TYPE, child.getData());
         for(ListListener<? super WR> listener : getObjectListeners())
@@ -73,27 +73,27 @@ public class ListBridge<
     }
 
     @Override
-    public void ancestorAdded(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
+    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
         // don't need to worry about ancestors other than children, handled above
     }
 
     @Override
-    public void ancestorRemoved(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
+    public void ancestorObjectRemoved(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
         // don't need to worry about ancestors other than children, handled above
     }
 
     @Override
     public WR get(String name) {
-        return getWrapper(name);
+        return getChild(name);
     }
 
     @Override
     public int size() {
-        return getWrappers().size();
+        return getChildren().size();
     }
 
     @Override
     public Iterator<WR> iterator() {
-        return getWrappers().iterator();
+        return getChildren().iterator();
     }
 }

@@ -43,9 +43,9 @@ public class DeviceBridge
         commandList = new ListBridge<CommandData, Command<?, ?>, CommandBridge>(resources, device.getCommands(), new CommandBridge.Converter(resources));
         valueList = new ListBridge<ValueData, Value<?, ?>, ValueBridge>(resources, device.getValues(), new ValueBridge.Converter(resources));
         propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, device.getProperties(), new PropertyBridge.Converter(resources));
-        addWrapper(commandList);
-        addWrapper(valueList);
-        addWrapper(propertyList);
+        addChild(commandList);
+        addChild(valueList);
+        addChild(propertyList);
     }
 
     @Override

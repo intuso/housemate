@@ -40,7 +40,7 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public COMMAND getRemoveCommand() {
-        return (COMMAND) getWrapper(REMOVE_COMMAND_ID);
+        return (COMMAND) getChild(REMOVE_COMMAND_ID);
     }
 
     @Override
@@ -52,7 +52,7 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public VALUE getConnectedValue() {
-        return (VALUE) getWrapper(CONNECTED_VALUE_ID);
+        return (VALUE) getChild(CONNECTED_VALUE_ID);
     }
 
     @Override
@@ -64,17 +64,17 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public VALUE getRunningValue() {
-        return (VALUE) getWrapper(RUNNING_VALUE_ID);
+        return (VALUE) getChild(RUNNING_VALUE_ID);
     }
 
     @Override
     public COMMAND getStartCommand() {
-        return (COMMAND) getWrapper(START_COMMAND_ID);
+        return (COMMAND) getChild(START_COMMAND_ID);
     }
 
     @Override
     public COMMAND getStopCommand() {
-        return (COMMAND) getWrapper(STOP_COMMAND_ID);
+        return (COMMAND) getChild(STOP_COMMAND_ID);
     }
 
     @Override
@@ -85,7 +85,7 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public VALUE getErrorValue() {
-        return (VALUE) getWrapper(ERROR_VALUE_ID);
+        return (VALUE) getChild(ERROR_VALUE_ID);
     }
 
     @Override
@@ -116,7 +116,7 @@ public abstract class ProxyPrimaryObject<
 
                 @Override
                 public void valueChanged(VALUE value) {
-                    for (PrimaryListener<? super PRIMARY_OBJECT> listener : getObjectListeners())
+                    for(PrimaryListener<? super PRIMARY_OBJECT> listener : getObjectListeners())
                         listener.error(getThis(), getError());
                 }
             }));

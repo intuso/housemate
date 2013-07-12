@@ -9,7 +9,7 @@ import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.wrapper.WrapperListener;
+import com.intuso.utilities.object.ObjectListener;
 
 import java.util.Iterator;
 
@@ -27,7 +27,7 @@ public abstract class ProxyList<
             CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
             LIST extends ProxyList<RESOURCES, CHILD_RESOURCES, CHILD_DATA, CHILD, LIST>>
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, ListData<CHILD_DATA>, CHILD_DATA, CHILD, LIST, ListListener<? super CHILD>>
-        implements List<CHILD>, WrapperListener<CHILD> {
+        implements List<CHILD>, ObjectListener<CHILD> {
 
     /**
      * @param resources {@inheritDoc}
@@ -53,23 +53,23 @@ public abstract class ProxyList<
         result.add(addMessageListener(ADD_TYPE, new Receiver<HousemateData>() {
             @Override
             public void messageReceived(Message<HousemateData> message) throws HousemateException {
-                CHILD wrapper;
+                CHILD child;
                 try {
-                    wrapper = getResources().getObjectFactory().create(getSubResources(), (CHILD_DATA)message.getPayload());
+                    child = getResources().getObjectFactory().create(getSubResources(), (CHILD_DATA)message.getPayload());
                 } catch(HousemateException e) {
                     throw new HousemateException("Could not create new list element", e);
                 }
-                wrapper.init(ProxyList.this);
-                addWrapper(wrapper);
+                child.init(ProxyList.this);
+                addChild(child);
             }
         }));
         result.add(addMessageListener(REMOVE_TYPE, new Receiver<HousemateData>() {
             @Override
             public void messageReceived(Message<HousemateData> message) throws HousemateException {
-                CHILD wrapper = getWrapper(message.getPayload().getId());
-                if(wrapper != null) {
-                    wrapper.uninit();
-                    removeWrapper(wrapper.getId());
+                CHILD child = getChild(message.getPayload().getId());
+                if(child != null) {
+                    child.uninit();
+                    removeChild(child.getId());
                 }
             }
         }));
@@ -78,30 +78,30 @@ public abstract class ProxyList<
 
     @Override
     public final CHILD get(String name) {
-        return getWrapper(name);
+        return getChild(name);
     }
 
     @Override
     public int size() {
-        return getWrappers().size();
+        return getChildren().size();
     }
 
     @Override
     public Iterator<CHILD> iterator() {
-        return getWrappers().iterator();
+        return getChildren().iterator();
     }
 
     @Override
-    public void childWrapperAdded(String childId, CHILD wrapper) {
-        super.childWrapperAdded(childId, wrapper);
+    public void childObjectAdded(String childId, CHILD child) {
+        super.childObjectAdded(childId, child);
         for(ListListener<? super CHILD> listener : getObjectListeners())
-            listener.elementAdded(wrapper);
+            listener.elementAdded(child);
     }
 
     @Override
-    public void childWrapperRemoved(String childId, CHILD wrapper) {
-        super.childWrapperRemoved(childId, wrapper);
+    public void childObjectRemoved(String childId, CHILD child) {
+        super.childObjectRemoved(childId, child);
         for(ListListener<? super CHILD> listener : getObjectListeners())
-            listener.elementRemoved(wrapper);
+            listener.elementRemoved(child);
     }
 }

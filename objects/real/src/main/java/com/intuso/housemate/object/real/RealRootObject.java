@@ -49,9 +49,9 @@ public class RealRootObject
 
         init(null);
 
-        addWrapper(types);
+        addChild(types);
         types.init(this);
-        addWrapper(devices);
+        addChild(devices);
         devices.init(this);
     }
 

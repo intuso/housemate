@@ -44,16 +44,16 @@ public abstract class ProxyDevice<
 
     @Override
     public final COMMANDS getCommands() {
-        return (COMMANDS) getWrapper(COMMANDS_ID);
+        return (COMMANDS) getChild(COMMANDS_ID);
     }
 
     @Override
     public final VALUES getValues() {
-        return (VALUES) getWrapper(VALUES_ID);
+        return (VALUES) getChild(VALUES_ID);
     }
 
     @Override
     public final PROPERTIES getProperties() {
-        return (PROPERTIES) getWrapper(PROPERTIES_ID);
+        return (PROPERTIES) getChild(PROPERTIES_ID);
     }
 }

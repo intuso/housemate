@@ -80,7 +80,7 @@ public abstract class ProxyCommand<
 
     @Override
     public PARAMETERS getParameters() {
-        return (PARAMETERS) getWrapper(PARAMETERS_ID);
+        return (PARAMETERS) getChild(PARAMETERS_ID);
     }
 
     /**

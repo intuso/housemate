@@ -19,7 +19,7 @@ public class UserBridge
     public UserBridge(BrokerBridgeResources resources, User user) {
         super(resources, new UserData(user.getId(), user.getName(), user.getDescription()));
         removeCommand = new CommandBridge(resources, user.getRemoveCommand());
-        addWrapper(removeCommand);
+        addChild(removeCommand);
     }
 
     @Override

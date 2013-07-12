@@ -70,7 +70,7 @@ class ObjectNode extends Composite
 
         children.getElement().getStyle().setPaddingLeft(10, com.google.gwt.dom.client.Style.Unit.PX);
 
-        for(ProxyObject<?, ?, ?, ?, ?, ?, ?> child : object.getWrappers()) {
+        for(ProxyObject<?, ?, ?, ?, ?, ?, ?> child : object.getChildren()) {
             ObjectNode childNode = new ObjectNode(root, child);
             childNodes.put(child.getId(), childNode);
             children.add(childNode);
@@ -85,7 +85,7 @@ class ObjectNode extends Composite
             }
         });
 
-        if(object.getWrappers().size() > 0) {
+        if(object.getChildren().size() > 0) {
             icon.setType(IconType.CHEVRON_RIGHT);
             icon.addDomHandler(new ClickHandler() {
                 @Override

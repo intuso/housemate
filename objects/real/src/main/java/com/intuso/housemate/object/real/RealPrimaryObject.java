@@ -63,11 +63,11 @@ public abstract class RealPrimaryObject<
             }
         };
         this.error = StringType.createValue(resources, ERROR_VALUE_ID, ERROR_VALUE_ID, "Current error for the " + objectType, null);
-        addWrapper(this.remove);
-        addWrapper(this.running);
-        addWrapper(this.start);
-        addWrapper(this.stop);
-        addWrapper(this.error);
+        addChild(this.remove);
+        addChild(this.running);
+        addChild(this.start);
+        addChild(this.stop);
+        addChild(this.error);
     }
 
     @Override

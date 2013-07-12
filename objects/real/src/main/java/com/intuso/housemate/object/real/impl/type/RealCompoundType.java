@@ -54,7 +54,7 @@ public abstract class RealCompoundType<O>
                                int maxValues, List<RealSubType<?>> subTypes) {
         super(resources, new CompoundTypeData(id, name, description, minValues, maxValues));
         this.subTypes = new RealList<SubTypeData, RealSubType<?>>(resources, SUB_TYPES_ID, SUB_TYPES_NAME, SUB_TYPES_DESCRIPTION);
-        addWrapper(this.subTypes);
+        addChild(this.subTypes);
         for(RealSubType<?> subType : subTypes)
             this.subTypes.add(subType);
     }

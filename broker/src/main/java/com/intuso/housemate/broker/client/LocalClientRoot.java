@@ -16,7 +16,7 @@ public class LocalClientRoot extends RealRootObject {
     public LocalClientRoot(BrokerGeneralResources resources) {
         super(resources.getClientResources());
         addDeviceCommand = resources.getLifecycleHandler().createAddDeviceCommand(getDevices());
-        addWrapper(addDeviceCommand);
+        addChild(addDeviceCommand);
     }
 
     public RealCommand getAddDeviceCommand() {

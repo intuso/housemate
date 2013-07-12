@@ -17,8 +17,8 @@ import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
  */
 public class TextInput extends TextBox implements TypeInput {
 
-    public TextInput(TypeData typeWrappable) {
-        final Validator validator = getValidator(typeWrappable);
+    public TextInput(TypeData typeData) {
+        final Validator validator = getValidator(typeData);
         addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
@@ -44,9 +44,9 @@ public class TextInput extends TextBox implements TypeInput {
         return addHandler(handler, TypeInputEditedEvent.TYPE);
     }
 
-    private Validator getValidator(TypeData typeWrappable) {
-        if(typeWrappable instanceof SimpleTypeData) {
-            switch (((SimpleTypeData)typeWrappable).getType()) {
+    private Validator getValidator(TypeData typeData) {
+        if(typeData instanceof SimpleTypeData) {
+            switch (((SimpleTypeData)typeData).getType()) {
                 case String:
                     return new StringValidator();
                 case Integer:
@@ -56,9 +56,9 @@ public class TextInput extends TextBox implements TypeInput {
                 case Boolean:
                     return new BooleanValidator();
             }
-        } else if(typeWrappable instanceof RegexTypeData) {
-            RegexTypeData regexTypeWrappable = (RegexTypeData)typeWrappable;
-            return new RegexValidator(regexTypeWrappable.getRegexPattern(), regexTypeWrappable.getDescription());
+        } else if(typeData instanceof RegexTypeData) {
+            RegexTypeData regexTypeData = (RegexTypeData)typeData;
+            return new RegexValidator(regexTypeData.getRegexPattern(), regexTypeData.getDescription());
         }
         return new StringValidator();
     }

@@ -44,9 +44,9 @@ public abstract class BrokerRealTask
         errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), (List)null);
         executingValue = new BrokerRealValue<Boolean>(resources, EXECUTING_ID, EXECUTING_ID, "Whether the task is executing", new BooleanType(resources.getRealResources()), false);
         propertyList = new BrokerRealList<PropertyData, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The task's properties", properties);
-        addWrapper(errorValue);
-        addWrapper(executingValue);
-        addWrapper(propertyList);
+        addChild(errorValue);
+        addChild(executingValue);
+        addChild(propertyList);
     }
 
     @Override

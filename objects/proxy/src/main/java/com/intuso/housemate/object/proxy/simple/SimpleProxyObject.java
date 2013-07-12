@@ -98,8 +98,8 @@ public class SimpleProxyObject {
                 List<WBL, WR>> {
         public List(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, WBL, WR>> resources,
                     ProxyResources<?> childResources,
-                    ListData<WBL> listWrappable) {
-            super(resources, childResources, listWrappable);
+                    ListData<WBL> listData) {
+            super(resources, childResources, listData);
         }
     }
 

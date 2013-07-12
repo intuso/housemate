@@ -49,11 +49,11 @@ public class BrokerProxyPrimaryObject<
 
     @Override
     protected void getChildObjects() {
-        remove = (BrokerProxyCommand)getWrapper(REMOVE_COMMAND_ID);
-        running = (BrokerProxyValue)getWrapper(RUNNING_VALUE_ID);
-        start = (BrokerProxyCommand)getWrapper(START_COMMAND_ID);
-        stop = (BrokerProxyCommand)getWrapper(STOP_COMMAND_ID);
-        error = (BrokerProxyValue)getWrapper(ERROR_VALUE_ID);
+        remove = (BrokerProxyCommand) getChild(REMOVE_COMMAND_ID);
+        running = (BrokerProxyValue) getChild(RUNNING_VALUE_ID);
+        start = (BrokerProxyCommand) getChild(START_COMMAND_ID);
+        stop = (BrokerProxyCommand) getChild(STOP_COMMAND_ID);
+        error = (BrokerProxyValue) getChild(ERROR_VALUE_ID);
     }
 
     @Override

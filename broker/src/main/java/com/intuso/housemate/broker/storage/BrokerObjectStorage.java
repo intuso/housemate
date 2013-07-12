@@ -78,7 +78,7 @@ public class BrokerObjectStorage implements Storage {
             log.e("Failed to get names of existing users");
             log.st(e);
         }
-        if(realUsers.getWrappers().size() == 0) {
+        if(realUsers.getChildren().size() == 0) {
             TypeInstanceMap toSave = new TypeInstanceMap();
             try {
                 toSave.put("password-hash", new TypeInstances(new TypeInstance(new String(

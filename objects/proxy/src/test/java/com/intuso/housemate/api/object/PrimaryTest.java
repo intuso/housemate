@@ -49,7 +49,7 @@ public class PrimaryTest {
 
     @Before
     public void addLists() throws HousemateException {
-        TestEnvironment.TEST_INSTANCE.getProxyRoot().addWrapper(proxyList);
+        TestEnvironment.TEST_INSTANCE.getProxyRoot().addChild(proxyList);
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
         realPrimary = new RealDevice(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-primary", "My Primary", "description");
         realList.add(realPrimary);

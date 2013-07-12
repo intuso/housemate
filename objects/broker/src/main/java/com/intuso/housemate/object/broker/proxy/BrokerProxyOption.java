@@ -26,7 +26,7 @@ public class BrokerProxyOption
 
     @Override
     protected void getChildObjects() {
-        subTypes = getWrapper(SUB_TYPES_ID);
+        subTypes = getChild(SUB_TYPES_ID);
     }
 
     @Override

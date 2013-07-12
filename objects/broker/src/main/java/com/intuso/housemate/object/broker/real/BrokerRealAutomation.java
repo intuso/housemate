@@ -33,12 +33,12 @@ public class BrokerRealAutomation
         addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions);
         addSatisfiedTaskCommand = getResources().getLifecycleHandler().createAddSatisfiedTaskCommand(satisfiedTasks);
         addUnsatisfiedTaskCommand = getResources().getLifecycleHandler().createAddUnsatisfiedTaskCommand(unsatisfiedTasks);
-        addWrapper(conditions);
-        addWrapper(satisfiedTasks);
-        addWrapper(unsatisfiedTasks);
-        addWrapper(addConditionCommand);
-        addWrapper(addSatisfiedTaskCommand);
-        addWrapper(addUnsatisfiedTaskCommand);
+        addChild(conditions);
+        addChild(satisfiedTasks);
+        addChild(unsatisfiedTasks);
+        addChild(addConditionCommand);
+        addChild(addSatisfiedTaskCommand);
+        addChild(addUnsatisfiedTaskCommand);
     }
 
     @Override

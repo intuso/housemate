@@ -21,8 +21,8 @@ import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.wrapper.Wrapper;
-import com.intuso.utilities.wrapper.WrapperListener;
+import com.intuso.utilities.object.*;
+import com.intuso.utilities.object.Object;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +57,7 @@ public abstract class ProxyRootObject<
             COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
             ROOT extends ProxyRootObject<RESOURCES, CHILD_RESOURCES, USER, USERS, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, RootData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, ROOT, RootListener<? super ROOT>>
-        implements ProxyRoot<USERS, TYPES, DEVICES, AUTOMATIONS, COMMAND, ROOT>, WrapperListener<ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ConnectionStatusChangeListener {
+        implements ProxyRoot<USERS, TYPES, DEVICES, AUTOMATIONS, COMMAND, ROOT>, ObjectListener<ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ConnectionStatusChangeListener {
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
@@ -109,7 +109,7 @@ public abstract class ProxyRootObject<
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addWrapperListener(this));
+        result.add(addChildListener(this));
         result.add(connectionManager.addStatusChangeListener(this));
         result.add(addMessageListener(CONNECTION_RESPONSE_TYPE, new Receiver<AuthenticationResponse>() {
             @Override
@@ -128,53 +128,53 @@ public abstract class ProxyRootObject<
 
     @Override
     public USERS getUsers() {
-        return (USERS) getWrapper(USERS_ID);
+        return (USERS) getChild(USERS_ID);
     }
 
     @Override
     public TYPES getTypes() {
-        return (TYPES) getWrapper(TYPES_ID);
+        return (TYPES) getChild(TYPES_ID);
     }
 
     @Override
     public DEVICES getDevices() {
-        return (DEVICES) getWrapper(DEVICES_ID);
+        return (DEVICES) getChild(DEVICES_ID);
     }
 
     @Override
     public AUTOMATIONS getAutomations() {
-        return (AUTOMATIONS) getWrapper(AUTOMATIONS_ID);
+        return (AUTOMATIONS) getChild(AUTOMATIONS_ID);
     }
 
     @Override
     public COMMAND getAddUserCommand() {
-        return (COMMAND) getWrapper(ADD_USER_ID);
+        return (COMMAND) getChild(ADD_USER_ID);
     }
 
     @Override
     public COMMAND getAddDeviceCommand() {
-        return (COMMAND) getWrapper(ADD_DEVICE_ID);
+        return (COMMAND) getChild(ADD_DEVICE_ID);
     }
 
     @Override
     public COMMAND getAddAutomationCommand() {
-        return (COMMAND) getWrapper(ADD_AUTOMATION_ID);
+        return (COMMAND) getChild(ADD_AUTOMATION_ID);
     }
 
     @Override
-    public void childWrapperAdded(String childName, ProxyObject<?, ?, ?, ?, ?, ?, ?> wrapper) {
+    public void childObjectAdded(String childName, ProxyObject<?, ?, ?, ?, ?, ?, ?> child) {
         // do nothing
     }
 
     @Override
-    public void childWrapperRemoved(String childName, ProxyObject<?, ?, ?, ?, ?, ?, ?> wrapper) {
+    public void childObjectRemoved(String childName, ProxyObject<?, ?, ?, ?, ?, ?, ?> child) {
         // do nothing
     }
 
     @Override
-    public void ancestorAdded(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
-        if(wrapper instanceof HousemateObject)
-            objectWrapperAdded(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) wrapper);
+    public void ancestorObjectAdded(String ancestorPath, Object<?, ?, ?, ?> ancestor) {
+        if(ancestor instanceof HousemateObject)
+            objectAdded(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) ancestor);
     }
 
     /**
@@ -182,20 +182,20 @@ public abstract class ProxyRootObject<
      * @param path the path of the object
      * @param object the object
      */
-    private void objectWrapperAdded(String path, HousemateObject<?, ?, ?, ?, ?> object) {
+    private void objectAdded(String path, HousemateObject<?, ?, ?, ?, ?> object) {
         if(objectLifecycleListeners.get(path) != null && objectLifecycleListeners.get(path).getListeners().size() > 0) {
             String splitPath[] = path.split(PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
                 listener.objectCreated(splitPath, object);
         }
-        for(HousemateObject<?, ?, ?, ?, ?> child : object.getWrappers())
-            objectWrapperAdded(path + PATH_SEPARATOR + child.getId(), child);
+        for(HousemateObject<?, ?, ?, ?, ?> child : object.getChildren())
+            objectAdded(path + PATH_SEPARATOR + child.getId(), child);
     }
 
     @Override
-    public void ancestorRemoved(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
-        if(wrapper instanceof HousemateObject)
-            objectWrapperRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) wrapper);
+    public void ancestorObjectRemoved(String ancestorPath, com.intuso.utilities.object.Object<?, ?, ?, ?> ancestor) {
+        if(ancestor instanceof HousemateObject)
+            objectRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) ancestor);
     }
 
     /**
@@ -203,14 +203,14 @@ public abstract class ProxyRootObject<
      * @param path the path of the object
      * @param object the object
      */
-    private void objectWrapperRemoved(String path, HousemateObject<?, ?, ?, ?, ?> object) {
+    private void objectRemoved(String path, HousemateObject<?, ?, ?, ?, ?> object) {
         if(objectLifecycleListeners.get(path) != null && objectLifecycleListeners.get(path).getListeners().size() > 0) {
             String splitPath[] = path.split(PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
                 listener.objectRemoved(splitPath, object);
         }
-        for(HousemateObject<?, ?, ?, ?, ?> child : object.getWrappers())
-            objectWrapperRemoved(path + PATH_SEPARATOR + child.getId(), child);
+        for(HousemateObject<?, ?, ?, ?, ?> child : object.getChildren())
+            objectRemoved(path + PATH_SEPARATOR + child.getId(), child);
     }
 
     @Override
@@ -233,12 +233,12 @@ public abstract class ProxyRootObject<
     @Override
     public final void brokerInstanceChanged() {
         Set<String> ids = Sets.newHashSet();
-        for(HousemateObject<?, ?, ?, ?, ?> child : getWrappers()) {
+        for(HousemateObject<?, ?, ?, ?, ?> child : getChildren()) {
             child.uninit();
             ids.add(child.getId());
         }
         for(String id : ids)
-            removeWrapper(id);
+            removeChild(id);
         for(RootListener<? super ROOT> listener : getObjectListeners())
             listener.brokerInstanceChanged(getThis());
     }

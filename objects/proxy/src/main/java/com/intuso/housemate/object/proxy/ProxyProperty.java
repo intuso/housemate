@@ -44,6 +44,6 @@ public abstract class ProxyProperty<
 
     @Override
     public SET_COMMAND getSetCommand() {
-        return (SET_COMMAND) getWrapper(SET_COMMAND_ID);
+        return (SET_COMMAND) getChild(SET_COMMAND_ID);
     }
 }

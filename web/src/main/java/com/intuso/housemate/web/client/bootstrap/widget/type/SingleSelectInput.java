@@ -43,7 +43,7 @@ public class SingleSelectInput extends Composite implements TypeInput {
 
     public SingleSelectInput(GWTProxyType type) {
 
-        options = (GWTProxyList<OptionData, GWTProxyOption>) type.getWrapper(OPTIONS);
+        options = (GWTProxyList<OptionData, GWTProxyOption>) type.getChild(OPTIONS);
 
         listBox = new ListBox(false);
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -77,9 +77,9 @@ public class SingleSelectInput extends Composite implements TypeInput {
             this.typeInstances.add(new TypeInstance());
         if(this.typeInstances.get(0).getValue() == null) {
             if(options.size() > 0)
-                this.typeInstances.get(0).setValue(options.getWrappers().iterator().next().getId());
+                this.typeInstances.get(0).setValue(options.getChildren().iterator().next().getId());
             listBox.setSelectedIndex(optionMap.get(options.get(this.typeInstances.get(0).getValue())));
-        } else if(options.getWrapper(this.typeInstances.get(0).getValue()) == null)
+        } else if(options.getChild(this.typeInstances.get(0).getValue()) == null)
             listBox.setSelectedIndex(0);
         else
             listBox.setSelectedIndex(optionMap.get(options.get(this.typeInstances.get(0).getValue())));

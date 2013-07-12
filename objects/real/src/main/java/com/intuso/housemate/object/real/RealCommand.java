@@ -45,7 +45,7 @@ public abstract class RealCommand
     protected RealCommand(RealResources resources, String id, String name, String description, List<RealParameter<?>> parameters) {
         super(resources, new CommandData(id, name, description));
         realParameters = new RealList<ParameterData, RealParameter<?>>(resources, PARAMETERS_ID, PARAMETERS_ID, "The parameters required by the command", parameters);
-        addWrapper(realParameters);
+        addChild(realParameters);
     }
 
     @Override

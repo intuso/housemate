@@ -33,8 +33,8 @@ public class BrokerProxyRootObject
         devices = new BrokerProxyList<DeviceData, BrokerProxyDevice>(
                 BrokerProxyFactory.changeFactoryType(resources, new BrokerProxyFactory.Device()), new ListData<DeviceData>(DEVICES_ID, DEVICES_ID, "Proxied devices"));
 
-        addWrapper(types);
-        addWrapper(devices);
+        addChild(types);
+        addChild(devices);
 
         init(null);
     }

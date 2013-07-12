@@ -28,8 +28,8 @@ public class TestRealRoot extends RealRootObject {
     }
 
     public void addWrapper(RealObject<?, ?, ?, ?> wrapper) {
-        removeWrapper(wrapper.getId());
-        super.addWrapper(wrapper);
+        removeChild(wrapper.getId());
+        super.addChild(wrapper);
         wrapper.init(this);
     }
 }

@@ -40,7 +40,7 @@ public class BrokerProxyCommand
 
     @Override
     protected void getChildObjects() {
-        parameters = getWrapper(PARAMETERS_ID);
+        parameters = getChild(PARAMETERS_ID);
     }
 
     @Override

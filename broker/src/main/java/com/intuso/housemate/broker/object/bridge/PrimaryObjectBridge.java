@@ -31,12 +31,12 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateDat
         startCommand = new CommandBridge(resources, proxyObject.getStartCommand());
         stopCommand = new CommandBridge(resources, proxyObject.getStopCommand());
         errorValue = new ValueBridge(resources, proxyObject.getErrorValue());
-        addWrapper(removeCommand);
-        addWrapper(connectedValue);
-        addWrapper(runningValue);
-        addWrapper(startCommand);
-        addWrapper(stopCommand);
-        addWrapper(errorValue);
+        addChild(removeCommand);
+        addChild(connectedValue);
+        addChild(runningValue);
+        addChild(startCommand);
+        addChild(stopCommand);
+        addChild(errorValue);
     }
 
     @Override

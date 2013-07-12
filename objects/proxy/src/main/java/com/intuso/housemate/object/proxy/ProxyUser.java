@@ -31,6 +31,6 @@ public abstract class ProxyUser<
 
     @Override
     public COMMAND getRemoveCommand() {
-        return (COMMAND) getWrapper(REMOVE_COMMAND_ID);
+        return (COMMAND) getChild(REMOVE_COMMAND_ID);
     }
 }

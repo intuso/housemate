@@ -35,11 +35,11 @@ public class ConditionBridge
         propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, condition.getProperties(), new PropertyBridge.Converter(resources));
         conditionList = new ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>(resources, condition.getConditions(), new Converter(resources));
         addConditionCommand = new CommandBridge(resources, condition.getAddConditionCommand()) {};
-        addWrapper(satisfiedValue);
-        addWrapper(errorValue);
-        addWrapper(propertyList);
-        addWrapper(conditionList);
-        addWrapper(addConditionCommand);
+        addChild(satisfiedValue);
+        addChild(errorValue);
+        addChild(propertyList);
+        addChild(conditionList);
+        addChild(addConditionCommand);
     }
 
     @Override

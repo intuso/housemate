@@ -40,7 +40,7 @@ public class ValueTest {
 
     @Before
     public void addLists() throws HousemateException {
-        TestEnvironment.TEST_INSTANCE.getProxyRoot().addWrapper(proxyList);
+        TestEnvironment.TEST_INSTANCE.getProxyRoot().addChild(proxyList);
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
         realValue = IntegerType.createValue(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-value", "My Value", "description", 1234);
         realList.add(realValue);

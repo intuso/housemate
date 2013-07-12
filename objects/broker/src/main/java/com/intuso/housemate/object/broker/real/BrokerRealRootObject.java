@@ -33,10 +33,10 @@ public class BrokerRealRootObject
         addUserCommand = getResources().getLifecycleHandler().createAddUserCommand(users);
         addAutomationCommand = getResources().getLifecycleHandler().createAddAutomationCommand(automations);
 
-        addWrapper(users);
-        addWrapper(automations);
-        addWrapper(addUserCommand);
-        addWrapper(addAutomationCommand);
+        addChild(users);
+        addChild(automations);
+        addChild(addUserCommand);
+        addChild(addAutomationCommand);
 
         init(null);
     }

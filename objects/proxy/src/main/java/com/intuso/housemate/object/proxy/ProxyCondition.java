@@ -73,22 +73,22 @@ public abstract class ProxyCondition<
 
     @Override
     public final PROPERTIES getProperties() {
-        return (PROPERTIES) getWrapper(PROPERTIES_ID);
+        return (PROPERTIES) getChild(PROPERTIES_ID);
     }
 
     @Override
     public CONDITIONS getConditions() {
-        return (CONDITIONS) getWrapper(CONDITIONS_ID);
+        return (CONDITIONS) getChild(CONDITIONS_ID);
     }
 
     @Override
     public ADD_COMMAND getAddConditionCommand() {
-        return (ADD_COMMAND) getWrapper(Automation.ADD_CONDITION_ID);
+        return (ADD_COMMAND) getChild(Automation.ADD_CONDITION_ID);
     }
 
     @Override
     public final VALUE getErrorValue() {
-        return (VALUE) getWrapper(ERROR_ID);
+        return (VALUE) getChild(ERROR_ID);
     }
 
     @Override
@@ -99,7 +99,7 @@ public abstract class ProxyCondition<
 
     @Override
     public final VALUE getSatisfiedValue() {
-        return (VALUE) getWrapper(SATISFIED_ID);
+        return (VALUE) getChild(SATISFIED_ID);
     }
 
     @Override
