@@ -7,7 +7,7 @@
 
     <inherits name='com.intuso.utilities.Log'/>
     <inherits name='com.intuso.utilities.Listener'/>
-    <inherits name='com.intuso.utilities.Wrapper'/>
+    <inherits name='com.intuso.utilities.Object'/>
 
     <source path="api"/>
 </module>
