@@ -6,16 +6,16 @@ import com.intuso.housemate.api.comms.Message;
  *
  * Message payload for strings
  */
-public class StringMessageValue implements Message.Payload {
+public class StringPayload implements Message.Payload {
 
     private String value;
 
-    private StringMessageValue() {}
+    private StringPayload() {}
 
     /**
      * @param value the payload to send
      */
-    public StringMessageValue(String value) {
+    public StringPayload(String value) {
         this.value = value;
     }
 

@@ -34,7 +34,6 @@ public abstract class ProxyCommand<
 
     private int nextId;
     private Map<String, CommandListener<? super COMMAND>> listenerMap = new HashMap<String, CommandListener<? super COMMAND>>();
-    private PARAMETERS parameters;
 
     /**
      * @param resources {@inheritDoc}
@@ -43,12 +42,6 @@ public abstract class ProxyCommand<
      */
     protected ProxyCommand(RESOURCES resources, CHILD_RESOURCES childResources, CommandData data) {
         super(resources, childResources, data);
-    }
-
-    @Override
-    protected void getChildObjects() {
-        super.getChildObjects();
-        parameters = getWrapper(PARAMETERS_ID);
     }
 
     @Override
@@ -87,7 +80,7 @@ public abstract class ProxyCommand<
 
     @Override
     public PARAMETERS getParameters() {
-        return parameters;
+        return (PARAMETERS) getWrapper(PARAMETERS_ID);
     }
 
     /**

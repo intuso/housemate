@@ -23,10 +23,8 @@ import com.intuso.housemate.object.broker.real.BrokerRealUser;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.wrapper.Wrapper;
-import com.intuso.utilities.wrapper.WrapperListener;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,7 +32,7 @@ import java.util.Map;
 public class RootObjectBridge
         extends BridgeObject<RootData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>,
             RootObjectBridge, RootListener<? super RootObjectBridge>>
-        implements Root<RootObjectBridge>, WrapperListener<HousemateObject<?, ?, ?, ?, ?>> {
+        implements Root<RootObjectBridge> {
 
     private ListBridge<UserData, BrokerRealUser, UserBridge> users;
     private ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types;
@@ -123,26 +121,17 @@ public class RootObjectBridge
     }
 
     @Override
-    protected List<ListenerRegistration> registerListeners() {
-        List<ListenerRegistration> result = super.registerListeners();
-        result.add(addWrapperListener(this));
-        return result;
-    }
-
-    @Override
-    public void childWrapperAdded(String childName, HousemateObject<?, ?, ?, ?, ?> wrapper) {
-        // do nothing
-    }
-
-    @Override
-    public void childWrapperRemoved(String childName, HousemateObject<?, ?, ?, ?, ?> wrapper) {
-        // do nothing
-    }
-
-    @Override
     public void ancestorAdded(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
+        super.ancestorAdded(ancestorPath, wrapper);
         if(wrapper instanceof HousemateObject)
             objectWrapperAdded(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) wrapper);
+    }
+
+    @Override
+    public void ancestorRemoved(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
+        super.ancestorRemoved(ancestorPath, wrapper);
+        if(wrapper instanceof HousemateObject)
+            objectWrapperRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) wrapper);
     }
 
     private void objectWrapperAdded(String path, HousemateObject<?, ?, ?, ?, ?> objectWrapper) {
@@ -153,12 +142,6 @@ public class RootObjectBridge
         }
         for(HousemateObject<?, ?, ?, ?, ?> child : objectWrapper.getWrappers())
             objectWrapperAdded(path + Wrapper.PATH_SEPARATOR + child.getId(), child);
-    }
-
-    @Override
-    public void ancestorRemoved(String ancestorPath, Wrapper<?, ?, ?, ?> wrapper) {
-        if(wrapper instanceof HousemateObject)
-            objectWrapperRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) wrapper);
     }
 
     private void objectWrapperRemoved(String path, HousemateObject<?, ?, ?, ?, ?> objectWrapper) {

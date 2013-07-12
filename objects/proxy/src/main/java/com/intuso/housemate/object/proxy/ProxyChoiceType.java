@@ -24,8 +24,6 @@ public abstract class ProxyChoiceType<
 
     private static final String OPTIONS_ID = "options";
 
-    private OPTIONS options;
-
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
@@ -36,13 +34,7 @@ public abstract class ProxyChoiceType<
     }
 
     @Override
-    protected void getChildObjects() {
-        super.getChildObjects();
-        options = getWrapper(OPTIONS_ID);
-    }
-
-    @Override
     public OPTIONS getOptions() {
-        return options;
+        return getWrapper(OPTIONS_ID);
     }
 }

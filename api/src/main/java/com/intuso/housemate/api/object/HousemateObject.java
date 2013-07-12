@@ -35,6 +35,8 @@ public abstract class HousemateObject<
         extends Wrapper<DATA, CHILD_DATA, CHILD, HousemateException>
         implements BaseObject<LISTENER> {
 
+    public final static String CHILD_ADDED = "child-added";
+    public final static String CHILD_REMOVED = "child-removed";
     public final static String LOAD_REQUEST = "load-request";
     public final static String LOAD_RESPONSE = "load-response";
 
@@ -273,6 +275,7 @@ public abstract class HousemateObject<
 
         private String childId;
         private DATA data;
+        private List<ChildData> childData;
         private String error;
 
         private LoadResponse() {}
@@ -280,9 +283,10 @@ public abstract class HousemateObject<
         /**
          * @param childId the id of the child wrapper to load
          */
-        public LoadResponse(String childId, DATA data) {
+        public LoadResponse(String childId, DATA data, List<ChildData> childData) {
             this.childId = childId;
             this.data = data;
+            this.childData = childData;
         }
 
         /**
@@ -303,6 +307,10 @@ public abstract class HousemateObject<
 
         public DATA getData() {
             return data;
+        }
+
+        public List<ChildData> getChildData() {
+            return childData;
         }
 
         public String getError() {

@@ -29,13 +29,6 @@ public abstract class ProxyPrimaryObject<
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, DATA, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
         implements PrimaryObject<COMMAND, COMMAND, VALUE, VALUE, VALUE, PRIMARY_OBJECT, LISTENER> {
 
-    private COMMAND remove;
-    private VALUE connected;
-    private VALUE running;
-    private COMMAND start;
-    private COMMAND stop;
-    private VALUE error;
-
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
@@ -46,68 +39,60 @@ public abstract class ProxyPrimaryObject<
     }
 
     @Override
-    protected void getChildObjects() {
-        super.getChildObjects();
-        remove = (COMMAND)getWrapper(REMOVE_COMMAND_ID);
-        connected = (VALUE)getWrapper(CONNECTED_VALUE_ID);
-        running = (VALUE)getWrapper(RUNNING_VALUE_ID);
-        start = (COMMAND)getWrapper(START_COMMAND_ID);
-        stop = (COMMAND)getWrapper(STOP_COMMAND_ID);
-        error = (VALUE)getWrapper(ERROR_VALUE_ID);
-    }
-
-    @Override
     public COMMAND getRemoveCommand() {
-        return remove;
+        return (COMMAND) getWrapper(REMOVE_COMMAND_ID);
     }
 
     @Override
     public boolean isConnected() {
+        VALUE connected = getConnectedValue();
         return connected.getTypeInstances() != null && connected.getTypeInstances().getFirstValue() != null
                 ? Boolean.parseBoolean(connected.getTypeInstances().getFirstValue()) : false;
     }
 
     @Override
     public VALUE getConnectedValue() {
-        return connected;
+        return (VALUE) getWrapper(CONNECTED_VALUE_ID);
     }
 
     @Override
     public final boolean isRunning() {
+        VALUE running = getRunningValue();
         return running.getTypeInstances() != null && running.getTypeInstances().getFirstValue() != null
                 ? Boolean.parseBoolean(running.getTypeInstances().getFirstValue()) : false;
     }
 
     @Override
     public VALUE getRunningValue() {
-        return running;
+        return (VALUE) getWrapper(RUNNING_VALUE_ID);
     }
 
     @Override
     public COMMAND getStartCommand() {
-        return start;
+        return (COMMAND) getWrapper(START_COMMAND_ID);
     }
 
     @Override
     public COMMAND getStopCommand() {
-        return stop;
+        return (COMMAND) getWrapper(STOP_COMMAND_ID);
     }
 
     @Override
     public final String getError() {
+        VALUE error = getErrorValue();
         return error.getTypeInstances() != null ? error.getTypeInstances().getFirstValue() : null;
     }
 
     @Override
     public VALUE getErrorValue() {
-        return error;
+        return (VALUE) getWrapper(ERROR_VALUE_ID);
     }
 
     @Override
     public List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        if(running != null) {
-            result.add(running.addObjectListener(new ValueListener<VALUE>() {
+        if(getRunningValue() != null) {
+            result.add(getRunningValue().addObjectListener(new ValueListener<VALUE>() {
 
                 @Override
                 public void valueChanging(VALUE value) {
@@ -121,8 +106,8 @@ public abstract class ProxyPrimaryObject<
                 }
             }));
         }
-        if(error != null) {
-            result.add(error.addObjectListener(new ValueListener<VALUE>() {
+        if(getErrorValue() != null) {
+            result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
 
                 @Override
                 public void valueChanging(VALUE value) {

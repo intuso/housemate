@@ -25,10 +25,6 @@ public abstract class ProxyTask<
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, TaskData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, TASK, TaskListener<? super TASK>>
         implements Task<VALUE, VALUE, PROPERTIES, TASK> {
 
-    private VALUE executing;
-    private VALUE error;
-    private PROPERTIES propertyList;
-
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
@@ -39,17 +35,9 @@ public abstract class ProxyTask<
     }
 
     @Override
-    protected void getChildObjects() {
-        super.getChildObjects();
-        error = (VALUE)getWrapper(ERROR_ID);
-        executing = (VALUE)getWrapper(EXECUTING_TYPE);
-        propertyList = (PROPERTIES)getWrapper(PROPERTIES_ID);
-    }
-
-    @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration>result = super.registerListeners();
-        result.add(executing.addObjectListener(new ValueListener<VALUE>() {
+        result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
 
             @Override
             public void valueChanging(VALUE value) {
@@ -62,7 +50,7 @@ public abstract class ProxyTask<
                     listener.taskExecuting(getThis(), isExecuting());
             }
         }));
-        result.add(error.addObjectListener(new ValueListener<VALUE>() {
+        result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
 
             @Override
             public void valueChanging(VALUE value) {
@@ -80,26 +68,28 @@ public abstract class ProxyTask<
 
     @Override
     public final PROPERTIES getProperties() {
-        return propertyList;
+        return (PROPERTIES) getWrapper(PROPERTIES_ID);
     }
 
     @Override
     public final VALUE getErrorValue() {
-        return error;
+        return (VALUE) getWrapper(ERROR_ID);
     }
 
     @Override
     public final String getError() {
+        VALUE error = getErrorValue();
         return error.getTypeInstances() != null ? error.getTypeInstances().getFirstValue() : null;
     }
 
     @Override
     public final VALUE getExecutingValue() {
-        return executing;
+        return (VALUE) getWrapper(EXECUTING_ID);
     }
 
     @Override
     public final boolean isExecuting() {
+        VALUE executing = getExecutingValue();
         return executing.getTypeInstances() != null && executing.getTypeInstances().getFirstValue() != null
                 ? Boolean.parseBoolean(executing.getTypeInstances().getFirstValue()) : false;
     }

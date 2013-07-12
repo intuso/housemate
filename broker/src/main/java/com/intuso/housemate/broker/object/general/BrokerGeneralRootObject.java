@@ -9,7 +9,7 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.message.AuthenticationRequest;
 import com.intuso.housemate.api.comms.message.NoPayload;
-import com.intuso.housemate.api.comms.message.StringMessageValue;
+import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
@@ -86,9 +86,9 @@ public class BrokerGeneralRootObject
                 getResources().getRemoteClientManager().clientDisconnected(message.getRoute());
             }
         }));
-        result.add(addMessageListener(Root.CONNECTION_LOST_TYPE, new Receiver<ClientPayload<StringMessageValue>>() {
+        result.add(addMessageListener(Root.CONNECTION_LOST_TYPE, new Receiver<ClientPayload<StringPayload>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<StringMessageValue>> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<StringPayload>> message) throws HousemateException {
                 // process the request
                 List<String> route = Lists.newArrayList(message.getRoute());
                 route.add(message.getPayload().getOriginal().getValue());

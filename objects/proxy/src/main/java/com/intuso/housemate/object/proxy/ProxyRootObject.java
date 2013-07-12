@@ -57,23 +57,12 @@ public abstract class ProxyRootObject<
             COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
             ROOT extends ProxyRootObject<RESOURCES, CHILD_RESOURCES, USER, USERS, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, RootData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, ROOT, RootListener<? super ROOT>>
-        implements ProxyRoot<USERS, TYPES, DEVICES, AUTOMATIONS, COMMAND, ROOT>, WrapperListener<HousemateObject<?, ?, ?, ?, ?>>, ConnectionStatusChangeListener {
-
-    private USERS proxyConnectionList;
-    private TYPES proxyTypeList;
-    private DEVICES proxyDeviceList;
-    private AUTOMATIONS proxyAutomationList;
-    private COMMAND addUserCommand;
-    private COMMAND addDeviceCommand;
-    private COMMAND addAutomationCommand;
+        implements ProxyRoot<USERS, TYPES, DEVICES, AUTOMATIONS, COMMAND, ROOT>, WrapperListener<ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ConnectionStatusChangeListener {
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
     private final Router.Registration routerRegistration;
     private final ConnectionManager connectionManager;
-    
-    private final static Set<String> toLoad = Sets.newHashSet();
-    private ListenerRegistration loadRegistration;
 
     /**
      * @param resources {@inheritDoc}
@@ -138,59 +127,47 @@ public abstract class ProxyRootObject<
     }
 
     @Override
-    public void getChildObjects() {
-        super.getChildObjects();
-        proxyConnectionList = (USERS)getWrapper(USERS_ID);
-        proxyTypeList = (TYPES)getWrapper(TYPES_ID);
-        proxyDeviceList = (DEVICES)getWrapper(DEVICES_ID);
-        proxyAutomationList = (AUTOMATIONS)getWrapper(AUTOMATIONS_ID);
-        addUserCommand = (COMMAND)getWrapper(ADD_USER_ID);
-        addDeviceCommand = (COMMAND)getWrapper(ADD_DEVICE_ID);
-        addAutomationCommand = (COMMAND)getWrapper(ADD_AUTOMATION_ID);
-    }
-
-    @Override
     public USERS getUsers() {
-        return proxyConnectionList;
+        return (USERS) getWrapper(USERS_ID);
     }
 
     @Override
     public TYPES getTypes() {
-        return proxyTypeList;
+        return (TYPES) getWrapper(TYPES_ID);
     }
 
     @Override
     public DEVICES getDevices() {
-        return proxyDeviceList;
+        return (DEVICES) getWrapper(DEVICES_ID);
     }
 
     @Override
     public AUTOMATIONS getAutomations() {
-        return proxyAutomationList;
+        return (AUTOMATIONS) getWrapper(AUTOMATIONS_ID);
     }
 
     @Override
     public COMMAND getAddUserCommand() {
-        return addUserCommand;
+        return (COMMAND) getWrapper(ADD_USER_ID);
     }
 
     @Override
     public COMMAND getAddDeviceCommand() {
-        return addDeviceCommand;
+        return (COMMAND) getWrapper(ADD_DEVICE_ID);
     }
 
     @Override
     public COMMAND getAddAutomationCommand() {
-        return addAutomationCommand;
+        return (COMMAND) getWrapper(ADD_AUTOMATION_ID);
     }
 
     @Override
-    public void childWrapperAdded(String childName, HousemateObject<?, ?, ?, ?, ?> wrapper) {
+    public void childWrapperAdded(String childName, ProxyObject<?, ?, ?, ?, ?, ?, ?> wrapper) {
         // do nothing
     }
 
     @Override
-    public void childWrapperRemoved(String childName, HousemateObject<?, ?, ?, ?, ?> wrapper) {
+    public void childWrapperRemoved(String childName, ProxyObject<?, ?, ?, ?, ?, ?, ?> wrapper) {
         // do nothing
     }
 

@@ -32,13 +32,6 @@ public abstract class ProxyAutomation<
         extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, AutomationData, ADD_COMMAND, VALUE, AUTOMATION, AutomationListener<? super AUTOMATION>>
         implements Automation<ADD_COMMAND, ADD_COMMAND, ADD_COMMAND, VALUE, VALUE, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION> {
 
-    private CONDITIONS conditions;
-    private TASKS satisfiedTasks;
-    private TASKS unsatisfiedTasks;
-    private ADD_COMMAND addConditionCommand;
-    private ADD_COMMAND addSatisifedTaskCommand;
-    private ADD_COMMAND addUnsatisifedTaskCommand;
-
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
@@ -49,43 +42,32 @@ public abstract class ProxyAutomation<
     }
 
     @Override
-    protected final void getChildObjects() {
-        super.getChildObjects();
-        conditions = (CONDITIONS)getWrapper(CONDITIONS_ID);
-        satisfiedTasks = (TASKS)getWrapper(SATISFIED_TASKS_ID);
-        unsatisfiedTasks = (TASKS)getWrapper(UNSATISFIED_TASKS_ID);
-        addConditionCommand = (ADD_COMMAND)getWrapper(ADD_CONDITION_ID);
-        addSatisifedTaskCommand = (ADD_COMMAND)getWrapper(ADD_SATISFIED_TASK_ID);
-        addUnsatisifedTaskCommand = (ADD_COMMAND)getWrapper(ADD_UNSATISFIED_TASK_ID);
-    }
-
-    @Override
     public CONDITIONS getConditions() {
-        return conditions;
+        return (CONDITIONS) getWrapper(CONDITIONS_ID);
     }
 
     @Override
     public TASKS getSatisfiedTasks() {
-        return satisfiedTasks;
+        return (TASKS) getWrapper(SATISFIED_TASKS_ID);
     }
 
     @Override
     public TASKS getUnsatisfiedTasks() {
-        return unsatisfiedTasks;
+        return (TASKS) getWrapper(UNSATISFIED_TASKS_ID);
     }
 
     @Override
     public ADD_COMMAND getAddConditionCommand() {
-        return addConditionCommand;
+        return (ADD_COMMAND) getWrapper(ADD_CONDITION_ID);
     }
 
     @Override
     public ADD_COMMAND getAddSatisifedTaskCommand() {
-        return addSatisifedTaskCommand;
+        return (ADD_COMMAND) getWrapper(ADD_SATISFIED_TASK_ID);
     }
 
     @Override
     public ADD_COMMAND getAddUnsatisifedTaskCommand() {
-        return addUnsatisifedTaskCommand;
+        return (ADD_COMMAND) getWrapper(ADD_UNSATISFIED_TASK_ID);
     }
 }

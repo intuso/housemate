@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.comms.message.StringMessageValue;
+import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.resources.Resources;
@@ -183,8 +183,8 @@ public abstract class Router implements Sender, Receiver {
             connected = false;
             if(clientId != null)
                 receivers.remove(clientId);
-            Router.this.sendMessage(new Message<StringMessageValue>(new String[] {""}, Root.CONNECTION_LOST_TYPE,
-                    new StringMessageValue(clientId)));
+            Router.this.sendMessage(new Message<StringPayload>(new String[] {""}, Root.CONNECTION_LOST_TYPE,
+                    new StringPayload(clientId)));
         }
     }
 }

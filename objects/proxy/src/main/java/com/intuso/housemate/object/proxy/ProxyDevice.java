@@ -33,10 +33,6 @@ public abstract class ProxyDevice<
         extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, DeviceData, COMMAND, VALUE, DEVICE, DeviceListener<? super DEVICE>>
         implements Device<COMMAND, COMMAND, COMMAND, COMMANDS, VALUE, VALUE, VALUE, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE> {
 
-    private COMMANDS commandList;
-    private VALUES valueList;
-    private PROPERTIES propertyList;
-
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
@@ -47,25 +43,17 @@ public abstract class ProxyDevice<
     }
 
     @Override
-    protected final void getChildObjects() {
-        super.getChildObjects();
-        commandList = (COMMANDS)getWrapper(COMMANDS_ID);
-        valueList = (VALUES)getWrapper(VALUES_ID);
-        propertyList = (PROPERTIES)getWrapper(PROPERTIES_ID);
-    }
-
-    @Override
     public final COMMANDS getCommands() {
-        return commandList;
+        return (COMMANDS) getWrapper(COMMANDS_ID);
     }
 
     @Override
     public final VALUES getValues() {
-        return valueList;
+        return (VALUES) getWrapper(VALUES_ID);
     }
 
     @Override
     public final PROPERTIES getProperties() {
-        return propertyList;
+        return (PROPERTIES) getWrapper(PROPERTIES_ID);
     }
 }

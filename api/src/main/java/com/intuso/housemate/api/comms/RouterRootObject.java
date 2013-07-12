@@ -4,7 +4,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.comms.message.AuthenticationResponse;
-import com.intuso.housemate.api.comms.message.StringMessageValue;
+import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
@@ -123,7 +123,7 @@ public class RouterRootObject
      * @param key the unknown key
      */
     public void unknownClient(String key) {
-        sendMessage(Root.CONNECTION_LOST_TYPE, new StringMessageValue(key));
+        sendMessage(Root.CONNECTION_LOST_TYPE, new StringPayload(key));
     }
 
     @Override

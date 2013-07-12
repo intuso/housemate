@@ -70,8 +70,8 @@ public abstract class HousemateData<DATA extends HousemateData<?>>
      */
     public final HousemateData deepClone() {
         HousemateData result = clone();
-        for(Map.Entry<String, DATA> child : getSubWrappables().entrySet())
-            result.addWrappable(child.getValue().deepClone());
+        for(Map.Entry<String, DATA> child : getChildData().entrySet())
+            result.addChildData(child.getValue().deepClone());
         return result;
     }
 }

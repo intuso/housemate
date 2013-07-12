@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.wrapper.WrapperListener;
 
 import java.util.Iterator;
 
@@ -26,7 +27,7 @@ public abstract class ProxyList<
             CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
             LIST extends ProxyList<RESOURCES, CHILD_RESOURCES, CHILD_DATA, CHILD, LIST>>
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, ListData<CHILD_DATA>, CHILD_DATA, CHILD, LIST, ListListener<? super CHILD>>
-        implements List<CHILD> {
+        implements List<CHILD>, WrapperListener<CHILD> {
 
     /**
      * @param resources {@inheritDoc}
@@ -60,18 +61,15 @@ public abstract class ProxyList<
                 }
                 wrapper.init(ProxyList.this);
                 addWrapper(wrapper);
-                for(ListListener<? super CHILD> listener : getObjectListeners())
-                    listener.elementAdded(wrapper);
             }
         }));
         result.add(addMessageListener(REMOVE_TYPE, new Receiver<HousemateData>() {
             @Override
             public void messageReceived(Message<HousemateData> message) throws HousemateException {
-                CHILD wrapper = removeWrapper(message.getPayload().getId());
+                CHILD wrapper = getWrapper(message.getPayload().getId());
                 if(wrapper != null) {
                     wrapper.uninit();
-                    for(ListListener<? super CHILD> listener : getObjectListeners())
-                        listener.elementRemoved(wrapper);
+                    removeWrapper(wrapper.getId());
                 }
             }
         }));
@@ -80,7 +78,7 @@ public abstract class ProxyList<
 
     @Override
     public final CHILD get(String name) {
-        return (CHILD)getWrapper(name);
+        return getWrapper(name);
     }
 
     @Override
@@ -91,5 +89,19 @@ public abstract class ProxyList<
     @Override
     public Iterator<CHILD> iterator() {
         return getWrappers().iterator();
+    }
+
+    @Override
+    public void childWrapperAdded(String childId, CHILD wrapper) {
+        super.childWrapperAdded(childId, wrapper);
+        for(ListListener<? super CHILD> listener : getObjectListeners())
+            listener.elementAdded(wrapper);
+    }
+
+    @Override
+    public void childWrapperRemoved(String childId, CHILD wrapper) {
+        super.childWrapperRemoved(childId, wrapper);
+        for(ListListener<? super CHILD> listener : getObjectListeners())
+            listener.elementRemoved(wrapper);
     }
 }

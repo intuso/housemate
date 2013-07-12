@@ -20,8 +20,6 @@ public abstract class ProxyUser<
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, UserData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, USER, UserListener>
         implements User<COMMAND> {
 
-    private COMMAND removeCommand;
-
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
@@ -32,13 +30,7 @@ public abstract class ProxyUser<
     }
 
     @Override
-    protected void getChildObjects() {
-        super.getChildObjects();
-        removeCommand = (COMMAND) getWrapper(REMOVE_COMMAND_ID);
-    }
-
-    @Override
     public COMMAND getRemoveCommand() {
-        return removeCommand;
+        return (COMMAND) getWrapper(REMOVE_COMMAND_ID);
     }
 }

@@ -68,6 +68,7 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                 if(ENVIRONMENT.getResources().getRoot() != null)
                     ENVIRONMENT.getResources().getRoot().uninit();
                 ENVIRONMENT.getResources().setRoot(new GWTProxyRootObject(ENVIRONMENT.getResources(), ENVIRONMENT.getResources()));
+                ENVIRONMENT.getResources().getRoot().addWrapperListener(new AutoLoader());
                 // add the main view to the root panel of the page
                 RootPanel.get().add(FACTORY.getPage());
                 // connect the root object

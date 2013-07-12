@@ -30,12 +30,6 @@ public abstract class ProxyCondition<
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, ConditionData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, CONDITION, ConditionListener<? super CONDITION>>
         implements Condition<VALUE, VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS> {
 
-    private VALUE error;
-    private VALUE satisfied;
-    private PROPERTIES propertyList;
-    private CONDITIONS conditionList;
-    private ADD_COMMAND addConditionCommand;
-
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
@@ -46,19 +40,9 @@ public abstract class ProxyCondition<
     }
 
     @Override
-    protected final void getChildObjects() {
-        super.getChildObjects();
-        error = (VALUE)getWrapper(ERROR_ID);
-        satisfied = (VALUE)getWrapper(SATISFIED_ID);
-        propertyList = (PROPERTIES)getWrapper(PROPERTIES_ID);
-        conditionList = (CONDITIONS)getWrapper(CONDITIONS_ID);
-        addConditionCommand = (ADD_COMMAND)getWrapper(Automation.ADD_CONDITION_ID);
-    }
-
-    @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(satisfied.addObjectListener(new ValueListener<VALUE>() {
+        result.add(getSatisfiedValue().addObjectListener(new ValueListener<VALUE>() {
 
             @Override
             public void valueChanging(VALUE value) {
@@ -71,7 +55,7 @@ public abstract class ProxyCondition<
                     listener.conditionSatisfied(getThis(), isSatisfied());
             }
         }));
-        result.add(error.addObjectListener(new ValueListener<VALUE>() {
+        result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
 
             @Override
             public void valueChanging(VALUE value) {
@@ -89,36 +73,38 @@ public abstract class ProxyCondition<
 
     @Override
     public final PROPERTIES getProperties() {
-        return propertyList;
+        return (PROPERTIES) getWrapper(PROPERTIES_ID);
     }
 
     @Override
     public CONDITIONS getConditions() {
-        return conditionList;
+        return (CONDITIONS) getWrapper(CONDITIONS_ID);
     }
 
     @Override
     public ADD_COMMAND getAddConditionCommand() {
-        return addConditionCommand;
+        return (ADD_COMMAND) getWrapper(Automation.ADD_CONDITION_ID);
     }
 
     @Override
     public final VALUE getErrorValue() {
-        return error;
+        return (VALUE) getWrapper(ERROR_ID);
     }
 
     @Override
     public final String getError() {
+        VALUE error = getErrorValue();
         return error.getTypeInstances() != null ? error.getTypeInstances().getFirstValue() : null;
     }
 
     @Override
     public final VALUE getSatisfiedValue() {
-        return satisfied;
+        return (VALUE) getWrapper(SATISFIED_ID);
     }
 
     @Override
     public final boolean isSatisfied() {
+        VALUE satisfied = getSatisfiedValue();
         return satisfied.getTypeInstances() != null && satisfied.getTypeInstances().getFirstValue() != null
                 ? Boolean.parseBoolean(satisfied.getTypeInstances().getFirstValue()) : false;
     }

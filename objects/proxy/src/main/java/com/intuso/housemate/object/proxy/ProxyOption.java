@@ -23,8 +23,6 @@ public abstract class ProxyOption<
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, OptionData, ListData<SubTypeData>, SUB_TYPES, OPTION, OptionListener>
         implements Option<SUB_TYPES> {
 
-    private SUB_TYPES subTypes;
-
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
@@ -35,13 +33,7 @@ public abstract class ProxyOption<
     }
 
     @Override
-    protected void getChildObjects() {
-        super.getChildObjects();
-        subTypes = getWrapper(SUB_TYPES_ID);
-    }
-
-    @Override
     public SUB_TYPES getSubTypes() {
-        return subTypes;
+        return getWrapper(SUB_TYPES_ID);
     }
 }

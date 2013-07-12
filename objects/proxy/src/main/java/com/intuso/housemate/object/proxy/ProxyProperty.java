@@ -24,8 +24,6 @@ public abstract class ProxyProperty<
         extends ProxyValueBase<RESOURCES, CHILD_RESOURCES, PropertyData, CommandData, SET_COMMAND, TYPE, PROPERTY>
         implements Property<TYPE, SET_COMMAND, PROPERTY> {
 
-    private SET_COMMAND setCommand;
-
     /**
      * @param resources {@inheritDoc}
      * @param childResources {@inheritDoc}
@@ -33,12 +31,6 @@ public abstract class ProxyProperty<
      */
     public ProxyProperty(RESOURCES resources, CHILD_RESOURCES childResources, PropertyData data) {
         super(resources, childResources, data);
-    }
-
-    @Override
-    protected void getChildObjects() {
-        super.getChildObjects();
-        setCommand = (SET_COMMAND) getWrapper(SET_COMMAND_ID);
     }
 
     @Override
@@ -52,6 +44,6 @@ public abstract class ProxyProperty<
 
     @Override
     public SET_COMMAND getSetCommand() {
-        return setCommand;
+        return (SET_COMMAND) getWrapper(SET_COMMAND_ID);
     }
 }

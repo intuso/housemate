@@ -8,7 +8,6 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.wrapper.Wrapper;
-import com.intuso.utilities.wrapper.WrapperListener;
 
 import java.util.Iterator;
 
@@ -19,7 +18,7 @@ public class ListBridge<
             OWR extends BaseObject<?>,
             WR extends BridgeObject<? extends WBL, ?, ?, ?, ?>>
         extends BridgeObject<ListData<WBL>, WBL, WR, ListBridge<WBL, OWR, WR>, ListListener<? super WR>>
-        implements List<WR>, WrapperListener<WR> {
+        implements List<WR> {
 
     private ListenerRegistration otherListListener;
 
@@ -50,27 +49,27 @@ public class ListBridge<
     @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        if(otherListListener != null)
-            result.add(otherListListener);
-        result.add(addWrapperListener(this));
+        result.add(otherListListener);
         return result;
     }
 
     @Override
-    public void childWrapperAdded(String childName, WR wrapper) {
-        wrapper.init(this);
-        addLoadedBy(wrapper);
-        broadcastMessage(ADD_TYPE, wrapper.getData().deepClone());
+    public void childWrapperAdded(String childId, WR child) {
+        super.childWrapperAdded(childId, child);
+        child.init(this);
+        addLoadedBy(child);
+        broadcastMessage(ADD_TYPE, child.getData().deepClone());
         for(ListListener<? super WR> listener : getObjectListeners())
-            listener.elementAdded(wrapper);
+            listener.elementAdded(child);
     }
 
     @Override
-    public void childWrapperRemoved(String name, WR wrapper) {
-        wrapper.uninit();
-        broadcastMessage(REMOVE_TYPE, wrapper.getData());
+    public void childWrapperRemoved(String childId, WR child) {
+        super.childWrapperRemoved(childId, child);
+        child.uninit();
+        broadcastMessage(REMOVE_TYPE, child.getData());
         for(ListListener<? super WR> listener : getObjectListeners())
-            listener.elementRemoved(wrapper);
+            listener.elementRemoved(child);
     }
 
     @Override
