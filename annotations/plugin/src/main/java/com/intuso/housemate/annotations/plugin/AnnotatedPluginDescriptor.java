@@ -107,19 +107,21 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
                 }
         }
         Devices devices = getClass().getAnnotation(Devices.class);
-        for(Class<? extends RealDevice> deviceClass : devices.value()) {
-            FactoryInformation information = deviceClass.getAnnotation(FactoryInformation.class);
-            if(information == null)
-                throw new HousemateException("Device class " + deviceClass.getName() + " has no "
-                        + FactoryInformation.class.getName() + " annotation");
-            Constructor<? extends RealDevice> constructor;
-            try {
-                 constructor = deviceClass.getConstructor(
-                        RealResources.class, String.class, String.class, String.class);
-            } catch(NoSuchMethodException e) {
-                throw new HousemateException("Device class " + deviceClass.getName() + " does not have the correct constructor");
+        if(devices != null) {
+            for(Class<? extends RealDevice> deviceClass : devices.value()) {
+                FactoryInformation information = deviceClass.getAnnotation(FactoryInformation.class);
+                if(information == null)
+                    throw new HousemateException("Device class " + deviceClass.getName() + " has no "
+                            + FactoryInformation.class.getName() + " annotation");
+                Constructor<? extends RealDevice> constructor;
+                try {
+                     constructor = deviceClass.getConstructor(
+                            RealResources.class, String.class, String.class, String.class);
+                } catch(NoSuchMethodException e) {
+                    throw new HousemateException("Device class " + deviceClass.getName() + " does not have the correct constructor");
+                }
+                this.deviceFactories.add(new SimpleDeviceFactory(information, constructor));
             }
-            this.deviceFactories.add(new SimpleDeviceFactory(information, constructor));
         }
     }
 
@@ -134,19 +136,21 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
                 }
         }
         Conditions conditions = getClass().getAnnotation(Conditions.class);
-        for(Class<? extends BrokerRealCondition> conditionClass : conditions.value()) {
-            FactoryInformation information = conditionClass.getAnnotation(FactoryInformation.class);
-            if(information == null)
-                throw new HousemateException("Condition class " + conditionClass.getName() + " has no "
-                        + FactoryInformation.class.getName() + " annotation");
-            Constructor<? extends BrokerRealCondition> constructor;
-            try {
-                constructor = conditionClass.getConstructor(
-                        BrokerRealResources.class, String.class, String.class, String.class);
-            } catch(NoSuchMethodException e) {
-                throw new HousemateException("Condition class " + conditionClass.getName() + " does not have the correct constructor");
+        if(conditions != null) {
+            for(Class<? extends BrokerRealCondition> conditionClass : conditions.value()) {
+                FactoryInformation information = conditionClass.getAnnotation(FactoryInformation.class);
+                if(information == null)
+                    throw new HousemateException("Condition class " + conditionClass.getName() + " has no "
+                            + FactoryInformation.class.getName() + " annotation");
+                Constructor<? extends BrokerRealCondition> constructor;
+                try {
+                    constructor = conditionClass.getConstructor(
+                            BrokerRealResources.class, String.class, String.class, String.class);
+                } catch(NoSuchMethodException e) {
+                    throw new HousemateException("Condition class " + conditionClass.getName() + " does not have the correct constructor");
+                }
+                this.conditionFactories.add(new SimpleConditionFactory(information, constructor));
             }
-            this.conditionFactories.add(new SimpleConditionFactory(information, constructor));
         }
     }
 
@@ -161,19 +165,21 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
                 }
         }
         Tasks tasks = getClass().getAnnotation(Tasks.class);
-        for(Class<? extends BrokerRealTask> taskClass : tasks.value()) {
-            FactoryInformation information = taskClass.getAnnotation(FactoryInformation.class);
-            if(information == null)
-                throw new HousemateException("Task class " + taskClass.getName() + " has no "
-                        + FactoryInformation.class.getName() + " annotation");
-            Constructor<? extends BrokerRealTask> constructor;
-            try {
-                constructor = taskClass.getConstructor(
-                        BrokerRealResources.class, String.class, String.class, String.class);
-            } catch(NoSuchMethodException e) {
-                throw new HousemateException("Task class " + taskClass.getName() + " does not have the correct constructor");
+        if(tasks != null) {
+            for(Class<? extends BrokerRealTask> taskClass : tasks.value()) {
+                FactoryInformation information = taskClass.getAnnotation(FactoryInformation.class);
+                if(information == null)
+                    throw new HousemateException("Task class " + taskClass.getName() + " has no "
+                            + FactoryInformation.class.getName() + " annotation");
+                Constructor<? extends BrokerRealTask> constructor;
+                try {
+                    constructor = taskClass.getConstructor(
+                            BrokerRealResources.class, String.class, String.class, String.class);
+                } catch(NoSuchMethodException e) {
+                    throw new HousemateException("Task class " + taskClass.getName() + " does not have the correct constructor");
+                }
+                this.taskFactories.add(new SimpleTaskFactory(information, constructor));
             }
-            this.taskFactories.add(new SimpleTaskFactory(information, constructor));
         }
     }
 

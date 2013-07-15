@@ -46,15 +46,15 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                 ActivityManager activityManager = new ActivityManager(FACTORY.getActivityMapper(), FACTORY.getEventBus());
                 activityManager.setDisplay(FACTORY.getPage().getContainer());
 
-                // set up the history handler
+                // setup the history handler
                 FACTORY.getPlaceHistoryHandler().register(FACTORY.getPlaceController(), FACTORY.getEventBus(), new HomePlace());
 
-                // add our default handlers
+                // setup our HM stuff
+                ENVIRONMENT.getResources().getLoginManager().init();
                 ENVIRONMENT.getResources().getRouter().addObjectListener(Housemate.this);
                 FACTORY.getEventBus().addHandler(PerformCommandEvent.TYPE, PerformCommandHandler.HANDLER);
 
                 // start the first login
-                ENVIRONMENT.getResources().getLoginManager().init();
                 ENVIRONMENT.getResources().getLoginManager().startLogin();
             }
         });

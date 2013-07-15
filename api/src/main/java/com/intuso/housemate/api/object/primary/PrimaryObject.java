@@ -23,12 +23,12 @@ public interface PrimaryObject<
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
         extends BaseHousemateObject<LISTENER> {
 
-    public final static String REMOVE_COMMAND_ID = "remove";
-    public final static String CONNECTED_VALUE_ID = "connected";
-    public final static String RUNNING_VALUE_ID = "running";
-    public final static String START_COMMAND_ID = "start";
-    public final static String STOP_COMMAND_ID = "stop";
-    public final static String ERROR_VALUE_ID = "error";
+    public final static String REMOVE_ID = "remove";
+    public final static String CONNECTED_ID = "connected";
+    public final static String RUNNING_ID = "running";
+    public final static String START_ID = "start";
+    public final static String STOP_ID = "stop";
+    public final static String ERROR_ID = "error";
 
     /**
      * Gets the remove command

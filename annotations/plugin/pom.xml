@@ -10,7 +10,7 @@
 
 	<artifactId>annotations-plugin</artifactId>
     <packaging>jar</packaging>
-    <name>Housemate Plugin Annotations</name>
+    <name>Housemate Annotations Plugin</name>
     <description>Annotations to help development of plugins</description>
 
     <dependencies>

@@ -36,7 +36,7 @@ public abstract class BrokerRealPrimaryObject<
      */
     public BrokerRealPrimaryObject(BrokerRealResources resources, DATA data, final String objectType) {
         super(resources, data);
-        this.remove = new BrokerRealCommand(resources, REMOVE_COMMAND_ID, REMOVE_COMMAND_ID, "Remove the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
+        this.remove = new BrokerRealCommand(resources, REMOVE_ID, REMOVE_ID, "Remove the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning())
@@ -44,9 +44,9 @@ public abstract class BrokerRealPrimaryObject<
                 remove();
             }
         };
-        this.connected = new BrokerRealValue<Boolean>(resources, CONNECTED_VALUE_ID, CONNECTED_VALUE_ID, "Whether the " + objectType + " is connected or not", new BooleanType(resources.getRealResources()), true);
-        this.running = new BrokerRealValue<Boolean>(resources, RUNNING_VALUE_ID, RUNNING_VALUE_ID, "Whether the " + objectType + " is running or not", new BooleanType(resources.getRealResources()), false);
-        this.start = new BrokerRealCommand(resources, START_COMMAND_ID, START_COMMAND_ID, "Start the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
+        this.connected = new BrokerRealValue<Boolean>(resources, CONNECTED_ID, CONNECTED_ID, "Whether the " + objectType + " is connected or not", new BooleanType(resources.getRealResources()), true);
+        this.running = new BrokerRealValue<Boolean>(resources, RUNNING_ID, RUNNING_ID, "Whether the " + objectType + " is running or not", new BooleanType(resources.getRealResources()), false);
+        this.start = new BrokerRealCommand(resources, START_ID, START_ID, "Start the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(!isRunning()) {
@@ -55,7 +55,7 @@ public abstract class BrokerRealPrimaryObject<
                 }
             }
         };
-        this.stop = new BrokerRealCommand(resources, STOP_COMMAND_ID, STOP_COMMAND_ID, "Stop the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
+        this.stop = new BrokerRealCommand(resources, STOP_ID, STOP_ID, "Stop the " + objectType, Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning()) {
@@ -64,7 +64,7 @@ public abstract class BrokerRealPrimaryObject<
                 }
             }
         };
-        this.error = new BrokerRealValue<String>(resources, ERROR_VALUE_ID, ERROR_VALUE_ID, "Current error for the " + objectType, new StringType(resources.getRealResources()), null);
+        this.error = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "Current error for the " + objectType, new StringType(resources.getRealResources()), null);
         addChild(this.remove);
         addChild(this.running);
         addChild(this.start);

@@ -36,33 +36,43 @@ public abstract class ProxyTask<
 
     @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
-        java.util.List<ListenerRegistration>result = super.registerListeners();
-        result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
-
+        final java.util.List<ListenerRegistration>result = super.registerListeners();
+        addChildLoadedListener(EXECUTING_ID, new ChildLoadedListener<TASK, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
             @Override
-            public void valueChanging(VALUE value) {
-                // do nothing
-            }
+            public void childLoaded(TASK object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+                result.add(getExecutingValue().addObjectListener(new ValueListener<VALUE>() {
 
-            @Override
-            public void valueChanged(VALUE value) {
-                for(TaskListener listener : getObjectListeners())
-                    listener.taskExecuting(getThis(), isExecuting());
-            }
-        }));
-        result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
+                    @Override
+                    public void valueChanging(VALUE value) {
+                        // do nothing
+                    }
 
-            @Override
-            public void valueChanging(VALUE value) {
-                // do nothing
+                    @Override
+                    public void valueChanged(VALUE value) {
+                        for(TaskListener listener : getObjectListeners())
+                            listener.taskExecuting(getThis(), isExecuting());
+                    }
+                }));
             }
+        });
+        addChildLoadedListener(ERROR_ID, new ChildLoadedListener<TASK, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
+            @Override
+            public void childLoaded(TASK object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+                result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
 
-            @Override
-            public void valueChanged(VALUE value) {
-                for(TaskListener listener : getObjectListeners())
-                    listener.taskError(getThis(), getError());
+                    @Override
+                    public void valueChanging(VALUE value) {
+                        // do nothing
+                    }
+
+                    @Override
+                    public void valueChanged(VALUE value) {
+                        for(TaskListener listener : getObjectListeners())
+                            listener.taskError(getThis(), getError());
+                    }
+                }));
             }
-        }));
+        });
         return result;
     }
 

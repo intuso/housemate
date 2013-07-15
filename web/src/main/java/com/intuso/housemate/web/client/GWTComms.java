@@ -3,7 +3,6 @@ package com.intuso.housemate.web.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.Resources;
@@ -41,9 +40,9 @@ public class GWTComms extends Router {
                 getLog().d("Message received " + message.toString());
                 try {
                     messageReceived(message);
-                } catch(HousemateException e) {
+                } catch(Throwable t) {
                     getLog().e("Failed to process received message");
-                    getLog().st(e);
+                    getLog().st(t);
                 }
             }
 

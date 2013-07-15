@@ -40,7 +40,7 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public COMMAND getRemoveCommand() {
-        return (COMMAND) getChild(REMOVE_COMMAND_ID);
+        return (COMMAND) getChild(REMOVE_ID);
     }
 
     @Override
@@ -52,7 +52,7 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public VALUE getConnectedValue() {
-        return (VALUE) getChild(CONNECTED_VALUE_ID);
+        return (VALUE) getChild(CONNECTED_ID);
     }
 
     @Override
@@ -64,17 +64,17 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public VALUE getRunningValue() {
-        return (VALUE) getChild(RUNNING_VALUE_ID);
+        return (VALUE) getChild(RUNNING_ID);
     }
 
     @Override
     public COMMAND getStartCommand() {
-        return (COMMAND) getChild(START_COMMAND_ID);
+        return (COMMAND) getChild(START_ID);
     }
 
     @Override
     public COMMAND getStopCommand() {
-        return (COMMAND) getChild(STOP_COMMAND_ID);
+        return (COMMAND) getChild(STOP_ID);
     }
 
     @Override
@@ -85,42 +85,48 @@ public abstract class ProxyPrimaryObject<
 
     @Override
     public VALUE getErrorValue() {
-        return (VALUE) getChild(ERROR_VALUE_ID);
+        return (VALUE) getChild(ERROR_ID);
     }
 
     @Override
     public List<ListenerRegistration> registerListeners() {
-        List<ListenerRegistration> result = super.registerListeners();
-        if(getRunningValue() != null) {
-            result.add(getRunningValue().addObjectListener(new ValueListener<VALUE>() {
+        final List<ListenerRegistration> result = super.registerListeners();
+        addChildLoadedListener(RUNNING_ID, new ChildLoadedListener<PRIMARY_OBJECT, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
+            @Override
+            public void childLoaded(PRIMARY_OBJECT object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+                result.add(getRunningValue().addObjectListener(new ValueListener<VALUE>() {
 
-                @Override
-                public void valueChanging(VALUE value) {
-                    // do nothing
-                }
+                    @Override
+                    public void valueChanging(VALUE value) {
+                        // do nothing
+                    }
 
-                @Override
-                public void valueChanged(VALUE value) {
-                    for(PrimaryListener<? super PRIMARY_OBJECT> listener : getObjectListeners())
-                        listener.running(getThis(), isRunning());
-                }
-            }));
-        }
-        if(getErrorValue() != null) {
-            result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
+                    @Override
+                    public void valueChanged(VALUE value) {
+                        for(PrimaryListener<? super PRIMARY_OBJECT> listener : getObjectListeners())
+                            listener.running(getThis(), isRunning());
+                    }
+                }));
+            }
+        });
+        addChildLoadedListener(ERROR_ID, new ChildLoadedListener<PRIMARY_OBJECT, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
+            @Override
+            public void childLoaded(PRIMARY_OBJECT object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+                result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
 
-                @Override
-                public void valueChanging(VALUE value) {
-                    // do nothing
-                }
+                    @Override
+                    public void valueChanging(VALUE value) {
+                        // do nothing
+                    }
 
-                @Override
-                public void valueChanged(VALUE value) {
-                    for(PrimaryListener<? super PRIMARY_OBJECT> listener : getObjectListeners())
-                        listener.error(getThis(), getError());
-                }
-            }));
-        }
+                    @Override
+                    public void valueChanged(VALUE value) {
+                        for(PrimaryListener<? super PRIMARY_OBJECT> listener : getObjectListeners())
+                            listener.error(getThis(), getError());
+                    }
+                }));
+            }
+        });
         return result;
     }
 }

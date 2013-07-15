@@ -42,18 +42,18 @@ public class BrokerProxyPrimaryObject<
     protected BrokerProxyPrimaryObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, HousemateData<?>, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> resources,
                                        BrokerRealResources realResources, DATA data) {
         super(resources, data);
-        connected = new BrokerRealValue<Boolean>(realResources, CONNECTED_VALUE_ID, CONNECTED_VALUE_ID,
+        connected = new BrokerRealValue<Boolean>(realResources, CONNECTED_ID, CONNECTED_ID,
                 "Whether the server has a connection open to control the object",
                 new BooleanType(realResources.getRealResources()), true);
     }
 
     @Override
     protected void getChildObjects() {
-        remove = (BrokerProxyCommand) getChild(REMOVE_COMMAND_ID);
-        running = (BrokerProxyValue) getChild(RUNNING_VALUE_ID);
-        start = (BrokerProxyCommand) getChild(START_COMMAND_ID);
-        stop = (BrokerProxyCommand) getChild(STOP_COMMAND_ID);
-        error = (BrokerProxyValue) getChild(ERROR_VALUE_ID);
+        remove = (BrokerProxyCommand) getChild(REMOVE_ID);
+        running = (BrokerProxyValue) getChild(RUNNING_ID);
+        start = (BrokerProxyCommand) getChild(START_ID);
+        stop = (BrokerProxyCommand) getChild(STOP_ID);
+        error = (BrokerProxyValue) getChild(ERROR_ID);
     }
 
     @Override

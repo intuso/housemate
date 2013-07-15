@@ -10,7 +10,7 @@
 
 	<artifactId>annotations-basic</artifactId>
     <packaging>jar</packaging>
-    <name>Housemate Basic Annotations</name>
+    <name>Housemate Annotations Basic</name>
     <description>Basic Annotations to help development of higher-level objects</description>
 
     <dependencies>

@@ -258,6 +258,12 @@ public class BrokerObjectStorage implements Storage {
             registration = propertyListeners.remove(device);
             if(registration != null)
                 registration.removeListener();
+            try {
+                removeValues(device.getPath());
+            } catch(HousemateException e) {
+                log.e("Failed to delete device properties");
+                log.st(e);
+            }
         }
     }
 
@@ -307,6 +313,12 @@ public class BrokerObjectStorage implements Storage {
             registration = unsatisfiedTaskListeners.remove(automation);
             if(registration != null)
                 registration.removeListener();
+            try {
+                removeValues(automation.getPath());
+            } catch(HousemateException e) {
+                log.e("Failed to delete automation properties");
+                log.st(e);
+            }
         }
     }
 

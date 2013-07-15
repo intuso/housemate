@@ -35,7 +35,7 @@ public abstract class RealPrimaryObject<
      */
     public RealPrimaryObject(RealResources resources, DATA data, final String objectType) {
         super(resources, data);
-        this.remove = new RealCommand(resources, REMOVE_COMMAND_ID, REMOVE_COMMAND_ID, "Remove the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
+        this.remove = new RealCommand(resources, REMOVE_ID, REMOVE_ID, "Remove the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning())
@@ -43,8 +43,8 @@ public abstract class RealPrimaryObject<
                 remove();
             }
         };
-        this.running = BooleanType.createValue(resources, RUNNING_VALUE_ID, RUNNING_VALUE_ID, "Whether the " + objectType + " is running or not", false);
-        this.start = new RealCommand(resources, START_COMMAND_ID, START_COMMAND_ID, "Start the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
+        this.running = BooleanType.createValue(resources, RUNNING_ID, RUNNING_ID, "Whether the " + objectType + " is running or not", false);
+        this.start = new RealCommand(resources, START_ID, START_ID, "Start the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(!isRunning()) {
@@ -53,7 +53,7 @@ public abstract class RealPrimaryObject<
                 }
             }
         };
-        this.stop = new RealCommand(resources, STOP_COMMAND_ID, STOP_COMMAND_ID, "Stop the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
+        this.stop = new RealCommand(resources, STOP_ID, STOP_ID, "Stop the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning()) {
@@ -62,7 +62,7 @@ public abstract class RealPrimaryObject<
                 }
             }
         };
-        this.error = StringType.createValue(resources, ERROR_VALUE_ID, ERROR_VALUE_ID, "Current error for the " + objectType, null);
+        this.error = StringType.createValue(resources, ERROR_ID, ERROR_ID, "Current error for the " + objectType, null);
         addChild(this.remove);
         addChild(this.running);
         addChild(this.start);

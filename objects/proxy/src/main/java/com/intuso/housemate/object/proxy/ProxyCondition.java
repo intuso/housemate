@@ -41,33 +41,43 @@ public abstract class ProxyCondition<
 
     @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
-        java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(getSatisfiedValue().addObjectListener(new ValueListener<VALUE>() {
-
+        final java.util.List<ListenerRegistration> result = super.registerListeners();
+        addChildLoadedListener(SATISFIED_ID, new ChildLoadedListener<CONDITION, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
             @Override
-            public void valueChanging(VALUE value) {
-                // do nothing
-            }
+            public void childLoaded(CONDITION object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+                result.add(getSatisfiedValue().addObjectListener(new ValueListener<VALUE>() {
 
-            @Override
-            public void valueChanged(VALUE value) {
-                for(ConditionListener listener : getObjectListeners())
-                    listener.conditionSatisfied(getThis(), isSatisfied());
-            }
-        }));
-        result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
+                    @Override
+                    public void valueChanging(VALUE value) {
+                        // do nothing
+                    }
 
-            @Override
-            public void valueChanging(VALUE value) {
-                // do nothing
+                    @Override
+                    public void valueChanged(VALUE value) {
+                        for(ConditionListener listener : getObjectListeners())
+                            listener.conditionSatisfied(getThis(), isSatisfied());
+                    }
+                }));
             }
+        });
+        addChildLoadedListener(ERROR_ID, new ChildLoadedListener<CONDITION, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
+            @Override
+            public void childLoaded(CONDITION object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+                result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
 
-            @Override
-            public void valueChanged(VALUE value) {
-                for(ConditionListener listener : getObjectListeners())
-                    listener.conditionError(getThis(), getError());
+                    @Override
+                    public void valueChanging(VALUE value) {
+                        // do nothing
+                    }
+
+                    @Override
+                    public void valueChanged(VALUE value) {
+                        for(ConditionListener listener : getObjectListeners())
+                            listener.conditionError(getThis(), getError());
+                    }
+                }));
             }
-        }));
+        });
         return result;
     }
 
