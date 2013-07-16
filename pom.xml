@@ -74,8 +74,8 @@
     </build>
 
     <scm>
-        <connection>scm:svn:svn+ssh://tom@intuso.com/svn/intuso.com/housemate/trunk</connection>
-        <developerConnection>scm:svn:https://intuso.com/svn/housemate/trunk/</developerConnection>
+        <connection>scm:svn:svn+ssh://tom@dev.intuso.com/svn/intuso.com/housemate/trunk</connection>
+        <developerConnection>scm:svn:svn+ssh://tom@dev.intuso.com/svn/intuso.com/housemate/trunk</developerConnection>
     </scm>
 
     <!--distributionManagement>
