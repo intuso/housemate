@@ -30,7 +30,7 @@ public class TVRemote extends RealDevice {
     }
 
     @Command(id = "volume-down", name = "Volume Down", description = "Volume down")
-    public void volumeDOwn() throws HousemateException {
+    public void volumeDown() throws HousemateException {
         irSend("KEY_VOLUMEDOWN");
     }
 
