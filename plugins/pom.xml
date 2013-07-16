@@ -18,6 +18,7 @@
         <module>arduino-temp-sensor</module>
         <module>rfxcom</module>
         <module>run-program-device</module>
+        <module>tv-remote</module>
         <module>twitter</module>
     </modules>
 
