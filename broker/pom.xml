@@ -60,6 +60,7 @@
             <groupId>com.intuso.housemate</groupId>
             <artifactId>web</artifactId>
             <version>${project.version}</version>
+	    <type>war</type>
         </dependency>
 
         <!-- Jetty server/web container stuff -->
