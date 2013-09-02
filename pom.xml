@@ -77,17 +77,17 @@
         <connection>scm:svn:svn+ssh://tom@dev.intuso.com/svn/intuso.com/housemate/trunk</connection>
         <developerConnection>scm:svn:svn+ssh://tom@dev.intuso.com/svn/intuso.com/housemate/trunk</developerConnection>
     </scm>
-
-    <!--distributionManagement>
+    
+     <distributionManagement>
         <repository>
-            <id>central</id>
-            <name>intuso.com-releases</name>
-            <url>https://intuso.com/artifactory/libs-releases-local/</url>
+            <id>intuso-maven</id>
+            <name>intuso-maven-releases</name>
+            <url>http://dev.intuso.com/maven/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <name>intuso.com-snapshots</name>
-            <url>https://intuso.com/artifactory/libs-snapshot-local/</url>
+            <id>intuso-maven</id>
+            <name>intuso-maven-snapshots</name>
+            <url>http://dev.intuso.com/maven/content/repositories/snapshots/</url>
         </snapshotRepository>
-    </distributionManagement-->
+    </distributionManagement>
 </project>
