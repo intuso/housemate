@@ -55,6 +55,13 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Web interface. Depended on so it builds before the broker module -->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Jetty server/web container stuff -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
