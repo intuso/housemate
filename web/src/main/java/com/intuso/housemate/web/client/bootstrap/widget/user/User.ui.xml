@@ -3,13 +3,11 @@
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
-        <b:Row>
-            <b:Column size="8">
-                <b:Heading size="3">General</b:Heading>
-                <b:ButtonGroup>
-                    <h:command.PerformButton ui:field="removeButton">Remove</h:command.PerformButton>
-                </b:ButtonGroup>
-            </b:Column>
-        </b:Row>
+        <g:SimplePanel addStyleNames="clearfix">
+            <b:Button ui:field="settings" addStyleNames="pull-right btn-mini" icon="COG"/>
+        </g:SimplePanel>
+        <b:Collapse ui:field="settingsPanel" defaultOpen="false">
+            <h:object.Control ui:field="control"/>
+        </b:Collapse>
     </g:FlowPanel>
 </ui:UiBinder>
