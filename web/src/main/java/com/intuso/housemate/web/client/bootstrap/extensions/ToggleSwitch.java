@@ -1,21 +1,15 @@
 package com.intuso.housemate.web.client.bootstrap.extensions;
 
 import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ButtonBase;
 import com.google.gwt.user.client.ui.HasValue;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -158,7 +152,7 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
 
     @Override
     public void setValue(Boolean value) {
-        setValue(value, false);
+        setValue(value, true);
     }
 
     @Override
@@ -170,6 +164,7 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
         Boolean oldValue = getValue();
         inputElem.setChecked(value);
         inputElem.setDefaultChecked(value);
+        setState(id, value);
         if (value.equals(oldValue)) {
             return;
         }
@@ -177,6 +172,12 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
             ValueChangeEvent.fire(this, value);
         }
     }
+
+    private native void setState(String id, boolean value) /*-{
+        $wnd.$(function() {
+            $wnd.$('#' + id).bootstrapSwitch('setState', value);
+        });
+    }-*/;
 
     public String getFormValue() {
         return inputElem.getValue();
