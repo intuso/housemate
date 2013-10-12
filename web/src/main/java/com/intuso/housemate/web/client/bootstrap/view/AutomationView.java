@@ -1,47 +1,45 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
-import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.automation.AutomationData;
-import com.intuso.housemate.web.client.GWTResources;
-import com.intuso.housemate.web.client.bootstrap.widget.automation.Automation;
-import com.intuso.housemate.web.client.object.GWTProxyAutomation;
-import com.intuso.housemate.web.client.object.GWTProxyCommand;
-import com.intuso.housemate.web.client.object.GWTProxyList;
-import com.intuso.housemate.web.client.place.AutomationPlace;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
+import com.google.common.collect.Lists;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.bootstrap.widget.automation.AutomationList;
+import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
+import com.intuso.housemate.web.client.place.AutomationsPlace;
+
+import java.util.List;
 
 /**
+ * Created with IntelliJ IDEA.
+ * User: tomc
+ * Date: 24/09/13
+ * Time: 00:15
+ * To change this template use File | Settings | File Templates.
  */
-public class AutomationView extends ObjectListView<GWTProxyAutomation, AutomationPlace> implements com.intuso.housemate.web.client.ui.view.AutomationView {
-
-    public AutomationView(GWTResources<?> resources) {
-        super(resources);
+public class AutomationView extends FlowPanel implements com.intuso.housemate.web.client.ui.view.AutomationView {
+    
+    private final AutomationList favouritesList;
+    private final AutomationList allList;
+    
+    public AutomationView() {
+        
+        List<String> favourites = Lists.newArrayList();
+        favouritesList = new AutomationList("favourites", favourites, true);
+        allList = new AutomationList("all", favourites, false);
+        
+        add(favouritesList);
+        add(allList);
+        Button addButton = new PerformButton(Housemate.ENVIRONMENT.getResources().getRoot().getAddAutomationCommand(), IconType.PLUS);
+        addButton.setSize(ButtonSize.SMALL);
+        add(addButton);
     }
 
     @Override
-    protected GWTProxyList<AutomationData, GWTProxyAutomation> getList(AutomationPlace place) {
-        return resources.getRoot().getAutomations();
-    }
-
-    @Override
-    protected GWTProxyCommand getAddCommand(AutomationPlace place) {
-        return resources.getRoot().getAddAutomationCommand();
-    }
-
-    @Override
-    protected String getSelectedObjectName(AutomationPlace place) {
-        return place.getAutomationName();
-    }
-
-    @Override
-    protected Widget getObjectWidget(AutomationPlace place, GWTProxyAutomation automation) {
-        return new Automation(automation);
-    }
-
-    @Override
-    protected AutomationPlace getPlace(AutomationPlace place, GWTProxyAutomation automation) {
-        if(automation == null)
-            return new AutomationPlace();
-        else
-            return new AutomationPlace(automation.getId());
+    public void newPlace(AutomationsPlace place) {
+        favouritesList.setSelected(place.getAutomationNames());
+        allList.setSelected(place.getAutomationNames());
     }
 }

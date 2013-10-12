@@ -2,16 +2,20 @@
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:g="urn:import:com.google.gwt.user.client.ui">
     <g:FlowPanel>
-        <b:Navbar inverse="true" position="TOP" addStyleNames="top-navs">
-            <b:Brand>Housemate</b:Brand>
-            <b:Nav alignment="RIGHT">
-                <b:NavLink ui:field="accountButton">Account</b:NavLink>
-                <b:NavLink ui:field="logoutButton">Logout</b:NavLink>
-            </b:Nav>
-        </b:Navbar>
-        <b:Container addStyleNames="main-container">
-            <b:Breadcrumbs hideOn="PHONE" divider=">" ui:field="allBreadcrumbs"/>
-            <b:Breadcrumbs showOn="PHONE" divider=">" ui:field="recentBreadcrumbs"/>
+        <b:ResponsiveNavbar inverse="true" position="TOP">
+            <b:Container>
+                <b:Brand>intuso home</b:Brand>
+                <b:NavCollapse>
+                    <b:Nav alignment="RIGHT">
+                        <b:NavLink ui:field="devicesButton">devices</b:NavLink>
+                        <b:NavLink ui:field="automationsButton">automations</b:NavLink>
+                        <b:NavLink ui:field="usersButton">users</b:NavLink>
+                        <b:NavLink ui:field="logoutButton">logout</b:NavLink>
+                    </b:Nav>
+                </b:NavCollapse>
+            </b:Container>
+        </b:ResponsiveNavbar>
+        <b:Container>
             <g:SimplePanel ui:field="container"/>
         </b:Container>
     </g:FlowPanel>

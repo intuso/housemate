@@ -1,10 +1,8 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
-import com.github.gwtbootstrap.client.ui.Breadcrumbs;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -14,13 +12,16 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.web.client.Housemate;
-import com.intuso.housemate.web.client.place.AccountPlace;
-import com.intuso.housemate.web.client.place.Breadcrumb;
-import com.intuso.housemate.web.client.place.HousematePlace;
-
-import java.util.List;
+import com.intuso.housemate.web.client.place.AutomationsPlace;
+import com.intuso.housemate.web.client.place.DevicesPlace;
+import com.intuso.housemate.web.client.place.UsersPlace;
 
 /**
+ * Created with IntelliJ IDEA.
+ * User: tomc
+ * Date: 13/09/13
+ * Time: 20:49
+ * To change this template use File | Settings | File Templates.
  */
 public class Page extends Composite implements com.intuso.housemate.web.client.ui.view.Page, PlaceChangeEvent.Handler {
 
@@ -30,18 +31,35 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
     private static BootstrapPageUiBinder ourUiBinder = GWT.create(BootstrapPageUiBinder.class);
 
     @UiField
-    NavLink accountButton;
-    @UiField
-    Breadcrumbs allBreadcrumbs;
-    @UiField
-    Breadcrumbs recentBreadcrumbs;
-    @UiField
     SimplePanel container;
+    @UiField
+    NavLink devicesButton;
+    @UiField
+    NavLink automationsButton;
+    @UiField
+    NavLink usersButton;
+
+    private NavLink activeButton = null;
 
     public Page() {
         initWidget(ourUiBinder.createAndBindUi(this));
-
         Housemate.FACTORY.getEventBus().addHandler(PlaceChangeEvent.TYPE, this);
+    }
+
+    @Override
+    public void onPlaceChange(PlaceChangeEvent event) {
+        if(activeButton != null) {
+            activeButton.setActive(false);
+            activeButton = null;
+        }
+        if(event.getNewPlace() instanceof DevicesPlace)
+            activeButton = devicesButton;
+        else if(event.getNewPlace() instanceof AutomationsPlace)
+            activeButton = automationsButton;
+        else if(event.getNewPlace() instanceof UsersPlace)
+            activeButton = usersButton;
+        if(activeButton != null)
+            activeButton.setActive(true);
     }
 
     @Override
@@ -49,34 +67,19 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
         return container;
     }
 
-    @Override
-    public void onPlaceChange(PlaceChangeEvent placeChangeEvent) {
-
-        // highlight top menu bar items if they're selected
-        Place place = placeChangeEvent.getNewPlace();
-        accountButton.setActive(false);
-        if(place instanceof AccountPlace)
-            accountButton.setActive(true);
-
-        // set the breadcrumb
-        if(place instanceof HousematePlace) {
-            allBreadcrumbs.clear();
-            recentBreadcrumbs.clear();
-            List<Breadcrumb> breadcrumbList = ((HousematePlace)place).getBreadcrumbItems();
-            for(Breadcrumb breadcrumb : breadcrumbList)
-                allBreadcrumbs.add(new NavLink(breadcrumb.getLabel(), breadcrumb.getHref()));
-            if(breadcrumbList.size() > 1) {
-                Breadcrumb breadCrumb = breadcrumbList.get(breadcrumbList.size() - 2);
-                recentBreadcrumbs.add(new NavLink(breadCrumb.getLabel(), breadCrumb.getHref()));
-                breadCrumb = breadcrumbList.get(breadcrumbList.size() - 1);
-                recentBreadcrumbs.add(new NavLink(breadCrumb.getLabel(), breadCrumb.getHref()));
-            }
-        }
+    @UiHandler("devicesButton")
+    public void devicesButtonClicked(ClickEvent e) {
+        Housemate.FACTORY.getPlaceController().goTo(new DevicesPlace());
     }
 
-    @UiHandler("accountButton")
-    public void accountButtonClicked(ClickEvent e) {
-        Housemate.FACTORY.getPlaceController().goTo(AccountPlace.PLACE);
+    @UiHandler("automationsButton")
+    public void automationsButtonClicked(ClickEvent e) {
+        Housemate.FACTORY.getPlaceController().goTo(new AutomationsPlace());
+    }
+
+    @UiHandler("usersButton")
+    public void usersButtonClicked(ClickEvent e) {
+        Housemate.FACTORY.getPlaceController().goTo(new UsersPlace());
     }
 
     @UiHandler("logoutButton")
