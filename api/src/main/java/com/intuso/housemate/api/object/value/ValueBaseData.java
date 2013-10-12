@@ -10,14 +10,14 @@ public abstract class ValueBaseData<WBL extends HousemateData<?>>
         extends HousemateData<WBL> {
     
     private String type;
-    private TypeInstances values;
+    private TypeInstances typeInstances;
 
     protected ValueBaseData() {}
 
-    public ValueBaseData(String id, String name, String description, String type, TypeInstances values) {
+    public ValueBaseData(String id, String name, String description, String type, TypeInstances typeInstances) {
         super(id, name,  description);
         this.type = type;
-        this.values = values;
+        this.typeInstances = typeInstances;
     }
 
     /**
@@ -32,15 +32,15 @@ public abstract class ValueBaseData<WBL extends HousemateData<?>>
      * Gets the current value
      * @return the current value
      */
-    public TypeInstances getValues() {
-        return values;
+    public TypeInstances getTypeInstances() {
+        return typeInstances;
     }
 
     /**
      * Sets the current value
-     * @param values the new value
+     * @param typeInstances the new value
      */
-    public void setValues(TypeInstances values) {
-        this.values = values;
+    public void setTypeInstances(TypeInstances typeInstances) {
+        this.typeInstances = typeInstances;
     }
 }

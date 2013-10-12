@@ -24,7 +24,7 @@ public interface ProxyRoot<
             USERS extends List<? extends User>,
             TYPES extends List<? extends Type>,
             DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
-            AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
+            AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
             ADD_COMMAND extends Command<?, ?>,
             ROOT extends ProxyRoot<USERS, TYPES, DEVICES, AUTOMATIONS, ADD_COMMAND, ROOT>>
         extends Root<ROOT>, HasUsers<USERS>, HasTypes<TYPES>, HasDevices<DEVICES>, HasAutomations<AUTOMATIONS> {

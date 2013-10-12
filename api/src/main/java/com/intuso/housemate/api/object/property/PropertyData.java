@@ -19,6 +19,6 @@ public final class PropertyData extends ValueBaseData<CommandData> {
 
     @Override
     public HousemateData clone() {
-        return new PropertyData(getId(), getName(), getDescription(), getType(), getValues());
+        return new PropertyData(getId(), getName(), getDescription(), getType(), getTypeInstances());
     }
 }

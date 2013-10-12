@@ -18,6 +18,6 @@ public class ValueData extends ValueBaseData<NoChildrenData> {
 
     @Override
     public HousemateData clone() {
-        return new ValueData(getId(), getName(), getDescription(), getType(), getValues());
+        return new ValueData(getId(), getName(), getDescription(), getType(), getTypeInstances());
     }
 }

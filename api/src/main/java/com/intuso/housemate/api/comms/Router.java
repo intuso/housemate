@@ -33,7 +33,7 @@ public abstract class Router implements Sender, Receiver {
     private final Log log;
 
     private final AtomicInteger nextId = new AtomicInteger(-1);
-    private final Map<String, Receiver<?>> receivers = Maps.newHashMap();
+    private final Map<String, Receiver<?>> receivers = Maps.newConcurrentMap();
 
     private final RouterRootObject root;
 

@@ -12,7 +12,6 @@ import com.intuso.housemate.api.object.value.Value;
  * @param <REMOVE_COMMAND> the type of the command for removing the automation
  * @param <START_STOP_COMMAND> the type of the command for stopping or starting
  * @param <ADD_COMMMAND> the type of the command for adding new conditions or tasks
- * @param <CONNECTED_VALUE> the type of the connected value
  * @param <RUNNING_VALUE> the type of the running value
  * @param <ERROR_VALUE> the type of the error value
  * @param <CONDITION> the type of the conditions
@@ -25,15 +24,14 @@ public interface Automation<
             REMOVE_COMMAND extends Command<?, ?>,
             START_STOP_COMMAND extends Command<?, ?>,
             ADD_COMMMAND extends Command<?, ?>,
-            CONNECTED_VALUE extends Value<?, ?>,
             RUNNING_VALUE extends Value<?, ?>,
             ERROR_VALUE extends Value<?, ?>,
             CONDITION extends Condition<?, ?, ?, ?, ?, ?>,
             CONDITIONS extends List<? extends CONDITION>,
             TASK extends Task<?, ?, ?, ?>,
             TASKS extends List<? extends TASK>,
-            A extends Automation<REMOVE_COMMAND, START_STOP_COMMAND, ADD_COMMMAND, CONNECTED_VALUE, RUNNING_VALUE, ERROR_VALUE, CONDITION, CONDITIONS, TASK, TASKS, A>>
-        extends PrimaryObject<REMOVE_COMMAND, START_STOP_COMMAND, CONNECTED_VALUE, RUNNING_VALUE, ERROR_VALUE, A, AutomationListener<? super A>>, HasConditions<CONDITIONS> {
+            A extends Automation<REMOVE_COMMAND, START_STOP_COMMAND, ADD_COMMMAND, RUNNING_VALUE, ERROR_VALUE, CONDITION, CONDITIONS, TASK, TASKS, A>>
+        extends PrimaryObject<REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, A, AutomationListener<? super A>>, HasConditions<CONDITIONS> {
 
     public final static String CONDITIONS_ID = "conditions";
     public final static String SATISFIED_TASKS_ID = "satisfied-tasks";

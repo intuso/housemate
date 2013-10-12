@@ -57,5 +57,12 @@
             <artifactId>guice-assistedinject</artifactId>
             <version>${guice.version}</version>
         </dependency>
+
+        <!-- Annotations -->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>annotations-feature</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

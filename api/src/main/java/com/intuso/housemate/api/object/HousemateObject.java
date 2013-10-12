@@ -1,5 +1,6 @@
 package com.intuso.housemate.api.object;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
@@ -9,12 +10,12 @@ import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.object.*;
+import com.intuso.utilities.object.BaseObject;
+import com.intuso.utilities.object.Data;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Base class for all Housemate object implementations
@@ -33,6 +34,9 @@ public abstract class HousemateObject<
             LISTENER extends ObjectListener>
         extends BaseObject<DATA, CHILD_DATA, CHILD, HousemateException>
         implements BaseHousemateObject<LISTENER> {
+
+    public final static String EVERYTHING = "*";
+    public final static String EVERYTHING_RECURSIVE = "**";
 
     public final static String CHILD_ADDED = "child-added";
     public final static String CHILD_REMOVED = "child-removed";
@@ -99,7 +103,7 @@ public abstract class HousemateObject<
      * Gets this object's listeners
      * @return this object's listeners
      */
-    public Set<LISTENER> getObjectListeners() {
+    public List<LISTENER> getObjectListeners() {
         return objectListeners.getListeners();
     }
 
@@ -212,28 +216,106 @@ public abstract class HousemateObject<
      * @return the object at that path, or null if none exists
      */
     public final HousemateObject<?, ?, ?, ?, ?> getObject(String[] path) {
-        return getChild(path, this);
+        return getChild(this, path);
     }
 
     /**
      * Gets the object at a path relative to another object
-     * @param path the path to get the object from
+     *
      * @param current the object the path is relative to
+     * @param path the path to get the object from
      * @return the object at the path relative to the other object, or null if none exists
      */
-    public final static HousemateObject<?, ?, ?, ?, ?> getChild(String[] path, HousemateObject<?, ?, ?, ?, ?> current) {
-        String[] currentPath = current.getPath();
-        if(path.length < currentPath.length)
-            throw new RuntimeException("Object requested is at a higher level than this object");
-        else if(path.length == currentPath.length)
+    public final static HousemateObject<?, ?, ?, ?, ?> getChild(HousemateObject<?, ?, ?, ?, ?> current, String[] path) {
+        return getChild(current, path, 0);
+    }
+
+    /**
+     * Gets the object at a path relative to another object
+     *
+     * @param current the object the path is relative to
+     * @param path the path to get the object from
+     * @param depth the current index in the path
+     * @return the object at the path relative to the other object, or null if none exists
+     */
+    public final static HousemateObject<?, ?, ?, ?, ?> getChild(HousemateObject<?, ?, ?, ?, ?> current, String[] path, int depth) {
+        if(depth >= path.length)
             return current;
-        else {
-            String childName = path[currentPath.length];
-            HousemateObject<?, ?, ?, ?, ?> child = current.getChild(childName);
-            if(child == null)
-                return null;
-            else
-                return getChild(path, child);
+        HousemateObject<?, ?, ?, ?, ?> next = current.getChild(path[depth]);
+        if(next == null)
+            return null;
+        return getChild(next, path, depth + 1);
+    }
+
+    public static class TreeLoadInfo implements Message.Payload {
+
+        private String id;
+        private boolean load;
+        private Map<String, TreeLoadInfo> children;
+
+        private TreeLoadInfo() {}
+
+        public TreeLoadInfo(String id, TreeLoadInfo... children) {
+            this(id, Maps.uniqueIndex(Lists.newArrayList(children), new Function<TreeLoadInfo, String>() {
+                @Override
+                public String apply(TreeLoadInfo loadInfo) {
+                    return loadInfo.getId();
+                }
+            }));
+        }
+
+        public TreeLoadInfo(String id, Map<String, TreeLoadInfo> children) {
+            this.id = id;
+            this.children = children;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public boolean isLoad() {
+            return load;
+        }
+
+        public void setLoad(boolean load) {
+            this.load = load;
+        }
+
+        public Map<String, TreeLoadInfo> getChildren() {
+            return children;
+        }
+    }
+
+    public static class TreeData<DATA extends Data<?>> implements Message.Payload {
+
+        private String id;
+        private DATA data;
+        private Map<String, TreeData<?>> children;
+        private Map<String, ChildData> childData;
+
+        private TreeData() {}
+
+        public TreeData(String id, DATA data, Map<String, TreeData<?>> children, Map<String, ChildData> childData) {
+            this.id = id;
+            this.data = data;
+            this.children = children;
+            this.childData = childData;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public DATA getData() {
+            return data;
+        }
+
+        public Map<String, TreeData<?>> getChildren() {
+            return children;
+        }
+
+        public Map<String, ChildData> getChildData() {
+            return childData;
         }
     }
 
@@ -242,28 +324,34 @@ public abstract class HousemateObject<
      */
     protected static class LoadRequest implements Message.Payload {
 
-        private String childId;
+        private String loaderName;
+        private TreeLoadInfo path;
 
         private LoadRequest() {}
 
         /**
-         * @param childId the id of the child object to load
+         * @param path the id of the child object to load
          */
-        public LoadRequest(String childId) {
-            this.childId = childId;
+        public LoadRequest(String loaderName, TreeLoadInfo path) {
+            this.loaderName = loaderName;
+            this.path = path;
+        }
+
+        public String getLoaderName() {
+            return loaderName;
         }
 
         /**
          * Gets the id of the child object to load
          * @return the id of the child object to load
          */
-        public String getChildId() {
-            return childId;
+        public TreeLoadInfo getLoadInfo() {
+            return path;
         }
 
         @Override
         public String toString() {
-            return childId;
+            return loaderName + " " + path.getId();
         }
     }
 
@@ -272,44 +360,28 @@ public abstract class HousemateObject<
      */
     protected static class LoadResponse<DATA extends Data<?>> implements Message.Payload {
 
-        private String childId;
-        private DATA data;
-        private List<ChildData> childData;
+        private String loaderName;
+        private TreeData<DATA> treeData;
         private String error;
 
         private LoadResponse() {}
 
-        /**
-         * @param childId the id of the child object to load
-         */
-        public LoadResponse(String childId, DATA data, List<ChildData> childData) {
-            this.childId = childId;
-            this.data = data;
-            this.childData = childData;
+        public LoadResponse(String loaderName, TreeData<DATA> treeData) {
+            this(loaderName, treeData, null);
         }
 
-        /**
-         * @param childId the id of the child object to load
-         */
-        public LoadResponse(String childId, String error) {
-            this.childId = childId;
+        public LoadResponse(String loaderName, TreeData<DATA> treeData, String error) {
+            this.loaderName = loaderName;
+            this.treeData = treeData;
             this.error = error;
         }
 
-        /**
-         * Gets the id of the child object to load
-         * @return the id of the child object to load
-         */
-        public String getChildId() {
-            return childId;
+        public String getLoaderName() {
+            return loaderName;
         }
 
-        public DATA getData() {
-            return data;
-        }
-
-        public List<ChildData> getChildData() {
-            return childData;
+        public TreeData<DATA> getTreeData() {
+            return treeData;
         }
 
         public String getError() {
@@ -318,7 +390,7 @@ public abstract class HousemateObject<
 
         @Override
         public String toString() {
-            return data != null ? childId + " data" : childId + " failed because " + error;
+            return loaderName + " tree " + treeData.getId() + " " + (treeData.getData() != null ? "data" : "failed because " + error);
         }
     }
 }

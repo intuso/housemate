@@ -5,7 +5,6 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.comms.Message;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,7 +46,7 @@ public class TypeInstances extends ArrayList<TypeInstance> implements Message.Pa
         return Joiner.on(",").join(Lists.transform(this, new Function<TypeInstance, String>() {
             @Override
             public String apply(TypeInstance typeInstance) {
-                return typeInstance != null ? typeInstance.getValue() : "null";
+                return typeInstance != null && typeInstance.getValue() != null ? typeInstance.getValue() : "null";
             }
         }));
     }

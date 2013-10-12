@@ -9,6 +9,6 @@ import com.intuso.housemate.api.resources.Resources;
  */
 public interface AutomationFactory<
             R extends Resources,
-            A extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>
+            A extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>
         extends HousemateObjectFactory<R, AutomationData, A> {
 }

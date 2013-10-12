@@ -1,15 +1,35 @@
 package com.intuso.housemate.api.object;
 
-public class ChildData extends HousemateData<NoChildrenData> {
+import com.intuso.housemate.api.comms.Message;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: tomc
+ * Date: 09/09/13
+ * Time: 08:44
+ * To change this template use File | Settings | File Templates.
+ */
+public class ChildData implements Message.Payload {
+
+    private String id, name, description;
 
     private ChildData() {}
 
     public ChildData(String id, String name, String description) {
-        super(id, name, description);
+        this.id = id;
+        this.name = name;
+        this.description = description;
     }
 
-    @Override
-    public HousemateData clone() {
-        return new ChildData(getId(), getName(), getDescription());
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

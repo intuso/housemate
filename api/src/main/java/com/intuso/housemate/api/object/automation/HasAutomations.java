@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.list.List;
  *
  * Interface to show that the implementing object has a list of automations
  */
-public interface HasAutomations<L extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
+public interface HasAutomations<L extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
 
     /**
      * Gets the automation list
