@@ -1,23 +1,19 @@
 package com.intuso.housemate.web.client.event;
 
 import com.google.gwt.event.shared.GwtEvent;
-import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
 
 /**
  */
-public class ObjectSelectedEvent<O extends HousemateObject<?, ?, ?, ?, ?>> extends GwtEvent<ObjectSelectedHandler> {
+public class ObjectSelectedEvent<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> extends GwtEvent<ObjectSelectedHandler> {
 
-    public static Type<ObjectSelectedHandler> TYPE = new Type<ObjectSelectedHandler>();
+    public final static Type<ObjectSelectedHandler> TYPE = new Type<ObjectSelectedHandler>();
 
-    private O object;
+    private final O object;
 
     public ObjectSelectedEvent(O object) {
         this.object = object;
-    }
-
-    public O getObject() {
-        return object;
     }
 
     @Override
@@ -27,6 +23,10 @@ public class ObjectSelectedEvent<O extends HousemateObject<?, ?, ?, ?, ?>> exten
 
     @Override
     protected void dispatch(ObjectSelectedHandler handler) {
-        handler.objectSelected(this);
+        handler.objectSelected(object);
+    }
+
+    public O getObject() {
+        return object;
     }
 }
