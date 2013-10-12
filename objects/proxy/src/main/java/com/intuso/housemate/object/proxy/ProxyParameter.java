@@ -11,10 +11,10 @@ import com.intuso.housemate.api.object.parameter.ParameterListener;
  * @param <PARAMETER> the type of the parameter
  */
 public abstract class ProxyParameter<
-            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
+            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory, ?>,
             TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
             PARAMETER extends ProxyParameter<?, TYPE, PARAMETER>>
-        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, ParameterData, NoChildrenData, NoChildrenProxyObject, PARAMETER, ParameterListener>
+        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory, ?>, ParameterData, NoChildrenData, NoChildrenProxyObject, PARAMETER, ParameterListener>
         implements Parameter<TYPE> {
 
     /**

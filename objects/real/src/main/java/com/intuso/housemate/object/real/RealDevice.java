@@ -1,6 +1,8 @@
 package com.intuso.housemate.object.real;
 
+import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.device.DeviceData;
@@ -8,7 +10,6 @@ import com.intuso.housemate.api.object.device.DeviceListener;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueData;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RealDevice
@@ -46,8 +47,9 @@ public class RealDevice
      * @param name the device's name
      * @param description the device's description
      */
-    public RealDevice(RealResources resources, String id, String name, String description) {
-        this(resources, id, name, description, new ArrayList<RealCommand>(0), new ArrayList<RealValue<?>>(0), new ArrayList<RealProperty<?>>(0));
+    public RealDevice(RealResources resources, String id, String name, String description, String ... featureIds) {
+        this(resources, id, name, description, Lists.newArrayList(featureIds), Lists.<String>newArrayList(),
+                Lists.<String>newArrayList(), Lists.<String>newArrayList());
     }
 
     /**
@@ -55,15 +57,18 @@ public class RealDevice
      * @param id the device's id
      * @param name the device's name
      * @param description the device's description
-     * @param commands the device's commands
-     * @param values the device's values
-     * @param properties the device's properties
+     * @param customCommandIds the ids of the device's commands that do not belong to a feature
+     * @param customValueIds the ids of the device's values that do not belong to a feature
+     * @param customPropertyIds the ids of the device's properties that do not belong to a feature
      */
-    public RealDevice(RealResources resources, String id, String name, String description, List<RealCommand> commands, List<RealValue<?>> values, List<RealProperty<?>> properties) {
-        super(resources, new DeviceData(id, name, description), OBJECT_TYPE);
-        this.commands = new RealList<CommandData, RealCommand>(resources, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION, commands);
-        this.values = new RealList<ValueData, RealValue<?>>(resources, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION, values);
-        this.properties = new RealList<PropertyData, RealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION, properties);
+    public RealDevice(RealResources resources, String id, String name, String description, List<String> featureIds,
+                      List<String> customCommandIds, List<String> customValueIds, List<String> customPropertyIds) {
+        super(resources,
+                new DeviceData(id, name, description, featureIds, customCommandIds, customValueIds, customPropertyIds),
+                OBJECT_TYPE);
+        this.commands = new RealList<CommandData, RealCommand>(resources, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION);
+        this.values = new RealList<ValueData, RealValue<?>>(resources, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION);
+        this.properties = new RealList<PropertyData, RealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION);
         addChild(this.commands);
         addChild(this.values);
         addChild(this.properties);
@@ -85,6 +90,16 @@ public class RealDevice
     }
 
     @Override
+    public boolean isConnected() {
+        throw new HousemateRuntimeException("This value is not maintained by the client");
+    }
+
+    @Override
+    public RealValue<Boolean> getConnectedValue() {
+        throw new HousemateRuntimeException("This value is not maintained by the client");
+    }
+
+    @Override
     protected final void remove() {
         getRealRoot().removeDevice(getId());
     }
@@ -101,6 +116,26 @@ public class RealDevice
     @Override
     protected final void _stop() {
         stop();
+    }
+
+    @Override
+    public final List<String> getFeatureIds() {
+        return getData().getFeatureIds();
+    }
+
+    @Override
+    public final List<String> getCustomCommandIds() {
+        return getData().getCustomCommandIds();
+    }
+
+    @Override
+    public final List<String> getCustomValueIds() {
+        return getData().getCustomValueIds();
+    }
+
+    @Override
+    public final List<String> getCustomPropertyIds() {
+        return getData().getCustomPropertyIds();
     }
 
     /**

@@ -20,7 +20,7 @@ public abstract class BrokerRealPrimaryObject<
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
         extends BrokerRealObject<DATA, HousemateData<?>, BrokerRealObject<?, ?, ?, ?>, LISTENER>
         implements PrimaryObject<BrokerRealCommand, BrokerRealCommand,
-            BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, PRIMARY_OBJECT, LISTENER> {
+            BrokerRealValue<Boolean>, BrokerRealValue<String>, PRIMARY_OBJECT, LISTENER> {
 
     private final BrokerRealCommand remove;
     private final BrokerRealValue<Boolean> connected;
@@ -64,7 +64,7 @@ public abstract class BrokerRealPrimaryObject<
                 }
             }
         };
-        this.error = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "Current error for the " + objectType, new StringType(resources.getRealResources()), null);
+        this.error = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "Current error for the " + objectType, new StringType(resources.getRealResources()), (String)null);
         addChild(this.remove);
         addChild(this.running);
         addChild(this.start);
@@ -95,16 +95,6 @@ public abstract class BrokerRealPrimaryObject<
     @Override
     public BrokerRealCommand getStartCommand() {
         return start;
-    }
-
-    @Override
-    public boolean isConnected() {
-        return connected.getTypedValue() != null ? connected.getTypedValue() : false;
-    }
-
-    @Override
-    public BrokerRealValue<Boolean> getConnectedValue() {
-        return connected;
     }
 
     @Override

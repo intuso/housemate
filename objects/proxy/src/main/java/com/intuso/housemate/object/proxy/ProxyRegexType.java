@@ -3,15 +3,16 @@ package com.intuso.housemate.object.proxy;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.type.RegexTypeData;
 import com.intuso.housemate.api.resources.RegexMatcher;
+import com.intuso.housemate.object.proxy.device.feature.ProxyFeatureFactory;
 
 /**
  * @param <RESOURCES> the type of the resources
  * @param <TYPE> the type of the type
  */
 public abstract class ProxyRegexType<
-            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
+            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory, ? extends ProxyFeatureFactory<?, ?>>,
             TYPE extends ProxyRegexType<RESOURCES, TYPE>>
-        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, RegexTypeData, NoChildrenData, NoChildrenProxyObject, TYPE> {
+        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory, ?>, RegexTypeData, NoChildrenData, NoChildrenProxyObject, TYPE> {
 
     private RegexMatcher regexMatcher;
 

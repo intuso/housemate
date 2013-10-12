@@ -1,8 +1,8 @@
 package com.intuso.housemate.object.proxy;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
@@ -32,8 +32,8 @@ import java.util.Set;
  * @param <LISTENER> the type of the listener
  */
 public abstract class ProxyObject<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>>,
-            CHILD_RESOURCES extends ProxyResources<?>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>, ?>,
+            CHILD_RESOURCES extends ProxyResources<?, ?>,
             DATA extends HousemateData<CHILD_DATA>,
             CHILD_DATA extends HousemateData<?>,
             CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
@@ -42,9 +42,11 @@ public abstract class ProxyObject<
         extends HousemateObject<RESOURCES, DATA, CHILD_DATA, CHILD, LISTENER>
         implements ObjectListener<CHILD> {
 
+    private Joiner PATH_JOINER = Joiner.on("/");
+
     private ProxyRoot<?, ?, ?, ?, ?, ?> proxyRoot;
     private final CHILD_RESOURCES childResources;
-    private final Map<String, Set<LoadManager>> pendingLoads = Maps.newHashMap();
+    private final Map<String, LoadManager> pendingLoads = Maps.newHashMap();
     private final Map<String, ChildData> childData = Maps.newHashMap();
     private final Listeners<AvailableChildrenListener<? super OBJECT>> availableChildrenListeners = new Listeners<AvailableChildrenListener<? super OBJECT>>();
     private final Map<String, Listeners<ChildLoadedListener<? super OBJECT, ? super CHILD>>> childLoadedListeners = Maps.newHashMap();
@@ -86,40 +88,42 @@ public abstract class ProxyObject<
         result.add(addMessageListener(LOAD_RESPONSE, new Receiver<LoadResponse<CHILD_DATA>>() {
             @Override
             public void messageReceived(Message<LoadResponse<CHILD_DATA>> message) throws HousemateException {
-                String id = message.getPayload().getChildId();
-                if(message.getPayload().getError() != null) {
-                    getLog().e("Failed to load " + id + ". " + message.getPayload().getError());
-                    if(pendingLoads.get(id) != null) {
-                        for(LoadManager manager : pendingLoads.get(id)) {
-                            manager.failed(id);
-                            manager.finished(id);
-                        }
-                    }
-                } else {
-                    try {
-                        CHILD object = getResources().getObjectFactory().create(getSubResources(), message.getPayload().getData());
-                        for(ChildData cd : message.getPayload().getChildData())
-                            ((ProxyObject)object).childData.put(cd.getId(), cd);
-                        object.init(ProxyObject.this);
-                        addChild(object);
-                        if(pendingLoads.get(object.getId()) != null) {
-                            for(LoadManager manager : pendingLoads.get(object.getId()))
-                                manager.finished(object.getId());
-                        }
-                    } catch(HousemateException e) {
-                        getLog().e("Failed to unwrap load response");
-                        getLog().st(e);
-                        if(pendingLoads.get(id) != null) {
-                            for(LoadManager manager : pendingLoads.get(id)) {
-                                manager.failed(id);
-                                manager.finished(id);
+                LoadManager manager = pendingLoads.get(message.getPayload().getLoaderName());
+                if(manager != null) {
+                    if(message.getPayload().getError() != null) {
+                        getLog().e("Failed to load " + message.getPayload().getLoaderName() + " tree " + message.getPayload().getTreeData().getId() + ". " + message.getPayload().getError());
+                        manager.responseReceived(message.getPayload().getTreeData().getId(), false);
+                    } else {
+                        try {
+                            if(message.getPayload().getTreeData().getData() != null) {
+                                CHILD object = createObject(message.getPayload().getTreeData());
+                                object.init(ProxyObject.this);
+                                addChild(object);
                             }
+                            manager.responseReceived(message.getPayload().getTreeData().getId(), true);
+                        } catch(HousemateException e) {
+                            getLog().e("Failed to unwrap load response");
+                            getLog().st(e);
+                            manager.responseReceived(message.getPayload().getTreeData().getId(), true);
                         }
                     }
                 }
             }
         }));
         return result;
+    }
+
+    protected CHILD createObject(TreeData<CHILD_DATA> treeData) throws HousemateException {
+        CHILD object = getResources().getObjectFactory().create(getSubResources(), treeData.getData());
+        getLog().d("Created " + object.getId());
+        object.initObject(treeData);
+        return object;
+    }
+
+    protected void initObject(TreeData<?> treeData) throws HousemateException {
+        childData.putAll(treeData.getChildData());
+        for(TreeData<?> childData : treeData.getChildren().values())
+            addChild(createObject((TreeData<CHILD_DATA>) childData));
     }
 
     @Override
@@ -210,21 +214,23 @@ public abstract class ProxyObject<
     public void load(LoadManager manager) {
         if(manager == null)
             throw new HousemateRuntimeException("Null manager");
+        else if(manager.getToLoad().size() == 0)
+            manager.allLoaded();
         else {
-            for(String id : manager.getToLoad()) {
-                if(getChild(id) != null)
-                    manager.finished(id);
-                else {
-                    if(pendingLoads.get(id) != null)
-                        pendingLoads.get(id).add(manager);
-                    else {
-                        pendingLoads.put(id, Sets.<LoadManager>newHashSet());
-                        pendingLoads.get(id).add(manager);
-                        sendMessage(LOAD_REQUEST, new LoadRequest(id));
-                    }
-                }
+            pendingLoads.put(manager.getName(), manager);
+            for(TreeLoadInfo tree : manager.getToLoad().values()) {
+                checkTree(tree);
+                sendMessage(HousemateObject.LOAD_REQUEST, new LoadRequest(manager.getName(), tree));
             }
         }
+    }
+
+    protected void checkTree(TreeLoadInfo tree) {
+        CHILD child = getChild(tree.getId());
+        tree.setLoad(child == null);
+        if(child != null)
+            for(TreeLoadInfo childTree : tree.getChildren().values())
+                child.checkTree(childTree);
     }
 
     /**

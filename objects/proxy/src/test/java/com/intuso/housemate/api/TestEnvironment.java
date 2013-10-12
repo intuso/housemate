@@ -8,8 +8,8 @@ import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.api.resources.RegexMatcherFactory;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
-import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.log.LogLevel;
@@ -32,8 +32,8 @@ public class TestEnvironment {
 
     private final RealResources realResources;
     private final Resources genericResources;
-    private final ProxyResources<SimpleProxyFactory.All> proxyResources;
-    private final ProxyResources<NoChildrenProxyObjectFactory> proxyNoChildrenResources;
+    private final SimpleProxyResources<SimpleProxyFactory.All> proxyResources;
+    private final SimpleProxyResources<NoChildrenProxyObjectFactory> proxyNoChildrenResources;
 
     private final TestRealRoot realRoot;
     private final TestProxyRoot proxyRoot;
@@ -52,7 +52,7 @@ public class TestEnvironment {
 
         // create real/proxy resources
         realResources = new RealResources(log, properties, realComms);
-        proxyResources = new ProxyResources<SimpleProxyFactory.All>(log, properties, proxyComms,
+        proxyResources = new SimpleProxyResources<SimpleProxyFactory.All>(log, properties, proxyComms,
                 new SimpleProxyFactory.All(),
                 new RegexMatcherFactory() {
                     @Override
@@ -73,11 +73,11 @@ public class TestEnvironment {
         return realResources;
     }
 
-    public ProxyResources<SimpleProxyFactory.All> getProxyResources() {
+    public SimpleProxyResources<SimpleProxyFactory.All> getProxyResources() {
         return proxyResources;
     }
 
-    public ProxyResources<NoChildrenProxyObjectFactory> getProxyNoChildrenResources() {
+    public SimpleProxyResources<NoChildrenProxyObjectFactory> getProxyNoChildrenResources() {
         return proxyNoChildrenResources;
     }
 

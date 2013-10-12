@@ -17,8 +17,8 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * @param <TASK> the type of the task
  */
 public abstract class ProxyTask<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            CHILD_RESOURCES extends ProxyResources<?>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ?>,
+            CHILD_RESOURCES extends ProxyResources<?, ?>,
             VALUE extends ProxyValue<?, ?, VALUE>,
             PROPERTIES extends ProxyList<?, ?, PropertyData, ? extends ProxyProperty<?, ?, ?, ?, ?>, PROPERTIES>,
             TASK extends ProxyTask<RESOURCES, CHILD_RESOURCES, VALUE, PROPERTIES, TASK>>

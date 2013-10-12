@@ -44,13 +44,13 @@ import java.util.Set;
  * @param <ROOT> the type of the root
  */
 public abstract class ProxyRootObject<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            CHILD_RESOURCES extends ProxyResources<?>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ?>,
+            CHILD_RESOURCES extends ProxyResources<?, ?>,
             USER extends ProxyUser<?, ?, ?, USER>,
             USERS extends ProxyList<?, ?, ?, USER, USERS>,
             TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
             TYPES extends ProxyList<?, ?, ?, TYPE, TYPES>,
-            DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?, ?>,
+            DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
             DEVICES extends ProxyList<?, ?, ?, DEVICE, DEVICES>,
             AUTOMATION extends ProxyAutomation<?, ?, ?, ?, ?, ?, ?, ?, ?>,
             AUTOMATIONS extends ProxyList<?, ?, ?, AUTOMATION, AUTOMATIONS>,

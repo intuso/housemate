@@ -19,15 +19,15 @@ import java.util.List;
  * @param <LISTENER> the type of the listener
  */
 public abstract class ProxyPrimaryObject<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            CHILD_RESOURCES extends ProxyResources<?>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>,?>,
+            CHILD_RESOURCES extends ProxyResources<?, ?>,
             DATA extends HousemateData<HousemateData<?>>,
             COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
             VALUE extends ProxyValue<?, ?, VALUE>,
             PRIMARY_OBJECT extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, DATA, COMMAND, VALUE, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, DATA, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
-        implements PrimaryObject<COMMAND, COMMAND, VALUE, VALUE, VALUE, PRIMARY_OBJECT, LISTENER> {
+        implements PrimaryObject<COMMAND, COMMAND, VALUE, VALUE, PRIMARY_OBJECT, LISTENER> {
 
     /**
      * @param resources {@inheritDoc}
@@ -41,18 +41,6 @@ public abstract class ProxyPrimaryObject<
     @Override
     public COMMAND getRemoveCommand() {
         return (COMMAND) getChild(REMOVE_ID);
-    }
-
-    @Override
-    public boolean isConnected() {
-        VALUE connected = getConnectedValue();
-        return connected.getTypeInstances() != null && connected.getTypeInstances().getFirstValue() != null
-                ? Boolean.parseBoolean(connected.getTypeInstances().getFirstValue()) : false;
-    }
-
-    @Override
-    public VALUE getConnectedValue() {
-        return (VALUE) getChild(CONNECTED_ID);
     }
 
     @Override

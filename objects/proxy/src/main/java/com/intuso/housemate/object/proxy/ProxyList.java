@@ -21,8 +21,8 @@ import java.util.Iterator;
  * @param <LIST> the type of the list
  */
 public abstract class ProxyList<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>>,
-            CHILD_RESOURCES extends ProxyResources<?>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>, ?>,
+            CHILD_RESOURCES extends ProxyResources<?, ?>,
             CHILD_DATA extends HousemateData<?>,
             CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
             LIST extends ProxyList<RESOURCES, CHILD_RESOURCES, CHILD_DATA, CHILD, LIST>>

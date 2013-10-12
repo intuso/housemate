@@ -1,7 +1,7 @@
 package com.intuso.housemate.object.proxy;
 
-import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.condition.Condition;
 import com.intuso.housemate.api.object.condition.ConditionData;
@@ -20,8 +20,8 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * @param <CONDITIONS> the type of the conditions list
  */
 public abstract class ProxyCondition<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            CHILD_RESOURCES extends ProxyResources<?>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ?>,
+            CHILD_RESOURCES extends ProxyResources<?, ?>,
             VALUE extends ProxyValue<?, ?, VALUE>,
             PROPERTIES extends ProxyList<?, ?, PropertyData, ? extends ProxyProperty<?, ?, ?, ?, ?>, PROPERTIES>,
             ADD_COMMAND extends ProxyCommand<?, ?, ?, ?, ADD_COMMAND>,

@@ -15,8 +15,8 @@ import com.intuso.housemate.api.object.subtype.SubTypeData;
  * @param <OPTION> the type of the option
  */
 public abstract class ProxyOption<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListData<SubTypeData>, SUB_TYPES>>,
-            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, SubTypeData, SUB_TYPE>>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListData<SubTypeData>, SUB_TYPES>, ?>,
+            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?, ?>, SubTypeData, SUB_TYPE>, ?>,
             SUB_TYPE extends ProxySubType<?, ?, ?>,
             SUB_TYPES extends ProxyList<CHILD_RESOURCES, ?, SubTypeData, SUB_TYPE, SUB_TYPES>,
             OPTION extends ProxyOption<RESOURCES, CHILD_RESOURCES, SUB_TYPE, SUB_TYPES, OPTION>>

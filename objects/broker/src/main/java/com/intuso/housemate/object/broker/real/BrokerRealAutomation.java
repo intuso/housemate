@@ -10,10 +10,14 @@ import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 public class BrokerRealAutomation
-        extends BrokerRealPrimaryObject<AutomationData, BrokerRealAutomation, AutomationListener<? super BrokerRealAutomation>>
-        implements Automation<BrokerRealCommand, BrokerRealCommand, BrokerRealCommand,
-                    BrokerRealValue<Boolean>, BrokerRealValue<Boolean>, BrokerRealValue<String>, BrokerRealCondition, BrokerRealList<ConditionData, BrokerRealCondition>,
-        BrokerRealTask, BrokerRealList<TaskData, BrokerRealTask>, BrokerRealAutomation>,
+        extends BrokerRealPrimaryObject<
+            AutomationData,
+            BrokerRealAutomation,
+            AutomationListener<? super BrokerRealAutomation>>
+        implements Automation<
+            BrokerRealCommand, BrokerRealCommand, BrokerRealCommand,
+            BrokerRealValue<Boolean>, BrokerRealValue<String>, BrokerRealCondition, BrokerRealList<ConditionData, BrokerRealCondition>,
+            BrokerRealTask, BrokerRealList<TaskData, BrokerRealTask>, BrokerRealAutomation>,
             ConditionListener<BrokerRealCondition> {
 
     private BrokerRealList<ConditionData, BrokerRealCondition> conditions;

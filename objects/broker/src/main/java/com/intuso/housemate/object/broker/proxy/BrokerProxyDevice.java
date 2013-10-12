@@ -7,6 +7,9 @@ import com.intuso.housemate.api.object.device.DeviceListener;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.broker.real.BrokerRealValue;
+import com.intuso.housemate.object.real.impl.type.BooleanType;
+
+import java.util.List;
 
 public class BrokerProxyDevice
         extends BrokerProxyPrimaryObject<
@@ -30,13 +33,17 @@ public class BrokerProxyDevice
     private BrokerProxyList<CommandData, BrokerProxyCommand> commands;
     private BrokerProxyList<ValueData, BrokerProxyValue> values;
     private BrokerProxyList<PropertyData, BrokerProxyProperty> properties;
+    private BrokerRealValue<Boolean> connected;
 
     /**
      * @param resources {@inheritDoc}
      * @param data {@inheritDoc}
      */
     public BrokerProxyDevice(BrokerProxyResources<BrokerProxyFactory.All> resources, DeviceData data) {
-        super(resources, resources.getBrokerRealResources(), data);
+        super(resources, data);
+        connected = new BrokerRealValue<Boolean>(resources.getBrokerRealResources(), CONNECTED_ID, CONNECTED_ID,
+                "Whether the server has a connection open to control the object",
+                new BooleanType(resources.getBrokerRealResources().getRealResources()), true);
     }
 
     @Override
@@ -60,5 +67,35 @@ public class BrokerProxyDevice
     @Override
     public BrokerProxyList<PropertyData, BrokerProxyProperty> getProperties() {
         return properties;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return connected.getTypedValue() != null ? connected.getTypedValue() : false;
+    }
+
+    @Override
+    public BrokerRealValue<Boolean> getConnectedValue() {
+        return connected;
+    }
+
+    @Override
+    public final List<String> getFeatureIds() {
+        return getData().getFeatureIds();
+    }
+
+    @Override
+    public final List<String> getCustomCommandIds() {
+        return getData().getCustomCommandIds();
+    }
+
+    @Override
+    public final List<String> getCustomValueIds() {
+        return getData().getCustomValueIds();
+    }
+
+    @Override
+    public final List<String> getCustomPropertyIds() {
+        return getData().getCustomPropertyIds();
     }
 }

@@ -2,11 +2,11 @@ package com.intuso.housemate.object.proxy;
 
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.automation.AutomationListener;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.task.TaskData;
-import com.intuso.housemate.api.object.automation.Automation;
-import com.intuso.housemate.api.object.automation.AutomationListener;
 
 /**
  * @param <RESOURCES> the type of the resources
@@ -20,8 +20,8 @@ import com.intuso.housemate.api.object.automation.AutomationListener;
  * @param <AUTOMATION> the type of the automation
  */
 public abstract class ProxyAutomation<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            CHILD_RESOURCES extends ProxyResources<?>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ?>,
+            CHILD_RESOURCES extends ProxyResources<?, ?>,
             ADD_COMMAND extends ProxyCommand<?, ?, ?, ?, ADD_COMMAND>,
             VALUE extends ProxyValue<?, ?, VALUE>,
             CONDITION extends ProxyCondition<?, ?, ?, ?, ?, CONDITION, CONDITIONS>,
@@ -30,7 +30,7 @@ public abstract class ProxyAutomation<
             TASKS extends ProxyList<?, ?, TaskData, TASK, TASKS>,
             AUTOMATION extends ProxyAutomation<RESOURCES, CHILD_RESOURCES, ADD_COMMAND, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION>>
         extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, AutomationData, ADD_COMMAND, VALUE, AUTOMATION, AutomationListener<? super AUTOMATION>>
-        implements Automation<ADD_COMMAND, ADD_COMMAND, ADD_COMMAND, VALUE, VALUE, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION> {
+        implements Automation<ADD_COMMAND, ADD_COMMAND, ADD_COMMAND, VALUE, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION> {
 
     /**
      * @param resources {@inheritDoc}

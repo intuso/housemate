@@ -16,8 +16,8 @@ import com.intuso.housemate.api.object.type.TypeInstances;
  * @param <PROPERTY> the type of the property
  */
 public abstract class ProxyProperty<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CommandData, SET_COMMAND>>,
-            CHILD_RESOURCES extends ProxyResources<?>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CommandData, SET_COMMAND>, ?>,
+            CHILD_RESOURCES extends ProxyResources<?, ?>,
             TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
             SET_COMMAND extends ProxyCommand<?, ?, ?, ?, SET_COMMAND>,
             PROPERTY extends ProxyProperty<RESOURCES, CHILD_RESOURCES, TYPE, SET_COMMAND, PROPERTY>>

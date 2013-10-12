@@ -6,7 +6,6 @@ import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.BrokerRealValue;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
@@ -24,11 +23,10 @@ public class BrokerProxyPrimaryObject<
             PRIMARY_OBJECT extends BrokerProxyPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
         extends BrokerProxyObject<DATA, HousemateData<?>, BrokerProxyObject<?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
-        implements PrimaryObject<BrokerProxyCommand, BrokerProxyCommand, BrokerRealValue<Boolean>,
-            BrokerProxyValue, BrokerProxyValue, PRIMARY_OBJECT, LISTENER> {
+        implements PrimaryObject<BrokerProxyCommand, BrokerProxyCommand, BrokerProxyValue,
+            BrokerProxyValue, PRIMARY_OBJECT, LISTENER> {
 
     private BrokerProxyCommand remove;
-    private BrokerRealValue<Boolean> connected;
     private BrokerProxyValue running;
     private BrokerProxyCommand start;
     private BrokerProxyCommand stop;
@@ -39,12 +37,8 @@ public class BrokerProxyPrimaryObject<
      * @param realResources the resources for real objects
      * @param data {@inheritDoc}
      */
-    protected BrokerProxyPrimaryObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, HousemateData<?>, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> resources,
-                                       BrokerRealResources realResources, DATA data) {
+    protected BrokerProxyPrimaryObject(BrokerProxyResources<? extends HousemateObjectFactory<BrokerProxyResources<?>, HousemateData<?>, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> resources, DATA data) {
         super(resources, data);
-        connected = new BrokerRealValue<Boolean>(realResources, CONNECTED_ID, CONNECTED_ID,
-                "Whether the server has a connection open to control the object",
-                new BooleanType(realResources.getRealResources()), true);
     }
 
     @Override
@@ -59,16 +53,6 @@ public class BrokerProxyPrimaryObject<
     @Override
     public BrokerProxyCommand getRemoveCommand() {
         return remove;
-    }
-
-    @Override
-    public boolean isConnected() {
-        return connected.getTypedValue() != null ? connected.getTypedValue() : false;
-    }
-
-    @Override
-    public BrokerRealValue<Boolean> getConnectedValue() {
-        return connected;
     }
 
     @Override

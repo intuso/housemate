@@ -11,10 +11,10 @@ import com.intuso.housemate.api.object.subtype.SubTypeListener;
  * @param <SUB_TYPE> the type of the sub type
  */
 public abstract class ProxySubType<
-            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
+            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory, ?>,
             TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
             SUB_TYPE extends ProxySubType<?, TYPE, SUB_TYPE>>
-        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, SubTypeData, NoChildrenData, NoChildrenProxyObject, SUB_TYPE, SubTypeListener>
+        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory, ?>, SubTypeData, NoChildrenData, NoChildrenProxyObject, SUB_TYPE, SubTypeListener>
         implements SubType<TYPE> {
 
     /**

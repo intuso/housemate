@@ -9,10 +9,10 @@ import com.intuso.housemate.api.object.value.ValueData;
  * @param <VALUE> the type of the value
  */
 public class ProxyValue<
-            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
+            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory, ?>,
             TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
             VALUE extends ProxyValue<RESOURCES, TYPE, VALUE>>
-        extends ProxyValueBase<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, ValueData, NoChildrenData, NoChildrenProxyObject, TYPE, VALUE> {
+        extends ProxyValueBase<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory, ?>, ValueData, NoChildrenData, NoChildrenProxyObject, TYPE, VALUE> {
 
     /**
      * @param resources {@inheritDoc}

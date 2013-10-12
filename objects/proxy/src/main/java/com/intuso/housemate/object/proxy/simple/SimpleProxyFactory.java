@@ -4,25 +4,25 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.automation.AutomationFactory;
 import com.intuso.housemate.api.object.command.CommandData;
+import com.intuso.housemate.api.object.command.CommandFactory;
 import com.intuso.housemate.api.object.condition.ConditionData;
+import com.intuso.housemate.api.object.condition.ConditionFactory;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.device.DeviceFactory;
 import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.list.ListFactory;
 import com.intuso.housemate.api.object.option.OptionData;
+import com.intuso.housemate.api.object.option.OptionFactory;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterFactory;
-import com.intuso.housemate.api.object.automation.AutomationFactory;
-import com.intuso.housemate.api.object.command.CommandFactory;
-import com.intuso.housemate.api.object.condition.ConditionFactory;
 import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.property.PropertyFactory;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
+import com.intuso.housemate.api.object.subtype.SubTypeFactory;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.task.TaskFactory;
-import com.intuso.housemate.api.object.device.DeviceFactory;
-import com.intuso.housemate.api.object.list.ListFactory;
-import com.intuso.housemate.api.object.option.OptionFactory;
-import com.intuso.housemate.api.object.property.PropertyFactory;
-import com.intuso.housemate.api.object.subtype.SubTypeFactory;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeFactory;
 import com.intuso.housemate.api.object.user.UserData;
@@ -38,7 +38,7 @@ import com.intuso.housemate.object.proxy.ProxyResources;
  *
  * @see SimpleProxyObject
  */
-public class SimpleProxyFactory {
+public final class SimpleProxyFactory {
 
     private final static All allFactory = new All();
     private final static Automation automationFactory = new Automation();
@@ -55,9 +55,9 @@ public class SimpleProxyFactory {
     private final static User userFactory = new User();
     private final static Value valueFactory = new Value();
 
-    public static class All implements HousemateObjectFactory<ProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
+    public static class All implements HousemateObjectFactory<SimpleProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
         @Override
-        public ProxyObject<?, ?, ?, ?, ?, ?, ?> create(ProxyResources<?> resources, HousemateData<?> data) throws HousemateException {
+        public ProxyObject<?, ?, ?, ?, ?, ?, ?> create(SimpleProxyResources<?> resources, HousemateData<?> data) throws HousemateException {
             if(data instanceof ParameterData)
                 return parameterFactory.create(resources, (ParameterData) data);
             else if(data instanceof CommandData)
@@ -90,47 +90,47 @@ public class SimpleProxyFactory {
     }
 
     public static class Automation implements AutomationFactory<
-            ProxyResources<?>,
+            SimpleProxyResources<?>,
             SimpleProxyObject.Automation> {
         @Override
-        public SimpleProxyObject.Automation create(ProxyResources<?> resources, AutomationData data) throws HousemateException {
-            ProxyResources<All> r = changeFactoryType(resources, allFactory);
+        public SimpleProxyObject.Automation create(SimpleProxyResources<?> resources, AutomationData data) throws HousemateException {
+            SimpleProxyResources<All> r = changeFactoryType(resources, allFactory);
             return new SimpleProxyObject.Automation(r, resources, data);
         }
     }
 
-    public static class Command implements CommandFactory<ProxyResources<?>, SimpleProxyObject.Command> {
+    public static class Command implements CommandFactory<SimpleProxyResources<?>, SimpleProxyObject.Command> {
         @Override
-        public SimpleProxyObject.Command create(ProxyResources<?> resources, CommandData data) throws HousemateException {
-            ProxyResources<List<ParameterData, SimpleProxyObject.Parameter>> r = changeFactoryType(resources, new List<ParameterData, SimpleProxyObject.Parameter>());
-            ProxyResources<Parameter> sr = changeFactoryType(resources, parameterFactory);
+        public SimpleProxyObject.Command create(SimpleProxyResources<?> resources, CommandData data) throws HousemateException {
+            SimpleProxyResources<List<ParameterData, SimpleProxyObject.Parameter>> r = changeFactoryType(resources, new List<ParameterData, SimpleProxyObject.Parameter>());
+            SimpleProxyResources<Parameter> sr = changeFactoryType(resources, parameterFactory);
             return new SimpleProxyObject.Command(r, sr, data);
         }
     }
 
-    public static class Condition implements ConditionFactory<ProxyResources<?>, SimpleProxyObject.Condition> {
+    public static class Condition implements ConditionFactory<SimpleProxyResources<?>, SimpleProxyObject.Condition> {
         @Override
-        public SimpleProxyObject.Condition create(ProxyResources<?> resources, ConditionData data) throws HousemateException {
-            ProxyResources<All> r = changeFactoryType(resources, allFactory);
+        public SimpleProxyObject.Condition create(SimpleProxyResources<?> resources, ConditionData data) throws HousemateException {
+            SimpleProxyResources<All> r = changeFactoryType(resources, allFactory);
             return new SimpleProxyObject.Condition(r, resources, data);
         }
     }
 
-    public static class Device implements DeviceFactory<ProxyResources<?>, SimpleProxyObject.Device> {
+    public static class Device implements DeviceFactory<SimpleProxyResources<?>, SimpleProxyObject.Device> {
         @Override
-        public SimpleProxyObject.Device create(ProxyResources<?> resources, DeviceData data) throws HousemateException {
-            ProxyResources<All> r = changeFactoryType(resources, allFactory);
+        public SimpleProxyObject.Device create(SimpleProxyResources<?> resources, DeviceData data) throws HousemateException {
+            SimpleProxyResources<All> r = changeFactoryType(resources, allFactory);
             return new SimpleProxyObject.Device(r, resources, data);
         }
     }
 
-    public static class GenericList implements ListFactory<ProxyResources<?>, HousemateData<?>,
+    public static class GenericList implements ListFactory<SimpleProxyResources<?>, HousemateData<?>,
             ProxyObject<?, ?, ?, ?, ?, ?, ?>,
             SimpleProxyObject.List<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> {
 
         @Override
-        public SimpleProxyObject.List<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> create(ProxyResources<?> resources, ListData<HousemateData<?>> data) throws HousemateException {
-            ProxyResources<All> r = changeFactoryType(resources, allFactory);
+        public SimpleProxyObject.List<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> create(SimpleProxyResources<?> resources, ListData<HousemateData<?>> data) throws HousemateException {
+            SimpleProxyResources<All> r = changeFactoryType(resources, allFactory);
             return new SimpleProxyObject.List<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>(r, resources, data);
         }
     }
@@ -138,88 +138,89 @@ public class SimpleProxyFactory {
     public static class List<
                 SWBL extends HousemateData<?>,
                 SWR extends ProxyObject<?, ?, ? extends SWBL, ?, ?, ?, ?>>
-            implements ListFactory<ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, SWBL, SWR>>, SWBL, SWR, SimpleProxyObject.List<SWBL, SWR>> {
+            implements ListFactory<SimpleProxyResources<? extends HousemateObjectFactory<SimpleProxyResources<?>, SWBL, SWR>>,
+                SWBL, SWR, SimpleProxyObject.List<SWBL, SWR>> {
 
         @Override
-        public SimpleProxyObject.List<SWBL, SWR> create(ProxyResources<? extends HousemateObjectFactory<ProxyResources<?>, SWBL, SWR>> resources,
+        public SimpleProxyObject.List<SWBL, SWR> create(SimpleProxyResources<? extends HousemateObjectFactory<SimpleProxyResources<?>, SWBL, SWR>> resources,
                                                         ListData<SWBL> data) throws HousemateException {
             return new SimpleProxyObject.List<SWBL, SWR>(resources, resources, data);
         }
     }
 
-    public static class Option implements OptionFactory<ProxyResources<?>, SimpleProxyObject.Option> {
+    public static class Option implements OptionFactory<SimpleProxyResources<?>, SimpleProxyObject.Option> {
         @Override
-        public SimpleProxyObject.Option create(ProxyResources<?> resources, OptionData data) throws HousemateException {
-            ProxyResources<List<SubTypeData, SimpleProxyObject.SubType>> r = changeFactoryType(resources,
+        public SimpleProxyObject.Option create(SimpleProxyResources<?> resources, OptionData data) throws HousemateException {
+            SimpleProxyResources<List<SubTypeData, SimpleProxyObject.SubType>> r = changeFactoryType(resources,
                     new List<SubTypeData, SimpleProxyObject.SubType>());
-            ProxyResources<SubType> sr = changeFactoryType(resources, subTypeFactory);
+            SimpleProxyResources<SubType> sr = changeFactoryType(resources, subTypeFactory);
             return new SimpleProxyObject.Option(r, sr, data);
         }
     }
 
-    public static class Parameter implements ParameterFactory<ProxyResources<?>, SimpleProxyObject.Parameter> {
+    public static class Parameter implements ParameterFactory<SimpleProxyResources<?>, SimpleProxyObject.Parameter> {
         @Override
-        public SimpleProxyObject.Parameter create(ProxyResources<?> resources, ParameterData data) throws HousemateException {
+        public SimpleProxyObject.Parameter create(SimpleProxyResources<?> resources, ParameterData data) throws HousemateException {
             return new SimpleProxyObject.Parameter(noFactoryType(resources), data);
         }
     }
 
-    public static class Property implements PropertyFactory<ProxyResources<?>, SimpleProxyObject.Property> {
+    public static class Property implements PropertyFactory<SimpleProxyResources<?>, SimpleProxyObject.Property> {
         @Override
-        public SimpleProxyObject.Property create(ProxyResources<?> resources, PropertyData data) throws HousemateException {
-            ProxyResources<Command> r = changeFactoryType(resources, commandFactory);
-            ProxyResources<List<ParameterData, SimpleProxyObject.Parameter>> sr = changeFactoryType(resources, new List<ParameterData, SimpleProxyObject.Parameter>());
+        public SimpleProxyObject.Property create(SimpleProxyResources<?> resources, PropertyData data) throws HousemateException {
+            SimpleProxyResources<Command> r = changeFactoryType(resources, commandFactory);
+            SimpleProxyResources<List<ParameterData, SimpleProxyObject.Parameter>> sr = changeFactoryType(resources, new List<ParameterData, SimpleProxyObject.Parameter>());
             return new SimpleProxyObject.Property(r, sr, data);
         }
     }
 
-    public static class SubType implements SubTypeFactory<ProxyResources<?>, SimpleProxyObject.SubType> {
+    public static class SubType implements SubTypeFactory<SimpleProxyResources<?>, SimpleProxyObject.SubType> {
         @Override
-        public SimpleProxyObject.SubType create(ProxyResources<?> resources, SubTypeData data) throws HousemateException {
+        public SimpleProxyObject.SubType create(SimpleProxyResources<?> resources, SubTypeData data) throws HousemateException {
             return new SimpleProxyObject.SubType(noFactoryType(resources), data);
         }
     }
 
-    public static class Task implements TaskFactory<ProxyResources<?>, SimpleProxyObject.Task> {
+    public static class Task implements TaskFactory<SimpleProxyResources<?>, SimpleProxyObject.Task> {
         @Override
-        public SimpleProxyObject.Task create(ProxyResources<?> resources, TaskData data) throws HousemateException {
-            ProxyResources<All> r = changeFactoryType(resources, allFactory);
+        public SimpleProxyObject.Task create(SimpleProxyResources<?> resources, TaskData data) throws HousemateException {
+            SimpleProxyResources<All> r = changeFactoryType(resources, allFactory);
             return new SimpleProxyObject.Task(r, resources, data);
         }
     }
 
-    public static class Type implements TypeFactory<ProxyResources<?>, SimpleProxyObject.Type> {
+    public static class Type implements TypeFactory<SimpleProxyResources<?>, SimpleProxyObject.Type> {
         @Override
-        public SimpleProxyObject.Type create(ProxyResources<?> resources,
+        public SimpleProxyObject.Type create(SimpleProxyResources<?> resources,
                                              TypeData<?> data) throws HousemateException {
-            ProxyResources<All> r = changeFactoryType(resources, allFactory);
+            SimpleProxyResources<All> r = changeFactoryType(resources, allFactory);
             return new SimpleProxyObject.Type(r, resources, data);
         }
     }
 
-    public static class User implements UserFactory<ProxyResources<?>, SimpleProxyObject.User> {
+    public static class User implements UserFactory<SimpleProxyResources<?>, SimpleProxyObject.User> {
         @Override
-        public SimpleProxyObject.User create(ProxyResources<?> resources, UserData data) throws HousemateException {
-            ProxyResources<All> r = changeFactoryType(resources, allFactory);
+        public SimpleProxyObject.User create(SimpleProxyResources<?> resources, UserData data) throws HousemateException {
+            SimpleProxyResources<All> r = changeFactoryType(resources, allFactory);
             return new SimpleProxyObject.User(r, resources, data);
         }
     }
 
-    public static class Value implements ValueFactory<ProxyResources<?>, SimpleProxyObject.Value> {
+    public static class Value implements ValueFactory<SimpleProxyResources<?>, SimpleProxyObject.Value> {
         @Override
-        public SimpleProxyObject.Value create(ProxyResources<?> resources, ValueData data) throws HousemateException {
+        public SimpleProxyObject.Value create(SimpleProxyResources<?> resources, ValueData data) throws HousemateException {
             return new SimpleProxyObject.Value(noFactoryType(resources), data);
         }
     }
 
     public static
-            <NF extends HousemateObjectFactory<? extends ProxyResources<?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>>
-            ProxyResources<NF> changeFactoryType(ProxyResources<?> resources, NF newFactory) {
-        return new ProxyResources<NF>(resources.getLog(), resources.getProperties(), resources.getRouter(),
-                newFactory, resources.getRegexMatcherFactory());
+            <NF extends HousemateObjectFactory<? extends ProxyResources<?, ?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>>
+            SimpleProxyResources<NF> changeFactoryType(SimpleProxyResources<?> resources, NF newFactory) {
+        return new SimpleProxyResources<NF>(resources.getLog(), resources.getProperties(), resources.getRouter(),
+                newFactory, resources.getFeatureFactory(), resources.getRegexMatcherFactory());
     }
 
-    public static ProxyResources<NoChildrenProxyObjectFactory> noFactoryType(ProxyResources<?> resources) {
+    public static SimpleProxyResources<NoChildrenProxyObjectFactory> noFactoryType(SimpleProxyResources<?> resources) {
         return changeFactoryType(resources, null);
     }
 }

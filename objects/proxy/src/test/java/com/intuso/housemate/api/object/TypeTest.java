@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
 import com.intuso.housemate.object.proxy.ProxyRegexType;
-import com.intuso.housemate.object.proxy.ProxyResources;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
@@ -127,8 +127,8 @@ public class TypeTest {
         }
     }
 
-    private class MyProxyType extends ProxyRegexType<ProxyResources<NoChildrenProxyObjectFactory>, MyProxyType> {
-        public MyProxyType(ProxyResources<NoChildrenProxyObjectFactory> resources, RegexTypeData data) {
+    private class MyProxyType extends ProxyRegexType<SimpleProxyResources<NoChildrenProxyObjectFactory>, MyProxyType> {
+        public MyProxyType(SimpleProxyResources<NoChildrenProxyObjectFactory> resources, RegexTypeData data) {
             super(resources, data);
         }
     }

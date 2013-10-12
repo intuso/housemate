@@ -8,9 +8,9 @@ import com.intuso.housemate.api.object.type.ObjectTypeData;
  * @param <TYPE> the type of the type
  */
 public abstract class ProxyObjectType<
-            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory>,
+            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory, ?>,
             TYPE extends ProxyObjectType<RESOURCES, TYPE>>
-        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory>, ObjectTypeData, NoChildrenData, NoChildrenProxyObject, TYPE> {
+        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory, ?>, ObjectTypeData, NoChildrenData, NoChildrenProxyObject, TYPE> {
 
     /**
      * @param resources {@inheritDoc}

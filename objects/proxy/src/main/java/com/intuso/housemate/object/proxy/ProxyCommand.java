@@ -24,8 +24,8 @@ import java.util.Map;
  * @param <COMMAND> the type of the command
  */
 public abstract class ProxyCommand<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListData<ParameterData>, PARAMETERS>>,
-            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?>, ParameterData, ? extends PARAMETER>>,
+            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListData<ParameterData>, PARAMETERS>, ?>,
+            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?, ?>, ParameterData, ? extends PARAMETER>, ?>,
             PARAMETER extends ProxyParameter<?, ?, PARAMETER>,
             PARAMETERS extends ProxyList<?, ?, ParameterData, PARAMETER, PARAMETERS>,
             COMMAND extends ProxyCommand<RESOURCES, CHILD_RESOURCES, PARAMETER, PARAMETERS, COMMAND>>

@@ -20,7 +20,7 @@ public abstract class RealPrimaryObject<
             PRIMARY_OBJECT extends RealPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
         extends RealObject<DATA, HousemateData<?>, RealObject<?, ?, ?, ?>, LISTENER>
-        implements PrimaryObject<RealCommand, RealCommand, RealValue<Boolean>, RealValue<Boolean>, RealValue<String>, PRIMARY_OBJECT, LISTENER> {
+        implements PrimaryObject<RealCommand, RealCommand, RealValue<Boolean>, RealValue<String>, PRIMARY_OBJECT, LISTENER> {
 
     private final RealCommand remove;
     private final RealValue<Boolean> running;
@@ -93,16 +93,6 @@ public abstract class RealPrimaryObject<
     @Override
     public RealCommand getStartCommand() {
         return start;
-    }
-
-    @Override
-    public boolean isConnected() {
-        throw new HousemateRuntimeException("This value is not maintained by the client");
-    }
-
-    @Override
-    public RealValue<Boolean> getConnectedValue() {
-        throw new HousemateRuntimeException("This value is not maintained by the client");
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueBaseData;
+import com.intuso.housemate.object.proxy.device.feature.ProxyFeatureFactory;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
@@ -22,8 +23,10 @@ import java.util.List;
  * @param <VALUE> the type of the value
  */
 public abstract class ProxyValueBase<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>>,
-            CHILD_RESOURCES extends ProxyResources<?>,
+            RESOURCES extends ProxyResources<
+                    ? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>,
+                    ? extends ProxyFeatureFactory<?, ?>>,
+            CHILD_RESOURCES extends ProxyResources<?, ?>,
             DATA extends ValueBaseData<CHILD_DATA>,
             CHILD_DATA extends HousemateData<?>,
             CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
@@ -49,7 +52,7 @@ public abstract class ProxyValueBase<
             public void messageReceived(Message<TypeInstances> stringMessageValueMessage) {
                 for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanging(getThis());
-                getData().setValues(stringMessageValueMessage.getPayload());
+                getData().setTypeInstances(stringMessageValueMessage.getPayload());
                 for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanged(getThis());
             }
@@ -64,7 +67,7 @@ public abstract class ProxyValueBase<
 
     @Override
     public final TypeInstances getTypeInstances() {
-        return getData().getValues();
+        return getData().getTypeInstances();
     }
 
 }

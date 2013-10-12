@@ -47,7 +47,7 @@ public abstract class BrokerRealValueBase<
 
     @Override
     public TypeInstances getTypeInstances() {
-        return getData().getValues();
+        return getData().getTypeInstances();
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class BrokerRealValueBase<
         for(ValueListener<? super VALUE> listener : getObjectListeners())
             listener.valueChanging((VALUE)this);
         this.typedValues = typedValues;
-        this.getData().setValues(RealType.serialiseAll(getType(), typedValues));
+        this.getData().setTypeInstances(RealType.serialiseAll(getType(), typedValues));
         for(ValueListener<? super VALUE> listener : getObjectListeners())
             listener.valueChanged((VALUE)this);
     }

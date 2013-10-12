@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.housemate.api.resources.RegexMatcherFactory;
 import com.intuso.housemate.api.resources.SimpleResources;
+import com.intuso.housemate.object.proxy.device.feature.ProxyFeatureFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
@@ -12,14 +13,16 @@ import java.util.Map;
 /**
  * Resources class for proxy objects
  *
- * @param <FACTORY> the type of the factory
+ * @param <OBJECT_FACTORY> the type of the factory
  */
 public class ProxyResources<
-            FACTORY extends HousemateObjectFactory<? extends ProxyResources<?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>>
+            OBJECT_FACTORY extends HousemateObjectFactory<? extends ProxyResources<?, ?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>,
+            FEATURE_FACTORY extends ProxyFeatureFactory<?, ?>>
         extends SimpleResources implements ClientResources{
 
     private final Router router;
-    private final FACTORY objectFactory;
+    private final OBJECT_FACTORY objectFactory;
+    private final FEATURE_FACTORY featureFactory;
     private final RegexMatcherFactory regexMatcherFactory;
 
     /**
@@ -29,10 +32,12 @@ public class ProxyResources<
      * @param objectFactory the object factory to use to create child objects
      * @param regexMatcherFactory the regex matcher factory to use to create regex matchers
      */
-    public ProxyResources(Log log, Map<String, String> properties, Router router, FACTORY objectFactory, RegexMatcherFactory regexMatcherFactory) {
+    public ProxyResources(Log log, Map<String, String> properties, Router router, OBJECT_FACTORY objectFactory,
+                          FEATURE_FACTORY featureFactory, RegexMatcherFactory regexMatcherFactory) {
         super(log, properties);
         this.router = router;
         this.objectFactory = objectFactory;
+        this.featureFactory = featureFactory;
         this.regexMatcherFactory = regexMatcherFactory;
     }
 
@@ -45,8 +50,12 @@ public class ProxyResources<
      * Gets the object factory
      * @return the object factory
      */
-    public FACTORY getObjectFactory() {
+    public OBJECT_FACTORY getObjectFactory() {
         return objectFactory;
+    }
+
+    public FEATURE_FACTORY getFeatureFactory() {
+        return featureFactory;
     }
 
     /**

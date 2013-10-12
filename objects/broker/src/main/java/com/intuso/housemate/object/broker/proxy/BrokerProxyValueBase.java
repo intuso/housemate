@@ -44,7 +44,7 @@ public class BrokerProxyValueBase<
 
     @Override
     public TypeInstances getTypeInstances() {
-        return getData().getValues();
+        return getData().getTypeInstances();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class BrokerProxyValueBase<
             public void messageReceived(Message<ClientPayload<TypeInstances>> stringMessageValueMessage) {
                 for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanging(getThis());
-                getData().setValues(stringMessageValueMessage.getPayload().getOriginal());
+                getData().setTypeInstances(stringMessageValueMessage.getPayload().getOriginal());
                 for(ValueListener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanged(getThis());
             }
