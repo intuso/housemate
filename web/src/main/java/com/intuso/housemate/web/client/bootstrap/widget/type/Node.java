@@ -27,10 +27,10 @@ import java.util.Map;
 * Time: 22:16
 * To change this template use File | Settings | File Templates.
 */
-class ObjectNode extends Composite
-        implements ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>>, HasObjectSelectedHandlers<ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
+public class Node extends Composite
+        implements HasObjectSelectedHandlers, ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
 
-    interface ObjectNodeUiBinder extends UiBinder<FlowPanel, ObjectNode> {
+    interface ObjectNodeUiBinder extends UiBinder<FlowPanel, Node> {
     }
 
     private static ObjectNodeUiBinder ourUiBinder = GWT.create(ObjectNodeUiBinder.class);
@@ -51,15 +51,15 @@ class ObjectNode extends Composite
     @UiField
     protected FlowPanel children;
 
-    private ObjectNode root;
-    private Map<String, ObjectNode> childNodes = Maps.newHashMap();
+    private Node root;
+    private Map<String, Node> childNodes = Maps.newHashMap();
     private boolean expanded = false;
 
-    public ObjectNode(ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
+    public Node(ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
         this(null, object);
     }
 
-    private ObjectNode(ObjectNode root, final ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
+    private Node(Node root, final ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
 
         this.root = root != null ? root : this;
 
@@ -71,7 +71,7 @@ class ObjectNode extends Composite
         children.getElement().getStyle().setPaddingLeft(10, com.google.gwt.dom.client.Style.Unit.PX);
 
         for(ProxyObject<?, ?, ?, ?, ?, ?, ?> child : object.getChildren()) {
-            ObjectNode childNode = new ObjectNode(root, child);
+            Node childNode = new Node(root, child);
             childNodes.put(child.getId(), childNode);
             children.add(childNode);
             childNode.addObjectSelectedHandler(this);
@@ -81,7 +81,7 @@ class ObjectNode extends Composite
             @Override
             public void onClick(ClickEvent event) {
                 fireEvent(new ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?, ?, ?>>(object));
-                ObjectNode.this.root.showObject(object, style.newSelection());
+                Node.this.root.showObject(object, style.newSelection());
             }
         });
 
@@ -116,7 +116,7 @@ class ObjectNode extends Composite
 
     private void unhighlightAll(String style) {
         heading.removeStyleName(style);
-        for(ObjectNode child : childNodes.values())
+        for(Node child : childNodes.values())
             child.unhighlightAll(style);
     }
 
@@ -125,18 +125,18 @@ class ObjectNode extends Composite
         if(depth >= path.length - 1)
             return;
         show(true);
-        ObjectNode node = childNodes.get(path[depth + 1]);
+        Node node = childNodes.get(path[depth + 1]);
         if(node != null)
             node.showObject(path, depth + 1, style);
     }
 
     @Override
-    public HandlerRegistration addObjectSelectedHandler(ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>> handler) {
+    public HandlerRegistration addObjectSelectedHandler(ObjectSelectedHandler handler) {
         return addHandler(handler, ObjectSelectedEvent.TYPE);
     }
 
     @Override
-    public void objectSelected(ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?, ?, ?>> event) {
-        fireEvent(event);
+    public void objectSelected(ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
+        fireEvent(new ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?, ?, ?>>(object));
     }
 }

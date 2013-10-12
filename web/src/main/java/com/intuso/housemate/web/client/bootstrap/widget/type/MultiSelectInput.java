@@ -3,12 +3,9 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 import com.github.gwtbootstrap.client.ui.ListBox;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
-import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyOption;
 import com.intuso.housemate.web.client.object.GWTProxyType;
@@ -29,24 +26,8 @@ public class MultiSelectInput extends ListBox implements TypeInput {
     private GWTProxyList<OptionData, GWTProxyOption> options;
     private Map<String, GWTProxyOption> optionsByName = new HashMap<String, GWTProxyOption>();
 
-    public MultiSelectInput(GWTProxyType type) {
+    public MultiSelectInput(GWTProxyType type, final TypeInstances typeInstances) {
         super(true);
-        addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                selectedOptions.clear();
-                for(int i = 0; i < getItemCount(); i++)
-                    if(isItemSelected(i))
-                        selectedOptions.add(getItemText(i));
-                TypeInstances typeInstances = new TypeInstances();
-                for(String selectedOption : selectedOptions)
-                    typeInstances.add(new TypeInstance(selectedOption));
-                fireEvent(new TypeInputEditedEvent(typeInstances));
-            }
-        });
-        optionIndices.clear();
-        options = null;
-        optionsByName.clear();
         if(type.getChild(OPTIONS) != null) {
             options = (GWTProxyList<OptionData, GWTProxyOption>) type.getChild(OPTIONS);
             int i = 0;
@@ -56,28 +37,28 @@ public class MultiSelectInput extends ListBox implements TypeInput {
                 addItem(option.getName());
                 i++;
             }
-        }
-    }
-
-    @Override
-    public HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler) {
-        return addHandler(handler, TypeInputEditedEvent.TYPE);
-    }
-
-    @Override
-    public void setTypeInstances(TypeInstances typeInstances) {
-        selectedOptions.clear();
-        for(TypeInstance typeInstance : typeInstances)
-            selectedOptions.add(typeInstance.getValue());
-        for(int i = 0; i < options.size(); i++)
-            setItemSelected(i, false);
-        for(String id : selectedOptions) {
-            GWTProxyOption option = options.get(id);
-            if(option != null) {
-                Integer index = optionIndices.get(option);
-                if(index != null)
-                    setItemSelected(index, true);
+            for(TypeInstance typeInstance : typeInstances)
+                selectedOptions.add(typeInstance.getValue());
+            for(String id : selectedOptions) {
+                GWTProxyOption option = options.get(id);
+                if(option != null) {
+                    Integer index = optionIndices.get(option);
+                    if(index != null)
+                        setItemSelected(index, true);
+                }
             }
         }
+        addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                selectedOptions.clear();
+                for(int i = 0; i < getItemCount(); i++)
+                    if(isItemSelected(i))
+                        selectedOptions.add(getItemText(i));
+                typeInstances.clear();
+                for(String selectedOption : selectedOptions)
+                    typeInstances.add(new TypeInstance(selectedOption));
+            }
+        });
     }
 }

@@ -3,35 +3,23 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
-import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 
 /**
  */
 public class CheckBoxInput extends CheckBox implements TypeInput {
 
-    public CheckBoxInput() {
-        addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Boolean> event) {
-                fireEvent(new TypeInputEditedEvent(new TypeInstances(new TypeInstance(Boolean.toString(event.getValue())))));
-            }
-        });
-    }
-
-    @Override
-    public HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler) {
-        return addHandler(handler, TypeInputEditedEvent.TYPE);
-    }
-
-    @Override
-    public void setTypeInstances(TypeInstances typeInstances) {
-        if(typeInstances == null || typeInstances.getFirstValue() == null)
+    public CheckBoxInput(final TypeInstances typeInstances) {
+        if(typeInstances.getFirstValue() == null)
             setValue(Boolean.FALSE);
         else
             setValue(Boolean.parseBoolean(typeInstances.getFirstValue()), false);
+        addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                typeInstances.set(0, new TypeInstance(event.getValue().toString()));
+            }
+        });
     }
 }

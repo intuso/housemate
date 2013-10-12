@@ -6,7 +6,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -14,8 +13,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
-import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyOption;
 import com.intuso.housemate.web.client.object.GWTProxySubType;
@@ -39,86 +36,59 @@ public class SingleSelectInput extends Composite implements TypeInput {
 
     private final GWTProxyList<OptionData, GWTProxyOption> options;
     private final BiMap<GWTProxyOption, Integer> optionMap = HashBiMap.create();
-    private TypeInstances typeInstances = new TypeInstances(new TypeInstance());
 
-    public SingleSelectInput(GWTProxyType type) {
+    public SingleSelectInput(GWTProxyType type, final TypeInstances typeInstances) {
+
+        if(typeInstances.size() == 0)
+            typeInstances.add(new TypeInstance());
 
         options = (GWTProxyList<OptionData, GWTProxyOption>) type.getChild(OPTIONS);
 
         listBox = new ListBox(false);
         initWidget(ourUiBinder.createAndBindUi(this));
-        listBox.addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                typeInstances.get(0).setValue(optionMap.inverse().get(listBox.getSelectedIndex()).getId());
-                selectedOptionChanged();
-            }
-        });
+
+        // add to the list for each option
         int i = 0;
         for(GWTProxyOption option : options) {
             optionMap.put(option, i++);
             listBox.addItem(option.getName());
         }
-        /*if(options.size() > 0) {
-            typeInstance.setValue(options.iterator().next().getId());
-            selectedOptionChanged();
-        }*/
-    }
 
-    @Override
-    public HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler) {
-        return addHandler(handler, TypeInputEditedEvent.TYPE);
-    }
-
-    @Override
-    public void setTypeInstances(TypeInstances typeInstances) {
-        this.typeInstances = typeInstances != null ? typeInstances : new TypeInstances();
-        if(this.typeInstances.size() == 0)
-            this.typeInstances.add(new TypeInstance());
-        if(this.typeInstances.get(0).getValue() == null) {
+        // get the selected id, or if not set choose the first one
+        String optionId = null;
+        if(typeInstances.get(0).getValue() == null) {
             if(options.size() > 0)
-                this.typeInstances.get(0).setValue(options.getChildren().iterator().next().getId());
-            listBox.setSelectedIndex(optionMap.get(options.get(this.typeInstances.get(0).getValue())));
-        } else if(options.getChild(this.typeInstances.get(0).getValue()) == null)
-            listBox.setSelectedIndex(0);
-        else
-            listBox.setSelectedIndex(optionMap.get(options.get(this.typeInstances.get(0).getValue())));
-        selectedOptionChanged();
+                optionId = options.iterator().next().getId();
+        } else
+            optionId = typeInstances.get(0).getValue();
+        typeInstances.get(0).setValue(optionId);
+
+        // highlight the selected option in the list and show it's sub options
+        if(optionId != null && options.getChild(optionId) != null) {
+            listBox.setSelectedIndex(optionMap.get(options.get(optionId)));
+            showOptions(optionId, typeInstances);
+        }
+
+        listBox.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                String optionId = optionMap.inverse().get(listBox.getSelectedIndex()).getId();
+                typeInstances.get(0).setValue(optionId);
+                showOptions(optionId, typeInstances);
+            }
+        });
     }
 
-    private void selectedOptionChanged() {
-        showOptions();
-        fireEvent(new TypeInputEditedEvent(typeInstances));
-    }
-
-    private void showOptions() {
+    private void showOptions(String optionId, TypeInstances typeInstances) {
         subTypesPanel.clear();
-        GWTProxyOption option = options.get(typeInstances.get(0).getValue());
+        GWTProxyOption option = options.get(optionId);
         if(option != null && option.getSubTypes() != null) {
             for(GWTProxySubType subType : option.getSubTypes()) {
-                TypeInput input = TypeInputTableRow.getInput(subType.getType());
-                input.addTypeInputEditedHandler(new SubTypeEditedHandler(subType.getId(), typeInstances.get(0)));
-                subTypesPanel.add(input);
                 if(typeInstances.get(0).getChildValues().get(subType.getId()) == null)
                     typeInstances.get(0).getChildValues().put(subType.getId(), new TypeInstances());
-                input.setTypeInstances(typeInstances.get(0).getChildValues().get(subType.getId()));
+                TypeInput input = TypeInputList.getInput(subType.getType(), typeInstances.get(0).getChildValues().get(subType.getId()));
+                subTypesPanel.add(input);
             }
-        }
-    }
-
-    private class SubTypeEditedHandler implements TypeInputEditedHandler {
-
-        private final String typeId;
-        private final TypeInstance typeInstance;
-
-        public SubTypeEditedHandler(String typeId, TypeInstance typeInstance) {
-            this.typeId = typeId;
-            this.typeInstance = typeInstance;
-        }
-
-        @Override
-        public void onTypeInputEdited(TypeInputEditedEvent event) {
-            typeInstance.getChildValues().put(typeId, event.getTypeInstances());
         }
     }
 }

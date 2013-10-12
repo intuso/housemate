@@ -3,45 +3,34 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
-import com.intuso.housemate.api.object.type.RegexTypeData;
-import com.intuso.housemate.api.object.type.SimpleTypeData;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
-import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
+import com.intuso.housemate.api.object.type.*;
 
 /**
  */
 public class TextInput extends TextBox implements TypeInput {
 
-    public TextInput(TypeData typeData) {
+    public TextInput(TypeData typeData, final TypeInstances typeInstances) {
+
+        if(typeInstances.size() == 0)
+            typeInstances.add(new TypeInstance());
+
+        if(typeInstances.getFirstValue() == null)
+            setText("");
+        else
+            setText(typeInstances.getFirstValue());
+
         final Validator validator = getValidator(typeData);
         addChangeHandler(new ChangeHandler() {
             @Override
             public void onChange(ChangeEvent event) {
-                if(validator.isValid(getText()))
-                    fireEvent(new TypeInputEditedEvent(new TypeInstances(new TypeInstance(getText()))));
-                else {
+                if(validator.isValid(getText())) {
+                    typeInstances.get(0).setValue(getText());
+                } else {
                     // TODO show invalid input
                 }
             }
         });
-    }
-
-    @Override
-    public void setTypeInstances(TypeInstances typeInstance) {
-        if(typeInstance == null || typeInstance.getFirstValue() == null)
-            setText("");
-        else
-            setText(typeInstance.getFirstValue());
-    }
-
-    @Override
-    public HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler) {
-        return addHandler(handler, TypeInputEditedEvent.TYPE);
     }
 
     private Validator getValidator(TypeData typeData) {

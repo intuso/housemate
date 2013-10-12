@@ -1,39 +1,21 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
-import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.type.CompoundTypeData;
-import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
+import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxySubType;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  */
-public class CompoundInput
-        extends SubTypeInputList
-        implements TypeInput {
+public class CompoundInput extends SubTypeInputList implements TypeInput {
 
     private final GWTProxyType type;
     private TypeInstances typeInstances;
 
-    public CompoundInput(CompoundTypeData typeData, GWTProxyType type) {
+    public CompoundInput(CompoundTypeData typeData, GWTProxyType type, TypeInstances typeInstances) {
+        super((GWTProxyList<SubTypeData, GWTProxySubType>) type.getChild("sub-types"), typeInstances);
         this.type = type;
-    }
-
-    @Override
-    public void setTypeInstances(TypeInstances typeInstance) {
-        this.typeInstances = typeInstance != null ? typeInstance : new TypeInstances();
-        if(typeInstances.size() == 0)
-            typeInstances.add(new TypeInstance());
-        super.setTypeInstances(this.typeInstances.get(0).getChildValues());
-        List<GWTProxySubType> list = (List<GWTProxySubType>) type.getChild("sub-types");
-        if(list != null)
-            setList(list);
-    }
-
-    @Override
-    public void onTypeInputEdited(TypeInputEditedEvent event) {
-        fireEvent(new TypeInputEditedEvent(typeInstances));
     }
 }

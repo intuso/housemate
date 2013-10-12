@@ -1,30 +1,21 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
-import com.intuso.housemate.web.client.event.TypeInputEditedEvent;
-import com.intuso.housemate.web.client.handler.HasTypeInputEditedHandlers;
-import com.intuso.housemate.web.client.handler.TypeInputEditedHandler;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.intuso.housemate.api.object.subtype.SubTypeData;
+import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxySubType;
 
 /**
  */
-public class SubTypeInputList
-        extends TypeInputList<GWTProxySubType>
-        implements HasTypeInputEditedHandlers, TypeInputEditedHandler {
+public class SubTypeInputList extends TypeInputList<SubTypeData, GWTProxySubType> {
 
-    @Override
-    public TableRow createObjectTableRow(GWTProxySubType subType) {
-        TypeInputTableRow result = new TypeInputTableRow(subType.getId(), subType.getName(), subType.getDescription(), subType.getType(), getInstances());
-        result.addTypeInputEditedHandler(this);
-        return result;
+    public SubTypeInputList(GWTProxyList<SubTypeData, GWTProxySubType> list, TypeInstances typeInstances) {
+        super(list, typeInstances);
     }
 
     @Override
-    public HandlerRegistration addTypeInputEditedHandler(TypeInputEditedHandler handler) {
-        return addHandler(handler, TypeInputEditedEvent.TYPE);
+    protected IsWidget getWidget(GWTProxySubType subType) {
+        return getWidget(subType.getType(), subType.getId());
     }
-
-    @Override
-    public void onTypeInputEdited(TypeInputEditedEvent event) {}
 }

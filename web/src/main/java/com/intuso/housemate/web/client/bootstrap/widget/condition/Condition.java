@@ -1,74 +1,27 @@
 package com.intuso.housemate.web.client.bootstrap.widget.condition;
 
-import com.github.gwtbootstrap.client.ui.Icon;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.github.gwtbootstrap.client.ui.Modal;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.condition.ConditionListener;
-import com.intuso.housemate.web.client.Housemate;
-import com.intuso.housemate.web.client.bootstrap.widget.list.ObjectNavs;
 import com.intuso.housemate.web.client.bootstrap.widget.property.PropertyList;
-import com.intuso.housemate.web.client.event.ObjectSelectedEvent;
-import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyCondition;
-import com.intuso.housemate.web.client.place.ConditionPlace;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  */
-public class Condition extends Composite
-        implements ConditionListener<GWTProxyCondition>, ObjectSelectedHandler<GWTProxyCondition> {
+public class Condition extends Composite {
 
-    interface ConditionUiBinder extends UiBinder<Widget, Condition> {
-    }
+    interface ConditionUiBinder extends UiBinder<Widget, Condition> {}
 
     private static ConditionUiBinder ourUiBinder = GWT.create(ConditionUiBinder.class);
 
-    @UiField
-    public Icon satisfiedIcon;
-    @UiField
-    public ObjectNavs<GWTProxyCondition> conditionList;
-    @UiField
-    public PropertyList propertyList;
+    @UiField(provided = true)
+    PropertyList propertyList;
 
-    private String automationName;
-    private int depth;
-    private List<String> conditionNames;
-
-    public Condition(String automationName, int depth, List<String> conditionNames, GWTProxyCondition condition) {
-
-        this.automationName = automationName;
-        this.conditionNames = conditionNames;
-
+    public Condition(GWTProxyCondition condition) {
+        propertyList = new PropertyList(condition.getProperties(), "properties", null, true);
         initWidget(ourUiBinder.createAndBindUi(this));
-
-        satisfiedIcon.setType(condition.isSatisfied() ? IconType.THUMBS_UP : IconType.THUMBS_DOWN);
-        conditionList.setList(condition.getConditions(), condition.getAddConditionCommand());
-        propertyList.setList(condition.getProperties());
-
-        conditionList.addObjectSelectedHandler(this);
-        condition.addObjectListener(this);
-    }
-
-    @Override
-    public void conditionSatisfied(GWTProxyCondition condition, boolean satisfied) {
-        satisfiedIcon.setType(satisfied ? IconType.THUMBS_UP : IconType.THUMBS_DOWN);
-    }
-
-    @Override
-    public void conditionError(GWTProxyCondition condition, String error) {
-        // TODO
-    }
-
-    @Override
-    public void objectSelected(ObjectSelectedEvent<GWTProxyCondition> event) {
-        List<String> newConditionNames = new LinkedList<String>(conditionNames);
-        newConditionNames.add(event.getObject().getId());
-        Housemate.FACTORY.getPlaceController().goTo(new ConditionPlace(automationName, depth + 1, newConditionNames));
     }
 }
