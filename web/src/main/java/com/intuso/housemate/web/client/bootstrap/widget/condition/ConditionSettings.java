@@ -22,7 +22,7 @@ public class ConditionSettings extends Composite {
     @UiField(provided = true)
     PerformButton addChildCondition;
 
-    public ConditionSettings(GWTProxyCondition condition) {`
+    public ConditionSettings(GWTProxyCondition condition) {
         propertyList = new PropertyList(condition.getProperties(), "properties", null, true);
         addChildCondition = new PerformButton(condition.getAddConditionCommand());
         initWidget(ourUiBinder.createAndBindUi(this));
