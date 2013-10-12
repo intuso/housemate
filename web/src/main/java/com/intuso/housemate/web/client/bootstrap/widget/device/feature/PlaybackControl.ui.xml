@@ -1,0 +1,14 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
+    <g:FlowPanel>
+        <b:ButtonGroup>
+            <h:command.PerformButton ui:field="rewindButton" icon="FAST_BACKWARD"/>
+            <h:command.PerformButton ui:field="stopButton" icon="STOP"/>
+            <h:command.PerformButton ui:field="pauseButton" icon="PAUSE"/>
+            <h:command.PerformButton ui:field="playButton" icon="PLAY"/>
+            <h:command.PerformButton ui:field="forwardButton" icon="FAST_FORWARD"/>
+        </b:ButtonGroup>
+    </g:FlowPanel>
+</ui:UiBinder>
