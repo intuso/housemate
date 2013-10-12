@@ -6,11 +6,5 @@
         <h:condition.ConditionList ui:field="conditions"/>
         <h:task.TaskList ui:field="satisfiedTasks"/>
         <h:task.TaskList ui:field="unsatisfiedTasks"/>
-        <g:SimplePanel addStyleNames="clearfix">
-            <b:Button ui:field="settingsButton" addStyleNames="pull-right" size="MINI" icon="COG"/>
-        </g:SimplePanel>
-        <b:Collapse ui:field="settingsCollapse" defaultOpen="false">
-            <g:SimplePanel ui:field="settingsPanel"/>
-        </b:Collapse>
     </g:FlowPanel>
 </ui:UiBinder>
