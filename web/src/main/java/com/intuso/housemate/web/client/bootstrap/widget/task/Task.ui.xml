@@ -2,5 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
-    <g:FlowPanel/>
+    <g:FlowPanel>
+        <h:WidgetRow ui:field="executing"/>
+    </g:FlowPanel>
 </ui:UiBinder>
