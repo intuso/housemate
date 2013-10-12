@@ -6,13 +6,9 @@ import com.google.gwt.place.shared.WithTokenizers;
 /**
  */
 @WithTokenizers({
-        HomePlace.Tokeniser.class,
-        DevicePlace.Tokeniser.class,
-        AutomationPlace.Tokeniser.class,
-        ConditionPlace.Tokeniser.class,
-        SatisfiedTaskPlace.Tokeniser.class,
-        UnsatisfiedTaskPlace.Tokeniser.class,
-        AccountPlace.Tokeniser.class
+        DevicesPlace.Tokeniser.class,
+        AutomationsPlace.Tokeniser.class,
+        UsersPlace.Tokeniser.class
 })
 public interface HousematePlaceHistoryMapper extends PlaceHistoryMapper {
 }

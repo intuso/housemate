@@ -18,9 +18,9 @@ public class GWTProxyAutomation extends ProxyAutomation<
             GWTProxyValue,
             GWTProxyCondition,
             GWTProxyList<ConditionData, GWTProxyCondition>,
-        GWTProxyTask,
+            GWTProxyTask,
             GWTProxyList<TaskData, GWTProxyTask>,
-        GWTProxyAutomation> {
+            GWTProxyAutomation> {
     public GWTProxyAutomation(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                               GWTResources<?> childResources,
                               AutomationData data) {

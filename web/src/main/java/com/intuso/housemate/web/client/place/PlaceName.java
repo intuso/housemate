@@ -4,14 +4,10 @@ package com.intuso.housemate.web.client.place;
  */
 public enum PlaceName {
 
-    Account("#account:"),
-    Home("#home:"),
-    User("#user:"),
-    Device("#device:"),
-    Automation("#automation:"),
-    Condition("#condition:"),
-    SatisfiedTask("#satisfiedtask:"),
-    UnsatisfiedTask("#unsatisfiedtask:");
+    Devices("#devices:"),
+    Automations("#automations:"),
+    Users("#users:"),
+    Account("#account:");
 
     private String token;
 

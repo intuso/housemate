@@ -1,14 +1,14 @@
 package com.intuso.housemate.web.client.activity;
 
 import com.intuso.housemate.web.client.Housemate;
-import com.intuso.housemate.web.client.place.AutomationPlace;
+import com.intuso.housemate.web.client.place.AutomationsPlace;
 import com.intuso.housemate.web.client.ui.view.AutomationView;
 
 /**
  */
-public class AutomationActivity extends HousemateActivity<AutomationPlace, AutomationView> {
+public class AutomationActivity extends HousemateActivity<AutomationsPlace, AutomationView> {
 
-    protected AutomationActivity(AutomationPlace place) {
+    protected AutomationActivity(AutomationsPlace place) {
         super(place);
     }
 

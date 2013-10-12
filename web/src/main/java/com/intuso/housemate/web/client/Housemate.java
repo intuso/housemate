@@ -1,5 +1,6 @@
 package com.intuso.housemate.web.client;
 
+import com.google.common.collect.Lists;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -8,15 +9,17 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.RouterRootObject;
+import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.handler.PerformCommandHandler;
 import com.intuso.housemate.web.client.object.GWTProxyRootObject;
-import com.intuso.housemate.web.client.place.HomePlace;
+import com.intuso.housemate.web.client.place.DevicesPlace;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -33,7 +36,7 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
     public void onModuleLoad() {
 
         // we must start the platform and connect the router first
-        ENVIRONMENT = new GWTEnvironment(new HashMap<String, String>(), new AsyncCallback<Void>() {
+        ENVIRONMENT = new GWTEnvironment(new HashMap<String, String>(), FACTORY.getFeatureFactory(), new AsyncCallback<Void>() {
 
             @Override
             public void onFailure(Throwable caught) {
@@ -47,7 +50,7 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                 activityManager.setDisplay(FACTORY.getPage().getContainer());
 
                 // setup the history handler
-                FACTORY.getPlaceHistoryHandler().register(FACTORY.getPlaceController(), FACTORY.getEventBus(), new HomePlace());
+                FACTORY.getPlaceHistoryHandler().register(FACTORY.getPlaceController(), FACTORY.getEventBus(), new DevicesPlace());
 
                 // setup our HM stuff
                 ENVIRONMENT.getResources().getLoginManager().init();
@@ -68,7 +71,6 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                 if(ENVIRONMENT.getResources().getRoot() != null)
                     ENVIRONMENT.getResources().getRoot().uninit();
                 ENVIRONMENT.getResources().setRoot(new GWTProxyRootObject(ENVIRONMENT.getResources(), ENVIRONMENT.getResources()));
-                ENVIRONMENT.getResources().getRoot().addChildListener(new AutoLoader());
                 // add the main view to the root panel of the page
                 RootPanel.get().add(FACTORY.getPage());
                 // connect the root object
@@ -76,11 +78,13 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                     @Override
                     public void connectionStatusChanged(GWTProxyRootObject root, ConnectionStatus status) {
                         if(status == ConnectionStatus.Authenticated) {
-                            ENVIRONMENT.getResources().getRoot().load(new LoadManager(
-                                    Root.DEVICES_ID, Root.ADD_DEVICE_ID, Root.AUTOMATIONS_ID, Root.ADD_AUTOMATION_ID,
-                                    Root.USERS_ID, Root.ADD_USER_ID, Root.TYPES_ID) {
+                            List<HousemateObject.TreeLoadInfo> loadInfos = Lists.newArrayList();
+                            for(String childId : new String[] {Root.TYPES_ID, Root.DEVICES_ID, Root.ADD_DEVICE_ID,
+                                    Root.AUTOMATIONS_ID, Root.ADD_AUTOMATION_ID, Root.USERS_ID, Root.ADD_USER_ID})
+                                loadInfos.add(new HousemateObject.TreeLoadInfo(childId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                            root.load(new LoadManager("webUI", loadInfos) {
                                 @Override
-                                protected void failed(String id) {
+                                protected void failed(HousemateObject.TreeLoadInfo tl) {
                                     // todo show error
                                 }
 

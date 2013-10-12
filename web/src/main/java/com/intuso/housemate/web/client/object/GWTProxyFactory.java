@@ -209,10 +209,10 @@ public class GWTProxyFactory {
         }
     }
 
-    public static <NF extends HousemateObjectFactory<? extends ProxyResources<?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>>
+    public static <NF extends HousemateObjectFactory<? extends ProxyResources<?, ?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>>
             GWTResources<NF> changeFactoryType(GWTResources<?> resources, NF newFactory) {
         return new GWTResources<NF>(resources.getLog(), resources.getProperties(), resources.getRouter(),
-                newFactory, resources.getRegexMatcherFactory());
+                newFactory, resources.getFeatureFactory(), resources.getRegexMatcherFactory());
     }
 
     public static GWTResources<NoChildrenProxyObjectFactory> noFactoryType(GWTResources<?> resources) {

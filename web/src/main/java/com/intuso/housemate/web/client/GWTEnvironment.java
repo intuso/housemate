@@ -7,6 +7,7 @@ import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.api.resources.RegexMatcherFactory;
 import com.intuso.housemate.api.resources.SimpleResources;
 import com.intuso.housemate.web.client.object.GWTProxyFactory;
+import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.log.LogLevel;
 import com.intuso.utilities.log.LogWriter;
@@ -24,7 +25,7 @@ public class GWTEnvironment {
     private final SimpleResources simpleResources;
     private final GWTResources resources;
 
-    public GWTEnvironment(Map<String, String> properties, AsyncCallback<Void> connectCallback) {
+    public GWTEnvironment(Map<String, String> properties, GWTProxyFeatureFactory featureFactory, AsyncCallback<Void> connectCallback) {
         super();
         this.properties = properties;
         GWTLogWriter logWriter = new GWTLogWriter(LogLevel.DEBUG);
@@ -35,7 +36,8 @@ public class GWTEnvironment {
 
         this.comms = new GWTComms(simpleResources, connectCallback);
 
-        resources = new GWTResources(log, properties, comms, new GWTProxyFactory.All(), new RegexMatcherFactory() {
+        resources = new GWTResources(log, properties, comms, new GWTProxyFactory.All(),
+                featureFactory, new RegexMatcherFactory() {
             @Override
             public RegexMatcher createRegexMatcher(String pattern) {
                 return new RM(pattern);

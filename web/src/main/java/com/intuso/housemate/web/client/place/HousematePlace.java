@@ -6,11 +6,7 @@ import com.google.common.collect.Iterables;
 import com.google.gwt.place.shared.Place;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  */
@@ -24,18 +20,12 @@ public abstract class HousematePlace extends Place {
         String getFieldName();
     }
 
-    protected static String namesToString(List<String> names) {
+    protected static String namesToString(Collection<String> names) {
         return Joiner.on(NAMES_SEPARATOR).join(names);
     }
 
     protected static List<String> stringToNames(String names) {
         return Arrays.asList(names.split(NAMES_SEPARATOR));
-    }
-
-    protected final List<Breadcrumb> breadcrumbList = new ArrayList<Breadcrumb>();
-
-    public final List<Breadcrumb> getBreadcrumbItems() {
-        return breadcrumbList;
     }
 
     protected static Map<String, String> getFields(String token) {
