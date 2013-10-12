@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
     <g:SimplePanel>
-        <b:Modal backdrop="STATIC" ui:field="modal" animation="true">
+        <b:Modal backdrop="STATIC" ui:field="modal" animation="true" closeVisible="false">
             <b:Form>
                 <b:ControlGroup>
                     <b:ControlLabel>Username</b:ControlLabel>

@@ -1,0 +1,9 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
+    <g:FlowPanel addStyleNames="property">
+        <h:type.TypeInput ui:field="typeInput"/>
+        <b:Button ui:field="updateButton" text="Update" addStyleNames="pull-right"/>
+    </g:FlowPanel>
+</ui:UiBinder>

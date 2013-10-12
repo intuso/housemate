@@ -1,0 +1,14 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
+    <g:FlowPanel>
+        <b:Label>Control</b:Label>
+        <h:WidgetRow ui:field="runnableRow" title="Run" visible="false">
+            <h:runnable.RunnableWidget ui:field="runnableWidget"/>
+        </h:WidgetRow>
+        <h:WidgetRow ui:field="removeableRow" title="Remove" visible="false">
+            <h:removeable.RemoveableWidget ui:field="removeableWidget"/>
+        </h:WidgetRow>
+    </g:FlowPanel>
+</ui:UiBinder>

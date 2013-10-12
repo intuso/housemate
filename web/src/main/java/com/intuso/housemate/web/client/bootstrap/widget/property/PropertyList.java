@@ -1,45 +1,29 @@
 package com.intuso.housemate.web.client.bootstrap.widget.property;
 
-import com.google.gwt.dom.client.Style;
-import com.intuso.housemate.web.client.bootstrap.widget.list.TableList;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableCol;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableColGroup;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableHead;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
+import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.web.client.bootstrap.widget.list.ComplexWidgetList;
+import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyProperty;
 
+import java.util.List;
+
 /**
+ * Created with IntelliJ IDEA.
+ * User: tomc
+ * Date: 23/09/13
+ * Time: 21:16
+ * To change this template use File | Settings | File Templates.
  */
-public class PropertyList extends TableList<GWTProxyProperty> {
+public class PropertyList extends ComplexWidgetList<PropertyData, GWTProxyProperty> {
 
-    public PropertyList() {
-        addColGroup();
-        addHeader();
-    }
-
-    private void addColGroup() {
-        TableColGroup colGroup= new TableColGroup();
-        TableCol titleCol = new TableCol();
-        titleCol.getElement().getStyle().setWidth(100, Style.Unit.PX);
-        TableCol valueCol = new TableCol();
-        TableCol setButtonCol = new TableCol();
-        setButtonCol.getElement().getStyle().setWidth(100, Style.Unit.PX);
-        colGroup.add(titleCol);
-        colGroup.add(valueCol);
-        colGroup.add(setButtonCol);
-        add(colGroup);
-    }
-
-    private void addHeader() {
-        TableRow header = new TableRow();
-        header.add(new TableHead("Name"));
-        header.add(new TableHead("Value"));
-        header.add(new TableHead("Set"));
-        add(header);
+    public PropertyList(GWTProxyList<PropertyData, GWTProxyProperty> list, String title,
+                        List<String> filteredIds, boolean showOnEmpty) {
+        super(list, title, filteredIds, showOnEmpty);
     }
 
     @Override
-    public TableRow createObjectTableRow(GWTProxyProperty property) {
-        return new PropertyTableRow(property);
+    protected Widget getWidget(final GWTProxyProperty property) {
+        return new Property(property);
     }
 }
