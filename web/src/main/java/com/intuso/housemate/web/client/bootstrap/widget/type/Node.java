@@ -51,8 +51,11 @@ public class Node extends Composite
     @UiField
     protected FlowPanel children;
 
-    private Node root;
-    private Map<String, Node> childNodes = Maps.newHashMap();
+    private final Node root;
+    private final ProxyObject<?, ?, ?, ?, ?, ?, ?> object;
+
+    private final Map<String, Node> childNodes = Maps.newHashMap();
+    private boolean childrenAdded = false;
     private boolean expanded = false;
 
     public Node(ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
@@ -62,6 +65,7 @@ public class Node extends Composite
     private Node(Node root, final ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
 
         this.root = root != null ? root : this;
+        this.object = object;
 
         initWidget(ourUiBinder.createAndBindUi(this));
 
@@ -69,13 +73,6 @@ public class Node extends Composite
         heading.setTitle(object.getDescription());
 
         children.getElement().getStyle().setPaddingLeft(10, com.google.gwt.dom.client.Style.Unit.PX);
-
-        for(ProxyObject<?, ?, ?, ?, ?, ?, ?> child : object.getChildren()) {
-            Node childNode = new Node(root, child);
-            childNodes.put(child.getId(), childNode);
-            children.add(childNode);
-            childNode.addObjectSelectedHandler(this);
-        }
 
         heading.addClickHandler(new ClickHandler() {
             @Override
@@ -100,6 +97,15 @@ public class Node extends Composite
     }
 
     private void show(boolean show) {
+        if(!childrenAdded && show) {
+            childrenAdded = true;
+            for(ProxyObject<?, ?, ?, ?, ?, ?, ?> child : object.getChildren()) {
+                Node childNode = new Node(root, child);
+                childNodes.put(child.getId(), childNode);
+                children.add(childNode);
+                childNode.addObjectSelectedHandler(this);
+            }
+        }
         expanded = show;
         children.setVisible(expanded);
         icon.setType(expanded ? IconType.CHEVRON_DOWN : IconType.CHEVRON_RIGHT);
