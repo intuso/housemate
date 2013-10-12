@@ -6,45 +6,46 @@ import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 import com.intuso.housemate.web.client.ClientFactory;
-import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.activity.HousemateActivityMapper;
-import com.intuso.housemate.web.client.bootstrap.view.AccountView;
 import com.intuso.housemate.web.client.bootstrap.view.AutomationView;
-import com.intuso.housemate.web.client.bootstrap.view.ConditionView;
 import com.intuso.housemate.web.client.bootstrap.view.DeviceView;
-import com.intuso.housemate.web.client.bootstrap.view.HomeView;
-import com.intuso.housemate.web.client.bootstrap.view.Page;
-import com.intuso.housemate.web.client.bootstrap.view.SatisfiedTaskView;
-import com.intuso.housemate.web.client.bootstrap.view.UnsatisfiedTaskView;
 import com.intuso.housemate.web.client.bootstrap.view.UserView;
+import com.intuso.housemate.web.client.bootstrap.widget.automation.AutomationList;
+import com.intuso.housemate.web.client.bootstrap.view.Page;
+import com.intuso.housemate.web.client.bootstrap.widget.user.UserList;
 import com.intuso.housemate.web.client.bootstrap.widget.login.LoginPopup;
+import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFactory;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryMapper;
 import com.intuso.housemate.web.client.ui.view.LoginView;
 
 /**
+ * Created with IntelliJ IDEA.
+ * User: tomc
+ * Date: 13/09/13
+ * Time: 20:45
+ * To change this template use File | Settings | File Templates.
  */
 public class BootstrapClientFactory implements ClientFactory {
 
     // general things
-    private EventBus eventBus = new SimpleEventBus();
+    private final EventBus eventBus = new SimpleEventBus();
 
     // activity/place stuff
-    private HousemateActivityMapper activityMapper = new HousemateActivityMapper();
-    private HousematePlaceHistoryMapper placeHistoryMapper = GWT.create(HousematePlaceHistoryMapper.class);
-    private PlaceHistoryHandler placeHistoryHandler = new PlaceHistoryHandler(placeHistoryMapper);
-    private PlaceController placeController = new PlaceController(eventBus);
+    private final HousemateActivityMapper activityMapper = new HousemateActivityMapper();
+    private final HousematePlaceHistoryMapper placeHistoryMapper = GWT.create(HousematePlaceHistoryMapper.class);
+    private final PlaceHistoryHandler placeHistoryHandler = new PlaceHistoryHandler(placeHistoryMapper);
+    private final PlaceController placeController = new PlaceController(eventBus);
+
+    // housemate resources
+    private final GWTProxyFeatureFactory featureFactory = new BootstrapFeatureFactory();
 
     // ui
-    private LoginPopup loginPopup;
+    private LoginPopup loginPopup = null;
     private Page page = null;
-    private HomeView homeView = null;
     private UserView userView = null;
     private DeviceView deviceView = null;
     private AutomationView automationView = null;
-    private ConditionView conditionView = null;
-    private SatisfiedTaskView satisfiedTaskView = null;
-    private UnsatisfiedTaskView unsatisfiedTaskView = null;
-    private AccountView accountView = null;
+
 
     @Override
     public EventBus getEventBus() {
@@ -72,6 +73,11 @@ public class BootstrapClientFactory implements ClientFactory {
     }
 
     @Override
+    public GWTProxyFeatureFactory getFeatureFactory() {
+        return featureFactory;
+    }
+
+    @Override
     public LoginView getLoginView() {
         if(loginPopup == null)
             loginPopup = new LoginPopup();
@@ -79,65 +85,30 @@ public class BootstrapClientFactory implements ClientFactory {
     }
 
     @Override
-    public com.intuso.housemate.web.client.ui.view.Page getPage() {
+    public Page getPage() {
         if(page == null)
             page = new Page();
         return page;
     }
 
     @Override
-    public com.intuso.housemate.web.client.ui.view.HomeView getHomeView() {
-        if(homeView == null)
-            homeView = new HomeView(Housemate.ENVIRONMENT.getResources());
-        return homeView;
-    }
-
-    @Override
     public com.intuso.housemate.web.client.ui.view.UserView getUserView() {
         if(userView == null)
-            userView = new UserView(Housemate.ENVIRONMENT.getResources());
+            userView = new UserView();
         return userView;
     }
 
     @Override
     public com.intuso.housemate.web.client.ui.view.DeviceView getDeviceView() {
         if(deviceView == null)
-            deviceView = new DeviceView(Housemate.ENVIRONMENT.getResources());
+            deviceView = new DeviceView();
         return deviceView;
     }
 
     @Override
     public com.intuso.housemate.web.client.ui.view.AutomationView getAutomationView() {
         if(automationView == null)
-            automationView = new AutomationView(Housemate.ENVIRONMENT.getResources());
+            automationView = new AutomationView();
         return automationView;
-    }
-
-    @Override
-    public com.intuso.housemate.web.client.ui.view.ConditionView getConditionView() {
-        if(conditionView == null)
-            conditionView = new ConditionView(Housemate.ENVIRONMENT.getResources());
-        return conditionView;
-    }
-
-    @Override
-    public com.intuso.housemate.web.client.ui.view.SatisfiedTaskView getSatisfiedTaskView() {
-        if(satisfiedTaskView == null)
-            satisfiedTaskView = new SatisfiedTaskView(Housemate.ENVIRONMENT.getResources());
-        return satisfiedTaskView;
-    }
-
-    @Override
-    public com.intuso.housemate.web.client.ui.view.UnsatisfiedTaskView getUnsatisfiedTaskView() {
-        if(unsatisfiedTaskView == null)
-            unsatisfiedTaskView = new UnsatisfiedTaskView(Housemate.ENVIRONMENT.getResources());
-        return unsatisfiedTaskView;
-    }
-
-    @Override
-    public com.intuso.housemate.web.client.ui.view.AccountView getAccountView() {
-        if(accountView == null)
-            accountView = new AccountView();
-        return accountView;
     }
 }
