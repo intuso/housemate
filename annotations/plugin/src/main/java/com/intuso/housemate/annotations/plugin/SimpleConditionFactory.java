@@ -1,6 +1,7 @@
 package com.intuso.housemate.annotations.plugin;
 
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.plugin.api.BrokerConditionFactory;
@@ -35,9 +36,10 @@ public class SimpleConditionFactory implements BrokerConditionFactory<BrokerReal
     }
 
     @Override
-    public BrokerRealCondition create(BrokerRealResources resources, String id, String name, String description) throws HousemateException {
+    public BrokerRealCondition create(BrokerRealResources resources, String id, String name, String description,
+                                      BrokerRealConditionOwner owner) throws HousemateException {
         try {
-            return constructor.newInstance(resources, id, name, description);
+            return constructor.newInstance(resources, id, name, description, owner);
         } catch(Exception e) {
             throw new HousemateException("Failed to create condition", e);
         }

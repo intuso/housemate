@@ -3,6 +3,7 @@ package com.intuso.housemate.broker.plugin.task;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
+import com.intuso.housemate.object.broker.real.BrokerRealTaskOwner;
 import com.intuso.housemate.plugin.api.BrokerTaskFactory;
 
 /**
@@ -31,7 +32,8 @@ public class PerformCommandTaskFactory implements BrokerTaskFactory<PerformComma
     }
 
     @Override
-    public PerformCommand create(BrokerRealResources resources, String id, String name, String description) throws HousemateException {
-        return new PerformCommand(resources, id, name, description, generalResources.getBridgeResources().getRoot());
+    public PerformCommand create(BrokerRealResources resources, String id, String name, String description,
+                                 BrokerRealTaskOwner owner) throws HousemateException {
+        return new PerformCommand(resources, id, name, description, owner, generalResources.getBridgeResources().getRoot());
     }
 }

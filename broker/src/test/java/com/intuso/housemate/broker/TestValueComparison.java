@@ -128,7 +128,7 @@ public class TestValueComparison {
 
     private ValueComparison makeValueComparison(ComparisonOperator operator, ValueSource sourceOne, ValueSource sourceTwo) {
         ValueComparison valueComparison = new ValueComparison(SERVER_ENVIRONMENT.getGeneralResources().getRealResources(),
-                "test", "Test", "Test VC", SERVER_ENVIRONMENT.getGeneralResources());
+                "test", "Test", "Test VC", null, SERVER_ENVIRONMENT.getGeneralResources());
         BrokerRealProperty<Comparison> comparisonProperty = (BrokerRealProperty<Comparison>) valueComparison.getProperties().get(ValueComparison.COMPARISON_ID);
         Comparison comparison = new Comparison(operator, COMPARISONS_BY_TYPE.get(operator), sourceOne, sourceTwo);
         comparisonProperty.setTypedValue(comparison);

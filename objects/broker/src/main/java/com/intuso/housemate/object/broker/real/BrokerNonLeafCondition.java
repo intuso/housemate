@@ -20,8 +20,9 @@ public abstract class BrokerNonLeafCondition extends BrokerRealCondition
      * @param name the object's name
      * @param description the object's description
      */
-    public BrokerNonLeafCondition(BrokerRealResources resources, String id, String name, String description) {
-        this(resources, id, name, description, new ArrayList<BrokerRealProperty<?>>());
+    public BrokerNonLeafCondition(BrokerRealResources resources, String id, String name, String description,
+                                  BrokerRealConditionOwner owner) {
+        this(resources, id, name, description, owner, new ArrayList<BrokerRealProperty<?>>());
     }
 
     /**
@@ -31,8 +32,9 @@ public abstract class BrokerNonLeafCondition extends BrokerRealCondition
      * @param description the object's description
      * @param properties the properties of the condition
      */
-    public BrokerNonLeafCondition(BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
-        super(resources, id, name, description, properties);
+    public BrokerNonLeafCondition(BrokerRealResources resources, String id, String name, String description,
+                                  BrokerRealConditionOwner owner, java.util.List<BrokerRealProperty<?>> properties) {
+        super(resources, id, name, description, owner, properties);
     }
 
     @Override

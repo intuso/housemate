@@ -1,6 +1,7 @@
 package com.intuso.housemate.sample.plugin.condition;
 
 import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 
 /**
@@ -11,12 +12,8 @@ import com.intuso.housemate.object.broker.real.BrokerRealResources;
  */
 public class DaylightCondition extends BrokerRealCondition {
 
-    public final static String ID = "daylight";
-    public final static String NAME = "Daylight";
-    public final static String DESCRIPTION = "Checks if it is currently light outside";
-
-    public DaylightCondition(BrokerRealResources resources) {
-        super(resources, ID, NAME, DESCRIPTION);
+    public DaylightCondition(BrokerRealResources resources, String id, String name, String description, BrokerRealConditionOwner owner) {
+        super(resources, id, name, description, owner);
     }
 
     @Override

@@ -17,13 +17,7 @@ import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.broker.LifecycleHandler;
-import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
-import com.intuso.housemate.object.broker.real.BrokerRealCommand;
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
-import com.intuso.housemate.object.broker.real.BrokerRealList;
-import com.intuso.housemate.object.broker.real.BrokerRealParameter;
-import com.intuso.housemate.object.broker.real.BrokerRealTask;
-import com.intuso.housemate.object.broker.real.BrokerRealUser;
+import com.intuso.housemate.object.broker.real.*;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
@@ -131,17 +125,20 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     }
 
     @Override
-    public BrokerRealCommand createAddConditionCommand(BrokerRealList<ConditionData, BrokerRealCondition> conditions) {
-        return resources.getConditionFactory().createAddConditionCommand(Automation.ADD_CONDITION_ID, Automation.ADD_CONDITION_ID, "Add a new condition", conditions);
+    public BrokerRealCommand createAddConditionCommand(BrokerRealList<ConditionData, BrokerRealCondition> conditions,
+                                                       BrokerRealConditionOwner owner) {
+        return resources.getConditionFactory().createAddConditionCommand(Automation.ADD_CONDITION_ID, Automation.ADD_CONDITION_ID, "Add a new condition", owner, conditions);
     }
 
     @Override
-    public BrokerRealCommand createAddSatisfiedTaskCommand(BrokerRealList<TaskData, BrokerRealTask> tasks) {
-        return resources.getTaskFactory().createAddTaskCommand(Automation.ADD_SATISFIED_TASK_ID, Automation.ADD_SATISFIED_TASK_ID, "Add a new satisfied task", tasks);
+    public BrokerRealCommand createAddSatisfiedTaskCommand(BrokerRealList<TaskData, BrokerRealTask> tasks,
+                                                           BrokerRealTaskOwner owner) {
+        return resources.getTaskFactory().createAddTaskCommand(Automation.ADD_SATISFIED_TASK_ID, Automation.ADD_SATISFIED_TASK_ID, "Add a new satisfied task", owner, tasks);
     }
 
     @Override
-    public BrokerRealCommand createAddUnsatisfiedTaskCommand(BrokerRealList<TaskData, BrokerRealTask> tasks) {
-        return resources.getTaskFactory().createAddTaskCommand(Automation.ADD_UNSATISFIED_TASK_ID, Automation.ADD_UNSATISFIED_TASK_ID, "Add a new unsatisfied task", tasks);
+    public BrokerRealCommand createAddUnsatisfiedTaskCommand(BrokerRealList<TaskData, BrokerRealTask> tasks,
+                                                             BrokerRealTaskOwner owner) {
+        return resources.getTaskFactory().createAddTaskCommand(Automation.ADD_UNSATISFIED_TASK_ID, Automation.ADD_UNSATISFIED_TASK_ID, "Add a new unsatisfied task", owner, tasks);
     }
 }

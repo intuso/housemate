@@ -5,12 +5,7 @@ import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
-import com.intuso.housemate.object.broker.real.BrokerRealCommand;
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
-import com.intuso.housemate.object.broker.real.BrokerRealList;
-import com.intuso.housemate.object.broker.real.BrokerRealTask;
-import com.intuso.housemate.object.broker.real.BrokerRealUser;
+import com.intuso.housemate.object.broker.real.*;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
@@ -56,19 +51,22 @@ public interface LifecycleHandler {
      * @param conditions the list to add the conditions to
      * @return a command that when performed (correctly) will add a condition to the given list
      */
-    BrokerRealCommand createAddConditionCommand(BrokerRealList<ConditionData, BrokerRealCondition> conditions);
+    BrokerRealCommand createAddConditionCommand(BrokerRealList<ConditionData, BrokerRealCondition> conditions,
+                                                BrokerRealConditionOwner owner);
 
     /**
      * Creates a command for adding satisfied tasks
      * @param tasks the list to add the satisfied tasks to
      * @return a command that when performed (correctly) will add a satisfied task to the given list
      */
-    BrokerRealCommand createAddSatisfiedTaskCommand(BrokerRealList<TaskData, BrokerRealTask> tasks);
+    BrokerRealCommand createAddSatisfiedTaskCommand(BrokerRealList<TaskData, BrokerRealTask> tasks,
+                                                    BrokerRealTaskOwner owner);
 
     /**
      * Creates a command for adding unsatisfied tasks
      * @param tasks the list to add the unsatisfied tasks to
      * @return a command that when performed (correctly) will add an unsatisfied task to the given list
      */
-    BrokerRealCommand createAddUnsatisfiedTaskCommand(BrokerRealList<TaskData, BrokerRealTask> tasks);
+    BrokerRealCommand createAddUnsatisfiedTaskCommand(BrokerRealList<TaskData, BrokerRealTask> tasks,
+                                                      BrokerRealTaskOwner owner);
 }

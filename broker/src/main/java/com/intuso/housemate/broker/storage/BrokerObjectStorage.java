@@ -21,11 +21,7 @@ import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
-import com.intuso.housemate.object.broker.real.BrokerRealList;
-import com.intuso.housemate.object.broker.real.BrokerRealTask;
-import com.intuso.housemate.object.broker.real.BrokerRealUser;
+import com.intuso.housemate.object.broker.real.*;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
@@ -144,19 +140,19 @@ public class BrokerObjectStorage implements Storage {
     }
 
     private void loadAutomationInfo(BrokerRealAutomation automation) throws HousemateException {
-        loadConditions(automation.getConditions());
-        loadTasks(automation.getSatisfiedTasks());
-        loadTasks(automation.getUnsatisfiedTasks());
+        loadConditions(automation.getConditions(), automation);
+        loadTasks(automation.getSatisfiedTasks(), automation.getSatisfiedTaskOwner());
+        loadTasks(automation.getUnsatisfiedTasks(), automation.getUnsatisfiedTaskOwner());
     }
 
-    private void loadConditions(BrokerRealList<ConditionData, BrokerRealCondition> conditions) {
+    private void loadConditions(BrokerRealList<ConditionData, BrokerRealCondition> conditions, BrokerRealConditionOwner owner) {
         try {
             for(String conditionName : storage.getValuesKeys(conditions.getPath())) {
                 try {
                     TypeInstanceMap details = storage.getValues(conditions.getPath(), conditionName);
-                    BrokerRealCondition condition = resources.getConditionFactory().createCondition(details);
+                    BrokerRealCondition condition = resources.getConditionFactory().createCondition(details, owner);
                     conditions.add(condition);
-                    loadConditions(condition.getConditions());
+                    loadConditions(condition.getConditions(), condition);
                 } catch(HousemateException e) {
                     log.e("Failed to load condition");
                     log.st(e);
@@ -170,12 +166,12 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    private void loadTasks(BrokerRealList<TaskData, BrokerRealTask> tasks) {
+    private void loadTasks(BrokerRealList<TaskData, BrokerRealTask> tasks, BrokerRealTaskOwner owner) {
         try {
             for(String taskName : storage.getValuesKeys(tasks.getPath())) {
                 try {
                     TypeInstanceMap details = storage.getValues(tasks.getPath(), taskName);
-                    tasks.add(resources.getTaskFactory().createTask(details));
+                    tasks.add(resources.getTaskFactory().createTask(details, owner));
                 } catch(HousemateException e) {
                     log.e("Failed to load task");
                     log.st(e);

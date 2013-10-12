@@ -3,9 +3,7 @@ package com.intuso.housemate.annotations.plugin;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
-import com.intuso.housemate.object.broker.real.BrokerRealTask;
+import com.intuso.housemate.object.broker.real.*;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
@@ -145,7 +143,8 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
                 Constructor<? extends BrokerRealCondition> constructor;
                 try {
                     constructor = conditionClass.getConstructor(
-                            BrokerRealResources.class, String.class, String.class, String.class);
+                            BrokerRealResources.class, String.class, String.class, String.class,
+                            BrokerRealConditionOwner.class);
                 } catch(NoSuchMethodException e) {
                     throw new HousemateException("Condition class " + conditionClass.getName() + " does not have the correct constructor");
                 }
@@ -174,7 +173,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
                 Constructor<? extends BrokerRealTask> constructor;
                 try {
                     constructor = taskClass.getConstructor(
-                            BrokerRealResources.class, String.class, String.class, String.class);
+                            BrokerRealResources.class, String.class, String.class, String.class, BrokerRealTaskOwner.class);
                 } catch(NoSuchMethodException e) {
                     throw new HousemateException("Task class " + taskClass.getName() + " does not have the correct constructor");
                 }

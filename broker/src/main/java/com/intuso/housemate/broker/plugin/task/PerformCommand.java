@@ -15,6 +15,7 @@ import com.intuso.housemate.broker.object.bridge.RootObjectBridge;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.BrokerRealTask;
+import com.intuso.housemate.object.broker.real.BrokerRealTaskOwner;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -47,8 +48,9 @@ public class PerformCommand extends BrokerRealTask implements ObjectLifecycleLis
         }
     };
 
-    public PerformCommand(BrokerRealResources resources, String id, String name, String description, RootObjectBridge root) {
-        super(resources, id, name, description);
+    public PerformCommand(BrokerRealResources resources, String id, String name, String description,
+                          BrokerRealTaskOwner owner, RootObjectBridge root) {
+        super(resources, id, name, description, owner);
         commandPath = new BrokerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>>(resources, "command-path", "Command Path", "The path to the command to perform",
                 new RealObjectType(resources.getRealResources(), root), (List)null);
         getProperties().add(commandPath);

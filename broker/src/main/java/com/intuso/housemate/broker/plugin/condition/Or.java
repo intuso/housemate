@@ -1,6 +1,7 @@
 package com.intuso.housemate.broker.plugin.condition;
 
 import com.intuso.housemate.annotations.plugin.FactoryInformation;
+import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.broker.real.BrokerNonLeafCondition;
@@ -22,8 +23,8 @@ public class Or extends BrokerNonLeafCondition {
 	 * @param name
 	 * @throws HousemateException
 	 */
-	public Or(BrokerRealResources resources, String id, String name, String description) throws HousemateException {
-		super(resources, id, name, description);
+	public Or(BrokerRealResources resources, String id, String name, String description, BrokerRealConditionOwner owner) throws HousemateException {
+		super(resources, id, name, description, owner);
     }
 
     /**

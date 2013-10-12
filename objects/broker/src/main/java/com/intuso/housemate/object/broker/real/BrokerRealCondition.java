@@ -18,8 +18,9 @@ public abstract class BrokerRealCondition
         extends BrokerRealObject<ConditionData, HousemateData<?>, BrokerRealObject<?, ?, ?, ?>,
             ConditionListener<? super BrokerRealCondition>>
         implements Condition<BrokerRealCommand, BrokerRealValue<String>, BrokerRealValue<Boolean>,
-            BrokerRealList<PropertyData, BrokerRealProperty<?>>, BrokerRealCommand, BrokerRealCondition,
-            BrokerRealList<ConditionData, BrokerRealCondition>> {
+                BrokerRealList<PropertyData, BrokerRealProperty<?>>, BrokerRealCommand, BrokerRealCondition,
+                BrokerRealList<ConditionData, BrokerRealCondition>>,
+            BrokerRealConditionOwner {
 
     private BrokerRealCommand removeCommand;
     private BrokerRealValue<String> errorValue;
@@ -35,8 +36,9 @@ public abstract class BrokerRealCondition
      * @param description the object's description
      * @param properties the condition's properties
      */
-    public BrokerRealCondition(BrokerRealResources resources, String id, String name, String description, BrokerRealProperty<?> ... properties) {
-        this(resources, id, name, description, Arrays.asList(properties));
+    public BrokerRealCondition(BrokerRealResources resources, String id, String name, String description, BrokerRealConditionOwner owner,
+                               BrokerRealProperty<?> ... properties) {
+        this(resources, id, name, description, owner, Arrays.asList(properties));
     }
 
     /**
@@ -46,12 +48,13 @@ public abstract class BrokerRealCondition
      * @param description the object's description
      * @param properties the condition's properties
      */
-    public BrokerRealCondition(final BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
+    public BrokerRealCondition(final BrokerRealResources resources, String id, String name, String description,
+                               final BrokerRealConditionOwner owner, java.util.List<BrokerRealProperty<?>> properties) {
         super(resources, new ConditionData(id, name, description));
         removeCommand = new BrokerRealCommand(resources, REMOVE_ID, REMOVE_ID, "Remove the condition", Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-
+                owner.remove(BrokerRealCondition.this);
             }
         };
         errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), (List)null);
@@ -59,7 +62,7 @@ public abstract class BrokerRealCondition
         propertyList = new BrokerRealList<PropertyData, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
         conditions = new BrokerRealList<ConditionData, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
         // add a command to add automations to the automation list
-        addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions);
+        addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions, this);
         addChild(removeCommand);
         addChild(errorValue);
         addChild(satisfiedValue);
@@ -108,6 +111,11 @@ public abstract class BrokerRealCondition
         return satisfiedValue.getTypedValue() != null ? satisfiedValue.getTypedValue() : false;
     }
 
+    @Override
+    public void remove(BrokerRealCondition condition) {
+        conditions.remove(condition.getId());
+    }
+
     /**
      * Sets the error message for the object
      * @param error
@@ -139,4 +147,5 @@ public abstract class BrokerRealCondition
      * Stops the condition
      */
     public abstract void stop();
+
 }

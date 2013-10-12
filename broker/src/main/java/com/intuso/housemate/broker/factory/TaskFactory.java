@@ -7,10 +7,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.object.broker.real.BrokerRealCommand;
-import com.intuso.housemate.object.broker.real.BrokerRealList;
-import com.intuso.housemate.object.broker.real.BrokerRealParameter;
-import com.intuso.housemate.object.broker.real.BrokerRealTask;
+import com.intuso.housemate.object.broker.real.*;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
@@ -55,7 +52,9 @@ public final class TaskFactory implements PluginListener {
         return type;
     }
 
-    public BrokerRealCommand createAddTaskCommand(String commandId, String commandName, String commandDescription, final BrokerRealList<TaskData, BrokerRealTask> list) {
+    public BrokerRealCommand createAddTaskCommand(String commandId, String commandName, String commandDescription,
+                                                  final BrokerRealTaskOwner owner,
+                                                  final BrokerRealList<TaskData, BrokerRealTask> list) {
         return new BrokerRealCommand(resources.getRealResources(), commandId, commandName, commandDescription, Arrays.asList(
                 new BrokerRealParameter<String>(resources.getRealResources(), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
                 new BrokerRealParameter<String>(resources.getRealResources(), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
@@ -63,7 +62,7 @@ public final class TaskFactory implements PluginListener {
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                BrokerRealTask task = createTask(values);
+                BrokerRealTask task = createTask(values, owner);
                 // todo process annotations
                 list.add(task);
                 resources.getStorage().saveValues(list.getPath(), task.getId(), values);
@@ -71,7 +70,7 @@ public final class TaskFactory implements PluginListener {
         };
     }
 
-    public BrokerRealTask createTask(TypeInstanceMap values) throws HousemateException {
+    public BrokerRealTask createTask(TypeInstanceMap values, BrokerRealTaskOwner owner) throws HousemateException {
         TypeInstances taskType = values.get(TYPE_PARAMETER_ID);
         if(taskType == null || taskType.getFirstValue() == null)
             throw new HousemateException("No task type specified");
@@ -84,7 +83,7 @@ public final class TaskFactory implements PluginListener {
         BrokerTaskFactory<?> taskFactory = type.deserialise(taskType.get(0));
         if(taskFactory == null)
             throw new HousemateException("No factory known for task type " + taskType);
-        return taskFactory.create(resources.getRealResources(), name.getFirstValue(), name.getFirstValue(), description.getFirstValue());
+        return taskFactory.create(resources.getRealResources(), name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), owner);
     }
 
     @Override

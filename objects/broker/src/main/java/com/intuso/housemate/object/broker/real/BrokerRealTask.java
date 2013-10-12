@@ -11,7 +11,6 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BrokerRealTask
@@ -37,8 +36,9 @@ public abstract class BrokerRealTask
      * @param name the object's name
      * @param description the object's description
      */
-    public BrokerRealTask(BrokerRealResources resources, String id, String name, String description) {
-        this(resources, id, name, description, new ArrayList<BrokerRealProperty<?>>(0));
+    public BrokerRealTask(BrokerRealResources resources, String id, String name, String description,
+                          BrokerRealTaskOwner owner, BrokerRealProperty<?> ... properties) {
+        this(resources, id, name, description, owner, Lists.newArrayList(properties));
     }
 
     /**
@@ -48,12 +48,13 @@ public abstract class BrokerRealTask
      * @param description the object's description
      * @param properties the task's properties
      */
-    public BrokerRealTask(BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
+    public BrokerRealTask(BrokerRealResources resources, String id, String name, String description,
+                          final BrokerRealTaskOwner owner, java.util.List<BrokerRealProperty<?>> properties) {
         super(resources, new TaskData(id, name, description));
         removeCommand = new BrokerRealCommand(resources, REMOVE_ID, REMOVE_ID, "Remove the task", Lists.<BrokerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-
+                owner.remove(BrokerRealTask.this);
             }
         };
         errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), (List)null);

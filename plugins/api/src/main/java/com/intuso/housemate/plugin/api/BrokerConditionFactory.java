@@ -1,8 +1,9 @@
 package com.intuso.housemate.plugin.api;
 
-import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
+import com.intuso.housemate.object.broker.real.BrokerRealResources;
 
 /**
  * @param <CONDITION> the type of the conditions created by this factory
@@ -36,5 +37,6 @@ public interface BrokerConditionFactory<CONDITION extends BrokerRealCondition> {
      * @return a new condition
      * @throws HousemateException if the condition cannot be created
      */
-    public CONDITION create(BrokerRealResources resources, String id, String name, String description) throws HousemateException;
+    public CONDITION create(BrokerRealResources resources, String id, String name, String description,
+                            BrokerRealConditionOwner owner) throws HousemateException;
 }

@@ -9,6 +9,7 @@ import com.intuso.housemate.broker.plugin.type.comparison.ComparisonType;
 import com.intuso.housemate.broker.plugin.type.valuesource.ValueAvailableListener;
 import com.intuso.housemate.broker.plugin.type.valuesource.ValueSource;
 import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.real.RealType;
@@ -42,8 +43,8 @@ public class ValueComparison extends BrokerRealCondition {
 	 * @throws com.intuso.housemate.api.HousemateException
 	 */
 	public ValueComparison(BrokerRealResources resources, String id, String name, String description,
-                           BrokerGeneralResources generalResources) {
-        super(resources, id, name, description);
+                           BrokerRealConditionOwner owner, BrokerGeneralResources generalResources) {
+        super(resources, id, name, description, owner);
         this.generalResources = generalResources;
         comparisonProperty = new BrokerRealProperty<Comparison>(resources, COMPARISON_ID, COMPARISON_NAME,
                 COMPARISON_DESCRIPTION, new ComparisonType(resources.getRealResources(), generalResources), (List)null);

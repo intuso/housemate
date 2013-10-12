@@ -60,14 +60,14 @@ public final class BrokerRealList<
     }
 
     @Override
-    public void childObjectAdded(String childName, CHILD child) {
+    public void childObjectAdded(String id, CHILD child) {
         child.init(this);
         for(ListListener<? super CHILD> listener : getObjectListeners())
             listener.elementAdded(child);
     }
 
     @Override
-    public void childObjectRemoved(String name, CHILD child) {
+    public void childObjectRemoved(String id, CHILD child) {
         child.uninit();
         for(ListListener<? super CHILD> listener : getObjectListeners())
             listener.elementRemoved(child);
@@ -84,8 +84,8 @@ public final class BrokerRealList<
     }
 
     @Override
-    public final CHILD get(String name) {
-        return getChild(name);
+    public final CHILD get(String id) {
+        return getChild(id);
     }
 
     /**
@@ -98,11 +98,11 @@ public final class BrokerRealList<
 
     /**
      * Removes an element from the list
-     * @param name the name of the element to remove
+     * @param id the name of the element to remove
      * @return the element that was removed, or null if it didn't exist
      */
-    public CHILD remove(String name) {
-        return removeChild(name);
+    public CHILD remove(String id) {
+        return removeChild(id);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.intuso.housemate.sample.plugin.condition;
 
 import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 
 /**
@@ -15,8 +16,9 @@ public class ComplexCondition extends BrokerRealCondition {
 
     private final Object extraArg;
 
-    public ComplexCondition(BrokerRealResources resources, String id, String name, String description, Object extraArg) {
-        super(resources, id, name, description);
+    public ComplexCondition(BrokerRealResources resources, String id, String name, String description,
+                            BrokerRealConditionOwner owner, Object extraArg) {
+        super(resources, id, name, description, owner);
         this.extraArg = extraArg;
     }
 

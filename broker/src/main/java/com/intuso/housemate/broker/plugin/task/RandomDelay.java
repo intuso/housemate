@@ -5,6 +5,7 @@ import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.broker.real.BrokerRealTask;
+import com.intuso.housemate.object.broker.real.BrokerRealTaskOwner;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.TimeUnit;
 import com.intuso.housemate.object.real.impl.type.TimeUnitType;
@@ -32,8 +33,8 @@ public class RandomDelay extends BrokerRealTask {
      * @param name
      * @throws HousemateException
      */
-    public RandomDelay(BrokerRealResources resources, String id, String name, String description) {
-        super(resources, id, name, description);
+    public RandomDelay(BrokerRealResources resources, String id, String name, String description, BrokerRealTaskOwner owner) {
+        super(resources, id, name, description, owner);
         unit = new BrokerRealProperty<TimeUnit>(resources, "unit", "Unit", "the unit of time to wait for", new TimeUnitType(resources.getRealResources()), TimeUnit.MINUTES);
         maxAmount = new BrokerRealProperty<Integer>(resources, "amount", "Amount", "the amount of time to wait", new IntegerType(resources.getRealResources()), 1);
         getProperties().add(unit);

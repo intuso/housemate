@@ -18,7 +18,8 @@ public class BrokerRealAutomation
             BrokerRealCommand, BrokerRealCommand, BrokerRealCommand,
             BrokerRealValue<Boolean>, BrokerRealValue<String>, BrokerRealCondition, BrokerRealList<ConditionData, BrokerRealCondition>,
             BrokerRealTask, BrokerRealList<TaskData, BrokerRealTask>, BrokerRealAutomation>,
-            ConditionListener<BrokerRealCondition> {
+            ConditionListener<BrokerRealCondition>,
+        BrokerRealConditionOwner {
 
     private BrokerRealList<ConditionData, BrokerRealCondition> conditions;
     private BrokerRealList<TaskData, BrokerRealTask> satisfiedTasks;
@@ -27,6 +28,19 @@ public class BrokerRealAutomation
     private BrokerRealCommand addSatisfiedTaskCommand;
     private BrokerRealCommand addUnsatisfiedTaskCommand;
 
+    private final BrokerRealTaskOwner satisfiedTaskOwner = new BrokerRealTaskOwner() {
+        @Override
+        public void remove(BrokerRealTask task) {
+            satisfiedTasks.remove(task.getId());
+        }
+    };
+    private final BrokerRealTaskOwner unsatisfiedTaskOwner = new BrokerRealTaskOwner() {
+        @Override
+        public void remove(BrokerRealTask task) {
+            unsatisfiedTasks.remove(task.getId());
+        }
+    };
+
     private ListenerRegistration conditionListenerRegistration;
 
     public BrokerRealAutomation(final BrokerRealResources resources, String id, String name, String description) {
@@ -34,9 +48,9 @@ public class BrokerRealAutomation
         this.conditions = new BrokerRealList<ConditionData, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
         this.satisfiedTasks = new BrokerRealList<TaskData, BrokerRealTask>(resources, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         this.unsatisfiedTasks = new BrokerRealList<TaskData, BrokerRealTask>(resources, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
-        addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions);
-        addSatisfiedTaskCommand = getResources().getLifecycleHandler().createAddSatisfiedTaskCommand(satisfiedTasks);
-        addUnsatisfiedTaskCommand = getResources().getLifecycleHandler().createAddUnsatisfiedTaskCommand(unsatisfiedTasks);
+        addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions, this);
+        addSatisfiedTaskCommand = getResources().getLifecycleHandler().createAddSatisfiedTaskCommand(satisfiedTasks, satisfiedTaskOwner);
+        addUnsatisfiedTaskCommand = getResources().getLifecycleHandler().createAddUnsatisfiedTaskCommand(unsatisfiedTasks, unsatisfiedTaskOwner);
         addChild(conditions);
         addChild(satisfiedTasks);
         addChild(unsatisfiedTasks);
@@ -97,6 +111,19 @@ public class BrokerRealAutomation
             getLog().e("Failed to perform automation tasks");
             getLog().st(e);
         }
+    }
+
+    @Override
+    public void remove(BrokerRealCondition condition) {
+        conditions.remove(condition.getId());
+    }
+
+    public BrokerRealTaskOwner getSatisfiedTaskOwner() {
+        return satisfiedTaskOwner;
+    }
+
+    public BrokerRealTaskOwner getUnsatisfiedTaskOwner() {
+        return unsatisfiedTaskOwner;
     }
 
     public void start() throws HousemateException {

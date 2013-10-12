@@ -1,6 +1,7 @@
 package com.intuso.housemate.sample.plugin.task;
 
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
+import com.intuso.housemate.object.broker.real.BrokerRealTaskOwner;
 import com.intuso.housemate.plugin.api.BrokerTaskFactory;
 
 /**
@@ -35,7 +36,8 @@ public class ReallyComplexTaskFactory implements BrokerTaskFactory<ComplexTask> 
     }
 
     @Override
-    public ComplexTask create(BrokerRealResources resources, String id, String name, String description) {
-        return new ComplexTask(resources, id, name, description, complexArg);
+    public ComplexTask create(BrokerRealResources resources, String id, String name, String description,
+                              BrokerRealTaskOwner owner) {
+        return new ComplexTask(resources, id, name, description, owner, complexArg);
     }
 }

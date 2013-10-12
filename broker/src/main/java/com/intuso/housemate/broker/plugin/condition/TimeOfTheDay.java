@@ -2,6 +2,7 @@ package com.intuso.housemate.broker.plugin.condition;
 
 import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.BrokerRealCondition;
@@ -57,8 +58,9 @@ public class TimeOfTheDay extends BrokerRealCondition {
 	 * @param name
 	 * @throws HousemateException if an error occurs creating the condition
 	 */
-	public TimeOfTheDay(BrokerRealResources resources, String id, String name, String description) throws HousemateException {
-		super(resources, id, name, description);
+	public TimeOfTheDay(BrokerRealResources resources, String id, String name, String description,
+                        BrokerRealConditionOwner owner) throws HousemateException {
+		super(resources, id, name, description, owner);
         before = new BrokerRealProperty<Time>(resources, BEFORE_FIELD, BEFORE_FIELD, "The condition is satisfied when the current time is before this time", new TimeType(resources.getRealResources()), DAY_END);
         after = new BrokerRealProperty<Time>(resources, AFTER_FIELD, AFTER_FIELD, "The condition is satisfied when the current time is after this time", new TimeType(resources.getRealResources()), DAY_END);
         getProperties().add(before);

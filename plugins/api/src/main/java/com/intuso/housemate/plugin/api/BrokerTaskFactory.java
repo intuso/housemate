@@ -3,6 +3,7 @@ package com.intuso.housemate.plugin.api;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.broker.real.BrokerRealTask;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.broker.real.BrokerRealTaskOwner;
 
 /**
  * @param <TASK> the type of the tasks created by this factory
@@ -36,5 +37,5 @@ public interface BrokerTaskFactory<TASK extends BrokerRealTask> {
      * @return a new task
      * @throws HousemateException if the condition cannot be created
      */
-    public TASK create(BrokerRealResources resources, String id, String name, String description) throws HousemateException;
+    public TASK create(BrokerRealResources resources, String id, String name, String description, BrokerRealTaskOwner owner) throws HousemateException;
 }

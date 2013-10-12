@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
 import com.intuso.housemate.object.broker.real.BrokerRealProperty;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.object.real.impl.type.Day;
@@ -51,8 +52,9 @@ public class DayOfTheWeek extends BrokerRealCondition {
      * @param name
 	 * @throws HousemateException 
 	 */
-	public DayOfTheWeek(BrokerRealResources resources, String id, String name, String description) throws HousemateException {
-		super(resources, id, name, description);
+	public DayOfTheWeek(BrokerRealResources resources, String id, String name, String description,
+                        BrokerRealConditionOwner owner) throws HousemateException {
+		super(resources, id, name, description, owner);
         days = new BrokerRealProperty<Day>(resources, DAYS_FIELD, DAYS_FIELD, "The days that satisfy the condition", new DaysType(resources.getRealResources()), Lists.<Day>newArrayList());
         getProperties().add(days);
     }

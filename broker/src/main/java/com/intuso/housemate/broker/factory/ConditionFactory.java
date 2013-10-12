@@ -7,10 +7,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.object.broker.real.BrokerRealCommand;
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
-import com.intuso.housemate.object.broker.real.BrokerRealList;
-import com.intuso.housemate.object.broker.real.BrokerRealParameter;
+import com.intuso.housemate.object.broker.real.*;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
@@ -55,7 +52,9 @@ public final class ConditionFactory implements PluginListener {
         return type;
     }
 
-    public BrokerRealCommand createAddConditionCommand(String commandId, String commandName, String commandDescription, final BrokerRealList<ConditionData, BrokerRealCondition> list) {
+    public BrokerRealCommand createAddConditionCommand(String commandId, String commandName, String commandDescription,
+                                                       final BrokerRealConditionOwner owner,
+                                                       final BrokerRealList<ConditionData, BrokerRealCondition> list) {
         return new BrokerRealCommand(resources.getRealResources(), commandId, commandName, commandDescription, Arrays.asList(
                 new BrokerRealParameter<String>(resources.getRealResources(), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
                 new BrokerRealParameter<String>(resources.getRealResources(), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
@@ -63,7 +62,7 @@ public final class ConditionFactory implements PluginListener {
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                BrokerRealCondition condition = createCondition(values);
+                BrokerRealCondition condition = createCondition(values, owner);
                 // todo process annotations
                 list.add(condition);
                 resources.getStorage().saveValues(list.getPath(), condition.getId(), values);
@@ -71,7 +70,7 @@ public final class ConditionFactory implements PluginListener {
         };
     }
 
-    public BrokerRealCondition createCondition(TypeInstanceMap values) throws HousemateException {
+    public BrokerRealCondition createCondition(TypeInstanceMap values, BrokerRealConditionOwner owner) throws HousemateException {
         TypeInstances conditionType = values.get(TYPE_PARAMETER_ID);
         if(conditionType == null || conditionType.getFirstValue() == null)
             throw new HousemateException("No condition type specified");
@@ -84,7 +83,7 @@ public final class ConditionFactory implements PluginListener {
         BrokerConditionFactory<?> conditionFactory = type.deserialise(conditionType.get(0));
         if(conditionFactory == null)
             throw new HousemateException("No factory known for condition type " + conditionType);
-        return conditionFactory.create(resources.getRealResources(), name.getFirstValue(), name.getFirstValue(), description.getFirstValue());
+        return conditionFactory.create(resources.getRealResources(), name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), owner);
     }
 
     @Override

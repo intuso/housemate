@@ -1,5 +1,6 @@
 package com.intuso.housemate.sample.plugin.condition;
 
+import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
 import com.intuso.housemate.object.broker.real.BrokerRealResources;
 import com.intuso.housemate.plugin.api.BrokerConditionFactory;
 
@@ -30,7 +31,8 @@ public class ComplexConditionFactory implements BrokerConditionFactory<ComplexCo
     }
 
     @Override
-    public ComplexCondition create(BrokerRealResources resources, String id, String name, String description) {
-        return new ComplexCondition(resources, id, name, description, simpleArg);
+    public ComplexCondition create(BrokerRealResources resources, String id, String name, String description,
+                                   BrokerRealConditionOwner owner) {
+        return new ComplexCondition(resources, id, name, description, owner, simpleArg);
     }
 }
