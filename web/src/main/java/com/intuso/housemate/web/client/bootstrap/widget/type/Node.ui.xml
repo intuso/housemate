@@ -5,13 +5,13 @@
 
         .currentSelection {
             border-radius: 3px 3px 3px 3px;
-            background-color: #0088CC;
+            background-color: #800090;
             color: #FFFFFF;
         }
 
         .newSelection {
             border-radius: 3px 3px 3px 3px;
-            background-color: #00CC88;
+            background-color: #C000C8;
             color: #FFFFFF;
         }
 
