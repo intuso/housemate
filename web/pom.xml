@@ -27,9 +27,9 @@
     </repositories>
 
     <properties>
-        <gwt.version.main>2.4</gwt.version.main>
-        <gwt.version>${gwt.version.main}.0</gwt.version>
-        <bootstrap.version>2.2.1.0</bootstrap.version>
+        <gwt.version.main>2.5</gwt.version.main>
+        <gwt.version>${gwt.version.main}.1</gwt.version>
+        <bootstrap.version>2.3.2.0-SNAPSHOT</bootstrap.version>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
     </properties>
 
@@ -96,6 +96,7 @@
             <groupId>com.github.gwtbootstrap</groupId>
             <artifactId>gwt-bootstrap</artifactId>
             <version>${bootstrap.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
