@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.ObjectListener;
  *
  * Listener interface for options
  */
-public interface ConditionListener<C extends Condition<?, ?, ?, ?, ?, ?>> extends ObjectListener {
+public interface ConditionListener<C extends Condition<?, ?, ?, ?, ?, ?, ?>> extends ObjectListener {
 
     /**
      * Notifies that a condition has become (un)satisfied

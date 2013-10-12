@@ -65,9 +65,8 @@ public final class SimpleProxyObject {
 
     public final static class Condition extends ProxyCondition<SimpleProxyResources<? extends HousemateObjectFactory<SimpleProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
                 SimpleProxyResources<?>,
-                Value,
+                Command, Value,
                 List<PropertyData, Property>,
-                Command,
                 Condition,
                 List<ConditionData, Condition>> {
         public Condition(SimpleProxyResources<? extends HousemateObjectFactory<SimpleProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
@@ -162,6 +161,7 @@ public final class SimpleProxyObject {
 
     public final static class Task extends ProxyTask<SimpleProxyResources<? extends HousemateObjectFactory<SimpleProxyResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             SimpleProxyResources<?>,
+            Command,
             Value,
             List<PropertyData, Property>,
             Task> {

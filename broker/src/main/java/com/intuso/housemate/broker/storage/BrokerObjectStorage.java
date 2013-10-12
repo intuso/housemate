@@ -194,8 +194,8 @@ public class BrokerObjectStorage implements Storage {
     }
 
     public void watchAutomations(List<? extends Automation<?, ?, ?, ?, ?,
-                ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-                ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> automations) {
+                ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+                ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> automations) {
         automations.addObjectListener(watchAutomationListListener, true);
     }
 
@@ -268,8 +268,8 @@ public class BrokerObjectStorage implements Storage {
     }
 
     private class WatchAutomationListListener implements ListListener<Automation<?, ?, ?, ?, ?,
-                ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-                ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> {
+                ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+                ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> {
 
         private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> runningListeners = Maps.newHashMap();
         private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> conditionListeners = Maps.newHashMap();
@@ -278,8 +278,8 @@ public class BrokerObjectStorage implements Storage {
 
         @Override
         public void elementAdded(Automation<?, ?, ?, ?, ?,
-                        ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-                        ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
+                        ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+                        ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
             runningListeners.put(automation, automation.getRunningValue().addObjectListener(watchValueListener));
             conditionListeners.put(automation, automation.getConditions().addObjectListener(watchConditionListListener, true));
             satisfiedTaskListeners.put(automation, automation.getSatisfiedTasks().addObjectListener(watchTaskListListener, true));
@@ -299,8 +299,8 @@ public class BrokerObjectStorage implements Storage {
 
         @Override
         public void elementRemoved(Automation<?, ?, ?, ?, ?,
-                        ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-                        ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
+                        ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
+                        ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
             ListenerRegistration registration = runningListeners.remove(automation);
             if(registration != null)
                 registration.removeListener();
@@ -322,19 +322,19 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    private class WatchConditionListListener implements ListListener<Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ? extends List<? extends Condition<?, ?, ?, ?, ?, ?>>>> {
+    private class WatchConditionListListener implements ListListener<Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ? extends List<? extends Condition<?, ?, ?, ?, ?, ?, ?>>>> {
 
-        private final Map<Condition<?, ?, ?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
-        private final Map<Condition<?, ?, ?, ?, ?, ?>, ListenerRegistration> conditionListeners = Maps.newHashMap();
+        private final Map<Condition<?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
+        private final Map<Condition<?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> conditionListeners = Maps.newHashMap();
 
         @Override
-        public void elementAdded(Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ? extends List<? extends Condition<?, ?, ?, ?, ?, ?>>> condition) {
+        public void elementAdded(Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ? extends List<? extends Condition<?, ?, ?, ?, ?, ?, ?>>> condition) {
             propertyListeners.put(condition, condition.getProperties().addObjectListener(watchPropertyListListener, true));
             conditionListeners.put(condition, condition.getConditions().addObjectListener(watchConditionListListener, true));
         }
 
         @Override
-        public void elementRemoved(Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ? extends List<? extends Condition<?, ?, ?, ?, ?, ?>>> condition) {
+        public void elementRemoved(Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ? extends List<? extends Condition<?, ?, ?, ?, ?, ?, ?>>> condition) {
             ListenerRegistration registration = propertyListeners.remove(condition);
             if(registration != null)
                 registration.removeListener();
@@ -344,17 +344,17 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    private class WatchTaskListListener implements ListListener<Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>> {
+    private class WatchTaskListListener implements ListListener<Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>> {
 
-        private final Map<Task<?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
+        private final Map<Task<?, ?, ?, ?, ?>, ListenerRegistration> propertyListeners = Maps.newHashMap();
 
         @Override
-        public void elementAdded(Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?> task) {
+        public void elementAdded(Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?> task) {
             propertyListeners.put(task, task.getProperties().addObjectListener(watchPropertyListListener, true));
         }
 
         @Override
-        public void elementRemoved(Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?> task) {
+        public void elementRemoved(Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?> task) {
             ListenerRegistration registration = propertyListeners.remove(task);
             if(registration != null)
                 registration.removeListener();

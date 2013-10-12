@@ -1,6 +1,7 @@
 package com.intuso.housemate.api.object.condition;
 
 import com.intuso.housemate.api.object.BaseHousemateObject;
+import com.intuso.housemate.api.object.RemoveableObject;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.property.HasProperties;
@@ -16,14 +17,19 @@ import com.intuso.housemate.api.object.value.Value;
  * @param <CONDITIONS> the type of the conditions list
  */
 public interface Condition<
+            REMOVE_COMMAND extends Command<?, ?>,
             ERROR_VALUE extends Value<?, ?>,
             SATISFIED_VALUE extends Value<?, ?>,
             PROPERTIES extends List<? extends Property<?, ?, ?>>,
             ADD_COMMAND extends Command<?, ?>,
-            CONDITION extends Condition<ERROR_VALUE, SATISFIED_VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS>,
+            CONDITION extends Condition<REMOVE_COMMAND, ERROR_VALUE, SATISFIED_VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS>,
             CONDITIONS extends List<? extends CONDITION>>
-        extends BaseHousemateObject<ConditionListener<? super CONDITION>>, HasProperties<PROPERTIES>, HasConditions<CONDITIONS> {
+        extends BaseHousemateObject<ConditionListener<? super CONDITION>>,
+            HasProperties<PROPERTIES>,
+            HasConditions<CONDITIONS>,
+            RemoveableObject<REMOVE_COMMAND> {
 
+    public final static String REMOVE_ID = "remove";
     public final static String SATISFIED_ID = "satisfied";
     public final static String ERROR_ID = "error";
     public final static String PROPERTIES_ID = "properties";

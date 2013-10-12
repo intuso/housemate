@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.list.List;
  *
  * Interface to show that the implementing object has a list of conditions
  */
-public interface HasConditions<L extends List<? extends Condition<?, ?, ?, ?, ?, ?>>> {
+public interface HasConditions<L extends List<? extends Condition<?, ?, ?, ?, ?, ?, ?>>> {
 
     /**
      * Gets the conditions list

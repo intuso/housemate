@@ -1,10 +1,13 @@
 package com.intuso.housemate.object.broker.real;
 
+import com.google.common.collect.Lists;
+import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.condition.Condition;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
@@ -14,10 +17,11 @@ import java.util.List;
 public abstract class BrokerRealCondition
         extends BrokerRealObject<ConditionData, HousemateData<?>, BrokerRealObject<?, ?, ?, ?>,
             ConditionListener<? super BrokerRealCondition>>
-        implements Condition<BrokerRealValue<String>, BrokerRealValue<Boolean>,
+        implements Condition<BrokerRealCommand, BrokerRealValue<String>, BrokerRealValue<Boolean>,
             BrokerRealList<PropertyData, BrokerRealProperty<?>>, BrokerRealCommand, BrokerRealCondition,
             BrokerRealList<ConditionData, BrokerRealCondition>> {
 
+    private BrokerRealCommand removeCommand;
     private BrokerRealValue<String> errorValue;
     private BrokerRealValue<Boolean> satisfiedValue;
     private BrokerRealList<PropertyData, BrokerRealProperty<?>> propertyList;
@@ -44,17 +48,29 @@ public abstract class BrokerRealCondition
      */
     public BrokerRealCondition(final BrokerRealResources resources, String id, String name, String description, java.util.List<BrokerRealProperty<?>> properties) {
         super(resources, new ConditionData(id, name, description));
+        removeCommand = new BrokerRealCommand(resources, REMOVE_ID, REMOVE_ID, "Remove the condition", Lists.<BrokerRealParameter<?>>newArrayList()) {
+            @Override
+            public void perform(TypeInstanceMap values) throws HousemateException {
+
+            }
+        };
         errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), (List)null);
         satisfiedValue = new BrokerRealValue<Boolean>(resources, SATISFIED_ID, SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(resources.getRealResources()), false);
         propertyList = new BrokerRealList<PropertyData, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
         conditions = new BrokerRealList<ConditionData, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
         // add a command to add automations to the automation list
         addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions);
+        addChild(removeCommand);
         addChild(errorValue);
         addChild(satisfiedValue);
         addChild(propertyList);
         addChild(addConditionCommand);
         addChild(conditions);
+    }
+
+    @Override
+    public BrokerRealCommand getRemoveCommand() {
+        return removeCommand;
     }
 
     @Override

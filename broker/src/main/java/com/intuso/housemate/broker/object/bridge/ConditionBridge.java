@@ -18,23 +18,26 @@ import java.util.List;
  */
 public class ConditionBridge
         extends BridgeObject<ConditionData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, ConditionBridge, ConditionListener<? super ConditionBridge>>
-        implements Condition<ValueBridge, ValueBridge,
+        implements Condition<CommandBridge, ValueBridge, ValueBridge,
                     ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>, CommandBridge, ConditionBridge,
-                    ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>> {
+                    ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>> {
 
+    private CommandBridge removeCommand;
     private ValueBridge satisfiedValue;
     private ValueBridge errorValue;
     private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
-    private ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
+    private ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
     private CommandBridge addConditionCommand;
 
-    public ConditionBridge(BrokerBridgeResources resources, Condition<?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?>, ?> condition) {
+    public ConditionBridge(BrokerBridgeResources resources, Condition<?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?> condition) {
         super(resources,new ConditionData(condition.getId(), condition.getName(), condition.getDescription()));
+        removeCommand = new CommandBridge(resources, condition.getRemoveCommand());
         satisfiedValue = new ValueBridge(resources, condition.getSatisfiedValue());
         errorValue = new ValueBridge(resources, condition.getErrorValue());
         propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, condition.getProperties(), new PropertyBridge.Converter(resources));
-        conditionList = new ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>(resources, condition.getConditions(), new Converter(resources));
-        addConditionCommand = new CommandBridge(resources, condition.getAddConditionCommand()) {};
+        conditionList = new ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(resources, condition.getConditions(), new Converter(resources));
+        addConditionCommand = new CommandBridge(resources, condition.getAddConditionCommand());
+        addChild(removeCommand);
         addChild(satisfiedValue);
         addChild(errorValue);
         addChild(propertyList);
@@ -43,12 +46,17 @@ public class ConditionBridge
     }
 
     @Override
+    public CommandBridge getRemoveCommand() {
+        return removeCommand;
+    }
+
+    @Override
     public ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
     }
 
     @Override
-    public ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
+    public ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
         return conditionList;
     }
 
@@ -79,7 +87,7 @@ public class ConditionBridge
         return satisfieds != null && satisfieds.size() > 0 && satisfieds.get(0) != null ? satisfieds.get(0) : false;
     }
 
-    public static class Converter implements Function<Condition<?, ?, ?, ?, ?, ?>, ConditionBridge> {
+    public static class Converter implements Function<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> {
 
         private final BrokerBridgeResources resources;
 
@@ -88,7 +96,7 @@ public class ConditionBridge
         }
 
         @Override
-        public ConditionBridge apply(@Nullable Condition<?, ?, ?, ?, ?, ?> condition) {
+        public ConditionBridge apply(@Nullable Condition<?, ?, ?, ?, ?, ?, ?> condition) {
             return new ConditionBridge(resources, condition);
         }
     }

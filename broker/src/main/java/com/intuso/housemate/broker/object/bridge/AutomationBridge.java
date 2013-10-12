@@ -16,21 +16,21 @@ import javax.annotation.Nullable;
 public class AutomationBridge
         extends PrimaryObjectBridge<AutomationData, AutomationBridge, AutomationListener<? super AutomationBridge>>
         implements Automation<CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge,
-            ConditionBridge,ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>, TaskBridge,
-            ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge>, AutomationBridge> {
+            ConditionBridge,ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>, TaskBridge,
+            ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>, AutomationBridge> {
 
-    private ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
-    private ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge> satisfiedTaskList;
-    private ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge> unsatisfiedTaskList;
+    private ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
+    private ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> satisfiedTaskList;
+    private ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> unsatisfiedTaskList;
     private CommandBridge addCondition;
     private CommandBridge addSatisfiedTask;
     private CommandBridge addUnsatisfiedTask;
     
-    public AutomationBridge(BrokerBridgeResources resources, Automation<?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?>, ?, ?> automation) {
+    public AutomationBridge(BrokerBridgeResources resources, Automation<?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?, ?>, ?, ?> automation) {
         super(resources, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()), automation);
-        conditionList = new ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>(resources,  automation.getConditions(), new ConditionBridge.Converter(resources));
-        satisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge>(resources, automation.getSatisfiedTasks(), new TaskBridge.Converter(resources));
-        unsatisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge>(resources, automation.getUnsatisfiedTasks(), new TaskBridge.Converter(resources));
+        conditionList = new ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(resources,  automation.getConditions(), new ConditionBridge.Converter(resources));
+        satisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>(resources, automation.getSatisfiedTasks(), new TaskBridge.Converter(resources));
+        unsatisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>(resources, automation.getUnsatisfiedTasks(), new TaskBridge.Converter(resources));
         addCondition = new CommandBridge(resources, automation.getAddConditionCommand());
         addSatisfiedTask = new CommandBridge(resources, automation.getAddSatisifedTaskCommand());
         addUnsatisfiedTask = new CommandBridge(resources, automation.getAddUnsatisifedTaskCommand());
@@ -58,17 +58,17 @@ public class AutomationBridge
     }
 
     @Override
-    public ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge> getUnsatisfiedTasks() {
+    public ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> getUnsatisfiedTasks() {
         return unsatisfiedTaskList;
     }
 
     @Override
-    public ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge> getSatisfiedTasks() {
+    public ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> getSatisfiedTasks() {
         return satisfiedTaskList;
     }
 
     @Override
-    public ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
+    public ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
         return conditionList;
     }
 

@@ -26,7 +26,7 @@ public abstract class ProxyAutomation<
             VALUE extends ProxyValue<?, ?, VALUE>,
             CONDITION extends ProxyCondition<?, ?, ?, ?, ?, CONDITION, CONDITIONS>,
             CONDITIONS extends ProxyList<?, ?, ConditionData, CONDITION, CONDITIONS>,
-            TASK extends ProxyTask<?, ?, ?, ?, TASK>,
+            TASK extends ProxyTask<?, ?, ?, ?, ?, TASK>,
             TASKS extends ProxyList<?, ?, TaskData, TASK, TASKS>,
             AUTOMATION extends ProxyAutomation<RESOURCES, CHILD_RESOURCES, ADD_COMMAND, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION>>
         extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, AutomationData, ADD_COMMAND, VALUE, AUTOMATION, AutomationListener<? super AUTOMATION>>

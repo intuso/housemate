@@ -3,7 +3,7 @@
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
-        <h:primary.Control ui:field="control"/>
+        <h:object.Control ui:field="control"/>
         <b:DropdownButton text="add" dropup="true">
             <b:NavLink ui:field="addCondition">condition</b:NavLink>
             <b:NavLink ui:field="addSatisfiedTask">satisfied task</b:NavLink>

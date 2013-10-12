@@ -26,9 +26,9 @@ public interface Automation<
             ADD_COMMMAND extends Command<?, ?>,
             RUNNING_VALUE extends Value<?, ?>,
             ERROR_VALUE extends Value<?, ?>,
-            CONDITION extends Condition<?, ?, ?, ?, ?, ?>,
+            CONDITION extends Condition<?, ?, ?, ?, ?, ?, ?>,
             CONDITIONS extends List<? extends CONDITION>,
-            TASK extends Task<?, ?, ?, ?>,
+            TASK extends Task<?, ?, ?, ?, ?>,
             TASKS extends List<? extends TASK>,
             A extends Automation<REMOVE_COMMAND, START_STOP_COMMAND, ADD_COMMMAND, RUNNING_VALUE, ERROR_VALUE, CONDITION, CONDITIONS, TASK, TASKS, A>>
         extends PrimaryObject<REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, A, AutomationListener<? super A>>, HasConditions<CONDITIONS> {

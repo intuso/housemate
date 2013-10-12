@@ -19,11 +19,12 @@ import com.intuso.utilities.listener.ListenerRegistration;
 public abstract class ProxyTask<
             RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ?>,
             CHILD_RESOURCES extends ProxyResources<?, ?>,
+            COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
             VALUE extends ProxyValue<?, ?, VALUE>,
             PROPERTIES extends ProxyList<?, ?, PropertyData, ? extends ProxyProperty<?, ?, ?, ?, ?>, PROPERTIES>,
-            TASK extends ProxyTask<RESOURCES, CHILD_RESOURCES, VALUE, PROPERTIES, TASK>>
+            TASK extends ProxyTask<RESOURCES, CHILD_RESOURCES, COMMAND, VALUE, PROPERTIES, TASK>>
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, TaskData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, TASK, TaskListener<? super TASK>>
-        implements Task<VALUE, VALUE, PROPERTIES, TASK> {
+        implements Task<COMMAND, VALUE, VALUE, PROPERTIES, TASK> {
 
     /**
      * @param resources {@inheritDoc}
@@ -74,6 +75,11 @@ public abstract class ProxyTask<
             }
         });
         return result;
+    }
+
+    @Override
+    public COMMAND getRemoveCommand() {
+        return (COMMAND) getChild(REMOVE_ID);
     }
 
     @Override

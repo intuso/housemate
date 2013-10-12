@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.ObjectListener;
  *
  * Listener interface for tasks
  */
-public interface TaskListener<T extends Task<?, ?, ?, ?>>
+public interface TaskListener<T extends Task<?, ?, ?, ?, ?>>
         extends ObjectListener {
 
     /**

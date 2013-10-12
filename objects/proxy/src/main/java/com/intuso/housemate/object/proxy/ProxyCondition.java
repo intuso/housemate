@@ -15,20 +15,20 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * @param <CHILD_RESOURCES> the type of the child resources
  * @param <VALUE> the type of the value
  * @param <PROPERTIES> the type of the properties list
- * @param <ADD_COMMAND> the type of the add command
+ * @param <COMMAND> the type of the add command
  * @param <CONDITION> the type of the conditions
  * @param <CONDITIONS> the type of the conditions list
  */
 public abstract class ProxyCondition<
             RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ?>,
             CHILD_RESOURCES extends ProxyResources<?, ?>,
+            COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
             VALUE extends ProxyValue<?, ?, VALUE>,
             PROPERTIES extends ProxyList<?, ?, PropertyData, ? extends ProxyProperty<?, ?, ?, ?, ?>, PROPERTIES>,
-            ADD_COMMAND extends ProxyCommand<?, ?, ?, ?, ADD_COMMAND>,
-            CONDITION extends ProxyCondition<RESOURCES, CHILD_RESOURCES, VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS>,
+            CONDITION extends ProxyCondition<RESOURCES, CHILD_RESOURCES, COMMAND, VALUE, PROPERTIES, CONDITION, CONDITIONS>,
             CONDITIONS extends ProxyList<?, ?, ConditionData, CONDITION, CONDITIONS>>
         extends ProxyObject<RESOURCES, CHILD_RESOURCES, ConditionData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, CONDITION, ConditionListener<? super CONDITION>>
-        implements Condition<VALUE, VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS> {
+        implements Condition<COMMAND, VALUE, VALUE, PROPERTIES, COMMAND, CONDITION, CONDITIONS> {
 
     /**
      * @param resources {@inheritDoc}
@@ -82,6 +82,11 @@ public abstract class ProxyCondition<
     }
 
     @Override
+    public COMMAND getRemoveCommand() {
+        return (COMMAND) getChild(REMOVE_ID);
+    }
+
+    @Override
     public final PROPERTIES getProperties() {
         return (PROPERTIES) getChild(PROPERTIES_ID);
     }
@@ -92,8 +97,8 @@ public abstract class ProxyCondition<
     }
 
     @Override
-    public ADD_COMMAND getAddConditionCommand() {
-        return (ADD_COMMAND) getChild(Automation.ADD_CONDITION_ID);
+    public COMMAND getAddConditionCommand() {
+        return (COMMAND) getChild(Automation.ADD_CONDITION_ID);
     }
 
     @Override

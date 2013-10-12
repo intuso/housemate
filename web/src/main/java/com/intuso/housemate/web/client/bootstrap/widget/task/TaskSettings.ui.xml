@@ -2,5 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
-    <h:property.PropertyList ui:field="propertyList"/>
+    <g:FlowPanel>
+        <h:object.Control ui:field="control"/>
+        <h:property.PropertyList ui:field="propertyList"/>
+    </g:FlowPanel>
 </ui:UiBinder>

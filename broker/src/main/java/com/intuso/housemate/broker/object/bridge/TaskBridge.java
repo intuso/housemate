@@ -17,24 +17,39 @@ import java.util.List;
 /**
  */
 public class TaskBridge
-        extends BridgeObject<TaskData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, TaskBridge,
-        TaskListener<? super TaskBridge>>
-        implements Task<ValueBridge, ValueBridge,
-                            ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
-        TaskBridge> {
+        extends BridgeObject<
+            TaskData,
+            HousemateData<?>,
+            BridgeObject<?, ?, ?, ?, ?>,
+            TaskBridge,
+            TaskListener<? super TaskBridge>>
+        implements Task<
+            CommandBridge,
+            ValueBridge,
+            ValueBridge,
+            ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
+            TaskBridge> {
 
+    private CommandBridge removeCommand;
     private ValueBridge executingValue;
     private ValueBridge errorValue;
     private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
-    public TaskBridge(BrokerBridgeResources resources, Task<?, ?, ?, ?> task) {
+    public TaskBridge(BrokerBridgeResources resources, Task<?, ?, ?, ?, ?> task) {
         super(resources, new TaskData(task.getId(), task.getName(), task.getDescription()));
+        removeCommand = new CommandBridge(resources, task.getRemoveCommand());
         executingValue = new ValueBridge(resources,task.getExecutingValue());
         errorValue = new ValueBridge(resources,task.getErrorValue());
         propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, task.getProperties(), new PropertyBridge.Converter(resources));
+        addChild(removeCommand);
         addChild(executingValue);
         addChild(errorValue);
         addChild(propertyList);
+    }
+
+    @Override
+    public CommandBridge getRemoveCommand() {
+        return removeCommand;
     }
 
     @Override
@@ -64,7 +79,7 @@ public class TaskBridge
         return propertyList;
     }
 
-    public static class Converter implements Function<Task<?, ?, ?, ?>, TaskBridge> {
+    public static class Converter implements Function<Task<?, ?, ?, ?, ?>, TaskBridge> {
 
         private final BrokerBridgeResources resources;
 
@@ -73,7 +88,7 @@ public class TaskBridge
         }
 
         @Override
-        public TaskBridge apply(@Nullable Task<?, ?, ?, ?> command) {
+        public TaskBridge apply(@Nullable Task<?, ?, ?, ?, ?> command) {
             return new TaskBridge(resources, command);
         }
     }

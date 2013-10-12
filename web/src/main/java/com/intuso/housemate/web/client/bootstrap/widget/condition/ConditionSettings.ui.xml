@@ -3,7 +3,8 @@
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
-        <h:property.PropertyList ui:field="propertyList"/>
+        <h:object.Control ui:field="control"/>
         <h:command.PerformButton ui:field="addChildCondition" text="add" title="Add new child condition" icon="PLUS" size="SMALL"/>
+        <h:property.PropertyList ui:field="propertyList"/>
     </g:FlowPanel>
 </ui:UiBinder>

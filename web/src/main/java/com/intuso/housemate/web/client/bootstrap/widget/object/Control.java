@@ -1,4 +1,4 @@
-package com.intuso.housemate.web.client.bootstrap.widget.primary;
+package com.intuso.housemate.web.client.bootstrap.widget.object;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;

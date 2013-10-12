@@ -3,7 +3,7 @@
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
-        <h:primary.Control ui:field="control"/>
+        <h:object.Control ui:field="control"/>
         <h:property.PropertyList ui:field="propertiesList"/>
     </g:FlowPanel>
 </ui:UiBinder>

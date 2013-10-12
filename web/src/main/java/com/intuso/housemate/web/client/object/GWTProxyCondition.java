@@ -13,9 +13,8 @@ import com.intuso.housemate.web.client.GWTResources;
 public class GWTProxyCondition extends ProxyCondition<
             GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             GWTResources<?>,
-            GWTProxyValue,
+            GWTProxyCommand, GWTProxyValue,
             GWTProxyList<PropertyData, GWTProxyProperty>,
-            GWTProxyCommand,
             GWTProxyCondition, GWTProxyList<ConditionData, GWTProxyCondition>> {
     public GWTProxyCondition(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
                              GWTResources childResources,

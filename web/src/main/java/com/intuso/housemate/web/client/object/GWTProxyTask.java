@@ -13,6 +13,7 @@ import com.intuso.housemate.web.client.GWTResources;
 public class GWTProxyTask extends ProxyTask<
             GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
             GWTResources<?>,
+            GWTProxyCommand,
             GWTProxyValue,
             GWTProxyList<PropertyData, GWTProxyProperty>,
         GWTProxyTask> {
