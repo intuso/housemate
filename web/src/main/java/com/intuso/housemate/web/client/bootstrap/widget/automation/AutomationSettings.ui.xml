@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
+    <g:FlowPanel>
+        <h:primary.Control ui:field="control"/>
+        <b:DropdownButton text="add" dropup="true">
+            <b:NavLink ui:field="addCondition">condition</b:NavLink>
+            <b:NavLink ui:field="addSatisfiedTask">satisfied task</b:NavLink>
+            <b:NavLink ui:field="addUnsatisfiedTask">unsatisfied task</b:NavLink>
+        </b:DropdownButton>
+    </g:FlowPanel>
+</ui:UiBinder>

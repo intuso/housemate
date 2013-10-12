@@ -1,27 +1,28 @@
 package com.intuso.housemate.web.client.bootstrap.widget.task;
 
-import com.github.gwtbootstrap.client.ui.Modal;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.web.client.bootstrap.widget.property.PropertyList;
+import com.intuso.housemate.web.client.bootstrap.widget.object.ConfigurableObject;
 import com.intuso.housemate.web.client.object.GWTProxyTask;
 
 /**
  */
-public class Task extends Composite {
+public class Task extends ConfigurableObject {
 
     interface TaskUiBinder extends UiBinder<Widget, Task> {}
 
     private static TaskUiBinder ourUiBinder = GWT.create(TaskUiBinder.class);
 
-    @UiField(provided = true)
-    PropertyList propertyList;
+    private final GWTProxyTask task;
 
     public Task(GWTProxyTask task) {
-        propertyList = new PropertyList(task.getProperties(), "properties", null, true);
+        this.task = task;
         initWidget(ourUiBinder.createAndBindUi(this));
+    }
+
+    @Override
+    protected Widget createSettingsWidget() {
+        return new TaskSettings(task);
     }
 }

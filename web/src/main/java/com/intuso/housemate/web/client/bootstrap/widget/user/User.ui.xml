@@ -4,10 +4,10 @@
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
         <g:SimplePanel addStyleNames="clearfix">
-            <b:Button ui:field="settings" addStyleNames="pull-right btn-mini" icon="COG"/>
+            <b:Button ui:field="settingsButton" addStyleNames="pull-right btn-mini" icon="COG"/>
         </g:SimplePanel>
-        <b:Collapse ui:field="settingsPanel" defaultOpen="false">
-            <h:object.Control ui:field="control"/>
+        <b:Collapse ui:field="settingsCollapse" defaultOpen="false">
+            <g:SimplePanel ui:field="settingsPanel"/>
         </b:Collapse>
     </g:FlowPanel>
 </ui:UiBinder>

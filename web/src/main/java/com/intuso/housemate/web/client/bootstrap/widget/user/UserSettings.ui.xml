@@ -3,11 +3,6 @@
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
-        <g:SimplePanel addStyleNames="clearfix">
-            <b:Button ui:field="settingsButton" addStyleNames="pull-right btn-mini" icon="COG"/>
-        </g:SimplePanel>
-        <b:Collapse ui:field="settingsCollapse" defaultOpen="false">
-            <g:SimplePanel ui:field="settingsPanel"/>
-        </b:Collapse>
+        <h:primary.Control ui:field="control"/>
     </g:FlowPanel>
 </ui:UiBinder>

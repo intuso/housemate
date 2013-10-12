@@ -7,13 +7,10 @@
         <h:command.CommandList ui:field="commandsList"/>
         <h:value.ValueList ui:field="valuesList"/>
         <g:SimplePanel addStyleNames="clearfix">
-            <b:Button ui:field="settings" addStyleNames="pull-right btn-mini" icon="COG"/>
+            <b:Button ui:field="settingsButton" addStyleNames="pull-right btn-mini" icon="COG"/>
         </g:SimplePanel>
-        <b:Collapse ui:field="settingsPanel" defaultOpen="false">
-            <g:FlowPanel>
-                <h:object.Control ui:field="control"/>
-                <h:property.PropertyList ui:field="propertiesList"/>
-            </g:FlowPanel>
+        <b:Collapse ui:field="settingsCollapse" defaultOpen="false">
+            <g:SimplePanel ui:field="settingsPanel"/>
         </b:Collapse>
     </g:FlowPanel>
 </ui:UiBinder>

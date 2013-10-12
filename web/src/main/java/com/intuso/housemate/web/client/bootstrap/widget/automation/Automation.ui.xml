@@ -7,17 +7,10 @@
         <h:task.TaskList ui:field="satisfiedTasks"/>
         <h:task.TaskList ui:field="unsatisfiedTasks"/>
         <g:SimplePanel addStyleNames="clearfix">
-            <b:Button ui:field="settings" addStyleNames="pull-right" size="MINI" icon="COG"/>
+            <b:Button ui:field="settingsButton" addStyleNames="pull-right" size="MINI" icon="COG"/>
         </g:SimplePanel>
-        <b:Collapse ui:field="settingsPanel" defaultOpen="false">
-            <g:FlowPanel>
-                <h:object.Control ui:field="control"/>
-                <b:DropdownButton text="add" dropup="true">
-                    <b:NavLink ui:field="addCondition">condition</b:NavLink>
-                    <b:NavLink ui:field="addSatisfiedTask">satisfied task</b:NavLink>
-                    <b:NavLink ui:field="addUnsatisfiedTask">unsatisfied task</b:NavLink>
-                </b:DropdownButton>
-            </g:FlowPanel>
+        <b:Collapse ui:field="settingsCollapse" defaultOpen="false">
+            <g:SimplePanel ui:field="settingsPanel"/>
         </b:Collapse>
     </g:FlowPanel>
 </ui:UiBinder>
