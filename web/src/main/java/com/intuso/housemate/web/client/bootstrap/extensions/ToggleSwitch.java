@@ -152,7 +152,7 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
 
     @Override
     public void setValue(Boolean value) {
-        setValue(value, true);
+        setValue(value, false);
     }
 
     @Override
