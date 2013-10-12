@@ -82,8 +82,11 @@ public class RunProgramDevice extends RealDevice {
 	public RunProgramDevice(RealResources resources, String id, String name, String description) {
 		super(resources, id, name, description);
         getProperties().add(command);
+        getCustomCommandIds().add(start.getId());
         getCommands().add(start);
+        getCustomCommandIds().add(stop.getId());
         getCommands().add(stop);
+        getCustomValueIds().add(runningValue.getId());
         getValues().add(runningValue);
 	}
 

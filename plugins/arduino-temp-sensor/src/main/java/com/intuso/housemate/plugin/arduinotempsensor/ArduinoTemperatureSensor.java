@@ -36,6 +36,7 @@ public class ArduinoTemperatureSensor extends RealDevice {
      */
     protected ArduinoTemperatureSensor(RealResources resources, SerialPort serialPort, String id, String name, String description) throws HousemateException {
         super(resources, id, name, description);
+        getCustomValueIds().add(temperature.getId());
         getValues().add(temperature);
         this.serialPort = serialPort;
     }

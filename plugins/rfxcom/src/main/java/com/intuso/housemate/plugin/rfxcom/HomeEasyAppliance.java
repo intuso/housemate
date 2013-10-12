@@ -41,11 +41,13 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
 	 */
 	public HomeEasyAppliance(RealResources resources, HomeEasy homeEasy, String id, String name, String description) throws HousemateException {
 		super(resources, id, name, description);
-        getProperties().add(this.houseId);
-        getProperties().add(this.unitId);
+        getCustomPropertyIds().add(houseId.getId());
+        getProperties().add(houseId);
+        getCustomPropertyIds().add(unitId.getId());
+        getProperties().add(unitId);
         this.homeEasy = homeEasy;
-        this.houseId.addObjectListener(this);
-        this.unitId.addObjectListener(this);
+        houseId.addObjectListener(this);
+        unitId.addObjectListener(this);
 	}
 	
 	/**
@@ -110,7 +112,7 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
 	}
 	
 	@Override
-	protected void turnOn() throws HousemateException {
+    public void turnOn() throws HousemateException {
         if(appliance == null)
             throw new HousemateException("Not connected to HomeEasy device. Ensure properties are set");
 		try {
@@ -122,7 +124,7 @@ public class HomeEasyAppliance extends OnOffDevice implements ValueListener<Real
 	}
 	
 	@Override
-	protected void turnOff() throws HousemateException {
+    public void turnOff() throws HousemateException {
         if(appliance == null)
             throw new HousemateException("Not connected to HomeEasy device. Ensure properties are set");
 		try {

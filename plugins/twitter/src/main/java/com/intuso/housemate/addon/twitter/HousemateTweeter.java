@@ -4,14 +4,15 @@ import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.ConnectionStatus;
+import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
 import com.intuso.utilities.listener.ListenerRegistration;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -73,7 +74,7 @@ public class HousemateTweeter {
 	 * @throws HousemateException
 	 */
 	@SuppressWarnings("unused")
-	public HousemateTweeter(final ProxyResources<SimpleProxyFactory.All> resources) throws HousemateException {
+	public HousemateTweeter(final SimpleProxyResources<SimpleProxyFactory.All> resources) throws HousemateException {
 
 		this.resources = resources;
         listeners = new HashMap<SimpleProxyObject.Device, java.util.List<ListenerRegistration>>();
@@ -110,9 +111,10 @@ public class HousemateTweeter {
                         break;
                     case Authenticated:
                         resources.getLog().e("Authenticated with server");
-                        root.load(new LoadManager(Root.DEVICES_ID) {
+                        root.load(new LoadManager("twitterClient", new HousemateObject.TreeLoadInfo(Root.DEVICES_ID),
+                                new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)) {
                             @Override
-                            protected void failed(String id) {
+                            protected void failed(HousemateObject.TreeLoadInfo tl) {
                                 tweet("Could not load devices from server. Do you have permission?");
                             }
 

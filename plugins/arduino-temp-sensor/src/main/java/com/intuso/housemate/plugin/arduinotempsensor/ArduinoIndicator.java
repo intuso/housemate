@@ -26,10 +26,12 @@ public class ArduinoIndicator extends OnOffDevice {
     protected ArduinoIndicator(RealResources resources, SerialPort serialPort, String id, String name, String description) {
         super(resources, id, name, description);
         this.serialPort = serialPort;
+        getCustomPropertyIds().add("colour");
+        getCustomPropertyIds().add("intensity");
     }
 
     @Override
-    protected void turnOn() {
+    public void turnOn() {
         try {
             serialPort.writeBytes(new byte[]{colour.getBytes()[0], (byte) ('0' + intensity)});
             setOn();
@@ -39,7 +41,7 @@ public class ArduinoIndicator extends OnOffDevice {
     }
 
     @Override
-    protected void turnOff() {
+    public void turnOff() {
         try {
             serialPort.writeBytes(new byte[]{colour.getBytes()[0], '0'});
             setOff();

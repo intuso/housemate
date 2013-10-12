@@ -1,57 +1,69 @@
 package com.intuso.housemate.plugin.tvremote;
 
-import com.intuso.housemate.annotations.basic.Command;
 import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.real.device.feature.RealPlaybackControl;
+import com.intuso.housemate.object.real.device.feature.RealVolumeControl;
+import com.intuso.housemate.object.real.impl.device.OnOffDevice;
 
 import java.io.IOException;
 
 @FactoryInformation(id = "tv-remote", name = "TV Remote", description = "TV Remote")
-public class TVRemote extends RealDevice {
+public class TVRemote extends OnOffDevice implements RealPlaybackControl, RealVolumeControl {
 
     @Property(id = "remote-name", name = "Remote Name", description = "The name of the remote you want to use", typeId = "string")
     public String remoteName;
 
     public TVRemote(RealResources resources, String id, String name, String description) {
         super(resources, id, name, description);
+        getCustomPropertyIds().add("remote-name");
     }
 
-    @Command(id = "power", name = "Power", description = "Turn the TV on or off")
-    public void power() throws HousemateException {
+    @Override
+    public void turnOn() throws HousemateException {
         irSend("KEY_POWER");
     }
 
-    @Command(id = "volume-up", name = "Volume Up", description = "Volume up")
-    public void volumeUp() throws HousemateException {
-        irSend("KEY_VOLUMEUP");
+    @Override
+    public void turnOff() throws HousemateException {
+        irSend("KEY_POWER");
     }
 
-    @Command(id = "volume-down", name = "Volume Down", description = "Volume down")
-    public void volumeDown() throws HousemateException {
-        irSend("KEY_VOLUMEDOWN");
-    }
-
-    @Command(id = "play", name = "Play", description = "Play")
+    @Override
     public void play() throws HousemateException {
         irSend("KEY_PLAY");
     }
 
-    @Command(id = "pause", name = "Pause", description = "Pause")
+    @Override
     public void pause() throws HousemateException {
         irSend("KEY_PAUSE");
     }
 
-    @Command(id = "Rewind", name = "Rewind", description = "Rewind")
+    @Override
+    public void stopPlayback() throws HousemateException {
+        irSend("KEY_STOP");
+    }
+
+    @Override
     public void rewind() throws HousemateException {
         irSend("KEY_REWIND");
     }
 
-    @Command(id = "forward", name = "Forward", description = "Forward")
+    @Override
     public void forward() throws HousemateException {
         irSend("KEY_FORWARD");
+    }
+
+    @Override
+    public void volumeUp() throws HousemateException {
+        irSend("KEY_VOLUMEUP");
+    }
+
+    @Override
+    public void volumeDown() throws HousemateException {
+        irSend("KEY_VOLUMEDOWN");
     }
 
     private void irSend(String buttonName) throws HousemateException {
