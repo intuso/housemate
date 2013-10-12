@@ -1,41 +1,30 @@
 package com.intuso.housemate.web.client.bootstrap.widget.value;
 
-import com.google.gwt.dom.client.Style;
-import com.intuso.housemate.web.client.bootstrap.widget.list.TableList;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableCol;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableColGroup;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableHead;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
+import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.value.ValueData;
+import com.intuso.housemate.web.client.bootstrap.widget.list.WidgetList;
+import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
 
+import java.util.List;
+
 /**
+ * Created with IntelliJ IDEA.
+ * User: tomc
+ * Date: 23/09/13
+ * Time: 21:16
+ * To change this template use File | Settings | File Templates.
  */
-public class ValueList extends TableList<GWTProxyValue> {
+public class ValueList extends WidgetList<ValueData, GWTProxyValue> {
 
-    public ValueList() {
-        addColGroup();
-        addHeader();
-    }
-
-    private void addColGroup() {
-        TableColGroup colGroup= new TableColGroup();
-        TableCol titleCol = new TableCol();
-        titleCol.getElement().getStyle().setWidth(100, Style.Unit.PX);
-        TableCol valueCol = new TableCol();
-        colGroup.add(titleCol);
-        colGroup.add(valueCol);
-        add(colGroup);
-    }
-
-    private void addHeader() {
-        TableRow header = new TableRow();
-        header.add(new TableHead("Name"));
-        header.add(new TableHead("Value"));
-        add(header);
+    public ValueList(GWTProxyList<ValueData, GWTProxyValue> list, String title,
+                     List<String> filteredIds, boolean showOnEmpty) {
+        super(list, title, filteredIds, showOnEmpty);
+        loadRows();
     }
 
     @Override
-    public TableRow createObjectTableRow(GWTProxyValue value) {
-        return new ValueTableRow(value);
+    protected Widget getWidget(GWTProxyValue value) {
+        return Value.getWidget(value);
     }
 }
