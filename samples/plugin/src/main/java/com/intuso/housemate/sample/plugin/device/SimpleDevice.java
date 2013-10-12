@@ -25,6 +25,7 @@ public class SimpleDevice extends RealDevice {
 
     public SimpleDevice(RealResources resources, String id, String name, String description) {
         super(resources, id, name, description);
+        getCustomPropertyIds().add("my-property");
     }
 
     @Command(id = "do-me", name = "Do Me", description = "Do me")
