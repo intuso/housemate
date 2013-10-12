@@ -7,9 +7,9 @@ import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.comms.transport.socket.client.SocketClient;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
-import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
 import com.intuso.utilities.listener.ListenerRegistration;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -40,9 +40,9 @@ public class TestClientDisconnect {
 
         final AtomicBoolean disconnected = new AtomicBoolean(true);
 
-        ProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
+        SimpleProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
         SocketClient socketClient = new SocketClient(resources, "localhost", 65432);
-        resources = new ProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
+        resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 socketClient, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
         socketClient.addObjectListener(new RootListener<RouterRootObject>() {
@@ -128,9 +128,9 @@ public class TestClientDisconnect {
         // repeat the same test as the disconnect, but instead of disconnecting, close the server socket
         final AtomicBoolean connectionLost = new AtomicBoolean(true);
 
-        ProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
+        SimpleProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
         SocketClient comms = new SocketClient(resources, "localhost", 65433);
-        resources = new ProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
+        resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
         comms.addObjectListener(new RootListener<RouterRootObject>() {
@@ -218,9 +218,9 @@ public class TestClientDisconnect {
         // repeat the same test as the disconnect, but instead of disconnecting, close the server socket
         final AtomicBoolean connected = new AtomicBoolean(true);
 
-        ProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
+        SimpleProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
         SocketClient comms = new SocketClient(resources, "localhost", 65433);
-        resources = new ProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
+        resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
         ListenerRegistration rootListenerRegistration = root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {

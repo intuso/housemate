@@ -14,25 +14,22 @@ import java.util.List;
 public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateData<?>>,
             PO extends PrimaryObjectBridge<WBL, PO, L>, L extends PrimaryListener<? super PO>>
         extends BridgeObject<WBL, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, PO, L>
-        implements PrimaryObject<CommandBridge, CommandBridge, ValueBridge, ValueBridge, ValueBridge, PO, L> {
+        implements PrimaryObject<CommandBridge, CommandBridge, ValueBridge, ValueBridge, PO, L> {
 
     private CommandBridge removeCommand;
-    private ValueBridge connectedValue;
     private ValueBridge runningValue;
     private CommandBridge startCommand;
     private CommandBridge stopCommand;
     private ValueBridge errorValue;
 
-    protected PrimaryObjectBridge(BrokerBridgeResources resources, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+    protected PrimaryObjectBridge(BrokerBridgeResources resources, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?> proxyObject) {
         super(resources,  data);
         removeCommand = new CommandBridge(resources, proxyObject.getRemoveCommand());
-        connectedValue = new ValueBridge(resources, proxyObject.getConnectedValue());
         runningValue = new ValueBridge(resources, proxyObject.getRunningValue());
         startCommand = new CommandBridge(resources, proxyObject.getStartCommand());
         stopCommand = new CommandBridge(resources, proxyObject.getStopCommand());
         errorValue = new ValueBridge(resources, proxyObject.getErrorValue());
         addChild(removeCommand);
-        addChild(connectedValue);
         addChild(runningValue);
         addChild(startCommand);
         addChild(stopCommand);
@@ -42,17 +39,6 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateDat
     @Override
     public CommandBridge getRemoveCommand() {
         return removeCommand;
-    }
-
-    @Override
-    public boolean isConnected() {
-        List<Boolean> connecteds = RealType.deserialiseAll(BooleanType.SERIALISER, connectedValue.getTypeInstances());
-        return connecteds != null && connecteds.size() > 0 && connecteds.get(0) != null ? connecteds.get(0) : false;
-    }
-
-    @Override
-    public ValueBridge getConnectedValue() {
-        return connectedValue;
     }
 
     @Override

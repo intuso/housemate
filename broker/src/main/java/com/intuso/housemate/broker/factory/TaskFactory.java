@@ -73,13 +73,13 @@ public final class TaskFactory implements PluginListener {
 
     public BrokerRealTask createTask(TypeInstanceMap values) throws HousemateException {
         TypeInstances taskType = values.get(TYPE_PARAMETER_ID);
-        if(taskType == null && taskType.getFirstValue() != null)
+        if(taskType == null || taskType.getFirstValue() == null)
             throw new HousemateException("No task type specified");
         TypeInstances name = values.get(NAME_PARAMETER_ID);
-        if(name == null && name.getFirstValue() != null)
+        if(name == null || name.getFirstValue() == null)
             throw new HousemateException("No task name specified");
         TypeInstances description = values.get(DESCRIPTION_PARAMETER_ID);
-        if(description == null && description.getFirstValue() != null)
+        if(description == null || description.getFirstValue() == null)
             throw new HousemateException("No task description specified");
         BrokerTaskFactory<?> taskFactory = type.deserialise(taskType.get(0));
         if(taskFactory == null)

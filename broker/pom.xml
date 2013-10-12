@@ -55,12 +55,13 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Web interface. Depended on so it builds before the broker module -->
+        <!-- Depend on web so it gets built before we add it to the package -->
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>web</artifactId>
+            <type>war</type>
             <version>${project.version}</version>
-	    <type>war</type>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Jetty server/web container stuff -->

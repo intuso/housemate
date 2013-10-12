@@ -26,7 +26,9 @@ public final class OnOffCommandDevice extends OnOffDevice {
 	 */
 	public OnOffCommandDevice(RealResources resources, String id, String name, String description) {
 		super(resources, id, name, description);
+        getCustomPropertyIds().add(onCommandProperty.getId());
         getProperties().add(onCommandProperty);
+        getCustomPropertyIds().add(offCommandProperty.getId());
         getProperties().add(offCommandProperty);
 	}
 
@@ -34,7 +36,7 @@ public final class OnOffCommandDevice extends OnOffDevice {
 	 * Turn the device on
 	 * @throws com.intuso.housemate.api.HousemateException
 	 */
-	protected void turnOn() throws HousemateException {
+    public void turnOn() throws HousemateException {
         String command = onCommandProperty.getTypedValue();
         if(command != null) {
             try {
@@ -51,7 +53,7 @@ public final class OnOffCommandDevice extends OnOffDevice {
 	 * Turn the device off
 	 * @throws com.intuso.housemate.api.HousemateException
 	 */
-	protected void turnOff() throws HousemateException {
+    public void turnOff() throws HousemateException {
         String command = offCommandProperty.getTypedValue();
         if(command != null) {
             try {

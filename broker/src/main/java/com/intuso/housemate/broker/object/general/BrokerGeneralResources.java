@@ -1,5 +1,6 @@
 package com.intuso.housemate.broker.object.general;
 
+import com.google.common.collect.Lists;
 import com.intuso.housemate.annotations.processor.AnnotationProcessor;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.Resources;
@@ -148,7 +149,8 @@ public class BrokerGeneralResources implements Resources {
             return;
         }
         plugins.add(plugin);
-        for(PluginListener listener : pluginListeners)
+        // some plugins add more plugin listeners, so need prevent concurrent modification
+        for(PluginListener listener : Lists.newArrayList(pluginListeners))
             listener.pluginAdded(plugin);
     }
 

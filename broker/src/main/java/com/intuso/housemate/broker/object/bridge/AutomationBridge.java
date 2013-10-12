@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
  */
 public class AutomationBridge
         extends PrimaryObjectBridge<AutomationData, AutomationBridge, AutomationListener<? super AutomationBridge>>
-        implements Automation<CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge, ValueBridge,
-                            ConditionBridge,ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>, TaskBridge,
-                            ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge>, AutomationBridge> {
+        implements Automation<CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge,
+            ConditionBridge,ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>, TaskBridge,
+            ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge>, AutomationBridge> {
 
     private ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
     private ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge> satisfiedTaskList;
@@ -26,7 +26,7 @@ public class AutomationBridge
     private CommandBridge addSatisfiedTask;
     private CommandBridge addUnsatisfiedTask;
     
-    public AutomationBridge(BrokerBridgeResources resources, Automation<?, ?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?>, ?, ?> automation) {
+    public AutomationBridge(BrokerBridgeResources resources, Automation<?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?>, ?, ?> automation) {
         super(resources, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()), automation);
         conditionList = new ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?>, ConditionBridge>(resources,  automation.getConditions(), new ConditionBridge.Converter(resources));
         satisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?>, TaskBridge>(resources, automation.getSatisfiedTasks(), new TaskBridge.Converter(resources));
@@ -72,7 +72,7 @@ public class AutomationBridge
         return conditionList;
     }
 
-    public final static class Converter implements Function<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> {
+    public final static class Converter implements Function<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> {
 
         private BrokerBridgeResources resources;
 
@@ -81,7 +81,7 @@ public class AutomationBridge
         }
 
         @Override
-        public AutomationBridge apply(@Nullable Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
+        public AutomationBridge apply(@Nullable Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
             return new AutomationBridge(resources, automation);
         }
     }

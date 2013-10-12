@@ -73,13 +73,13 @@ public final class ConditionFactory implements PluginListener {
 
     public BrokerRealCondition createCondition(TypeInstanceMap values) throws HousemateException {
         TypeInstances conditionType = values.get(TYPE_PARAMETER_ID);
-        if(conditionType == null && conditionType.getFirstValue() != null)
+        if(conditionType == null || conditionType.getFirstValue() == null)
             throw new HousemateException("No condition type specified");
         TypeInstances name = values.get(NAME_PARAMETER_ID);
-        if(name == null && name.getFirstValue() != null)
+        if(name == null || name.getFirstValue() == null)
             throw new HousemateException("No condition name specified");
         TypeInstances description = values.get(DESCRIPTION_PARAMETER_ID);
-        if(description == null && description.getFirstValue() != null)
+        if(description == null || description.getFirstValue() == null)
             throw new HousemateException("No condition description specified");
         BrokerConditionFactory<?> conditionFactory = type.deserialise(conditionType.get(0));
         if(conditionFactory == null)

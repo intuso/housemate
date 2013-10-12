@@ -193,7 +193,7 @@ public class BrokerObjectStorage implements Storage {
         devices.addObjectListener(watchDeviceListListener, true);
     }
 
-    public void watchAutomations(List<? extends Automation<?, ?, ?, ?, ?, ?,
+    public void watchAutomations(List<? extends Automation<?, ?, ?, ?, ?,
                 ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
                 ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> automations) {
         automations.addObjectListener(watchAutomationListListener, true);
@@ -267,17 +267,17 @@ public class BrokerObjectStorage implements Storage {
         }
     }
 
-    private class WatchAutomationListListener implements ListListener<Automation<?, ?, ?, ?, ?, ?,
+    private class WatchAutomationListListener implements ListListener<Automation<?, ?, ?, ?, ?,
                 ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
                 ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> {
 
-        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> runningListeners = Maps.newHashMap();
-        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> conditionListeners = Maps.newHashMap();
-        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> satisfiedTaskListeners = Maps.newHashMap();
-        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> unsatisfiedTaskListeners = Maps.newHashMap();
+        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> runningListeners = Maps.newHashMap();
+        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> conditionListeners = Maps.newHashMap();
+        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> satisfiedTaskListeners = Maps.newHashMap();
+        private final Map<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> unsatisfiedTaskListeners = Maps.newHashMap();
 
         @Override
-        public void elementAdded(Automation<?, ?, ?, ?, ?, ?,
+        public void elementAdded(Automation<?, ?, ?, ?, ?,
                         ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
                         ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
             runningListeners.put(automation, automation.getRunningValue().addObjectListener(watchValueListener));
@@ -298,7 +298,7 @@ public class BrokerObjectStorage implements Storage {
         }
 
         @Override
-        public void elementRemoved(Automation<?, ?, ?, ?, ?, ?,
+        public void elementRemoved(Automation<?, ?, ?, ?, ?,
                         ? extends Condition<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
                         ? extends Task<?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
             ListenerRegistration registration = runningListeners.remove(automation);

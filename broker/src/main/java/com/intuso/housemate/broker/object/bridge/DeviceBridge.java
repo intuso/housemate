@@ -10,8 +10,11 @@ import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueData;
+import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.impl.type.BooleanType;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  */
@@ -37,15 +40,21 @@ public class DeviceBridge
     private ListBridge<CommandData, Command<?, ?>, CommandBridge> commandList;
     private ListBridge<ValueData, Value<?, ?>, ValueBridge> valueList;
     private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
+    private ValueBridge connectedValue;
 
     public DeviceBridge(BrokerBridgeResources resources, Device<?, ?, ? extends Command<?, ?>, ?, ?, ?, ?, ? extends Value<?, ?>, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
-        super(resources, new DeviceData(device.getId(), device.getName(), device.getDescription()), device);
+        super(resources,
+                new DeviceData(device.getId(), device.getName(), device.getDescription(), device.getFeatureIds(),
+                        device.getCustomCommandIds(), device.getCustomValueIds(), device.getCustomPropertyIds()),
+                device);
         commandList = new ListBridge<CommandData, Command<?, ?>, CommandBridge>(resources, device.getCommands(), new CommandBridge.Converter(resources));
         valueList = new ListBridge<ValueData, Value<?, ?>, ValueBridge>(resources, device.getValues(), new ValueBridge.Converter(resources));
         propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, device.getProperties(), new PropertyBridge.Converter(resources));
+        connectedValue = new ValueBridge(resources, device.getConnectedValue());
         addChild(commandList);
         addChild(valueList);
         addChild(propertyList);
+        addChild(connectedValue);
     }
 
     @Override
@@ -61,6 +70,37 @@ public class DeviceBridge
     @Override
     public ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
+    }
+
+    @Override
+    public boolean isConnected() {
+        List<Boolean> connecteds = RealType.deserialiseAll(BooleanType.SERIALISER, connectedValue.getTypeInstances());
+        return connecteds != null && connecteds.size() > 0 && connecteds.get(0) != null ? connecteds.get(0) : false;
+    }
+
+    @Override
+    public ValueBridge getConnectedValue() {
+        return connectedValue;
+    }
+
+    @Override
+    public final List<String> getFeatureIds() {
+        return getData().getFeatureIds();
+    }
+
+    @Override
+    public final List<String> getCustomCommandIds() {
+        return getData().getCustomCommandIds();
+    }
+
+    @Override
+    public final List<String> getCustomValueIds() {
+        return getData().getCustomValueIds();
+    }
+
+    @Override
+    public final List<String> getCustomPropertyIds() {
+        return getData().getCustomPropertyIds();
     }
 
     public final static class Converter implements Function<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> {

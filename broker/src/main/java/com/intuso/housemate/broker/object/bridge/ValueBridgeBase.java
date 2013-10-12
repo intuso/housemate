@@ -34,7 +34,7 @@ public class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
 
     @Override
     public TypeInstances getTypeInstances() {
-        return getData().getValues();
+        return getData().getTypeInstances();
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
 
             @Override
             public void valueChanged(Value<?, ?> value) {
-                getData().setValues(value.getTypeInstances());
+                getData().setTypeInstances(value.getTypeInstances());
                 for(ValueListener<? super V> listener : getObjectListeners())
                     listener.valueChanged(getThis());
                 broadcastMessage(VALUE_ID, value.getTypeInstances());

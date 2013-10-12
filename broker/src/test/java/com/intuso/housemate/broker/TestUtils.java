@@ -4,8 +4,9 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.api.resources.RegexMatcherFactory;
-import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyFeatureFactory;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
 
 /**
  */
@@ -19,8 +20,8 @@ public class TestUtils {
         }
     }
 
-    public static ProxyResources<SimpleProxyFactory.All> createProxyRootResources(BrokerServerEnvironment environment) {
-        return new ProxyResources<SimpleProxyFactory.All>(environment.getGeneralResources().getLog(),
+    public static SimpleProxyResources<SimpleProxyFactory.All> createProxyRootResources(BrokerServerEnvironment environment) {
+        return new SimpleProxyResources<SimpleProxyFactory.All>(environment.getGeneralResources().getLog(),
                 environment.getGeneralResources().getProperties(), environment.getGeneralResources().getMainRouter(),
                 new SimpleProxyFactory.All(),
                 new RegexMatcherFactory() {
