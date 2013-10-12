@@ -255,7 +255,6 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 		 * @throws HousemateException
 		 */
 		private void sendMessage(Message message) throws HousemateException {
-            long start = System.currentTimeMillis();
 			try {
                 // send the message and flush it
                 oos.writeObject(message);
@@ -267,7 +266,6 @@ public final class ClientHandle implements Receiver<Message.Payload> {
                 e.printStackTrace();
 				throw new HousemateException("Could not send message", e);
 			}
-            log.d("Sent message in " + (System.currentTimeMillis() - start) + "ms");
 		}
 	}
 }

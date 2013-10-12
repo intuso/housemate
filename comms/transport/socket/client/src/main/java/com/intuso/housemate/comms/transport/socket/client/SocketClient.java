@@ -289,7 +289,6 @@ public class SocketClient extends Router {
                     } else
                         getLog().d("Sending message " + message.toString());
                     sendMessage(message);
-
                 } catch(InterruptedException e) {
                     if(socket == null || socket.isClosed())
                         break;
