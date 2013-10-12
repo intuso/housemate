@@ -3,21 +3,17 @@
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
-        <b:Row>
-            <b:Column size="8">
-                <b:Heading size="3">General</b:Heading>
-                <b:ButtonGroup>
-                    <h:command.PerformButton ui:field="startButton">Start</h:command.PerformButton>
-                    <h:command.PerformButton ui:field="stopButton">Stop</h:command.PerformButton>
-                    <h:command.PerformButton ui:field="removeButton">Remove</h:command.PerformButton>
-                </b:ButtonGroup>
-                <b:Heading size="3">Commands</b:Heading>
-                <h:command.CommandList ui:field="commandList"/>
-                <b:Heading size="3">Values</b:Heading>
-                <h:value.ValueList ui:field="valueList"/>
-                <b:Heading size="3">Properties</b:Heading>
-                <h:property.PropertyList ui:field="propertyList"/>
-            </b:Column>
-        </b:Row>
+        <g:FlowPanel ui:field="featureWidgets"/>
+        <h:command.CommandList ui:field="commandsList"/>
+        <h:value.ValueList ui:field="valuesList"/>
+        <g:SimplePanel addStyleNames="clearfix">
+            <b:Button ui:field="settings" addStyleNames="pull-right btn-mini" icon="COG"/>
+        </g:SimplePanel>
+        <b:Collapse ui:field="settingsPanel" defaultOpen="false">
+            <g:FlowPanel>
+                <h:object.Control ui:field="control"/>
+                <h:property.PropertyList ui:field="propertiesList"/>
+            </g:FlowPanel>
+        </b:Collapse>
     </g:FlowPanel>
 </ui:UiBinder>

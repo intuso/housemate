@@ -1,22 +1,19 @@
 package com.intuso.housemate.web.client.bootstrap.widget.automation;
 
-import com.google.common.collect.Lists;
+import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.Collapse;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.web.client.Housemate;
-import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
-import com.intuso.housemate.web.client.bootstrap.widget.list.ObjectNavs;
-import com.intuso.housemate.web.client.event.ObjectSelectedEvent;
-import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
+import com.intuso.housemate.web.client.bootstrap.widget.command.CommandPopup;
+import com.intuso.housemate.web.client.bootstrap.widget.condition.ConditionList;
+import com.intuso.housemate.web.client.bootstrap.widget.object.Control;
+import com.intuso.housemate.web.client.bootstrap.widget.task.TaskList;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
-import com.intuso.housemate.web.client.object.GWTProxyCondition;
-import com.intuso.housemate.web.client.object.GWTProxyTask;
-import com.intuso.housemate.web.client.place.ConditionPlace;
-import com.intuso.housemate.web.client.place.SatisfiedTaskPlace;
-import com.intuso.housemate.web.client.place.UnsatisfiedTaskPlace;
 
 /**
  */
@@ -27,49 +24,54 @@ public class Automation extends Composite {
 
     private static AutomationUiBinder ourUiBinder = GWT.create(AutomationUiBinder.class);
 
+    @UiField(provided = true)
+    ConditionList conditions;
+    @UiField(provided = true)
+    TaskList satisfiedTasks;
+    @UiField(provided = true)
+    TaskList unsatisfiedTasks;
+
     @UiField
-    public PerformButton startButton;
+    Button settings;
     @UiField
-    public PerformButton stopButton;
-    @UiField
-    public PerformButton removeButton;
-    @UiField
-    public ObjectNavs<GWTProxyCondition> conditionList;
-    @UiField
-    public ObjectNavs<GWTProxyTask> satisfiedTaskList;
-    @UiField
-    public ObjectNavs<GWTProxyTask> unsatisfiedTaskList;
+    Collapse settingsPanel;
+    @UiField(provided = true)
+    Control control;
+
+    private final GWTProxyAutomation automation;
 
     public Automation(final GWTProxyAutomation automation) {
+        this.automation = automation;
+
+        conditions = new ConditionList(automation.getConditions(), "conditions", null, true);
+        satisfiedTasks = new TaskList(automation.getSatisfiedTasks(), "satisfied tasks", null, true);
+        unsatisfiedTasks = new TaskList(automation.getUnsatisfiedTasks(), "unsatisfied tasks", null, false);
+        control = new Control(automation);
 
         initWidget(ourUiBinder.createAndBindUi(this));
+    }
 
-        startButton.setCommand(automation.getStartCommand());
-        stopButton.setCommand(automation.getStopCommand());
-        removeButton.setCommand(automation.getRemoveCommand());
-        conditionList.setList(automation.getConditions(), automation.getAddConditionCommand());
-        conditionList.addObjectSelectedHandler(new ObjectSelectedHandler<GWTProxyCondition>() {
-            @Override
-            public void objectSelected(ObjectSelectedEvent<GWTProxyCondition> event) {
-                Housemate.FACTORY.getPlaceController().goTo(
-                        new ConditionPlace(automation.getId(), 0, Lists.newArrayList(event.getObject().getId())));
-            }
-        });
-        satisfiedTaskList.setList(automation.getSatisfiedTasks(), automation.getAddSatisifedTaskCommand());
-        satisfiedTaskList.addObjectSelectedHandler(new ObjectSelectedHandler<GWTProxyTask>() {
-            @Override
-            public void objectSelected(ObjectSelectedEvent<GWTProxyTask> event) {
-                Housemate.FACTORY.getPlaceController().goTo(
-                        new SatisfiedTaskPlace(automation.getId(), event.getObject().getId()));
-            }
-        });
-        unsatisfiedTaskList.setList(automation.getUnsatisfiedTasks(), automation.getAddUnsatisifedTaskCommand());
-        unsatisfiedTaskList.addObjectSelectedHandler(new ObjectSelectedHandler<GWTProxyTask>() {
-            @Override
-            public void objectSelected(ObjectSelectedEvent<GWTProxyTask> event) {
-                Housemate.FACTORY.getPlaceController().goTo(
-                        new UnsatisfiedTaskPlace(automation.getId(), event.getObject().getId()));
-            }
-        });
+    @UiHandler("settings")
+    public void settingsClicked(ClickEvent event) {
+        settings.setActive(!settings.isActive());
+        if(settings.isActive())
+            settingsPanel.show();
+        else
+            settingsPanel.hide();
+    }
+
+    @UiHandler("addCondition")
+    public void addCondition(ClickEvent event) {
+        new CommandPopup(automation.getAddConditionCommand());
+    }
+
+    @UiHandler("addSatisfiedTask")
+    public void addSatisfiedTask(ClickEvent event) {
+        new CommandPopup(automation.getAddSatisifedTaskCommand());
+    }
+
+    @UiHandler("addUnsatisfiedTask")
+    public void addUnsatisfiedTask(ClickEvent event) {
+        new CommandPopup(automation.getAddUnsatisifedTaskCommand());
     }
 }

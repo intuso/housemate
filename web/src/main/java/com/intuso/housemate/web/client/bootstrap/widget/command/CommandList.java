@@ -1,41 +1,29 @@
 package com.intuso.housemate.web.client.bootstrap.widget.command;
 
-import com.google.gwt.dom.client.Style;
-import com.intuso.housemate.web.client.bootstrap.widget.list.TableList;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableCol;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableColGroup;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableHead;
-import com.intuso.housemate.web.client.bootstrap.widget.table.TableRow;
+import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.command.CommandData;
+import com.intuso.housemate.web.client.bootstrap.widget.list.ComplexWidgetList;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+
+import java.util.List;
 
 /**
+ * Created with IntelliJ IDEA.
+ * User: tomc
+ * Date: 23/09/13
+ * Time: 21:16
+ * To change this template use File | Settings | File Templates.
  */
-public class CommandList extends TableList<GWTProxyCommand> {
+public class CommandList extends ComplexWidgetList<CommandData, GWTProxyCommand> {
 
-    public CommandList() {
-        addColGroup();
-        addHeader();
-    }
-
-    private void addColGroup() {
-        TableColGroup colGroup= new TableColGroup();
-        TableCol titleCol = new TableCol();
-        titleCol.getElement().getStyle().setWidth(100, Style.Unit.PX);
-        TableCol valueCol = new TableCol();
-        colGroup.add(titleCol);
-        colGroup.add(valueCol);
-        add(colGroup);
-    }
-
-    private void addHeader() {
-        TableRow header = new TableRow();
-        header.add(new TableHead("Name"));
-        header.add(new TableHead("Perform"));
-        add(header);
+    public CommandList(GWTProxyList<CommandData, GWTProxyCommand> list, String title,
+                       List<String> filteredIds, boolean showOnEmpty) {
+        super(list, title, filteredIds, showOnEmpty);
     }
 
     @Override
-    public TableRow createObjectTableRow(GWTProxyCommand command) {
-        return new CommandTableRow(command);
+    protected Widget getWidget(GWTProxyCommand command) {
+        return new Command(command);
     }
 }

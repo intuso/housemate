@@ -1,7 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.widget.command;
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -15,10 +14,12 @@ import com.intuso.housemate.web.client.object.GWTProxyCommand;
 public class PerformButton extends Button implements ClickHandler {
 
     private GWTProxyCommand command;
+    private String text;
+    private IconType icon;
     private TypeInstanceMap values;
 
     public PerformButton() {
-        addClickHandler(this);
+        this(null, null, null, null);
     }
 
     public PerformButton(GWTProxyCommand command) {
@@ -31,22 +32,25 @@ public class PerformButton extends Button implements ClickHandler {
     }
 
     public PerformButton(GWTProxyCommand command, String text) {
-        this(command, null, text);
+        this(command, text, null);
     }
 
-    public PerformButton(GWTProxyCommand command, TypeInstanceMap values, String text) {
-        this();
-        setText(text);
-        setCommand(command, values);
+    public PerformButton(GWTProxyCommand command, String text, TypeInstanceMap values) {
+        this(command, text, null, values);
     }
 
-    public PerformButton(GWTProxyCommand command, Icon icon) {
-        this(command, null, icon);
+    public PerformButton(GWTProxyCommand command, IconType icon) {
+        this(command, icon, null);
     }
 
-    public PerformButton(GWTProxyCommand command, TypeInstanceMap values, Icon icon) {
-        this();
-        add(icon);
+    public PerformButton(GWTProxyCommand command, IconType icon, TypeInstanceMap values) {
+        this(command, null, icon, values);
+    }
+
+    public PerformButton(GWTProxyCommand command, String text, IconType icon, TypeInstanceMap values) {
+        addClickHandler(this);
+        this.text = text;
+        this.icon = icon;
         setCommand(command, values);
     }
 
@@ -57,16 +61,36 @@ public class PerformButton extends Button implements ClickHandler {
     public void setCommand(GWTProxyCommand command, TypeInstanceMap values) {
         this.command = command;
         this.values = values;
-        if(command.getParameters() != null && command.getParameters().size() > 0)
-            setIcon(IconType.CHEVRON_RIGHT);
+        if(icon != null)
+            setIcon(icon);
+        else {
+            if(text != null)
+                setText(text);
+            else if(command != null)
+                setText(command.getName());
+
+            if(command != null && command.getParameters() != null && command.getParameters().size() > 0)
+                    setIcon(IconType.CHEVRON_RIGHT);
+        }
+    }
+
+    @Override
+    public void setIcon(IconType icon) {
+        this.icon = icon;
+        super.setIcon(icon);
+    }
+
+    @Override
+    public void setText(String text) {
+        this.text = text;
+        super.setText(text);
     }
 
     @Override
     public void onClick(ClickEvent clickEvent) {
         if(command != null) {
             if(values == null && command.getParameters() != null && command.getParameters().size() > 0) {
-                CommandPopup popup = new CommandPopup(command);
-                popup.show();
+                new CommandPopup(command);
             } else
                 Housemate.FACTORY.getEventBus().fireEvent(
                         new PerformCommandEvent(command, values != null ? values : new TypeInstanceMap()));

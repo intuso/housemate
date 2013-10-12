@@ -3,21 +3,21 @@
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
-        <b:Row>
-            <b:Column size="8">
-                <b:Heading size="3">General</b:Heading>
-                <b:ButtonGroup>
-                    <h:command.PerformButton ui:field="startButton">Start</h:command.PerformButton>
-                    <h:command.PerformButton ui:field="stopButton">Stop</h:command.PerformButton>
-                    <h:command.PerformButton ui:field="removeButton">Remove</h:command.PerformButton>
-                </b:ButtonGroup>
-                <b:Heading size="3">Conditions</b:Heading>
-                <h:list.ObjectNavs ui:field="conditionList"/>
-                <b:Heading size="3">Satisfied Tasks</b:Heading>
-                <h:list.ObjectNavs ui:field="satisfiedTaskList"/>
-                <b:Heading size="3">Unsatisfied Tasks</b:Heading>
-                <h:list.ObjectNavs ui:field="unsatisfiedTaskList"/>
-            </b:Column>
-        </b:Row>
+        <h:condition.ConditionList ui:field="conditions"/>
+        <h:task.TaskList ui:field="satisfiedTasks"/>
+        <h:task.TaskList ui:field="unsatisfiedTasks"/>
+        <g:SimplePanel addStyleNames="clearfix">
+            <b:Button ui:field="settings" addStyleNames="pull-right" size="MINI" icon="COG"/>
+        </g:SimplePanel>
+        <b:Collapse ui:field="settingsPanel" defaultOpen="false">
+            <g:FlowPanel>
+                <h:object.Control ui:field="control"/>
+                <b:DropdownButton text="add" dropup="true">
+                    <b:NavLink ui:field="addCondition">condition</b:NavLink>
+                    <b:NavLink ui:field="addSatisfiedTask">satisfied task</b:NavLink>
+                    <b:NavLink ui:field="addUnsatisfiedTask">unsatisfied task</b:NavLink>
+                </b:DropdownButton>
+            </g:FlowPanel>
+        </b:Collapse>
     </g:FlowPanel>
 </ui:UiBinder>

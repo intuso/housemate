@@ -2,9 +2,9 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
-    <g:SimplePanel>
-        <b:Modal ui:field="modal">
-            <h:command.Command ui:field="command"/>
-        </b:Modal>
-    </g:SimplePanel>
+    <g:FlowPanel>
+        <b:Alert ui:field="errorAlert" visible="false"/>
+        <h:type.ParameterInputList ui:field="parameterList"/>
+        <b:Button ui:field="performButton" text="Perform"/>
+    </g:FlowPanel>
 </ui:UiBinder>
