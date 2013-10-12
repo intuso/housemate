@@ -21,6 +21,11 @@
         </dependency>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
+            <artifactId>annotations-feature</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
             <artifactId>object-real</artifactId>
             <version>${project.version}</version>
         </dependency>

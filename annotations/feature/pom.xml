@@ -8,9 +8,9 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-	<artifactId>annotations-basic</artifactId>
+	<artifactId>annotations-feature</artifactId>
     <packaging>jar</packaging>
-    <name>Housemate Annotations Basic</name>
-    <description>Basic Annotations to help development of higher-level objects</description>
+    <name>Housemate Annotations Feature</name>
+    <description>Annotations to help development of devices with features</description>
 
 </project>

@@ -7,6 +7,7 @@ import com.intuso.housemate.annotations.basic.Parameter;
 import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.annotations.basic.Value;
 import com.intuso.housemate.annotations.basic.Values;
+import com.intuso.housemate.annotations.feature.Id;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.HasCommands;
@@ -17,6 +18,7 @@ import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.HasValues;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.real.RealCommand;
+import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealObject;
 import com.intuso.housemate.object.real.RealParameter;
@@ -24,6 +26,7 @@ import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.RealValue;
+import com.intuso.housemate.object.real.device.feature.RealFeature;
 import com.intuso.utilities.log.Log;
 
 import java.lang.annotation.Annotation;
@@ -63,6 +66,8 @@ public class AnnotationProcessor {
             parseProperties(object, ((HasProperties<RealList<PropertyData, RealProperty<?>>>) object).getProperties());
         if(object instanceof HasValues)
             parseValues(object, ((HasValues<RealList<ValueData, RealValue<?>>>) object).getValues());
+        if(object instanceof RealDevice)
+            parseFeatures((RealDevice) object, (Class<? extends RealDevice>) object.getClass());
     }
     
     private void parseCommands(RealObject<?, ?, ?, ?> object, RealList<CommandData, RealCommand> commands) throws HousemateException {
@@ -105,6 +110,34 @@ public class AnnotationProcessor {
         }
     }
 
+    private void parseFeatures(RealDevice device, Class<? extends RealDevice> deviceClass) throws HousemateException {
+        for(Class<?> interfaceClass : deviceClass.getInterfaces())
+            if(RealFeature.class.isAssignableFrom(interfaceClass))
+                addFeatureId(device, interfaceClass);
+        if(RealDevice.class.isAssignableFrom(deviceClass.getSuperclass()))
+            parseFeatures(device, (Class<? extends RealDevice>) deviceClass.getSuperclass());
+    }
+
+    private void addFeatureId(RealDevice device, Class<?> featureClass) throws HousemateException {
+        Id id = featureClass.getAnnotation(Id.class);
+        if(id != null)
+            device.getData().getFeatureIds().add(id.value());
+        else {
+            try {
+                Field field = featureClass.getField("ID");
+                Object value = field.get(null);
+                if(value instanceof String)
+                    device.getData().getFeatureIds().add((String)value);
+                else
+                    throw new HousemateException("Could not get id for feature class. ID field is not of type string " + featureClass.getName());
+            } catch(NoSuchFieldException e) {
+                throw new HousemateException("Could not get id for feature class " + featureClass.getName(), e);
+            } catch(IllegalAccessException e) {
+                throw new HousemateException("Could not get id for feature class " + featureClass.getName(), e);
+            }
+        }
+    }
+
     private void parseValues(RealObject<?, ?, ?, ?> object, RealList<ValueData, RealValue<?>> values) throws HousemateException {
         for(Map.Entry<Field, Values> valuesField : getAnnotatedFields(object.getClass(), Values.class).entrySet()) {
             Map<Method, RealValue<Object>> valuesFunctions = Maps.newHashMap();
@@ -140,6 +173,8 @@ public class AnnotationProcessor {
         for(Method method : objectClass.getDeclaredMethods())
             if(method.getAnnotation(annotationClass) != null)
                 methods.put(method, method.getAnnotation(annotationClass));
+        for(Class<?> interfaceClass : objectClass.getInterfaces())
+            getAnnotatedMethods(interfaceClass, annotationClass, methods);
         if(objectClass.getSuperclass() != null)
             getAnnotatedMethods(objectClass.getSuperclass(), annotationClass, methods);
     }
