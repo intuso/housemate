@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.intuso.housemate</groupId>
+        <artifactId>platforms</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>platforms-android</artifactId>
+    <packaging>pom</packaging>
+    <name>Housemate Platforms Android</name>
+    <description>Platforms for the Housemate framework on Android</description>
+
+    <properties>
+        <android.sdk.path>/opt/adt/sdk</android.sdk.path>
+        <android.platform.version>4.0.1.2</android.platform.version>
+        <android.plugin.version>3.6.0</android.plugin.version>
+    </properties>
+
+    <modules>
+        <module>common</module>
+        <module>app</module>
+        <module>service</module>
+    </modules>
+
+</project>

@@ -31,8 +31,6 @@ public class PCEnvironment {
     public final static String LOG_LEVEL = "log.level";
     public final static String BROKER_PORT = "broker.port";
     public final static String BROKER_HOST = "broker.host";
-    public final static String USERNAME = "username";
-    public final static String PASSWORD = "password";
 
     private final static String HOUSEMATE_CONFIG_DIR = "HOUSEMATE_CONFIG_DIR";
     private final static String HOUSEMATE_LOG_DIR = "HOUSEMATE_LOG_DIR";

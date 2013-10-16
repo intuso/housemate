@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Activity -->
+    <string name="activity_name">Housemate</string>
+
+    <!-- Action bar -->
+    <string name="action_settings">Settings</string>
+
+    <!-- Main view -->
+    <string name="main_routerStatus_default">Not Connected</string>
+
+    <!-- Preferences names -->
+    <string name="pref_title_server">Server Details</string>
+    <string name="pref_title_server_host">Host</string>
+    <string name="pref_title_server_port">Port</string>
+
+    <string name="pref_title_auth">Login Details</string>
+    <string name="pref_title_auth_username">Username</string>
+    <string name="pref_title_auth_password">Password</string>
+
+    <!-- Service -->
+    <string name="service_name">Housemate Service</string>
+</resources>

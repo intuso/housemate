@@ -1,0 +1,27 @@
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:key="preferences">
+    <PreferenceCategory
+            android:title="@string/pref_title_server">
+        <EditTextPreference
+                android:key="broker_host"
+                android:title="@string/pref_title_server_host"
+                android:defaultValue="" />
+        <EditTextPreference
+                android:key="broker_port"
+                android:title="@string/pref_title_server_port"
+                android:inputType="number"
+                android:defaultValue="46873" />
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="@string/pref_title_auth">
+        <EditTextPreference
+                android:key="username"
+                android:title="@string/pref_title_auth_username"
+                android:defaultValue="admin" />
+        <EditTextPreference
+                android:key="password"
+                android:title="@string/pref_title_auth_password"
+                android:defaultValue="admin" />
+    </PreferenceCategory>
+</PreferenceScreen>
