@@ -124,9 +124,14 @@ public abstract class Router implements Sender, Receiver {
      * @param receiver the client's receiver implementation
      * @return a router registration that the client can use to send messages
      */
-    public synchronized final Registration registerReceiver(Receiver<?> receiver) {
+    public synchronized final Registration registerReceiver(Receiver receiver) {
         String clientId = "" + nextId.incrementAndGet();
         receivers.put(clientId, receiver);
+        try {
+            receiver.messageReceived(new Message<ConnectionStatus>(new String[] {""}, Root.STATUS_TYPE, root.getStatus()));
+        } catch(HousemateException e) {
+            log.e("Failed to tell new client " + clientId + " the current router status");
+        }
         return new Registration(clientId);
     }
 

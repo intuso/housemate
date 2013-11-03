@@ -8,9 +8,12 @@ package com.intuso.housemate.api.authentication;
  */
 public class UsernamePassword implements AuthenticationMethod {
 
+    private static final long serialVersionUID = -1L;
+
     private String username;
     private String password;
     private boolean createSession;
+    private boolean childrenAuthenticated;
 
     private UsernamePassword() {}
 
@@ -21,9 +24,20 @@ public class UsernamePassword implements AuthenticationMethod {
      *                      you don't want the user to be prompted for their credentials each time
      */
     public UsernamePassword(String username, String password, boolean createSession) {
+        this(username, password, createSession, false);
+    }
+
+    /**
+     * @param username the username to login with
+     * @param password the password to login with
+     * @param createSession true to create a session id that can be used at next login. Useful in user interfaces where
+     *                      you don't want the user to be prompted for their credentials each time
+     */
+    public UsernamePassword(String username, String password, boolean createSession, boolean childrenAuthenticated) {
         this.username = username;
         this.password = password;
         this.createSession = createSession;
+        this.childrenAuthenticated = childrenAuthenticated;
     }
 
     /**
@@ -48,6 +62,11 @@ public class UsernamePassword implements AuthenticationMethod {
      */
     public boolean isCreateSession() {
         return createSession;
+    }
+
+    @Override
+    public boolean isClientsAuthenticated() {
+        return childrenAuthenticated;
     }
 
     @Override

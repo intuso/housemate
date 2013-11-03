@@ -7,6 +7,9 @@ import com.intuso.housemate.api.comms.Message;
  * Message payload for messages which have no payload
  */
 public class NoPayload implements Message.Payload {
+
+    private static final long serialVersionUID = -1L;
+
     public final static NoPayload VALUE = new NoPayload();
 
     private NoPayload() {}

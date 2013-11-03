@@ -12,6 +12,8 @@ import com.intuso.housemate.api.comms.ConnectionType;
  */
 public final class AuthenticationRequest implements Message.Payload {
 
+    private static final long serialVersionUID = -1L;
+
     private ConnectionType type;
     private AuthenticationMethod method;
 

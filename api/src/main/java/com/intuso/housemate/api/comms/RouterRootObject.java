@@ -1,5 +1,6 @@
 package com.intuso.housemate.api.comms;
 
+import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
@@ -128,13 +129,13 @@ public class RouterRootObject
 
     @Override
     public void connectionStatusChanged(ConnectionStatus status) {
-        for(RootListener<? super RouterRootObject> listener : getObjectListeners())
+        for(RootListener<? super RouterRootObject> listener : Lists.newArrayList(getObjectListeners()))
             listener.connectionStatusChanged(this, status);
     }
 
     @Override
     public void brokerInstanceChanged() {
-        for(RootListener<? super RouterRootObject> listener : getObjectListeners())
+        for(RootListener<? super RouterRootObject> listener : Lists.newArrayList(getObjectListeners()))
             listener.brokerInstanceChanged(this);
     }
 }

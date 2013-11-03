@@ -1,5 +1,6 @@
 package com.intuso.housemate.api.comms;
 
+import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.authentication.Reconnect;
@@ -81,7 +82,7 @@ public class ConnectionManager {
         else if(status == ConnectionStatus.Authenticating)
             throw new HousemateRuntimeException("Authentication already in progress");
         status = ConnectionStatus.Authenticating;
-        for(ConnectionStatusChangeListener listener : listeners.getListeners())
+        for(ConnectionStatusChangeListener listener : listeners)
             listener.connectionStatusChanged(status);
         sender.sendMessage(new Message<AuthenticationRequest>(path, connectMessageType, new AuthenticationRequest(clientType, method)));
     }
@@ -92,7 +93,7 @@ public class ConnectionManager {
     public void logout() {
         sender.sendMessage(new Message<NoPayload>(path, disconnectMessageType, NoPayload.VALUE));
         status = ConnectionStatus.Unauthenticated;
-        for(ConnectionStatusChangeListener listener : listeners.getListeners())
+        for(ConnectionStatusChangeListener listener : listeners)
             listener.connectionStatusChanged(status);
     }
 
@@ -106,14 +107,14 @@ public class ConnectionManager {
         else if(brokerInstanceId != null && !brokerInstanceId.equals(response.getBrokerInstanceId())) {
             connectionId = null;
             status = ConnectionStatus.Unauthenticated;
-            for(ConnectionStatusChangeListener listener : listeners.getListeners())
+            for(ConnectionStatusChangeListener listener : listeners)
                 listener.brokerInstanceChanged();
         } else {
             brokerInstanceId = response.getBrokerInstanceId();
             connectionId = response.getConnectionId();
             status = connectionId != null ? ConnectionStatus.Authenticated : ConnectionStatus.AuthenticationFailed;
         }
-        for(ConnectionStatusChangeListener listener : listeners.getListeners())
+        for(ConnectionStatusChangeListener listener : listeners)
             listener.connectionStatusChanged(status);
     }
 
@@ -128,7 +129,7 @@ public class ConnectionManager {
             case Unauthenticated:
             case Authenticating:
             case AuthenticationFailed:
-                status = ConnectionStatus.Unauthenticated;
+                status = ConnectionStatus.Disconnected;
                 break;
             case Authenticated:
                 if(connectionId != null) {
@@ -140,7 +141,7 @@ public class ConnectionManager {
                     status = ConnectionStatus.Unauthenticated;
                 break;
         }
-        for(ConnectionStatusChangeListener listener : listeners.getListeners())
+        for(ConnectionStatusChangeListener listener : Lists.newArrayList(listeners))
             listener.connectionStatusChanged(status);
     }
 }

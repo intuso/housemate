@@ -8,6 +8,8 @@ package com.intuso.housemate.api.authentication;
  */
 public class Reconnect implements AuthenticationMethod {
 
+    private static final long serialVersionUID = -1L;
+
     private String connectionId;
 
     private Reconnect() {}
@@ -25,6 +27,11 @@ public class Reconnect implements AuthenticationMethod {
      */
     public String getConnectionId() {
         return connectionId;
+    }
+
+    @Override
+    public boolean isClientsAuthenticated() {
+        return false;
     }
 
     @Override

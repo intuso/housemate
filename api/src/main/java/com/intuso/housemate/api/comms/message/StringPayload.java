@@ -8,6 +8,8 @@ import com.intuso.housemate.api.comms.Message;
  */
 public class StringPayload implements Message.Payload {
 
+    private static final long serialVersionUID = -1L;
+
     private String value;
 
     private StringPayload() {}

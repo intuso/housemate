@@ -8,7 +8,10 @@ package com.intuso.housemate.api.authentication;
  */
 public class Session implements AuthenticationMethod {
 
+    private static final long serialVersionUID = -1L;
+
     private String sessionId;
+    private boolean childrenAuthenticated;
 
     private Session() {}
 
@@ -16,7 +19,15 @@ public class Session implements AuthenticationMethod {
      * @param sessionId the saved session id
      */
     public Session(String sessionId) {
+        this(sessionId, false);
+    }
+
+    /**
+     * @param sessionId the saved session id
+     */
+    public Session(String sessionId, boolean childrenAuthenticated) {
         this.sessionId = sessionId;
+        this.childrenAuthenticated = childrenAuthenticated;
     }
 
     /**
@@ -25,6 +36,11 @@ public class Session implements AuthenticationMethod {
      */
     public String getSessionId() {
         return sessionId;
+    }
+
+    @Override
+    public boolean isClientsAuthenticated() {
+        return childrenAuthenticated;
     }
 
     @Override

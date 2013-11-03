@@ -11,6 +11,8 @@ import com.intuso.housemate.api.comms.Message;
  */
 public class AuthenticationResponse implements Message.Payload {
 
+    private static final long serialVersionUID = -1L;
+
     private String brokerInstanceId;
     private String connectionId;
     private String userId;
@@ -24,10 +26,7 @@ public class AuthenticationResponse implements Message.Payload {
      * @param userId the id of the user that was logged in
      */
     public AuthenticationResponse(String brokerInstanceId, String connectionId, String userId) {
-        this.brokerInstanceId = brokerInstanceId;
-        this.connectionId = connectionId;
-        this.userId = userId;
-        this.problem = null;
+        this(brokerInstanceId, connectionId, userId, null);
     }
 
     /**
@@ -35,9 +34,18 @@ public class AuthenticationResponse implements Message.Payload {
      * @param problem the cause of the failed login attempt
      */
     public AuthenticationResponse(String brokerInstanceId, String problem) {
+        this(brokerInstanceId, null, null, problem);
+    }
+
+    /**
+     * @param brokerInstanceId the instance id of the broker
+     * @param connectionId the connection id
+     * @param userId the id of the user that was logged in
+     */
+    public AuthenticationResponse(String brokerInstanceId, String connectionId, String userId, String problem) {
         this.brokerInstanceId = brokerInstanceId;
-        this.connectionId = null;
-        this.userId = null;
+        this.connectionId = connectionId;
+        this.userId = userId;
         this.problem = problem;
     }
 
