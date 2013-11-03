@@ -2,7 +2,9 @@ package com.intuso.housemate.api.object.device.feature;
 
 import com.intuso.housemate.annotations.feature.Id;
 import com.intuso.housemate.api.object.command.Command;
+import com.intuso.housemate.api.object.value.Value;
 
+@Id("volume-control")
 public interface VolumeControl<COMMAND extends Command<?, ?>>
         extends Feature {
 
