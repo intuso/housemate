@@ -10,6 +10,8 @@ import java.util.List;
  */
 public final class DeviceData extends HousemateData<HousemateData<?>> {
 
+    private static final long serialVersionUID = -1L;
+
     private List<String> featureIds;
     private List<String> customCommandIds;
     private List<String> customValueIds;

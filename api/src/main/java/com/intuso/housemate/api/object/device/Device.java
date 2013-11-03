@@ -1,6 +1,6 @@
 package com.intuso.housemate.api.object.device;
 
-import com.intuso.housemate.api.RemoteObject;
+import com.intuso.housemate.api.object.RemoteObject;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.HasCommands;
 import com.intuso.housemate.api.object.list.List;
