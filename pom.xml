@@ -21,7 +21,7 @@
         <junit.version>4.8.1</junit.version>
         <guava.version>15.0</guava.version>
         <guice.version>3.0</guice.version>
-        <intuso.utils.version>1.1.0-SNAPSHOT</intuso.utils.version>
+        <intuso.utils.version>1.0.0</intuso.utils.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
     </properties>
@@ -88,13 +88,13 @@
     
      <distributionManagement>
         <repository>
-            <id>intuso-maven</id>
-            <name>intuso-maven-releases</name>
+            <id>dev.intuso.com</id>
+            <name>libs-releases</name>
             <url>http://dev.intuso.com/maven/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>intuso-maven</id>
-            <name>intuso-maven-snapshots</name>
+            <id>dev.intuso.com-snapshots</id>
+            <name>libs-snapshots</name>
             <url>http://dev.intuso.com/maven/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
