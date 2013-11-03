@@ -135,7 +135,7 @@ public class RootObjectBridge
     }
 
     private void objectAdded(String path, HousemateObject<?, ?, ?, ?, ?> object) {
-        if(objectLifecycleListeners.get(path) != null && objectLifecycleListeners.get(path).getListeners().size() > 0) {
+        if(objectLifecycleListeners.get(path) != null) {
             String splitPath[] = path.split(BaseObject.PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
                 listener.objectCreated(splitPath, object);
@@ -145,7 +145,7 @@ public class RootObjectBridge
     }
 
     private void objectRemoved(String path, HousemateObject<?, ?, ?, ?, ?> object) {
-        if(objectLifecycleListeners.get(path) != null && objectLifecycleListeners.get(path).getListeners().size() > 0) {
+        if(objectLifecycleListeners.get(path) != null) {
             String splitPath[] = path.split(BaseObject.PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
                 listener.objectRemoved(splitPath, object);

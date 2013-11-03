@@ -15,6 +15,7 @@
 
     <modules>
         <module>socket</module>
+        <module>rest</module>
     </modules>
 
 </project>

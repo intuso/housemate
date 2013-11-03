@@ -74,10 +74,10 @@ public class ValueComparison extends BrokerRealCondition {
         Comparison comparison = comparisonProperty.getTypedValue();
         if(comparison == null)
             setError("No comparison available");
-        else if(comparison.getOperator().getId() == null)
+        else if(comparison.getComparisonType().getId() == null)
             setError("No operator defined");
         else if(comparison.getComparatorsByType() == null)
-            setError("No comparators available for operator " + comparison.getOperator().getId());
+            setError("No comparators available for operator " + comparison.getComparisonType().getId());
         else if(firstValue == null && secondValue == null)
             setError("Neither value is available");
         else if(firstValue == null)
@@ -91,7 +91,7 @@ public class ValueComparison extends BrokerRealCondition {
         else if(!firstValue.getType().getId().equals(secondValue.getType().getId()))
             setError("The two values have different types (" + firstValue.getType().getName() + "," + secondValue.getType().getName() + ")");
         else if(comparison.getComparatorsByType().get(firstValue.getType().getId()) == null)
-            setError("No comparator for operator " + comparison.getOperator().getName() + " and value type " + firstValue.getType().getId());
+            setError("No comparator for operator " + comparison.getComparisonType().getName() + " and value type " + firstValue.getType().getId());
         else {
             try {
                 RealType<?, ?, ?> type = generalResources.getClient().getRoot().getTypes().get(firstValue.getType().getId());

@@ -60,6 +60,20 @@ public interface PluginDescriptor {
     public List<Comparator<?>> getComparators(RealResources resources);
 
     /**
+     * Gets the operators provided by this plugin
+     * @param resources the resources for the operators
+     * @return the operators provided by this plugin
+     */
+    public List<Operator<?, ?>> getOperators(RealResources resources);
+
+    /**
+     * Gets the transformers provided by this plugin
+     * @param resources the resources for the transformers
+     * @return the transformers provided by this plugin
+     */
+    public List<Transformer<?, ?>> getTransformers (RealResources resources);
+
+    /**
      * Gets the device factories provided by this plugin
      * @return the device factories provided by this plugin
      */

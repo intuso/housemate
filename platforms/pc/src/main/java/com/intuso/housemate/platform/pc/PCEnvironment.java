@@ -29,8 +29,6 @@ import java.util.regex.Pattern;
 public class PCEnvironment {
 
     public final static String LOG_LEVEL = "log.level";
-    public final static String BROKER_PORT = "broker.port";
-    public final static String BROKER_HOST = "broker.host";
 
     private final static String HOUSEMATE_CONFIG_DIR = "HOUSEMATE_CONFIG_DIR";
     private final static String HOUSEMATE_LOG_DIR = "HOUSEMATE_LOG_DIR";
@@ -155,7 +153,7 @@ public class PCEnvironment {
                 return properties;
             }
         };
-        comms = new SocketClient(resources, properties.get(BROKER_HOST), Integer.parseInt(properties.get(BROKER_PORT)));
+        comms = new SocketClient(resources);
     }
 
     public ClientResources getResources() {
@@ -185,7 +183,7 @@ public class PCEnvironment {
 
     public static class RM implements RegexMatcher {
 
-        Pattern pattern;
+        private final Pattern pattern;
 
         public RM(String regexPattern) {
             pattern = Pattern.compile(regexPattern);
@@ -201,8 +199,8 @@ public class PCEnvironment {
         try {
             BufferedWriter out = new BufferedWriter(new java.io.FileWriter(file));
             out.write(LOG_LEVEL + "=DEBUG\n");
-            out.write(BROKER_HOST + "=localhost\n");
-            out.write(BROKER_PORT + "=46873\n");
+            out.write(SocketClient.BROKER_HOST + "=localhost\n");
+            out.write(SocketClient.BROKER_PORT + "=46873\n");
             out.close();
         } catch(IOException e) {
             throw new HousemateException("Could not create default props file", e);

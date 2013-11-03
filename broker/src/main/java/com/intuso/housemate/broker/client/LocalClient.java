@@ -1,8 +1,8 @@
 package com.intuso.housemate.broker.client;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.broker.PluginListener;
+import com.intuso.housemate.broker.comms.InternalAuthentication;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealRootObject;
@@ -19,7 +19,7 @@ public class LocalClient implements PluginListener {
     public LocalClient(final BrokerGeneralResources resources) throws HousemateException {
         this.resources = resources;
         root = new LocalClientRoot(resources);
-        root.login(new InternalConnectMethod());
+        root.login(new InternalAuthentication());
         root.addType(resources.getDeviceFactory().getType());
         root.addType(resources.getConditionFactory().getType());
         root.addType(resources.getTaskFactory().getType());
@@ -47,10 +47,4 @@ public class LocalClient implements PluginListener {
         // todo remove types added by this plugin
     }
 
-    public final class InternalConnectMethod implements AuthenticationMethod {
-        @Override
-        public String toString() {
-            return "internal";
-        }
-    }
 }

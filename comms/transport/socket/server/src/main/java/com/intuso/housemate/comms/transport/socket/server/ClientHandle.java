@@ -59,8 +59,6 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 	public ClientHandle(Router router, Socket socket, Log log) throws HousemateException {
         super();
 
-        routerRegistration = router.registerReceiver(this);
-
 		// save all the given input params
 		this.socket = socket;
 		this.log = log;
@@ -87,6 +85,8 @@ public final class ClientHandle implements Receiver<Message.Payload> {
         outputQueue = new LinkedBlockingQueue<Message>();
         streamReader = new StreamReader();
         messageSender = new MessageSender();
+
+        routerRegistration = router.registerReceiver(this);
 		
 		// start the reader/writer threads 
 		streamReader.start();
@@ -163,8 +163,10 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 			while(!isInterrupted()) {
 				try {
                     Message message = readMessage();
-                    if(!(message.getPath().length == 0 && message.getType().equals("heartbeat")))
+                    if(!(message.getPath().length == 0 && message.getType().equals("heartbeat"))) {
+                        log.d("Received message " + message);
                         routerRegistration.sendMessage(message);
+                    }
 				} catch(HousemateException e) {
                     log.e("Failed to read message from the queue");
                     log.st(e);
@@ -229,18 +231,20 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 				
 				// while we should keep running
 				while(!isInterrupted()) {
-					Message to_send;
+					Message toSend;
 					try {
-						to_send = outputQueue.poll(30, TimeUnit.SECONDS);
+						toSend = outputQueue.poll(30, TimeUnit.SECONDS);
 					} catch (InterruptedException e) {
 						log.e("Interrupted waiting for message to send, breaking loop");
 						break;
 					}
-					if(to_send == null)
-						to_send = heartbeat;
+					if(toSend == null)
+						toSend = heartbeat;
+                    else
+                        log.d("Sending message " + toSend);
 					
 					// send a message from the proxy output queue
-					sendMessage(to_send);
+					sendMessage(toSend);
 				}
 			} catch(HousemateException e) {
 				log.e("Error sending message to client. Closing client connection");

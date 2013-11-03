@@ -5,11 +5,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.plugin.api.BrokerConditionFactory;
-import com.intuso.housemate.plugin.api.BrokerTaskFactory;
-import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
-import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.housemate.plugin.api.*;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 
@@ -62,6 +58,16 @@ public class ArduinoTemperatureSensorPlugin implements PluginDescriptor {
 
     @Override
     public List<Comparator<?>> getComparators(RealResources resources) {
+        return Lists.newArrayList();
+    }
+
+    @Override
+    public List<Operator<?, ?>> getOperators(RealResources resources) {
+        return Lists.newArrayList();
+    }
+
+    @Override
+    public List<Transformer<?, ?>> getTransformers(RealResources resources) {
         return Lists.newArrayList();
     }
 

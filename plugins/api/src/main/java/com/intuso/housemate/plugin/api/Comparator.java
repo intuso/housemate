@@ -11,7 +11,7 @@ public interface Comparator<O> {
      * Gets the operator for the comparison
      * @return
      */
-    public ComparisonOperator getOperator();
+    public ComparisonType getComparisonType();
 
     /**
      * Gets the type id that the comparison is for
@@ -24,7 +24,7 @@ public interface Comparator<O> {
      *
      * @param first the first value to compare
      * @param second the second value to compare
-     * @return depends on the comparator used, but for eg GreateThan, returns true iff first > second
+     * @return depends on the comparator used, but for eg GreaterThan, returns true iff first > second
      * @throws HousemateException
      */
     public boolean compare(O first, O second) throws HousemateException;

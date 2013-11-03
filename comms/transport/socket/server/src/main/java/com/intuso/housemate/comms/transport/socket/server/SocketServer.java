@@ -1,6 +1,7 @@
 package com.intuso.housemate.comms.transport.socket.server;
 
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.log.Log;
@@ -11,9 +12,9 @@ import java.net.Socket;
 
 /**
  */
-public class SocketServer {
+public class SocketServer extends Router {
 
-    public final static String BROKER_PORT = "broker.port";
+    public final static String BROKER_PORT = "socket.server.port";
 
     private final Log log;
 
@@ -27,17 +28,26 @@ public class SocketServer {
      */
     private final Accepter accepter;
 
-    private final Router clientMap;
+    private final Router.Registration routerRegistration;
 
-    public SocketServer(Resources resources, Router clientMap) throws HousemateException {
+    public SocketServer(Resources resources, Router router) throws HousemateException {
 
-        this.clientMap = clientMap;
+        super(resources);
+
+        this.routerRegistration = router.registerReceiver(this);
 
         log = resources.getLog();
+
+        setRouterStatus(Status.Connected);
+        login(new AuthenticationMethod());
 
         try {
             // open the server port
             String port = resources.getProperties().get(BROKER_PORT);
+            if(port == null) {
+                log.d("Socket server port not set, using default");
+                port = "46873";
+            }
             log.d("Starting server comms on port " + port);
             serverSocket = new ServerSocket(Integer.parseInt(port));
             accepter = new Accepter();
@@ -47,7 +57,22 @@ public class SocketServer {
             throw new HousemateException("Could not open port to listen on", e);
         }
     }
-    
+
+    @Override
+    public void connect() {
+        // do nothing
+    }
+
+    @Override
+    public void disconnect() {
+        // do nothing
+    }
+
+    @Override
+    public void sendMessage(Message<?> message) {
+        routerRegistration.sendMessage(message);
+    }
+
     public void start() {
         // start the thread that will accept connections from the port
         accepter.start();
@@ -75,7 +100,7 @@ public class SocketServer {
                     // TODO read client "contract" - version, mime type etc
                     // could also read a name to call the client so that we can show something useful when showing
                     // who's connected?
-                    new ClientHandle(clientMap, socket, log);
+                    new ClientHandle(SocketServer.this, socket, log);
                 } catch (IOException e) {
                     if(!serverSocket.isClosed()) {
                         log.e("Error getting next client connection.");
@@ -86,6 +111,16 @@ public class SocketServer {
                     log.st(e);
                 }
             }
+        }
+    }
+
+    public class AuthenticationMethod implements com.intuso.housemate.api.authentication.AuthenticationMethod {
+
+        private AuthenticationMethod() {}
+
+        @Override
+        public boolean isClientsAuthenticated() {
+            return false;
         }
     }
 }

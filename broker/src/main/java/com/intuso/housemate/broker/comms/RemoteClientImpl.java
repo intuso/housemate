@@ -18,17 +18,22 @@ import java.util.Set;
 public class RemoteClientImpl implements RemoteClient {
 
     private final String connectionId;
+    private final String authenticatedUser;
     private final ConnectionType type;
     private final MainRouter comms;
     private final BiMap<String, RemoteClientImpl> children = HashBiMap.create();
     private final Listeners<RemoteClientListener> listeners = new Listeners<RemoteClientListener>();
     private RemoteClientImpl parent;
     private List<String> route = null;
+    private final boolean clientsAuthenticated;
 
-    public RemoteClientImpl(String connectionId, ConnectionType type, MainRouter comms) {
+    public RemoteClientImpl(String connectionId, String authenticatedUser, ConnectionType type, MainRouter comms,
+                            boolean clientsAuthenticated) {
         this.connectionId = connectionId;
+        this.authenticatedUser = authenticatedUser;
         this.type = type;
         this.comms = comms;
+        this.clientsAuthenticated = clientsAuthenticated;
     }
 
     private void setParent(RemoteClientImpl parent) {
@@ -62,8 +67,9 @@ public class RemoteClientImpl implements RemoteClient {
         return listeners.addListener(listener);
     }
 
-    public RemoteClientImpl addClient(List<String> route, String connectionId, ConnectionType type) throws HousemateException {
-        RemoteClientImpl client = new RemoteClientImpl(connectionId, type, comms);
+    public RemoteClientImpl addClient(List<String> route, String connectionId, String authenticatedUser,
+                                      ConnectionType type, boolean clientsAuthenticated) throws HousemateException {
+        RemoteClientImpl client = new RemoteClientImpl(connectionId, authenticatedUser, type, comms,clientsAuthenticated);
         client.setRoute(route);
         addClient(client);
         return client;
@@ -122,8 +128,9 @@ public class RemoteClientImpl implements RemoteClient {
 
         // else, if we're at the last position, then check the client route doesn't already exist
         else if(client.getRoute().size() - 1 == currentIndex) {
-            if(current.children.containsKey(client.getRoute().get(currentIndex)))
+            if(current.children.containsKey(client.getRoute().get(currentIndex))) {
                 throw new HousemateException("Client route already exists");
+            }
             current.children.put(client.getRoute().get(currentIndex), client);
             client.setParent(current);
             return;
@@ -151,6 +158,26 @@ public class RemoteClientImpl implements RemoteClient {
         // else if the next key exists then recurse
         else if(current.children.containsKey(route.get(currentIndex)))
             return getClient(current.children.get(route.get(currentIndex)), currentIndex + 1, route);
+
+        else
+            return null;
+    }
+
+    public String getAuthenticatedRouter(List<String> route) {
+        return getAuthenticatedRouter(this, 0, route);
+    }
+
+    private static String getAuthenticatedRouter(RemoteClientImpl current, int currentIndex, List<String> route) {
+
+        if(current.clientsAuthenticated)
+            return current.authenticatedUser;
+
+        // if at or past the end, return null
+        else if(route.size() <= currentIndex)
+            return null;
+
+        else if(current.children.containsKey(route.get(currentIndex)))
+            return getAuthenticatedRouter(current.children.get(route.get(currentIndex)), currentIndex + 1, route);
 
         else
             return null;

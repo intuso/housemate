@@ -29,19 +29,18 @@ public class ContextListener implements ServletContextListener {
                     RESOURCES = new PCEnvironment(new String[0]).getResources();
             }
             RESOURCES.getRouter().connect();
-            RESOURCES.getRouter().login(
-                    new UsernamePassword(RESOURCES.getProperties().get("username"), RESOURCES.getProperties().get("password"), false));
             RESOURCES.getRouter().addObjectListener(new RootListener<RouterRootObject>() {
                 @Override
                 public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
                     RESOURCES.getLog().d("Router connection status: " + status);
+                    if(status == ConnectionStatus.Unauthenticated)
+                        RESOURCES.getRouter().login(
+                                new UsernamePassword(RESOURCES.getProperties().get("username"), RESOURCES.getProperties().get("password"), false));
                 }
 
                 @Override
                 public void brokerInstanceChanged(RouterRootObject root) {
-                    RESOURCES.getRouter().login(
-                            new UsernamePassword(RESOURCES.getProperties().get("username"), RESOURCES.getProperties().get("password"), false)
-                    );
+                    RESOURCES.getLog().d("Broker instance changed");
                 }
             });
         } catch(HousemateException e) {

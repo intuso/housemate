@@ -20,15 +20,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class SocketClient extends Router {
 
-    /**
-     * broker host
-     */
-    private final String host;
+    public final static String BROKER_PORT = "broker.port";
+    public final static String BROKER_HOST = "broker.host";
 
-    /**
-     * broker port
-     */
-    private final int port;
+    private final Resources resources;
 
     /**
      * True if a connection attempt is underway
@@ -45,6 +40,9 @@ public class SocketClient extends Router {
      */
     private LinkedBlockingQueue<Message> outputQueue;
 
+    private final Object connectThreadLock = new Object();
+    private ConnectThread connectThread;
+
     /**
      * thread that reads the stream and creates copies of messages that were sent by the broker
      */
@@ -59,24 +57,30 @@ public class SocketClient extends Router {
      * Create a new client comms
      * @throws HousemateException
      */
-    public SocketClient(Resources resources, String host, int port) {
+    public SocketClient(Resources resources) {
         super(resources);
-
+        this.resources = resources;
         // create the queues and threads
         outputQueue = new LinkedBlockingQueue<Message>();
-
-        // get the details of the broker (host, port and root topic)
-        this.host = host;
-        this.port = port;
-
-        // log for debug info
-        getLog().d("Broker host is \"" + this.host + "\"");
-        getLog().d("Broker port is \"" + this.port + "\"");
     }
 
     @Override
     public final void disconnect() {
-        shutdownComms(false);
+        disconnect(false);
+    }
+
+    private void disconnect(boolean reconnect) {
+        synchronized (connectThreadLock) {
+            if(connectThread != null) {
+                connectThread.interrupt();
+                try {
+                    connectThread.join();
+                } catch(InterruptedException e) {}
+            }
+            shutdownComms(reconnect);
+//            if(reconnect)
+//                connect();
+        }
     }
 
     /**
@@ -84,48 +88,11 @@ public class SocketClient extends Router {
      */
     @Override
     public final void connect() {
-        int delay = 1;
-        while(socket == null || !socket.isConnected()) {
-            try {
-                getLog().d("Attempting to connect to broker (" + host + ":" + port + ")");
-
-                // create the socket and the streams
-                socket = new Socket(host, port);
-                socket.setKeepAlive(true);
-                socket.setSoTimeout(60000);
-
-                getLog().d("Connected to broker, creating reader/writer threads");
-                messageSender = new MessageSender();
-                streamReader = new StreamReader();
-
-                // start the threads
-                streamReader.start();
-                messageSender.start();
-
-                getLog().d("Connected to broker");
-                setRouterStatus(Status.Connected);
-
-                // return from the method
-                return;
-
-            } catch (UnknownHostException e) {
-                getLog().e("Broker host \"" + host + ":" + port + "\" is unknown, cannot connect");
-            } catch (IOException e) {
-                getLog().e("Error connecting to broker: " + e.getMessage());
-                getLog().st(e);
-            } catch (HousemateException e) {
-                getLog().e("Error connecting to broker: " + e.getMessage());
-                getLog().st(e);
+        synchronized (connectThreadLock) {
+            if(connectThread == null) {
+                connectThread = new ConnectThread();
+                connectThread.start();
             }
-
-            getLog().e("Failed to connect to broker. Retrying in " + delay + " seconds");
-            try {
-                Thread.sleep(delay * 1000);
-            } catch(InterruptedException e) {
-                getLog().e("Interrupted waiting to retry connection. Aborting trying to connect");
-                return;
-            }
-            delay *= 2;
         }
     }
 
@@ -133,56 +100,102 @@ public class SocketClient extends Router {
      * Shutdown the comms connection
      */
     private void shutdownComms(boolean reconnecting) {
-
-        getLog().d("Disconnecting from the broker");
-        try {
-            socket.close();
-        } catch(IOException e) {
-            if(!socket.isClosed())
-                getLog().e("Error closing client connection to broker");
-        }
-        socket = null;
-
-        getLog().d("Interrupting all reader/writer threads");
-        streamReader.interrupt();
-        messageSender.interrupt();
-
-        try {
-            getLog().d("Joining all reader/writer threads");
-            streamReader.join();
-            messageSender.join();
-        } catch(InterruptedException e) {
-            getLog().e("Interrupted while waiting for reader/writer threads to stop");
-        }
-
-        getLog().d("Disconnected");
-        setRouterStatus(reconnecting ? Status.Connecting : Status.Disconnected);
-    }
-
-    /**
-     * Reconnect to the broker
-     */
-    private void reconnect() {
-        // do this in a new thread so the reader/writer threads don't block and then get interrupted
-        if(!connecting) {
-            getLog().d("Starting a thread to reconnect to the broker");
-            new Thread() {
-                @Override
-                public void run() {
-                    connecting = true;
-                    getLog().d("Running reconnect thread");
-                    shutdownComms(true);
-                    connect();
-                    getLog().d("Reconnected");
-                    connecting = false;
+        synchronized (connectThreadLock) {
+            getLog().d("Disconnecting from the broker");
+            if(socket != null) {
+                try {
+                    socket.close();
+                } catch(IOException e) {
+                    if(!socket.isClosed())
+                        getLog().e("Error closing client connection to broker");
                 }
-            }.start();
+                socket = null;
+            }
+
+            getLog().d("Interrupting all reader/writer threads");
+            if(streamReader != null)
+                streamReader.interrupt();
+            if(messageSender != null)
+                messageSender.interrupt();
+
+            try {
+                getLog().d("Joining all reader/writer threads");
+                if(streamReader != null)
+                    streamReader.join();
+                if(messageSender != null)
+                    messageSender.join();
+            } catch(InterruptedException e) {
+                getLog().e("Interrupted while waiting for reader/writer threads to stop");
+            }
+
+            getLog().d("Disconnected");
+            setRouterStatus(reconnecting ? Status.Connecting : Status.Disconnected);
         }
     }
 
     @Override
     public void sendMessage(Message message) {
         outputQueue.add(message);
+    }
+
+    private class ConnectThread extends Thread {
+        @Override
+        public void run() {
+            String host = resources.getProperties().get(BROKER_HOST);
+            int port = Integer.parseInt(resources.getProperties().get(BROKER_PORT));
+
+            // log for debug info
+            getLog().d("Broker host is \"" + host + "\"");
+            getLog().d("Broker port is \"" + port + "\"");
+            int delay = 1;
+            while(socket == null || !socket.isConnected()) {
+                try {
+                    getLog().d("Attempting to connect");
+
+                    // create the socket and the streams
+                    socket = new Socket(host, port);
+                    socket.setKeepAlive(true);
+                    socket.setSoTimeout(60000);
+
+                    getLog().d("Connected to broker, creating reader/writer threads");
+                    messageSender = new MessageSender();
+                    streamReader = new StreamReader();
+
+                    // start the threads
+                    streamReader.start();
+                    messageSender.start();
+
+                    getLog().d("Connected to broker");
+
+                    // return from the method
+                    synchronized (connectThreadLock) {
+                        connectThread = null;
+                    }
+                    return;
+
+                } catch (UnknownHostException e) {
+                    getLog().e("Broker host \"" + host + ":" + port + "\" is unknown, cannot connect");
+                } catch (IOException e) {
+                    getLog().e("Error connecting to broker: " + e.getMessage());
+                    getLog().st(e);
+                } catch (HousemateException e) {
+                    getLog().e("Error connecting to broker: " + e.getMessage());
+                    getLog().st(e);
+                }
+
+                getLog().e("Failed to connect to broker. Retrying in " + delay + " seconds");
+                try {
+                    Thread.sleep(delay * 1000);
+                } catch(InterruptedException e) {
+                    getLog().e("Interrupted waiting to retry connection. Aborting trying to connect");
+                    synchronized (connectThreadLock) {
+                        connectThread = null;
+                    }
+                    return;
+                }
+                delay = Math.min(60, delay * 2);
+            }
+        }
     }
 
     /**
@@ -222,7 +235,8 @@ public class SocketClient extends Router {
                 }
             } catch (HousemateException e) {
                 getLog().e("Error reading from broker socket connection");
-                reconnect();
+                getLog().st(e);
+                disconnect(true);
             }
 
             getLog().d("Stopped stream reader");
@@ -296,7 +310,7 @@ public class SocketClient extends Router {
                 } catch(IOException e) {
                     getLog().e("Error sending message to client. Will attempt to reconnect");
                     getLog().st(e);
-                    reconnect();
+                    disconnect(true);
                     break;
                 } catch(HousemateException e) {
                     getLog().e("Error getting message text. Message will not be sent");

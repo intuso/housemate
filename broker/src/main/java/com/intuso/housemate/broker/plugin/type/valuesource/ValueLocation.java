@@ -35,14 +35,14 @@ public class ValueLocation extends ValueSource implements ObjectLifecycleListene
     public void objectCreated(String[] path, HousemateObject<?, ?, ?, ?, ?> object) {
         if(object instanceof ValueBridge) {
             objectReference.setObject((Value<?, ?>)object);
-            for(ValueAvailableListener listener : listeners.getListeners())
+            for(ValueAvailableListener listener : listeners)
                 listener.valueAvailable(this, objectReference.getObject());
         }
     }
 
     @Override
     public void objectRemoved(String[] path, HousemateObject<?, ?, ?, ?, ?> object) {
-        for(ValueAvailableListener listener : listeners.getListeners())
+        for(ValueAvailableListener listener : listeners)
             listener.valueUnavailable(this);
     }
 }

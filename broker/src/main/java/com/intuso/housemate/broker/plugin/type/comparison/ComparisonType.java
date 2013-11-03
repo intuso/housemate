@@ -11,7 +11,6 @@ import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealSubType;
 import com.intuso.housemate.object.real.impl.type.RealCompoundType;
 import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.ComparisonOperator;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 
 import java.util.Map;
@@ -24,9 +23,9 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     public final static String NAME = "Comparison";
     public final static String DESCRIPTION = "Comparison of values";
     
-    public final static String OPERATOR_ID = "operator";
-    public final static String OPERATOR_NAME = "Operator";
-    public final static String OPERATOR_DESCRIPTION = "The way to compare the values";
+    public final static String COMPARISON_TYPE_ID = "comparison-type";
+    public final static String COMPARISON_TYPE_NAME = "Comparison Type";
+    public final static String COMPARISON_TYPE_DESCRIPTION = "The way to compare the values";
     public final static String VALUE_0_ID = "value0";
     public final static String VALUE_0_NAME = "First value";
     public final static String VALUE_0_DESCRIPTION = "The first value to compare";
@@ -34,26 +33,26 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     public final static String VALUE_1_NAME = "Second value";
     public final static String VALUE_1_DESCRIPTION = "The second value to compare";
 
-    private final ComparisonOperatorType operatorType;
+    private final ComparisonTypeType comparisonTypeType;
     private final ValueSourceType sourceType;
-    private final Map<ComparisonOperator, Map<String, Comparator<?>>> comparators = Maps.newHashMap();
+    private final Map<com.intuso.housemate.plugin.api.ComparisonType, Map<String, Comparator<?>>> comparators = Maps.newHashMap();
 
     private final BrokerGeneralResources generalResources;
 
     public ComparisonType(RealResources resources, BrokerGeneralResources generalResources) {
         this(resources,  generalResources,
-                (ComparisonOperatorType) generalResources.getClient().getRoot().getTypes().get(ComparisonOperatorType.ID),
+                (ComparisonTypeType) generalResources.getClient().getRoot().getTypes().get(ComparisonTypeType.ID),
                 (ValueSourceType) generalResources.getClient().getRoot().getTypes().get(ValueSourceType.ID));
     }
 
     public ComparisonType(RealResources resources, BrokerGeneralResources generalResources,
-                          ComparisonOperatorType operatorType, ValueSourceType sourceType) {
+                          ComparisonTypeType comparisonTypeType, ValueSourceType sourceType) {
         super(resources, ID, NAME, DESCRIPTION, 1, 1);
         this.generalResources = generalResources;
-        this.operatorType = operatorType;
+        this.comparisonTypeType = comparisonTypeType;
         this.sourceType = sourceType;
-        getSubTypes().add(new RealSubType<ComparisonOperator>(resources, OPERATOR_ID, OPERATOR_NAME,
-                OPERATOR_DESCRIPTION, operatorType));
+        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.ComparisonType>(resources, COMPARISON_TYPE_ID, COMPARISON_TYPE_NAME,
+                COMPARISON_TYPE_DESCRIPTION, comparisonTypeType));
         getSubTypes().add(new RealSubType<ValueSource>(resources, VALUE_0_ID, VALUE_0_NAME, VALUE_0_DESCRIPTION,
                 sourceType));
         getSubTypes().add(new RealSubType<ValueSource>(resources, VALUE_1_ID, VALUE_1_NAME, VALUE_1_DESCRIPTION,
@@ -66,7 +65,7 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
         if(comparisonInstance == null)
             return null;
         TypeInstance result = new TypeInstance();
-        result.getChildValues().put(OPERATOR_ID, new TypeInstances(operatorType.serialise(comparisonInstance.getOperator())));
+        result.getChildValues().put(COMPARISON_TYPE_ID, new TypeInstances(comparisonTypeType.serialise(comparisonInstance.getComparisonType())));
         result.getChildValues().put(VALUE_0_ID, new TypeInstances(sourceType.serialise(comparisonInstance.getFirstValueSource())));
         result.getChildValues().put(VALUE_1_ID, new TypeInstances(sourceType.serialise(comparisonInstance.getSecondValueSource())));
         return result;
@@ -75,8 +74,8 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     @Override
     public Comparison deserialise(TypeInstance instance) {
         if(instance == null
-                || instance.getChildValues().get(OPERATOR_ID) == null
-                || instance.getChildValues().get(OPERATOR_ID).size() == 0)
+                || instance.getChildValues().get(COMPARISON_TYPE_ID) == null
+                || instance.getChildValues().get(COMPARISON_TYPE_ID).size() == 0)
             return null;
         ValueSource value0 = null;
         if(instance.getChildValues().get(VALUE_0_ID) != null && instance.getChildValues().get(VALUE_0_ID).size() != 0)
@@ -84,17 +83,17 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
         ValueSource value1 = null;
         if(instance.getChildValues().get(VALUE_1_ID) != null && instance.getChildValues().get(VALUE_1_ID).size() != 0)
             value1 = sourceType.deserialise(instance.getChildValues().get(VALUE_1_ID).get(0));
-        ComparisonOperator operator = operatorType.deserialise(instance.getChildValues().get(OPERATOR_ID).get(0));
-        return new Comparison(operator, comparators.get(operator), value0, value1);
+        com.intuso.housemate.plugin.api.ComparisonType comparisonType = comparisonTypeType.deserialise(instance.getChildValues().get(COMPARISON_TYPE_ID).get(0));
+        return new Comparison(comparisonType, comparators.get(comparisonType), value0, value1);
     }
 
     @Override
     public void pluginAdded(PluginDescriptor plugin) {
         for(Comparator<?> comparator : plugin.getComparators(generalResources.getClientResources())) {
-            Map<String, Comparator<?>> comparatorsByType = comparators.get(comparator.getOperator());
+            Map<String, Comparator<?>> comparatorsByType = comparators.get(comparator.getComparisonType());
             if(comparatorsByType == null) {
                 comparatorsByType = Maps.newHashMap();
-                comparators.put(comparator.getOperator(), comparatorsByType);
+                comparators.put(comparator.getComparisonType(), comparatorsByType);
             }
             comparatorsByType.put(comparator.getTypeId(), comparator);
         }

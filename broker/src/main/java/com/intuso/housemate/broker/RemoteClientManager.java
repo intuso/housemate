@@ -3,10 +3,7 @@ package com.intuso.housemate.broker;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.Reconnect;
-import com.intuso.housemate.api.authentication.Session;
-import com.intuso.housemate.api.authentication.UsernamePassword;
+import com.intuso.housemate.api.authentication.*;
 import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.message.AuthenticationRequest;
@@ -16,10 +13,12 @@ import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.broker.client.LocalClient;
+import com.intuso.housemate.broker.comms.InternalAuthentication;
 import com.intuso.housemate.broker.comms.RemoteClientImpl;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.broker.storage.DetailsNotFoundException;
+import com.intuso.housemate.comms.transport.rest.RestServer;
+import com.intuso.housemate.comms.transport.socket.server.SocketServer;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
 
 import java.security.MessageDigest;
@@ -40,7 +39,7 @@ public class RemoteClientManager {
 
     public RemoteClientManager(BrokerGeneralResources resources) {
         this.resources = resources;
-        root = new RemoteClientImpl(UUID.randomUUID().toString(), ConnectionType.Router, resources.getMainRouter());
+        root = new RemoteClientImpl(UUID.randomUUID().toString(), null, ConnectionType.Router, resources.getMainRouter(), false);
         root.setRoute(Lists.<String>newArrayList());
     }
 
@@ -82,23 +81,24 @@ public class RemoteClientManager {
         String connectionId = UUID.randomUUID().toString();
         RemoteClientImpl client;
 
+        // check authentication method
+        AuthenticationResponse response;
+        try {
+            response = checkMethod(route, request.getMethod(), connectionId);
+        } catch(Throwable t) {
+            response = new AuthenticationResponse(BROKER_INSTANCE_ID, "Could not check authentication: " + t.getMessage());
+        }
+
         // try and add the client. If this fails, it's because one of the intermediate clients isn't authenticated
         // in which case it shouldn't have allowed this message through. We shouldn't reply to prevent misuse
         try {
-            client = addClient(connectionId, route, request.getType());
+            client = addClient(connectionId, response.getUserId(), route, request.getType(), request.getType() == ConnectionType.Router && request.getMethod().isClientsAuthenticated());
             client.setRoute(route);
         } catch(HousemateException e) {
             resources.getLog().e("Failed to add client endpoint for " + Message.routeToString(route));
+            resources.getLog().st(e);
             resources.getLog().d("Maybe one of the intermediate clients isn't connected or isn't of type " + ConnectionType.Router);
             return;
-        }
-
-        // client is added, now authenticate it
-        AuthenticationResponse response;
-        try {
-            response = checkMethod(request.getMethod(), connectionId);
-        } catch(Throwable t) {
-            response = new AuthenticationResponse(BROKER_INSTANCE_ID, "Could not check authentication: " + t.getMessage());
         }
 
         try {
@@ -112,8 +112,11 @@ public class RemoteClientManager {
         }
 
         // if response is null, or it has no user id and is not one of the internal methods, then remove the client
-        if(response == null
-                || (response.getUserId() == null && !(request.getMethod() instanceof LocalClient.InternalConnectMethod))) {
+        if(response == null ||
+                (response.getUserId() == null && !(
+                        request.getMethod() instanceof InternalAuthentication
+                        || request.getMethod() instanceof RestServer.AuthenticationMethod
+                        || request.getMethod() instanceof SocketServer.AuthenticationMethod))) {
             if(response == null)
                 resources.getLog().d("Authentication failed. See previous log messages for details");
             else
@@ -122,7 +125,7 @@ public class RemoteClientManager {
         }
     }
 
-    private AuthenticationResponse checkMethod(AuthenticationMethod method, String connectionId) throws HousemateException {
+    private AuthenticationResponse checkMethod(List<String> route, AuthenticationMethod method, String connectionId) throws HousemateException {
         // check by session
         if(method == null) {
             resources.getLog().d("No authentication method");
@@ -149,8 +152,18 @@ public class RemoteClientManager {
                 return new AuthenticationResponse(BROKER_INSTANCE_ID, "Incorrect credentials");
             }
 
+            // need to check that an intermediate router has authed its clients
+        } else if(method instanceof FromRouter) {
+            String user = root.getAuthenticatedRouter(route);
+            if(user != null)
+                return new AuthenticationResponse(BROKER_INSTANCE_ID, connectionId, user);
+            else
+                return new AuthenticationResponse(BROKER_INSTANCE_ID, "No intermediate router has authenticated for clients");
+
             // anything internal should just be accepted regardless
-        } else if(method instanceof LocalClient.InternalConnectMethod) {
+        } else if(method instanceof InternalAuthentication
+                || method instanceof RestServer.AuthenticationMethod
+                || method instanceof SocketServer.AuthenticationMethod) {
             resources.getLog().d("Internal client authentication");
             return new AuthenticationResponse(BROKER_INSTANCE_ID, connectionId, null);
 
@@ -165,9 +178,9 @@ public class RemoteClientManager {
         }
     }
 
-    private RemoteClientImpl addClient(String connectionId, List<String> route, ConnectionType type) throws HousemateException {
-        RemoteClientImpl client = root.addClient(route, connectionId, type);
-        return client;
+    private RemoteClientImpl addClient(String connectionId, String authenticatedUser, List<String> route,
+                                       ConnectionType type, boolean clientsAuthenticated) throws HousemateException {
+        return root.addClient(route, connectionId, authenticatedUser, type, clientsAuthenticated);
     }
 
     public void clientDisconnected(List<String> route) {

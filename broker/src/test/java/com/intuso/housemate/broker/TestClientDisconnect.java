@@ -41,7 +41,9 @@ public class TestClientDisconnect {
         final AtomicBoolean disconnected = new AtomicBoolean(true);
 
         SimpleProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
-        SocketClient socketClient = new SocketClient(resources, "localhost", 65432);
+        resources.getProperties().put(SocketClient.BROKER_HOST, "localhost");
+        resources.getProperties().put(SocketClient.BROKER_PORT, "65432");
+        SocketClient socketClient = new SocketClient(resources);
         resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 socketClient, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
@@ -129,7 +131,9 @@ public class TestClientDisconnect {
         final AtomicBoolean connectionLost = new AtomicBoolean(true);
 
         SimpleProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
-        SocketClient comms = new SocketClient(resources, "localhost", 65433);
+        resources.getProperties().put(SocketClient.BROKER_HOST, "localhost");
+        resources.getProperties().put(SocketClient.BROKER_PORT, "65433");
+        SocketClient comms = new SocketClient(resources);
         resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
@@ -219,7 +223,9 @@ public class TestClientDisconnect {
         final AtomicBoolean connected = new AtomicBoolean(true);
 
         SimpleProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
-        SocketClient comms = new SocketClient(resources, "localhost", 65433);
+        resources.getProperties().put(SocketClient.BROKER_HOST, "localhost");
+        resources.getProperties().put(SocketClient.BROKER_PORT, "65433");
+        SocketClient comms = new SocketClient(resources);
         resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);

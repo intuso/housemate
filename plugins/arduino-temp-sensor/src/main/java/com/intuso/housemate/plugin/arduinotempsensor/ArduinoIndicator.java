@@ -2,13 +2,13 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.impl.device.OnOffDevice;
+import com.intuso.housemate.object.real.impl.device.StatefulPoweredDevice;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 
 /**
  */
-public class ArduinoIndicator extends OnOffDevice {
+public class ArduinoIndicator extends StatefulPoweredDevice {
 
     private final SerialPort serialPort;
 

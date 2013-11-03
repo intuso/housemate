@@ -2,11 +2,12 @@ package com.intuso.housemate.broker.comms;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.comms.message.AuthenticationRequest;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.comms.message.AuthenticationRequest;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
+import com.intuso.housemate.comms.transport.rest.RestServer;
 import com.intuso.housemate.comms.transport.socket.server.SocketServer;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.housemate.object.broker.RemoteClient;
@@ -26,18 +27,28 @@ public final class MainRouter extends Router {
     public MainRouter(BrokerGeneralResources resources) {
         super(resources);
         this.resources = resources;
+        setRouterStatus(Status.Connected);
+        login(new InternalAuthentication());
     }
 	
 	/**
-	 * Start accepting connections to the server socket
+	 * Start accepting connections to the broker
 	 */
     public final void start() {
 
 		// start the thread that will process incoming messages
 		messageProcessor.start();
 
+        // start the socket server
         try {
             new SocketServer(resources, this).start();
+        } catch(HousemateException e) {
+            throw new HousemateRuntimeException("Could not start broker comms", e);
+        }
+
+        // start the rest server
+        try {
+            new RestServer(resources, this).start();
         } catch(HousemateException e) {
             throw new HousemateRuntimeException("Could not start broker comms", e);
         }

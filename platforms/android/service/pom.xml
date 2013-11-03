@@ -23,6 +23,12 @@
             <groupId>com.intuso.housemate</groupId>
             <artifactId>platform-android-common</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.intuso.housemate</groupId>
+                    <artifactId>api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.intuso.housemate</groupId>

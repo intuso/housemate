@@ -23,7 +23,7 @@ import com.intuso.housemate.object.real.impl.type.DoubleType;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.ComparisonOperator;
+import com.intuso.housemate.plugin.api.ComparisonType;
 import com.intuso.utilities.listener.ListenerRegistration;
 import org.junit.Test;
 
@@ -38,11 +38,11 @@ public class TestValueComparison {
 
     private final static BrokerServerEnvironment SERVER_ENVIRONMENT = TestUtils.startBroker(65432);
 
-    private final static Map<ComparisonOperator, Map<String, Comparator<?>>> COMPARISONS_BY_TYPE = Maps.newHashMap();
+    private final static Map<ComparisonType, Map<String, Comparator<?>>> COMPARISONS_BY_TYPE = Maps.newHashMap();
     static {
-        COMPARISONS_BY_TYPE.put(ComparisonOperator.Simple.Equals, Maps.<String, Comparator<?>>newHashMap());
-        COMPARISONS_BY_TYPE.get(ComparisonOperator.Simple.Equals).put(SimpleTypeData.Type.Integer.getId(), new IntegerComparators.Equals());
-        COMPARISONS_BY_TYPE.get(ComparisonOperator.Simple.Equals).put(SimpleTypeData.Type.Double.getId(), new DoubleComparators.Equals());
+        COMPARISONS_BY_TYPE.put(ComparisonType.Simple.Equals, Maps.<String, Comparator<?>>newHashMap());
+        COMPARISONS_BY_TYPE.get(ComparisonType.Simple.Equals).put(SimpleTypeData.Type.Integer.getId(), new IntegerComparators.Equals());
+        COMPARISONS_BY_TYPE.get(ComparisonType.Simple.Equals).put(SimpleTypeData.Type.Double.getId(), new DoubleComparators.Equals());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class TestValueComparison {
         RealType<?, ?, ?> integerType = new IntegerType(SERVER_ENVIRONMENT.getGeneralResources().getClientResources());
         ConstantValue valueOne = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstances(new TypeInstance("1")));
-        assertValueComparisonSatisfied(ComparisonOperator.Simple.Equals, valueOne, valueTwo, true);
+        assertValueComparisonSatisfied(ComparisonType.Simple.Equals, valueOne, valueTwo, true);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class TestValueComparison {
         RealType<?, ?, ?> integerType = new IntegerType(SERVER_ENVIRONMENT.getGeneralResources().getClientResources());
         ConstantValue valueOne = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue((RealType<?, ?, Object>) integerType, new TypeInstances(new TypeInstance("2")));
-        assertValueComparisonSatisfied(ComparisonOperator.Simple.Equals, valueOne, valueTwo, false);
+        assertValueComparisonSatisfied(ComparisonType.Simple.Equals, valueOne, valueTwo, false);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class TestValueComparison {
                 // do nothing
             }
         });
-        ValueComparison vc = makeValueComparison(ComparisonOperator.Simple.Equals, valueOne, valueTwo);
+        ValueComparison vc = makeValueComparison(ComparisonType.Simple.Equals, valueOne, valueTwo);
         assertEquals(vc.getError(), "Second value is not available");
         TestDevice device = new TestDevice(SERVER_ENVIRONMENT.getGeneralResources().getClientResources(), "device", "Device", "Device");
         SERVER_ENVIRONMENT.getGeneralResources().getAnnotationProcessor().process(device);
@@ -117,7 +117,7 @@ public class TestValueComparison {
         assertSatisfied(vc, true);
     }
 
-    private void assertValueComparisonSatisfied(ComparisonOperator operator, ValueSource sourceOne,
+    private void assertValueComparisonSatisfied(ComparisonType operator, ValueSource sourceOne,
                                                 ValueSource sourceTwo, boolean satisfied) {
         assertSatisfied(makeValueComparison(operator, sourceOne, sourceTwo), satisfied);
     }
@@ -126,7 +126,7 @@ public class TestValueComparison {
         assertEquals(satisfied, valueComparison.isSatisfied());
     }
 
-    private ValueComparison makeValueComparison(ComparisonOperator operator, ValueSource sourceOne, ValueSource sourceTwo) {
+    private ValueComparison makeValueComparison(ComparisonType operator, ValueSource sourceOne, ValueSource sourceTwo) {
         ValueComparison valueComparison = new ValueComparison(SERVER_ENVIRONMENT.getGeneralResources().getRealResources(),
                 "test", "Test", "Test VC", null, SERVER_ENVIRONMENT.getGeneralResources());
         BrokerRealProperty<Comparison> comparisonProperty = (BrokerRealProperty<Comparison>) valueComparison.getProperties().get(ValueComparison.COMPARISON_ID);

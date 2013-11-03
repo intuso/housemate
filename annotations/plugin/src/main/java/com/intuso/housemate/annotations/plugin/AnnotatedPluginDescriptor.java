@@ -7,11 +7,7 @@ import com.intuso.housemate.object.broker.real.*;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.plugin.api.BrokerConditionFactory;
-import com.intuso.housemate.plugin.api.BrokerTaskFactory;
-import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
-import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.housemate.plugin.api.*;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -24,6 +20,8 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
     private PluginInformation information;
     private final List<Constructor<? extends RealType<?, ?, ?>>> typeConstructors = Lists.newArrayList();
     private final List<Constructor<? extends Comparator<?>>> comparatorConstructors = Lists.newArrayList();
+    private final List<Constructor<? extends Operator<?, ?>>> operatorConstructors = Lists.newArrayList();
+    private final List<Constructor<? extends Transformer<?, ?>>> transformerConstructors = Lists.newArrayList();
     private final List<RealDeviceFactory<?>> deviceFactories = Lists.newArrayList();
     private final List<BrokerConditionFactory<?>> conditionFactories = Lists.newArrayList();
     private final List<BrokerTaskFactory<?>> taskFactories = Lists.newArrayList();
@@ -53,6 +51,8 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
         initInformation();
         initTypes(resources);
         initComparators(resources);
+        initOperators(resources);
+        initTransformers(resources);
         initDeviceFactories(resources);
         initConditionFactories(resources);
         initTaskFactories(resources);
@@ -88,6 +88,34 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
                     comparatorConstructors.add(comparatorClass.getConstructor());
                 } catch(NoSuchMethodException e) {
                     throw new HousemateException("Failed to find " + comparatorClass.getName() + " constructor with single "
+                            + RealResources.class.getName() + " parameter");
+                }
+            }
+        }
+    }
+
+    private void initOperators(Resources resources) throws HousemateException {
+        Operators operators = getClass().getAnnotation(Operators.class);
+        if(operators != null) {
+            for(Class<? extends Operator<?, ?>> operatorClass : operators.value()) {
+                try {
+                    operatorConstructors.add(operatorClass.getConstructor());
+                } catch(NoSuchMethodException e) {
+                    throw new HousemateException("Failed to find " + operatorClass.getName() + " constructor with single "
+                            + RealResources.class.getName() + " parameter");
+                }
+            }
+        }
+    }
+
+    private void initTransformers(Resources resources) throws HousemateException {
+        Transformers transformers = getClass().getAnnotation(Transformers.class);
+        if(transformers != null) {
+            for(Class<? extends Transformer<?, ?>> transformerClass : transformers.value()) {
+                try {
+                    transformerConstructors.add(transformerClass.getConstructor());
+                } catch(NoSuchMethodException e) {
+                    throw new HousemateException("Failed to find " + transformerClass.getName() + " constructor with single "
                             + RealResources.class.getName() + " parameter");
                 }
             }
@@ -204,6 +232,34 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
                 result.add(constructor.newInstance());
             } catch(Exception e) {
                 resources.getLog().e("Failed to create type comparator");
+                resources.getLog().st(e);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Operator<?, ?>> getOperators(RealResources resources) {
+        List<Operator<?, ?>> result = Lists.newArrayList();
+        for(Constructor<? extends Operator<?, ?>> constructor : operatorConstructors) {
+            try {
+                result.add(constructor.newInstance());
+            } catch(Exception e) {
+                resources.getLog().e("Failed to create type operator");
+                resources.getLog().st(e);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Transformer<?, ?>> getTransformers(RealResources resources) {
+        List<Transformer<?, ?>> result = Lists.newArrayList();
+        for(Constructor<? extends Transformer<?, ?>> constructor : transformerConstructors) {
+            try {
+                result.add(constructor.newInstance());
+            } catch(Exception e) {
+                resources.getLog().e("Failed to create type transformer");
                 resources.getLog().st(e);
             }
         }

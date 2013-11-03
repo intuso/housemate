@@ -6,8 +6,8 @@ public class SimpleProxyFeatureFactory
         extends ProxyFeatureFactory<SimpleProxyFeature, SimpleProxyObject.Device> {
 
     @Override
-    public SimpleProxyFeature.OnOff getOnOff(SimpleProxyObject.Device device) {
-        return new SimpleProxyFeature.OnOff(device);
+    public SimpleProxyFeature.PowerControl getOnOff(SimpleProxyObject.Device device) {
+        return new SimpleProxyFeature.PowerControl(device);
     }
 
     @Override
@@ -16,7 +16,17 @@ public class SimpleProxyFeatureFactory
     }
 
     @Override
+    public SimpleProxyFeature.StatefulPlaybackControl getStatefulPlaybackControl(SimpleProxyObject.Device device) {
+        return new SimpleProxyFeature.StatefulPlaybackControl(device);
+    }
+
+    @Override
     public SimpleProxyFeature.VolumeControl getVolumeControl(SimpleProxyObject.Device device) {
         return new SimpleProxyFeature.VolumeControl(device);
+    }
+
+    @Override
+    public SimpleProxyFeature.StatefulVolumeControl getStatefulVolumeControl(SimpleProxyObject.Device device) {
+        return new SimpleProxyFeature.StatefulVolumeControl(device);
     }
 }

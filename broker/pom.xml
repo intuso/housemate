@@ -54,6 +54,11 @@
             <artifactId>comms-transport-socket-server</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>comms-transport-rest-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Depend on web so it gets built before we add it to the package -->
         <dependency>
@@ -99,12 +104,6 @@
         </dependency>
 
         <!-- Test dependencies -->
-        <dependency>
-            <groupId>com.intuso.housemate</groupId>
-            <artifactId>object-proxy</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>comms-transport-socket-client</artifactId>

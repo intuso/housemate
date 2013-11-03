@@ -7,5 +7,5 @@
     <TextView android:id="@+id/router_status"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:text="@string/main_routerStatus_default"/>
+              android:text="@string/main_welcomeMessage"/>
 </LinearLayout>

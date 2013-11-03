@@ -15,16 +15,20 @@
         android:icon="@drawable/icon"
         android:label="@string/activity_name"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity" >
+        <activity android:name=".activity.HousemateActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity" />
-        <service android:name=".HousemateServiceImpl"
-                 android:icon="@drawable/icon"
-                 android:label="@string/service_name"/>
+        <activity android:name=".activity.SettingsActivity" />
+        <service android:name=".service.HousemateService"
+                 android:exported="true"
+                 android:label="@string/service_name">
+            <intent-filter>
+                <action android:name="com.intuso.housemate.service" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

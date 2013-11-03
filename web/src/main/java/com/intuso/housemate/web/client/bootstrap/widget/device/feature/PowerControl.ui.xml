@@ -1,0 +1,11 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
+             xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
+    <g:FlowPanel>
+        <b:ButtonGroup>
+            <h:command.PerformButton ui:field="onButton" text="On"/>
+            <h:command.PerformButton ui:field="offButton" text="Off"/>
+        </b:ButtonGroup>
+    </g:FlowPanel>
+</ui:UiBinder>

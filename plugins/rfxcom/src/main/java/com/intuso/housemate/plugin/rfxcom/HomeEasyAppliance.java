@@ -4,7 +4,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.impl.device.OnOffDevice;
+import com.intuso.housemate.object.real.impl.device.StatefulPoweredDevice;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.rfxcom.rfxtrx.util.HomeEasy;
 
@@ -15,7 +15,7 @@ import java.util.Arrays;
  * Housemate device that controls a USB relay
  *
  */
-public class HomeEasyAppliance extends OnOffDevice implements ValueListener<RealProperty<?>> {
+public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueListener<RealProperty<?>> {
 
     private HomeEasy homeEasy;
 

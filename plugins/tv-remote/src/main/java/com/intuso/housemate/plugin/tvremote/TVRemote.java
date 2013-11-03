@@ -6,12 +6,12 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.device.feature.RealPlaybackControl;
 import com.intuso.housemate.object.real.device.feature.RealVolumeControl;
-import com.intuso.housemate.object.real.impl.device.OnOffDevice;
+import com.intuso.housemate.object.real.impl.device.PoweredDevice;
 
 import java.io.IOException;
 
 @FactoryInformation(id = "tv-remote", name = "TV Remote", description = "TV Remote")
-public class TVRemote extends OnOffDevice implements RealPlaybackControl, RealVolumeControl {
+public class TVRemote extends PoweredDevice implements RealPlaybackControl, RealVolumeControl {
 
     @Property(id = "remote-name", name = "Remote Name", description = "The name of the remote you want to use", typeId = "string")
     public String remoteName;

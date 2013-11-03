@@ -77,8 +77,8 @@ public abstract class ProxyList<
     }
 
     @Override
-    public final CHILD get(String name) {
-        return getChild(name);
+    public final CHILD get(String id) {
+        return getChild(id);
     }
 
     @Override

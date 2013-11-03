@@ -53,11 +53,45 @@ public abstract class SimpleProxyFeature implements ProxyFeature<SimpleProxyFeat
         return new HousemateObject.TreeLoadInfo(objectName, children);
     }
 
-    protected final static class OnOff
+    public final static class PowerControl
             extends SimpleProxyFeature
-            implements com.intuso.housemate.api.object.device.feature.OnOff<SimpleProxyObject.Command, SimpleProxyObject.Value> {
+            implements com.intuso.housemate.api.object.device.feature.PowerControl<SimpleProxyObject.Command> {
 
-        public OnOff(SimpleProxyObject.Device device) {
+        public PowerControl(SimpleProxyObject.Device device) {
+            super(device);
+        }
+
+        @Override
+        public SimpleProxyObject.Command getOnCommand() {
+            return device.getCommands() != null ? device.getCommands().get(ON_COMMAND) : null;
+        }
+
+        @Override
+        public SimpleProxyObject.Command getOffCommand() {
+            return device.getCommands() != null ? device.getCommands().get(OFF_COMMAND) : null;
+        }
+
+        @Override
+        public Set<String> getCommandIds() {
+            return Sets.newHashSet(ON_COMMAND, OFF_COMMAND);
+        }
+
+        @Override
+        public Set<String> getValueIds() {
+            return Sets.newHashSet();
+        }
+
+        @Override
+        public Set<String> getPropertyIds() {
+            return Sets.newHashSet();
+        }
+    }
+
+    public final static class StatefulPowerControl
+            extends SimpleProxyFeature
+            implements com.intuso.housemate.api.object.device.feature.StatefulPowerControl<SimpleProxyObject.Command, SimpleProxyObject.Value> {
+
+        public StatefulPowerControl(SimpleProxyObject.Device device) {
             super(device);
         }
 
@@ -101,7 +135,7 @@ public abstract class SimpleProxyFeature implements ProxyFeature<SimpleProxyFeat
         }
     }
 
-    protected final static class PlaybackControl
+    public final static class PlaybackControl
             extends SimpleProxyFeature
             implements com.intuso.housemate.api.object.device.feature.PlaybackControl<SimpleProxyObject.Command> {
 
@@ -150,7 +184,70 @@ public abstract class SimpleProxyFeature implements ProxyFeature<SimpleProxyFeat
         }
     }
 
-    protected final static class VolumeControl
+    public final static class StatefulPlaybackControl
+            extends SimpleProxyFeature
+            implements com.intuso.housemate.api.object.device.feature.StatefulPlaybackControl<SimpleProxyObject.Command, SimpleProxyObject.Value> {
+
+        public StatefulPlaybackControl(SimpleProxyObject.Device device) {
+            super(device);
+        }
+
+        @Override
+        public SimpleProxyObject.Value getIsPlayingValue() {
+            return device.getValues() != null ? device.getValues().get(IS_PLAYING_VALUE) : null;
+        }
+
+        @Override
+        public boolean isPlaying() {
+            SimpleProxyObject.Value value = getIsPlayingValue();
+            return value != null
+                    && value.getTypeInstances() != null
+                    && value.getTypeInstances().getFirstValue() != null
+                    && Boolean.parseBoolean(value.getTypeInstances().getFirstValue());
+        }
+
+        @Override
+        public SimpleProxyObject.Command getPlayCommand() {
+            return device.getCommands() != null ? device.getCommands().get(PLAY_COMMAND) : null;
+        }
+
+        @Override
+        public SimpleProxyObject.Command getPauseCommand() {
+            return device.getCommands() != null ? device.getCommands().get(PAUSE_COMMAND) : null;
+        }
+
+        @Override
+        public SimpleProxyObject.Command getStopCommand() {
+            return device.getCommands() != null ? device.getCommands().get(STOP_COMMAND) : null;
+        }
+
+        @Override
+        public SimpleProxyObject.Command getForwardCommand() {
+            return device.getCommands() != null ? device.getCommands().get(REWIND_COMMAND) : null;
+        }
+
+        @Override
+        public SimpleProxyObject.Command getRewindCommand() {
+            return device.getCommands() != null ? device.getCommands().get(FORWARD_COMMAND) : null;
+        }
+
+        @Override
+        public Set<String> getCommandIds() {
+            return Sets.newHashSet(PLAY_COMMAND, PAUSE_COMMAND, STOP_COMMAND, FORWARD_COMMAND, REWIND_COMMAND);
+        }
+
+        @Override
+        public Set<String> getValueIds() {
+            return Sets.newHashSet(IS_PLAYING_VALUE);
+        }
+
+        @Override
+        public Set<String> getPropertyIds() {
+            return Sets.newHashSet();
+        }
+    }
+
+    public final static class VolumeControl
             extends SimpleProxyFeature
             implements com.intuso.housemate.api.object.device.feature.VolumeControl<SimpleProxyObject.Command> {
 
@@ -176,6 +273,45 @@ public abstract class SimpleProxyFeature implements ProxyFeature<SimpleProxyFeat
         @Override
         public Set<String> getValueIds() {
             return Sets.newHashSet();
+        }
+
+        @Override
+        public Set<String> getPropertyIds() {
+            return Sets.newHashSet();
+        }
+    }
+
+    public final static class StatefulVolumeControl
+            extends SimpleProxyFeature
+            implements com.intuso.housemate.api.object.device.feature.StatefulVolumeControl<SimpleProxyObject.Command, SimpleProxyObject.Value> {
+
+        public StatefulVolumeControl(SimpleProxyObject.Device device) {
+            super(device);
+        }
+
+        @Override
+        public SimpleProxyObject.Value getCurrentVolumeValue() {
+            return device.getValues() != null ? device.getValues().get(CURRENT_VOLUME_VALUE) : null;
+        }
+
+        @Override
+        public SimpleProxyObject.Command getVolumeUpCommand() {
+            return device.getCommands() != null ? device.getCommands().get(VOLUME_UP_COMMAND) : null;
+        }
+
+        @Override
+        public SimpleProxyObject.Command getVolumeDownCommand() {
+            return device.getCommands() != null ? device.getCommands().get(VOLUME_DOWN_COMMAND) : null;
+        }
+
+        @Override
+        public Set<String> getCommandIds() {
+            return Sets.newHashSet(VOLUME_UP_COMMAND, VOLUME_DOWN_COMMAND);
+        }
+
+        @Override
+        public Set<String> getValueIds() {
+            return Sets.newHashSet(CURRENT_VOLUME_VALUE);
         }
 
         @Override

@@ -8,7 +8,7 @@
     <string name="action_settings">Settings</string>
 
     <!-- Main view -->
-    <string name="main_routerStatus_default">Not Connected</string>
+    <string name="main_welcomeMessage">Welcome to Housemate!</string>
 
     <!-- Preferences names -->
     <string name="pref_title_server">Server Details</string>

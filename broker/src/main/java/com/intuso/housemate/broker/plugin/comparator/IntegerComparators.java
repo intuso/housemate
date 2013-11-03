@@ -3,7 +3,7 @@ package com.intuso.housemate.broker.plugin.comparator;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.SimpleTypeData;
 import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.ComparisonOperator;
+import com.intuso.housemate.plugin.api.ComparisonType;
 
 /**
  */
@@ -14,8 +14,8 @@ public class IntegerComparators {
     public static class Equals implements Comparator<Integer> {
 
         @Override
-        public ComparisonOperator getOperator() {
-            return ComparisonOperator.Simple.Equals;
+        public ComparisonType getComparisonType() {
+            return ComparisonType.Simple.Equals;
         }
 
         @Override
@@ -32,8 +32,8 @@ public class IntegerComparators {
     public static class GreaterThan implements Comparator<Integer> {
 
         @Override
-        public ComparisonOperator getOperator() {
-            return ComparisonOperator.Simple.GreaterThan;
+        public ComparisonType getComparisonType() {
+            return ComparisonType.Simple.GreaterThan;
         }
 
         @Override
@@ -50,8 +50,8 @@ public class IntegerComparators {
     public static class GreaterThanOrEqual implements Comparator<Integer> {
 
         @Override
-        public ComparisonOperator getOperator() {
-            return ComparisonOperator.Simple.GreaterThanOrEqual;
+        public ComparisonType getComparisonType() {
+            return ComparisonType.Simple.GreaterThanOrEqual;
         }
 
         @Override
@@ -68,8 +68,8 @@ public class IntegerComparators {
     public static class LessThan implements Comparator<Integer> {
 
         @Override
-        public ComparisonOperator getOperator() {
-            return ComparisonOperator.Simple.LessThan;
+        public ComparisonType getComparisonType() {
+            return ComparisonType.Simple.LessThan;
         }
 
         @Override
@@ -86,8 +86,8 @@ public class IntegerComparators {
     public static class LessThanOrEqual implements Comparator<Integer> {
 
         @Override
-        public ComparisonOperator getOperator() {
-            return ComparisonOperator.Simple.LessThanOrEqual;
+        public ComparisonType getComparisonType() {
+            return ComparisonType.Simple.LessThanOrEqual;
         }
 
         @Override
