@@ -9,6 +9,8 @@ import java.util.Map;
  */
 public class TypeInstance implements Message.Payload {
 
+    private static final long serialVersionUID = -1L;
+
     private String value;
     private TypeInstanceMap childValues;
 

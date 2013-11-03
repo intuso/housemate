@@ -103,8 +103,8 @@ public abstract class HousemateObject<
      * Gets this object's listeners
      * @return this object's listeners
      */
-    public List<LISTENER> getObjectListeners() {
-        return objectListeners.getListeners();
+    public Iterable<LISTENER> getObjectListeners() {
+        return objectListeners;
     }
 
     /**
@@ -137,6 +137,10 @@ public abstract class HousemateObject<
      * @throws HousemateException if the message could not be distributed, or an error was thrown when processing it
      */
     public final void distributeMessage(Message<?> message) throws HousemateException {
+        if(path == null) {
+            getLog().e("Cannot receive message when not a registered object");
+            return;
+        }
         if(message.getPath().length == path.length) {
             Listeners<Receiver<?>> listeners = messageListeners.get(message.getType());
             if(listeners == null)
@@ -249,6 +253,8 @@ public abstract class HousemateObject<
 
     public static class TreeLoadInfo implements Message.Payload {
 
+        private static final long serialVersionUID = -1L;
+
         private String id;
         private boolean load;
         private Map<String, TreeLoadInfo> children;
@@ -286,7 +292,9 @@ public abstract class HousemateObject<
         }
     }
 
-    public static class TreeData<DATA extends Data<?>> implements Message.Payload {
+    public static class TreeData<DATA extends HousemateData<?>> implements Message.Payload {
+
+        private static final long serialVersionUID = -1L;
 
         private String id;
         private DATA data;
@@ -322,7 +330,9 @@ public abstract class HousemateObject<
     /**
      * Message payload for a load request of a remote object
      */
-    protected static class LoadRequest implements Message.Payload {
+    public static class LoadRequest implements Message.Payload {
+
+        private static final long serialVersionUID = -1L;
 
         private String loaderName;
         private TreeLoadInfo path;
@@ -358,7 +368,9 @@ public abstract class HousemateObject<
     /**
      * Message payload for a load request of a remote object
      */
-    protected static class LoadResponse<DATA extends Data<?>> implements Message.Payload {
+    public static class LoadResponse<DATA extends HousemateData<?>> implements Message.Payload {
+
+        private static final long serialVersionUID = -1L;
 
         private String loaderName;
         private TreeData<DATA> treeData;

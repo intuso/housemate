@@ -9,6 +9,8 @@ import com.intuso.housemate.api.object.NoChildrenData;
  */
 public final class SubTypeData extends HousemateData<NoChildrenData> {
 
+    private static final long serialVersionUID = -1L;
+
     private String type;
 
     private SubTypeData() {}

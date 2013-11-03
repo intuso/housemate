@@ -14,6 +14,8 @@ import java.util.Collection;
  */
 public class TypeInstances extends ArrayList<TypeInstance> implements Message.Payload {
 
+    private static final long serialVersionUID = -1L;
+
     public TypeInstances() {}
 
     public TypeInstances(TypeInstance ... instances) {

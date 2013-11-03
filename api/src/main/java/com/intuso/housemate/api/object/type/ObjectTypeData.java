@@ -7,7 +7,9 @@ import com.intuso.housemate.api.object.NoChildrenData;
  *
  * Data object for an object type
  */
-public class ObjectTypeData extends TypeData<NoChildrenData> {
+public final class ObjectTypeData extends TypeData<NoChildrenData> {
+
+    private static final long serialVersionUID = -1L;
 
     private ObjectTypeData() {}
 

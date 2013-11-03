@@ -8,6 +8,8 @@ import com.intuso.housemate.api.object.HousemateData;
  */
 public final class UserData extends HousemateData<HousemateData<?>> {
 
+    private static final long serialVersionUID = -1L;
+
     private UserData() {}
 
     public UserData(String id, String name, String description) {

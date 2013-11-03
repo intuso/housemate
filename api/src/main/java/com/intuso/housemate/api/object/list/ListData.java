@@ -10,6 +10,8 @@ import java.util.Arrays;
  */
 public final class ListData<DATA extends HousemateData<?>> extends HousemateData<DATA> {
 
+    private static final long serialVersionUID = -1L;
+
     private ListData() {}
 
     public ListData(String id, String name, String description, DATA... childData) {

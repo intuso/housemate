@@ -13,7 +13,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
 /**
  * @param <ROOT> the type of the root
  */
-public interface Root<ROOT extends Root>
+public interface Root<ROOT extends Root<?>>
         extends BaseHousemateObject<RootListener<? super ROOT>>, Receiver<Message.Payload>, Sender {
 
     public final static String STATUS_TYPE = "status";

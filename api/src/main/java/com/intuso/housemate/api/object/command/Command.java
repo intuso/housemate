@@ -33,6 +33,8 @@ public interface Command<
      */
     public static class PerformMessageValue implements Message.Payload {
 
+        private static final long serialVersionUID = -1L;
+
         private String opId;
         private TypeInstanceMap values;
 
@@ -68,6 +70,8 @@ public interface Command<
      * Message payload for command progress
      */
     public static class PerformingMessageValue implements Message.Payload {
+
+        private static final long serialVersionUID = -1L;
 
         private String opId;
         private boolean performing;
@@ -109,6 +113,8 @@ public interface Command<
      * Message payload for failed commands
      */
     public static class FailedMessageValue implements Message.Payload {
+
+        private static final long serialVersionUID = -1L;
 
         private String opId;
         private String cause;

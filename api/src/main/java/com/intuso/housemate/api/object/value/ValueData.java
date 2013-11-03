@@ -8,7 +8,9 @@ import com.intuso.housemate.api.object.type.TypeInstances;
  *
  * Data object for a value
  */
-public class ValueData extends ValueBaseData<NoChildrenData> {
+public final class ValueData extends ValueBaseData<NoChildrenData> {
+
+    private static final long serialVersionUID = -1L;
 
     protected ValueData() {}
 

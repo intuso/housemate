@@ -9,6 +9,8 @@ import com.intuso.housemate.api.object.list.ListData;
  */
 public final class CommandData extends HousemateData<ListData<ParameterData>> {
 
+    private static final long serialVersionUID = -1L;
+
     private CommandData() {}
 
     public CommandData(String id, String name, String description) {

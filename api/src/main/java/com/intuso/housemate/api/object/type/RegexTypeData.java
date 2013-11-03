@@ -9,6 +9,8 @@ import com.intuso.housemate.api.object.NoChildrenData;
  */
 public final class RegexTypeData extends TypeData<NoChildrenData> {
 
+    private static final long serialVersionUID = -1L;
+
     private String regexPattern;
 
     private RegexTypeData() {}

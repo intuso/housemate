@@ -9,10 +9,13 @@ import com.intuso.housemate.api.object.NoChildrenData;
  */
 public final class SimpleTypeData extends TypeData<NoChildrenData> {
 
+    private static final long serialVersionUID = -1L;
+
     /**
      * Enumeration of all simple types
      */
     public enum Type {
+
         String("string", "String", "Some text"),
         Integer("integer", "Integer", "A whole number"),
         Double("double", "Double", "A number"),

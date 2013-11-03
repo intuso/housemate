@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.ObjectListener;
  *
  * Listener interface for root objects
  */
-public interface RootListener<R extends Root> extends ObjectListener {
+public interface RootListener<R extends Root<?>> extends ObjectListener {
 
     /**
      * Notifies that the connection status of this root object has changed

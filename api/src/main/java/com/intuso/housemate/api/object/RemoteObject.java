@@ -1,4 +1,4 @@
-package com.intuso.housemate.api;
+package com.intuso.housemate.api.object;
 
 import com.intuso.housemate.api.object.value.Value;
 

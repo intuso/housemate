@@ -9,6 +9,9 @@ import java.util.Map;
  * Collection of type instances, mapped by type id
  */
 public class TypeInstanceMap extends HashMap<String, TypeInstances> implements Message.Payload {
+
+    private static final long serialVersionUID = -1L;
+
     @Override
     public boolean equals(Object o) {
         if(o == null || !(o instanceof TypeInstanceMap))

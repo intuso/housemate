@@ -8,7 +8,9 @@ import com.intuso.housemate.api.object.subtype.SubTypeData;
  *
  * Data object for an option
  */
-public class OptionData extends HousemateData<ListData<SubTypeData>> {
+public final class OptionData extends HousemateData<ListData<SubTypeData>> {
+
+    private static final long serialVersionUID = -1L;
 
     protected OptionData() {}
 

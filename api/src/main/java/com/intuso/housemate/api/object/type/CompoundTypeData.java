@@ -8,7 +8,9 @@ import com.intuso.housemate.api.object.subtype.SubTypeData;
  *
  * Data object for a compound type
  */
-public class CompoundTypeData extends TypeData<ListData<SubTypeData>> {
+public final class CompoundTypeData extends TypeData<ListData<SubTypeData>> {
+
+    private static final long serialVersionUID = -1L;
 
     private CompoundTypeData() {}
 

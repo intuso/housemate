@@ -11,6 +11,8 @@ import com.intuso.housemate.api.object.value.ValueBaseData;
  */
 public final class PropertyData extends ValueBaseData<CommandData> {
 
+    private static final long serialVersionUID = -1L;
+
     private PropertyData() {}
 
     public PropertyData(String id, String name, String description, String type, TypeInstances values) {
