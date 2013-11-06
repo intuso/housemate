@@ -13,5 +13,10 @@ import java.io.Serializable;
  * @see com.intuso.housemate.api.object.root.Root#login(AuthenticationMethod)
 */
 public interface AuthenticationMethod extends Serializable {
+
+    /**
+     * Is this authentication method allowing clients to use it
+     * @return true if this authentication method allows clients to use it
+     */
     public boolean isClientsAuthenticated();
 }

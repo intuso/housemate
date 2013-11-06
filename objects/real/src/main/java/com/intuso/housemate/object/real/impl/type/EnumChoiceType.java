@@ -9,7 +9,6 @@ import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealSubType;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
@@ -112,7 +111,7 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
                                                                               final EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
         return Lists.transform(Arrays.asList(values), new Function<E, RealOption>() {
             @Override
-            public RealOption apply(@Nullable E value) {
+            public RealOption apply(E value) {
                 if(optionSubTypes.containsKey(value))
                     return new RealOption(resources, value.name(), value.name(), value.name(), optionSubTypes.get(value));
                 else

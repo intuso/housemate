@@ -1,5 +1,8 @@
 package com.intuso.housemate.api.resources;
 
+/**
+ * Interface for matching regexes
+ */
 public interface RegexMatcher {
 
     /**

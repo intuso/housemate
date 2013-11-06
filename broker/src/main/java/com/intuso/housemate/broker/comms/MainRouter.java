@@ -15,6 +15,7 @@ import com.intuso.housemate.object.broker.RemoteClient;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
+ * The main router for the whole app. All comms routers attach to this
  */
 public final class MainRouter extends Router {
 

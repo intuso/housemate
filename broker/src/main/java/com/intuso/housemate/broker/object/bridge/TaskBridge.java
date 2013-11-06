@@ -2,16 +2,15 @@ package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
 import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.task.Task;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.task.TaskListener;
-import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -88,7 +87,7 @@ public class TaskBridge
         }
 
         @Override
-        public TaskBridge apply(@Nullable Task<?, ?, ?, ?, ?> command) {
+        public TaskBridge apply(Task<?, ?, ?, ?, ?> command) {
             return new TaskBridge(resources, command);
         }
     }

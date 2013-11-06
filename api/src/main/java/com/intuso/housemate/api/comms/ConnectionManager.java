@@ -124,13 +124,6 @@ public class ConnectionManager {
      */
     public void routerStatusChanged(ConnectionStatus routerStatus) {
         switch(routerStatus) {
-            case Disconnected:
-            case Connecting:
-            case Unauthenticated:
-            case Authenticating:
-            case AuthenticationFailed:
-                status = ConnectionStatus.Disconnected;
-                break;
             case Authenticated:
                 if(connectionId != null) {
                     sender.sendMessage(new Message<AuthenticationRequest>(path, connectMessageType,
@@ -139,6 +132,9 @@ public class ConnectionManager {
                     return;
                 } else
                     status = ConnectionStatus.Unauthenticated;
+                break;
+            default:
+                status = ConnectionStatus.Disconnected;
                 break;
         }
         for(ConnectionStatusChangeListener listener : Lists.newArrayList(listeners))

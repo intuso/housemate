@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class SocketClient extends Router {
 
-    public final static String BROKER_PORT = "broker.port";
-    public final static String BROKER_HOST = "broker.host";
+    public final static String BROKER_PORT = "socket.server.port";
+    public final static String BROKER_HOST = "socket.server.host";
 
     private final Resources resources;
 
@@ -102,6 +102,7 @@ public class SocketClient extends Router {
     private void shutdownComms(boolean reconnecting) {
         synchronized (connectThreadLock) {
             getLog().d("Disconnecting from the broker");
+            setRouterStatus(Status.Disconnected);
             if(socket != null) {
                 try {
                     socket.close();
@@ -129,7 +130,6 @@ public class SocketClient extends Router {
             }
 
             getLog().d("Disconnected");
-            setRouterStatus(reconnecting ? Status.Connecting : Status.Disconnected);
         }
     }
 
@@ -141,6 +141,7 @@ public class SocketClient extends Router {
     private class ConnectThread extends Thread {
         @Override
         public void run() {
+            setRouterStatus(Status.Connecting);
             String host = resources.getProperties().get(BROKER_HOST);
             int port = Integer.parseInt(resources.getProperties().get(BROKER_PORT));
 
@@ -158,6 +159,7 @@ public class SocketClient extends Router {
                     socket.setSoTimeout(60000);
 
                     getLog().d("Connected to broker, creating reader/writer threads");
+                    setRouterStatus(Status.Connected);
                     messageSender = new MessageSender();
                     streamReader = new StreamReader();
 

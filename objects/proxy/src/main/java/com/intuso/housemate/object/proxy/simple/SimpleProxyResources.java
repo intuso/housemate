@@ -9,6 +9,10 @@ import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 
+/**
+ * Resources class required by simple proxy objects
+ * @param <OBJECT_FACTORY> the object factory type
+ */
 public class SimpleProxyResources<
             OBJECT_FACTORY extends HousemateObjectFactory<? extends ProxyResources<?, ?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>>
         extends ProxyResources<OBJECT_FACTORY, SimpleProxyFeatureFactory> {

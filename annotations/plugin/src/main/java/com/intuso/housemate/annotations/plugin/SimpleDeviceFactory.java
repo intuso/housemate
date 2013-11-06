@@ -8,6 +8,7 @@ import com.intuso.housemate.plugin.api.RealDeviceFactory;
 import java.lang.reflect.Constructor;
 
 /**
+ * Factory for simple devices that have no special constructor
  */
 public class SimpleDeviceFactory implements RealDeviceFactory<RealDevice> {
 

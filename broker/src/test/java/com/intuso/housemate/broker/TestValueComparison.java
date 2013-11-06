@@ -36,7 +36,7 @@ import static junit.framework.Assert.assertNull;
  */
 public class TestValueComparison {
 
-    private final static BrokerServerEnvironment SERVER_ENVIRONMENT = TestUtils.startBroker(65432);
+    private final static BrokerServerEnvironment SERVER_ENVIRONMENT = TestUtils.startBroker(65432, 65433);
 
     private final static Map<ComparisonType, Map<String, Comparator<?>>> COMPARISONS_BY_TYPE = Maps.newHashMap();
     static {

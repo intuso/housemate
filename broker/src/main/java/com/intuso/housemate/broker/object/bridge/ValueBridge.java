@@ -5,8 +5,6 @@ import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueData;
 
-import javax.annotation.Nullable;
-
 /**
 * Created with IntelliJ IDEA.
 * User: ravnroot
@@ -29,7 +27,7 @@ public class ValueBridge extends ValueBridgeBase<ValueData, NoChildrenData,
         }
 
         @Override
-        public ValueBridge apply(@Nullable Value<?, ?> value) {
+        public ValueBridge apply(Value<?, ?> value) {
             return new ValueBridge(resources, value);
         }
     }

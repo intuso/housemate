@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
+ * Command implementation for annotated commands
  */
 public class CommandImpl extends RealCommand {
 

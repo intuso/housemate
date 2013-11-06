@@ -11,7 +11,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
-import com.intuso.utilities.object.Data;
 
 import java.util.Arrays;
 import java.util.List;
@@ -251,6 +250,9 @@ public abstract class HousemateObject<
         return getChild(next, path, depth + 1);
     }
 
+    /**
+     * Container class for data about what objects a client wants to load
+     */
     public static class TreeLoadInfo implements Message.Payload {
 
         private static final long serialVersionUID = -1L;
@@ -275,23 +277,43 @@ public abstract class HousemateObject<
             this.children = children;
         }
 
+        /**
+         * Get the id of the object to load
+         * @return the id of the object to load
+         */
         public String getId() {
             return id;
         }
 
+        /**
+         * Is there data to load
+         * @return true if there is data to load
+         */
         public boolean isLoad() {
             return load;
         }
 
+        /**
+         * Set whether there is data to load
+         * @param load true if there is data to load
+         */
         public void setLoad(boolean load) {
             this.load = load;
         }
 
+        /**
+         * Get the load info for child objects
+         * @return the load info for child objects
+         */
         public Map<String, TreeLoadInfo> getChildren() {
             return children;
         }
     }
 
+    /**
+     * Container class for loaded objects
+     * @param <DATA>
+     */
     public static class TreeData<DATA extends HousemateData<?>> implements Message.Payload {
 
         private static final long serialVersionUID = -1L;
@@ -299,30 +321,46 @@ public abstract class HousemateObject<
         private String id;
         private DATA data;
         private Map<String, TreeData<?>> children;
-        private Map<String, ChildData> childData;
+        private Map<String, ChildOverview> childData;
 
         private TreeData() {}
 
-        public TreeData(String id, DATA data, Map<String, TreeData<?>> children, Map<String, ChildData> childData) {
+        public TreeData(String id, DATA data, Map<String, TreeData<?>> children, Map<String, ChildOverview> childData) {
             this.id = id;
             this.data = data;
             this.children = children;
             this.childData = childData;
         }
 
+        /**
+         * Get the id of the loaded object
+         * @return the id of the loaded object
+         */
         public String getId() {
             return id;
         }
 
+        /**
+         * Get the object data
+         * @return the object data
+         */
         public DATA getData() {
             return data;
         }
 
+        /**
+         * Get the children object data
+         * @returnthe children object data
+         */
         public Map<String, TreeData<?>> getChildren() {
             return children;
         }
 
-        public Map<String, ChildData> getChildData() {
+        /**
+         * Get the overviews of other unloaded children
+         * @return the overviews of other unloaded children
+         */
+        public Map<String, ChildOverview> getChildData() {
             return childData;
         }
     }
@@ -347,6 +385,10 @@ public abstract class HousemateObject<
             this.path = path;
         }
 
+        /**
+         * Get the loader name
+         * @return the loader name
+         */
         public String getLoaderName() {
             return loaderName;
         }
@@ -366,7 +408,7 @@ public abstract class HousemateObject<
     }
 
     /**
-     * Message payload for a load request of a remote object
+     * Message payload for a load response of a remote object
      */
     public static class LoadResponse<DATA extends HousemateData<?>> implements Message.Payload {
 
@@ -388,14 +430,26 @@ public abstract class HousemateObject<
             this.error = error;
         }
 
+        /**
+         * Get the loader name
+         * @return the loader name
+         */
         public String getLoaderName() {
             return loaderName;
         }
 
+        /**
+         * Get the loaded object's data
+         * @return the loaded object's data
+         */
         public TreeData<DATA> getTreeData() {
             return treeData;
         }
 
+        /**
+         * Get the error that occurred
+         * @return the error that occurred
+         */
         public String getError() {
             return error;
         }

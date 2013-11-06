@@ -6,7 +6,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.object.ChildData;
+import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.object.broker.ClientPayload;
@@ -94,12 +94,12 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
 
     @Override
     public void childObjectAdded(String childId, CHILD child) {
-        broadcastMessage(CHILD_ADDED, new ChildData(child.getId(), child.getName(), child.getDescription()));
+        broadcastMessage(CHILD_ADDED, new ChildOverview(child.getId(), child.getName(), child.getDescription()));
     }
 
     @Override
     public void childObjectRemoved(String childId, CHILD child) {
-        broadcastMessage(CHILD_REMOVED, new ChildData(child.getId(), child.getName(), child.getDescription()));
+        broadcastMessage(CHILD_REMOVED, new ChildOverview(child.getId(), child.getName(), child.getDescription()));
     }
 
     @Override
@@ -116,7 +116,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
         clientListeners.put(client, client.addListener(this));
         loadedByClients.add(client);
         Map<String, TreeData<?>> children = Maps.newHashMap();
-        Map<String, ChildData> childData = Maps.newHashMap();
+        Map<String, ChildOverview> childData = Maps.newHashMap();
         if(loadInfo.getId().equals(HousemateObject.EVERYTHING_RECURSIVE)) {
             for(CHILD child : getChildren())
                 children.put(child.getId(), child.getDataForClient(client, loadInfo));
@@ -131,7 +131,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
             }
             for(CHILD child : getChildren())
                 if(!children.containsKey(child.getId()))
-                    childData.put(child.getId(), new ChildData(child.getId(), child.getName(), child.getDescription()));
+                    childData.put(child.getId(), new ChildOverview(child.getId(), child.getName(), child.getDescription()));
         }
         return new TreeData<HousemateData<?>>(getId(), getData().clone(), children, childData);
     }

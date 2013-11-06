@@ -8,6 +8,7 @@ import com.intuso.housemate.object.real.RealType;
 import java.lang.reflect.Field;
 
 /**
+ * Property implementation for annotated properties
  */
 public class PropertyImpl extends RealProperty<Object> {
 

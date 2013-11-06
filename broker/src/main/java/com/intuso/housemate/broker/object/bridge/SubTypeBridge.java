@@ -6,8 +6,6 @@ import com.intuso.housemate.api.object.subtype.SubType;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.subtype.SubTypeListener;
 
-import javax.annotation.Nullable;
-
 /**
  */
 public class SubTypeBridge
@@ -35,7 +33,7 @@ public class SubTypeBridge
         }
 
         @Override
-        public SubTypeBridge apply(@Nullable SubType<?> parameter) {
+        public SubTypeBridge apply(SubType<?> parameter) {
             return new SubTypeBridge(resources, parameter);
         }
     }

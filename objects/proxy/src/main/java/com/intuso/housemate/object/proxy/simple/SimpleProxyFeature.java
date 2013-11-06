@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Base and container class for simple proxy features
+ */
 public abstract class SimpleProxyFeature implements ProxyFeature<SimpleProxyFeature, SimpleProxyObject.Device> {
 
     protected final SimpleProxyObject.Device device;

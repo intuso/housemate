@@ -37,7 +37,7 @@ public class DeviceView extends FlowPanel
         List<String> favourites = Lists.newArrayList();
         favouritesList = new DeviceList("favourites", favourites, true);
         favouritesList.addSelectedIdsChangedHandler(selectedIdsChangedHandler);
-        allList = new DeviceList("all", favourites, false);
+        allList = new DeviceList(favourites.size() > 0 ? "all" : "", favourites, false);
         allList.addSelectedIdsChangedHandler(selectedIdsChangedHandler);
 
         add(favouritesList);

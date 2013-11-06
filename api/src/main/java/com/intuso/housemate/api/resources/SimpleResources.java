@@ -4,6 +4,9 @@ import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 
+/**
+ * Simple resources class
+ */
 public class SimpleResources implements Resources {
 
     private final Log log;

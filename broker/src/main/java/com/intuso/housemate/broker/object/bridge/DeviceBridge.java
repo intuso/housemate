@@ -13,7 +13,6 @@ import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -112,7 +111,7 @@ public class DeviceBridge
         }
 
         @Override
-        public DeviceBridge apply(@Nullable Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
+        public DeviceBridge apply(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
             return new DeviceBridge(resources, device);
         }
     }

@@ -10,6 +10,7 @@ import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 
 /**
+ * Util class for running objects local to the broker
  */
 public class LocalClient implements PluginListener {
 
@@ -26,10 +27,18 @@ public class LocalClient implements PluginListener {
         resources.addPluginListener(LocalClient.this, true);
     }
 
+    /**
+     * Get the command for adding devices
+     * @return the command for adding devices
+     */
     public RealCommand getAddDeviceCommand() {
         return root.getAddDeviceCommand();
     }
 
+    /**
+     * Get the root object
+     * @return the root object
+     */
     public RealRootObject getRoot() {
         return root;
     }

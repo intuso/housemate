@@ -56,12 +56,16 @@ public final class SimpleTypeData extends TypeData<NoChildrenData> {
         this.type = type;
     }
 
+    /**
+     * Get the type of the type
+     * @return the type of the type
+     */
+    public final Type getType() {
+        return type;
+    }
+
     @Override
     public HousemateData clone() {
         return new SimpleTypeData(type);
-    }
-
-    public final Type getType() {
-        return type;
     }
 }

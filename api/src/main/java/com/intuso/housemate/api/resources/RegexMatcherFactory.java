@@ -1,5 +1,8 @@
 package com.intuso.housemate.api.resources;
 
+/**
+ * Factory for {@link RegexMatcher} instances
+ */
 public interface RegexMatcherFactory {
 
     /**

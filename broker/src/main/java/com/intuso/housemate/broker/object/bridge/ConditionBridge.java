@@ -11,7 +11,6 @@ import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -96,7 +95,7 @@ public class ConditionBridge
         }
 
         @Override
-        public ConditionBridge apply(@Nullable Condition<?, ?, ?, ?, ?, ?, ?> condition) {
+        public ConditionBridge apply(Condition<?, ?, ?, ?, ?, ?, ?> condition) {
             return new ConditionBridge(resources, condition);
         }
     }

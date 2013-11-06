@@ -12,10 +12,14 @@ body {
     margin-bottom: 5px !important;
 }
 
+.object-list {
+    margin-top: 30px;
+}
+
 .object-list.accordion > .accordion-group {
     border: 1px solid #800090 !important;
     border-radius: 8px !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 15px !important;
 }
 
 .object-list.accordion > .accordion-inner {

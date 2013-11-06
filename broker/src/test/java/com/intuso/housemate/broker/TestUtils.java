@@ -4,17 +4,20 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.api.resources.RegexMatcherFactory;
+import com.intuso.housemate.comms.transport.rest.RestServer;
+import com.intuso.housemate.comms.transport.socket.server.SocketServer;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyFeatureFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
 
 /**
  */
 public class TestUtils {
 
-    public static BrokerServerEnvironment startBroker(int port) {
+    public static BrokerServerEnvironment startBroker(int socketPort, int restPort) {
         try {
-            return App.start(new String[]{"-broker.port", Integer.toString(port), "-webapp.run", "false"});
+            return App.start(new String[]{"-" + SocketServer.PORT, Integer.toString(socketPort),
+                    "-" + RestServer.PORT, Integer.toString(restPort),
+                    "-webapp.run", "false"});
         } catch(HousemateException e) {
             throw new HousemateRuntimeException("Failed to start broker", e);
         }

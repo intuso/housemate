@@ -15,8 +15,6 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 
-import javax.annotation.Nullable;
-
 /**
  */
 public class CommandBridge
@@ -119,7 +117,7 @@ public class CommandBridge
         }
 
         @Override
-        public CommandBridge apply(@Nullable Command<?, ?> command) {
+        public CommandBridge apply(Command<?, ?> command) {
             return new CommandBridge(resources, command);
         }
     }

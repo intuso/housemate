@@ -9,6 +9,7 @@ import com.intuso.housemate.plugin.api.BrokerTaskFactory;
 import java.lang.reflect.Constructor;
 
 /**
+ * Factory for simple tasks that have no special constructor
  */
 public class SimpleTaskFactory implements BrokerTaskFactory<BrokerRealTask> {
 

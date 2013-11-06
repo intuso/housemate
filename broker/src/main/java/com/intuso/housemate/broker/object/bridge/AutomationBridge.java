@@ -9,8 +9,6 @@ import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.task.Task;
 import com.intuso.housemate.api.object.task.TaskData;
 
-import javax.annotation.Nullable;
-
 /**
  */
 public class AutomationBridge
@@ -81,7 +79,7 @@ public class AutomationBridge
         }
 
         @Override
-        public AutomationBridge apply(@Nullable Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
+        public AutomationBridge apply(Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
             return new AutomationBridge(resources, automation);
         }
     }

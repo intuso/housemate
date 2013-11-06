@@ -2,12 +2,20 @@ package com.intuso.housemate.object.proxy.simple;
 
 import com.intuso.housemate.object.proxy.device.feature.ProxyFeatureFactory;
 
+/**
+ * Feature factory for simple proxy features
+ */
 public class SimpleProxyFeatureFactory
         extends ProxyFeatureFactory<SimpleProxyFeature, SimpleProxyObject.Device> {
 
     @Override
-    public SimpleProxyFeature.PowerControl getOnOff(SimpleProxyObject.Device device) {
+    public SimpleProxyFeature.PowerControl getPowerControl(SimpleProxyObject.Device device) {
         return new SimpleProxyFeature.PowerControl(device);
+    }
+
+    @Override
+    public SimpleProxyFeature.StatefulPowerControl getStatefulPowerControl(SimpleProxyObject.Device device) {
+        return new SimpleProxyFeature.StatefulPowerControl(device);
     }
 
     @Override

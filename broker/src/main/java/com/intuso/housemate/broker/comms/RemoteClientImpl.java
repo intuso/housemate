@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Local representation of a remote client. Internal objects should use this to send messages to the client
  */
 public class RemoteClientImpl implements RemoteClient {
 
@@ -40,6 +41,10 @@ public class RemoteClientImpl implements RemoteClient {
         this.parent = parent;
     }
 
+    /**
+     * Get the id of the connection
+     * @return the id of the connection
+     */
     public String getConnectionId() {
         return connectionId;
     }

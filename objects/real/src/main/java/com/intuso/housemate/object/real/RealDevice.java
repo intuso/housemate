@@ -12,6 +12,9 @@ import com.intuso.housemate.api.object.value.ValueData;
 
 import java.util.List;
 
+/**
+ * Base class for all devices
+ */
 public class RealDevice
         extends RealPrimaryObject<
         DeviceData,

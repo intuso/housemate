@@ -9,6 +9,7 @@ import com.intuso.housemate.plugin.api.BrokerConditionFactory;
 import java.lang.reflect.Constructor;
 
 /**
+ * Factory for simple conditions that have no special constructor
  */
 public class SimpleConditionFactory implements BrokerConditionFactory<BrokerRealCondition> {
 

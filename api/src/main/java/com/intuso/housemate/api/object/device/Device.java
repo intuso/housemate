@@ -45,8 +45,27 @@ public interface Device<
     public final static String VALUES_ID = "values";
     public final static String PROPERTIES_ID = "properties";
 
+    /**
+     * Get the ids of all the device's features
+     * @return the ids of all the device's features
+     */
     public java.util.List<String> getFeatureIds();
+
+    /**
+     * Get the ids of all the commands that do not belong to features
+     * @return the ids of all the commands that do not belong to features
+     */
     public java.util.List<String> getCustomCommandIds();
+
+    /**
+     * Get the ids of all the values that do not belong to features
+     * @return the ids of all the values that do not belong to features
+     */
     public java.util.List<String> getCustomValueIds();
+
+    /**
+     * Get the ids of all the properties that do not belong to features
+     * @return the ids of all the properties that do not belong to features
+     */
     public java.util.List<String> getCustomPropertyIds();
 }

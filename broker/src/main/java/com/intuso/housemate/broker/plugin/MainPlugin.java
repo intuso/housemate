@@ -8,7 +8,7 @@ import com.intuso.housemate.broker.plugin.comparator.DoubleComparators;
 import com.intuso.housemate.broker.plugin.comparator.IntegerComparators;
 import com.intuso.housemate.broker.plugin.comparator.StringComparators;
 import com.intuso.housemate.broker.plugin.condition.*;
-import com.intuso.housemate.broker.plugin.device.PoweredByCommandDevice;
+import com.intuso.housemate.broker.plugin.device.PowerByCommandDevice;
 import com.intuso.housemate.broker.plugin.task.Delay;
 import com.intuso.housemate.broker.plugin.task.PerformCommandTaskFactory;
 import com.intuso.housemate.broker.plugin.task.RandomDelay;
@@ -36,7 +36,7 @@ import java.util.List;
         IntegerComparators.LessThan.class, IntegerComparators.LessThanOrEqual.class, DoubleComparators.Equals.class,
         DoubleComparators.GreaterThan.class, DoubleComparators.GreaterThanOrEqual.class,
         DoubleComparators.LessThan.class, DoubleComparators.LessThanOrEqual.class})
-@Devices({PoweredByCommandDevice.class})
+@Devices({PowerByCommandDevice.class})
 @Conditions({And.class, Or.class, Not.class, TimeOfTheDay.class, DayOfTheWeek.class})
 @Tasks({Delay.class, RandomDelay.class})
 public class MainPlugin extends AnnotatedPluginDescriptor {

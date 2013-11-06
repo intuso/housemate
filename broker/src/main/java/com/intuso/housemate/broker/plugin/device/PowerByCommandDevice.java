@@ -12,8 +12,8 @@ import java.io.IOException;
 /**
  * Device that allows On/Off functionality by performing a system command.
  */
-@FactoryInformation(id = "on-off-command", name = "On Off By Command", description = "Device which runs a configured command to turn things on and off")
-public final class PoweredByCommandDevice extends StatefulPoweredDevice {
+@FactoryInformation(id = "power-by-command", name = "Power By Command", description = "Device which runs a configured command to turn things on and off")
+public final class PowerByCommandDevice extends StatefulPoweredDevice {
 
     private final RealProperty<String> onCommandProperty = StringType.createProperty(getResources(), "on-command", "On Command", "The command to turn the device on", null);
 
@@ -24,7 +24,7 @@ public final class PoweredByCommandDevice extends StatefulPoweredDevice {
 	 * @param id the name of the device
 	 * @throws com.intuso.housemate.api.HousemateException if an error occurs creating the device
 	 */
-	public PoweredByCommandDevice(RealResources resources, String id, String name, String description) {
+	public PowerByCommandDevice(RealResources resources, String id, String name, String description) {
 		super(resources, id, name, description);
         getCustomPropertyIds().add(onCommandProperty.getId());
         getProperties().add(onCommandProperty);

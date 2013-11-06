@@ -33,18 +33,34 @@ public final class DeviceData extends HousemateData<HousemateData<?>> {
         this.customPropertyIds = customPropertyIds;
     }
 
+    /**
+     * Get the ids of all the device's features
+     * @return the ids of all the device's features
+     */
     public List<String> getFeatureIds() {
         return featureIds;
     }
 
+    /**
+     * Get the ids of all the commands that do not belong to features
+     * @return the ids of all the commands that do not belong to features
+     */
     public List<String> getCustomCommandIds() {
         return customCommandIds;
     }
 
+    /**
+     * Get the ids of all the values that do not belong to features
+     * @return the ids of all the values that do not belong to features
+     */
     public List<String> getCustomValueIds() {
         return customValueIds;
     }
 
+    /**
+     * Get the ids of all the properties that do not belong to features
+     * @return the ids of all the properties that do not belong to features
+     */
     public List<String> getCustomPropertyIds() {
         return customPropertyIds;
     }

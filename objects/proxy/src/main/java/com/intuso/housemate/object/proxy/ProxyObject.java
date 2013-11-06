@@ -7,7 +7,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.object.ChildData;
+import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
@@ -47,7 +47,7 @@ public abstract class ProxyObject<
     private ProxyRoot<?, ?, ?, ?, ?, ?> proxyRoot;
     private final CHILD_RESOURCES childResources;
     private final Map<String, LoadManager> pendingLoads = Maps.newHashMap();
-    private final Map<String, ChildData> childData = Maps.newHashMap();
+    private final Map<String, ChildOverview> childData = Maps.newHashMap();
     private final Listeners<AvailableChildrenListener<? super OBJECT>> availableChildrenListeners = new Listeners<AvailableChildrenListener<? super OBJECT>>();
     private final Map<String, Listeners<ChildLoadedListener<? super OBJECT, ? super CHILD>>> childLoadedListeners = Maps.newHashMap();
 
@@ -65,10 +65,10 @@ public abstract class ProxyObject<
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = Lists.newArrayList();
         result.add(addChildListener(this));
-        result.add(addMessageListener(CHILD_ADDED, new Receiver<ChildData>() {
+        result.add(addMessageListener(CHILD_ADDED, new Receiver<ChildOverview>() {
             @Override
-            public void messageReceived(Message<ChildData> message) throws HousemateException {
-                ChildData cd = message.getPayload();
+            public void messageReceived(Message<ChildOverview> message) throws HousemateException {
+                ChildOverview cd = message.getPayload();
                 if(childData.get(cd.getId()) == null) {
                     childData.put(cd.getId(), cd);
                     for(AvailableChildrenListener<? super OBJECT> listener : availableChildrenListeners)
@@ -76,10 +76,10 @@ public abstract class ProxyObject<
                 }
             }
         }));
-        result.add(addMessageListener(CHILD_REMOVED, new Receiver<ChildData>() {
+        result.add(addMessageListener(CHILD_REMOVED, new Receiver<ChildOverview>() {
             @Override
-            public void messageReceived(Message<ChildData> message) throws HousemateException {
-                ChildData cd = message.getPayload();
+            public void messageReceived(Message<ChildOverview> message) throws HousemateException {
+                ChildOverview cd = message.getPayload();
                 childData.remove(cd.getId());
                 for(AvailableChildrenListener<? super OBJECT> listener : availableChildrenListeners)
                     listener.childRemoved(getThis(), cd);
@@ -188,7 +188,7 @@ public abstract class ProxyObject<
     public ListenerRegistration addAvailableChildrenListener(AvailableChildrenListener<? super OBJECT> listener, boolean callForExisting) {
         ListenerRegistration result = availableChildrenListeners.addListener(listener);
         if(callForExisting)
-            for(ChildData cd : childData.values())
+            for(ChildOverview cd : childData.values())
                 listener.childAdded(getThis(), cd);
         return result;
     }

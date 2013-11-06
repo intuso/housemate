@@ -280,7 +280,7 @@ public class BrokerServerEnvironment {
             BufferedWriter out = new BufferedWriter(new java.io.FileWriter(file));
             out.write(LOG_LEVEL + "=DEBUG\n");
             out.write(BROKER_NAME + "=My Broker\n");
-            out.write(SocketServer.BROKER_PORT + "=46873\n");
+            out.write(SocketServer.PORT + "=46873\n");
             out.write(RUN_WEBAPP + "=true\n");
             out.write(USERNAME + "=admin\n");
             out.write(PASSWORD + "=admin\n");

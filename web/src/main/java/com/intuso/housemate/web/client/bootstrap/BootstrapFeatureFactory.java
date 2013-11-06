@@ -5,9 +5,15 @@ import com.intuso.housemate.web.client.object.GWTProxyDevice;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFactory;
 
 public class BootstrapFeatureFactory extends GWTProxyFeatureFactory {
+
     @Override
-    public PowerControl getOnOff(GWTProxyDevice device) {
+    public PowerControl getPowerControl(GWTProxyDevice device) {
         return new PowerControl(device);
+    }
+
+    @Override
+    public StatefulPowerControl getStatefulPowerControl(GWTProxyDevice device) {
+        return new StatefulPowerControl(device);
     }
 
     @Override

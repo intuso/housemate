@@ -14,7 +14,7 @@ import java.net.Socket;
  */
 public class SocketServer extends Router {
 
-    public final static String BROKER_PORT = "socket.server.port";
+    public final static String PORT = "socket.server.port";
 
     private final Log log;
 
@@ -43,7 +43,7 @@ public class SocketServer extends Router {
 
         try {
             // open the server port
-            String port = resources.getProperties().get(BROKER_PORT);
+            String port = resources.getProperties().get(PORT);
             if(port == null) {
                 log.d("Socket server port not set, using default");
                 port = "46873";

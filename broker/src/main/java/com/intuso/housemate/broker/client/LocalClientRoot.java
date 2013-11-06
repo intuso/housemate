@@ -8,6 +8,7 @@ import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealRootObject;
 
 /**
+ * Version of a root object for broker-internal objects
  */
 public class LocalClientRoot extends RealRootObject {
 
@@ -19,6 +20,10 @@ public class LocalClientRoot extends RealRootObject {
         addChild(addDeviceCommand);
     }
 
+    /**
+     * Get the add device command for this client
+     * @return
+     */
     public RealCommand getAddDeviceCommand() {
         return addDeviceCommand;
     }

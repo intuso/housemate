@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Stack;
 
 /**
+ * Exception for sending to client's when they connect with an unknown type
  */
 public class UnknownClientTypeException extends HousemateException {
     public UnknownClientTypeException(Stack<String> route) {

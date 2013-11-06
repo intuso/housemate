@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Exception to use when a message is sent to a route that is not known
  */
 public class UnknownClientRouteException extends HousemateException {
     public UnknownClientRouteException(List<String> route) {

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Processor of annotated devices etc
  */
 public class AnnotationProcessor {
 

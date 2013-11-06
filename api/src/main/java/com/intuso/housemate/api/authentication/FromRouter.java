@@ -2,7 +2,7 @@ package com.intuso.housemate.api.authentication;
 
 /**
  *
- * Authentication method to log in with a username and password.
+ * Authentication method to use a parent router's login credentials
  *
  * @see com.intuso.housemate.api.object.root.Root#login(com.intuso.housemate.api.authentication.AuthenticationMethod)
  */

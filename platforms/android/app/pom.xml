@@ -14,6 +14,7 @@
     <description>Platform for running Housemate Android apps</description>
 
     <dependencies>
+
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>platform-android-common</artifactId>

@@ -2,8 +2,11 @@ package com.intuso.housemate.api.object.device.feature;
 
 import com.intuso.housemate.annotations.feature.Id;
 import com.intuso.housemate.api.object.command.Command;
-import com.intuso.housemate.api.object.value.Value;
 
+/**
+ * Interface for all devices that allow playback
+ * @param <COMMAND> the command type
+ */
 @Id("playback-control")
 public interface PlaybackControl<COMMAND extends Command<?, ?>>
         extends Feature {
@@ -16,9 +19,33 @@ public interface PlaybackControl<COMMAND extends Command<?, ?>>
     public final static String FORWARD_COMMAND = "forward";
     public final static String REWIND_COMMAND = "rewind";
 
+    /**
+     * Get the command for starting playback
+     * @return the command for starting playback
+     */
     public COMMAND getPlayCommand();
+
+    /**
+     * Get the command for pausing playback
+     * @return the command for pausing playback
+     */
     public COMMAND getPauseCommand();
+
+    /**
+     * Get the command for stopping playback
+     * @return the command for stopping playback
+     */
     public COMMAND getStopCommand();
+
+    /**
+     * Get the command for skipping playback forward
+     * @return the command for skipping playback forward
+     */
     public COMMAND getForwardCommand();
+
+    /**
+     * Get the command for skipping playback backward
+     * @return the command for skipping playback backward
+     */
     public COMMAND getRewindCommand();
 }

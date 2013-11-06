@@ -9,7 +9,7 @@ import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.message.*;
-import com.intuso.housemate.api.object.ChildData;
+import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.automation.AutomationData;
@@ -294,7 +294,7 @@ public class ParcelableMessage implements Parcelable {
         parcel.writeString(treeData.getId());
         writeHousemateData(parcel, flags, treeData.getData());
         parcel.writeInt(treeData.getChildData().size());
-        for(Map.Entry<String, ChildData> entry : treeData.getChildData().entrySet()) {
+        for(Map.Entry<String, ChildOverview> entry : treeData.getChildData().entrySet()) {
             parcel.writeString(entry.getKey());
             parcel.writeString(entry.getValue().getId());
             parcel.writeString(entry.getValue().getName());
@@ -487,10 +487,10 @@ public class ParcelableMessage implements Parcelable {
 
     private static HousemateObject.TreeData<HousemateData<?>> readTreeData(Parcel parcel) {
         HousemateObject.TreeData<HousemateData<?>> result = new HousemateObject.TreeData<HousemateData<?>>(parcel.readString(),
-                readHousemateData(parcel), Maps.<String, HousemateObject.TreeData<?>>newHashMap(), Maps.<String, ChildData>newHashMap());
+                readHousemateData(parcel), Maps.<String, HousemateObject.TreeData<?>>newHashMap(), Maps.<String, ChildOverview>newHashMap());
         int num = parcel.readInt();
         for(int i = 0; i < num; i++)
-            result.getChildData().put(parcel.readString(), new ChildData(parcel.readString(), parcel.readString(), parcel.readString()));
+            result.getChildData().put(parcel.readString(), new ChildOverview(parcel.readString(), parcel.readString(), parcel.readString()));
         num = parcel.readInt();
         for(int i = 0; i < num; i++)
             result.getChildren().put(parcel.readString(), readTreeData(parcel));

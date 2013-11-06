@@ -28,16 +28,16 @@ public final class RegexTypeData extends TypeData<NoChildrenData> {
         this.regexPattern = regexPattern;
     }
 
-    @Override
-    public HousemateData clone() {
-        return new RegexTypeData(getId(), getName(), getDescription(), getMinValues(), getMaxValues(), regexPattern);
-    }
-
     /**
      * Gets the regex pattern
      * @return the regex pattern
      */
     public String getRegexPattern() {
         return regexPattern;
+    }
+
+    @Override
+    public HousemateData clone() {
+        return new RegexTypeData(getId(), getName(), getDescription(), getMinValues(), getMaxValues(), regexPattern);
     }
 }

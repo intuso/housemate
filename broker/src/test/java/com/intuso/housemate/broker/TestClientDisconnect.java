@@ -4,7 +4,9 @@ import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.RouterRootObject;
 import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.comms.transport.rest.RestServer;
 import com.intuso.housemate.comms.transport.socket.client.SocketClient;
+import com.intuso.housemate.comms.transport.socket.server.SocketServer;
 import com.intuso.housemate.object.broker.RemoteClient;
 import com.intuso.housemate.object.broker.RemoteClientListener;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
@@ -30,7 +32,7 @@ import static junit.framework.Assert.*;
 @Ignore
 public class TestClientDisconnect {
 
-    private final static BrokerServerEnvironment environment = TestUtils.startBroker(65432);
+    private final static BrokerServerEnvironment environment = TestUtils.startBroker(65432, 65433);
     private final static AtomicInteger TEST_NUM = new AtomicInteger(0);
 
     @Test(timeout = 5000)
@@ -42,8 +44,9 @@ public class TestClientDisconnect {
 
         SimpleProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
         resources.getProperties().put(SocketClient.BROKER_HOST, "localhost");
-        resources.getProperties().put(SocketClient.BROKER_PORT, "65432");
-        SocketClient socketClient = new SocketClient(resources);
+        resources.getProperties().put(SocketServer.PORT, "65432");
+        resources.getProperties().put(RestServer.PORT, "65433");
+        final SocketClient socketClient = new SocketClient(resources);
         resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 socketClient, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
@@ -95,7 +98,8 @@ public class TestClientDisconnect {
                         }
                     });
                     root.login(new UsernamePassword("admin", "admin", false));
-                }
+                } else if(status == ConnectionStatus.Unauthenticated)
+                    socketClient.login(new UsernamePassword("admin", "admin", false));
             }
 
             @Override
@@ -104,7 +108,6 @@ public class TestClientDisconnect {
             }
         });
         socketClient.connect();
-        socketClient.login(new UsernamePassword("admin", "admin", false));
 
         synchronized (disconnected) {
             disconnected.wait(); // wait for messages to be processed
@@ -123,7 +126,7 @@ public class TestClientDisconnect {
         final int testNum = TEST_NUM.incrementAndGet();
 
         // start a server socket, wait for the client to connect to it, then stream between the two
-        final ServerSocket server = new ServerSocket(65433);
+        final ServerSocket server = new ServerSocket(65434);
         final Accepter accepter = new Accepter(server);
         accepter.start();
 
@@ -132,20 +135,20 @@ public class TestClientDisconnect {
 
         SimpleProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
         resources.getProperties().put(SocketClient.BROKER_HOST, "localhost");
-        resources.getProperties().put(SocketClient.BROKER_PORT, "65433");
-        SocketClient comms = new SocketClient(resources);
+        resources.getProperties().put(SocketServer.PORT, "65434");
+        final SocketClient comms = new SocketClient(resources);
         resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
         comms.addObjectListener(new RootListener<RouterRootObject>() {
             @Override
             public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
-                if(status == ConnectionStatus.Authenticated) {
+                if (status == ConnectionStatus.Authenticated) {
                     root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {
 
                         @Override
                         public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
-                            if(status != ConnectionStatus.Authenticated)
+                            if (status != ConnectionStatus.Authenticated)
                                 return;
                             synchronized (connectionLost) {
                                 connectionLost.set(false);
@@ -164,7 +167,7 @@ public class TestClientDisconnect {
 
                                 @Override
                                 public void connectionLost(RemoteClient client) {
-                                    synchronized(connectionLost) {
+                                    synchronized (connectionLost) {
                                         connectionLost.set(true);
                                         connectionLost.notify();
                                     }
@@ -185,7 +188,8 @@ public class TestClientDisconnect {
                         }
                     });
                     root.login(new UsernamePassword("admin", "admin", false));
-                }
+                } else if (status == ConnectionStatus.Unauthenticated)
+                    comms.login(new UsernamePassword("admin", "admin", false));
             }
 
             @Override
@@ -194,7 +198,6 @@ public class TestClientDisconnect {
             }
         });
         comms.connect();
-        comms.login(new UsernamePassword("admin", "admin", false));
 
         synchronized (connectionLost) {
             connectionLost.wait(); // wait for messages to be processed
@@ -215,7 +218,7 @@ public class TestClientDisconnect {
         final int testNum = TEST_NUM.incrementAndGet();
 
         // start a server socket, wait for the client to connect to it, then stream between the two
-        ServerSocket server = new ServerSocket(65433);
+        ServerSocket server = new ServerSocket(65434);
         Accepter accepter = new Accepter(server);
         accepter.start();
 
@@ -224,8 +227,8 @@ public class TestClientDisconnect {
 
         SimpleProxyResources<SimpleProxyFactory.All> resources = TestUtils.createProxyRootResources(environment);
         resources.getProperties().put(SocketClient.BROKER_HOST, "localhost");
-        resources.getProperties().put(SocketClient.BROKER_PORT, "65433");
-        SocketClient comms = new SocketClient(resources);
+        resources.getProperties().put(SocketServer.PORT, "65434");
+        final SocketClient comms = new SocketClient(resources);
         resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
@@ -278,7 +281,8 @@ public class TestClientDisconnect {
             public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
                 if(status == ConnectionStatus.Authenticated) {
                     root.login(new UsernamePassword("admin", "admin", false));
-                }
+                } else if(status == ConnectionStatus.Unauthenticated)
+                    comms.login(new UsernamePassword("admin", "admin", false));
             }
 
             @Override
@@ -287,7 +291,6 @@ public class TestClientDisconnect {
             }
         });
         comms.connect();
-        comms.login(new UsernamePassword("admin", "admin", false));
 
         synchronized (connected) {
             connected.wait(); // wait for messages to be processed, assert that it's connected
@@ -302,7 +305,7 @@ public class TestClientDisconnect {
             connected.wait(); // wait for messages to be processed, assert that the connect is lost
             assertFalse(connected.get());
         }
-        server = new ServerSocket(65433);
+        server = new ServerSocket(65434);
         accepter = new Accepter(server);
         accepter.start();
         synchronized (connected) {

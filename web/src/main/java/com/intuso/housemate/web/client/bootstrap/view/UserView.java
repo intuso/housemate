@@ -4,13 +4,17 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.common.collect.Lists;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.bootstrap.widget.user.UserList;
+import com.intuso.housemate.web.client.handler.MultiListSelectedIdsChangedHandler;
+import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.place.UsersPlace;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,22 +23,33 @@ import java.util.List;
  * Time: 00:15
  * To change this template use File | Settings | File Templates.
  */
-public class UserView extends FlowPanel implements com.intuso.housemate.web.client.ui.view.UserView {
+public class UserView extends FlowPanel
+        implements com.intuso.housemate.web.client.ui.view.UserView, SelectedIdsChangedHandler {
 
     private final UserList favouritesList;
     private final UserList allList;
+    private final MultiListSelectedIdsChangedHandler selectedIdsChangedHandler;
 
     public UserView() {
 
+        selectedIdsChangedHandler = new MultiListSelectedIdsChangedHandler(this);
+
         List<String> favourites = Lists.newArrayList();
         favouritesList = new UserList("favourites", favourites, true);
-        allList = new UserList("all", favourites, false);
+        favouritesList.addSelectedIdsChangedHandler(selectedIdsChangedHandler);
+        allList = new UserList(favourites.size() > 0 ? "all" : "", favourites, false);
+        allList.addSelectedIdsChangedHandler(selectedIdsChangedHandler);
 
         add(favouritesList);
         add(allList);
         Button addButton = new PerformButton(Housemate.ENVIRONMENT.getResources().getRoot().getAddUserCommand(), IconType.PLUS);
         addButton.setSize(ButtonSize.SMALL);
         add(addButton);
+    }
+
+    @Override
+    public void selectedIdsChanged(Set<String> ids) {
+        History.newItem(Housemate.FACTORY.getPlaceHistoryMapper().getToken(new UsersPlace(ids)), false);
     }
 
     @Override

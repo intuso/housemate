@@ -1,19 +1,17 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.option.Option;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.subtype.SubType;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.type.Type;
-import com.intuso.housemate.api.object.type.TypeListener;
 import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.api.object.type.TypeListener;
 import com.intuso.utilities.log.Log;
-
-import javax.annotation.Nullable;
 
 /**
  */
@@ -31,7 +29,7 @@ public class TypeBridge
             addChild(new ListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(resources, (List) ((HousemateObject) (type)).getChild(OPTIONS),
                     new Function<Option, OptionBridge>() {
                         @Override
-                        public OptionBridge apply(@Nullable Option option) {
+                        public OptionBridge apply(Option option) {
                             return new OptionBridge(resources, option);
                         }
                     }));
@@ -40,7 +38,7 @@ public class TypeBridge
             addChild(new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(resources, (List) ((HousemateObject) (type)).getChild(SUB_TYPES),
                     new Function<SubType<?>, SubTypeBridge>() {
                         @Override
-                        public SubTypeBridge apply(@Nullable SubType<?> subType) {
+                        public SubTypeBridge apply(SubType<?> subType) {
                             return new SubTypeBridge(resources, subType);
                         }
                     }));
@@ -65,7 +63,7 @@ public class TypeBridge
         }
 
         @Override
-        public TypeBridge apply(@Nullable Type type) {
+        public TypeBridge apply(Type type) {
             return new TypeBridge(resources, type);
         }
     }

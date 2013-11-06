@@ -6,8 +6,6 @@ import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.user.UserListener;
 
-import javax.annotation.Nullable;
-
 /**
  */
 public class UserBridge
@@ -36,7 +34,7 @@ public class UserBridge
         }
 
         @Override
-        public UserBridge apply(@Nullable User<?> user) {
+        public UserBridge apply(User<?> user) {
             return new UserBridge(resources, user);
         }
     }

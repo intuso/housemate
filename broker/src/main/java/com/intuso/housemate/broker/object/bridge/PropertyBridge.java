@@ -8,8 +8,6 @@ import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 
-import javax.annotation.Nullable;
-
 /**
  */
 public class PropertyBridge
@@ -49,7 +47,7 @@ public class PropertyBridge
         }
 
         @Override
-        public PropertyBridge apply(@Nullable Property<?, ?, ?> property) {
+        public PropertyBridge apply(Property<?, ?, ?> property) {
             return new PropertyBridge(resources, property);
         }
     }

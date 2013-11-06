@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Base class for managing the loading of remote objects
+ */
 public abstract class LoadManager {
 
     private final String name;
@@ -31,23 +34,44 @@ public abstract class LoadManager {
         this.toLoad = toLoad;
     }
 
+    /**
+     * Get the name of the loader
+     * @return the name of the loader
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get the info of the objects to load
+     * @return the info of the objects to load
+     */
     public final Map<String, HousemateObject.TreeLoadInfo> getToLoad() {
         return toLoad;
     }
 
-    protected final void responseReceived(String objectName, boolean succeeded) {
-        if(toLoad.containsKey(objectName))
-            loaded.add(objectName);
+    /**
+     * Callback for when an object's load has finished
+     * @param objectId the id of the object whose load finished
+     * @param succeeded true if the load was successful
+     */
+    protected final void responseReceived(String objectId, boolean succeeded) {
+        if(toLoad.containsKey(objectId))
+            loaded.add(objectId);
         if(!succeeded)
-            failed(toLoad.get(objectName));
+            failed(toLoad.get(objectId));
         if(toLoad.size() == loaded.size())
             allLoaded();
     }
 
+    /**
+     * Callback for when the load of some objects failed
+     * @param path the path of the failed object
+     */
     protected abstract void failed(HousemateObject.TreeLoadInfo path);
+
+    /**
+     * Callback for when all required objects have been loaded
+     */
     protected abstract void allLoaded();
 }

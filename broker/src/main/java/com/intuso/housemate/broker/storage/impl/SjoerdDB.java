@@ -11,19 +11,8 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.broker.storage.DetailsNotFoundException;
 import com.intuso.housemate.broker.storage.Storage;
 
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 /**
  */
@@ -91,7 +80,7 @@ public class SjoerdDB implements Storage {
                     })
             ), new Function<File, String>() {
                 @Override
-                public String apply(@Nullable File file) {
+                public String apply(File file) {
                     return file.getName().substring(0, file.getName().length() - PROPERTIES_EXTENSION.length());
                 }
             }));

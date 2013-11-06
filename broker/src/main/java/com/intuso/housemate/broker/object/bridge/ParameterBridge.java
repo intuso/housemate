@@ -6,8 +6,6 @@ import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterListener;
 
-import javax.annotation.Nullable;
-
 /**
  */
 public class ParameterBridge
@@ -35,7 +33,7 @@ public class ParameterBridge
         }
 
         @Override
-        public ParameterBridge apply(@Nullable Parameter<?> parameter) {
+        public ParameterBridge apply(Parameter<?> parameter) {
             return new ParameterBridge(resources, parameter);
         }
     }
