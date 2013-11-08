@@ -4,7 +4,7 @@
     <g:FlowPanel>
         <b:ResponsiveNavbar inverse="true" position="TOP">
             <b:Container>
-                <b:Brand>intuso home</b:Brand>
+                <b:Brand ui:field="brand"/>
                 <b:NavCollapse>
                     <b:Nav alignment="RIGHT">
                         <b:NavLink ui:field="devicesButton">devices</b:NavLink>

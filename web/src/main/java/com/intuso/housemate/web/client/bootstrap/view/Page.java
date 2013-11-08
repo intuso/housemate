@@ -1,5 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
+import com.github.gwtbootstrap.client.ui.Brand;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -7,10 +8,7 @@ import com.google.gwt.place.shared.PlaceChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.AcceptsOneWidget;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.place.AutomationsPlace;
 import com.intuso.housemate.web.client.place.DevicesPlace;
@@ -31,6 +29,8 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
     private static BootstrapPageUiBinder ourUiBinder = GWT.create(BootstrapPageUiBinder.class);
 
     @UiField
+    Brand brand;
+    @UiField
     SimplePanel container;
     @UiField
     NavLink devicesButton;
@@ -43,6 +43,11 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
 
     public Page() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        this.brand.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        final Image logo = new Image("img/nav-brand.png");
+        final String html = "<center>" + logo.toString() + "</center>";//"<br>Ø®Ù…Ø³ Ø¯Ù‚Ø§ÙŠÙ‚ Ø£Ø®Ø¨Ø§Ø±</center>";
+        this.brand.setHTML(html);
+        this.brand.setDirectionEstimator(true);
         Housemate.FACTORY.getEventBus().addHandler(PlaceChangeEvent.TYPE, this);
     }
 

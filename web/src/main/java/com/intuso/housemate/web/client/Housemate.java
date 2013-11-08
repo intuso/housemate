@@ -79,8 +79,7 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                     public void connectionStatusChanged(GWTProxyRootObject root, ConnectionStatus status) {
                         if(status == ConnectionStatus.Authenticated) {
                             List<HousemateObject.TreeLoadInfo> loadInfos = Lists.newArrayList();
-                            for(String childId : new String[] {Root.TYPES_ID, Root.DEVICES_ID, Root.ADD_DEVICE_ID,
-                                    Root.AUTOMATIONS_ID, Root.ADD_AUTOMATION_ID, Root.USERS_ID, Root.ADD_USER_ID})
+                            for(String childId : new String[] {Root.TYPES_ID, Root.ADD_DEVICE_ID, Root.ADD_AUTOMATION_ID, Root.ADD_USER_ID})
                                 loadInfos.add(new HousemateObject.TreeLoadInfo(childId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
                             root.load(new LoadManager("webUI", loadInfos) {
                                 @Override

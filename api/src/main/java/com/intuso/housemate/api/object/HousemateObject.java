@@ -1,6 +1,5 @@
 package com.intuso.housemate.api.object;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
@@ -263,13 +262,15 @@ public abstract class HousemateObject<
 
         private TreeLoadInfo() {}
 
-        public TreeLoadInfo(String id, TreeLoadInfo... children) {
-            this(id, Maps.uniqueIndex(Lists.newArrayList(children), new Function<TreeLoadInfo, String>() {
-                @Override
-                public String apply(TreeLoadInfo loadInfo) {
-                    return loadInfo.getId();
-                }
-            }));
+        public TreeLoadInfo(String id, TreeLoadInfo ... children) {
+            this(id, asMap(children));
+        }
+
+        private static Map<String, TreeLoadInfo> asMap(TreeLoadInfo ... children) {
+            Map<String, TreeLoadInfo> result = Maps.newHashMap();
+            for(TreeLoadInfo child : children)
+                result.put(child.getId(), child);
+            return result;
         }
 
         public TreeLoadInfo(String id, Map<String, TreeLoadInfo> children) {

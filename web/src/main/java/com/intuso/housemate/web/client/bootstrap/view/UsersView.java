@@ -23,14 +23,14 @@ import java.util.Set;
  * Time: 00:15
  * To change this template use File | Settings | File Templates.
  */
-public class UserView extends FlowPanel
-        implements com.intuso.housemate.web.client.ui.view.UserView, SelectedIdsChangedHandler {
+public class UsersView extends FlowPanel
+        implements com.intuso.housemate.web.client.ui.view.UsersView, SelectedIdsChangedHandler {
 
     private final UserList favouritesList;
     private final UserList allList;
     private final MultiListSelectedIdsChangedHandler selectedIdsChangedHandler;
 
-    public UserView() {
+    public UsersView() {
 
         selectedIdsChangedHandler = new MultiListSelectedIdsChangedHandler(this);
 
@@ -54,7 +54,7 @@ public class UserView extends FlowPanel
 
     @Override
     public void newPlace(UsersPlace place) {
-        favouritesList.setSelected(place.getUsernames());
-        allList.setSelected(place.getUsernames());
+        favouritesList.setSelected(place.getUserIds());
+        allList.setSelected(place.getUserIds());
     }
 }

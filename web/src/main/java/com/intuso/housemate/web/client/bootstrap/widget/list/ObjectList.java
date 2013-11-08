@@ -12,8 +12,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.list.ListListener;
+import com.intuso.housemate.object.proxy.AvailableChildrenListener;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.event.SelectedIdsChangedEvent;
 import com.intuso.housemate.web.client.handler.HasSelectedIdsChangedHandlers;
@@ -32,13 +33,14 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<?, ?, DATA, ?, ?, ?, ?>>
-        extends Accordion implements ListListener<OBJECT>, HasSelectedIdsChangedHandlers {
+        extends Accordion implements AvailableChildrenListener<GWTProxyList<DATA, OBJECT>>, HasSelectedIdsChangedHandlers {
 
     private final GWTProxyList<DATA, OBJECT> list;
     private final List<String> filteredIds;
     private final boolean includeFiltered;
 
     private final Map<String, AccordionGroup> accordionGroups = Maps.newHashMap();
+    private final Map<AccordionGroup, ShowHandler> showHandlers = Maps.newHashMap();
     private final Set<String> selectedIds = Sets.newHashSet();
 
     public ObjectList(GWTProxyList<DATA, OBJECT> list, String title, List<String> filteredIds, boolean includeFiltered) {
@@ -55,44 +57,47 @@ public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends P
 
         add(new Heading(4, title));
 
-        this.list.addObjectListener(this, true);
+        this.list.addAvailableChildrenListener(this, true);
     }
 
     @Override
-    public void elementAdded(OBJECT element) {
-        if(includeFiltered == filteredIds.contains(element.getId())) {
+    public void childAdded(GWTProxyList<DATA, OBJECT> list, ChildOverview childOverview) {
+        if(includeFiltered == filteredIds.contains(childOverview.getId())) {
             setVisible(true);
-            addEntry(element);
+            addEntry(childOverview);
         }
     }
 
     @Override
-    public void elementRemoved(OBJECT element) {
-        AccordionGroup accordionGroup = accordionGroups.get(element.getId());
+    public void childRemoved(GWTProxyList<DATA, OBJECT> list, ChildOverview childOverview) {
+        AccordionGroup accordionGroup = accordionGroups.get(childOverview.getId());
         if(accordionGroup != null)
             remove(accordionGroup);
     }
 
-    private void addEntry(final OBJECT object) {
-        if(object != null) {
-            AccordionGroup accordionGroup = new AccordionGroup();
-            accordionGroup.setHeading(object.getName());
-            accordionGroup.add(getWidget(object));
+    private void addEntry(final ChildOverview childOverview) {
+        if(childOverview != null) {
+            final AccordionGroup accordionGroup = new AccordionGroup();
+            accordionGroup.setHeading(childOverview.getName());
+            // lazy load the widget
+            ShowHandler showHandler = new ShowObjectHandler(accordionGroup, childOverview.getId());
+            showHandlers.put(accordionGroup, showHandler);
+            accordionGroup.addShowHandler(showHandler);
             accordionGroup.addShowHandler(new ShowHandler() {
                 @Override
                 public void onShow(ShowEvent showEvent) {
-                    if(selectedIds.add(object.getId()))
+                    if (selectedIds.add(childOverview.getId()))
                         ObjectList.this.fireEvent(new SelectedIdsChangedEvent(selectedIds));
                 }
             });
             accordionGroup.addHideHandler(new HideHandler() {
                 @Override
                 public void onHide(HideEvent hideEvent) {
-                    if (selectedIds.remove(object.getId()))
+                    if (selectedIds.remove(childOverview.getId()))
                         ObjectList.this.fireEvent(new SelectedIdsChangedEvent(selectedIds));
                 }
             });
-            accordionGroups.put(object.getId(), accordionGroup);
+            accordionGroups.put(childOverview.getId(), accordionGroup);
             add(accordionGroup);
         }
     }
@@ -112,6 +117,8 @@ public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends P
     }
 
     private void setVisible(AccordionGroup accordionGroup, boolean visible) {
+        if(visible)
+            showHandlers.get(accordionGroup).onShow(null);
         Widget bodyWidget = accordionGroup.getWidget(1);
         if(visible)
             bodyWidget.addStyleName(Constants.IN);
@@ -128,5 +135,25 @@ public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends P
         }
     }
 
-    protected abstract Widget getWidget(OBJECT object);
+    protected abstract Widget getWidget(String id, OBJECT object);
+
+    private class ShowObjectHandler implements ShowHandler {
+
+        private final AccordionGroup accordionGroup;
+        private final String id;
+        private boolean shown = false;
+
+        private ShowObjectHandler(AccordionGroup accordionGroup, String id) {
+            this.accordionGroup = accordionGroup;
+            this.id = id;
+        }
+
+        @Override
+        public void onShow(ShowEvent showEvent) {
+            if(!shown) {
+                accordionGroup.add(getWidget(id, list.get(id)));
+                shown = true;
+            }
+        }
+    }
 }

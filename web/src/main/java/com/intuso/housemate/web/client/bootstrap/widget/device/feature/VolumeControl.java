@@ -22,6 +22,11 @@ public class VolumeControl
     }
 
     @Override
+    public GWTProxyCommand getMuteCommand() {
+        return device.getCommands() != null ? device.getCommands().get(MUTE_COMMAND) : null;
+    }
+
+    @Override
     public GWTProxyCommand getVolumeUpCommand() {
         return device.getCommands() != null ? device.getCommands().get(VOLUME_UP_COMMAND) : null;
     }
@@ -64,6 +69,8 @@ public class VolumeControl
     public class VolumeWidget extends Composite {
 
         @UiField
+        public PerformButton muteButton;
+        @UiField
         public PerformButton upButton;
         @UiField
         public PerformButton downButton;
@@ -71,6 +78,7 @@ public class VolumeControl
         private VolumeWidget() {
             initWidget(ourUiBinder.createAndBindUi(this));
 
+            muteButton.setCommand(getMuteCommand());
             upButton.setCommand(getVolumeUpCommand());
             downButton.setCommand(getVolumeDownCommand());
         }

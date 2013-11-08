@@ -57,6 +57,11 @@ public class TVRemote extends PoweredDevice implements RealPlaybackControl, Real
     }
 
     @Override
+    public void mute() throws HousemateException {
+        irSend("KEY_MUTE");
+    }
+
+    @Override
     public void volumeUp() throws HousemateException {
         irSend("KEY_VOLUMEUP");
     }

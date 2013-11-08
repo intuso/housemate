@@ -11,6 +11,13 @@ import com.intuso.housemate.api.HousemateException;
 public interface RealVolumeControl extends RealFeature {
 
     /**
+     * Callback for when the volume should be muted
+     * @throws HousemateException
+     */
+    @Command(id = "mute", name = "Mute", description = "Mute")
+    public void mute() throws HousemateException;
+
+    /**
      * Callback for when the volume should be increased
      * @throws HousemateException
      */

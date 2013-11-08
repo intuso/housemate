@@ -13,8 +13,15 @@ public interface VolumeControl<COMMAND extends Command<?, ?>>
 
     public final static String ID = "volume-control";
 
+    public final static String MUTE_COMMAND = "mute";
     public final static String VOLUME_UP_COMMAND = "volume-up";
     public final static String VOLUME_DOWN_COMMAND = "volume-down";
+
+    /**
+     * Get the command to mute the volume
+     * @return the command to mute  the volume
+     */
+    public COMMAND getMuteCommand();
 
     /**
      * Get the command to increase the volume

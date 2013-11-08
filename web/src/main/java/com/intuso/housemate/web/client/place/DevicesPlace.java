@@ -1,10 +1,16 @@
 package com.intuso.housemate.web.client.place;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
+import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.ui.view.HousemateView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,19 +27,19 @@ public class DevicesPlace extends HousematePlace {
         }
     }
 
-    private Set<String> deviceNames;
+    private Set<String> deviceIds;
 
     public DevicesPlace() {
         super();
     }
 
-    public DevicesPlace(Set<String> deviceNames) {
+    public DevicesPlace(Set<String> deviceIds) {
         super();
-        this.deviceNames = deviceNames;
+        this.deviceIds = deviceIds;
     }
 
-    public Set<String> getDeviceNames() {
-        return deviceNames;
+    public Set<String> getDeviceIds() {
+        return deviceIds;
     }
 
     @Prefix("devices")
@@ -53,9 +59,23 @@ public class DevicesPlace extends HousematePlace {
         @Override
         public String getToken(DevicesPlace devicesPlace) {
             Map<TokenisableField, String> fields = new HashMap<TokenisableField, String>();
-            if(devicesPlace.getDeviceNames() != null && devicesPlace.getDeviceNames().size() > 0)
-                fields.put(Field.Selected, namesToString(devicesPlace.getDeviceNames()));
+            if(devicesPlace.getDeviceIds() != null && devicesPlace.getDeviceIds().size() > 0)
+                fields.put(Field.Selected, namesToString(devicesPlace.getDeviceIds()));
             return HousematePlace.getToken(fields);
         }
+    }
+
+    @Override
+    public List<HousemateObject.TreeLoadInfo> createTreeLoadInfos() {
+        HousemateObject.TreeLoadInfo treeLoadInfo = new HousemateObject.TreeLoadInfo(Root.DEVICES_ID);
+        if(deviceIds != null)
+            for(String deviceId : deviceIds)
+                treeLoadInfo.getChildren().put(deviceId, new HousemateObject.TreeLoadInfo(deviceId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+        return Lists.newArrayList(treeLoadInfo);
+    }
+
+    @Override
+    protected HousemateView getView() {
+        return Housemate.FACTORY.getDevicesView();
     }
 }

@@ -4,11 +4,10 @@ import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 import com.intuso.housemate.web.client.place.HousematePlace;
-import com.intuso.housemate.web.client.ui.view.HousemateView;
 
 /**
  */
-public abstract class HousemateActivity<P extends HousematePlace, V extends HousemateView<P>> extends AbstractActivity {
+public abstract class HousemateActivity<P extends HousematePlace> extends AbstractActivity {
 
     private P place;
 
@@ -18,10 +17,7 @@ public abstract class HousemateActivity<P extends HousematePlace, V extends Hous
 
     @Override
     public void start(AcceptsOneWidget acceptsOneWidget, EventBus eventBus) {
-        V view = getView();
-        view.newPlace(place);
-        acceptsOneWidget.setWidget(view);
+        acceptsOneWidget.setWidget(null);
+        place.loadData(acceptsOneWidget);
     }
-
-    protected abstract V getView();
 }

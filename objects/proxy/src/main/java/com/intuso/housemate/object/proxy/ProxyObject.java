@@ -220,7 +220,10 @@ public abstract class ProxyObject<
             pendingLoads.put(manager.getName(), manager);
             for(TreeLoadInfo tree : manager.getToLoad().values()) {
                 checkTree(tree);
-                sendMessage(HousemateObject.LOAD_REQUEST, new LoadRequest(manager.getName(), tree));
+                if(tree.isLoad())
+                    sendMessage(HousemateObject.LOAD_REQUEST, new LoadRequest(manager.getName(), tree));
+                else
+                    manager.responseReceived(tree.getId(), true);
             }
         }
     }

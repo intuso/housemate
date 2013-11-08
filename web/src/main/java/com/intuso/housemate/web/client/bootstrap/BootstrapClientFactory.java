@@ -7,16 +7,14 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 import com.intuso.housemate.web.client.ClientFactory;
 import com.intuso.housemate.web.client.activity.HousemateActivityMapper;
-import com.intuso.housemate.web.client.bootstrap.view.AutomationView;
-import com.intuso.housemate.web.client.bootstrap.view.DeviceView;
-import com.intuso.housemate.web.client.bootstrap.view.UserView;
-import com.intuso.housemate.web.client.bootstrap.widget.automation.AutomationList;
 import com.intuso.housemate.web.client.bootstrap.view.Page;
-import com.intuso.housemate.web.client.bootstrap.widget.user.UserList;
 import com.intuso.housemate.web.client.bootstrap.widget.login.LoginPopup;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFactory;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryMapper;
+import com.intuso.housemate.web.client.ui.view.AutomationsView;
+import com.intuso.housemate.web.client.ui.view.DevicesView;
 import com.intuso.housemate.web.client.ui.view.LoginView;
+import com.intuso.housemate.web.client.ui.view.UsersView;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,9 +40,9 @@ public class BootstrapClientFactory implements ClientFactory {
     // ui
     private LoginPopup loginPopup = null;
     private Page page = null;
-    private UserView userView = null;
-    private DeviceView deviceView = null;
-    private AutomationView automationView = null;
+    private com.intuso.housemate.web.client.bootstrap.view.UsersView userView = null;
+    private com.intuso.housemate.web.client.bootstrap.view.DevicesView deviceView = null;
+    private com.intuso.housemate.web.client.bootstrap.view.AutomationsView automationView = null;
 
 
     @Override
@@ -92,23 +90,23 @@ public class BootstrapClientFactory implements ClientFactory {
     }
 
     @Override
-    public com.intuso.housemate.web.client.ui.view.UserView getUserView() {
+    public UsersView getUsersView() {
         if(userView == null)
-            userView = new UserView();
+            userView = new com.intuso.housemate.web.client.bootstrap.view.UsersView();
         return userView;
     }
 
     @Override
-    public com.intuso.housemate.web.client.ui.view.DeviceView getDeviceView() {
+    public DevicesView getDevicesView() {
         if(deviceView == null)
-            deviceView = new DeviceView();
+            deviceView = new com.intuso.housemate.web.client.bootstrap.view.DevicesView();
         return deviceView;
     }
 
     @Override
-    public com.intuso.housemate.web.client.ui.view.AutomationView getAutomationView() {
+    public AutomationsView getAutomationsView() {
         if(automationView == null)
-            automationView = new AutomationView();
+            automationView = new com.intuso.housemate.web.client.bootstrap.view.AutomationsView();
         return automationView;
     }
 }

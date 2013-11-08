@@ -118,8 +118,10 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
         Map<String, TreeData<?>> children = Maps.newHashMap();
         Map<String, ChildOverview> childData = Maps.newHashMap();
         if(loadInfo.getId().equals(HousemateObject.EVERYTHING_RECURSIVE)) {
-            for(CHILD child : getChildren())
+            for(CHILD child : getChildren()) {
                 children.put(child.getId(), child.getDataForClient(client, loadInfo));
+                childData.put(child.getId(), new ChildOverview(child.getId(), child.getName(), child.getDescription()));
+            }
         } else {
             for(Map.Entry<String, TreeLoadInfo> entry : loadInfo.getChildren().entrySet()) {
                 if(entry.getKey().equals(HousemateObject.EVERYTHING_RECURSIVE) ||
@@ -130,8 +132,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
                     children.put(entry.getKey(), getChild(entry.getKey()).getDataForClient(client, entry.getValue()));
             }
             for(CHILD child : getChildren())
-                if(!children.containsKey(child.getId()))
-                    childData.put(child.getId(), new ChildOverview(child.getId(), child.getName(), child.getDescription()));
+                childData.put(child.getId(), new ChildOverview(child.getId(), child.getName(), child.getDescription()));
         }
         return new TreeData<HousemateData<?>>(getId(), getData().clone(), children, childData);
     }

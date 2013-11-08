@@ -7,11 +7,11 @@ import com.google.common.collect.Lists;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.bootstrap.widget.automation.AutomationList;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
-import com.intuso.housemate.web.client.bootstrap.widget.device.DeviceList;
 import com.intuso.housemate.web.client.handler.MultiListSelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
-import com.intuso.housemate.web.client.place.DevicesPlace;
+import com.intuso.housemate.web.client.place.AutomationsPlace;
 
 import java.util.List;
 import java.util.Set;
@@ -23,38 +23,38 @@ import java.util.Set;
  * Time: 00:15
  * To change this template use File | Settings | File Templates.
  */
-public class DeviceView extends FlowPanel
-        implements com.intuso.housemate.web.client.ui.view.DeviceView, SelectedIdsChangedHandler {
-
-    private final DeviceList favouritesList;
-    private final DeviceList allList;
+public class AutomationsView extends FlowPanel
+        implements com.intuso.housemate.web.client.ui.view.AutomationsView, SelectedIdsChangedHandler {
+    
+    private final AutomationList favouritesList;
+    private final AutomationList allList;
     private final MultiListSelectedIdsChangedHandler selectedIdsChangedHandler;
-
-    public DeviceView() {
+    
+    public AutomationsView() {
 
         selectedIdsChangedHandler = new MultiListSelectedIdsChangedHandler(this);
 
         List<String> favourites = Lists.newArrayList();
-        favouritesList = new DeviceList("favourites", favourites, true);
+        favouritesList = new AutomationList("favourites", favourites, true);
         favouritesList.addSelectedIdsChangedHandler(selectedIdsChangedHandler);
-        allList = new DeviceList(favourites.size() > 0 ? "all" : "", favourites, false);
+        allList = new AutomationList(favourites.size() > 0 ? "all" : "", favourites, false);
         allList.addSelectedIdsChangedHandler(selectedIdsChangedHandler);
-
+        
         add(favouritesList);
         add(allList);
-        Button addButton = new PerformButton(Housemate.ENVIRONMENT.getResources().getRoot().getAddDeviceCommand(), IconType.PLUS);
+        Button addButton = new PerformButton(Housemate.ENVIRONMENT.getResources().getRoot().getAddAutomationCommand(), IconType.PLUS);
         addButton.setSize(ButtonSize.SMALL);
         add(addButton);
     }
 
     @Override
     public void selectedIdsChanged(Set<String> ids) {
-        History.newItem(Housemate.FACTORY.getPlaceHistoryMapper().getToken(new DevicesPlace(ids)), false);
+        History.newItem(Housemate.FACTORY.getPlaceHistoryMapper().getToken(new AutomationsPlace(ids)), false);
     }
 
     @Override
-    public void newPlace(DevicesPlace place) {
-        favouritesList.setSelected(place.getDeviceNames());
-        allList.setSelected(place.getDeviceNames());
+    public void newPlace(AutomationsPlace place) {
+        favouritesList.setSelected(place.getAutomationIds());
+        allList.setSelected(place.getAutomationIds());
     }
 }

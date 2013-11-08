@@ -6,11 +6,8 @@ import com.google.web.bindery.event.shared.EventBus;
 import com.intuso.housemate.web.client.activity.HousemateActivityMapper;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFactory;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryMapper;
-import com.intuso.housemate.web.client.ui.view.AutomationView;
-import com.intuso.housemate.web.client.ui.view.DeviceView;
-import com.intuso.housemate.web.client.ui.view.LoginView;
-import com.intuso.housemate.web.client.ui.view.Page;
-import com.intuso.housemate.web.client.ui.view.UserView;
+import com.intuso.housemate.web.client.ui.view.*;
+import com.intuso.housemate.web.client.ui.view.UsersView;
 
 /**
  */
@@ -31,7 +28,7 @@ public interface ClientFactory {
     // UI things
     LoginView getLoginView();
     Page getPage();
-    UserView getUserView();
-    DeviceView getDeviceView();
-    AutomationView getAutomationView();
+    UsersView getUsersView();
+    DevicesView getDevicesView();
+    AutomationsView getAutomationsView();
 }

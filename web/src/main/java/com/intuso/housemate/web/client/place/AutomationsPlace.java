@@ -1,10 +1,16 @@
 package com.intuso.housemate.web.client.place;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
+import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.ui.view.HousemateView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,19 +27,19 @@ public class AutomationsPlace extends HousematePlace {
         }
     }
 
-    private Set<String> automationNames;
+    private Set<String> automationIds;
 
     public AutomationsPlace() {
         super();
     }
 
-    public AutomationsPlace(Set<String> automationNames) {
+    public AutomationsPlace(Set<String> automationIds) {
         super();
-        this.automationNames = automationNames;
+        this.automationIds = automationIds;
     }
 
-    public Set<String> getAutomationNames() {
-        return automationNames;
+    public Set<String> getAutomationIds() {
+        return automationIds;
     }
 
     @Prefix("automations")
@@ -53,9 +59,23 @@ public class AutomationsPlace extends HousematePlace {
         @Override
         public String getToken(AutomationsPlace automationPlace) {
             Map<TokenisableField, String> fields = new HashMap<TokenisableField, String>();
-            if(automationPlace.getAutomationNames() != null && automationPlace.getAutomationNames().size() > 0)
-                fields.put(Field.Selected, namesToString(automationPlace.getAutomationNames()));
+            if(automationPlace.getAutomationIds() != null && automationPlace.getAutomationIds().size() > 0)
+                fields.put(Field.Selected, namesToString(automationPlace.getAutomationIds()));
             return HousematePlace.getToken(fields);
         }
+    }
+
+    @Override
+    public List<HousemateObject.TreeLoadInfo> createTreeLoadInfos() {
+        HousemateObject.TreeLoadInfo treeLoadInfo = new HousemateObject.TreeLoadInfo(Root.AUTOMATIONS_ID);
+        if(automationIds != null)
+            for(String automationId : automationIds)
+                treeLoadInfo.getChildren().put(automationId, new HousemateObject.TreeLoadInfo(automationId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+        return Lists.newArrayList(treeLoadInfo);
+    }
+
+    @Override
+    protected HousemateView getView() {
+        return Housemate.FACTORY.getAutomationsView();
     }
 }

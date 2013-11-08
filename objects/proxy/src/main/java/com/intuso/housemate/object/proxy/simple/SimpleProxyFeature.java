@@ -259,6 +259,11 @@ public abstract class SimpleProxyFeature implements ProxyFeature<SimpleProxyFeat
         }
 
         @Override
+        public SimpleProxyObject.Command getMuteCommand() {
+            return device.getCommands() != null ? device.getCommands().get(MUTE_COMMAND) : null;
+        }
+
+        @Override
         public SimpleProxyObject.Command getVolumeUpCommand() {
             return device.getCommands() != null ? device.getCommands().get(VOLUME_UP_COMMAND) : null;
         }
@@ -290,6 +295,11 @@ public abstract class SimpleProxyFeature implements ProxyFeature<SimpleProxyFeat
 
         public StatefulVolumeControl(SimpleProxyObject.Device device) {
             super(device);
+        }
+
+        @Override
+        public SimpleProxyObject.Command getMuteCommand() {
+            return device.getCommands() != null ? device.getCommands().get(MUTE_COMMAND) : null;
         }
 
         @Override

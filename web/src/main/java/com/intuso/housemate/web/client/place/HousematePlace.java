@@ -4,6 +4,11 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.gwt.place.shared.Place;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.ui.view.HousemateView;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -57,4 +62,25 @@ public abstract class HousematePlace extends Place {
             }
         }));
     }
+
+    public final void loadData(final AcceptsOneWidget acceptsOneWidget) {
+        Housemate.ENVIRONMENT.getResources().getRoot().load(new LoadManager("web", createTreeLoadInfos()) {
+            @Override
+            protected void failed(HousemateObject.TreeLoadInfo path) {
+                // todo notify someone/thing
+                acceptsOneWidget.setWidget(getView());
+            }
+
+            @Override
+            protected void allLoaded() {
+                HousemateView view = getView();
+                view.newPlace(HousematePlace.this);
+                acceptsOneWidget.setWidget(view);
+            }
+        });
+    }
+
+    protected abstract List<HousemateObject.TreeLoadInfo> createTreeLoadInfos();
+
+    protected abstract HousemateView getView();
 }

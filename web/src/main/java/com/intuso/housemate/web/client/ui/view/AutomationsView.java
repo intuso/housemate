@@ -4,5 +4,5 @@ import com.intuso.housemate.web.client.place.AutomationsPlace;
 
 /**
  */
-public interface AutomationView extends HousemateView<AutomationsPlace> {
+public interface AutomationsView extends HousemateView<AutomationsPlace> {
 }
