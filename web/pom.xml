@@ -16,7 +16,7 @@
     <repositories>
         <repository>
             <id>sonatype</id>
-            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <url>http://oss.sonatype.org/content/repositories/releases</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -29,7 +29,7 @@
     <properties>
         <gwt.version.main>2.5</gwt.version.main>
         <gwt.version>${gwt.version.main}.1</gwt.version>
-        <bootstrap.version>2.3.2.0-SNAPSHOT</bootstrap.version>
+        <bootstrap.version>2.2.1.0</bootstrap.version>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
     </properties>
 
