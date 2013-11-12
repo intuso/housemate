@@ -4,7 +4,7 @@
 
     <groupId>com.intuso.housemate</groupId>
     <artifactId>housemate</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>Housemate</name>
     <description>Parent for the Housemate framework</description>
@@ -82,8 +82,8 @@
     </build>
 
     <scm>
-        <connection>scm:svn:svn+ssh://tom@dev.intuso.com/svn/intuso.com/housemate/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://tom@dev.intuso.com/svn/intuso.com/housemate/trunk</developerConnection>
+        <connection>scm:svn:svn+ssh://tom@dev.intuso.com/svn/intuso.com/housemate/tags/housemate-1.0.0</connection>
+        <developerConnection>scm:svn:svn+ssh://tom@dev.intuso.com/svn/intuso.com/housemate/tags/housemate-1.0.0</developerConnection>
     </scm>
     
      <distributionManagement>
