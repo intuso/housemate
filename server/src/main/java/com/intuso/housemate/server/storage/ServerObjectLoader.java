@@ -72,8 +72,7 @@ public class ServerObjectLoader {
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved users " + Arrays.toString(realUsers.getPath()));
         } catch(HousemateException e) {
-            log.e("Failed to get names of existing users");
-            log.st(e);
+            log.e("Failed to get names of existing users", e);
         }
         if(realUsers.getChildren().size() == 0) {
             TypeInstanceMap toSave = new TypeInstanceMap();
@@ -104,15 +103,13 @@ public class ServerObjectLoader {
                     addDeviceCommand.perform(storage.getValues(path, key),
                             new CommandListener("Load device \"" + key + "\""));
                 } catch(HousemateException e) {
-                    log.e("Failed to load device");
-                    log.st(e);
+                    log.e("Failed to load device", e);
                 }
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved devices " + Arrays.toString(path));
         } catch(HousemateException e) {
-            log.e("Failed to get names of existing devices");
-            log.st(e);
+            log.e("Failed to get names of existing devices", e);
         }
     }
 
@@ -128,15 +125,13 @@ public class ServerObjectLoader {
                     loadAutomationInfo(automation);
                     realAutomations.add(automation);
                 } catch(HousemateException e) {
-                    log.e("Failed to load automation");
-                    log.st(e);
+                    log.e("Failed to load automation", e);
                 }
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved automations " + Arrays.toString(realAutomations.getPath()));
         } catch(HousemateException e) {
-            log.e("Failed to get names of existing automations");
-            log.st(e);
+            log.e("Failed to get names of existing automations", e);
         }
     }
 
@@ -155,15 +150,13 @@ public class ServerObjectLoader {
                     conditions.add(condition);
                     loadConditions(condition.getConditions(), condition);
                 } catch(HousemateException e) {
-                    log.e("Failed to load condition");
-                    log.st(e);
+                    log.e("Failed to load condition", e);
                 }
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved conditions " + Arrays.toString(conditions.getPath()));
         } catch(HousemateException e) {
-            log.e("Failed to get device names of existing conditions");
-            log.st(e);
+            log.e("Failed to get device names of existing conditions", e);
         }
     }
 
@@ -174,15 +167,13 @@ public class ServerObjectLoader {
                     TypeInstanceMap details = storage.getValues(tasks.getPath(), taskName);
                     tasks.add(taskFactory.createTask(details, owner));
                 } catch(HousemateException e) {
-                    log.e("Failed to load task");
-                    log.st(e);
+                    log.e("Failed to load task", e);
                 }
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved tasks " + Arrays.toString(tasks.getPath()));
         } catch(HousemateException e) {
-            log.e("Failed to get device names of existing tasks");
-            log.st(e);
+            log.e("Failed to get device names of existing tasks", e);
         }
     }
 

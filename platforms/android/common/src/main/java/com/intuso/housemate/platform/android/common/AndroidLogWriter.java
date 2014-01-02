@@ -26,22 +26,22 @@ public class AndroidLogWriter extends LogWriter {
     }
 
     @Override
-    protected void _write(LogLevel level, String message) {
+    protected void _write(LogLevel level, String message, Throwable t) {
         switch (level) {
             case DEBUG:
-                Log.d(tag, message);
+                Log.d(tag, message, t);
                 break;
             case WARN:
-                Log.w(tag, message);
+                Log.w(tag, message, t);
                 break;
             case ERROR:
-                Log.e(tag, message);
+                Log.e(tag, message, t);
                 break;
             case FATAL:
-                Log.e(tag, message);
+                Log.e(tag, message, t);
                 break;
             case INFO:
-                Log.i(tag, message);
+                Log.i(tag, message, t);
                 break;
         }
     }

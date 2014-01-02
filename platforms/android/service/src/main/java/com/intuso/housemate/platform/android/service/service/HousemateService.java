@@ -65,8 +65,7 @@ public class HousemateService extends Service {
                         reply.getData().putString("id", id);
                         msg.replyTo.send(reply);
                     } catch (RemoteException e) {
-                        environment.getLog().e("Failed to send message to client");
-                        environment.getLog().st(e);
+                        environment.getLog().e("Failed to send message to client", e);
                     }
                     break;
                 case MessageCodes.DISCONNECT:
@@ -101,8 +100,7 @@ public class HousemateService extends Service {
                 msg.getData().putParcelable("message", new ParcelableMessage(message));
                 clientReceiver.send(msg);
             } catch(RemoteException e) {
-                environment.getLog().e("Failed to send message to client");
-                environment.getLog().st(e);
+                environment.getLog().e("Failed to send message to client", e);
             }
         }
     }

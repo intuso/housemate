@@ -112,8 +112,7 @@ public class ServerRealAutomation
                 task.executeTask();
         } catch (HousemateException e) {
             getErrorValue().setTypedValue("Failed to perform automation tasks: " + e.getMessage());
-            getLog().e("Failed to perform automation tasks");
-            getLog().st(e);
+            getLog().e("Failed to perform automation tasks", e);
         }
     }
 

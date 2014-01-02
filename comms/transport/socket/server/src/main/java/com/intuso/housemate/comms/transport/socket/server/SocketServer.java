@@ -52,8 +52,7 @@ public class SocketServer extends Router {
             serverSocket = new ServerSocket(Integer.parseInt(port));
             accepter = new Accepter();
         } catch (IOException e) {
-            log.e("Could not open port to listen on");
-            log.st(e);
+            log.e("Could not open port to listen on", e);
             throw new HousemateException("Could not open port to listen on", e);
         }
     }
@@ -103,12 +102,10 @@ public class SocketServer extends Router {
                     new ClientHandle(SocketServer.this, socket, log);
                 } catch (IOException e) {
                     if(!serverSocket.isClosed()) {
-                        log.e("Error getting next client connection.");
-                        log.st(e);
+                        log.e("Error getting next client connection.", e);
                     }
                 } catch(HousemateException e) {
-                    log.e("Could not create client handle for new client connection");
-                    log.st(e);
+                    log.e("Could not create client handle for new client connection", e);
                 }
             }
         }

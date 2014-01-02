@@ -53,8 +53,7 @@ public abstract class Router implements Sender, Receiver {
                     try {
                         receiver.messageReceived(message);
                     } catch(HousemateException e) {
-                        log.e("Failed to notify client of new router status");
-                        log.st(e);
+                        log.e("Failed to notify client of new router status", e);
                     }
                 }
             }

@@ -217,8 +217,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
             try {
                 result.add(constructor.newInstance(resources));
             } catch(Exception e) {
-                resources.getLog().e("Failed to create type instance");
-                resources.getLog().st(e);
+                resources.getLog().e("Failed to create type instance", e);
             }
         }
         return result;
@@ -231,8 +230,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
             try {
                 result.add(constructor.newInstance());
             } catch(Exception e) {
-                resources.getLog().e("Failed to create type comparator");
-                resources.getLog().st(e);
+                resources.getLog().e("Failed to create type comparator", e);
             }
         }
         return result;
@@ -245,8 +243,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
             try {
                 result.add(constructor.newInstance());
             } catch(Exception e) {
-                resources.getLog().e("Failed to create type operator");
-                resources.getLog().st(e);
+                resources.getLog().e("Failed to create type operator", e);
             }
         }
         return result;
@@ -259,8 +256,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
             try {
                 result.add(constructor.newInstance());
             } catch(Exception e) {
-                resources.getLog().e("Failed to create type transformer");
-                resources.getLog().st(e);
+                resources.getLog().e("Failed to create type transformer", e);
             }
         }
         return result;

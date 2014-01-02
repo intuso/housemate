@@ -87,8 +87,7 @@ public abstract class RealCommand
             perform(values);
             listener.commandFinished(this);
         } catch(Throwable t) {
-            getLog().e("Failed to perform command");
-            getLog().st(t);
+            getLog().e("Failed to perform command", t);
             listener.commandFailed(this, t.getMessage());
         }
     }

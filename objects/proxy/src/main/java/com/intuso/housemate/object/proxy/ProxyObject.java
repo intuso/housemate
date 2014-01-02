@@ -102,8 +102,7 @@ public abstract class ProxyObject<
                             }
                             manager.responseReceived(message.getPayload().getTreeData().getId(), true);
                         } catch(HousemateException e) {
-                            getLog().e("Failed to unwrap load response");
-                            getLog().st(e);
+                            getLog().e("Failed to unwrap load response", e);
                             manager.responseReceived(message.getPayload().getTreeData().getId(), true);
                         }
                     }

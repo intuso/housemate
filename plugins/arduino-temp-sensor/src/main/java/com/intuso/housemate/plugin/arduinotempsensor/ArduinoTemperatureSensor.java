@@ -63,16 +63,14 @@ public class ArduinoTemperatureSensor extends RealDevice {
         try {
             serialPort.removeEventListener();
         } catch(SerialPortException e) {
-            getLog().e("Failed to remove serial port event listener");
-            getLog().st(e);
+            getLog().e("Failed to remove serial port event listener", e);
         }
         if(lineReader != null) {
             lineReader.interrupt();
             try {
                 lineReader.join();
             } catch(InterruptedException e) {
-                getLog().e("Interrupted waiting for reader to finish");
-                getLog().st(e);
+                getLog().e("Interrupted waiting for reader to finish", e);
             }
             lineReader = null;
         }
@@ -86,11 +84,9 @@ public class ArduinoTemperatureSensor extends RealDevice {
                 while((available = serialPort.getInputBufferBytesCount()) > 0)
                     output.write(serialPort.readBytes(available));
             } catch(IOException e) {
-                getLog().e("Failed to read data from Arduino");
-                getLog().st(e);
+                getLog().e("Failed to read data from Arduino", e);
             } catch(SerialPortException e) {
-                getLog().e("Failed to read data from Arduino");
-                getLog().st(e);
+                getLog().e("Failed to read data from Arduino", e);
             }
         }
     }
@@ -110,14 +106,12 @@ public class ArduinoTemperatureSensor extends RealDevice {
                     }
                 }
             } catch(IOException e) {
-                getLog().e("Error reading temperature from Arduino");
-                getLog().st(e);
+                getLog().e("Error reading temperature from Arduino", e);
             }
             try {
                 in.close();
             } catch(IOException e) {
-                getLog().e("Failed to close connection to the Arduino");
-                getLog().st(e);
+                getLog().e("Failed to close connection to the Arduino", e);
             }
         }
     }

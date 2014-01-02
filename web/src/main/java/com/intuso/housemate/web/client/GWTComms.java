@@ -16,8 +16,7 @@ public class GWTComms extends Router {
     private AsyncCallback<Void> sendCallback = new AsyncCallback<Void>() {
         @Override
         public void onFailure(Throwable throwable) {
-            getLog().e("Failed to send message");
-            getLog().st(throwable);
+            getLog().e("Failed to send message", throwable);
         }
 
         @Override
@@ -41,8 +40,7 @@ public class GWTComms extends Router {
                 try {
                     messageReceived(message);
                 } catch(Throwable t) {
-                    getLog().e("Failed to process received message");
-                    getLog().st(t);
+                    getLog().e("Failed to process received message", t);
                 }
             }
 

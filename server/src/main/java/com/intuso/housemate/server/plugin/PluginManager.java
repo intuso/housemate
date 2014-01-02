@@ -39,8 +39,7 @@ public class PluginManager {
         try {
             plugin.init(realResources);
         } catch(HousemateException e) {
-            log.e("Failed to initialise plugin");
-            log.st(e);
+            log.e("Failed to initialise plugin", e);
             return;
         }
         plugins.add(plugin);

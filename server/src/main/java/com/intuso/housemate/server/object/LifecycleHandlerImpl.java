@@ -58,8 +58,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
             try {
                 storage.saveTypeInstances(value.getPath(), value.getTypeInstances());
             } catch(HousemateException e) {
-                log.e("Failed to save running value of device");
-                log.st(e);
+                log.e("Failed to save running value of device", e);
             }
         }
     };

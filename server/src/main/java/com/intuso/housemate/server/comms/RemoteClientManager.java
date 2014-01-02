@@ -104,8 +104,7 @@ public class RemoteClientManager {
             client = addClient(connectionId, response.getUserId(), route, request.getType(), request.getType() == ConnectionType.Router && request.getMethod().isClientsAuthenticated());
             client.setRoute(route);
         } catch(HousemateException e) {
-            log.e("Failed to add client endpoint for " + Message.routeToString(route));
-            log.st(e);
+            log.e("Failed to add client endpoint for " + Message.routeToString(route), e);
             log.d("Maybe one of the intermediate clients isn't connected or isn't of type " + ConnectionType.Router);
             return;
         }

@@ -88,8 +88,7 @@ public final class MainRouter extends Router {
         try {
             messageReceived(message);
         } catch(HousemateException e) {
-            getLog().e("Failed to send message to client");
-            getLog().st(e);
+            getLog().e("Failed to send message to client", e);
             throw e;
         }
 	}
@@ -142,8 +141,7 @@ public final class MainRouter extends Router {
                             new ClientPayload<Message.Payload>(client, message.getPayload()), message.getRoute());
                     root.messageReceived(message);
                 } catch(Throwable t) {
-                    getLog().e("Failed to distribute received message");
-                    getLog().st(t);
+                    getLog().e("Failed to distribute received message", t);
                 }
             }
         }

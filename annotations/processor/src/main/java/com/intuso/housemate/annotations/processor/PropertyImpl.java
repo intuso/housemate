@@ -27,8 +27,7 @@ public class PropertyImpl extends RealProperty<Object> {
                 try {
                     field.set(instance, value.getTypedValue());
                 } catch(IllegalAccessException e) {
-                    getResources().getLog().e("Failed to update value for annotated property " + getId());
-                    getResources().getLog().st(e);
+                    getResources().getLog().e("Failed to update value for annotated property " + getId(), e);
                 }
             }
         });

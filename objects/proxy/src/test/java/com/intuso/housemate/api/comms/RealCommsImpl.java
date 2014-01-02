@@ -37,8 +37,7 @@ public class RealCommsImpl extends Router {
             if(proxyRoot != null)
                 proxyRoot.distributeMessage(message);
         } catch(HousemateException e) {
-            getLog().e("Could not send message to proxy root");
-            getLog().st(e);
+            getLog().e("Could not send message to proxy root", e);
         }
     }
 }

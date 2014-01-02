@@ -76,8 +76,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection, RootL
             msg.replyTo = receiver;
             sender.send(msg);
         } catch (RemoteException e) {
-            getLog().e("Failed to connect to service");
-            getLog().st(e);
+            getLog().e("Failed to connect to service", e);
         }
     }
 
@@ -107,8 +106,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection, RootL
                     try {
                         messageReceived(((ParcelableMessage)msg.getData().getParcelable("message")).getMessage());
                     } catch (HousemateException e) {
-                        getLog().e("Failed to process received message");
-                        getLog().st(e);
+                        getLog().e("Failed to process received message", e);
                     }
                     break;
                 case MessageCodes.CONNECTED:

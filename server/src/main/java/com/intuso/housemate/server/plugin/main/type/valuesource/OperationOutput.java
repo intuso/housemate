@@ -60,8 +60,7 @@ public class OperationOutput extends ValueSource implements ValueAvailableListen
                     value = new ComputedValue(outputType);
                 value.setTypeInstances(new TypeInstances(outputType.serialise(result)));
             } catch(HousemateException e) {
-                log.e("Failed to operate on values");
-                log.st(e);
+                log.e("Failed to operate on values", e);
                 value = null;
                 return;
             }

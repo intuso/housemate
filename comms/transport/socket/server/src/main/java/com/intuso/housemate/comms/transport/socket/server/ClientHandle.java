@@ -168,8 +168,7 @@ public final class ClientHandle implements Receiver<Message.Payload> {
                         routerRegistration.sendMessage(message);
                     }
 				} catch(HousemateException e) {
-                    log.e("Failed to read message from the queue");
-                    log.st(e);
+                    log.e("Failed to read message from the queue", e);
 					close();
 					break;
 				}
@@ -247,8 +246,7 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 					sendMessage(toSend);
 				}
 			} catch(HousemateException e) {
-				log.e("Error sending message to client. Closing client connection");
-				log.st(e);
+				log.e("Error sending message to client. Closing client connection", e);
 				close();
 			}
 		}

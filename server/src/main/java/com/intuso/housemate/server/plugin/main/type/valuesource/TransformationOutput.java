@@ -57,8 +57,7 @@ public class TransformationOutput extends ValueSource implements ValueAvailableL
                 value = new ComputedValue(outputType);
             value.setTypeInstances(new TypeInstances(outputType.serialise(result)));
         } catch(HousemateException e) {
-            log.e("Failed to transform value");
-            log.st(e);
+            log.e("Failed to transform value", e);
             value = null;
             return;
         }

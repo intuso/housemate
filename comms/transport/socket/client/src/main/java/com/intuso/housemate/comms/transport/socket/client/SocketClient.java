@@ -178,11 +178,9 @@ public class SocketClient extends Router {
                 } catch (UnknownHostException e) {
                     getLog().e("Server host \"" + host + ":" + port + "\" is unknown, cannot connect");
                 } catch (IOException e) {
-                    getLog().e("Error connecting to server: " + e.getMessage());
-                    getLog().st(e);
+                    getLog().e("Error connecting to server: " + e.getMessage(), e);
                 } catch (HousemateException e) {
-                    getLog().e("Error connecting to server: " + e.getMessage());
-                    getLog().st(e);
+                    getLog().e("Error connecting to server: " + e.getMessage(), e);
                 }
 
                 getLog().e("Failed to connect to server. Retrying in " + delay + " seconds");
@@ -236,8 +234,7 @@ public class SocketClient extends Router {
                     }
                 }
             } catch (HousemateException e) {
-                getLog().e("Error reading from server socket connection");
-                getLog().st(e);
+                getLog().e("Error reading from server socket connection", e);
                 disconnect(true);
             }
 
@@ -310,8 +307,7 @@ public class SocketClient extends Router {
                         break;
                     getLog().d("Interrupted waiting for message to send. Trying again");
                 } catch(IOException e) {
-                    getLog().e("Error sending message to client. Will attempt to reconnect");
-                    getLog().st(e);
+                    getLog().e("Error sending message to client. Will attempt to reconnect", e);
                     disconnect(true);
                     break;
                 } catch(HousemateException e) {

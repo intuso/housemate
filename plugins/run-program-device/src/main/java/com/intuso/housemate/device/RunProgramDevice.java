@@ -44,8 +44,7 @@ public class RunProgramDevice extends RealDevice {
 					throw new HousemateException("No command has been set");
 				Runtime.getRuntime().exec(command.getTypedValue());
 			} catch (Throwable t) {
-				getLog().e("Could not start program: " + t.getMessage());
-				getLog().st(t);
+				getLog().e("Could not start program: " + t.getMessage(), t);
 				throw new HousemateException("Could not start program", t);
 			}
 		}
@@ -105,8 +104,7 @@ public class RunProgramDevice extends RealDevice {
 			p = Runtime.getRuntime().exec(cmd);
 		} catch (IOException e) {
 			// TODO - put device in error?
-			getLog().e("Could not run check if program is running");
-			getLog().st(e);
+			getLog().e("Could not run check if program is running", e);
 			return null;
 		}
 
@@ -115,8 +113,7 @@ public class RunProgramDevice extends RealDevice {
 			rc = p.waitFor();
 		} catch (InterruptedException e) {
 			// TODO - put device in error?
-			getLog().e("Interrupted waiting for check if program is running to complete");
-			getLog().st(e);
+			getLog().e("Interrupted waiting for check if program is running to complete", e);
 			return null;
 		}
 		
@@ -136,8 +133,7 @@ public class RunProgramDevice extends RealDevice {
 				return null;
 			} catch(IOException e) {
 				// TODO - put device in error?
-				getLog().e("Could not read result of check if program is running");
-				getLog().st(e);
+				getLog().e("Could not read result of check if program is running", e);
 				return null;
 			}
 		}
@@ -152,8 +148,7 @@ public class RunProgramDevice extends RealDevice {
 			return null;
 		} catch(IOException e) {
 			// TODO - put device in error?
-			getLog().e("Check if program is running failed and could not read error");
-			getLog().st(e);
+			getLog().e("Check if program is running failed and could not read error", e);
 			return null;
 		}
 	}

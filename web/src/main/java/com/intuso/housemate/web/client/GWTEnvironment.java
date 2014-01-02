@@ -75,8 +75,8 @@ public class GWTEnvironment {
         }
 
         @Override
-        protected void _write(LogLevel level, String message) {
-            GWT.log(level + ": " + message);
+        protected void _write(LogLevel level, String message, Throwable t) {
+            GWT.log(level + ": " + message, t);
         }
     }
 }

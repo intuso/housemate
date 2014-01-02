@@ -268,8 +268,7 @@ public class ServerEnvironment {
                     try {
                         result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl));
                     } catch(HousemateException e) {
-                        log.e("Failed to load plugin descriptor");
-                        log.st(e);
+                        log.e("Failed to load plugin descriptor", e);
                     }
                 }
                 for(Map.Entry<String, Attributes> mfEntry : mf.getEntries().entrySet()) {
@@ -278,8 +277,7 @@ public class ServerEnvironment {
                         try {
                             result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl));
                         } catch(HousemateException e) {
-                            log.e("Failed to load plugin descriptor");
-                            log.st(e);
+                            log.e("Failed to load plugin descriptor", e);
                         }
                     }
                 }
@@ -404,15 +402,13 @@ public class ServerEnvironment {
                 if(is != null)
                     is.close();
             } catch(IOException e) {
-                log.e("Failed to close input stream when copying webapp");
-                log.st(e);
+                log.e("Failed to close input stream when copying webapp", e);
             }
             try {
                 if(os != null)
                     os.close();
             } catch(IOException e) {
-                log.e("Failed to close input stream when copying webapp");
-                log.st(e);
+                log.e("Failed to close input stream when copying webapp", e);
             }
         }
     }

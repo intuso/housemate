@@ -109,8 +109,7 @@ public class ValueComparison extends ServerRealCondition {
                 setError(null);
             } catch(HousemateException e) {
                 setError("Error comparing values: " + e.getMessage());
-                getLog().e("Error comparing values");
-                getLog().st(e);
+                getLog().e("Error comparing values", e);
             }
         }
     }

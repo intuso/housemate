@@ -74,8 +74,7 @@ public class ServerObjectPersister {
             } catch(DetailsNotFoundException e) {
                 log.w("No details found for whether the device was previously running" + Arrays.toString(device.getPath()));
             } catch(HousemateException e) {
-                log.e("Failed to check value for whether the device was previously running");
-                log.st(e);
+                log.e("Failed to check value for whether the device was previously running", e);
             }
         }
 
@@ -90,8 +89,7 @@ public class ServerObjectPersister {
             try {
                 storage.removeValues(device.getPath());
             } catch(HousemateException e) {
-                log.e("Failed to delete device properties");
-                log.st(e);
+                log.e("Failed to delete device properties", e);
             }
         }
     }
@@ -121,8 +119,7 @@ public class ServerObjectPersister {
             } catch(DetailsNotFoundException e) {
                 log.w("No details found for whether the device was previously running" + Arrays.toString(automation.getPath()));
             } catch(HousemateException e) {
-                log.e("Failed to check value for whether the device was previously running");
-                log.st(e);
+                log.e("Failed to check value for whether the device was previously running", e);
             }
         }
 
@@ -145,8 +142,7 @@ public class ServerObjectPersister {
             try {
                 storage.removeValues(automation.getPath());
             } catch(HousemateException e) {
-                log.e("Failed to delete automation properties");
-                log.st(e);
+                log.e("Failed to delete automation properties", e);
             }
         }
     }
@@ -203,8 +199,7 @@ public class ServerObjectPersister {
             } catch(DetailsNotFoundException e) {
                 log.w("No details found for property value " + Arrays.toString(property.getPath()));
             } catch(HousemateException e) {
-                log.e("Failed to set property value " + Arrays.toString(property.getPath()));
-                log.st(e);
+                log.e("Failed to set property value " + Arrays.toString(property.getPath()), e);
             }
             listeners.put(property, property.addObjectListener(watchPropertyListener));
         }
@@ -229,8 +224,7 @@ public class ServerObjectPersister {
             try {
                 storage.saveTypeInstances(property.getPath(), property.getTypeInstances());
             } catch(HousemateException e) {
-                log.e("Failed to save property value");
-                log.st(e);
+                log.e("Failed to save property value", e);
             }
         }
     }
