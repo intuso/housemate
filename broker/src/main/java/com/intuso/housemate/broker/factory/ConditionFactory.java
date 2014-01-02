@@ -1,12 +1,16 @@
 package com.intuso.housemate.broker.factory;
 
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.broker.PluginListener;
-import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
+import com.intuso.housemate.broker.plugin.PluginListener;
+import com.intuso.housemate.broker.plugin.PluginManager;
+import com.intuso.housemate.broker.storage.Storage;
 import com.intuso.housemate.object.broker.real.*;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
@@ -16,11 +20,11 @@ import com.intuso.housemate.plugin.api.BrokerConditionFactory;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  */
+@Singleton
 public final class ConditionFactory implements PluginListener {
 
     public final static String TYPE_ID = "condition-factory";
@@ -37,15 +41,21 @@ public final class ConditionFactory implements PluginListener {
     public final static String TYPE_PARAMETER_NAME = "Type";
     public final static String TYPE_PARAMETER_DESCRIPTION = "The type of the new condition";
 
-    private final BrokerGeneralResources resources;
-    private final Map<String, BrokerConditionFactory<?>> factories;
+    private final BrokerRealResources brokerRealResources;
+    private final RealResources realResources;
+    private final Storage storage;
+    
+    private final Map<String, BrokerConditionFactory<?>> factories = Maps.newHashMap();
     private final ConditionFactoryType type;
 
-    public ConditionFactory(BrokerGeneralResources resources) {
-        this.resources = resources;
-        factories = new HashMap<String, BrokerConditionFactory<?>>();
-        type = new ConditionFactoryType(resources.getClientResources());
-        resources.addPluginListener(this, true);
+    @Inject
+    public ConditionFactory(BrokerRealResources brokerRealResources, RealResources realResources,
+                            Storage storage, PluginManager pluginManager) {
+        this.brokerRealResources = brokerRealResources;
+        this.realResources = realResources;
+        this.storage = storage;
+        type = new ConditionFactoryType(realResources);
+        pluginManager.addPluginListener(this, true);
     }
 
     public ConditionFactoryType getType() {
@@ -55,17 +65,17 @@ public final class ConditionFactory implements PluginListener {
     public BrokerRealCommand createAddConditionCommand(String commandId, String commandName, String commandDescription,
                                                        final BrokerRealConditionOwner owner,
                                                        final BrokerRealList<ConditionData, BrokerRealCondition> list) {
-        return new BrokerRealCommand(resources.getRealResources(), commandId, commandName, commandDescription, Arrays.asList(
-                new BrokerRealParameter<String>(resources.getRealResources(), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
-                new BrokerRealParameter<String>(resources.getRealResources(), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
-                new BrokerRealParameter<BrokerConditionFactory<?>>(resources.getRealResources(), TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
+        return new BrokerRealCommand(brokerRealResources, commandId, commandName, commandDescription, Arrays.asList(
+                new BrokerRealParameter<String>(brokerRealResources, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(realResources)),
+                new BrokerRealParameter<String>(brokerRealResources, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(realResources)),
+                new BrokerRealParameter<BrokerConditionFactory<?>>(brokerRealResources, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 BrokerRealCondition condition = createCondition(values, owner);
                 // todo process annotations
                 list.add(condition);
-                resources.getStorage().saveValues(list.getPath(), condition.getId(), values);
+                storage.saveValues(list.getPath(), condition.getId(), values);
             }
         };
     }
@@ -83,15 +93,15 @@ public final class ConditionFactory implements PluginListener {
         BrokerConditionFactory<?> conditionFactory = type.deserialise(conditionType.get(0));
         if(conditionFactory == null)
             throw new HousemateException("No factory known for condition type " + conditionType);
-        return conditionFactory.create(resources.getRealResources(), name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), owner);
+        return conditionFactory.create(brokerRealResources, name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), owner);
     }
 
     @Override
     public void pluginAdded(PluginDescriptor plugin) {
         for(BrokerConditionFactory<?> factory : plugin.getConditionFactories()) {
-            resources.getLog().d("Adding new condition factory for type " + factory.getTypeId());
+            realResources.getLog().d("Adding new condition factory for type " + factory.getTypeId());
             factories.put(factory.getTypeId(), factory);
-            type.getOptions().add(new RealOption(resources.getClientResources(), factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
+            type.getOptions().add(new RealOption(realResources, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
         }
     }
 

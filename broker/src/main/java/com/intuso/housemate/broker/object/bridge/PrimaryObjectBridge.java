@@ -3,6 +3,8 @@ package com.intuso.housemate.broker.object.bridge;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
@@ -22,13 +24,14 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateDat
     private CommandBridge stopCommand;
     private ValueBridge errorValue;
 
-    protected PrimaryObjectBridge(BrokerBridgeResources resources, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?> proxyObject) {
+    protected PrimaryObjectBridge(BrokerBridgeResources resources, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?> proxyObject,
+                                  ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
         super(resources,  data);
-        removeCommand = new CommandBridge(resources, proxyObject.getRemoveCommand());
-        runningValue = new ValueBridge(resources, proxyObject.getRunningValue());
-        startCommand = new CommandBridge(resources, proxyObject.getStartCommand());
-        stopCommand = new CommandBridge(resources, proxyObject.getStopCommand());
-        errorValue = new ValueBridge(resources, proxyObject.getErrorValue());
+        removeCommand = new CommandBridge(resources, proxyObject.getRemoveCommand(), types);
+        runningValue = new ValueBridge(resources, proxyObject.getRunningValue(), types);
+        startCommand = new CommandBridge(resources, proxyObject.getStartCommand(), types);
+        stopCommand = new CommandBridge(resources, proxyObject.getStopCommand(), types);
+        errorValue = new ValueBridge(resources, proxyObject.getErrorValue(), types);
         addChild(removeCommand);
         addChild(runningValue);
         addChild(startCommand);

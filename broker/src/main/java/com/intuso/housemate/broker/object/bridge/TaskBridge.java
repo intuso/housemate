@@ -7,6 +7,8 @@ import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.task.Task;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.task.TaskListener;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
@@ -34,12 +36,14 @@ public class TaskBridge
     private ValueBridge errorValue;
     private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
-    public TaskBridge(BrokerBridgeResources resources, Task<?, ?, ?, ?, ?> task) {
+    public TaskBridge(BrokerBridgeResources resources, Task<?, ?, ?, ?, ?> task,
+                      ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
         super(resources, new TaskData(task.getId(), task.getName(), task.getDescription()));
-        removeCommand = new CommandBridge(resources, task.getRemoveCommand());
-        executingValue = new ValueBridge(resources,task.getExecutingValue());
-        errorValue = new ValueBridge(resources,task.getErrorValue());
-        propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, task.getProperties(), new PropertyBridge.Converter(resources));
+        removeCommand = new CommandBridge(resources, task.getRemoveCommand(), types);
+        executingValue = new ValueBridge(resources,task.getExecutingValue(), types);
+        errorValue = new ValueBridge(resources,task.getErrorValue(), types);
+        propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, task.getProperties(),
+                new PropertyBridge.Converter(resources, types));
         addChild(removeCommand);
         addChild(executingValue);
         addChild(errorValue);
@@ -81,14 +85,16 @@ public class TaskBridge
     public static class Converter implements Function<Task<?, ?, ?, ?, ?>, TaskBridge> {
 
         private final BrokerBridgeResources resources;
+        private final ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types;
 
-        public Converter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources, ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
             this.resources = resources;
+            this.types = types;;
         }
 
         @Override
         public TaskBridge apply(Task<?, ?, ?, ?, ?> command) {
-            return new TaskBridge(resources, command);
+            return new TaskBridge(resources, command, types);
         }
     }
 }

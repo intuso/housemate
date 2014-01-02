@@ -3,6 +3,8 @@ package com.intuso.housemate.object.real.impl.type;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.root.Root;
@@ -17,6 +19,7 @@ import java.util.List;
 /**
  * Type for an object from the object tree
  */
+@Singleton
 public class RealObjectType<O extends BaseHousemateObject<?>>
         extends RealType<ObjectTypeData, NoChildrenData, RealObjectType.Reference<O>> {
 
@@ -32,6 +35,7 @@ public class RealObjectType<O extends BaseHousemateObject<?>>
      * @param resources the resources
      * @param root the root to get the object from
      */
+    @Inject
     public RealObjectType(RealResources resources, Root<?> root) {
         super(resources, new ObjectTypeData(ID, NAME, "Path to an object", 1, 1));
         serialiser = new Serialiser<O>(root);
@@ -116,6 +120,7 @@ public class RealObjectType<O extends BaseHousemateObject<?>>
         /**
          * @param root the root to get the object from
          */
+        @Inject
         public Serialiser(Root<?> root) {
             this.root = root;
         }

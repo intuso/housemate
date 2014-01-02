@@ -1,22 +1,29 @@
 package com.intuso.housemate.broker.client;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.object.real.RealCommand;
-import com.intuso.housemate.object.real.RealRootObject;
+import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.object.broker.LifecycleHandler;
+import com.intuso.housemate.object.real.*;
 
 /**
  * Version of a root object for broker-internal objects
  */
+@Singleton
 public class LocalClientRoot extends RealRootObject {
 
     private final RealCommand addDeviceCommand;
 
-    public LocalClientRoot(BrokerGeneralResources resources) {
-        super(resources.getClientResources());
-        addDeviceCommand = resources.getLifecycleHandler().createAddDeviceCommand(getDevices());
+    @Inject
+    public LocalClientRoot(RealResources resources, RealList<TypeData<?>, RealType<?, ?, ?>> types,
+                final LifecycleHandler lifecycleHandler) {
+        super(resources, types, new RealList<DeviceData, RealDevice>(resources, Root.DEVICES_ID, "Devices", "Devices"));
+        addDeviceCommand = lifecycleHandler.createAddDeviceCommand(getDevices());
         addChild(addDeviceCommand);
     }
 

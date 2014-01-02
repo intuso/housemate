@@ -1,5 +1,7 @@
 package com.intuso.housemate.object.broker.real;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
@@ -12,8 +14,10 @@ import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.user.UserData;
+import com.intuso.housemate.object.broker.LifecycleHandler;
 import com.intuso.utilities.listener.ListenerRegistration;
 
+@Singleton
 public class BrokerRealRootObject
         extends BrokerRealObject<RootData, HousemateData<?>, BrokerRealObject<?, ?, ?, ?>, RootListener<? super BrokerRealRootObject>>
         implements Root<BrokerRealRootObject> {
@@ -26,12 +30,13 @@ public class BrokerRealRootObject
     /**
      * @param resources {@inheritDoc}
      */
-    public BrokerRealRootObject(BrokerRealResources resources) {
+    @Inject
+    public BrokerRealRootObject(BrokerRealResources resources, LifecycleHandler lifecycleHandler) {
         super(resources, new RootData());
         users = new BrokerRealList<UserData, BrokerRealUser>(resources, USERS_ID, USERS_ID, "The defined users");
         automations = new BrokerRealList<AutomationData, BrokerRealAutomation>(resources, AUTOMATIONS_ID, AUTOMATIONS_ID, "The defined automations");
-        addUserCommand = getResources().getLifecycleHandler().createAddUserCommand(users);
-        addAutomationCommand = getResources().getLifecycleHandler().createAddAutomationCommand(automations);
+        addUserCommand = lifecycleHandler.createAddUserCommand(users);
+        addAutomationCommand = lifecycleHandler.createAddAutomationCommand(automations);
 
         addChild(users);
         addChild(automations);

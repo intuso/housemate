@@ -1,6 +1,8 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Joiner;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
@@ -16,9 +18,13 @@ import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.UserData;
+import com.intuso.housemate.broker.client.LocalClient;
+import com.intuso.housemate.broker.storage.BrokerObjectPersister;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyDevice;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyRootObject;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 import com.intuso.housemate.object.broker.real.BrokerRealAutomation;
+import com.intuso.housemate.object.broker.real.BrokerRealRootObject;
 import com.intuso.housemate.object.broker.real.BrokerRealUser;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -29,6 +35,7 @@ import java.util.Map;
 
 /**
  */
+@Singleton
 public class RootObjectBridge
         extends BridgeObject<RootData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>,
             RootObjectBridge, RootListener<? super RootObjectBridge>>
@@ -44,24 +51,22 @@ public class RootObjectBridge
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
-    public RootObjectBridge(final BrokerBridgeResources resources) {
+    @Inject
+    public RootObjectBridge(final BrokerBridgeResources resources, BrokerRealRootObject realRoot,
+                            ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types,
+                            BrokerProxyRootObject proxyRoot, LocalClient client, BrokerObjectPersister storage) {
         super(resources, new RootData());
         resources.setRoot(this);
         users = new ListBridge<UserData, BrokerRealUser, UserBridge>(resources,
-                resources.getGeneralResources().getRealResources().getRoot().getUsers(),
-                new UserBridge.Converter(resources));
-        types = new ListBridge<TypeData<?>, BrokerProxyType, TypeBridge>(resources,
-                resources.getGeneralResources().getProxyResources().getRoot().getTypes(),
-                new TypeBridge.Converter(resources));
+                realRoot.getUsers(), new UserBridge.Converter(resources, types));
+        this.types = types;
         devices = new ListBridge<DeviceData, BrokerProxyDevice, DeviceBridge>(resources,
-                resources.getGeneralResources().getProxyResources().getRoot().getDevices(),
-                new DeviceBridge.Converter(resources));
+                proxyRoot.getDevices(), new DeviceBridge.Converter(resources, types));
         automations = new ListBridge<AutomationData, BrokerRealAutomation, AutomationBridge>(resources,
-                resources.getGeneralResources().getRealResources().getRoot().getAutomations(),
-                new AutomationBridge.Converter(resources));
-        addUser = new CommandBridge(resources, resources.getGeneralResources().getRealResources().getRoot().getAddUserCommand());
-        addDevice = new CommandBridge(resources, resources.getGeneralResources().getClient().getAddDeviceCommand());
-        addAutomation = new CommandBridge(resources, resources.getGeneralResources().getRealResources().getRoot().getAddAutomationCommand());
+                realRoot.getAutomations(), new AutomationBridge.Converter(resources, types));
+        addUser = new CommandBridge(resources, realRoot.getAddUserCommand(), types);
+        addDevice = new CommandBridge(resources, client.getAddDeviceCommand(), types);
+        addAutomation = new CommandBridge(resources, realRoot.getAddAutomationCommand(), types);
         addChild(users);
         addChild(types);
         addChild(devices);
@@ -69,8 +74,8 @@ public class RootObjectBridge
         addChild(addUser);
         addChild(addDevice);
         addChild(addAutomation);
-        getResources().getGeneralResources().getStorage().watchDevices(devices);
-        getResources().getGeneralResources().getStorage().watchAutomations(automations);
+        storage.watchDevices(devices);
+        storage.watchAutomations(automations);
         init(null);
     }
 

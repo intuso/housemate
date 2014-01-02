@@ -1,29 +1,31 @@
 package com.intuso.housemate.broker.factory;
 
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.intuso.housemate.annotations.processor.AnnotationProcessor;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.broker.PluginListener;
-import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.object.real.RealCommand;
-import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.RealParameter;
-import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.broker.plugin.PluginListener;
+import com.intuso.housemate.broker.plugin.PluginManager;
+import com.intuso.housemate.broker.storage.Storage;
+import com.intuso.housemate.object.real.*;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  */
+@Singleton
 public final class DeviceFactory implements PluginListener {
 
     public final static String TYPE_ID = "device-factory";
@@ -40,26 +42,36 @@ public final class DeviceFactory implements PluginListener {
     public final static String TYPE_PARAMETER_NAME = "Type";
     public final static String TYPE_PARAMETER_DESCRIPTION = "The type of the new device";
 
-    private final BrokerGeneralResources resources;
-    private final Map<String, RealDeviceFactory<?>> factories;
+    private final Log log;
+    private final RealResources realResources;
+    private final Storage storage;
+    private final AnnotationProcessor annotationProcessor;
+
+    private final Map<String, RealDeviceFactory<?>> factories = Maps.newHashMap();
     private final DeviceFactoryType type;
 
-    public DeviceFactory(BrokerGeneralResources resources) {
-        this.resources = resources;
-        factories = new HashMap<String, RealDeviceFactory<?>>();
-        type = new DeviceFactoryType(resources.getClientResources());
-        resources.addPluginListener(this, true);
+    @Inject
+    public DeviceFactory(Log log, RealResources realResources, Storage storage,
+                         AnnotationProcessor annotationProcessor, PluginManager pluginManager) {
+        this.log = log;
+        this.realResources = realResources;
+        this.storage = storage;
+        this.annotationProcessor = annotationProcessor;
+        type = new DeviceFactoryType(realResources);
+        pluginManager.addPluginListener(this, true);
     }
 
     public DeviceFactoryType getType() {
         return type;
     }
 
-    public RealCommand createAddDeviceCommand(String commandId, String commandName, String commandDescription, final RealList<DeviceData, RealDevice> list) {
-        return new RealCommand(resources.getClientResources(), commandId, commandName, commandDescription, Arrays.asList(
-                new RealParameter<String>(resources.getClientResources(), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
-                new RealParameter<String>(resources.getClientResources(), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(resources.getClientResources())),
-                new RealParameter<RealDeviceFactory<?>>(resources.getClientResources(), TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
+    public RealCommand createAddDeviceCommand(String commandId, String commandName, String commandDescription,
+                                              final RealList<TypeData<?>, RealType<?, ?, ?>> types,
+                                              final RealList<DeviceData, RealDevice> devices) {
+        return new RealCommand(realResources, commandId, commandName, commandDescription, Arrays.asList(
+                new RealParameter<String>(realResources, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(realResources)),
+                new RealParameter<String>(realResources, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(realResources)),
+                new RealParameter<RealDeviceFactory<?>>(realResources, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -75,10 +87,10 @@ public final class DeviceFactory implements PluginListener {
                 RealDeviceFactory<?> deviceFactory = type.deserialise(deviceType.get(0));
                 if(deviceFactory == null)
                     throw new HousemateException("No factory known for device type " + deviceType);
-                RealDevice device = deviceFactory.create(resources.getClientResources(), name.getFirstValue(), name.getFirstValue(), description.getFirstValue());
-                resources.getAnnotationProcessor().process(device);
-                list.add(device);
-                resources.getStorage().saveValues(list.getPath(), device.getId(), values);
+                RealDevice device = deviceFactory.create(realResources, name.getFirstValue(), name.getFirstValue(), description.getFirstValue());
+                annotationProcessor.process(types, device);
+                devices.add(device);
+                storage.saveValues(devices.getPath(), device.getId(), values);
             }
         };
     }
@@ -86,9 +98,9 @@ public final class DeviceFactory implements PluginListener {
     @Override
     public void pluginAdded(PluginDescriptor plugin) {
         for(RealDeviceFactory<?> factory : plugin.getDeviceFactories()) {
-            resources.getLog().d("Adding new device factory for type " + factory.getTypeId());
+            log.d("Adding new device factory for type " + factory.getTypeId());
             factories.put(factory.getTypeId(), factory);
-            type.getOptions().add(new RealOption(resources.getClientResources(), factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
+            type.getOptions().add(new RealOption(realResources, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
         }
     }
 

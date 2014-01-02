@@ -5,6 +5,8 @@ import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.subtype.SubType;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.subtype.SubTypeListener;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 
 /**
  */
@@ -14,9 +16,10 @@ public class SubTypeBridge
 
     private final TypeBridge type;
 
-    public SubTypeBridge(BrokerBridgeResources resources, SubType<?> subType) {
+    public SubTypeBridge(BrokerBridgeResources resources, SubType<?> subType,
+                         ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
         super(resources, new SubTypeData(subType.getId(), subType.getName(), subType.getDescription(), subType.getType().getId()));
-        type = resources.getGeneralResources().getBridgeResources().getRoot().getTypes().get(getData().getType());
+        type = types.get(getData().getType());
     }
 
     @Override
@@ -26,15 +29,17 @@ public class SubTypeBridge
 
     public final static class Converter implements Function<SubType<?>, SubTypeBridge> {
 
-        private BrokerBridgeResources resources;
+        private final BrokerBridgeResources resources;
+        private final ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types;
 
-        public Converter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources, ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
             this.resources = resources;
+            this.types = types;
         }
 
         @Override
         public SubTypeBridge apply(SubType<?> parameter) {
-            return new SubTypeBridge(resources, parameter);
+            return new SubTypeBridge(resources, parameter, types);
         }
     }
 }

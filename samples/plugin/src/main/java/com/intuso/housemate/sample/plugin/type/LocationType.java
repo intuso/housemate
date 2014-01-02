@@ -1,10 +1,13 @@
 package com.intuso.housemate.sample.plugin.type;
 
+import com.intuso.housemate.api.object.type.SimpleTypeData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealSubType;
-import com.intuso.housemate.object.real.impl.type.DoubleType;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealCompoundType;
 
 public class LocationType extends RealCompoundType<Location> {
@@ -21,16 +24,21 @@ public class LocationType extends RealCompoundType<Location> {
     public final static String LONGITUDE_NAME = "Longitude";
     public final static String LONGITUDE_DESCRIPTION = "The location's longitude";
 
-    protected LocationType(RealResources resources) {
-        super(resources, ID, NAME, DESCRIPTION, 1, 1, makeLatitudeSubType(resources), makeLongitudeSubType(resources));
+    protected LocationType(RealResources resources, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+        super(resources, ID, NAME, DESCRIPTION, 1, 1,
+                makeLatitudeSubType(resources, types), makeLongitudeSubType(resources, types));
     }
 
-    private static RealSubType<Double> makeLatitudeSubType(RealResources resources) {
-        return new RealSubType<Double>(resources, LATITUDE_ID, LATITUDE_NAME, LATITUDE_DESCRIPTION, new DoubleType(resources));
+    private static RealSubType<Double> makeLatitudeSubType(RealResources resources,
+                                                           RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+        return new RealSubType<Double>(resources, LATITUDE_ID, LATITUDE_NAME, LATITUDE_DESCRIPTION,
+                SimpleTypeData.Type.Double.getId(), types);
     }
 
-    private static RealSubType<Double> makeLongitudeSubType(RealResources resources) {
-        return new RealSubType<Double>(resources, LONGITUDE_ID, LONGITUDE_NAME, LONGITUDE_DESCRIPTION, new DoubleType(resources));
+    private static RealSubType<Double> makeLongitudeSubType(RealResources resources,
+                                                            RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+        return new RealSubType<Double>(resources, LONGITUDE_ID, LONGITUDE_NAME, LONGITUDE_DESCRIPTION,
+                SimpleTypeData.Type.Double.getId(), types);
     }
 
     @Override

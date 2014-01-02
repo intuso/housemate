@@ -1,10 +1,12 @@
 package com.intuso.housemate.broker.object.bridge;
 
 import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueBaseData;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
@@ -21,10 +23,11 @@ public class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
     private Value proxyValue;
     private final TypeBridge type;
 
-    public ValueBridgeBase(BrokerBridgeResources resources, WBL data, Value<?, ?> value) {
+    public ValueBridgeBase(BrokerBridgeResources resources, WBL data, Value<?, ?> value,
+                           ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
         super(resources, data);
         proxyValue = value;
-        type = resources.getGeneralResources().getBridgeResources().getRoot().getTypes().get(getData().getType());
+        type = types.get(getData().getType());
     }
 
     @Override

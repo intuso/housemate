@@ -1,5 +1,7 @@
 package com.intuso.housemate.object.real.impl.type;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.type.SimpleTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
@@ -13,6 +15,7 @@ import java.util.List;
 /**
  * Type for a boolean
  */
+@Singleton
 public class BooleanType extends RealSimpleType<Boolean> {
 
     public final static TypeSerialiser<Boolean> SERIALISER = new TypeSerialiser<Boolean>() {
@@ -30,6 +33,7 @@ public class BooleanType extends RealSimpleType<Boolean> {
     /**
      * @param resources {@inheritDoc}
      */
+    @Inject
     public BooleanType(RealResources resources) {
         super(resources, SimpleTypeData.Type.Boolean, SERIALISER);
     }

@@ -2,30 +2,18 @@ package com.intuso.housemate.annotations.processor;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.intuso.housemate.annotations.basic.Command;
-import com.intuso.housemate.annotations.basic.Parameter;
-import com.intuso.housemate.annotations.basic.Property;
-import com.intuso.housemate.annotations.basic.Value;
-import com.intuso.housemate.annotations.basic.Values;
+import com.google.inject.Inject;
+import com.intuso.housemate.annotations.basic.*;
 import com.intuso.housemate.annotations.feature.Id;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.HasCommands;
-import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.property.HasProperties;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.HasValues;
 import com.intuso.housemate.api.object.value.ValueData;
-import com.intuso.housemate.object.real.RealCommand;
-import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealObject;
-import com.intuso.housemate.object.real.RealParameter;
-import com.intuso.housemate.object.real.RealProperty;
-import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.RealValue;
+import com.intuso.housemate.object.real.*;
 import com.intuso.housemate.object.real.device.feature.RealFeature;
 import com.intuso.utilities.log.Log;
 
@@ -43,42 +31,31 @@ import java.util.Map;
 public class AnnotationProcessor {
 
     private final Log log;
-    private final Map<String, RealType<?, ?, ?>> registeredTypes = Maps.newHashMap();
 
-    public AnnotationProcessor(Log log, RealList<TypeData<?>, RealType<?, ?, ?>> registeredTypes) {
+    @Inject
+    public AnnotationProcessor(Log log) {
         this.log = log;
-        registeredTypes.addObjectListener(new ListListener<RealType<?, ?, ?>>() {
-            @Override
-            public void elementAdded(RealType<?, ?, ?> type) {
-                AnnotationProcessor.this.registeredTypes.put(type.getId(), type);
-            }
-
-            @Override
-            public void elementRemoved(RealType<?, ?, ?> type) {
-                AnnotationProcessor.this.registeredTypes.remove(type.getId());
-            }
-        }, true);
     }
 
-    public void process(RealObject<?, ?, ?, ?> object) throws HousemateException {
+    public void process(RealList<TypeData<?>, RealType<?, ?, ?>> types, RealObject<?, ?, ?, ?> object) throws HousemateException {
         if(object instanceof HasCommands)
-            parseCommands(object, ((HasCommands<RealList<CommandData, RealCommand>>)object).getCommands());
+            parseCommands(types, object, ((HasCommands<RealList<CommandData, RealCommand>>)object).getCommands());
         if(object instanceof HasProperties)
-            parseProperties(object, ((HasProperties<RealList<PropertyData, RealProperty<?>>>) object).getProperties());
+            parseProperties(types, object, ((HasProperties<RealList<PropertyData, RealProperty<?>>>) object).getProperties());
         if(object instanceof HasValues)
-            parseValues(object, ((HasValues<RealList<ValueData, RealValue<?>>>) object).getValues());
+            parseValues(types, object, ((HasValues<RealList<ValueData, RealValue<?>>>) object).getValues());
         if(object instanceof RealDevice)
             parseFeatures((RealDevice) object, (Class<? extends RealDevice>) object.getClass());
     }
     
-    private void parseCommands(RealObject<?, ?, ?, ?> object, RealList<CommandData, RealCommand> commands) throws HousemateException {
+    private void parseCommands(RealList<TypeData<?>, RealType<?, ?, ?>> types, RealObject<?, ?, ?, ?> object, RealList<CommandData, RealCommand> commands) throws HousemateException {
         for(Map.Entry<Method, Command> commandMethod : getAnnotatedMethods(object.getClass(), Command.class).entrySet())
             commands.add(new CommandImpl(object.getResources(), commandMethod.getValue().id(),
                     commandMethod.getValue().name(), commandMethod.getValue().description(),
-                    parseParameters(object.getResources(), commandMethod.getKey()), commandMethod.getKey(), object));
+                    parseParameters(types, object.getResources(), commandMethod.getKey()), commandMethod.getKey(), object));
     }
 
-    private List<RealParameter<?>> parseParameters(RealResources resources, Method method) throws HousemateException {
+    private List<RealParameter<?>> parseParameters(RealList<TypeData<?>, RealType<?, ?, ?>> types, RealResources resources, Method method) throws HousemateException {
         List<RealParameter<?>> result = Lists.newArrayList();
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         for(int a = 0; a < parameterAnnotations.length; a++) {
@@ -86,15 +63,15 @@ public class AnnotationProcessor {
             if(parameterAnnotation == null)
                 throw new HousemateException("Parameter " + a + " of command method " + method.getName()
                         + " is not annotated with " + Parameter.class.getName());
-            if(registeredTypes.get(parameterAnnotation.typeId()) == null)
+            if(types.get(parameterAnnotation.typeId()) == null)
                 throw new HousemateException(parameterAnnotation.typeId() + " type does not exist");
             result.add(new RealParameter(resources, parameterAnnotation.id(), parameterAnnotation.name(),
-                    parameterAnnotation.description(), registeredTypes.get(parameterAnnotation.typeId())));
+                    parameterAnnotation.description(), types.get(parameterAnnotation.typeId())));
         }
         return result;
     }
 
-    private void parseProperties(RealObject<?, ?, ?, ?> object, RealList<PropertyData, RealProperty<?>> properties) throws HousemateException {
+    private void parseProperties(RealList<TypeData<?>, RealType<?, ?, ?>> types, RealObject<?, ?, ?, ?> object, RealList<PropertyData, RealProperty<?>> properties) throws HousemateException {
         for(Map.Entry<Field, Property> propertyField : getAnnotatedFields(object.getClass(), Property.class).entrySet()) {
             Object value = null;
             try {
@@ -102,11 +79,11 @@ public class AnnotationProcessor {
             } catch(IllegalAccessException e) {
                 log.w("Failed to get initial value of annotated property field " + propertyField.getKey().getName());
             }
-            if(registeredTypes.get(propertyField.getValue().typeId()) == null)
+            if(types.get(propertyField.getValue().typeId()) == null)
                 throw new HousemateException(propertyField.getValue().typeId() + " type does not exist");
             properties.add(new PropertyImpl(object.getResources(), propertyField.getValue().id(),
                     propertyField.getValue().name(), propertyField.getValue().description(),
-                    (RealType<?, ?, Object>) registeredTypes.get(propertyField.getValue().typeId()), value,
+                    (RealType<?, ?, Object>) types.get(propertyField.getValue().typeId()), value,
                     propertyField.getKey(), object));
         }
     }
@@ -139,7 +116,7 @@ public class AnnotationProcessor {
         }
     }
 
-    private void parseValues(RealObject<?, ?, ?, ?> object, RealList<ValueData, RealValue<?>> values) throws HousemateException {
+    private void parseValues(RealList<TypeData<?>, RealType<?, ?, ?>> types, RealObject<?, ?, ?, ?> object, RealList<ValueData, RealValue<?>> values) throws HousemateException {
         for(Map.Entry<Field, Values> valuesField : getAnnotatedFields(object.getClass(), Values.class).entrySet()) {
             Map<Method, RealValue<Object>> valuesFunctions = Maps.newHashMap();
             InvocationHandler invocationHandler = new ValuesInvocationHandler(valuesFunctions);
@@ -152,11 +129,11 @@ public class AnnotationProcessor {
                 throw new HousemateException("Failed to assign proxy instance to " + valuesField.getKey().getName());
             }
             for(Map.Entry<Method, Value> valueMethod : getAnnotatedMethods(valuesField.getKey().getType(), Value.class).entrySet()) {
-                if(registeredTypes.get(valueMethod.getValue().typeId()) == null)
+                if(types.get(valueMethod.getValue().typeId()) == null)
                     throw new HousemateException(valueMethod.getValue().typeId() + " type does not exist");
                 RealValue<Object> value = new RealValue<Object>(object.getResources(), valueMethod.getValue().id(),
                         valueMethod.getValue().name(), valueMethod.getValue().description(),
-                        (RealType<?,?,Object>) registeredTypes.get(valueMethod.getValue().typeId()), (List)null);
+                        (RealType<?,?,Object>) types.get(valueMethod.getValue().typeId()), (List)null);
                 valuesFunctions.put(valueMethod.getKey(), value);
                 values.add(value);
             }

@@ -1,9 +1,10 @@
 package com.intuso.housemate.broker.object;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
 import com.intuso.housemate.broker.object.general.BrokerResourcesImpl;
-import com.intuso.housemate.object.broker.LifecycleHandler;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyObject;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyResources;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyRootObject;
@@ -15,14 +16,31 @@ import java.util.Map;
 
 /**
  */
+@Singleton
 public class BrokerProxyResourcesImpl<F extends HousemateObjectFactory<?, ?, ?>>
         extends BrokerResourcesImpl<BrokerProxyRootObject> implements BrokerProxyResources<F> {
-    
-    private F factory;
-    
-    public BrokerProxyResourcesImpl(BrokerGeneralResources generalResources, F factory) {
-        super(generalResources);
+
+    private final BrokerRealResources brokerRealResources;
+    private final RealResources realResources;
+    private final F factory;
+
+    @Inject
+    public BrokerProxyResourcesImpl(Log log, Map<String, String> properties, Injector injector,
+                                    BrokerRealResources brokerRealResources, RealResources realResources, F factory) {
+        super(log, properties, injector);
+        this.brokerRealResources = brokerRealResources;
+        this.realResources = realResources;
         this.factory = factory;
+    }
+
+    @Override
+    public BrokerRealResources getBrokerRealResources() {
+        return brokerRealResources;
+    }
+
+    @Override
+    public RealResources getRealResources() {
+        return realResources;
     }
 
     @Override
@@ -46,16 +64,6 @@ public class BrokerProxyResourcesImpl<F extends HousemateObjectFactory<?, ?, ?>>
         }
 
         @Override
-        public F getFactory() {
-            return factory;
-        }
-
-        @Override
-        public <NF extends HousemateObjectFactory<? extends BrokerProxyResources<?>, ?, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> BrokerProxyResources<NF> cloneForNewFactory(NF newFactory) {
-            return new Clone<NF>(this, newFactory);
-        }
-
-        @Override
         public BrokerRealResources getBrokerRealResources() {
             return original.getBrokerRealResources();
         }
@@ -66,8 +74,13 @@ public class BrokerProxyResourcesImpl<F extends HousemateObjectFactory<?, ?, ?>>
         }
 
         @Override
-        public LifecycleHandler getLifecycleHandler() {
-            return original.getLifecycleHandler();
+        public F getFactory() {
+            return factory;
+        }
+
+        @Override
+        public <NF extends HousemateObjectFactory<? extends BrokerProxyResources<?>, ?, ? extends BrokerProxyObject<?, ?, ?, ?, ?>>> BrokerProxyResources<NF> cloneForNewFactory(NF newFactory) {
+            return new Clone<NF>(this, newFactory);
         }
 
         @Override
@@ -83,6 +96,11 @@ public class BrokerProxyResourcesImpl<F extends HousemateObjectFactory<?, ?, ?>>
         @Override
         public Map<String, String> getProperties() {
             return original.getProperties();
+        }
+
+        @Override
+        public Injector getInjector() {
+            return original.getInjector();
         }
     }
 }

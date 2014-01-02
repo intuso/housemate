@@ -4,6 +4,7 @@ import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.RouterRootObject;
 import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.broker.comms.RemoteClientManager;
 import com.intuso.housemate.comms.transport.rest.RestServer;
 import com.intuso.housemate.comms.transport.socket.client.SocketClient;
 import com.intuso.housemate.comms.transport.socket.server.SocketServer;
@@ -64,7 +65,7 @@ public class TestClientDisconnect {
                                 disconnected.set(false);
                                 disconnected.notify();
                             }
-                            RemoteClient client = environment.getGeneralResources().getRemoteClientManager().getClient(
+                            RemoteClient client = environment.getInjector().getInstance(RemoteClientManager.class).getClient(
                                     Arrays.asList(Integer.toString(testNum), "0"));
                             assertNotNull(client);
                             client.addListener(new RemoteClientListener() {
@@ -154,7 +155,7 @@ public class TestClientDisconnect {
                                 connectionLost.set(false);
                                 connectionLost.notify();
                             }
-                            RemoteClient client = environment.getGeneralResources().getRemoteClientManager().getClient(
+                            RemoteClient client = environment.getInjector().getInstance(RemoteClientManager.class).getClient(
                                     Arrays.asList(Integer.toString(testNum), "0"));
                             assertNotNull(client);
                             client.addListener(new RemoteClientListener() {
@@ -242,7 +243,7 @@ public class TestClientDisconnect {
                     connected.set(true);
                     connected.notify();
                 }
-                RemoteClient client = environment.getGeneralResources().getRemoteClientManager().getClient(
+                RemoteClient client = environment.getInjector().getInstance(RemoteClientManager.class).getClient(
                         Arrays.asList(Integer.toString(testNum), "0"));
                 assertNotNull(client);
                 client.addListener(new RemoteClientListener() {

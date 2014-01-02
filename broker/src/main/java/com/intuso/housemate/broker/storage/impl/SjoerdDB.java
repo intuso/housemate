@@ -4,6 +4,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
@@ -16,7 +18,10 @@ import java.util.*;
 
 /**
  */
+@Singleton
 public class SjoerdDB implements Storage {
+
+    public final static String PATH_PROPERTY_KEY = "dbPath";
 
     public final static String PROPERTY_VALUE_KEY = "value";
     public final static String PROPERTIES_EXTENSION = ".properties";
@@ -28,7 +33,9 @@ public class SjoerdDB implements Storage {
     private final Joiner pathJoiner = Joiner.on(File.separator);
     private final String basePath;
 
-    public SjoerdDB(String basePath) throws HousemateException {
+    @Inject
+    public SjoerdDB(Map<String, String> properties) throws HousemateException {
+        String basePath = properties.get(PATH_PROPERTY_KEY);
         File baseDir = new File(basePath);
         if(baseDir.exists()) {
             if(!baseDir.isDirectory())

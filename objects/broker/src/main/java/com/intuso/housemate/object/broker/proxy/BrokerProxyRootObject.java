@@ -1,5 +1,7 @@
 package com.intuso.housemate.object.broker.proxy;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
@@ -15,6 +17,7 @@ import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.utilities.listener.ListenerRegistration;
 
+@Singleton
 public class BrokerProxyRootObject
         extends BrokerProxyObject<RootData, HousemateData<?>, BrokerProxyObject<?, ?, ?, ?, ?>,
             BrokerProxyRootObject, RootListener<? super BrokerProxyRootObject>>
@@ -26,6 +29,7 @@ public class BrokerProxyRootObject
     /**
      * @param resources {@inheritDoc}
      */
+    @Inject
     public BrokerProxyRootObject(BrokerProxyResources<BrokerProxyFactory.All> resources) {
         super(resources, new RootData());
         types = new BrokerProxyList<TypeData<?>, BrokerProxyType>(

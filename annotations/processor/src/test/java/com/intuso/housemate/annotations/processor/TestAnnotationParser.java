@@ -41,18 +41,18 @@ public class TestAnnotationParser {
     @Test
     public void testAvailableTypes() {
         RealResources resources = createResources();
-        new AnnotationProcessor(resources.getLog(), createAvailableTypes(resources));
+        new AnnotationProcessor(resources.getLog());
     }
 
     @Test
     public void testCommands() throws HousemateException {
         // create classes
         RealResources resources = createResources();
-        AnnotationProcessor annotationParser = new AnnotationProcessor(resources.getLog(), createAvailableTypes(resources));
+        AnnotationProcessor annotationParser = new AnnotationProcessor(resources.getLog());
         TestChildDevice testDevice = new TestChildDevice(resources, "test-device", "Test Device", "Test Device");
 
         // parse all annotations
-        annotationParser.process(testDevice);
+        annotationParser.process(createAvailableTypes(resources), testDevice);
 
         // check all parent device elements are created
         assertNotNull(testDevice.getCommands().get("command"));

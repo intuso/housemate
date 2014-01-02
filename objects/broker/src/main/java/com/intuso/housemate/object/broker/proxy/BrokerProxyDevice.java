@@ -43,7 +43,7 @@ public class BrokerProxyDevice
         super(resources, data);
         connected = new BrokerRealValue<Boolean>(resources.getBrokerRealResources(), CONNECTED_ID, CONNECTED_ID,
                 "Whether the server has a connection open to control the object",
-                new BooleanType(resources.getBrokerRealResources().getRealResources()), true);
+                new BooleanType(resources.getRealResources()), true);
     }
 
     @Override

@@ -1,30 +1,27 @@
 package com.intuso.housemate.broker;
 
 import com.google.common.collect.Lists;
-import com.intuso.housemate.annotations.processor.AnnotationProcessor;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.housemate.api.resources.RegexMatcher;
-import com.intuso.housemate.broker.client.LocalClient;
 import com.intuso.housemate.broker.comms.MainRouter;
-import com.intuso.housemate.broker.factory.ConditionFactory;
-import com.intuso.housemate.broker.factory.DeviceFactory;
-import com.intuso.housemate.broker.factory.TaskFactory;
 import com.intuso.housemate.broker.object.BrokerProxyResourcesImpl;
 import com.intuso.housemate.broker.object.BrokerRealResourcesImpl;
-import com.intuso.housemate.broker.object.LifecycleHandlerImpl;
 import com.intuso.housemate.broker.object.bridge.BrokerBridgeResources;
 import com.intuso.housemate.broker.object.bridge.RootObjectBridge;
-import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
-import com.intuso.housemate.broker.object.general.BrokerGeneralRootObject;
-import com.intuso.housemate.broker.plugin.MainPlugin;
-import com.intuso.housemate.broker.storage.BrokerObjectStorage;
-import com.intuso.housemate.broker.storage.Storage;
+import com.intuso.housemate.broker.plugin.PluginManager;
+import com.intuso.housemate.broker.plugin.main.MainPlugin;
+import com.intuso.housemate.broker.storage.BrokerObjectLoader;
 import com.intuso.housemate.broker.storage.impl.SjoerdDB;
+import com.intuso.housemate.broker.storage.impl.SjoerdDBModule;
 import com.intuso.housemate.comms.transport.socket.server.SocketServer;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyFactory;
 import com.intuso.housemate.object.broker.proxy.BrokerProxyRootObject;
 import com.intuso.housemate.object.broker.real.BrokerRealRootObject;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.log.LogLevel;
@@ -37,26 +34,12 @@ import org.eclipse.jetty.util.resource.JarResource;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Pattern;
@@ -67,6 +50,7 @@ import java.util.regex.Pattern;
  * and some methods are unsupported as they should not be used by the broker.
  *
  */
+@Singleton
 public class BrokerServerEnvironment {
 
     public final static String HOUSEMATE_CONFIG_DIR = "HOUSEMATE_CONFIG_DIR";
@@ -89,17 +73,8 @@ public class BrokerServerEnvironment {
 
 	private final Map<String, String> properties;
     private final Log log;
-    private final MainRouter comms;
-    private final Storage storage;
-    private final DeviceFactory deviceFactory;
-    private final ConditionFactory conditionFactory;
-    private final TaskFactory taskFactory;
 
-    private final BrokerGeneralResources generalResources;
-    private final BrokerRealResourcesImpl realResources;
-    private final BrokerBridgeResources bridgeResources;
-    private final BrokerProxyResourcesImpl<BrokerProxyFactory.All> proxyResources;
-    private final RealResources clientResources;
+    private final Injector injector;
 
 	/**
 	 * Create a environment instance
@@ -195,63 +170,25 @@ public class BrokerServerEnvironment {
             throw new HousemateException("Failed to create main app log", e);
         }
 
-        storage = new SjoerdDB(config_dir.getAbsolutePath() + File.separator + "database");
+        properties.put(SjoerdDB.PATH_PROPERTY_KEY, config_dir.getAbsolutePath() + File.separator + "database");
 
-        generalResources = new BrokerGeneralResources(log, properties);
-        generalResources.setRoot(new BrokerGeneralRootObject(generalResources));
+        injector = Guice.createInjector(
+                new PCModule(log, properties), // log and properties provider
+                new SjoerdDBModule(), // storage impl
+                new BrokerModule());
 
-        realResources = new BrokerRealResourcesImpl(generalResources);
-        bridgeResources = new BrokerBridgeResources(generalResources);
-        proxyResources = new BrokerProxyResourcesImpl<BrokerProxyFactory.All>(generalResources, new BrokerProxyFactory.All());
+        injector.getInstance(BrokerRealResourcesImpl.class).setRoot(injector.getInstance(BrokerRealRootObject.class));
+        injector.getInstance(new Key<BrokerProxyResourcesImpl<BrokerProxyFactory.All>>() {}).setRoot(injector.getInstance(BrokerProxyRootObject.class));
+        injector.getInstance(BrokerBridgeResources.class).setRoot(injector.getInstance(RootObjectBridge.class));
 
-        comms = new MainRouter(generalResources);
-        generalResources.setMainRouter(comms);
-
-        clientResources = new RealResources(log, properties, comms);
-        generalResources.setClientResources(clientResources);
-
-        deviceFactory = new DeviceFactory(generalResources);
-        conditionFactory = new ConditionFactory(generalResources);
-        taskFactory = new TaskFactory(generalResources);
-
-        generalResources.setLifecycleHandler(new LifecycleHandlerImpl(generalResources));
-
-        initGeneralResources();
-
-        generalResources.setClient(new LocalClient(generalResources));
-
-        initResources();
-        comms.start();
-
-        generalResources.setAnnotationParser(new AnnotationProcessor(generalResources.getLog(),
-                getGeneralResources().getClient().getRoot().getTypes()));
+        injector.getInstance(MainRouter.class).start();
         loadPlugins();
-
-        generalResources.getStorage().loadObjects();
-
+        injector.getInstance(BrokerObjectLoader.class).loadObjects();
         startWebapp();
     }
 
-    public BrokerGeneralResources getGeneralResources() {
-        return generalResources;
-    }
-
-    private void initGeneralResources() {
-        generalResources.setStorage(new BrokerObjectStorage(storage, generalResources));
-        generalResources.setRemoteClientManager(new RemoteClientManager(generalResources));
-        generalResources.setDeviceFactory(deviceFactory);
-        generalResources.setConditionFactory(conditionFactory);
-        generalResources.setTaskFactory(taskFactory);
-        generalResources.setRealResources(realResources);
-        generalResources.setProxyResources(proxyResources);
-        generalResources.setBridgeResources(bridgeResources);
-        generalResources.setClientResources(clientResources);
-    }
-
-    protected void initResources() {
-        realResources.setRoot(new BrokerRealRootObject(realResources));
-        proxyResources.setRoot(new BrokerProxyRootObject(proxyResources));
-        bridgeResources.setRoot(new RootObjectBridge(bridgeResources));
+    public Injector getInjector() {
+        return injector;
     }
 
     /**
@@ -293,9 +230,11 @@ public class BrokerServerEnvironment {
     private void loadPlugins() {
 
         loadSharedJNILibs();
+        
+        PluginManager pluginManager = injector.getInstance(PluginManager.class);
 
         // add the default plugin
-        generalResources.addPlugin(new MainPlugin(generalResources));
+        pluginManager.addPlugin(new MainPlugin(injector));
 
         // discover plugins from local dir
         File pluginDirectory = new File(this.config_dir, PLUGINS_DIR_NAME);
@@ -304,10 +243,10 @@ public class BrokerServerEnvironment {
         if(pluginDirectory.isFile())
             log.w("Plugin path is not a directory");
         else {
-            generalResources.getLog().d("Loading plugins from " + pluginDirectory.getAbsolutePath());
+            log.d("Loading plugins from " + pluginDirectory.getAbsolutePath());
             for(File pluginFile : pluginDirectory.listFiles(new PluginFileFilter())) {
                 for(PluginDescriptor plugin : loadPlugin(pluginFile))
-                    generalResources.addPlugin(plugin);
+                    pluginManager.addPlugin(plugin);
             }
         }
     }
@@ -317,7 +256,7 @@ public class BrokerServerEnvironment {
     }
 
     private List<PluginDescriptor> loadPlugin(File file) {
-        generalResources.getLog().d("Loading plugins from " + file.getAbsolutePath());
+        log.d("Loading plugins from " + file.getAbsolutePath());
         try {
             ClassLoader cl = new URLClassLoader(new URL[] {file.toURI().toURL()}, PluginDescriptor.class.getClassLoader());
             Enumeration<URL> urls = cl.getResources("META-INF/MANIFEST.MF");
@@ -329,8 +268,8 @@ public class BrokerServerEnvironment {
                     try {
                         result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl));
                     } catch(HousemateException e) {
-                        generalResources.getLog().e("Failed to load plugin descriptor");
-                        generalResources.getLog().st(e);
+                        log.e("Failed to load plugin descriptor");
+                        log.st(e);
                     }
                 }
                 for(Map.Entry<String, Attributes> mfEntry : mf.getEntries().entrySet()) {
@@ -339,18 +278,18 @@ public class BrokerServerEnvironment {
                         try {
                             result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl));
                         } catch(HousemateException e) {
-                            generalResources.getLog().e("Failed to load plugin descriptor");
-                            generalResources.getLog().st(e);
+                            log.e("Failed to load plugin descriptor");
+                            log.st(e);
                         }
                     }
                 }
             }
             return result;
         } catch(MalformedURLException e) {
-            generalResources.getLog().e("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not get URL for file");
+            log.e("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not get URL for file");
             return Lists.newArrayList();
         } catch(IOException e) {
-            generalResources.getLog().e("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not load mainifest file");
+            log.e("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not load mainifest file");
             return Lists.newArrayList();
         }
     }
@@ -359,16 +298,16 @@ public class BrokerServerEnvironment {
         List<PluginDescriptor> result = Lists.newArrayList();
         if(key != null && key.toString().equals(PluginDescriptor.MANIFEST_ATTRIBUTE)
                 && value instanceof String) {
-            generalResources.getLog().d("Found " + PluginDescriptor.MANIFEST_ATTRIBUTE + " attribute in "+ url.toExternalForm());
+            log.d("Found " + PluginDescriptor.MANIFEST_ATTRIBUTE + " attribute in "+ url.toExternalForm());
             String[] classNames = ((String)value).split(",");
             for(String className : classNames) {
                 PluginDescriptor descriptor = null;
                 try {
-                    generalResources.getLog().d("Loading plugin class " + className);
+                    log.d("Loading plugin class " + className);
                     Class<?> clazz = Class.forName(className, true, cl);
                     if(PluginDescriptor.class.isAssignableFrom(clazz)) {
                         descriptor = (PluginDescriptor) clazz.getConstructor().newInstance();
-                        generalResources.getLog().d("Successfully loaded plugin class " + className);
+                        log.d("Successfully loaded plugin class " + className);
                     } else
                         throw new HousemateException(clazz.getName() + " is not assignable to " + PluginDescriptor.class.getName());
                 } catch(ClassNotFoundException e) {
@@ -402,9 +341,9 @@ public class BrokerServerEnvironment {
     }
 
     private void startWebapp() throws HousemateException {
-        if(generalResources.getProperties().get(RUN_WEBAPP) != null
-                && generalResources.getProperties().get(RUN_WEBAPP).equalsIgnoreCase("false")) {
-            generalResources.getLog().d("Not starting webapp");
+        if(properties.get(RUN_WEBAPP) != null
+                && properties.get(RUN_WEBAPP).equalsIgnoreCase("false")) {
+            log.d("Not starting webapp");
             return;
         }
         File webappDirectory = new File(config_dir, WEBAPP_FOLDER);
@@ -416,7 +355,7 @@ public class BrokerServerEnvironment {
         if(!webappFile.exists()) {
             URL url = getClass().getResource("/" + webappFile.getName());
             if(url == null) {
-                generalResources.getLog().e("Could not find existing webapp and could not find it in jar. Cannot start web interface");
+                log.e("Could not find existing webapp and could not find it in jar. Cannot start web interface");
                 return;
             }
             copyWebapp(url, webappFile);
@@ -430,10 +369,10 @@ public class BrokerServerEnvironment {
         }
         int port = 46874;
         try {
-            if(generalResources.getProperties().containsKey(WEBAPP_PORT))
-                port = Integer.parseInt(generalResources.getProperties().get(WEBAPP_PORT));
+            if(properties.containsKey(WEBAPP_PORT))
+                port = Integer.parseInt(properties.get(WEBAPP_PORT));
         } catch(Throwable t) {
-            generalResources.getLog().w("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
+            log.w("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
         }
         startJetty(port, webappDir);
     }
@@ -465,15 +404,15 @@ public class BrokerServerEnvironment {
                 if(is != null)
                     is.close();
             } catch(IOException e) {
-                generalResources.getLog().e("Failed to close input stream when copying webapp");
-                generalResources.getLog().st(e);
+                log.e("Failed to close input stream when copying webapp");
+                log.st(e);
             }
             try {
                 if(os != null)
                     os.close();
             } catch(IOException e) {
-                generalResources.getLog().e("Failed to close input stream when copying webapp");
-                generalResources.getLog().st(e);
+                log.e("Failed to close input stream when copying webapp");
+                log.st(e);
             }
         }
     }
@@ -492,7 +431,7 @@ public class BrokerServerEnvironment {
 
         // Configure webapp provided as external WAR
         WebAppContext webapp = new WebAppContext();
-        webapp.getServletContext().setAttribute("RESOURCES", clientResources);
+        webapp.getServletContext().setAttribute("RESOURCES", injector.getInstance(ClientResources.class));
         webapp.setContextPath(properties.get(WEBAPP_PATH) != null ? properties.get(WEBAPP_PATH) : DEFAULT_WEBAPP_PATH);
         webapp.setWar(warFile.getAbsolutePath());
         server.setHandler(webapp);

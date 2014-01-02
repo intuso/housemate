@@ -2,8 +2,10 @@ package com.intuso.housemate.broker.object.bridge;
 
 import com.google.common.base.Function;
 import com.intuso.housemate.api.object.NoChildrenData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueData;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 
 /**
 * Created with IntelliJ IDEA.
@@ -14,21 +16,26 @@ import com.intuso.housemate.api.object.value.ValueData;
 */
 public class ValueBridge extends ValueBridgeBase<ValueData, NoChildrenData,
                 NoChildrenBridgeObject, ValueBridge> {
-    public ValueBridge(BrokerBridgeResources resources, Value<?, ?> proxyValue) {
-        super(resources, new ValueData(proxyValue.getId(), proxyValue.getName(), proxyValue.getDescription(), proxyValue.getType().getId(), proxyValue.getTypeInstances()), proxyValue);
+    public ValueBridge(BrokerBridgeResources resources, Value<?, ?> proxyValue,
+                       ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
+        super(resources,
+                new ValueData(proxyValue.getId(), proxyValue.getName(), proxyValue.getDescription(), proxyValue.getType().getId(), proxyValue.getTypeInstances()),
+                proxyValue, types);
     }
 
     public static class Converter implements Function<Value<?, ?>, ValueBridge> {
 
         private final BrokerBridgeResources resources;
+        private final ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types;
 
-        public Converter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources, ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
             this.resources = resources;
+            this.types = types;
         }
 
         @Override
         public ValueBridge apply(Value<?, ?> value) {
-            return new ValueBridge(resources, value);
+            return new ValueBridge(resources, value, types);
         }
     }
 }

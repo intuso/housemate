@@ -11,6 +11,7 @@ import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeListener;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -23,25 +24,16 @@ public class TypeBridge
     private final static String OPTIONS = "options";
     private final static String SUB_TYPES = "sub-types";
 
-    public TypeBridge(final BrokerBridgeResources resources, Type type) {
+    public TypeBridge(final BrokerBridgeResources resources, Type type,
+                      final ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
         super(resources, cloneData(resources.getLog(), type));
         if(type instanceof HousemateObject && ((HousemateObject)type).getChild(OPTIONS) != null) {
             addChild(new ListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(resources, (List) ((HousemateObject) (type)).getChild(OPTIONS),
-                    new Function<Option, OptionBridge>() {
-                        @Override
-                        public OptionBridge apply(Option option) {
-                            return new OptionBridge(resources, option);
-                        }
-                    }));
+                    new OptionBridge.Converter(resources, types)));
         }
         if(type instanceof HousemateObject && ((HousemateObject)type).getChild(SUB_TYPES) != null) {
             addChild(new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(resources, (List) ((HousemateObject) (type)).getChild(SUB_TYPES),
-                    new Function<SubType<?>, SubTypeBridge>() {
-                        @Override
-                        public SubTypeBridge apply(SubType<?> subType) {
-                            return new SubTypeBridge(resources, subType);
-                        }
-                    }));
+                    new SubTypeBridge.Converter(resources, types)));
         }
     }
 
@@ -56,15 +48,17 @@ public class TypeBridge
 
     public final static class Converter implements Function<Type, TypeBridge> {
 
-        private BrokerBridgeResources resources;
+        private final BrokerBridgeResources resources;
+        private final ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types;
 
-        public Converter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources, ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
             this.resources = resources;
+            this.types = types;
         }
 
         @Override
         public TypeBridge apply(Type type) {
-            return new TypeBridge(resources, type);
+            return new TypeBridge(resources, type, types);
         }
     }
 }

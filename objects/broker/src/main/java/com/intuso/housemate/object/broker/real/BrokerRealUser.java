@@ -4,6 +4,7 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.user.UserListener;
+import com.intuso.housemate.object.broker.LifecycleHandler;
 
 public class BrokerRealUser
         extends BrokerRealObject<UserData, HousemateData<?>, BrokerRealObject<?, ? ,?, ?>, UserListener>
@@ -17,9 +18,10 @@ public class BrokerRealUser
      * @param name the object's name
      * @param description the object's description
      */
-    public BrokerRealUser(BrokerRealResources resources, String id, String name, String description) {
+    public BrokerRealUser(BrokerRealResources resources, String id, String name, String description,
+                          LifecycleHandler lifecycleHandler) {
         super(resources, new UserData(id, name, description));
-        this.remove = getResources().getLifecycleHandler().createRemoveUserCommand(this);
+        this.remove = lifecycleHandler.createRemoveUserCommand(this);
     }
 
     @Override

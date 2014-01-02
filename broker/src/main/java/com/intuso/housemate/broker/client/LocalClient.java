@@ -1,30 +1,44 @@
 package com.intuso.housemate.broker.client;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.broker.PluginListener;
 import com.intuso.housemate.broker.comms.InternalAuthentication;
-import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
+import com.intuso.housemate.broker.factory.ConditionFactory;
+import com.intuso.housemate.broker.factory.DeviceFactory;
+import com.intuso.housemate.broker.factory.TaskFactory;
+import com.intuso.housemate.broker.plugin.PluginListener;
+import com.intuso.housemate.broker.plugin.PluginManager;
 import com.intuso.housemate.object.real.RealCommand;
+import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealRootObject;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
+import com.intuso.utilities.log.Log;
 
 /**
  * Util class for running objects local to the broker
  */
+@Singleton
 public class LocalClient implements PluginListener {
 
-    private final BrokerGeneralResources resources;
+    private final Log log;
+    private final RealResources realResources;
+
     private final LocalClientRoot root;
 
-    public LocalClient(final BrokerGeneralResources resources) throws HousemateException {
-        this.resources = resources;
-        root = new LocalClientRoot(resources);
+    @Inject
+    public LocalClient(final Log log, final RealResources realResources, final LocalClientRoot root,
+                       final DeviceFactory deviceFactory, final ConditionFactory conditionFactory,
+                       final TaskFactory taskFactory, final PluginManager pluginManager) throws HousemateException {
+        this.log = log;
+        this.realResources = realResources;
+        this.root = root;
         root.login(new InternalAuthentication());
-        root.addType(resources.getDeviceFactory().getType());
-        root.addType(resources.getConditionFactory().getType());
-        root.addType(resources.getTaskFactory().getType());
-        resources.addPluginListener(LocalClient.this, true);
+        root.addType(deviceFactory.getType());
+        root.addType(conditionFactory.getType());
+        root.addType(taskFactory.getType());
+        pluginManager.addPluginListener(LocalClient.this, true);
     }
 
     /**
@@ -45,8 +59,8 @@ public class LocalClient implements PluginListener {
 
     @Override
     public void pluginAdded(PluginDescriptor plugin) {
-        for(RealType<?, ?, ?> type : plugin.getTypes(resources.getClientResources())) {
-            resources.getLog().d("Adding type " + type.getId());
+        for(RealType<?, ?, ?> type : plugin.getTypes(realResources)) {
+            log.d("Adding type " + type.getId());
             root.addType(type);
         }
     }

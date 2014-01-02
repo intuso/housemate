@@ -1,5 +1,7 @@
 package com.intuso.housemate.object.real.impl.type;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.object.real.RealResources;
@@ -7,6 +9,7 @@ import com.intuso.housemate.object.real.RealResources;
 /**
  * Type for a time
  */
+@Singleton
 public class TimeType extends RealRegexType<Time> {
 
     public final static String ID = "time";
@@ -17,6 +20,7 @@ public class TimeType extends RealRegexType<Time> {
     /**
      * @param resources the resources
      */
+    @Inject
     public TimeType(RealResources resources) {
         super(resources, ID, NAME, DESCRIPTION, 1, 1, REGEX);
     }

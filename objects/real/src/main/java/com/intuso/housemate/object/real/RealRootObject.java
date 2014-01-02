@@ -1,5 +1,6 @@
 package com.intuso.housemate.object.real;
 
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
@@ -22,6 +23,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
 
+@Singleton
 public class RealRootObject
         extends RealObject<RootData, HousemateData<?>, RealObject<?, ? extends HousemateData<?>, ?, ?>, RootListener<? super RealRootObject>>
         implements RealRoot<RealType<?, ?, ?>, RealList<TypeData<?>, RealType<?, ?, ?>>, RealDevice,
@@ -39,13 +41,19 @@ public class RealRootObject
      * @param resources {@inheritDoc}
      */
     public RealRootObject(RealResources resources) {
+        this(resources, new RealList<TypeData<?>, RealType<?, ?, ?>>(resources, TYPES_ID, TYPES_ID, "Defined types"),
+            new RealList<DeviceData, RealDevice>(resources, DEVICES_ID, DEVICES_ID, "Defined devices"));
+    }
+
+    public RealRootObject(RealResources resources, RealList<TypeData<?>, RealType<?, ?, ?>> types,
+            RealList<DeviceData, RealDevice> devices) {
         super(resources, new RootData());
 
         routerRegistration = resources.getRouter().registerReceiver(this);
         connectionManager = new ConnectionManager(routerRegistration, ConnectionType.Real, ConnectionStatus.Unauthenticated);
 
-        types = new RealList<TypeData<?>, RealType<?, ?, ?>>(resources, TYPES_ID, TYPES_ID, "Defined types");
-        devices = new RealList<DeviceData, RealDevice>(resources, DEVICES_ID, DEVICES_ID, "Defined devices");
+        this.types = types;
+        this.devices = devices;
 
         init(null);
 
@@ -53,6 +61,7 @@ public class RealRootObject
         types.init(this);
         addChild(devices);
         devices.init(this);
+
     }
 
     @Override

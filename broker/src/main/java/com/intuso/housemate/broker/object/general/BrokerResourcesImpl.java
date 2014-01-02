@@ -1,52 +1,39 @@
 package com.intuso.housemate.broker.object.general;
 
-import com.intuso.housemate.api.resources.Resources;
+import com.google.inject.Injector;
 import com.intuso.housemate.object.broker.BrokerResources;
-import com.intuso.housemate.object.broker.LifecycleHandler;
-import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 
 /**
  */
-public class BrokerResourcesImpl<R> implements Resources, BrokerResources<R> {
+public abstract class BrokerResourcesImpl<R> implements BrokerResources<R> {
 
-    private final BrokerGeneralResources generalResources;
+    private final Log log;
+    private final Map<String, String> properties;
+    private final Injector injector;
     private R root;
 
-    public BrokerResourcesImpl(BrokerGeneralResources generalResources) {
-        this.generalResources = generalResources;
-    }
-
-    public BrokerGeneralResources getGeneralResources() {
-        return generalResources;
+    public BrokerResourcesImpl(Log log, Map<String, String> properties, Injector injector) {
+        this.log = log;
+        this.properties = properties;
+        this.injector = injector;
     }
 
     @Override
     public Log getLog() {
-        return generalResources.getLog();
+        return log;
     }
 
     @Override
     public Map<String, String> getProperties() {
-        return generalResources.getProperties();
+        return properties;
     }
 
     @Override
-    public BrokerRealResources getBrokerRealResources() {
-        return getGeneralResources().getRealResources();
-    }
-
-    @Override
-    public RealResources getRealResources() {
-        return getGeneralResources().getClientResources();
-    }
-
-    @Override
-    public LifecycleHandler getLifecycleHandler() {
-        return generalResources.getLifecycleHandler();
+    public Injector getInjector() {
+        return injector;
     }
 
     @Override

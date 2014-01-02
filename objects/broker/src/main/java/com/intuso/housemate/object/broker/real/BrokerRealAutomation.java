@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.automation.AutomationListener;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.task.TaskData;
+import com.intuso.housemate.object.broker.LifecycleHandler;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 public class BrokerRealAutomation
@@ -21,12 +22,13 @@ public class BrokerRealAutomation
             ConditionListener<BrokerRealCondition>,
         BrokerRealConditionOwner {
 
-    private BrokerRealList<ConditionData, BrokerRealCondition> conditions;
-    private BrokerRealList<TaskData, BrokerRealTask> satisfiedTasks;
-    private BrokerRealList<TaskData, BrokerRealTask> unsatisfiedTasks;
-    private BrokerRealCommand addConditionCommand;
-    private BrokerRealCommand addSatisfiedTaskCommand;
-    private BrokerRealCommand addUnsatisfiedTaskCommand;
+    private final BrokerRealList<ConditionData, BrokerRealCondition> conditions;
+    private final BrokerRealList<TaskData, BrokerRealTask> satisfiedTasks;
+    private final BrokerRealList<TaskData, BrokerRealTask> unsatisfiedTasks;
+    private final BrokerRealCommand addConditionCommand;
+    private final BrokerRealCommand addSatisfiedTaskCommand;
+    private final BrokerRealCommand addUnsatisfiedTaskCommand;
+    private final LifecycleHandler lifecycleHandler;
 
     private final BrokerRealTaskOwner satisfiedTaskOwner = new BrokerRealTaskOwner() {
         @Override
@@ -43,14 +45,16 @@ public class BrokerRealAutomation
 
     private ListenerRegistration conditionListenerRegistration;
 
-    public BrokerRealAutomation(final BrokerRealResources resources, String id, String name, String description) {
+    public BrokerRealAutomation(final BrokerRealResources resources, String id, String name, String description,
+                                LifecycleHandler lifecycleHandler) {
         super(resources, new AutomationData(id, name, description), "automation");
+        this.lifecycleHandler = lifecycleHandler;
         this.conditions = new BrokerRealList<ConditionData, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
         this.satisfiedTasks = new BrokerRealList<TaskData, BrokerRealTask>(resources, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         this.unsatisfiedTasks = new BrokerRealList<TaskData, BrokerRealTask>(resources, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
-        addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions, this);
-        addSatisfiedTaskCommand = getResources().getLifecycleHandler().createAddSatisfiedTaskCommand(satisfiedTasks, satisfiedTaskOwner);
-        addUnsatisfiedTaskCommand = getResources().getLifecycleHandler().createAddUnsatisfiedTaskCommand(unsatisfiedTasks, unsatisfiedTaskOwner);
+        addConditionCommand = lifecycleHandler.createAddConditionCommand(conditions, this);
+        addSatisfiedTaskCommand = lifecycleHandler.createAddSatisfiedTaskCommand(satisfiedTasks, satisfiedTaskOwner);
+        addUnsatisfiedTaskCommand = lifecycleHandler.createAddUnsatisfiedTaskCommand(unsatisfiedTasks, unsatisfiedTaskOwner);
         addChild(conditions);
         addChild(satisfiedTasks);
         addChild(unsatisfiedTasks);
@@ -62,7 +66,7 @@ public class BrokerRealAutomation
     @Override
     protected void remove() {
         getResources().getRoot().getAutomations().remove(getId());
-        getResources().getLifecycleHandler().automationRemoved(getPath());
+        lifecycleHandler.automationRemoved(getPath());
     }
 
     @Override

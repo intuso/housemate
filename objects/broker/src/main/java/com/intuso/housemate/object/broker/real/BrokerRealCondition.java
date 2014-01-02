@@ -8,6 +8,7 @@ import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
+import com.intuso.housemate.object.broker.LifecycleHandler;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 
@@ -57,12 +58,13 @@ public abstract class BrokerRealCondition
                 owner.remove(BrokerRealCondition.this);
             }
         };
-        errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), (List)null);
+        errorValue = new BrokerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error",
+                new StringType(resources.getRealResources()), (List)null);
         satisfiedValue = new BrokerRealValue<Boolean>(resources, SATISFIED_ID, SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(resources.getRealResources()), false);
         propertyList = new BrokerRealList<PropertyData, BrokerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
         conditions = new BrokerRealList<ConditionData, BrokerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
         // add a command to add automations to the automation list
-        addConditionCommand = getResources().getLifecycleHandler().createAddConditionCommand(conditions, this);
+        addConditionCommand = getResources().getInjector().getInstance(LifecycleHandler.class).createAddConditionCommand(conditions, this);
         addChild(removeCommand);
         addChild(errorValue);
         addChild(satisfiedValue);

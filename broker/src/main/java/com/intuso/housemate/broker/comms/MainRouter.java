@@ -1,32 +1,41 @@
 package com.intuso.housemate.broker.comms;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.AuthenticationRequest;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.broker.object.general.BrokerGeneralResources;
+import com.intuso.housemate.api.resources.Resources;
+import com.intuso.housemate.broker.object.bridge.RootObjectBridge;
+import com.intuso.housemate.broker.object.general.BrokerGeneralRootObject;
 import com.intuso.housemate.comms.transport.rest.RestServer;
 import com.intuso.housemate.comms.transport.socket.server.SocketServer;
 import com.intuso.housemate.object.broker.ClientPayload;
 import com.intuso.housemate.object.broker.RemoteClient;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyRootObject;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * The main router for the whole app. All comms routers attach to this
  */
+@Singleton
 public final class MainRouter extends Router {
 
-    private final LinkedBlockingQueue<Message<Message.Payload>> incomingMessages = new LinkedBlockingQueue<Message<Message.Payload>>();
+    private final Injector injector;
+    private final Resources resources;
 
+    private final LinkedBlockingQueue<Message<Message.Payload>> incomingMessages = new LinkedBlockingQueue<Message<Message.Payload>>();
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
-    private BrokerGeneralResources resources;
-
-    public MainRouter(BrokerGeneralResources resources) {
+    @Inject
+    public MainRouter(Injector injector, Resources resources) {
         super(resources);
+        this.injector = injector;
         this.resources = resources;
         setRouterStatus(Status.Connected);
         login(new InternalAuthentication());
@@ -88,23 +97,23 @@ public final class MainRouter extends Router {
     private Root<?> getRoot(RemoteClient client, Message<?> message) throws HousemateException {
         if(client == null) {
             if(message.getPayload() instanceof AuthenticationRequest)
-                return resources.getRoot();
+                return injector.getInstance(BrokerGeneralRootObject.class);
             else
                 throw new UnknownClientRouteException(message.getRoute());
         }
         if(client.getType() != null) {
             // intercept certain messages
             if(message.getPath().length == 1 && message.getType().equals(Root.DISCONNECT_TYPE))
-                return resources.getRoot();
+                return injector.getInstance(BrokerGeneralRootObject.class);
             switch(client.getType()) {
                 case Real: // the broker proxy objects are for remote real objects
-                    return resources.getProxyResources().getRoot();
+                    return injector.getInstance(BrokerProxyRootObject.class);
                 case Proxy: // the broker bridge objects are for remote proxy objects
-                    return resources.getBridgeResources().getRoot();
+                    return injector.getInstance(RootObjectBridge.class);
             }
         }
         // all other requests should go to the general root object
-        return resources.getRoot();
+        return injector.getInstance(BrokerGeneralRootObject.class);
     }
 
     private class MessageProcessor extends Thread {
@@ -126,7 +135,7 @@ public final class MainRouter extends Router {
                 }
                 getLog().d("Message received " + message.toString());
                 try {
-                    RemoteClientImpl client = resources.getRemoteClientManager().getClient(message.getRoute());
+                    RemoteClientImpl client = injector.getInstance(RemoteClientManager.class).getClient(message.getRoute());
                     Root<?> root = getRoot(client, message);
                     // wrap payload in new payload in which we can put the client's id
                     message = new Message<Message.Payload>(message.getPath(), message.getType(),

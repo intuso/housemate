@@ -11,8 +11,10 @@ import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.broker.ClientPayload;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -26,11 +28,12 @@ public class CommandBridge
     private Command<?, ?> proxyCommand;
     private ListBridge<ParameterData, Parameter<?>, ParameterBridge> parameters;
 
-    public CommandBridge(BrokerBridgeResources resources, Command<? extends List<? extends Parameter<?>>, ?> proxyCommand) {
+    public CommandBridge(BrokerBridgeResources resources, Command<? extends List<? extends Parameter<?>>, ?> proxyCommand,
+                         ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
         super(resources, new CommandData(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
         this.proxyCommand = proxyCommand;
         parameters = new ListBridge<ParameterData, Parameter<?>, ParameterBridge>(resources,
-                proxyCommand.getParameters(), new ParameterBridge.Converter(resources));
+                proxyCommand.getParameters(), new ParameterBridge.Converter(resources, types));
         addChild(parameters);
     }
 
@@ -111,14 +114,16 @@ public class CommandBridge
     public static class Converter implements Function<Command<?, ?>, CommandBridge> {
 
         private final BrokerBridgeResources resources;
+        private final ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types;
 
-        public Converter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources, ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
             this.resources = resources;
+            this.types = types;
         }
 
         @Override
         public CommandBridge apply(Command<?, ?> command) {
-            return new CommandBridge(resources, command);
+            return new CommandBridge(resources, command, types);
         }
     }
 }

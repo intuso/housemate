@@ -20,10 +20,20 @@ public class ListBridge<
         extends BridgeObject<ListData<WBL>, WBL, WR, ListBridge<WBL, OWR, WR>, ListListener<? super WR>>
         implements List<WR> {
 
+    private final List<? extends OWR> list;
     private ListenerRegistration otherListListener;
 
-    public ListBridge(BrokerBridgeResources resources, List<? extends OWR> list, final Function<? super OWR, ? extends WR> converter) {
+    public ListBridge(BrokerBridgeResources resources, List<? extends OWR> list) {
         super(resources, new ListData(list.getId(), list.getName(), list.getDescription()));
+        this.list = list;
+    }
+
+    public ListBridge(BrokerBridgeResources resources, List<? extends OWR> list, final Function<? super OWR, ? extends WR> converter) {
+        this(resources, list);
+        convert(converter);
+    }
+
+    public void convert(final Function<? super OWR, ? extends WR> converter) {
         otherListListener = list.addObjectListener(new ListListener<OWR>() {
             @Override
             public void elementAdded(OWR element) {

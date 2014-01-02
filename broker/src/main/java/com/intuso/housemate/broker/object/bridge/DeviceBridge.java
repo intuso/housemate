@@ -8,8 +8,10 @@ import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueData;
+import com.intuso.housemate.object.broker.proxy.BrokerProxyType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 
@@ -41,15 +43,17 @@ public class DeviceBridge
     private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
     private ValueBridge connectedValue;
 
-    public DeviceBridge(BrokerBridgeResources resources, Device<?, ?, ? extends Command<?, ?>, ?, ?, ?, ?, ? extends Value<?, ?>, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+    public DeviceBridge(BrokerBridgeResources resources,
+                        Device<?, ?, ? extends Command<?, ?>, ?, ?, ?, ?, ? extends Value<?, ?>, ?, ? extends Property<?, ?, ?>, ?, ?> device,
+                        ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
         super(resources,
                 new DeviceData(device.getId(), device.getName(), device.getDescription(), device.getFeatureIds(),
                         device.getCustomCommandIds(), device.getCustomValueIds(), device.getCustomPropertyIds()),
-                device);
-        commandList = new ListBridge<CommandData, Command<?, ?>, CommandBridge>(resources, device.getCommands(), new CommandBridge.Converter(resources));
-        valueList = new ListBridge<ValueData, Value<?, ?>, ValueBridge>(resources, device.getValues(), new ValueBridge.Converter(resources));
-        propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, device.getProperties(), new PropertyBridge.Converter(resources));
-        connectedValue = new ValueBridge(resources, device.getConnectedValue());
+                device, types);
+        commandList = new ListBridge<CommandData, Command<?, ?>, CommandBridge>(resources, device.getCommands(), new CommandBridge.Converter(resources, types));
+        valueList = new ListBridge<ValueData, Value<?, ?>, ValueBridge>(resources, device.getValues(), new ValueBridge.Converter(resources, types));
+        propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, device.getProperties(), new PropertyBridge.Converter(resources, types));
+        connectedValue = new ValueBridge(resources, device.getConnectedValue(), types);
         addChild(commandList);
         addChild(valueList);
         addChild(propertyList);
@@ -104,15 +108,17 @@ public class DeviceBridge
 
     public final static class Converter implements Function<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> {
 
-        private BrokerBridgeResources resources;
+        private final BrokerBridgeResources resources;
+        private final ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types;
 
-        public Converter(BrokerBridgeResources resources) {
+        public Converter(BrokerBridgeResources resources, ListBridge<TypeData<?>, BrokerProxyType, TypeBridge> types) {
             this.resources = resources;
+            this.types = types;
         }
 
         @Override
         public DeviceBridge apply(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
-            return new DeviceBridge(resources, device);
+            return new DeviceBridge(resources, device, types);
         }
     }
 }
