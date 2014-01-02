@@ -1,22 +1,22 @@
 package com.intuso.housemate.annotations.plugin;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
-import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
-import com.intuso.housemate.plugin.api.BrokerConditionFactory;
+import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
+import com.intuso.housemate.object.server.real.ServerRealResources;
+import com.intuso.housemate.object.server.real.ServerRealCondition;
+import com.intuso.housemate.plugin.api.ServerConditionFactory;
 
 import java.lang.reflect.Constructor;
 
 /**
  * Factory for simple conditions that have no special constructor
  */
-public class SimpleConditionFactory implements BrokerConditionFactory<BrokerRealCondition> {
+public class SimpleConditionFactory implements ServerConditionFactory<ServerRealCondition> {
 
     private final FactoryInformation information;
-    private final Constructor<? extends BrokerRealCondition> constructor;
+    private final Constructor<? extends ServerRealCondition> constructor;
 
-    public SimpleConditionFactory(FactoryInformation information, Constructor<? extends BrokerRealCondition> constructor) {
+    public SimpleConditionFactory(FactoryInformation information, Constructor<? extends ServerRealCondition> constructor) {
         this.information = information;
         this.constructor = constructor;
     }
@@ -37,8 +37,8 @@ public class SimpleConditionFactory implements BrokerConditionFactory<BrokerReal
     }
 
     @Override
-    public BrokerRealCondition create(BrokerRealResources resources, String id, String name, String description,
-                                      BrokerRealConditionOwner owner) throws HousemateException {
+    public ServerRealCondition create(ServerRealResources resources, String id, String name, String description,
+                                      ServerRealConditionOwner owner) throws HousemateException {
         try {
             return constructor.newInstance(resources, id, name, description, owner);
         } catch(Exception e) {

@@ -104,7 +104,7 @@ public class GWTComms extends Router {
     @Override
     public void sendMessage(Message message) {
         getLog().d("Sending message " + message.toString());
-        commsService.sendMessageToBroker(message, sendCallback);
+        commsService.sendMessageToServer(message, sendCallback);
     }
 
     private void requestMessages() {

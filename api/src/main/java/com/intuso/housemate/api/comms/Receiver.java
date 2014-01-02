@@ -5,7 +5,7 @@ import com.intuso.utilities.listener.Listener;
 
 /**
  *
- * Receiver of messages from the broker
+ * Receiver of messages from the server
  */
 public interface Receiver<T extends Message.Payload> extends Listener {
 	

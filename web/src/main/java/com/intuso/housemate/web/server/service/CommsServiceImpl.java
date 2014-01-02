@@ -36,7 +36,7 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
     }
 
     @Override
-    public void sendMessageToBroker(Message<Message.Payload> message) {
+    public void sendMessageToServer(Message<Message.Payload> message) {
         getEndpoint().sendMessage(message);
     }
 

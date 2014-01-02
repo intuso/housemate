@@ -25,7 +25,7 @@ public abstract class RealObject<
     }
 
     /**
-     * Sends a message to the broker
+     * Sends a message to the server
      * @param type the type of the message
      * @param payload the message payload
      * @param <MV> the type of the message's payload
@@ -46,8 +46,7 @@ public abstract class RealObject<
     @Override
     protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {
 
-        // get the broker for this object
-        // get the broker for this object
+        // get the server for this object
         if(this instanceof RealRoot)
             realRoot = (RealRoot)this;
         else if(parent != null && parent instanceof RealObject)

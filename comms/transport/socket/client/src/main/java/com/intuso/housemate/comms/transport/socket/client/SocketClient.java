@@ -15,13 +15,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Client comms implementation that provides socket-based communications with the broker
+ * Client comms implementation that provides socket-based communications with the server
  *
  */
 public class SocketClient extends Router {
 
-    public final static String BROKER_PORT = "socket.server.port";
-    public final static String BROKER_HOST = "socket.server.host";
+    public final static String SERVER_PORT = "socket.server.port";
+    public final static String SERVER_HOST = "socket.server.host";
 
     private final Resources resources;
 
@@ -44,7 +44,7 @@ public class SocketClient extends Router {
     private ConnectThread connectThread;
 
     /**
-     * thread that reads the stream and creates copies of messages that were sent by the broker
+     * thread that reads the stream and creates copies of messages that were sent by the server
      */
     private StreamReader streamReader;
 
@@ -84,7 +84,7 @@ public class SocketClient extends Router {
     }
 
     /**
-     * Connect to the broker
+     * Connect to the server
      */
     @Override
     public final void connect() {
@@ -101,14 +101,14 @@ public class SocketClient extends Router {
      */
     private void shutdownComms(boolean reconnecting) {
         synchronized (connectThreadLock) {
-            getLog().d("Disconnecting from the broker");
+            getLog().d("Disconnecting from the server");
             setRouterStatus(Status.Disconnected);
             if(socket != null) {
                 try {
                     socket.close();
                 } catch(IOException e) {
                     if(!socket.isClosed())
-                        getLog().e("Error closing client connection to broker");
+                        getLog().e("Error closing client connection to server");
                 }
                 socket = null;
             }
@@ -142,12 +142,12 @@ public class SocketClient extends Router {
         @Override
         public void run() {
             setRouterStatus(Status.Connecting);
-            String host = resources.getProperties().get(BROKER_HOST);
-            int port = Integer.parseInt(resources.getProperties().get(BROKER_PORT));
+            String host = resources.getProperties().get(SERVER_HOST);
+            int port = Integer.parseInt(resources.getProperties().get(SERVER_PORT));
 
             // log for debug info
-            getLog().d("Broker host is \"" + host + "\"");
-            getLog().d("Broker port is \"" + port + "\"");
+            getLog().d("Server host is \"" + host + "\"");
+            getLog().d("Server port is \"" + port + "\"");
             int delay = 1;
             while(socket == null || !socket.isConnected()) {
                 try {
@@ -158,7 +158,7 @@ public class SocketClient extends Router {
                     socket.setKeepAlive(true);
                     socket.setSoTimeout(60000);
 
-                    getLog().d("Connected to broker, creating reader/writer threads");
+                    getLog().d("Connected to server, creating reader/writer threads");
                     setRouterStatus(Status.Connected);
                     messageSender = new MessageSender();
                     streamReader = new StreamReader();
@@ -167,7 +167,7 @@ public class SocketClient extends Router {
                     streamReader.start();
                     messageSender.start();
 
-                    getLog().d("Connected to broker");
+                    getLog().d("Connected to server");
 
                     // return from the method
                     synchronized (connectThreadLock) {
@@ -176,16 +176,16 @@ public class SocketClient extends Router {
                     return;
 
                 } catch (UnknownHostException e) {
-                    getLog().e("Broker host \"" + host + ":" + port + "\" is unknown, cannot connect");
+                    getLog().e("Server host \"" + host + ":" + port + "\" is unknown, cannot connect");
                 } catch (IOException e) {
-                    getLog().e("Error connecting to broker: " + e.getMessage());
+                    getLog().e("Error connecting to server: " + e.getMessage());
                     getLog().st(e);
                 } catch (HousemateException e) {
-                    getLog().e("Error connecting to broker: " + e.getMessage());
+                    getLog().e("Error connecting to server: " + e.getMessage());
                     getLog().st(e);
                 }
 
-                getLog().e("Failed to connect to broker. Retrying in " + delay + " seconds");
+                getLog().e("Failed to connect to server. Retrying in " + delay + " seconds");
                 try {
                     Thread.sleep(delay * 1000);
                 } catch(InterruptedException e) {
@@ -236,7 +236,7 @@ public class SocketClient extends Router {
                     }
                 }
             } catch (HousemateException e) {
-                getLog().e("Error reading from broker socket connection");
+                getLog().e("Error reading from server socket connection");
                 getLog().st(e);
                 disconnect(true);
             }
@@ -267,7 +267,7 @@ public class SocketClient extends Router {
     }
 
     /**
-     * Thread to read messages off the output queue and send them to the broker
+     * Thread to read messages off the output queue and send them to the server
      * @author Tom Clabon
      *
      */

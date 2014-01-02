@@ -1,6 +1,6 @@
 app.log.level=DEBUG
 device.log.level=DEBUG
 rules.log.level=DEBUG
-broker.name=My Broker
-broker.host=localhost
-broker.port=6284
+server.name=My Server
+server.host=localhost
+server.port=6284

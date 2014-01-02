@@ -15,7 +15,7 @@ public interface ConnectionStatusChangeListener extends Listener {
     public void connectionStatusChanged(ConnectionStatus status);
 
     /**
-     * Notifies when the instance of the broker has changed
+     * Notifies when the instance of the server has changed
      */
-    public void brokerInstanceChanged();
+    public void newServerInstance();
 }

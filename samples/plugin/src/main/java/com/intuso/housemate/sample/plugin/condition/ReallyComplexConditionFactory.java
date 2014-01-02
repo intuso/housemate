@@ -1,8 +1,8 @@
 package com.intuso.housemate.sample.plugin.condition;
 
-import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
-import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.plugin.api.BrokerConditionFactory;
+import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
+import com.intuso.housemate.object.server.real.ServerRealResources;
+import com.intuso.housemate.plugin.api.ServerConditionFactory;
 
 /**
  * Example factory for conditions with a non-simple constructor. This factory also has a non-simple
@@ -12,7 +12,7 @@ import com.intuso.housemate.plugin.api.BrokerConditionFactory;
  *
  * @see com.intuso.housemate.annotations.plugin.AnnotatedPluginDescriptor
  */
-public class ReallyComplexConditionFactory implements BrokerConditionFactory<ComplexCondition> {
+public class ReallyComplexConditionFactory implements ServerConditionFactory<ComplexCondition> {
 
     private final Object complexArg;
 
@@ -36,8 +36,8 @@ public class ReallyComplexConditionFactory implements BrokerConditionFactory<Com
     }
 
     @Override
-    public ComplexCondition create(BrokerRealResources resources, String id, String name, String description,
-                                   BrokerRealConditionOwner owner) {
+    public ComplexCondition create(ServerRealResources resources, String id, String name, String description,
+                                   ServerRealConditionOwner owner) {
         return new ComplexCondition(resources, id, name, description, owner, complexArg);
     }
 }

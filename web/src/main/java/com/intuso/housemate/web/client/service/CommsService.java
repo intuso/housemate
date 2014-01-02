@@ -13,5 +13,5 @@ public interface CommsService extends RemoteService {
     void connectClient();
     void disconnectClient();
     Message<Message.Payload>[] getMessages(int num, long timeout) throws NotConnectedException;
-    void sendMessageToBroker(Message<Message.Payload> message);
+    void sendMessageToServer(Message<Message.Payload> message);
 }

@@ -129,7 +129,7 @@ public abstract class ProxyObject<
     @Override
     protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {
 
-        // get the broker for this object
+        // get the server for this object
         if(this instanceof ProxyRoot)
             proxyRoot = (ProxyRoot)this;
         else if(parent != null && parent instanceof ProxyObject)
@@ -152,7 +152,7 @@ public abstract class ProxyObject<
     protected void initPostRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {}
 
     /**
-     * Sends a message to the broker
+     * Sends a message to the server
      * @param type the type of the message to send
      * @param payload the message payload
      * @param <MV> the type of the message payload

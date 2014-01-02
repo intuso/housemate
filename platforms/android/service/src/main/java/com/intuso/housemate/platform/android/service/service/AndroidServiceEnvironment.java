@@ -79,14 +79,14 @@ class AndroidServiceEnvironment implements SharedPreferences.OnSharedPreferenceC
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         properties.put(s, sharedPreferences.getAll().get(s).toString());
-        if(s.equals(SocketClient.BROKER_HOST) || s.equals(SocketClient.BROKER_PORT))
+        if(s.equals(SocketClient.SERVER_HOST) || s.equals(SocketClient.SERVER_PORT))
             router.disconnect();
         checkProps();
     }
 
     private void checkProps() {
-        if(properties.get(SocketClient.BROKER_HOST) != null
-                && properties.get(SocketClient.BROKER_PORT) != null
+        if(properties.get(SocketClient.SERVER_HOST) != null
+                && properties.get(SocketClient.SERVER_PORT) != null
                 && properties.get(USERNAME) != null
                 && properties.get(PASSWORD) != null)
             new Thread() {
@@ -107,8 +107,8 @@ class AndroidServiceEnvironment implements SharedPreferences.OnSharedPreferenceC
         // set any defaults
         if(properties.get(LOG_LEVEL) == null)
             properties.put(LOG_LEVEL, LogLevel.DEBUG.name());
-        if(properties.get(SocketClient.BROKER_PORT) == null)
-            properties.put(SocketClient.BROKER_PORT, "46874");
+        if(properties.get(SocketClient.SERVER_PORT) == null)
+            properties.put(SocketClient.SERVER_PORT, "46874");
         if(properties.get(USERNAME) == null)
             properties.put(USERNAME, "admin");
         if(properties.get(PASSWORD) == null)
@@ -124,7 +124,7 @@ class AndroidServiceEnvironment implements SharedPreferences.OnSharedPreferenceC
     }
 
     @Override
-    public void brokerInstanceChanged(RouterRootObject root) {
+    public void newServerInstance(RouterRootObject root) {
         // do something!
     }
 

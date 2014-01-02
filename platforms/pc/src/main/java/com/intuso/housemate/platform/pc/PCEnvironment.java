@@ -98,7 +98,7 @@ public class PCEnvironment {
         // get the props file
         File props_file = new File(configDirectory, HOUSEMATE_PROPS_FILE);
         if(!props_file.exists()) {
-            System.out.println("Could not find broker properties file \"" + props_file.getAbsolutePath() + "\". Creating a new one with default settings");
+            System.out.println("Could not find server properties file \"" + props_file.getAbsolutePath() + "\". Creating a new one with default settings");
             createDefaultPropsFile(props_file);
         }
 
@@ -110,11 +110,11 @@ public class PCEnvironment {
                 properties.put(key, fileProps.getProperty(key));
         } catch (FileNotFoundException e) {
             // Would have logged above!
-            System.err.println("Could not find broker properties file \"" + props_file.getAbsolutePath() + "\"");
+            System.err.println("Could not find server properties file \"" + props_file.getAbsolutePath() + "\"");
             System.exit(0);
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Could not read broker properties from file");
+            System.err.println("Could not read server properties from file");
             System.exit(0);
         }
 
@@ -199,8 +199,8 @@ public class PCEnvironment {
         try {
             BufferedWriter out = new BufferedWriter(new java.io.FileWriter(file));
             out.write(LOG_LEVEL + "=DEBUG\n");
-            out.write(SocketClient.BROKER_HOST + "=localhost\n");
-            out.write(SocketClient.BROKER_PORT + "=46873\n");
+            out.write(SocketClient.SERVER_HOST + "=localhost\n");
+            out.write(SocketClient.SERVER_PORT + "=46873\n");
             out.close();
         } catch(IOException e) {
             throw new HousemateException("Could not create default props file", e);

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Class to hold all details about a message sent to or received from the broker
+ * Class to hold all details about a message sent to or received from the server
  *
  */
 public class Message<T extends Message.Payload> implements Serializable {

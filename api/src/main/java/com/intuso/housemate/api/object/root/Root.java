@@ -43,13 +43,13 @@ public interface Root<ROOT extends Root<?>>
     public String getConnectionId();
 
     /**
-     * Logs in to the broker
+     * Logs in to the server
      * @param method the method used to authenticate with
      */
     public void login(AuthenticationMethod method);
 
     /**
-     * Logs out of the broker
+     * Logs out of the server
      */
     public void logout();
 

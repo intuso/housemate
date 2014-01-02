@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
-            <artifactId>object-broker</artifactId>
+            <artifactId>object-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 	</dependencies>

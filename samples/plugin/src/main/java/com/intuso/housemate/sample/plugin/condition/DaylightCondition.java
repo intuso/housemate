@@ -1,8 +1,8 @@
 package com.intuso.housemate.sample.plugin.condition;
 
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
-import com.intuso.housemate.object.broker.real.BrokerRealConditionOwner;
-import com.intuso.housemate.object.broker.real.BrokerRealResources;
+import com.intuso.housemate.object.server.real.ServerRealCondition;
+import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
+import com.intuso.housemate.object.server.real.ServerRealResources;
 
 /**
  * Example condition with a simple constructor that can be used with the
@@ -10,9 +10,9 @@ import com.intuso.housemate.object.broker.real.BrokerRealResources;
  *
  * @see com.intuso.housemate.annotations.plugin.AnnotatedPluginDescriptor
  */
-public class DaylightCondition extends BrokerRealCondition {
+public class DaylightCondition extends ServerRealCondition {
 
-    public DaylightCondition(BrokerRealResources resources, String id, String name, String description, BrokerRealConditionOwner owner) {
+    public DaylightCondition(ServerRealResources resources, String id, String name, String description, ServerRealConditionOwner owner) {
         super(resources, id, name, description, owner);
     }
 

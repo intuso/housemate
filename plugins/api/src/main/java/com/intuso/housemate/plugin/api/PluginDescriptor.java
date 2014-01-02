@@ -83,11 +83,11 @@ public interface PluginDescriptor {
      * Gets the condition factories provided by this plugin
      * @return the condition factories provided by this plugin
      */
-    public List<BrokerConditionFactory<?>> getConditionFactories();
+    public List<ServerConditionFactory<?>> getConditionFactories();
 
     /**
      * Gets the task factories provided by this plugin
      * @return the task factories provided by this plugin
      */
-    public List<BrokerTaskFactory<?>> getTaskFactories();
+    public List<ServerTaskFactory<?>> getTaskFactories();
 }

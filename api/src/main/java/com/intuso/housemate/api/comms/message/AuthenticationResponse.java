@@ -4,7 +4,7 @@ import com.intuso.housemate.api.comms.Message;
 
 /**
  *
- * Message payload for an authentication response. An instance of this should always contain the broker instance id.
+ * Message payload for an authentication response. An instance of this should always contain the server instance id.
  * It will then contain either the problem, or both the connection id and user id
  *
  * @see com.intuso.housemate.api.object.root.Root#login(com.intuso.housemate.api.authentication.AuthenticationMethod)
@@ -13,7 +13,7 @@ public class AuthenticationResponse implements Message.Payload {
 
     private static final long serialVersionUID = -1L;
 
-    private String brokerInstanceId;
+    private String serverInstanceId;
     private String connectionId;
     private String userId;
     private String problem;
@@ -21,40 +21,40 @@ public class AuthenticationResponse implements Message.Payload {
     public AuthenticationResponse() {}
 
     /**
-     * @param brokerInstanceId the instance id of the broker
+     * @param serverInstanceId the instance id of the server
      * @param connectionId the connection id
      * @param userId the id of the user that was logged in
      */
-    public AuthenticationResponse(String brokerInstanceId, String connectionId, String userId) {
-        this(brokerInstanceId, connectionId, userId, null);
+    public AuthenticationResponse(String serverInstanceId, String connectionId, String userId) {
+        this(serverInstanceId, connectionId, userId, null);
     }
 
     /**
-     * @param brokerInstanceId the instance id of the broker
+     * @param serverInstanceId the instance id of the server
      * @param problem the cause of the failed login attempt
      */
-    public AuthenticationResponse(String brokerInstanceId, String problem) {
-        this(brokerInstanceId, null, null, problem);
+    public AuthenticationResponse(String serverInstanceId, String problem) {
+        this(serverInstanceId, null, null, problem);
     }
 
     /**
-     * @param brokerInstanceId the instance id of the broker
+     * @param serverInstanceId the instance id of the server
      * @param connectionId the connection id
      * @param userId the id of the user that was logged in
      */
-    public AuthenticationResponse(String brokerInstanceId, String connectionId, String userId, String problem) {
-        this.brokerInstanceId = brokerInstanceId;
+    public AuthenticationResponse(String serverInstanceId, String connectionId, String userId, String problem) {
+        this.serverInstanceId = serverInstanceId;
         this.connectionId = connectionId;
         this.userId = userId;
         this.problem = problem;
     }
 
     /**
-     * Gets the instance id of the broker. Use this to check if the broker has been restarted
-     * @return the instance id of the broker
+     * Gets the instance id of the server. Use this to check if the server has been restarted
+     * @return the instance id of the server
      */
-    public String getBrokerInstanceId() {
-        return brokerInstanceId;
+    public String getServerInstanceId() {
+        return serverInstanceId;
     }
 
     /**

@@ -11,8 +11,8 @@ import com.intuso.housemate.annotations.plugin.Tasks;
 import com.intuso.housemate.annotations.plugin.Types;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.plugin.api.BrokerConditionFactory;
-import com.intuso.housemate.plugin.api.BrokerTaskFactory;
+import com.intuso.housemate.plugin.api.ServerConditionFactory;
+import com.intuso.housemate.plugin.api.ServerTaskFactory;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
 import com.intuso.housemate.sample.plugin.comparator.ComplexLocationComparator;
@@ -78,8 +78,8 @@ public class SamplePlugin extends AnnotatedPluginDescriptor {
      * Override to add condition factories that do not have simple constructors
      */
     @Override
-    public List<BrokerConditionFactory<?>> getConditionFactories() {
-        List<BrokerConditionFactory<?>> result = super.getConditionFactories();
+    public List<ServerConditionFactory<?>> getConditionFactories() {
+        List<ServerConditionFactory<?>> result = super.getConditionFactories();
         result.add(new ReallyComplexConditionFactory(complexArg));
         return result;
     }
@@ -88,8 +88,8 @@ public class SamplePlugin extends AnnotatedPluginDescriptor {
      * Override to add task factories that do not have simple constructors
      */
     @Override
-    public List<BrokerTaskFactory<?>> getTaskFactories() {
-        List<BrokerTaskFactory<?>> result = super.getTaskFactories();
+    public List<ServerTaskFactory<?>> getTaskFactories() {
+        List<ServerTaskFactory<?>> result = super.getTaskFactories();
         result.add(new ReallyComplexTaskFactory(complexArg));
         return result;
     }

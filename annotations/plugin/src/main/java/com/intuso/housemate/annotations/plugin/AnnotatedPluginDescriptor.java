@@ -3,7 +3,7 @@ package com.intuso.housemate.annotations.plugin;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.object.broker.real.*;
+import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
@@ -23,8 +23,8 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
     private final List<Constructor<? extends Operator<?, ?>>> operatorConstructors = Lists.newArrayList();
     private final List<Constructor<? extends Transformer<?, ?>>> transformerConstructors = Lists.newArrayList();
     private final List<RealDeviceFactory<?>> deviceFactories = Lists.newArrayList();
-    private final List<BrokerConditionFactory<?>> conditionFactories = Lists.newArrayList();
-    private final List<BrokerTaskFactory<?>> taskFactories = Lists.newArrayList();
+    private final List<ServerConditionFactory<?>> conditionFactories = Lists.newArrayList();
+    private final List<ServerTaskFactory<?>> taskFactories = Lists.newArrayList();
 
     @Override
     public final String getId() {
@@ -154,7 +154,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
     private void initConditionFactories(Resources resources) throws HousemateException {
         ConditionFactories conditionFactories = getClass().getAnnotation(ConditionFactories.class);
         if(conditionFactories != null) {
-            for(Class<? extends BrokerConditionFactory<?>> factoryClass : conditionFactories.value())
+            for(Class<? extends ServerConditionFactory<?>> factoryClass : conditionFactories.value())
                 try {
                     this.conditionFactories.add(factoryClass.newInstance());
                 } catch(Exception e) {
@@ -163,16 +163,16 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
         }
         Conditions conditions = getClass().getAnnotation(Conditions.class);
         if(conditions != null) {
-            for(Class<? extends BrokerRealCondition> conditionClass : conditions.value()) {
+            for(Class<? extends ServerRealCondition> conditionClass : conditions.value()) {
                 FactoryInformation information = conditionClass.getAnnotation(FactoryInformation.class);
                 if(information == null)
                     throw new HousemateException("Condition class " + conditionClass.getName() + " has no "
                             + FactoryInformation.class.getName() + " annotation");
-                Constructor<? extends BrokerRealCondition> constructor;
+                Constructor<? extends ServerRealCondition> constructor;
                 try {
                     constructor = conditionClass.getConstructor(
-                            BrokerRealResources.class, String.class, String.class, String.class,
-                            BrokerRealConditionOwner.class);
+                            ServerRealResources.class, String.class, String.class, String.class,
+                            ServerRealConditionOwner.class);
                 } catch(NoSuchMethodException e) {
                     throw new HousemateException("Condition class " + conditionClass.getName() + " does not have the correct constructor");
                 }
@@ -184,7 +184,7 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
     private void initTaskFactories(Resources resources) throws HousemateException {
         TaskFactories taskFactories = getClass().getAnnotation(TaskFactories.class);
         if(taskFactories != null) {
-            for(Class<? extends BrokerTaskFactory<?>> factoryClass : taskFactories.value())
+            for(Class<? extends ServerTaskFactory<?>> factoryClass : taskFactories.value())
                 try {
                     this.taskFactories.add(factoryClass.newInstance());
                 } catch(Exception e) {
@@ -193,15 +193,15 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
         }
         Tasks tasks = getClass().getAnnotation(Tasks.class);
         if(tasks != null) {
-            for(Class<? extends BrokerRealTask> taskClass : tasks.value()) {
+            for(Class<? extends ServerRealTask> taskClass : tasks.value()) {
                 FactoryInformation information = taskClass.getAnnotation(FactoryInformation.class);
                 if(information == null)
                     throw new HousemateException("Task class " + taskClass.getName() + " has no "
                             + FactoryInformation.class.getName() + " annotation");
-                Constructor<? extends BrokerRealTask> constructor;
+                Constructor<? extends ServerRealTask> constructor;
                 try {
                     constructor = taskClass.getConstructor(
-                            BrokerRealResources.class, String.class, String.class, String.class, BrokerRealTaskOwner.class);
+                            ServerRealResources.class, String.class, String.class, String.class, ServerRealTaskOwner.class);
                 } catch(NoSuchMethodException e) {
                     throw new HousemateException("Task class " + taskClass.getName() + " does not have the correct constructor");
                 }
@@ -272,12 +272,12 @@ public class AnnotatedPluginDescriptor implements PluginDescriptor {
     }
 
     @Override
-    public List<BrokerConditionFactory<?>> getConditionFactories() {
+    public List<ServerConditionFactory<?>> getConditionFactories() {
         return conditionFactories;
     }
 
     @Override
-    public List<BrokerTaskFactory<?>> getTaskFactories() {
+    public List<ServerTaskFactory<?>> getTaskFactories() {
         return taskFactories;
     }
 }

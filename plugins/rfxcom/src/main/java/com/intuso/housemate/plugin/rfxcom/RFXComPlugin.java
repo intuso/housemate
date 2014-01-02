@@ -84,12 +84,12 @@ public class RFXComPlugin implements PluginDescriptor {
     }
 
     @Override
-    public List<BrokerConditionFactory<?>> getConditionFactories() {
+    public List<ServerConditionFactory<?>> getConditionFactories() {
         return Lists.newArrayList();
     }
 
     @Override
-    public List<BrokerTaskFactory<?>> getTaskFactories() {
+    public List<ServerTaskFactory<?>> getTaskFactories() {
         return Lists.newArrayList();
     }
 }

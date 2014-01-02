@@ -231,7 +231,7 @@ public abstract class ProxyRootObject<
     }
 
     @Override
-    public final void brokerInstanceChanged() {
+    public final void newServerInstance() {
         Set<String> ids = Sets.newHashSet();
         for(HousemateObject<?, ?, ?, ?, ?> child : getChildren()) {
             child.uninit();
@@ -240,6 +240,6 @@ public abstract class ProxyRootObject<
         for(String id : ids)
             removeChild(id);
         for(RootListener<? super ROOT> listener : getObjectListeners())
-            listener.brokerInstanceChanged(getThis());
+            listener.newServerInstance(getThis());
     }
 }

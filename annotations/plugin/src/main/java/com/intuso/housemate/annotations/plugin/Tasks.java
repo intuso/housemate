@@ -1,6 +1,6 @@
 package com.intuso.housemate.annotations.plugin;
 
-import com.intuso.housemate.object.broker.real.BrokerRealTask;
+import com.intuso.housemate.object.server.real.ServerRealTask;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,5 +18,5 @@ public @interface Tasks {
      * The list of classes of tasks with simple constructors that the plugin provides
      * @return the list of classes of tasks with simple constructors that the plugin provides
      */
-    Class<? extends BrokerRealTask>[] value();
+    Class<? extends ServerRealTask>[] value();
 }

@@ -14,7 +14,7 @@ import com.intuso.utilities.listener.Listeners;
 
 /**
  *
- * Utility class for managing a connection to a broker. Handles broker messages, reconnecting etc and calls the
+ * Utility class for managing a connection to a server. Handles server messages, reconnecting etc and calls the
  * appropriate callbacks as state changes
  */
 public class ConnectionManager {
@@ -27,12 +27,12 @@ public class ConnectionManager {
     private final String disconnectMessageType;
     private final ConnectionType clientType;
 
-    private String brokerInstanceId = null;
+    private String serverInstanceId = null;
     private String connectionId = null;
     private ConnectionStatus status = null;
 
     /**
-     * @param sender the message sender the connection manager can use to communicate with the broker
+     * @param sender the message sender the connection manager can use to communicate with the server
      * @param clientType the type of the client's connection
      * @param initialStatus the initial connection status
      */
@@ -71,7 +71,7 @@ public class ConnectionManager {
     }
 
     /**
-     * Authenticates with the broker
+     * Authenticates with the server
      * @param method the method to authenticate with
      */
     public void login(AuthenticationMethod method) {
@@ -88,7 +88,7 @@ public class ConnectionManager {
     }
 
     /**
-     * Logs out of the broker
+     * Logs out of the server
      */
     public void logout() {
         sender.sendMessage(new Message<NoPayload>(path, disconnectMessageType, NoPayload.VALUE));
@@ -104,13 +104,13 @@ public class ConnectionManager {
     public void authenticationResponseReceived(AuthenticationResponse response) {
         if(response instanceof ReconnectResponse)
             status = ConnectionStatus.Authenticated;
-        else if(brokerInstanceId != null && !brokerInstanceId.equals(response.getBrokerInstanceId())) {
+        else if(serverInstanceId != null && !serverInstanceId.equals(response.getServerInstanceId())) {
             connectionId = null;
             status = ConnectionStatus.Unauthenticated;
             for(ConnectionStatusChangeListener listener : listeners)
-                listener.brokerInstanceChanged();
+                listener.newServerInstance();
         } else {
-            brokerInstanceId = response.getBrokerInstanceId();
+            serverInstanceId = response.getServerInstanceId();
             connectionId = response.getConnectionId();
             status = connectionId != null ? ConnectionStatus.Authenticated : ConnectionStatus.AuthenticationFailed;
         }
@@ -119,7 +119,7 @@ public class ConnectionManager {
     }
 
     /**
-     * Updates the status of the router we use to connect to the broker
+     * Updates the status of the router we use to connect to the server
      * @param routerStatus the router's new status
      */
     public void routerStatusChanged(ConnectionStatus routerStatus) {

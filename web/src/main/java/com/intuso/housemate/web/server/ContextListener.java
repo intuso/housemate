@@ -19,7 +19,7 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-        // will be null if started in dev mode, in which case the broker is run separately
+        // will be null if started in dev mode, in which case the server is run separately
         try {
             if(RESOURCES == null) {
                 Object resources = servletContextEvent.getServletContext().getAttribute("RESOURCES");
@@ -39,8 +39,8 @@ public class ContextListener implements ServletContextListener {
                 }
 
                 @Override
-                public void brokerInstanceChanged(RouterRootObject root) {
-                    RESOURCES.getLog().d("Broker instance changed");
+                public void newServerInstance(RouterRootObject root) {
+                    RESOURCES.getLog().d("Server instance changed");
                 }
             });
         } catch(HousemateException e) {

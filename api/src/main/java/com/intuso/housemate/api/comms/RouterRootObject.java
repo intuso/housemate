@@ -18,7 +18,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import java.util.List;
 
 /**
- * Root object used to handle messaging between a router and the broker
+ * Root object used to handle messaging between a router and the server
  */
 public class RouterRootObject
         extends HousemateObject<Resources, RootData, HousemateData<?>,
@@ -120,7 +120,7 @@ public class RouterRootObject
     }
 
     /**
-     * Tells the broker that a client key it tried to use is unknown
+     * Tells the server that a client key it tried to use is unknown
      * @param key the unknown key
      */
     public void unknownClient(String key) {
@@ -134,8 +134,8 @@ public class RouterRootObject
     }
 
     @Override
-    public void brokerInstanceChanged() {
+    public void newServerInstance() {
         for(RootListener<? super RouterRootObject> listener : Lists.newArrayList(getObjectListeners()))
-            listener.brokerInstanceChanged(this);
+            listener.newServerInstance(this);
     }
 }

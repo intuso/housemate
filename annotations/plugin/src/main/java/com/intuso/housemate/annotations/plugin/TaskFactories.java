@@ -1,6 +1,6 @@
 package com.intuso.housemate.annotations.plugin;
 
-import com.intuso.housemate.plugin.api.BrokerTaskFactory;
+import com.intuso.housemate.plugin.api.ServerTaskFactory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,5 +18,5 @@ public @interface TaskFactories {
      * The list of the task factories the plugin provides
      * @return the list of the task factories the plugin provides
      */
-    Class<? extends BrokerTaskFactory<?>>[] value();
+    Class<? extends ServerTaskFactory<?>>[] value();
 }

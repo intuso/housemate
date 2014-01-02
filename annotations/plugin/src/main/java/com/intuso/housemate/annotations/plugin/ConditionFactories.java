@@ -1,6 +1,6 @@
 package com.intuso.housemate.annotations.plugin;
 
-import com.intuso.housemate.plugin.api.BrokerConditionFactory;
+import com.intuso.housemate.plugin.api.ServerConditionFactory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,5 +18,5 @@ public @interface ConditionFactories {
      * The list of the condition factories the plugin provides
      * @return the list of the condition factories the plugin provides
      */
-    Class<? extends BrokerConditionFactory<?>>[] value();
+    Class<? extends ServerConditionFactory<?>>[] value();
 }

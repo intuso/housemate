@@ -119,7 +119,7 @@ public final class RealList<
     }
 
     /**
-     * Resends all elements of the list to the broker. Used when the broker instance has changed and the broker needs
+     * Resends all elements of the list to the server. Used when the server instance has changed and the server needs
      * to be retold of all objects
      */
     public void resendElements() {

@@ -33,9 +33,9 @@ public class LoginManager implements CredentialsSubmittedHandler {
         }
 
         @Override
-        public void brokerInstanceChanged(RouterRootObject root) {
+        public void newServerInstance(RouterRootObject root) {
             isLoggedIn = false;
-            Housemate.FACTORY.getLoginView().show("The broker restarted. Please login again");
+            Housemate.FACTORY.getLoginView().show("The server restarted. Please login again");
             Housemate.FACTORY.getLoginView().enable();
         }
     };

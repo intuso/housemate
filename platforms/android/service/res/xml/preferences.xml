@@ -4,11 +4,11 @@
     <PreferenceCategory
             android:title="@string/pref_title_server">
         <EditTextPreference
-                android:key="broker.host"
+                android:key="server.host"
                 android:title="@string/pref_title_server_host"
                 android:defaultValue="" />
         <EditTextPreference
-                android:key="broker.port"
+                android:key="server.port"
                 android:title="@string/pref_title_server_port"
                 android:inputType="number"
                 android:defaultValue="46873" />

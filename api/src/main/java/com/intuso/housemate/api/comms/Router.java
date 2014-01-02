@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * A Housemate client that can have clients of its own. Each program instance should use one of these if it expects to
  * have multiple clients of different types. Alternatively, this can be used to allow multiple clients to share a single
- * connection to the broker, for example a selection of widgets on a mobile phone
+ * connection to the server, for example a selection of widgets on a mobile phone
  */
 public abstract class Router implements Sender, Receiver {
 
@@ -60,7 +60,7 @@ public abstract class Router implements Sender, Receiver {
             }
 
             @Override
-            public void brokerInstanceChanged(RouterRootObject root) {
+            public void newServerInstance(RouterRootObject root) {
                 // do nothing
             }
         });
@@ -93,7 +93,7 @@ public abstract class Router implements Sender, Receiver {
     }
 
     /**
-     * Logs in to the broker
+     * Logs in to the server
      * @param method the method to authenticate with
      */
     public final void login(AuthenticationMethod method) {
@@ -103,19 +103,19 @@ public abstract class Router implements Sender, Receiver {
     }
 
     /**
-     * Logs out of the broker
+     * Logs out of the server
      */
     public final void logout() {
         root.logout();
     }
 
     /**
-     * Makes a connection to the next router in the chain, or the broker itself
+     * Makes a connection to the next router in the chain
      */
     public abstract void connect();
 
     /**
-     * Disconnects from the next router in the chain or the broker itself
+     * Disconnects from the next router in the chain
      */
     public abstract void disconnect();
 
@@ -153,7 +153,7 @@ public abstract class Router implements Sender, Receiver {
     }
 
     /**
-     * Used by clients to send messages to the broker
+     * Used by clients to send messages to the server
      */
     public final class Registration implements Sender {
 

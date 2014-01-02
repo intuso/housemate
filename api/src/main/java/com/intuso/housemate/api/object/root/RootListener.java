@@ -17,8 +17,8 @@ public interface RootListener<R extends Root<?>> extends ObjectListener {
     public void connectionStatusChanged(R root, ConnectionStatus status);
 
     /**
-     * Notifies that the instance of the broker we were connected to has changed
-     * @param root the root whose broker instance was changed
+     * Notifies that the instance of the connected server has changed
+     * @param root the root whose server instance was changed
      */
-    void brokerInstanceChanged(R root);
+    void newServerInstance(R root);
 }

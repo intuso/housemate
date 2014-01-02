@@ -94,7 +94,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection, RootL
     }
 
     @Override
-    public void brokerInstanceChanged(RouterRootObject root) {
+    public void newServerInstance(RouterRootObject root) {
         // TODO
     }
 

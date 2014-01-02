@@ -1,5 +1,5 @@
 <assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
-    <baseDirectory>housemate-broker</baseDirectory>
+    <baseDirectory>housemate-server</baseDirectory>
     <formats>
         <format>zip</format>
         <format>tar.gz</format>
@@ -7,7 +7,7 @@
     <fileSets>
         <fileSet>
             <outputDirectory>/</outputDirectory>
-            <directory>${project.build.directory}/jsw/housemate-broker</directory>
+            <directory>${project.build.directory}/jsw/housemate-server</directory>
             <excludes>
                 <exclude>bin/**</exclude>
                 <exclude>scripts/**</exclude>
@@ -15,16 +15,16 @@
         </fileSet>
         <fileSet>
             <outputDirectory>logs</outputDirectory>
-            <directory>${project.build.directory}/jsw/housemate-broker/logs</directory>
+            <directory>${project.build.directory}/jsw/housemate-server/logs</directory>
         </fileSet>
         <fileSet>
             <outputDirectory>scripts</outputDirectory>
-            <directory>${project.build.directory}/jsw/housemate-broker/scripts</directory>
+            <directory>${project.build.directory}/jsw/housemate-server/scripts</directory>
             <fileMode>0744</fileMode>
         </fileSet>
         <fileSet>
             <outputDirectory>bin</outputDirectory>
-            <directory>${project.build.directory}/jsw/housemate-broker/bin</directory>
+            <directory>${project.build.directory}/jsw/housemate-server/bin</directory>
             <fileMode>0744</fileMode>
         </fileSet>
     </fileSets>

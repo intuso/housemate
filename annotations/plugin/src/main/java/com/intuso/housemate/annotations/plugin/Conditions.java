@@ -1,6 +1,6 @@
 package com.intuso.housemate.annotations.plugin;
 
-import com.intuso.housemate.object.broker.real.BrokerRealCondition;
+import com.intuso.housemate.object.server.real.ServerRealCondition;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,5 +18,5 @@ public @interface Conditions {
      * The list of classes of conditions with simple constructors that the plugin provides
      * @return the list of classes of conditions with simple constructors that the plugin provides
      */
-    Class<? extends BrokerRealCondition>[] value();
+    Class<? extends ServerRealCondition>[] value();
 }

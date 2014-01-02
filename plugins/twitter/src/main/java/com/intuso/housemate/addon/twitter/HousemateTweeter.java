@@ -128,8 +128,8 @@ public class HousemateTweeter {
             }
 
             @Override
-            public void brokerInstanceChanged(SimpleProxyObject.Root root) {
-                tweet("Broker instance changed. Reconnecting");
+            public void newServerInstance(SimpleProxyObject.Root root) {
+                tweet("Server instance changed. Reconnecting");
                 root.login(new UsernamePassword(resources.getProperties().get("username"), resources.getProperties().get("password"), true));
             }
         });

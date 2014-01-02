@@ -96,7 +96,7 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                     }
 
                     @Override
-                    public void brokerInstanceChanged(GWTProxyRootObject root) {
+                    public void newServerInstance(GWTProxyRootObject root) {
                         // do nothing (handled by router listener
                     }
                 });
@@ -114,7 +114,7 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
     }
 
     @Override
-    public void brokerInstanceChanged(RouterRootObject root) {
+    public void newServerInstance(RouterRootObject root) {
         resetContent();
     }
 

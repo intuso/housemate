@@ -160,9 +160,9 @@ public class RealRootObject
     }
 
     @Override
-    public void brokerInstanceChanged() {
+    public void newServerInstance() {
         for(RootListener<? super RealRootObject> listener : getObjectListeners())
-            listener.brokerInstanceChanged(this);
+            listener.newServerInstance(this);
         resend = true;
     }
 }

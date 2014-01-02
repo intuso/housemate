@@ -118,7 +118,7 @@ public class ContextualResource
     }
 
     @Override
-    public void brokerInstanceChanged(SimpleProxyObject.Root root) {
+    public void newServerInstance(SimpleProxyObject.Root root) {
         // TODO let the client know somehow
     }
 

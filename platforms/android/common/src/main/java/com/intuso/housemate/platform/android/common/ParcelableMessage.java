@@ -263,7 +263,7 @@ public class ParcelableMessage implements Parcelable {
     }
 
     private static void writeAuthenticationResponse(Parcel parcel, int flags, AuthenticationResponse authenticationResponse) {
-        parcel.writeString(authenticationResponse.getBrokerInstanceId());
+        parcel.writeString(authenticationResponse.getServerInstanceId());
         parcel.writeString(authenticationResponse.getConnectionId());
         parcel.writeString(authenticationResponse.getUserId());
         parcel.writeString(authenticationResponse.getProblem());

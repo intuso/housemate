@@ -14,7 +14,7 @@
     <description>Objects for the Housemate framework</description>
 
     <modules>
-        <module>broker</module>
+        <module>server</module>
         <module>proxy</module>
         <module>real</module>
     </modules>

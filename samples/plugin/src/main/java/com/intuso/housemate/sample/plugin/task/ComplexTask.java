@@ -1,8 +1,8 @@
 package com.intuso.housemate.sample.plugin.task;
 
-import com.intuso.housemate.object.broker.real.BrokerRealResources;
-import com.intuso.housemate.object.broker.real.BrokerRealTask;
-import com.intuso.housemate.object.broker.real.BrokerRealTaskOwner;
+import com.intuso.housemate.object.server.real.ServerRealResources;
+import com.intuso.housemate.object.server.real.ServerRealTask;
+import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
 
 /**
  * Complex task with a non-simple constructor that cannot be used with the
@@ -12,12 +12,12 @@ import com.intuso.housemate.object.broker.real.BrokerRealTaskOwner;
  * @see com.intuso.housemate.sample.plugin.task.ComplexTaskFactory
  * @see com.intuso.housemate.sample.plugin.task.ReallyComplexTaskFactory
  */
-public class ComplexTask extends BrokerRealTask {
+public class ComplexTask extends ServerRealTask {
 
     private final Object extraArg;
 
-    public ComplexTask(BrokerRealResources resources, String id, String name, String description,
-                       BrokerRealTaskOwner owner, Object extraArg) {
+    public ComplexTask(ServerRealResources resources, String id, String name, String description,
+                       ServerRealTaskOwner owner, Object extraArg) {
         super(resources, id, name, description, owner);
         this.extraArg = extraArg;
     }
