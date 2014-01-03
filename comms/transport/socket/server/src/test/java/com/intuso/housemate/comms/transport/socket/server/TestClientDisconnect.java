@@ -1,39 +1,13 @@
-package com.intuso.housemate.server;
+package com.intuso.housemate.comms.transport.socket.server;
 
-import com.intuso.housemate.api.authentication.UsernamePassword;
-import com.intuso.housemate.api.comms.ConnectionStatus;
-import com.intuso.housemate.api.comms.RouterRootObject;
-import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.server.comms.RemoteClientManager;
-import com.intuso.housemate.comms.transport.rest.RestServer;
-import com.intuso.housemate.comms.transport.socket.client.SocketClient;
-import com.intuso.housemate.comms.transport.socket.server.SocketServer;
-import com.intuso.housemate.object.server.RemoteClient;
-import com.intuso.housemate.object.server.RemoteClientListener;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
-import com.intuso.utilities.listener.ListenerRegistration;
 import org.junit.Ignore;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static junit.framework.Assert.*;
 
 /**
  */
 @Ignore
 public class TestClientDisconnect {
 
-    private final static ServerEnvironment environment = TestUtils.startServer(65432, 65433);
+    /*private final static ServerEnvironment environment = TestUtils.startServer(65432, 65433);
     private final static AtomicInteger TEST_NUM = new AtomicInteger(0);
 
     @Test(timeout = 5000)
@@ -379,5 +353,5 @@ public class TestClientDisconnect {
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 }

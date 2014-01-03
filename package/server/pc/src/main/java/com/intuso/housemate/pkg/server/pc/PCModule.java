@@ -1,4 +1,4 @@
-package com.intuso.housemate.server;
+package com.intuso.housemate.pkg.server.pc;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;

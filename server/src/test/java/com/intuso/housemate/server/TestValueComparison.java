@@ -1,54 +1,10 @@
 package com.intuso.housemate.server;
 
-import com.google.common.collect.Maps;
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.intuso.housemate.annotations.processor.AnnotationProcessor;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.type.SimpleTypeData;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.object.server.real.ServerRealResources;
-import com.intuso.housemate.server.client.LocalClient;
-import com.intuso.housemate.server.object.bridge.RootObjectBridge;
-import com.intuso.housemate.server.object.bridge.ValueBridge;
-import com.intuso.housemate.server.plugin.main.comparator.DoubleComparators;
-import com.intuso.housemate.server.plugin.main.comparator.IntegerComparators;
-import com.intuso.housemate.server.plugin.main.condition.ValueComparison;
-import com.intuso.housemate.server.plugin.main.type.comparison.Comparison;
-import com.intuso.housemate.server.plugin.main.type.valuesource.ConstantValue;
-import com.intuso.housemate.server.plugin.main.type.valuesource.ValueLocation;
-import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.DoubleType;
-import com.intuso.housemate.object.real.impl.type.IntegerType;
-import com.intuso.housemate.object.real.impl.type.RealObjectType;
-import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.ComparisonType;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Map;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-
 /**
  */
 public class TestValueComparison {
 
-    private final static ServerEnvironment SERVER_ENVIRONMENT = TestUtils.startServer(65432, 65433);
+    /*private final static ServerEnvironment SERVER_ENVIRONMENT = TestUtils.startServer(65432, 65433);
 
     private final static Map<ComparisonType, Map<String, Comparator<?>>> COMPARISONS_BY_TYPE = Maps.newHashMap();
     static {
@@ -159,5 +115,5 @@ public class TestValueComparison {
         comparisonProperty.setTypedValue(comparison);
         valueComparison.start();
         return valueComparison;
-    }
+    }*/
 }

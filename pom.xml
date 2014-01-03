@@ -36,6 +36,7 @@
         <module>plugins</module>
         <module>samples</module>
         <module>web</module>
+        <module>package</module>
     </modules>
 
     <dependencies>

@@ -1,28 +1,20 @@
-package com.intuso.housemate.server;
+package com.intuso.housemate.pkg.server.pc;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.housemate.api.resources.RegexMatcher;
-import com.intuso.housemate.object.server.proxy.ServerProxyFactory;
-import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
-import com.intuso.housemate.object.server.real.ServerRealRootObject;
-import com.intuso.housemate.server.comms.MainRouter;
-import com.intuso.housemate.server.object.ServerProxyResourcesImpl;
-import com.intuso.housemate.server.object.ServerRealResourcesImpl;
-import com.intuso.housemate.server.object.bridge.ServerBridgeResources;
-import com.intuso.housemate.server.object.bridge.RootObjectBridge;
+import com.intuso.housemate.comms.transport.socket.server.SocketServer;
+import com.intuso.housemate.plugin.api.PluginDescriptor;
+import com.intuso.housemate.server.ServerModule;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.plugin.main.MainPlugin;
 import com.intuso.housemate.server.storage.ServerObjectLoader;
 import com.intuso.housemate.server.storage.impl.SjoerdDB;
 import com.intuso.housemate.server.storage.impl.SjoerdDBModule;
-import com.intuso.housemate.comms.transport.socket.server.SocketServer;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.log.LogLevel;
 import com.intuso.utilities.log.LogWriter;
@@ -177,11 +169,8 @@ public class ServerEnvironment {
                 new SjoerdDBModule(), // storage impl
                 new ServerModule());
 
-        injector.getInstance(ServerRealResourcesImpl.class).setRoot(injector.getInstance(ServerRealRootObject.class));
-        injector.getInstance(new Key<ServerProxyResourcesImpl<ServerProxyFactory.All>>() {}).setRoot(injector.getInstance(ServerProxyRootObject.class));
-        injector.getInstance(ServerBridgeResources.class).setRoot(injector.getInstance(RootObjectBridge.class));
+        injector.getInstance(com.intuso.housemate.server.Server.class).start();
 
-        injector.getInstance(MainRouter.class).start();
         loadPlugins();
         injector.getInstance(ServerObjectLoader.class).loadObjects();
         startWebapp();

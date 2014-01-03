@@ -1,4 +1,4 @@
-package com.intuso.housemate.server;
+package com.intuso.housemate.pkg.server.pc;
 
 import com.intuso.housemate.api.HousemateException;
 
@@ -6,7 +6,7 @@ import com.intuso.housemate.api.HousemateException;
  * Main class for the server
  *
  */
-public class App {
+public class Main {
 
 	public static void main(String args[]) throws HousemateException {
         start(args);

@@ -53,16 +53,37 @@ public final class MainRouter extends Router {
         try {
             new SocketServer(resources, this).start();
         } catch(HousemateException e) {
-            throw new HousemateRuntimeException("Could not start server comms", e);
+            throw new HousemateRuntimeException("Could not start socket server comms", e);
         }
 
         // start the rest server
         try {
             new RestServer(resources, this).start();
         } catch(HousemateException e) {
-            throw new HousemateRuntimeException("Could not start server comms", e);
+            throw new HousemateRuntimeException("Could not start rest server comms", e);
         }
 	}
+
+    /**
+     * Stop accepting connections to the server
+     */
+    public final void stop() {
+
+        // start the thread that will process incoming messages
+        messageProcessor.interrupt();
+
+        // start the socket server
+        new SocketServer(resources, this).stop();
+
+        // start the rest server
+        new RestServer(resources, this).stop();
+
+        try {
+            messageProcessor.join();
+        } catch(InterruptedException e) {
+            getLog().e("Failed to wait for message processor to stop");
+        }
+    }
 
     @Override
     public void sendMessage(Message message) {

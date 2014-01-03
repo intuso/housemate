@@ -4,7 +4,6 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,45 +15,28 @@ public class SocketServer extends Router {
 
     public final static String PORT = "socket.server.port";
 
-    private final Log log;
+    private final Resources resources;
 
     /**
      * The server socket
      */
-    private final ServerSocket serverSocket;
+    private ServerSocket serverSocket;
 
     /**
      * Thread for accepting new client connections
      */
-    private final Accepter accepter;
+    private Accepter accepter;
 
     private final Router.Registration routerRegistration;
 
-    public SocketServer(Resources resources, Router router) throws HousemateException {
-
+    public SocketServer(Resources resources, Router router) {
         super(resources);
-
+        
+        this.resources = resources;
         this.routerRegistration = router.registerReceiver(this);
-
-        log = resources.getLog();
 
         setRouterStatus(Status.Connected);
         login(new AuthenticationMethod());
-
-        try {
-            // open the server port
-            String port = resources.getProperties().get(PORT);
-            if(port == null) {
-                log.d("Socket server port not set, using default");
-                port = "46873";
-            }
-            log.d("Starting server comms on port " + port);
-            serverSocket = new ServerSocket(Integer.parseInt(port));
-            accepter = new Accepter();
-        } catch (IOException e) {
-            log.e("Could not open port to listen on", e);
-            throw new HousemateException("Could not open port to listen on", e);
-        }
     }
 
     @Override
@@ -72,9 +54,42 @@ public class SocketServer extends Router {
         routerRegistration.sendMessage(message);
     }
 
-    public void start() {
+    public void start() throws HousemateException {
+
+        try {
+            // open the server port
+            String port = resources.getProperties().get(PORT);
+            if(port == null) {
+                getLog().d("Socket server port not set, using default");
+                port = "46873";
+            }
+            getLog().d("Starting server comms on port " + port);
+            serverSocket = new ServerSocket(Integer.parseInt(port));
+            accepter = new Accepter();
+        } catch (IOException e) {
+            getLog().e("Could not open port to listen on", e);
+            throw new HousemateException("Could not open port to listen on", e);
+        }
+        
         // start the thread that will accept connections from the port
         accepter.start();
+        getLog().d("Accepting socket connections");
+    }
+
+    public void stop() {
+        getLog().d("Stopping server comms");
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            getLog().e("Failed to close socket server's socket", e);
+        }
+        // start the thread that will accept connections from the port
+        accepter.interrupt();
+        try {
+            accepter.join();
+        } catch (InterruptedException e) {
+            getLog().e("Failed to wait for accepter thread to stop");
+        }
     }
 
     /**
@@ -87,7 +102,7 @@ public class SocketServer extends Router {
         @Override
         public void run() {
 
-            log.d("Listening for connections");
+            getLog().d("Listening for connections");
 
             // while we shouldn't shut down
             while(!isInterrupted()) {
@@ -99,13 +114,13 @@ public class SocketServer extends Router {
                     // TODO read client "contract" - version, mime type etc
                     // could also read a name to call the client so that we can show something useful when showing
                     // who's connected?
-                    new ClientHandle(SocketServer.this, socket, log);
+                    new ClientHandle(SocketServer.this, socket, getLog());
                 } catch (IOException e) {
                     if(!serverSocket.isClosed()) {
-                        log.e("Error getting next client connection.", e);
+                        getLog().e("Error getting next client connection.", e);
                     }
                 } catch(HousemateException e) {
-                    log.e("Could not create client handle for new client connection", e);
+                    getLog().e("Could not create client handle for new client connection", e);
                 }
             }
         }

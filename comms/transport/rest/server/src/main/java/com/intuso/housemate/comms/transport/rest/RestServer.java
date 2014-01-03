@@ -33,7 +33,7 @@ public class RestServer extends Router {
     private final Router.Registration routerRegistration;
     private final Server server;
 
-    public RestServer(Resources resources, Router router) throws HousemateException {
+    public RestServer(Resources resources, Router router) {
 
         super(resources);
 
@@ -49,7 +49,7 @@ public class RestServer extends Router {
             port = "46872";
         }
 
-        resources.getLog().d("Starting server comms on port " + port);
+        resources.getLog().d("Creating REST server on port " + port);
         server = new Server(Integer.parseInt(port));
 
         ServletContextHandler handler = new ServletContextHandler();
@@ -74,11 +74,20 @@ public class RestServer extends Router {
         routerRegistration.sendMessage(message);
     }
 
-    public void start() {
+    public void start() throws HousemateException {
         try {
             server.start();
         } catch (Exception e) {
-            throw new RuntimeException("Could not start the server", e);
+            getLog().e("Could not start the server", e);
+            throw new HousemateException("Could not start the REST server", e);
+        }
+    }
+
+    public void stop() {
+        try {
+            server.stop();
+        } catch(Exception e) {
+            getLog().e("Could not stop the REST server", e);
         }
     }
 
