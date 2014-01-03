@@ -20,41 +20,41 @@
 
         <!-- Housemate API+objects -->
 		<dependency>
-			<groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
 			<artifactId>api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>plugin-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>object-real</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!-- Annotations -->
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>annotations-processor</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>annotations-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <!-- Transport implementations -->
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>comms-transport-socket-server</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>comms-transport-rest-server</artifactId>
             <version>${project.version}</version>
         </dependency>

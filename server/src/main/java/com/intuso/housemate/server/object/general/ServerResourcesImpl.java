@@ -3,19 +3,18 @@ package com.intuso.housemate.server.object.general;
 import com.google.inject.Injector;
 import com.intuso.housemate.object.server.ServerResources;
 import com.intuso.utilities.log.Log;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  */
 public abstract class ServerResourcesImpl<R> implements ServerResources<R> {
 
     private final Log log;
-    private final Map<String, String> properties;
+    private final PropertyContainer properties;
     private final Injector injector;
     private R root;
 
-    public ServerResourcesImpl(Log log, Map<String, String> properties, Injector injector) {
+    public ServerResourcesImpl(Log log, PropertyContainer properties, Injector injector) {
         this.log = log;
         this.properties = properties;
         this.injector = injector;
@@ -27,7 +26,7 @@ public abstract class ServerResourcesImpl<R> implements ServerResources<R> {
     }
 
     @Override
-    public Map<String, String> getProperties() {
+    public PropertyContainer getProperties() {
         return properties;
     }
 

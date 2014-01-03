@@ -6,28 +6,27 @@ import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.object.server.proxy.ServerProxyFactory;
-import com.intuso.housemate.object.server.proxy.ServerProxyResources;
-import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
-import com.intuso.housemate.object.server.real.ServerRealResources;
-import com.intuso.housemate.server.client.LocalClientRoot;
-import com.intuso.housemate.server.comms.MainRouter;
-import com.intuso.housemate.server.object.ServerProxyResourcesImpl;
-import com.intuso.housemate.server.object.ServerRealResourcesImpl;
-import com.intuso.housemate.server.object.LifecycleHandlerImpl;
-import com.intuso.housemate.server.object.bridge.ServerBridgeResources;
-import com.intuso.housemate.server.object.bridge.ListBridge;
-import com.intuso.housemate.server.object.bridge.RootObjectBridge;
-import com.intuso.housemate.server.object.bridge.TypeBridge;
-import com.intuso.housemate.object.server.LifecycleHandler;
-import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.server.LifecycleHandler;
+import com.intuso.housemate.object.server.proxy.ServerProxyFactory;
+import com.intuso.housemate.object.server.proxy.ServerProxyResources;
+import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
+import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.housemate.object.server.real.ServerRealResources;
+import com.intuso.housemate.server.client.LocalClientRoot;
+import com.intuso.housemate.server.comms.MainRouter;
+import com.intuso.housemate.server.object.LifecycleHandlerImpl;
+import com.intuso.housemate.server.object.ServerProxyResourcesImpl;
+import com.intuso.housemate.server.object.ServerRealResourcesImpl;
+import com.intuso.housemate.server.object.bridge.ListBridge;
+import com.intuso.housemate.server.object.bridge.RootObjectBridge;
+import com.intuso.housemate.server.object.bridge.ServerBridgeResources;
+import com.intuso.housemate.server.object.bridge.TypeBridge;
 import com.intuso.utilities.log.Log;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  */
@@ -44,7 +43,7 @@ public class ServerModule extends AbstractModule {
     }
 
     @Provides
-    public RealResources getRealResources(Log log, Map<String, String> properties, Router router) {
+    public RealResources getRealResources(Log log, PropertyContainer properties, Router router) {
         return new RealResources(log, properties, router);
     }
 
@@ -72,10 +71,10 @@ public class ServerModule extends AbstractModule {
     private static class ResourcesImpl implements Resources {
 
         private final Log log;
-        private final Map<String, String> properties;
+        private final PropertyContainer properties;
 
         @Inject
-        private ResourcesImpl(Log log, Map<String, String> properties) {
+        private ResourcesImpl(Log log, PropertyContainer properties) {
             this.log = log;
             this.properties = properties;
         }
@@ -86,7 +85,7 @@ public class ServerModule extends AbstractModule {
         }
 
         @Override
-        public Map<String, String> getProperties() {
+        public PropertyContainer getProperties() {
             return properties;
         }
     }

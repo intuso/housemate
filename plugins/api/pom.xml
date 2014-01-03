@@ -14,17 +14,17 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
 			<artifactId>api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>object-real</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>object-server</artifactId>
             <version>${project.version}</version>
         </dependency>

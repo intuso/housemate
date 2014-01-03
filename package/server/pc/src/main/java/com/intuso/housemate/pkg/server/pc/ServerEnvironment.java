@@ -20,6 +20,10 @@ import com.intuso.utilities.log.LogLevel;
 import com.intuso.utilities.log.LogWriter;
 import com.intuso.utilities.log.writer.FileWriter;
 import com.intuso.utilities.log.writer.StdOutWriter;
+import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.api.PropertyValue;
+import com.intuso.utilities.properties.reader.commandline.CommandLineReader;
+import com.intuso.utilities.properties.reader.file.FileReader;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.FileResource;
 import org.eclipse.jetty.util.resource.JarResource;
@@ -63,7 +67,7 @@ public class ServerEnvironment {
 
     public final File config_dir;
 
-	private final Map<String, String> properties;
+	private final PropertyContainer properties = new PropertyContainer();
     private final Log log;
 
     private final Injector injector;
@@ -76,14 +80,13 @@ public class ServerEnvironment {
 	public ServerEnvironment(String args[]) throws HousemateException {
 
 		// convert the command line args into a map of values that are set
-		Map<String, String> overrides = parseArgs(args);
+        properties.read(new CommandLineReader("commandLine", 2, args));
 
 		String dir;
-		// get the base housemate config directory. If overridden, use that, else use env var value. If that not set then quit
-		if(overrides.get(HOUSEMATE_CONFIG_DIR) != null) {
-			System.out.println("Overriding " + HOUSEMATE_CONFIG_DIR + " to " + overrides.get(HOUSEMATE_CONFIG_DIR));
-			dir = overrides.get(HOUSEMATE_CONFIG_DIR);
-			overrides.remove(HOUSEMATE_CONFIG_DIR);
+		// get the base housemate config directory. If overridden, use that, else use env var value, else use default
+		if(properties.get(HOUSEMATE_CONFIG_DIR) != null) {
+			System.out.println("Overriding " + HOUSEMATE_CONFIG_DIR + " to " + properties.get(HOUSEMATE_CONFIG_DIR));
+			dir = properties.get(HOUSEMATE_CONFIG_DIR);
 		} else {
 			dir = System.getenv(HOUSEMATE_CONFIG_DIR);
 			if(dir == null)
@@ -96,10 +99,9 @@ public class ServerEnvironment {
             config_dir.mkdirs();
 
 		// get the base housemate log directory. If overridden, use that, else use env var value. If that not set then quit
-		if(overrides.get(HOUSEMATE_LOG_DIR) != null) {
-			System.out.println("Overriding " + HOUSEMATE_LOG_DIR + " to " + overrides.get(HOUSEMATE_LOG_DIR));
-			dir = overrides.get(HOUSEMATE_LOG_DIR);
-			overrides.remove(HOUSEMATE_LOG_DIR);
+		if(properties.get(HOUSEMATE_LOG_DIR) != null) {
+			System.out.println("Overriding " + HOUSEMATE_LOG_DIR + " to " + properties.get(HOUSEMATE_LOG_DIR));
+			dir = properties.get(HOUSEMATE_LOG_DIR);
 		} else {
 			dir = System.getenv(HOUSEMATE_LOG_DIR);
 			if(dir == null)
@@ -118,9 +120,6 @@ public class ServerEnvironment {
         if(!log_dir.exists())
             log_dir.mkdirs();
 
-		// init the properties
-		properties = new HashMap<String, String>();
-
 		// get the props file
 		File props_file = new File(config_dir, HOUSEMATE_PROPS_FILE);
 		if(!props_file.exists()) {
@@ -130,10 +129,7 @@ public class ServerEnvironment {
 
 		// load the props from the file
 		try {
-            Properties fileProps = new Properties();
-			fileProps.load(new FileInputStream(props_file));
-            for(String key : fileProps.stringPropertyNames())
-                properties.put(key, fileProps.getProperty(key));
+            properties.read(new FileReader("propertiesFile", 1, props_file));
 		} catch (FileNotFoundException e) {
 			// Would have logged above!
 			System.err.println("Could not find server properties file \"" + props_file.getAbsolutePath() + "\"");
@@ -145,13 +141,6 @@ public class ServerEnvironment {
 		}
 
 		// override any properties from the props file that are specified on the command line
-		for(String prop_name : overrides.keySet()) {
-			if(properties.get(prop_name) != null)
-				System.out.println("Overriding prop file setting of " + prop_name + " to " + overrides.get(prop_name));
-			else
-				System.out.println("Setting custom property " + prop_name + " to " + overrides.get(prop_name));
-			properties.put(prop_name, overrides.get(prop_name));
-		}
 
         try {
             FileWriter fileWriter = new FileWriter(LogLevel.valueOf(properties.get(LOG_LEVEL)),
@@ -162,7 +151,7 @@ public class ServerEnvironment {
             throw new HousemateException("Failed to create main app log", e);
         }
 
-        properties.put(SjoerdDB.PATH_PROPERTY_KEY, config_dir.getAbsolutePath() + File.separator + "database");
+        properties.set(SjoerdDB.PATH_PROPERTY_KEY, new PropertyValue("internal", 3, config_dir.getAbsolutePath() + File.separator + "database"));
 
         injector = Guice.createInjector(
                 new PCModule(log, properties), // log and properties provider
@@ -179,27 +168,6 @@ public class ServerEnvironment {
     public Injector getInjector() {
         return injector;
     }
-
-    /**
-	 * Parse the command line arguments into a map of properties that are set and their values
-	 * @param args the command line arguments
-	 * @return a map of properties that are set and their values
-	 * @throws HousemateException
-	 */
-	private final Map<String, String> parseArgs(String args[]) throws HousemateException {
-		if(args.length % 2 == 1)
-			throw new HousemateException("Odd number of arguments to parse - must be even");
-
-		Map<String, String> properties = new HashMap<String, String>(args.length / 2);
-
-		for(int i = 0; i < args.length; i+=2) {
-			if(!args[i].startsWith("-"))
-				throw new HousemateException("Property name must start with \"-\"");
-			properties.put(args[i].substring(1), args[i + 1]);
-		}
-
-		return properties;
-	}
 
     private void createDefaultPropsFile(File file) throws HousemateException {
         try {

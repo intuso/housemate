@@ -19,13 +19,13 @@
 
 	<dependencies>
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>platform-android-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>comms-transport-socket-client</artifactId>
             <version>${project.version}</version>
         </dependency>

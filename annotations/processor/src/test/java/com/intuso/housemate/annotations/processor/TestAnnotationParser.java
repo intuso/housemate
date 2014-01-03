@@ -1,11 +1,10 @@
 package com.intuso.housemate.annotations.processor;
 
-import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealResources;
@@ -15,6 +14,7 @@ import com.intuso.housemate.object.real.impl.type.DoubleType;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.properties.api.PropertyContainer;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertNotNull;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 public class TestAnnotationParser {
 
     private static RealResources createResources() {
-        return new RealResources(new Log("testLog"), Maps.<String, String>newHashMap(), null);
+        return new RealResources(new Log("testLog"), new PropertyContainer(), null);
     }
 
     private static RealList<TypeData<?>, RealType<?, ?, ?>> createAvailableTypes(RealResources resources) {

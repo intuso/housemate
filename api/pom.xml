@@ -13,10 +13,10 @@
     <description>The main API of the Housemate framework</description>
 
 	<dependencies>
-        <dependency>
 
         <!-- Base library for object-tree strucutre -->
-        <groupId>com.intuso.utilities</groupId>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
             <artifactId>wrapper</artifactId>
             <version>${intuso.utils.version}</version>
         </dependency>
@@ -28,6 +28,23 @@
 			<version>${intuso.utils.version}</version>
 		</dependency>
 
+        <!-- Properties modules. Not used in main api but used often enough to include here -->
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>properties-api</artifactId>
+            <version>${intuso.utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>properties-reader-commandline</artifactId>
+            <version>${intuso.utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>properties-reader-file</artifactId>
+            <version>${intuso.utils.version}</version>
+        </dependency>
+
         <!-- Guava goodness -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -37,7 +54,7 @@
 
         <!-- Annotations -->
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>annotations-feature</artifactId>
             <version>${project.version}</version>
         </dependency>

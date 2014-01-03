@@ -12,6 +12,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.server.storage.DetailsNotFoundException;
 import com.intuso.housemate.server.storage.Storage;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 import java.io.*;
 import java.util.*;
@@ -34,7 +35,7 @@ public class SjoerdDB implements Storage {
     private final String basePath;
 
     @Inject
-    public SjoerdDB(Map<String, String> properties) throws HousemateException {
+    public SjoerdDB(PropertyContainer properties) throws HousemateException {
         String basePath = properties.get(PATH_PROPERTY_KEY);
         File baseDir = new File(basePath);
         if(baseDir.exists()) {

@@ -2,9 +2,8 @@ package com.intuso.housemate.api;
 
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.properties.api.PropertyContainer;
 import org.junit.Ignore;
-
-import java.util.Map;
 
 /**
  */
@@ -12,9 +11,9 @@ import java.util.Map;
 public class TestResources implements Resources {
 
     private final Log log;
-    private final Map<String, String> properties;
+    private final PropertyContainer properties;
 
-    public TestResources(Log log, Map<String, String> properties) {
+    public TestResources(Log log, PropertyContainer properties) {
         this.log = log;
         this.properties = properties;
     }
@@ -25,7 +24,7 @@ public class TestResources implements Resources {
     }
 
     @Override
-    public Map<String, String> getProperties() {
+    public PropertyContainer getProperties() {
         return properties;
     }
 }

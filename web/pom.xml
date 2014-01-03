@@ -56,19 +56,19 @@
 
         <!-- Housemate -->
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>api</artifactId>
             <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>object-proxy</artifactId>
             <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>platform-pc</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -6,8 +6,7 @@ import com.intuso.housemate.api.resources.RegexMatcherFactory;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.utilities.log.Log;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  * Resources class required by simple proxy objects
@@ -24,7 +23,7 @@ public class SimpleProxyResources<
      * @param objectFactory       the object factory to use to create child objects
      * @param regexMatcherFactory the regex matcher factory to use to create regex matchers
      */
-    public SimpleProxyResources(Log log, Map<String, String> properties, Router router, OBJECT_FACTORY objectFactory,
+    public SimpleProxyResources(Log log, PropertyContainer properties, Router router, OBJECT_FACTORY objectFactory,
                                 RegexMatcherFactory regexMatcherFactory) {
         this(log, properties, router, objectFactory, new SimpleProxyFeatureFactory(), regexMatcherFactory);
     }
@@ -37,7 +36,7 @@ public class SimpleProxyResources<
      * @param featureFactory      the feature factory to create device features from
      * @param regexMatcherFactory the regex matcher factory to use to create regex matchers
      */
-    public SimpleProxyResources(Log log, Map<String, String> properties, Router router, OBJECT_FACTORY objectFactory, SimpleProxyFeatureFactory featureFactory, RegexMatcherFactory regexMatcherFactory) {
+    public SimpleProxyResources(Log log, PropertyContainer properties, Router router, OBJECT_FACTORY objectFactory, SimpleProxyFeatureFactory featureFactory, RegexMatcherFactory regexMatcherFactory) {
         super(log, properties, router, objectFactory, featureFactory, regexMatcherFactory);
     }
 }

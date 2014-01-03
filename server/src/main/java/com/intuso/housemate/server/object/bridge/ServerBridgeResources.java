@@ -5,8 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.intuso.housemate.server.object.general.ServerResourcesImpl;
 import com.intuso.utilities.log.Log;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  */
@@ -14,7 +13,7 @@ import java.util.Map;
 public class ServerBridgeResources extends ServerResourcesImpl<RootObjectBridge> {
 
     @Inject
-    public ServerBridgeResources(Log log, Map<String, String> properties, Injector injector) {
+    public ServerBridgeResources(Log log, PropertyContainer properties, Injector injector) {
         super(log, properties, injector);
     }
 }

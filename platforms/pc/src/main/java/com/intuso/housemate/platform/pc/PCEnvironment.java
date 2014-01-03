@@ -1,25 +1,26 @@
 package com.intuso.housemate.platform.pc;
 
-import com.intuso.housemate.comms.transport.socket.client.SocketClient;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.housemate.api.resources.RegexMatcher;
+import com.intuso.housemate.comms.transport.socket.client.SocketClient;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.log.LogLevel;
 import com.intuso.utilities.log.LogWriter;
 import com.intuso.utilities.log.writer.StdOutWriter;
+import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.reader.commandline.CommandLineReader;
+import com.intuso.utilities.properties.reader.file.FileReader;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
 /**
@@ -42,7 +43,7 @@ public class PCEnvironment {
     /**
      * System Properties
      */
-    private final Map<String, String> properties;
+    private final PropertyContainer properties = new PropertyContainer();
     private final ClientResources resources;
 
     /**
@@ -53,14 +54,13 @@ public class PCEnvironment {
     public PCEnvironment(String args[]) throws HousemateException {
 
         // convert the command line args into a map of values that are set
-        Map<String, String> overrides = parseArgs(args);
+        properties.read(new CommandLineReader("commandLine", 1, args));
 
         String dir;
         // get the base housemate config directory. If overridden, use that, else use env var value. If that not set then quit
-        if(overrides.get(HOUSEMATE_CONFIG_DIR) != null) {
-            System.out.println("Overriding " + HOUSEMATE_CONFIG_DIR + " to " + overrides.get(HOUSEMATE_CONFIG_DIR));
-            dir = overrides.get(HOUSEMATE_CONFIG_DIR);
-            overrides.remove(HOUSEMATE_CONFIG_DIR);
+        if(properties.get(HOUSEMATE_CONFIG_DIR) != null) {
+            System.out.println("Overriding " + HOUSEMATE_CONFIG_DIR + " to " + properties.get(HOUSEMATE_CONFIG_DIR));
+            dir = properties.get(HOUSEMATE_CONFIG_DIR);
         } else {
             dir = System.getenv(HOUSEMATE_CONFIG_DIR);
             if(dir == null)
@@ -73,10 +73,9 @@ public class PCEnvironment {
             configDirectory.mkdirs();
 
         // get the base housemate log directory. If overridden, use that, else use env var value. If that not set then quit
-        if(overrides.get(HOUSEMATE_LOG_DIR) != null) {
-            System.out.println("Overriding " + HOUSEMATE_LOG_DIR + " to " + overrides.get(HOUSEMATE_LOG_DIR));
-            dir = overrides.get(HOUSEMATE_LOG_DIR);
-            overrides.remove(HOUSEMATE_LOG_DIR);
+        if(properties.get(HOUSEMATE_LOG_DIR) != null) {
+            System.out.println("Overriding " + HOUSEMATE_LOG_DIR + " to " + properties.get(HOUSEMATE_LOG_DIR));
+            dir = properties.get(HOUSEMATE_LOG_DIR);
         } else {
             dir = System.getenv(HOUSEMATE_LOG_DIR);
             if(dir == null)
@@ -92,9 +91,6 @@ public class PCEnvironment {
         if(!logDirectory.exists())
             logDirectory.mkdirs();
 
-        // init the properties
-        properties = new HashMap<String, String>();
-
         // get the props file
         File props_file = new File(configDirectory, HOUSEMATE_PROPS_FILE);
         if(!props_file.exists()) {
@@ -104,10 +100,7 @@ public class PCEnvironment {
 
         // load the props from the file
         try {
-            Properties fileProps = new Properties();
-            fileProps.load(new FileInputStream(props_file));
-            for(String key : fileProps.stringPropertyNames())
-                properties.put(key, fileProps.getProperty(key));
+            properties.read(new FileReader("propertiesFile", 1, props_file));
         } catch (FileNotFoundException e) {
             // Would have logged above!
             System.err.println("Could not find server properties file \"" + props_file.getAbsolutePath() + "\"");
@@ -116,15 +109,6 @@ public class PCEnvironment {
             e.printStackTrace();
             System.err.println("Could not read server properties from file");
             System.exit(0);
-        }
-
-        // override any properties from the props file that are specified on the command line
-        for(String prop_name : overrides.keySet()) {
-            if(properties.get(prop_name) != null)
-                System.out.println("Overriding prop file setting of " + prop_name + " to " + overrides.get(prop_name));
-            else
-                System.out.println("Setting custom property " + prop_name + " to " + overrides.get(prop_name));
-            properties.put(prop_name, overrides.get(prop_name));
         }
 
         try {
@@ -149,7 +133,7 @@ public class PCEnvironment {
             }
 
             @Override
-            public Map<String, String> getProperties() {
+            public PropertyContainer getProperties() {
                 return properties;
             }
         };

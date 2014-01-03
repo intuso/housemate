@@ -11,23 +11,21 @@ import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFact
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.log.LogLevel;
 import com.intuso.utilities.log.LogWriter;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  */
 public class GWTEnvironment {
     
     private final Log log;
-    private final Map<String, String> properties;
     private final GWTComms comms;
 
     private final SimpleResources simpleResources;
     private final GWTResources resources;
 
-    public GWTEnvironment(Map<String, String> properties, GWTProxyFeatureFactory featureFactory, AsyncCallback<Void> connectCallback) {
+    public GWTEnvironment(PropertyContainer properties, GWTProxyFeatureFactory featureFactory, AsyncCallback<Void> connectCallback) {
         super();
-        this.properties = properties;
+
         GWTLogWriter logWriter = new GWTLogWriter(LogLevel.DEBUG);
         log = new Log("Housemate");
         log.addWriter(logWriter);

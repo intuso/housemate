@@ -20,14 +20,14 @@
 
         <!-- Housemate API+objects -->
 		<dependency>
-			<groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
 			<artifactId>server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
         <!-- Depend on web so it gets built before we add it to the package -->
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>web</artifactId>
             <type>war</type>
             <version>${project.version}</version>
@@ -70,7 +70,7 @@
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>comms-transport-socket-client</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -96,7 +96,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>com.intuso.housemate</groupId>
+                                    <groupId>${project.groupId}</groupId>
                                     <artifactId>web</artifactId>
                                     <version>${project.version}</version>
                                     <type>war</type>

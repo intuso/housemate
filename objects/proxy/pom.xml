@@ -14,14 +14,14 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
 			<artifactId>api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>object-real</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

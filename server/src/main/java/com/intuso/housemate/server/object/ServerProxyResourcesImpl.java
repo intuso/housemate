@@ -4,15 +4,14 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.server.proxy.ServerProxyObject;
 import com.intuso.housemate.object.server.proxy.ServerProxyResources;
 import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
 import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.server.object.general.ServerResourcesImpl;
-import com.intuso.housemate.object.server.proxy.ServerProxyObject;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.utilities.log.Log;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  */
@@ -25,7 +24,7 @@ public class ServerProxyResourcesImpl<F extends HousemateObjectFactory<?, ?, ?>>
     private final F factory;
 
     @Inject
-    public ServerProxyResourcesImpl(Log log, Map<String, String> properties, Injector injector,
+    public ServerProxyResourcesImpl(Log log, PropertyContainer properties, Injector injector,
                                     ServerRealResources serverRealResources, RealResources realResources, F factory) {
         super(log, properties, injector);
         this.serverRealResources = serverRealResources;
@@ -94,7 +93,7 @@ public class ServerProxyResourcesImpl<F extends HousemateObjectFactory<?, ?, ?>>
         }
 
         @Override
-        public Map<String, String> getProperties() {
+        public PropertyContainer getProperties() {
             return original.getProperties();
         }
 

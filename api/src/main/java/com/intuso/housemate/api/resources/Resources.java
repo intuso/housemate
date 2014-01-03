@@ -1,8 +1,7 @@
 package com.intuso.housemate.api.resources;
 
 import com.intuso.utilities.log.Log;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  * Base interface for all resources
@@ -19,5 +18,5 @@ public interface Resources {
      * Gets the properties
      * @return the properties
      */
-    public Map<String, String> getProperties();
+    public PropertyContainer getProperties();
 }

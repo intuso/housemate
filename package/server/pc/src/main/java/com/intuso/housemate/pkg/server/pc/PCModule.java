@@ -1,10 +1,8 @@
 package com.intuso.housemate.pkg.server.pc;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.TypeLiteral;
 import com.intuso.utilities.log.Log;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,9 +14,9 @@ import java.util.Map;
 public class PCModule extends AbstractModule {
 
     private final Log log;
-    private final Map<String, String> properties;
+    private final PropertyContainer properties;
 
-    public PCModule(Log log, Map<String, String> properties) {
+    public PCModule(Log log, PropertyContainer properties) {
         this.log = log;
         this.properties = properties;
     }
@@ -26,6 +24,6 @@ public class PCModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(Log.class).toInstance(log);
-        bind(new TypeLiteral<Map<String, String>>() {}).toInstance(properties);
+        bind(PropertyContainer.class).toInstance(properties);
     }
 }

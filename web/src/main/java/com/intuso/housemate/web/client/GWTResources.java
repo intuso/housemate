@@ -8,8 +8,7 @@ import com.intuso.housemate.object.proxy.ProxyResources;
 import com.intuso.housemate.web.client.object.GWTProxyRootObject;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFactory;
 import com.intuso.utilities.log.Log;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  */
@@ -19,7 +18,7 @@ public class GWTResources<F extends HousemateObjectFactory<? extends ProxyResour
     private GWTProxyRootObject root;
     private final LoginManager loginManager = new LoginManager();
 
-    public GWTResources(Log log, Map<String, String> properties, Router router, F objectFactory,
+    public GWTResources(Log log, PropertyContainer properties, Router router, F objectFactory,
                         GWTProxyFeatureFactory featureFactory, RegexMatcherFactory regexMatcherFactory) {
         super(log, properties, router, objectFactory, featureFactory, regexMatcherFactory);
     }

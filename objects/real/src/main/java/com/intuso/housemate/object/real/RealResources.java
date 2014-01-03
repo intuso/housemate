@@ -3,8 +3,7 @@ package com.intuso.housemate.object.real;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.utilities.log.Log;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  * Resources container for real objects
@@ -12,7 +11,7 @@ import java.util.Map;
 public class RealResources implements ClientResources {
 
     private final Log log;
-    private final Map<String, String> properties;
+    private final PropertyContainer properties;
     private final Router router;
 
     /**
@@ -20,7 +19,7 @@ public class RealResources implements ClientResources {
      * @param properties the properties to use
      * @param router the router to connect through
      */
-    public RealResources(Log log, Map<String, String> properties, Router router) {
+    public RealResources(Log log, PropertyContainer properties, Router router) {
         this.log = log;
         this.properties = properties;
         this.router = router;
@@ -32,7 +31,7 @@ public class RealResources implements ClientResources {
     }
 
     @Override
-    public Map<String, String> getProperties() {
+    public PropertyContainer getProperties() {
         return properties;
     }
 

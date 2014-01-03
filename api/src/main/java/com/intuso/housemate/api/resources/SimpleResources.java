@@ -1,8 +1,7 @@
 package com.intuso.housemate.api.resources;
 
 import com.intuso.utilities.log.Log;
-
-import java.util.Map;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  * Simple resources class
@@ -10,13 +9,13 @@ import java.util.Map;
 public class SimpleResources implements Resources {
 
     private final Log log;
-    private final Map<String, String> properties;
+    private final PropertyContainer properties;
 
     /**
      * @param log the log instance to use
      * @param properties the properties
      */
-    public SimpleResources(Log log, Map<String, String> properties) {
+    public SimpleResources(Log log, PropertyContainer properties) {
         this.log = log;
         this.properties = properties;
     }
@@ -27,7 +26,7 @@ public class SimpleResources implements Resources {
     }
 
     @Override
-    public final Map<String, String> getProperties() {
+    public final PropertyContainer getProperties() {
         return properties;
     }
 }

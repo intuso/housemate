@@ -17,8 +17,8 @@ import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.handler.PerformCommandHandler;
 import com.intuso.housemate.web.client.object.GWTProxyRootObject;
 import com.intuso.housemate.web.client.place.DevicesPlace;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -36,7 +36,7 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
     public void onModuleLoad() {
 
         // we must start the platform and connect the router first
-        ENVIRONMENT = new GWTEnvironment(new HashMap<String, String>(), FACTORY.getFeatureFactory(), new AsyncCallback<Void>() {
+        ENVIRONMENT = new GWTEnvironment(new PropertyContainer(), FACTORY.getFeatureFactory(), new AsyncCallback<Void>() {
 
             @Override
             public void onFailure(Throwable caught) {

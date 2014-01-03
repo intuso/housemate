@@ -3,7 +3,7 @@ package com.intuso.housemate.platform.android.service.service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.ConnectionStatus;
@@ -13,10 +13,14 @@ import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.comms.transport.socket.client.SocketClient;
 import com.intuso.housemate.platform.android.common.AndroidLogWriter;
+import com.intuso.housemate.platform.android.common.SharedPreferencesReader;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.log.LogLevel;
+import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.api.PropertyValue;
+import com.intuso.utilities.properties.api.Reader;
 
-import java.util.Map;
+import java.util.Iterator;
 
 /**
  * Platform implementation for PCs
@@ -35,7 +39,7 @@ class AndroidServiceEnvironment implements SharedPreferences.OnSharedPreferenceC
     /**
      * System Properties
      */
-    private final Map<String, String> properties = Maps.newHashMap();
+    private final PropertyContainer properties = new PropertyContainer();
 
     /**
      * Init the environment instance
@@ -43,7 +47,19 @@ class AndroidServiceEnvironment implements SharedPreferences.OnSharedPreferenceC
     public void init(Context context) {
 
         // init the properties
-        initProps(context);
+        properties.read(new SharedPreferencesReader("androidProperties", 1, context));
+        properties.read(new Reader("defaults", 0) {
+            @Override
+            public Iterator<Entry> iterator() {
+                return Lists.newArrayList(
+                        new Entry(LOG_LEVEL, LogLevel.DEBUG.name()),
+                        new Entry(SocketClient.SERVER_PORT, "46874"),
+                        new Entry(USERNAME, "admin"),
+                        new Entry(PASSWORD, "admin")
+                ).iterator();
+            }
+        });
+        PreferenceManager.getDefaultSharedPreferences(context).registerOnSharedPreferenceChangeListener(this);
 
         log.addWriter(new AndroidLogWriter(LogLevel.valueOf(properties.get(LOG_LEVEL)), "Service"));
         router = new SocketClient(new Resources() {
@@ -53,7 +69,7 @@ class AndroidServiceEnvironment implements SharedPreferences.OnSharedPreferenceC
             }
 
             @Override
-            public Map<String, String> getProperties() {
+            public PropertyContainer getProperties() {
                 return properties;
             }
         });
@@ -78,7 +94,7 @@ class AndroidServiceEnvironment implements SharedPreferences.OnSharedPreferenceC
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        properties.put(s, sharedPreferences.getAll().get(s).toString());
+        properties.set(s, new PropertyValue("androidProperties", 1, sharedPreferences.getAll().get(s).toString()));
         if(s.equals(SocketClient.SERVER_HOST) || s.equals(SocketClient.SERVER_PORT))
             router.disconnect();
         checkProps();
@@ -95,24 +111,6 @@ class AndroidServiceEnvironment implements SharedPreferences.OnSharedPreferenceC
                     router.connect();
                 }
             }.start();
-    }
-
-    private void initProps(Context context) {
-        properties.clear();
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        preferences.registerOnSharedPreferenceChangeListener(this);
-        for(Map.Entry<String, ?> entry : preferences.getAll().entrySet())
-            properties.put(entry.getKey(), entry.getValue().toString());
-
-        // set any defaults
-        if(properties.get(LOG_LEVEL) == null)
-            properties.put(LOG_LEVEL, LogLevel.DEBUG.name());
-        if(properties.get(SocketClient.SERVER_PORT) == null)
-            properties.put(SocketClient.SERVER_PORT, "46874");
-        if(properties.get(USERNAME) == null)
-            properties.put(USERNAME, "admin");
-        if(properties.get(PASSWORD) == null)
-            properties.put(PASSWORD, "admin");
     }
 
     @Override
