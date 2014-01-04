@@ -4,6 +4,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.Resources;
+import com.intuso.housemate.plugin.api.ExternalClientRouter;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -11,7 +12,7 @@ import java.net.Socket;
 
 /**
  */
-public class SocketServer extends Router {
+public class SocketServer extends ExternalClientRouter {
 
     public final static String PORT = "socket.server.port";
 

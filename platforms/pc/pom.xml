@@ -19,11 +19,6 @@
             <artifactId>api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>comms-transport-socket-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
 </project>

@@ -42,7 +42,7 @@ public class AutomationsView extends FlowPanel
         
         add(favouritesList);
         add(allList);
-        Button addButton = new PerformButton(Housemate.ENVIRONMENT.getResources().getRoot().getAddAutomationCommand(), IconType.PLUS);
+        Button addButton = new PerformButton(Housemate.ENVIRONMENT.getGwtResources().getRoot().getAddAutomationCommand(), IconType.PLUS);
         addButton.setSize(ButtonSize.SMALL);
         add(addButton);
     }

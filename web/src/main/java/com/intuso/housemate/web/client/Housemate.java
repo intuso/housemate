@@ -53,28 +53,28 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                 FACTORY.getPlaceHistoryHandler().register(FACTORY.getPlaceController(), FACTORY.getEventBus(), new DevicesPlace());
 
                 // setup our HM stuff
-                ENVIRONMENT.getResources().getLoginManager().init();
-                ENVIRONMENT.getResources().getRouter().addObjectListener(Housemate.this);
+                ENVIRONMENT.getGwtResources().getLoginManager().init();
+                ENVIRONMENT.getGwtResources().getRouter().addObjectListener(Housemate.this);
                 FACTORY.getEventBus().addHandler(PerformCommandEvent.TYPE, PerformCommandHandler.HANDLER);
 
                 // start the first login
-                ENVIRONMENT.getResources().getLoginManager().startLogin();
+                ENVIRONMENT.getGwtResources().getLoginManager().startLogin();
             }
         });
-        ENVIRONMENT.getResources().getRouter().connect();
+        ENVIRONMENT.getGwtResources().getRouter().connect();
     }
 
     @Override
     public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
         switch (status) {
             case Authenticated:
-                if(ENVIRONMENT.getResources().getRoot() != null)
-                    ENVIRONMENT.getResources().getRoot().uninit();
-                ENVIRONMENT.getResources().setRoot(new GWTProxyRootObject(ENVIRONMENT.getResources(), ENVIRONMENT.getResources()));
+                if(ENVIRONMENT.getGwtResources().getRoot() != null)
+                    ENVIRONMENT.getGwtResources().getRoot().uninit();
+                ENVIRONMENT.getGwtResources().setRoot(new GWTProxyRootObject(ENVIRONMENT.getGwtResources(), ENVIRONMENT.getGwtResources()));
                 // add the main view to the root panel of the page
                 RootPanel.get().add(FACTORY.getPage());
                 // connect the root object
-                ENVIRONMENT.getResources().getRoot().addObjectListener(new RootListener<GWTProxyRootObject>() {
+                ENVIRONMENT.getGwtResources().getRoot().addObjectListener(new RootListener<GWTProxyRootObject>() {
                     @Override
                     public void connectionStatusChanged(GWTProxyRootObject root, ConnectionStatus status) {
                         if(status == ConnectionStatus.Authenticated) {
@@ -100,7 +100,7 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                         // do nothing (handled by router listener
                     }
                 });
-                ENVIRONMENT.getResources().getRoot().login(ENVIRONMENT.getResources().getLoginManager().getLoginMethod());
+                ENVIRONMENT.getGwtResources().getRoot().login(ENVIRONMENT.getGwtResources().getLoginManager().getLoginMethod());
                 break;
             case Disconnected:
             case Unauthenticated:
@@ -120,9 +120,9 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
 
     private void resetContent() {
         RootPanel.get().remove(FACTORY.getPage());
-        if(ENVIRONMENT.getResources().getRoot() != null) {
-            ENVIRONMENT.getResources().getRoot().uninit();
-            ENVIRONMENT.getResources().setRoot(null);
+        if(ENVIRONMENT.getGwtResources().getRoot() != null) {
+            ENVIRONMENT.getGwtResources().getRoot().uninit();
+            ENVIRONMENT.getGwtResources().setRoot(null);
         }
     }
 }

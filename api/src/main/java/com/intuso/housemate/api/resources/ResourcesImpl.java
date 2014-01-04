@@ -1,12 +1,13 @@
 package com.intuso.housemate.api.resources;
 
+import com.google.inject.Inject;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  * Simple resources class
  */
-public class SimpleResources implements Resources {
+public class ResourcesImpl implements Resources {
 
     private final Log log;
     private final PropertyContainer properties;
@@ -15,7 +16,8 @@ public class SimpleResources implements Resources {
      * @param log the log instance to use
      * @param properties the properties
      */
-    public SimpleResources(Log log, PropertyContainer properties) {
+    @Inject
+    public ResourcesImpl(Log log, PropertyContainer properties) {
         this.log = log;
         this.properties = properties;
     }

@@ -8,15 +8,15 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.AuthenticationRequest;
+import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
-import com.intuso.housemate.server.object.bridge.RootObjectBridge;
-import com.intuso.housemate.server.object.general.ServerGeneralRootObject;
-import com.intuso.housemate.comms.transport.rest.RestServer;
-import com.intuso.housemate.comms.transport.socket.server.SocketServer;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.housemate.object.server.RemoteClient;
+import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
+import com.intuso.housemate.plugin.api.ExternalClientRouter;
+import com.intuso.housemate.server.object.bridge.RootObjectBridge;
+import com.intuso.housemate.server.object.general.ServerGeneralRootObject;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -28,15 +28,19 @@ public final class MainRouter extends Router {
 
     private final Injector injector;
     private final Resources resources;
+    private final List<ExternalClientRouter> externalClientRouters;
 
     private final LinkedBlockingQueue<Message<Message.Payload>> incomingMessages = new LinkedBlockingQueue<Message<Message.Payload>>();
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
     @Inject
-    public MainRouter(Injector injector, Resources resources) {
+    public MainRouter(Injector injector, Resources resources, List<ExternalClientRouter> externalClientRouters) {
         super(resources);
+
         this.injector = injector;
         this.resources = resources;
+        this.externalClientRouters = externalClientRouters;
+
         setRouterStatus(Status.Connected);
         login(new InternalAuthentication());
     }
@@ -49,18 +53,12 @@ public final class MainRouter extends Router {
 		// start the thread that will process incoming messages
 		messageProcessor.start();
 
-        // start the socket server
-        try {
-            new SocketServer(resources, this).start();
-        } catch(HousemateException e) {
-            throw new HousemateRuntimeException("Could not start socket server comms", e);
-        }
-
-        // start the rest server
-        try {
-            new RestServer(resources, this).start();
-        } catch(HousemateException e) {
-            throw new HousemateRuntimeException("Could not start rest server comms", e);
+        for(ExternalClientRouter externalClientRouter : externalClientRouters) {
+            try {
+                externalClientRouter.start();
+            } catch(HousemateException e) {
+                throw new HousemateRuntimeException("Could not start external client router", e);
+            }
         }
 	}
 
@@ -72,11 +70,8 @@ public final class MainRouter extends Router {
         // start the thread that will process incoming messages
         messageProcessor.interrupt();
 
-        // start the socket server
-        new SocketServer(resources, this).stop();
-
-        // start the rest server
-        new RestServer(resources, this).stop();
+        for(ExternalClientRouter externalClientRouter : externalClientRouters)
+            externalClientRouter.stop();
 
         try {
             messageProcessor.join();

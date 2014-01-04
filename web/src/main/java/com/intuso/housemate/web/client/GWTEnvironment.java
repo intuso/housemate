@@ -5,7 +5,7 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.api.resources.RegexMatcherFactory;
-import com.intuso.housemate.api.resources.SimpleResources;
+import com.intuso.housemate.api.resources.ResourcesImpl;
 import com.intuso.housemate.web.client.object.GWTProxyFactory;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFactory;
 import com.intuso.utilities.log.Log;
@@ -20,8 +20,8 @@ public class GWTEnvironment {
     private final Log log;
     private final GWTComms comms;
 
-    private final SimpleResources simpleResources;
-    private final GWTResources resources;
+    private final ResourcesImpl resources;
+    private final GWTResources gwtResources;
 
     public GWTEnvironment(PropertyContainer properties, GWTProxyFeatureFactory featureFactory, AsyncCallback<Void> connectCallback) {
         super();
@@ -30,11 +30,11 @@ public class GWTEnvironment {
         log = new Log("Housemate");
         log.addWriter(logWriter);
 
-        simpleResources = new SimpleResources(log, properties);
+        resources = new ResourcesImpl(log, properties);
 
-        this.comms = new GWTComms(simpleResources, connectCallback);
+        this.comms = new GWTComms(resources, connectCallback);
 
-        resources = new GWTResources(log, properties, comms, new GWTProxyFactory.All(),
+        gwtResources = new GWTResources(log, properties, comms, new GWTProxyFactory.All(),
                 featureFactory, new RegexMatcherFactory() {
             @Override
             public RegexMatcher createRegexMatcher(String pattern) {
@@ -43,8 +43,8 @@ public class GWTEnvironment {
         });
     }
 
-    public GWTResources getResources() {
-        return resources;
+    public GWTResources getGwtResources() {
+        return gwtResources;
     }
 
     private class RM implements RegexMatcher {

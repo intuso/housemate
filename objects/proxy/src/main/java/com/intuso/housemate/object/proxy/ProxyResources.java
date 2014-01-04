@@ -4,7 +4,7 @@ import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.housemate.api.resources.RegexMatcherFactory;
-import com.intuso.housemate.api.resources.SimpleResources;
+import com.intuso.housemate.api.resources.ResourcesImpl;
 import com.intuso.housemate.object.proxy.device.feature.ProxyFeatureFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyContainer;
@@ -17,7 +17,7 @@ import com.intuso.utilities.properties.api.PropertyContainer;
 public class ProxyResources<
             OBJECT_FACTORY extends HousemateObjectFactory<? extends ProxyResources<?, ?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>,
             FEATURE_FACTORY extends ProxyFeatureFactory<?, ?>>
-        extends SimpleResources implements ClientResources{
+        extends ResourcesImpl implements ClientResources{
 
     private final Router router;
     private final OBJECT_FACTORY objectFactory;

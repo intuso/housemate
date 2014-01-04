@@ -64,7 +64,7 @@ public abstract class HousematePlace extends Place {
     }
 
     public final void loadData(final AcceptsOneWidget acceptsOneWidget) {
-        Housemate.ENVIRONMENT.getResources().getRoot().load(new LoadManager("web", createTreeLoadInfos()) {
+        Housemate.ENVIRONMENT.getGwtResources().getRoot().load(new LoadManager("web", createTreeLoadInfos()) {
             @Override
             protected void failed(HousemateObject.TreeLoadInfo path) {
                 // todo notify someone/thing

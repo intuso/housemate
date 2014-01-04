@@ -34,6 +34,7 @@
     </properties>
 
     <dependencies>
+
         <!-- Utilities -->
         <dependency>
             <groupId>com.intuso.utilities</groupId>
@@ -70,6 +71,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>platform-pc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>comms-transport-socket-client</artifactId>
             <version>${project.version}</version>
         </dependency>
 

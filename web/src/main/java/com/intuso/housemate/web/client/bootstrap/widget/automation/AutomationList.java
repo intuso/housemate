@@ -22,7 +22,7 @@ import java.util.List;
 public class AutomationList extends ObjectList<AutomationData, GWTProxyAutomation> {
     
     public AutomationList(String title, List<String> filteredIds, boolean includeFiltered) {
-        super(Housemate.ENVIRONMENT.getResources().getRoot().getAutomations(), title, filteredIds, includeFiltered);
+        super(Housemate.ENVIRONMENT.getGwtResources().getRoot().getAutomations(), title, filteredIds, includeFiltered);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class AutomationList extends ObjectList<AutomationData, GWTProxyAutomatio
             return new Automation(object);
         else {
             final SimplePanel panel = new SimplePanel();
-            Housemate.ENVIRONMENT.getResources().getRoot().getAutomations().load(new LoadManager("load-automation",
+            Housemate.ENVIRONMENT.getGwtResources().getRoot().getAutomations().load(new LoadManager("load-automation",
                     new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))) {
                 @Override
                 protected void failed(HousemateObject.TreeLoadInfo path) {
@@ -41,7 +41,7 @@ public class AutomationList extends ObjectList<AutomationData, GWTProxyAutomatio
 
                 @Override
                 protected void allLoaded() {
-                    panel.add(new Automation(Housemate.ENVIRONMENT.getResources().getRoot().getAutomations().get(id)));
+                    panel.add(new Automation(Housemate.ENVIRONMENT.getGwtResources().getRoot().getAutomations().get(id)));
                 }
             });
             return panel;

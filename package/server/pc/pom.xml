@@ -34,6 +34,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Guice multibindings -->
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>${guice.version}</version>
+        </dependency>
+
         <!-- Jetty server/web container stuff -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>

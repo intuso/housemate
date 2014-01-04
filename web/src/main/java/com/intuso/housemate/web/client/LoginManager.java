@@ -43,13 +43,13 @@ public class LoginManager implements CredentialsSubmittedHandler {
     private boolean isLoggedIn = false;
 
     public void init() {
-        Housemate.ENVIRONMENT.getResources().getRouter().addObjectListener(statusChangedListener);
+        Housemate.ENVIRONMENT.getGwtResources().getRouter().addObjectListener(statusChangedListener);
         Housemate.FACTORY.getEventBus().addHandler(CredentialsSubmittedEvent.TYPE, this);
     }
 
     public void startLogin() {
         if(Cookies.getCookieNames().contains(SESSION_COOKIE))
-            Housemate.ENVIRONMENT.getResources().getRouter().login(
+            Housemate.ENVIRONMENT.getGwtResources().getRouter().login(
                     new Session(Cookies.getCookie(SESSION_COOKIE)));
         else {
             Housemate.FACTORY.getLoginView().show(null);
@@ -60,7 +60,7 @@ public class LoginManager implements CredentialsSubmittedHandler {
     public void logout() {
         Cookies.removeCookie(SESSION_COOKIE);
         isLoggedIn = false;
-        Housemate.ENVIRONMENT.getResources().getRouter().logout();
+        Housemate.ENVIRONMENT.getGwtResources().getRouter().logout();
         Housemate.FACTORY.getLoginView().show(null);
         Housemate.FACTORY.getLoginView().enable();
     }
@@ -68,7 +68,7 @@ public class LoginManager implements CredentialsSubmittedHandler {
     @Override
     public void onCredentialsSubmitted(CredentialsSubmittedEvent event) {
         if(!isLoggedIn)
-            Housemate.ENVIRONMENT.getResources().getRouter().login(
+            Housemate.ENVIRONMENT.getGwtResources().getRouter().login(
                     new UsernamePassword(event.getUsername(), event.getPassword(), true));
     }
 

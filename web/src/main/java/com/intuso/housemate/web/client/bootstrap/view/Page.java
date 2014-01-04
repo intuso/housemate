@@ -89,6 +89,6 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
 
     @UiHandler("logoutButton")
     public void logoutButtonClicked(ClickEvent e) {
-        Housemate.ENVIRONMENT.getResources().getLoginManager().logout();
+        Housemate.ENVIRONMENT.getGwtResources().getLoginManager().logout();
     }
 }

@@ -10,6 +10,7 @@ import com.intuso.housemate.comms.transport.rest.resources.ContextualResource;
 import com.intuso.housemate.comms.transport.rest.resources.GenericResource;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
+import com.intuso.housemate.plugin.api.ExternalClientRouter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -25,7 +26,7 @@ import java.util.regex.Pattern;
  * Time: 09:22
  * To change this template use File | Settings | File Templates.
  */
-public class RestServer extends Router {
+public class RestServer extends ExternalClientRouter {
 
     public final static String PORT = "rest.server.port";
 
