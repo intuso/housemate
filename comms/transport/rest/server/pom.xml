@@ -13,6 +13,7 @@
     <description>Server for REST transport between Housemate components</description>
 
     <dependencies>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>plugin-api</artifactId>
@@ -22,6 +23,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>object-proxy</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>${guice.version}</version>
         </dependency>
 
         <dependency>

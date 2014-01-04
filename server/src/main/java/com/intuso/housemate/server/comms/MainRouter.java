@@ -2,13 +2,12 @@ package com.intuso.housemate.server.comms;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Singleton;
+import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.AuthenticationRequest;
-import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.server.ClientPayload;
@@ -18,28 +17,25 @@ import com.intuso.housemate.plugin.api.ExternalClientRouter;
 import com.intuso.housemate.server.object.bridge.RootObjectBridge;
 import com.intuso.housemate.server.object.general.ServerGeneralRootObject;
 
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * The main router for the whole app. All comms routers attach to this
  */
-@Singleton
 public final class MainRouter extends Router {
 
     private final Injector injector;
-    private final Resources resources;
-    private final List<ExternalClientRouter> externalClientRouters;
+    private Set<ExternalClientRouter> externalClientRouters;
 
     private final LinkedBlockingQueue<Message<Message.Payload>> incomingMessages = new LinkedBlockingQueue<Message<Message.Payload>>();
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
     @Inject
-    public MainRouter(Injector injector, Resources resources, List<ExternalClientRouter> externalClientRouters) {
+    public MainRouter(Injector injector, Resources resources) {
         super(resources);
 
         this.injector = injector;
-        this.resources = resources;
-        this.externalClientRouters = externalClientRouters;
 
         setRouterStatus(Status.Connected);
         login(new InternalAuthentication());
@@ -50,12 +46,15 @@ public final class MainRouter extends Router {
 	 */
     public final void start() {
 
+        externalClientRouters = injector.getInstance(new Key<Set<ExternalClientRouter>>() {});
+
 		// start the thread that will process incoming messages
 		messageProcessor.start();
 
         for(ExternalClientRouter externalClientRouter : externalClientRouters) {
             try {
                 externalClientRouter.start();
+                externalClientRouter.login(new InternalAuthentication());
             } catch(HousemateException e) {
                 throw new HousemateRuntimeException("Could not start external client router", e);
             }

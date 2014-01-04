@@ -16,6 +16,12 @@ public interface Value<
     public final static String VALUE_ID = "value";
 
     /**
+     * Gets the value's type's id
+     * @return the value's type's id
+     */
+    public String getTypeId();
+
+    /**
      * Gets the value's type
      * @return the value's type
      */

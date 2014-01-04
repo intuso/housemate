@@ -1,5 +1,6 @@
 package com.intuso.housemate.comms.transport.rest;
 
+import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
@@ -34,6 +35,7 @@ public class RestServer extends ExternalClientRouter {
     private final Router.Registration routerRegistration;
     private final Server server;
 
+    @Inject
     public RestServer(Resources resources, Router router) {
 
         super(resources);
@@ -42,7 +44,6 @@ public class RestServer extends ExternalClientRouter {
         this.routerRegistration = router.registerReceiver(this);
 
         setRouterStatus(Status.Connected);
-        login(new AuthenticationMethod());
 
         String port = resources.getProperties().get(PORT);
         if(port == null) {
@@ -115,16 +116,6 @@ public class RestServer extends ExternalClientRouter {
         @Override
         public boolean matches(String value) {
             return pattern.matcher(value).matches();
-        }
-    }
-
-    public class AuthenticationMethod implements com.intuso.housemate.api.authentication.AuthenticationMethod {
-
-        private AuthenticationMethod() {}
-
-        @Override
-        public boolean isClientsAuthenticated() {
-            return false;
         }
     }
 }

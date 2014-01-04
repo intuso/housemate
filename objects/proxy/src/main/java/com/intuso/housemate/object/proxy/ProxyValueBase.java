@@ -61,6 +61,11 @@ public abstract class ProxyValueBase<
     }
 
     @Override
+    public String getTypeId() {
+        return getData().getType();
+    }
+
+    @Override
     public TYPE getType() {
         return (TYPE) getProxyRoot().getTypes().get(getData().getType());
     }

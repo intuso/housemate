@@ -27,7 +27,7 @@ public class GWTEnvironment {
         super();
 
         GWTLogWriter logWriter = new GWTLogWriter(LogLevel.DEBUG);
-        log = new Log("Housemate");
+        log = new Log();
         log.addWriter(logWriter);
 
         resources = new ResourcesImpl(log, properties);

@@ -40,6 +40,11 @@ public abstract class RealValueBase<
     }
 
     @Override
+    public String getTypeId() {
+        return getData().getType();
+    }
+
+    @Override
     public RealType<?, ?, O> getType() {
         return type;
     }

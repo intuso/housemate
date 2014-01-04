@@ -51,6 +51,11 @@ public class ConstantInstance<O> implements Value<RealType<?, ?, O>, ConstantIns
     }
 
     @Override
+    public String getTypeId() {
+        return type.getId();
+    }
+
+    @Override
     public RealType<?, ?, O> getType() {
         return type;
     }

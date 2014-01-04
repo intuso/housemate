@@ -1,7 +1,6 @@
 package com.intuso.housemate.object.real.impl.type;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.type.SimpleTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
@@ -15,7 +14,6 @@ import java.util.List;
 /**
  * Type for an integer
  */
-@Singleton
 public class IntegerType extends RealSimpleType<Integer> {
 
     public final static TypeSerialiser<Integer> SERIALISER = new TypeSerialiser<Integer>() {

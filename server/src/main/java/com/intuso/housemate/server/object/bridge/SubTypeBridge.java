@@ -18,8 +18,13 @@ public class SubTypeBridge
 
     public SubTypeBridge(ServerBridgeResources resources, SubType<?> subType,
                          ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(resources, new SubTypeData(subType.getId(), subType.getName(), subType.getDescription(), subType.getType().getId()));
+        super(resources, new SubTypeData(subType.getId(), subType.getName(), subType.getDescription(), subType.getTypeId()));
         type = types.get(getData().getType());
+    }
+
+    @Override
+    public String getTypeId() {
+        return getData().getType();
     }
 
     @Override

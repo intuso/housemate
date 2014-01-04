@@ -1,5 +1,6 @@
 package com.intuso.housemate.comms.transport.socket.client;
 
+import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
@@ -57,6 +58,7 @@ public class SocketClient extends Router {
      * Create a new client comms
      * @throws HousemateException
      */
+    @Inject
     public SocketClient(Resources resources) {
         super(resources);
         this.resources = resources;

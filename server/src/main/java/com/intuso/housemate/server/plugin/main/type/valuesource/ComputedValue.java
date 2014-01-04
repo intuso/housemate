@@ -25,6 +25,11 @@ public class ComputedValue implements Value<RealType<?, ?, ?>, ComputedValue> {
     }
 
     @Override
+    public String getTypeId() {
+        return type.getId();
+    }
+
+    @Override
     public RealType<?, ?, ?> getType() {
         return type;
     }

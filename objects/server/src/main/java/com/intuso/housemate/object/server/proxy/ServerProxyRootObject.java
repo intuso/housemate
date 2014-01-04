@@ -1,7 +1,6 @@
 package com.intuso.housemate.object.server.proxy;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
@@ -17,7 +16,6 @@ import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.utilities.listener.ListenerRegistration;
 
-@Singleton
 public class ServerProxyRootObject
         extends ServerProxyObject<RootData, HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>,
         ServerProxyRootObject, RootListener<? super ServerProxyRootObject>>

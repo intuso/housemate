@@ -1,7 +1,6 @@
 package com.intuso.housemate.server.plugin.main.type.constant;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -11,7 +10,6 @@ import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 
 /**
  */
-@Singleton
 public class ConstantType extends RealChoiceType<ConstantInstance<Object>> implements ListListener<RealType<?, ?, ?>> {
 
     public final static String ID = "constant";

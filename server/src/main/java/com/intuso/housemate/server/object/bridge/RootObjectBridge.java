@@ -2,7 +2,6 @@ package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
@@ -20,12 +19,12 @@ import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.server.proxy.ServerProxyDevice;
 import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
-import com.intuso.housemate.server.client.LocalClient;
-import com.intuso.housemate.server.storage.ServerObjectPersister;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.housemate.object.server.real.ServerRealAutomation;
 import com.intuso.housemate.object.server.real.ServerRealRootObject;
 import com.intuso.housemate.object.server.real.ServerRealUser;
+import com.intuso.housemate.server.client.LocalClient;
+import com.intuso.housemate.server.storage.ServerObjectPersister;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.object.BaseObject;
@@ -33,9 +32,6 @@ import com.intuso.utilities.object.BaseObject;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- */
-@Singleton
 public class RootObjectBridge
         extends BridgeObject<RootData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>,
             RootObjectBridge, RootListener<? super RootObjectBridge>>

@@ -21,7 +21,7 @@ public class PropertyBridge
     public PropertyBridge(ServerBridgeResources resources, Property<?, ?, ?> property,
                           ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
         super(resources,
-            new PropertyData(property.getId(), property.getName(), property.getDescription(), property.getType().getId(), property.getTypeInstances()),
+            new PropertyData(property.getId(), property.getName(), property.getDescription(), property.getTypeId(), property.getTypeInstances()),
             property, types);
         setCommand = new CommandBridge(resources, property.getSetCommand(), types);
         addChild(setCommand);

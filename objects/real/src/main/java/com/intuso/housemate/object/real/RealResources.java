@@ -1,5 +1,6 @@
 package com.intuso.housemate.object.real;
 
+import com.google.inject.Inject;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.utilities.log.Log;
@@ -19,6 +20,7 @@ public class RealResources implements ClientResources {
      * @param properties the properties to use
      * @param router the router to connect through
      */
+    @Inject
     public RealResources(Log log, PropertyContainer properties, Router router) {
         this.log = log;
         this.properties = properties;

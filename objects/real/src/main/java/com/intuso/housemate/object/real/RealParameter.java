@@ -27,6 +27,11 @@ public class RealParameter<O>
     }
 
     @Override
+    public String getTypeId() {
+        return getData().getType();
+    }
+
+    @Override
     public final RealType<?, ?, O> getType() {
         return type;
     }

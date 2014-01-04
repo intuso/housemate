@@ -18,12 +18,31 @@
 
     <dependencies>
 
-        <!-- Housemate API+objects -->
+        <!-- Server code module -->
 		<dependency>
             <groupId>${project.groupId}</groupId>
 			<artifactId>server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+        <!-- Properties, log etc modules -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>platform-pc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Transport implementations -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>comms-transport-socket-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>comms-transport-rest-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Depend on web so it gets built before we add it to the package -->
         <dependency>
@@ -32,13 +51,6 @@
             <type>war</type>
             <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- Guice multibindings -->
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-multibindings</artifactId>
-            <version>${guice.version}</version>
         </dependency>
 
         <!-- Jetty server/web container stuff -->

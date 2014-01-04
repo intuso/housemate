@@ -2,22 +2,21 @@ package com.intuso.housemate.server.factory;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.server.plugin.PluginListener;
-import com.intuso.housemate.server.plugin.PluginManager;
-import com.intuso.housemate.server.storage.Storage;
-import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
-import com.intuso.housemate.plugin.api.ServerTaskFactory;
+import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
+import com.intuso.housemate.plugin.api.ServerTaskFactory;
+import com.intuso.housemate.server.plugin.PluginListener;
+import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.housemate.server.storage.Storage;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -25,7 +24,6 @@ import java.util.Map;
 
 /**
  */
-@Singleton
 public final class TaskFactory implements PluginListener {
 
     public final static String TYPE_ID = "task-factory";

@@ -4,7 +4,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.root.Root;
@@ -19,7 +18,6 @@ import java.util.List;
 /**
  * Type for an object from the object tree
  */
-@Singleton
 public class RealObjectType<O extends BaseHousemateObject<?>>
         extends RealType<ObjectTypeData, NoChildrenData, RealObjectType.Reference<O>> {
 

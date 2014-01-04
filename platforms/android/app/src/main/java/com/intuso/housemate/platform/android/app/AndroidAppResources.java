@@ -26,7 +26,7 @@ class AndroidAppResources implements ClientResources, SharedPreferences.OnShared
     private final PropertyContainer properties = new PropertyContainer();
 
     public AndroidAppResources(Context context) {
-        log = new Log(context.getPackageName(), new AndroidLogWriter(LogLevel.DEBUG, context.getPackageName()));
+        log = new Log(new AndroidLogWriter(LogLevel.DEBUG, context.getPackageName()));
         router = new AndroidAppRouter(this, context);
         properties.read(new SharedPreferencesReader("androidProperties", 1, context));
         PreferenceManager.getDefaultSharedPreferences(context).registerOnSharedPreferenceChangeListener(this);

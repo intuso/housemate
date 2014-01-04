@@ -19,7 +19,7 @@ import java.util.List;
  * @param <CHILD> the type of the child
  * @param <VALUE> the type of the value
  */
-public class ServerProxyValueBase<
+public abstract class ServerProxyValueBase<
             DATA extends ValueBaseData<CHILD_DATA>,
             CHILD_DATA extends HousemateData<?>,
             CHILD extends ServerProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
@@ -35,6 +35,11 @@ public class ServerProxyValueBase<
      */
     public ServerProxyValueBase(ServerProxyResources<? extends HousemateObjectFactory<ServerProxyResources<?>, CHILD_DATA, ? extends CHILD>> resources, DATA data) {
         super(resources, data);
+    }
+
+    @Override
+    public String getTypeId() {
+        return getData().getType();
     }
 
     @Override

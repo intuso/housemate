@@ -17,8 +17,6 @@ import com.intuso.utilities.log.writer.StdOutWriter;
 import com.intuso.utilities.properties.api.PropertyContainer;
 import org.junit.Ignore;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -29,7 +27,7 @@ public class TestEnvironment {
     public final static TestEnvironment TEST_INSTANCE = new TestEnvironment();
 
     private final PropertyContainer properties = new PropertyContainer();
-    private final Log log = new Log("Housemate");
+    private final Log log = new Log();
 
     private final RealResources realResources;
     private final Resources genericResources;

@@ -1,19 +1,17 @@
 package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealResources;
-import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
+import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.plugin.api.ServerConditionFactory;
+import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType;
 
 /**
  */
-@Singleton
 public class ValueComparisonFactory implements ServerConditionFactory<ValueComparison> {
 
     private final ComparisonType comparisonType;

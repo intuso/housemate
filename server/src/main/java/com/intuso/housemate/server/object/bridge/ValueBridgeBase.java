@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  */
-public class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
+public abstract class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
             SWBL extends HousemateData<?>,
             SWR extends BridgeObject<? extends SWBL, ?, ?, ?, ?>,
             V extends ValueBridgeBase<WBL, SWBL, SWR, V>>
@@ -28,6 +28,11 @@ public class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
         super(resources, data);
         proxyValue = value;
         type = types.get(getData().getType());
+    }
+
+    @Override
+    public String getTypeId() {
+        return getData().getType();
     }
 
     @Override

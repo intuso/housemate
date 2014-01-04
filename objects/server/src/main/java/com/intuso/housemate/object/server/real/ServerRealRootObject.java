@@ -1,7 +1,6 @@
 package com.intuso.housemate.object.server.real;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
@@ -17,7 +16,6 @@ import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.utilities.listener.ListenerRegistration;
 
-@Singleton
 public class ServerRealRootObject
         extends ServerRealObject<RootData, HousemateData<?>, ServerRealObject<?, ?, ?, ?>, RootListener<? super ServerRealRootObject>>
         implements Root<ServerRealRootObject> {

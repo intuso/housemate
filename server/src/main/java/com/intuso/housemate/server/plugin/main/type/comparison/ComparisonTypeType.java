@@ -2,23 +2,21 @@ package com.intuso.housemate.server.plugin.main.type.comparison;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.server.plugin.PluginListener;
-import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.ComparisonType;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
+import com.intuso.housemate.server.plugin.PluginListener;
+import com.intuso.housemate.server.plugin.PluginManager;
 
 import java.util.Map;
 
 /**
  */
-@Singleton
 public class ComparisonTypeType extends RealChoiceType<ComparisonType> {
 
     public final static String ID = "comparison-type";
@@ -43,7 +41,6 @@ public class ComparisonTypeType extends RealChoiceType<ComparisonType> {
         return serialiser.deserialise(instance);
     }
 
-    @Singleton
     public final static class Serialiser implements TypeSerialiser<ComparisonType>, PluginListener {
 
         private final RealResources realResources;

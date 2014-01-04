@@ -1,6 +1,7 @@
 package com.intuso.housemate.platform.pc;
 
 import com.google.inject.AbstractModule;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,16 +12,17 @@ import com.google.inject.AbstractModule;
  */
 public class PCModule extends AbstractModule {
 
-    private final String[] args;
+    private final PropertyContainer properties;
+    private final String defaultLogName;
 
-    public PCModule(String[] args) {
-        this.args = args;
+    public PCModule(PropertyContainer properties, String defaultLogName) {
+        this.properties = properties;
+        this.defaultLogName = defaultLogName;
     }
 
     @Override
     protected void configure() {
-        install(new PCPropertiesModule(args));
-        install(new PCLogModule());
+        install(new PCLogModule(properties, defaultLogName));
         install(new PCRegexMatcherModule());
     }
 }

@@ -3,27 +3,16 @@ package com.intuso.housemate.pkg.server.pc;
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.resources.ClientResources;
-import com.intuso.housemate.api.resources.RegexMatcher;
-import com.intuso.housemate.comms.transport.socket.server.SocketServer;
+import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
-import com.intuso.housemate.server.ServerModule;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.plugin.main.MainPlugin;
 import com.intuso.housemate.server.storage.ServerObjectLoader;
-import com.intuso.housemate.server.storage.impl.SjoerdDB;
-import com.intuso.housemate.server.storage.impl.SjoerdDBModule;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.log.LogLevel;
-import com.intuso.utilities.log.LogWriter;
-import com.intuso.utilities.log.writer.FileWriter;
-import com.intuso.utilities.log.writer.StdOutWriter;
 import com.intuso.utilities.properties.api.PropertyContainer;
 import com.intuso.utilities.properties.api.PropertyValue;
-import com.intuso.utilities.properties.reader.commandline.CommandLineReader;
-import com.intuso.utilities.properties.reader.file.FileReader;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.FileResource;
 import org.eclipse.jetty.util.resource.JarResource;
@@ -35,10 +24,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.regex.Pattern;
 
 /**
  * Platform implementation for a server. Works the same was as the PC implementation in terms of getting properties
@@ -46,15 +37,9 @@ import java.util.regex.Pattern;
  * and some methods are unsupported as they should not be used by the server.
  *
  */
-@Singleton
 public class ServerEnvironment {
 
-    public final static String HOUSEMATE_CONFIG_DIR = "HOUSEMATE_CONFIG_DIR";
-    public final static String HOUSEMATE_LOG_DIR = "HOUSEMATE_LOG_DIR";
-    public final static String HOUSEMATE_PROPS_FILE = "housemate.props";
     public final static String PLUGINS_DIR_NAME= "plugins";
-    public final static String LOG_LEVEL = "log.level";
-    public final static String SERVER_NAME = "server.name";
     public final static String RUN_WEBAPP = "webapp.run";
     public final static String WEBAPP_PORT = "webapp.port";
     private final static String WEBAPP_PATH = "webapp.path";
@@ -65,13 +50,6 @@ public class ServerEnvironment {
     private final static String WEBAPP_NAME = "housemate";
     private final static String DEFAULT_WEBAPP_PATH = "/housemate";
 
-    public final File config_dir;
-
-	private final PropertyContainer properties = new PropertyContainer();
-    private final Log log;
-
-    private final Injector injector;
-
 	/**
 	 * Create a environment instance
 	 * @param args the command line args that the server was run with
@@ -79,122 +57,36 @@ public class ServerEnvironment {
 	 */
 	public ServerEnvironment(String args[]) throws HousemateException {
 
-		// convert the command line args into a map of values that are set
-        properties.read(new CommandLineReader("commandLine", 2, args));
+        PropertyContainer properties = Properties.init(args);
+        setExtraDefaults(properties);
 
-		String dir;
-		// get the base housemate config directory. If overridden, use that, else use env var value, else use default
-		if(properties.get(HOUSEMATE_CONFIG_DIR) != null) {
-			System.out.println("Overriding " + HOUSEMATE_CONFIG_DIR + " to " + properties.get(HOUSEMATE_CONFIG_DIR));
-			dir = properties.get(HOUSEMATE_CONFIG_DIR);
-		} else {
-			dir = System.getenv(HOUSEMATE_CONFIG_DIR);
-			if(dir == null)
-				dir = System.getProperty("user.home") + File.separator + ".housemate";
-		}
-		config_dir = new File(dir);
-
-        // create the directory if it does not exist
-        if(!config_dir.exists())
-            config_dir.mkdirs();
-
-		// get the base housemate log directory. If overridden, use that, else use env var value. If that not set then quit
-		if(properties.get(HOUSEMATE_LOG_DIR) != null) {
-			System.out.println("Overriding " + HOUSEMATE_LOG_DIR + " to " + properties.get(HOUSEMATE_LOG_DIR));
-			dir = properties.get(HOUSEMATE_LOG_DIR);
-		} else {
-			dir = System.getenv(HOUSEMATE_LOG_DIR);
-			if(dir == null)
-				dir = System.getProperty("user.home") + File.separator + ".housemate" + File.separator + "log";
-		}
-		File top_log_dir = new File(dir);
-
-        // create it if it does not exist
-        if(!top_log_dir.exists())
-            top_log_dir.mkdirs();
-
-        // for the server we use the server subdir
-        File log_dir = new File(top_log_dir, "server");
-
-        // create it if it does not exist
-        if(!log_dir.exists())
-            log_dir.mkdirs();
-
-		// get the props file
-		File props_file = new File(config_dir, HOUSEMATE_PROPS_FILE);
-		if(!props_file.exists()) {
-			System.out.println("Could not find server properties file \"" + props_file.getAbsolutePath() + "\". Creating a new one with default settings");
-            createDefaultPropsFile(props_file);
-		}
-
-		// load the props from the file
-		try {
-            properties.read(new FileReader("propertiesFile", 1, props_file));
-		} catch (FileNotFoundException e) {
-			// Would have logged above!
-			System.err.println("Could not find server properties file \"" + props_file.getAbsolutePath() + "\"");
-			System.exit(0);
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.err.println("Could not read server properties from file");
-			System.exit(0);
-		}
-
-		// override any properties from the props file that are specified on the command line
-
-        try {
-            FileWriter fileWriter = new FileWriter(LogLevel.valueOf(properties.get(LOG_LEVEL)),
-                    log_dir.getAbsolutePath() + File.separator + "housemate.log");
-            List<LogWriter> logWriters = Arrays.asList(fileWriter, new StdOutWriter(LogLevel.DEBUG));
-            log = new Log("Housemate", logWriters);
-        } catch(IOException e) {
-            throw new HousemateException("Failed to create main app log", e);
-        }
-
-        properties.set(SjoerdDB.PATH_PROPERTY_KEY, new PropertyValue("internal", 3, config_dir.getAbsolutePath() + File.separator + "database"));
-
-        injector = Guice.createInjector(
-                new PCModule(log, properties), // log and properties provider
-                new SjoerdDBModule(), // storage impl
-                new ServerModule());
+        Injector injector = Guice.createInjector(new PCServerModule(properties));
 
         injector.getInstance(com.intuso.housemate.server.Server.class).start();
 
-        loadPlugins();
+        loadPlugins(injector, properties);
         injector.getInstance(ServerObjectLoader.class).loadObjects();
-        startWebapp();
+        startWebapp(injector, properties);
     }
 
-    public Injector getInjector() {
-        return injector;
+    private void setExtraDefaults(PropertyContainer properties) {
+        properties.set(RUN_WEBAPP, new PropertyValue("default", 0, "true"));
+        properties.set(USERNAME, new PropertyValue("default", 0, "admin"));
+        properties.set(PASSWORD, new PropertyValue("default", 0, "admin"));
     }
 
-    private void createDefaultPropsFile(File file) throws HousemateException {
-        try {
-            BufferedWriter out = new BufferedWriter(new java.io.FileWriter(file));
-            out.write(LOG_LEVEL + "=DEBUG\n");
-            out.write(SERVER_NAME + "=My Server\n");
-            out.write(SocketServer.PORT + "=46873\n");
-            out.write(RUN_WEBAPP + "=true\n");
-            out.write(USERNAME + "=admin\n");
-            out.write(PASSWORD + "=admin\n");
-            out.close();
-        } catch(IOException e) {
-            throw new HousemateException("Could not create default props file", e);
-        }
-    }
-
-    private void loadPlugins() {
+    private void loadPlugins(Injector injector, PropertyContainer properties) {
 
         loadSharedJNILibs();
-        
+
+        Log log = injector.getInstance(Log.class);
         PluginManager pluginManager = injector.getInstance(PluginManager.class);
 
         // add the default plugin
         pluginManager.addPlugin(new MainPlugin(injector));
 
         // discover plugins from local dir
-        File pluginDirectory = new File(this.config_dir, PLUGINS_DIR_NAME);
+        File pluginDirectory = new File(properties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + PLUGINS_DIR_NAME);
         if(!pluginDirectory.exists())
             pluginDirectory.mkdir();
         if(pluginDirectory.isFile())
@@ -202,7 +94,7 @@ public class ServerEnvironment {
         else {
             log.d("Loading plugins from " + pluginDirectory.getAbsolutePath());
             for(File pluginFile : pluginDirectory.listFiles(new PluginFileFilter())) {
-                for(PluginDescriptor plugin : loadPlugin(pluginFile))
+                for(PluginDescriptor plugin : loadPlugin(pluginFile, log))
                     pluginManager.addPlugin(plugin);
             }
         }
@@ -212,7 +104,7 @@ public class ServerEnvironment {
         //CommPortIdentifier.getPortIdentifiers();
     }
 
-    private List<PluginDescriptor> loadPlugin(File file) {
+    private List<PluginDescriptor> loadPlugin(File file, Log log) {
         log.d("Loading plugins from " + file.getAbsolutePath());
         try {
             ClassLoader cl = new URLClassLoader(new URL[] {file.toURI().toURL()}, PluginDescriptor.class.getClassLoader());
@@ -223,7 +115,7 @@ public class ServerEnvironment {
                 Manifest mf = new Manifest(url.openStream());
                 for(Map.Entry<Object, Object> attrEntry : mf.getMainAttributes().entrySet()) {
                     try {
-                        result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl));
+                        result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl, log));
                     } catch(HousemateException e) {
                         log.e("Failed to load plugin descriptor", e);
                     }
@@ -232,7 +124,7 @@ public class ServerEnvironment {
                     Attributes attrs = mfEntry.getValue();
                     for(Map.Entry<Object, Object> attrEntry : attrs.entrySet()) {
                         try {
-                            result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl));
+                            result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl, log));
                         } catch(HousemateException e) {
                             log.e("Failed to load plugin descriptor", e);
                         }
@@ -249,7 +141,8 @@ public class ServerEnvironment {
         }
     }
 
-    private List<PluginDescriptor> processManifestAttribute(URL url, Object key, Object value, ClassLoader cl) throws HousemateException {
+    private List<PluginDescriptor> processManifestAttribute(URL url, Object key, Object value, ClassLoader cl, Log log)
+            throws HousemateException {
         List<PluginDescriptor> result = Lists.newArrayList();
         if(key != null && key.toString().equals(PluginDescriptor.MANIFEST_ATTRIBUTE)
                 && value instanceof String) {
@@ -295,13 +188,16 @@ public class ServerEnvironment {
         }
     }
 
-    private void startWebapp() throws HousemateException {
+    private void startWebapp(Injector injector, PropertyContainer properties) throws HousemateException {
+
+        Log log = injector.getInstance(Log.class);
+
         if(properties.get(RUN_WEBAPP) != null
                 && properties.get(RUN_WEBAPP).equalsIgnoreCase("false")) {
             log.d("Not starting webapp");
             return;
         }
-        File webappDirectory = new File(config_dir, WEBAPP_FOLDER);
+        File webappDirectory = new File(properties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + WEBAPP_FOLDER);
         if(!webappDirectory.exists())
             webappDirectory.mkdir();
         File webappFile = new File(webappDirectory, WEBAPP_NAME + ".war");
@@ -313,7 +209,7 @@ public class ServerEnvironment {
                 log.e("Could not find existing webapp and could not find it in jar. Cannot start web interface");
                 return;
             }
-            copyWebapp(url, webappFile);
+            copyWebapp(url, webappFile, log);
         }
         File webappDir = new File(webappDirectory, WEBAPP_NAME);
         if(webappDir.isFile())
@@ -329,10 +225,10 @@ public class ServerEnvironment {
         } catch(Throwable t) {
             log.w("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
         }
-        startJetty(port, webappDir);
+        startJetty(injector, properties, port, webappDir);
     }
 
-    private void copyWebapp(URL fromUrl, File toFile) throws HousemateException {
+    private void copyWebapp(URL fromUrl, File toFile, Log log) throws HousemateException {
         InputStream is = null;
         OutputStream os = null;
         try {
@@ -379,7 +275,8 @@ public class ServerEnvironment {
         }
     }
 
-    private void startJetty(int port, File warFile) throws HousemateException {
+    private void startJetty(Injector injector, PropertyContainer properties, int port, File warFile)
+            throws HousemateException {
         Server server = new Server(port);
 
         // Configure webapp provided as external WAR
@@ -394,20 +291,6 @@ public class ServerEnvironment {
             server.start();
         } catch(Exception e) {
             throw new HousemateException("Failed to start internal webserver", e);
-        }
-    }
-
-    public static class RM implements RegexMatcher {
-
-        Pattern pattern;
-
-        public RM(String regexPattern) {
-            pattern = Pattern.compile(regexPattern);
-        }
-
-        @Override
-        public boolean matches(String value) {
-            return pattern.matcher(value).matches();
         }
     }
 }

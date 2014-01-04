@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 public class TestAnnotationParser {
 
     private static RealResources createResources() {
-        return new RealResources(new Log("testLog"), new PropertyContainer(), null);
+        return new RealResources(new Log(), new PropertyContainer(), null);
     }
 
     private static RealList<TypeData<?>, RealType<?, ?, ?>> createAvailableTypes(RealResources resources) {

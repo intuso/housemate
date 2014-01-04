@@ -2,7 +2,6 @@ package com.intuso.housemate.server.object;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.server.proxy.ServerProxyObject;
@@ -13,9 +12,6 @@ import com.intuso.housemate.server.object.general.ServerResourcesImpl;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyContainer;
 
-/**
- */
-@Singleton
 public class ServerProxyResourcesImpl<F extends HousemateObjectFactory<?, ?, ?>>
         extends ServerResourcesImpl<ServerProxyRootObject> implements ServerProxyResources<F> {
 

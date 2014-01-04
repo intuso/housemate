@@ -1,19 +1,13 @@
 package com.intuso.housemate.object.real;
 
-import com.google.inject.Singleton;
+import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.comms.ConnectionManager;
-import com.intuso.housemate.api.comms.ConnectionStatus;
-import com.intuso.housemate.api.comms.ConnectionStatusChangeListener;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.comms.message.AuthenticationResponse;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
@@ -23,7 +17,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
 
-@Singleton
 public class RealRootObject
         extends RealObject<RootData, HousemateData<?>, RealObject<?, ? extends HousemateData<?>, ?, ?>, RootListener<? super RealRootObject>>
         implements RealRoot<RealType<?, ?, ?>, RealList<TypeData<?>, RealType<?, ?, ?>>, RealDevice,
@@ -45,6 +38,7 @@ public class RealRootObject
             new RealList<DeviceData, RealDevice>(resources, DEVICES_ID, DEVICES_ID, "Defined devices"));
     }
 
+    @Inject
     public RealRootObject(RealResources resources, RealList<TypeData<?>, RealType<?, ?, ?>> types,
             RealList<DeviceData, RealDevice> devices) {
         super(resources, new RootData());

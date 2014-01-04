@@ -46,17 +46,5 @@
             <artifactId>annotations-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- Transport implementations -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>comms-transport-socket-server</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>comms-transport-rest-server</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

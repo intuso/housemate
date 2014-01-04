@@ -21,6 +21,8 @@ import com.intuso.housemate.server.object.bridge.ServerBridgeResources;
  */
 public class Server {
 
+    public final static String SERVER_NAME = "server.name";
+
     private final Injector injector;
 
     @Inject

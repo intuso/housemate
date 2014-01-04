@@ -1,13 +1,11 @@
 package com.intuso.housemate.object.real.impl.type;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.object.real.RealResources;
 
 /**
  * Type for a unit of time
  */
-@Singleton
 public class TimeUnitType extends EnumChoiceType<TimeUnit> {
 
     public final static String ID = "time-unit";

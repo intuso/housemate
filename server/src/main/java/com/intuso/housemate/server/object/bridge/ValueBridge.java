@@ -19,7 +19,7 @@ public class ValueBridge extends ValueBridgeBase<ValueData, NoChildrenData,
     public ValueBridge(ServerBridgeResources resources, Value<?, ?> proxyValue,
                        ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
         super(resources,
-                new ValueData(proxyValue.getId(), proxyValue.getName(), proxyValue.getDescription(), proxyValue.getType().getId(), proxyValue.getTypeInstances()),
+                new ValueData(proxyValue.getId(), proxyValue.getName(), proxyValue.getDescription(), proxyValue.getTypeId(), proxyValue.getTypeInstances()),
                 proxyValue, types);
     }
 

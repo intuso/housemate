@@ -1,8 +1,5 @@
 package com.intuso.housemate.platform.pc;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.intuso.housemate.api.HousemateException;
 import com.intuso.utilities.properties.api.PropertyContainer;
 import com.intuso.utilities.properties.reader.commandline.CommandLineReader;
 import com.intuso.utilities.properties.reader.file.FileReader;
@@ -18,22 +15,14 @@ import java.io.IOException;
  * Time: 17:03
  * To change this template use File | Settings | File Templates.
  */
-public class PCPropertiesModule extends AbstractModule {
+public class Properties {
 
-    private final static String HOUSEMATE_CONFIG_DIR = "HOUSEMATE_CONFIG_DIR";
-    private final static String HOUSEMATE_PROPS_FILE = "housemate.props";
+    public final static String HOUSEMATE_CONFIG_DIR = "HOUSEMATE_CONFIG_DIR";
+    public final static String HOUSEMATE_PROPS_FILE = "housemate.props";
 
-    private final String[] args;
+    private Properties() {}
 
-    public PCPropertiesModule(String[] args) {
-        this.args = args;
-    }
-
-    @Override
-    protected void configure() {}
-
-    @Provides
-    public void getPropertyContainer() throws HousemateException {
+    public static PropertyContainer init(String[] args) {
 
         PropertyContainer properties = new PropertyContainer();
 
@@ -63,11 +52,13 @@ public class PCPropertiesModule extends AbstractModule {
             try {
                 properties.read(new FileReader("propertiesFile", 1, props_file));
             } catch (FileNotFoundException e) {
-                // Would have logged above!
-                throw new HousemateException("Could not find server properties file \"" + props_file.getAbsolutePath() + "\"", e);
+                System.out.println("WARN: Could not find server properties file \"" + props_file.getAbsolutePath() + "\"");
             } catch (IOException e) {
-                throw new HousemateException("Could not read server properties from file", e);
+                System.err.println("ERROR: Could not read server properties from file");
+                e.printStackTrace();
             }
         }
+
+        return properties;
     }
 }

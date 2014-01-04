@@ -33,7 +33,7 @@ class AndroidServiceEnvironment implements SharedPreferences.OnSharedPreferenceC
     public final static String USERNAME = "username";
     public final static String PASSWORD = "password";
 
-    private final Log log = new Log("Housemate");
+    private final Log log = new Log();
     private SocketClient router;
 
     /**

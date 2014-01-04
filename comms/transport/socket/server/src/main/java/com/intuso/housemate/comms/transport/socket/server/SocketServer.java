@@ -1,5 +1,6 @@
 package com.intuso.housemate.comms.transport.socket.server;
 
+import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
@@ -30,6 +31,7 @@ public class SocketServer extends ExternalClientRouter {
 
     private final Router.Registration routerRegistration;
 
+    @Inject
     public SocketServer(Resources resources, Router router) {
         super(resources);
         
@@ -37,7 +39,6 @@ public class SocketServer extends ExternalClientRouter {
         this.routerRegistration = router.registerReceiver(this);
 
         setRouterStatus(Status.Connected);
-        login(new AuthenticationMethod());
     }
 
     @Override
@@ -64,7 +65,7 @@ public class SocketServer extends ExternalClientRouter {
                 getLog().d("Socket server port not set, using default");
                 port = "46873";
             }
-            getLog().d("Starting server comms on port " + port);
+            getLog().d("Creating server comms on port " + port);
             serverSocket = new ServerSocket(Integer.parseInt(port));
             accepter = new Accepter();
         } catch (IOException e) {
@@ -124,16 +125,6 @@ public class SocketServer extends ExternalClientRouter {
                     getLog().e("Could not create client handle for new client connection", e);
                 }
             }
-        }
-    }
-
-    public class AuthenticationMethod implements com.intuso.housemate.api.authentication.AuthenticationMethod {
-
-        private AuthenticationMethod() {}
-
-        @Override
-        public boolean isClientsAuthenticated() {
-            return false;
         }
     }
 }

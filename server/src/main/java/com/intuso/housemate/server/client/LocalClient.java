@@ -1,25 +1,23 @@
 package com.intuso.housemate.server.client;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.real.RealCommand;
+import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.object.real.RealRootObject;
+import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.server.comms.InternalAuthentication;
 import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.DeviceFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
-import com.intuso.housemate.object.real.RealCommand;
-import com.intuso.housemate.object.real.RealResources;
-import com.intuso.housemate.object.real.RealRootObject;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.utilities.log.Log;
 
 /**
  * Util class for running objects local to the server
  */
-@Singleton
 public class LocalClient implements PluginListener {
 
     private final Log log;

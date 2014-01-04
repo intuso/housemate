@@ -1,19 +1,18 @@
 package com.intuso.housemate.server.plugin.main.type.valuesource;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.*;
 import com.intuso.housemate.api.object.value.Value;
+import com.intuso.housemate.object.real.*;
+import com.intuso.housemate.object.real.impl.type.RealChoiceType;
+import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.housemate.server.plugin.main.type.constant.ConstantInstance;
 import com.intuso.housemate.server.plugin.main.type.constant.ConstantType;
 import com.intuso.housemate.server.plugin.main.type.operation.Operation;
 import com.intuso.housemate.server.plugin.main.type.operation.OperationType;
 import com.intuso.housemate.server.plugin.main.type.transformation.Transformation;
 import com.intuso.housemate.server.plugin.main.type.transformation.TransformationType;
-import com.intuso.housemate.object.real.*;
-import com.intuso.housemate.object.real.impl.type.RealChoiceType;
-import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -21,7 +20,6 @@ import java.util.List;
 
 /**
  */
-@Singleton
 public class ValueSourceType extends RealChoiceType<ValueSource> {
 
     public final static String ID = "value-source";
@@ -79,7 +77,6 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
         return serialiser.deserialise(instance);
     }
 
-    @Singleton
     public static class Serialiser implements TypeSerialiser<ValueSource> {
 
         private final Log log;

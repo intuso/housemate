@@ -2,15 +2,10 @@ package com.intuso.housemate.server.plugin.main.type.comparison;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.server.plugin.PluginListener;
-import com.intuso.housemate.server.plugin.PluginManager;
-import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
-import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealSubType;
@@ -18,12 +13,15 @@ import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealCompoundType;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
+import com.intuso.housemate.server.plugin.PluginListener;
+import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
+import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 
 import java.util.Map;
 
 /**
  */
-@Singleton
 public class ComparisonType extends RealCompoundType<Comparison> implements PluginListener {
 
     public final static String ID = "comparison";

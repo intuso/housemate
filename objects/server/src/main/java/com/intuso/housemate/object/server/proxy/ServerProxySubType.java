@@ -28,6 +28,11 @@ public class ServerProxySubType
     }
 
     @Override
+    public String getTypeId() {
+        return getData().getType();
+    }
+
+    @Override
     public final ServerProxyType getType() {
         return type;
     }

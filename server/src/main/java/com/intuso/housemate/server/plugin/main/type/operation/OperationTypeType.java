@@ -2,23 +2,21 @@ package com.intuso.housemate.server.plugin.main.type.operation;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.server.plugin.PluginListener;
-import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.plugin.api.OperationType;
 import com.intuso.housemate.plugin.api.Operator;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
+import com.intuso.housemate.server.plugin.PluginListener;
+import com.intuso.housemate.server.plugin.PluginManager;
 
 import java.util.Map;
 
 /**
  */
-@Singleton
 public class OperationTypeType extends RealChoiceType<OperationType> {
 
     public final static String ID = "operation-type";

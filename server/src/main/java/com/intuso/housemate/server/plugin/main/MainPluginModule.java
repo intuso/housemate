@@ -2,9 +2,12 @@ package com.intuso.housemate.server.plugin.main;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
+import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
+import com.intuso.housemate.server.plugin.main.condition.ValueComparisonFactory;
 import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonTypeType;
+import com.intuso.housemate.server.plugin.main.type.constant.ConstantType;
 import com.intuso.housemate.server.plugin.main.type.operation.Operation;
 import com.intuso.housemate.server.plugin.main.type.operation.OperationType;
 import com.intuso.housemate.server.plugin.main.type.operation.OperationTypeType;
@@ -27,12 +30,26 @@ public class MainPluginModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(new TypeLiteral<TypeSerialiser<ValueSource>>() {}).to(ValueSourceType.Serialiser.class);
-        bind(new TypeLiteral<TypeSerialiser<ComparisonType>>() {}).to(ComparisonTypeType.Serialiser.class);
-        bind(new TypeLiteral<TypeSerialiser<Operation>>() {}).to(OperationType.Serialiser.class);
-        bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.OperationType>>() {}).to(OperationTypeType.Serialiser.class);
-        bind(new TypeLiteral<TypeSerialiser<String>>() {}).to(TransformationOutputType.Serialiser.class);
-        bind(new TypeLiteral<TypeSerialiser<Transformation>>() {}).to(TransformationType.Serialiser.class);
-        bind(new TypeLiteral<TypeSerialiser<RealObjectType.Reference<?>>>() {}).to(new Key<RealObjectType.Serialiser<?>>() {});
+
+        // mark all as singletons
+        bind(ValueComparisonFactory.class).in(Scopes.SINGLETON);
+        bind(com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType.class).in(Scopes.SINGLETON);
+        bind(ComparisonTypeType.class).in(Scopes.SINGLETON);
+        bind(ConstantType.class).in(Scopes.SINGLETON);
+        bind(OperationType.class).in(Scopes.SINGLETON);
+        bind(OperationTypeType.class).in(Scopes.SINGLETON);
+        bind(TransformationOutputType.class).in(Scopes.SINGLETON);
+        bind(TransformationType.class).in(Scopes.SINGLETON);
+        bind(ValueSourceType.class).in(Scopes.SINGLETON);
+
+        // bind implementations
+        bind(new TypeLiteral<TypeSerialiser<ValueSource>>() {}).to(ValueSourceType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<ComparisonType>>() {}).to(ComparisonTypeType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<Operation>>() {}).to(OperationType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.OperationType>>() {}).to(OperationTypeType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<String>>() {}).to(TransformationOutputType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<Transformation>>() {}).to(TransformationType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<RealObjectType.Reference<?>>>() {}).to(new Key<RealObjectType.Serialiser<?>>() {
+        }).in(Scopes.SINGLETON);
     }
 }

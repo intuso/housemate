@@ -3,7 +3,6 @@ package com.intuso.housemate.server.comms;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.*;
 import com.intuso.housemate.api.comms.ConnectionType;
@@ -16,11 +15,9 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.server.real.ServerRealResources;
+import com.intuso.housemate.object.server.real.ServerRealUser;
 import com.intuso.housemate.server.storage.DetailsNotFoundException;
 import com.intuso.housemate.server.storage.Storage;
-import com.intuso.housemate.comms.transport.rest.RestServer;
-import com.intuso.housemate.comms.transport.socket.server.SocketServer;
-import com.intuso.housemate.object.server.real.ServerRealUser;
 import com.intuso.utilities.log.Log;
 
 import java.security.MessageDigest;
@@ -31,7 +28,6 @@ import java.util.UUID;
 
 /**
  */
-@Singleton
 public class RemoteClientManager {
 
     private final static String SERVER_INSTANCE_ID = UUID.randomUUID().toString();
@@ -121,10 +117,7 @@ public class RemoteClientManager {
 
         // if response is null, or it has no user id and is not one of the internal methods, then remove the client
         if(response == null ||
-                (response.getUserId() == null && !(
-                        request.getMethod() instanceof InternalAuthentication
-                        || request.getMethod() instanceof RestServer.AuthenticationMethod
-                        || request.getMethod() instanceof SocketServer.AuthenticationMethod))) {
+                (response.getUserId() == null && !(request.getMethod() instanceof InternalAuthentication))) {
             if(response == null)
                 log.d("Authentication failed. See previous log messages for details");
             else
@@ -169,9 +162,7 @@ public class RemoteClientManager {
                 return new AuthenticationResponse(SERVER_INSTANCE_ID, "No intermediate router has authenticated for clients");
 
             // anything internal should just be accepted regardless
-        } else if(method instanceof InternalAuthentication
-                || method instanceof RestServer.AuthenticationMethod
-                || method instanceof SocketServer.AuthenticationMethod) {
+        } else if(method instanceof InternalAuthentication) {
             log.d("Internal client authentication");
             return new AuthenticationResponse(SERVER_INSTANCE_ID, connectionId, null);
 

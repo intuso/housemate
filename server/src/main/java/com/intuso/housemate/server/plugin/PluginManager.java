@@ -2,7 +2,6 @@ package com.intuso.housemate.server.plugin;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
@@ -19,7 +18,6 @@ import java.util.List;
  * Time: 09:13
  * To change this template use File | Settings | File Templates.
  */
-@Singleton
 public class PluginManager {
 
     private final Log log;

@@ -1,11 +1,10 @@
-package com.intuso.housemate.server.storage.impl;
+package com.intuso.housemate.pkg.server.pc.storage;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
@@ -17,9 +16,6 @@ import com.intuso.utilities.properties.api.PropertyContainer;
 import java.io.*;
 import java.util.*;
 
-/**
- */
-@Singleton
 public class SjoerdDB implements Storage {
 
     public final static String PATH_PROPERTY_KEY = "dbPath";

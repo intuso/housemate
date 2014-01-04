@@ -31,8 +31,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-/**
- */
 public class LifecycleHandlerImpl implements LifecycleHandler {
 
     private final Log log;

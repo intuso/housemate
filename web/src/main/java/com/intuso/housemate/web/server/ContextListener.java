@@ -10,6 +10,7 @@ import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.housemate.api.resources.ClientResourcesImpl;
 import com.intuso.housemate.comms.transport.socket.client.SocketClientModule;
 import com.intuso.housemate.platform.pc.PCModule;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -28,7 +29,8 @@ public class ContextListener implements ServletContextListener {
             if(resources != null && resources instanceof ClientResources)
                 RESOURCES = (ClientResources)resources;
             else {
-                Injector injector = Guice.createInjector(new PCModule(new String[0]), new SocketClientModule());
+                PropertyContainer properties = new PropertyContainer();
+                Injector injector = Guice.createInjector(new PCModule(properties, "web-server.log"), new SocketClientModule(properties));
                 RESOURCES = injector.getInstance(ClientResourcesImpl.class);
             }
         }

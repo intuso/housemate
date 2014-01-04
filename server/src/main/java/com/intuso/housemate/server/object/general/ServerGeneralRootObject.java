@@ -2,7 +2,6 @@ package com.intuso.housemate.server.object.general;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
@@ -19,15 +18,14 @@ import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.server.comms.RemoteClientManager;
 import com.intuso.housemate.object.server.ClientPayload;
+import com.intuso.housemate.server.comms.RemoteClientManager;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
 
 /**
  */
-@Singleton
 public class ServerGeneralRootObject
         extends HousemateObject<Resources, RootData, HousemateData<?>,
                     HousemateObject<?, ?, ?, ?, ?>, RootListener<? super ServerGeneralRootObject>>

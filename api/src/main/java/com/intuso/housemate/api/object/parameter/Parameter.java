@@ -9,8 +9,14 @@ import com.intuso.housemate.api.object.type.Type;
 public interface Parameter<TYPE extends Type> extends BaseHousemateObject<ParameterListener> {
 
     /**
+     * Gets the type id of the parameter
+     * @return the type id of the parameter
+     */
+    public String getTypeId();
+
+    /**
      * Gets the type of the parameter
      * @return the type of the parameter
      */
-    public abstract TYPE getType();
+    public TYPE getType();
 }

@@ -1,7 +1,6 @@
 package com.intuso.housemate.server.plugin.main.type.transformation;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
@@ -14,7 +13,6 @@ import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 
 /**
  */
-@Singleton
 public class TransformationOutputType extends RealChoiceType<String> {
 
     public final static String ID = "output-type";

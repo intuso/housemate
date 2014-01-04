@@ -18,8 +18,13 @@ public class ParameterBridge
 
     public ParameterBridge(ServerBridgeResources resources, Parameter<?> parameter,
                            ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(resources, new ParameterData(parameter.getId(), parameter.getName(), parameter.getDescription(), parameter.getType().getId()));
+        super(resources, new ParameterData(parameter.getId(), parameter.getName(), parameter.getDescription(), parameter.getTypeId()));
         type = types.get(getData().getType());
+    }
+
+    @Override
+    public String getTypeId() {
+        return getData().getType();
     }
 
     @Override

@@ -2,17 +2,19 @@ package com.intuso.housemate.platform.pc;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.intuso.housemate.api.HousemateException;
+import com.google.inject.Singleton;
+import com.google.inject.multibindings.Multibinder;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.log.LogLevel;
 import com.intuso.utilities.log.LogWriter;
+import com.intuso.utilities.log.writer.FileWriter;
 import com.intuso.utilities.log.writer.StdOutWriter;
 import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.api.PropertyValue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,44 +25,48 @@ import java.util.List;
  */
 public class PCLogModule extends AbstractModule {
 
-    private final static String HOUSEMATE_LOG_DIR = "HOUSEMATE_LOG_DIR";
-    public final static String LOG_LEVEL = "log.level";
+    private final static String HOUSEMATE_LOG_STDOUT = "log.stdout";
+    private final static String HOUSEMATE_LOG_STDOUT_LEVEL = "log.stdout.level";
+    private final static String HOUSEMATE_LOG_FILE = "log.file";
+    private final static String HOUSEMATE_LOG_FILE_LEVEL = "log.file.level";
+    private final static String HOUSEMATE_LOG_FILE_PATH = "log.file.path";
+
+    private final PropertyContainer properties;
+
+    public PCLogModule(PropertyContainer properties, String defaultLogName) {
+        this.properties = properties;
+        properties.set(HOUSEMATE_LOG_STDOUT, new PropertyValue("default", 0, "true"));
+        properties.set(HOUSEMATE_LOG_STDOUT_LEVEL, new PropertyValue("default", 0, LogLevel.ERROR.name()));
+        properties.set(HOUSEMATE_LOG_FILE, new PropertyValue("default", 0, "true"));
+        properties.set(HOUSEMATE_LOG_FILE_LEVEL, new PropertyValue("default", 0, LogLevel.DEBUG.name()));
+        properties.set(HOUSEMATE_LOG_FILE_PATH, new PropertyValue("default", 0, System.getProperty("user.home") + File.separator + ".housemate" + File.separator + "log" + File.separator + defaultLogName));
+    }
 
     @Override
-    protected void configure() {}
+    protected void configure() {
+
+        Multibinder<LogWriter> logWriters = Multibinder.newSetBinder(binder(), LogWriter.class);
+
+        // stdout writer
+        if(Boolean.parseBoolean(properties.get(HOUSEMATE_LOG_STDOUT)))
+            logWriters.addBinding().toInstance(new StdOutWriter(LogLevel.valueOf(properties.get(HOUSEMATE_LOG_STDOUT_LEVEL))));
+
+        // file writer
+        if(Boolean.parseBoolean(properties.get(HOUSEMATE_LOG_FILE))) {
+            try {
+                logWriters.addBinding().toInstance(new FileWriter(LogLevel.valueOf(properties.get(HOUSEMATE_LOG_FILE_LEVEL)),
+                        properties.get(HOUSEMATE_LOG_FILE_PATH)));
+            } catch(IOException e) {
+                System.err.println("Failed to create log file writer");
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Provides
-    public Log getLog(PropertyContainer properties) throws HousemateException {
-
-        String dir = null;
-
-        // get the base housemate log directory. If overridden, use that, else use env var value. If that not set then quit
-        if(properties.get(HOUSEMATE_LOG_DIR) != null) {
-            System.out.println("Overriding " + HOUSEMATE_LOG_DIR + " to " + properties.get(HOUSEMATE_LOG_DIR));
-            dir = properties.get(HOUSEMATE_LOG_DIR);
-        } else {
-            dir = System.getenv(HOUSEMATE_LOG_DIR);
-            if(dir == null)
-                dir = System.getProperty("user.home") + File.separator + ".housemate" + File.separator + "log";
-        }
-
-        File logDirectory = new File(dir);
-
-        // create it if it does not exist
-        if(!logDirectory.exists())
-            logDirectory.mkdirs();
-
-        // create it if it does not exist
-        if(!logDirectory.exists())
-            logDirectory.mkdirs();
-
-        try {
-            com.intuso.utilities.log.writer.FileWriter fileWriter = new com.intuso.utilities.log.writer.FileWriter(LogLevel.valueOf(properties.get(LOG_LEVEL)), logDirectory.getAbsolutePath() + File.separator + "housemate.log");
-            StdOutWriter stdOutWriter = new StdOutWriter(LogLevel.DEBUG);
-            List<LogWriter> logWriters = Arrays.asList(new LogWriter[]{fileWriter, stdOutWriter});
-            return new Log("Housemate", logWriters);
-        } catch(IOException e) {
-            throw new HousemateException("Failed to create main app log", e);
-        }
+    @Singleton
+    public Log getLog(Set<LogWriter> logWriters) {
+        // return the log
+        return new Log(logWriters);
     }
 }
