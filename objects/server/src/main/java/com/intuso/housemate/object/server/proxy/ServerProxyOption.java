@@ -1,10 +1,14 @@
 package com.intuso.housemate.object.server.proxy;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.Option;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.option.OptionListener;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
+import com.intuso.utilities.log.Log;
 
 public class ServerProxyOption
         extends ServerProxyObject<OptionData, ListData<SubTypeData>,
@@ -16,12 +20,13 @@ public class ServerProxyOption
     private ServerProxyList<SubTypeData, ServerProxySubType> subTypes;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ServerProxyOption(ServerProxyResources<ServerProxyFactory.List<SubTypeData, ServerProxySubType>> resources,
-                             OptionData data) {
-        super(resources, data);
+    @Inject
+    public ServerProxyOption(Log log, Injector injector, @Assisted OptionData data) {
+        super(log, injector, data);
     }
 
     @Override

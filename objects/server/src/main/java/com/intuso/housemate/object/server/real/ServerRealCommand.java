@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -20,15 +21,15 @@ public abstract class ServerRealCommand
     private ServerRealList<ParameterData, ServerRealParameter<?>> realParameters;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the object's id
      * @param name the object's name
      * @param description the object's description
      * @param parameters the command's parameters
      */
-    protected ServerRealCommand(ServerRealResources resources, String id, String name, String description, List<ServerRealParameter<?>> parameters) {
-        super(resources, new CommandData(id, name, description));
-        realParameters = new ServerRealList<ParameterData, ServerRealParameter<?>>(resources, PARAMETERS_ID, PARAMETERS_ID, PARAMETERS_DESCRIPTION, parameters);
+    protected ServerRealCommand(Log log, String id, String name, String description, List<ServerRealParameter<?>> parameters) {
+        super(log, new CommandData(id, name, description));
+        realParameters = new ServerRealList<ParameterData, ServerRealParameter<?>>(log, PARAMETERS_ID, PARAMETERS_ID, PARAMETERS_DESCRIPTION, parameters);
         addChild(realParameters);
     }
 

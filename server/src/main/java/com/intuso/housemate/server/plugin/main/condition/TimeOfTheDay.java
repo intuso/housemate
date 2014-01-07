@@ -2,10 +2,10 @@ package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealCondition;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
 import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.real.impl.type.Time;
 import com.intuso.housemate.object.real.impl.type.TimeType;
 import com.intuso.utilities.log.Log;
@@ -53,17 +53,18 @@ public class TimeOfTheDay extends ServerRealCondition {
 	
 	/**
 	 * Construct a new time of day condition
-     * @param serverRealResources
+     * @param log
 	 * @param name
 	 * @throws HousemateException if an error occurs creating the condition
 	 */
     @Inject
-	public TimeOfTheDay(ServerRealResources serverRealResources, String id, String name, String description,
-                        ServerRealConditionOwner owner, TimeType timeType) throws HousemateException {
-		super(serverRealResources, id, name, description, owner);
-        before = new ServerRealProperty<Time>(serverRealResources, BEFORE_FIELD, BEFORE_FIELD, "The condition is satisfied when the current time is before this time",
+	public TimeOfTheDay(Log log, String id, String name, String description,
+                        ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler, TimeType timeType)
+            throws HousemateException {
+		super(log, id, name, description, owner, lifecycleHandler);
+        before = new ServerRealProperty<Time>(log, BEFORE_FIELD, BEFORE_FIELD, "The condition is satisfied when the current time is before this time",
                 timeType, DAY_END);
-        after = new ServerRealProperty<Time>(serverRealResources, AFTER_FIELD, AFTER_FIELD, "The condition is satisfied when the current time is after this time",
+        after = new ServerRealProperty<Time>(log, AFTER_FIELD, AFTER_FIELD, "The condition is satisfied when the current time is after this time",
                 timeType, DAY_END);
         getProperties().add(before);
         getProperties().add(after);

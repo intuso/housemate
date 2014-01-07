@@ -17,25 +17,25 @@ import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.housemate.server.comms.RemoteClientManager;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
 /**
  */
 public class ServerGeneralRootObject
-        extends HousemateObject<Resources, RootData, HousemateData<?>,
-                    HousemateObject<?, ?, ?, ?, ?>, RootListener<? super ServerGeneralRootObject>>
+        extends HousemateObject<RootData, HousemateData<?>,
+                    HousemateObject<?, ?, ?, ?>, RootListener<? super ServerGeneralRootObject>>
         implements Root<ServerGeneralRootObject> {
 
     private final RemoteClientManager remoteClientManager;
 
     @Inject
-    public ServerGeneralRootObject(Resources resources, RemoteClientManager remoteClientManager) {
-        super(resources, new RootData());
+    public ServerGeneralRootObject(Log log, RemoteClientManager remoteClientManager) {
+        super(log, new RootData());
         this.remoteClientManager = remoteClientManager;
         init(null);
     }

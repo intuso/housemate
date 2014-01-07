@@ -13,12 +13,12 @@ import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.server.real.ServerRealTask;
 import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
 import com.intuso.housemate.server.object.bridge.RootObjectBridge;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,11 +50,11 @@ public class PerformCommand extends ServerRealTask implements ObjectLifecycleLis
     };
 
     @Inject
-    public PerformCommand(ServerRealResources resources, String id, String name, String description,
+    public PerformCommand(Log log, String id, String name, String description,
                           ServerRealTaskOwner owner, RootObjectBridge root,
                           RealObjectType<BaseHousemateObject<?>> realObjectType) {
-        super(resources, id, name, description, owner);
-        commandPath = new ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>>(resources, "command-path", "Command Path", "The path to the command to perform",
+        super(log, id, name, description, owner);
+        commandPath = new ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>>(log, "command-path", "Command Path", "The path to the command to perform",
                 realObjectType, (List)null);
         getProperties().add(commandPath);
         addPropertyListener(root);
@@ -73,7 +73,7 @@ public class PerformCommand extends ServerRealTask implements ObjectLifecycleLis
             public void valueChanged(ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> property) {
                 String[] path = property.getTypedValue().getPath();
                 commandLifecycleListenerRegistration = root.addObjectLifecycleListener(path, PerformCommand.this);
-                HousemateObject<?, ?, ?, ?, ?> object = root.getObject(path);
+                HousemateObject<?, ?, ?, ?> object = root.getObject(path);
                 if(object == null)
                     setError("Cannot find an object at path " + Arrays.toString(path));
                 else {
@@ -87,7 +87,7 @@ public class PerformCommand extends ServerRealTask implements ObjectLifecycleLis
     }
 
     @Override
-    public void objectCreated(String[] path, HousemateObject<?, ?, ?, ?, ?> object) {
+    public void objectCreated(String[] path, HousemateObject<?, ?, ?, ?> object) {
         if(!(object instanceof Command))
             setError("Object at path " + commandPath.getTypedValue() + " is not a command");
         else {
@@ -97,7 +97,7 @@ public class PerformCommand extends ServerRealTask implements ObjectLifecycleLis
     }
 
     @Override
-    public void objectRemoved(String[] path, HousemateObject<?, ?, ?, ?, ?> object) {
+    public void objectRemoved(String[] path, HousemateObject<?, ?, ?, ?> object) {
         command = null;
         setError("Cannot find an object at path " + commandPath.getTypedValue());
     }

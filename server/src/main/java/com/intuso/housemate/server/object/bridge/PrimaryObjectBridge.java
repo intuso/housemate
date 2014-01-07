@@ -8,6 +8,7 @@ import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -24,14 +25,14 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateDat
     private CommandBridge stopCommand;
     private ValueBridge errorValue;
 
-    protected PrimaryObjectBridge(ServerBridgeResources resources, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?> proxyObject,
+    protected PrimaryObjectBridge(Log log, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?> proxyObject,
                                   ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(resources,  data);
-        removeCommand = new CommandBridge(resources, proxyObject.getRemoveCommand(), types);
-        runningValue = new ValueBridge(resources, proxyObject.getRunningValue(), types);
-        startCommand = new CommandBridge(resources, proxyObject.getStartCommand(), types);
-        stopCommand = new CommandBridge(resources, proxyObject.getStopCommand(), types);
-        errorValue = new ValueBridge(resources, proxyObject.getErrorValue(), types);
+        super(log,  data);
+        removeCommand = new CommandBridge(log, proxyObject.getRemoveCommand(), types);
+        runningValue = new ValueBridge(log, proxyObject.getRunningValue(), types);
+        startCommand = new CommandBridge(log, proxyObject.getStartCommand(), types);
+        stopCommand = new CommandBridge(log, proxyObject.getStopCommand(), types);
+        errorValue = new ValueBridge(log, proxyObject.getErrorValue(), types);
         addChild(removeCommand);
         addChild(runningValue);
         addChild(startCommand);

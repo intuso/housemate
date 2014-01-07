@@ -15,6 +15,7 @@ import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 public class ServerRealRootObject
         extends ServerRealObject<RootData, HousemateData<?>, ServerRealObject<?, ?, ?, ?>, RootListener<? super ServerRealRootObject>>
@@ -26,13 +27,13 @@ public class ServerRealRootObject
     private final ServerRealCommand addAutomationCommand;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      */
     @Inject
-    public ServerRealRootObject(ServerRealResources resources, LifecycleHandler lifecycleHandler) {
-        super(resources, new RootData());
-        users = new ServerRealList<UserData, ServerRealUser>(resources, USERS_ID, USERS_ID, "The defined users");
-        automations = new ServerRealList<AutomationData, ServerRealAutomation>(resources, AUTOMATIONS_ID, AUTOMATIONS_ID, "The defined automations");
+    public ServerRealRootObject(Log log, LifecycleHandler lifecycleHandler) {
+        super(log, new RootData());
+        users = new ServerRealList<UserData, ServerRealUser>(log, USERS_ID, USERS_ID, "The defined users");
+        automations = new ServerRealList<AutomationData, ServerRealAutomation>(log, AUTOMATIONS_ID, AUTOMATIONS_ID, "The defined automations");
         addUserCommand = lifecycleHandler.createAddUserCommand(users);
         addAutomationCommand = lifecycleHandler.createAddAutomationCommand(automations);
 

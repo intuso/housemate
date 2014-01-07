@@ -1,11 +1,13 @@
 package com.intuso.housemate.api.object;
 
+import com.google.inject.Inject;
+import com.intuso.housemate.api.comms.RealRouterImpl;
 import com.intuso.housemate.object.real.RealObject;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealRootObject;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.log.Log;
 import org.junit.Ignore;
 
 /**
@@ -13,8 +15,9 @@ import org.junit.Ignore;
 @Ignore
 public class TestRealRoot extends RealRootObject {
 
-    public TestRealRoot(RealResources resources) {
-        super(resources);
+    @Inject
+    public TestRealRoot(Log log, RealRouterImpl router) {
+        super(log, router);
     }
 
     public void connect() {
@@ -22,9 +25,9 @@ public class TestRealRoot extends RealRootObject {
     }
 
     public void init() {
-        addType(new StringType(getResources()));
-        addType(new IntegerType(getResources()));
-        addType(new BooleanType(getResources()));
+        addType(new StringType(getLog()));
+        addType(new IntegerType(getLog()));
+        addType(new BooleanType(getLog()));
     }
 
     public void addWrapper(RealObject<?, ?, ?, ?> wrapper) {

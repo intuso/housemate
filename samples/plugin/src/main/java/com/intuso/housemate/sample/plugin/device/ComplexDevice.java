@@ -1,7 +1,7 @@
 package com.intuso.housemate.sample.plugin.device;
 
 import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealResources;
+import com.intuso.utilities.log.Log;
 
 /**
  * Complex device with a non-simple constructor that cannot be used with the
@@ -12,7 +12,7 @@ import com.intuso.housemate.object.real.RealResources;
  * @see com.intuso.housemate.sample.plugin.device.ReallyComplexDeviceFactory
  */
 public class ComplexDevice extends RealDevice {
-    public ComplexDevice(RealResources resources, String id, String name, String description, Object extraArg) {
-        super(resources, id, name, description);
+    public ComplexDevice(Log log, String id, String name, String description, Object extraArg) {
+        super(log, id, name, description);
     }
 }

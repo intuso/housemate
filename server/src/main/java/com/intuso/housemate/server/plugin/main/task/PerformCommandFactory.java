@@ -3,11 +3,11 @@ package com.intuso.housemate.server.plugin.main.task;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.BaseHousemateObject;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
 import com.intuso.housemate.plugin.api.ServerTaskFactory;
 import com.intuso.housemate.server.object.bridge.RootObjectBridge;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -38,8 +38,8 @@ public class PerformCommandFactory implements ServerTaskFactory<PerformCommand> 
     }
 
     @Override
-    public PerformCommand create(ServerRealResources resources, String id, String name, String description,
+    public PerformCommand create(Log log, String id, String name, String description,
                                  ServerRealTaskOwner owner) throws HousemateException {
-        return new PerformCommand(resources, id, name, description, owner, bridgeRoot, realObjectType);
+        return new PerformCommand(log, id, name, description, owner, bridgeRoot, realObjectType);
     }
 }

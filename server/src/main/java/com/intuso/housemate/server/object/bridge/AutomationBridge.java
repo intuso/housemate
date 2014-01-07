@@ -10,6 +10,7 @@ import com.intuso.housemate.api.object.task.Task;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -26,19 +27,19 @@ public class AutomationBridge
     private CommandBridge addSatisfiedTask;
     private CommandBridge addUnsatisfiedTask;
     
-    public AutomationBridge(ServerBridgeResources resources,
+    public AutomationBridge(Log log,
                             Automation<?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?, ?>, ?, ?> automation,
                             ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(resources, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()), automation, types);
-        conditionList = new ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(resources,
-                automation.getConditions(), new ConditionBridge.Converter(resources, types));
-        satisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>(resources,
-                automation.getSatisfiedTasks(), new TaskBridge.Converter(resources, types));
-        unsatisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>(resources,
-                automation.getUnsatisfiedTasks(), new TaskBridge.Converter(resources, types));
-        addCondition = new CommandBridge(resources, automation.getAddConditionCommand(), types);
-        addSatisfiedTask = new CommandBridge(resources, automation.getAddSatisifedTaskCommand(), types);
-        addUnsatisfiedTask = new CommandBridge(resources, automation.getAddUnsatisifedTaskCommand(), types);
+        super(log, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()), automation, types);
+        conditionList = new ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(log,
+                automation.getConditions(), new ConditionBridge.Converter(log, types));
+        satisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>(log,
+                automation.getSatisfiedTasks(), new TaskBridge.Converter(log, types));
+        unsatisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>(log,
+                automation.getUnsatisfiedTasks(), new TaskBridge.Converter(log, types));
+        addCondition = new CommandBridge(log, automation.getAddConditionCommand(), types);
+        addSatisfiedTask = new CommandBridge(log, automation.getAddSatisifedTaskCommand(), types);
+        addUnsatisfiedTask = new CommandBridge(log, automation.getAddUnsatisifedTaskCommand(), types);
         addChild(conditionList);
         addChild(satisfiedTaskList);
         addChild(unsatisfiedTaskList);
@@ -79,17 +80,17 @@ public class AutomationBridge
 
     public final static class Converter implements Function<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> {
 
-        private final ServerBridgeResources resources;
+        private final Log log;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(ServerBridgeResources resources, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-            this.resources = resources;
+        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+            this.log = log;
             this.types = types;
         }
 
         @Override
         public AutomationBridge apply(Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
-            return new AutomationBridge(resources, automation, types);
+            return new AutomationBridge(log, automation, types);
         }
     }
 }

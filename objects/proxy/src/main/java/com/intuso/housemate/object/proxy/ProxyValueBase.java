@@ -1,21 +1,19 @@
 package com.intuso.housemate.object.proxy;
 
+import com.google.inject.Injector;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueBaseData;
-import com.intuso.housemate.object.proxy.device.feature.ProxyFeatureFactory;
+import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
 /**
- * @param <RESOURCES> the type of the resources
- * @param <CHILD_RESOURCES> the type of the child resources
  * @param <DATA> the type of the data
  * @param <CHILD_DATA> the type of the child data
  * @param <CHILD> the type of the children
@@ -23,25 +21,21 @@ import java.util.List;
  * @param <VALUE> the type of the value
  */
 public abstract class ProxyValueBase<
-            RESOURCES extends ProxyResources<
-                    ? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>,
-                    ? extends ProxyFeatureFactory<?, ?>>,
-            CHILD_RESOURCES extends ProxyResources<?, ?>,
             DATA extends ValueBaseData<CHILD_DATA>,
             CHILD_DATA extends HousemateData<?>,
-            CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
-            TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
-            VALUE extends ProxyValueBase<RESOURCES, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, TYPE, VALUE>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, VALUE, ValueListener<? super VALUE>>
+            CHILD extends ProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
+            TYPE extends ProxyType<?, ?, ?, ?>,
+            VALUE extends ProxyValueBase<DATA, CHILD_DATA, CHILD, TYPE, VALUE>>
+        extends ProxyObject<DATA, CHILD_DATA, CHILD, VALUE, ValueListener<? super VALUE>>
         implements Value<TYPE, VALUE> {
 
     /**
-     * @param resources {@inheritDoc}
-     * @param childResources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyValueBase(RESOURCES resources, CHILD_RESOURCES childResources, DATA data) {
-        super(resources, childResources, data);
+    public ProxyValueBase(Log log, Injector injector, DATA data) {
+        super(log, injector, data);
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.root.real.RealRoot;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -31,19 +32,19 @@ public class RealRootObject
     private boolean resend = false;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      */
-    public RealRootObject(RealResources resources) {
-        this(resources, new RealList<TypeData<?>, RealType<?, ?, ?>>(resources, TYPES_ID, TYPES_ID, "Defined types"),
-            new RealList<DeviceData, RealDevice>(resources, DEVICES_ID, DEVICES_ID, "Defined devices"));
+    public RealRootObject(Log log, Router router) {
+        this(log, router, new RealList<TypeData<?>, RealType<?, ?, ?>>(log, TYPES_ID, TYPES_ID, "Defined types"),
+            new RealList<DeviceData, RealDevice>(log, DEVICES_ID, DEVICES_ID, "Defined devices"));
     }
 
     @Inject
-    public RealRootObject(RealResources resources, RealList<TypeData<?>, RealType<?, ?, ?>> types,
+    public RealRootObject(Log log, Router router, RealList<TypeData<?>, RealType<?, ?, ?>> types,
             RealList<DeviceData, RealDevice> devices) {
-        super(resources, new RootData());
+        super(log, new RootData());
 
-        routerRegistration = resources.getRouter().registerReceiver(this);
+        routerRegistration = router.registerReceiver(this);
         connectionManager = new ConnectionManager(routerRegistration, ConnectionType.Real, ConnectionStatus.Unauthenticated);
 
         this.types = types;

@@ -1,6 +1,8 @@
 package com.intuso.housemate.addon.twitter;
 
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.ConnectionStatus;
@@ -8,30 +10,21 @@ import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
+import com.intuso.utilities.properties.api.PropertyContainer;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Main class for "tweeting" Housemate events
@@ -57,26 +50,22 @@ public class HousemateTweeter {
 	 * Formatter for the date
 	 */
 	private final SimpleDateFormat dateFormat;
-	
-	/**
-	 * The log to use
-	 */
-	private final Resources resources;
+
+    private final Log log;
 
     private final Map<SimpleProxyObject.Device, java.util.List<ListenerRegistration>> listeners;
-
     private DeviceListListener deviceListListener = new DeviceListListener();
-
     private DeviceListener deviceListener = new DeviceListener();
 
 	/**
 	 * Default constructor
 	 * @throws HousemateException
 	 */
-	@SuppressWarnings("unused")
-	public HousemateTweeter(final SimpleProxyResources<SimpleProxyFactory.All> resources) throws HousemateException {
+	@Inject
+	public HousemateTweeter(final Log log, final PropertyContainer properties, Injector injector) throws HousemateException {
 
-		this.resources = resources;
+        this.log = log;
+
         listeners = new HashMap<SimpleProxyObject.Device, java.util.List<ListenerRegistration>>();
 
 		dateFormat = new SimpleDateFormat("h:mm a");
@@ -88,29 +77,29 @@ public class HousemateTweeter {
 		twitter = new TwitterFactory().getInstance();
 		twitter.setOAuthConsumer("dPL31ZtQCTBknLOvEY7Lg", "slOU1tdctmdGOdVAhgMv2E2Vxe4jZo52TbQ19elALE");
 		getTokenCredentials();
-		resources.getLog().d("Loaded token and secret. If these are wrong or no longer valid please delete the file \"" + getTokenCredentialsPropsFile().getAbsolutePath() + "\" to force the addon to get a new token and secret");
+		log.d("Loaded token and secret. If these are wrong or no longer valid please delete the file \"" + getTokenCredentialsPropsFile().getAbsolutePath() + "\" to force the addon to get a new token and secret");
 
 		// setup the housemate stuff
-        final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources,  resources);
+        final SimpleProxyObject.Root root = injector.getInstance(SimpleProxyObject.Root.class);
         root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {
 
             @Override
             public void connectionStatusChanged(final SimpleProxyObject.Root root, ConnectionStatus status) {
                 switch (status) {
                     case Disconnected:
-                        resources.getLog().d("Disconnected from server");
+                        log.d("Disconnected from server");
                         break;
                     case Connecting:
-                        resources.getLog().d("Reconnecting to server");
+                        log.d("Reconnecting to server");
                         break;
                     case Unauthenticated:
-                        resources.getLog().d("Connected to server but not authenticated");
+                        log.d("Connected to server but not authenticated");
                         break;
                     case Authenticating:
-                        resources.getLog().d("Authenticating with server");
+                        log.d("Authenticating with server");
                         break;
                     case Authenticated:
-                        resources.getLog().e("Authenticated with server");
+                        log.e("Authenticated with server");
                         root.load(new LoadManager("twitterClient", new HousemateObject.TreeLoadInfo(Root.DEVICES_ID),
                                 new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)) {
                             @Override
@@ -130,11 +119,11 @@ public class HousemateTweeter {
             @Override
             public void newServerInstance(SimpleProxyObject.Root root) {
                 tweet("Server instance changed. Reconnecting");
-                root.login(new UsernamePassword(resources.getProperties().get("username"), resources.getProperties().get("password"), true));
+                root.login(new UsernamePassword(properties.get("username"), properties.get("password"), true));
             }
         });
 
-        root.login(new UsernamePassword(resources.getProperties().get("username"), resources.getProperties().get("password"), true));
+        root.login(new UsernamePassword(properties.get("username"), properties.get("password"), true));
 	}
 
 	/**
@@ -201,18 +190,18 @@ public class HousemateTweeter {
 	 */
 	private synchronized void tweet(String to_tweet) {
 		String message = dateFormat.format(new Date()) + ": " + to_tweet;
-		resources.getLog().d("Tweeting \"" + message + "\"");
+		log.d("Tweeting \"" + message + "\"");
 		try {
 			int i = 0;
 			while(i + 140 < message.length()) {
-				resources.getLog().d("Tweeting characters from " + i + " through to " + (i + 137));
+				log.d("Tweeting characters from " + i + " through to " + (i + 137));
 				twitter.updateStatus(message.substring(i, i + 137) + "...");
 				i += 137;
 			}
-			resources.getLog().d("Tweeting characters from " + i + " through to the end");
+			log.d("Tweeting characters from " + i + " through to the end");
 			twitter.updateStatus(message.substring(i));
 		} catch(TwitterException e) {
-			resources.getLog().e("Could not tweet \"" + message + "\" because: " + e.getMessage());
+			log.e("Could not tweet \"" + message + "\" because: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

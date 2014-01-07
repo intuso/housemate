@@ -66,6 +66,6 @@ public interface Root<ROOT extends Root<?>>
      * @param path the path of the object to get
      * @return the object at that path, or null if there isn't one
      */
-    public HousemateObject<?, ?, ?, ?, ?> getObject(String[] path);
+    public HousemateObject<?, ?, ?, ?> getObject(String[] path);
 
 }

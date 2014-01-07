@@ -1,5 +1,7 @@
 package com.intuso.housemate.object.server.proxy;
 
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.ConnectionType;
@@ -11,6 +13,7 @@ import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.object.server.RemoteClient;
 import com.intuso.housemate.object.server.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
 
 /**
@@ -26,18 +29,26 @@ public abstract class ServerProxyObject<
             CHILD extends ServerProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
             OBJECT extends ServerProxyObject<?, ?, ?, ?, ?>,
             LISTENER extends ObjectListener>
-        extends HousemateObject<ServerProxyResources<? extends HousemateObjectFactory<ServerProxyResources<?>, CHILD_DATA, ? extends CHILD>>, DATA, CHILD_DATA, CHILD, LISTENER>
+        extends HousemateObject<DATA, CHILD_DATA, CHILD, LISTENER>
         implements RemoteClientListener {
+
+    private final Injector injector;
 
     private RemoteClient client;
     private ListenerRegistration clientListener;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected ServerProxyObject(ServerProxyResources<? extends HousemateObjectFactory<ServerProxyResources<?>, CHILD_DATA, ? extends CHILD>> resources, DATA data) {
-        super(resources, data);
+    protected ServerProxyObject(Log log, Injector injector, DATA data) {
+        super(log, data);
+        this.injector = injector;
+    }
+
+    public Injector getInjector() {
+        return injector;
     }
 
     /**
@@ -74,13 +85,13 @@ public abstract class ServerProxyObject<
     }
 
     @Override
-    protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {
+    protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?> parent) {
         // unwrap children
         try {
             createChildren(new ObjectFactory<CHILD_DATA, CHILD, HousemateException>() {
                 @Override
                 public CHILD create(CHILD_DATA data) throws HousemateException {
-                    return getResources().getFactory().create(getResources(), data);
+                    return (CHILD) injector.getInstance(new Key<HousemateObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>>() {}).create(data);
                 }
             });
         } catch(HousemateException e) {
@@ -89,7 +100,7 @@ public abstract class ServerProxyObject<
     }
 
     @Override
-    protected void initPostRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {
+    protected void initPostRecurseHook(HousemateObject<?, ?, ?, ?> parent) {
         getChildObjects();
     }
 

@@ -1,10 +1,11 @@
 package com.intuso.housemate.annotations.plugin;
 
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.server.real.ServerRealCondition;
 import com.intuso.housemate.plugin.api.ServerConditionFactory;
+import com.intuso.utilities.log.Log;
 
 import java.lang.reflect.Constructor;
 
@@ -37,10 +38,11 @@ public class SimpleConditionFactory implements ServerConditionFactory<ServerReal
     }
 
     @Override
-    public ServerRealCondition create(ServerRealResources resources, String id, String name, String description,
-                                      ServerRealConditionOwner owner) throws HousemateException {
+    public ServerRealCondition create(Log log, String id, String name, String description,
+                                      ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler)
+            throws HousemateException {
         try {
-            return constructor.newInstance(resources, id, name, description, owner);
+            return constructor.newInstance(log, id, name, description, owner, lifecycleHandler);
         } catch(Exception e) {
             throw new HousemateException("Failed to create condition", e);
         }

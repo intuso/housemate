@@ -1,24 +1,25 @@
 package com.intuso.housemate.web.client.object;
 
-import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.object.proxy.ProxyType;
-import com.intuso.housemate.web.client.GWTResources;
+import com.intuso.utilities.log.Log;
 
 /**
  */
 public class GWTProxyType extends ProxyType<
-            GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            GWTResources<?>,
         TypeData<HousemateData<?>>,
         HousemateData<?>,
-            ProxyObject<?, ?, ?, ?, ?, ?, ?>,
+            ProxyObject<?, ?, ?, ?, ?>,
             GWTProxyType> {
-    public GWTProxyType(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                        GWTResources<?> childResources,
-                        TypeData data) {
-        super(resources, childResources, data);
+    @Inject
+    public GWTProxyType(Log log,
+                        Injector injector,
+                        @Assisted TypeData data) {
+        super(log, injector, data);
     }
 }

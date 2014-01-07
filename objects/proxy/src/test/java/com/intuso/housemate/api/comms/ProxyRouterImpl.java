@@ -1,17 +1,19 @@
 package com.intuso.housemate.api.comms;
 
+import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.TestRealRoot;
-import com.intuso.housemate.api.resources.Resources;
+import com.intuso.utilities.log.Log;
 
 /**
  */
-public class ProxyCommsImpl extends Router {
+public class ProxyRouterImpl extends Router {
 
     private TestRealRoot realRoot;
 
-    public ProxyCommsImpl(Resources resources) {
-        super(resources);
+    @Inject
+    public ProxyRouterImpl(Log log) {
+        super(log);
         connect();
         setRouterStatus(Status.Connected);
         login(null);

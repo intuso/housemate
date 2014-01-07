@@ -41,7 +41,6 @@ public final class DeviceFactory implements PluginListener {
     public final static String TYPE_PARAMETER_DESCRIPTION = "The type of the new device";
 
     private final Log log;
-    private final RealResources realResources;
     private final Storage storage;
     private final AnnotationProcessor annotationProcessor;
 
@@ -49,13 +48,12 @@ public final class DeviceFactory implements PluginListener {
     private final DeviceFactoryType type;
 
     @Inject
-    public DeviceFactory(Log log, RealResources realResources, Storage storage,
+    public DeviceFactory(Log log, Storage storage,
                          AnnotationProcessor annotationProcessor, PluginManager pluginManager) {
         this.log = log;
-        this.realResources = realResources;
         this.storage = storage;
         this.annotationProcessor = annotationProcessor;
-        type = new DeviceFactoryType(realResources);
+        type = new DeviceFactoryType(log);
         pluginManager.addPluginListener(this, true);
     }
 
@@ -66,10 +64,10 @@ public final class DeviceFactory implements PluginListener {
     public RealCommand createAddDeviceCommand(String commandId, String commandName, String commandDescription,
                                               final RealList<TypeData<?>, RealType<?, ?, ?>> types,
                                               final RealList<DeviceData, RealDevice> devices) {
-        return new RealCommand(realResources, commandId, commandName, commandDescription, Arrays.asList(
-                new RealParameter<String>(realResources, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(realResources)),
-                new RealParameter<String>(realResources, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(realResources)),
-                new RealParameter<RealDeviceFactory<?>>(realResources, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
+        return new RealCommand(log, commandId, commandName, commandDescription, Arrays.asList(
+                new RealParameter<String>(log, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(log)),
+                new RealParameter<String>(log, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(log)),
+                new RealParameter<RealDeviceFactory<?>>(log, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -85,7 +83,7 @@ public final class DeviceFactory implements PluginListener {
                 RealDeviceFactory<?> deviceFactory = type.deserialise(deviceType.get(0));
                 if(deviceFactory == null)
                     throw new HousemateException("No factory known for device type " + deviceType);
-                RealDevice device = deviceFactory.create(realResources, name.getFirstValue(), name.getFirstValue(), description.getFirstValue());
+                RealDevice device = deviceFactory.create(log, name.getFirstValue(), name.getFirstValue(), description.getFirstValue());
                 annotationProcessor.process(types, device);
                 devices.add(device);
                 storage.saveValues(devices.getPath(), device.getId(), values);
@@ -98,7 +96,7 @@ public final class DeviceFactory implements PluginListener {
         for(RealDeviceFactory<?> factory : plugin.getDeviceFactories()) {
             log.d("Adding new device factory for type " + factory.getTypeId());
             factories.put(factory.getTypeId(), factory);
-            type.getOptions().add(new RealOption(realResources, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
+            type.getOptions().add(new RealOption(log, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
         }
     }
 
@@ -111,8 +109,8 @@ public final class DeviceFactory implements PluginListener {
     }
 
     private class DeviceFactoryType extends RealChoiceType<RealDeviceFactory<?>> {
-        protected DeviceFactoryType(RealResources resources) {
-            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
+        protected DeviceFactoryType(Log log) {
+            super(log, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
         }
 
         @Override

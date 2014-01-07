@@ -3,7 +3,6 @@ package com.intuso.housemate.server.client;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.real.RealCommand;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealRootObject;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
@@ -21,16 +20,14 @@ import com.intuso.utilities.log.Log;
 public class LocalClient implements PluginListener {
 
     private final Log log;
-    private final RealResources realResources;
 
     private final LocalClientRoot root;
 
     @Inject
-    public LocalClient(final Log log, final RealResources realResources, final LocalClientRoot root,
+    public LocalClient(final Log log, final LocalClientRoot root,
                        final DeviceFactory deviceFactory, final ConditionFactory conditionFactory,
                        final TaskFactory taskFactory, final PluginManager pluginManager) throws HousemateException {
         this.log = log;
-        this.realResources = realResources;
         this.root = root;
         root.login(new InternalAuthentication());
         root.addType(deviceFactory.getType());
@@ -57,7 +54,7 @@ public class LocalClient implements PluginListener {
 
     @Override
     public void pluginAdded(PluginDescriptor plugin) {
-        for(RealType<?, ?, ?> type : plugin.getTypes(realResources)) {
+        for(RealType<?, ?, ?> type : plugin.getTypes(log)) {
             log.d("Adding type " + type.getId());
             root.addType(type);
         }

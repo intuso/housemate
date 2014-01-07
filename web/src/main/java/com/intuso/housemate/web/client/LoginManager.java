@@ -5,6 +5,7 @@ import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.authentication.Session;
 import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.ConnectionStatus;
+import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.RouterRootObject;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.web.client.event.CredentialsSubmittedEvent;
@@ -43,13 +44,13 @@ public class LoginManager implements CredentialsSubmittedHandler {
     private boolean isLoggedIn = false;
 
     public void init() {
-        Housemate.ENVIRONMENT.getGwtResources().getRouter().addObjectListener(statusChangedListener);
+        Housemate.INJECTOR.getInstance(Router.class).addObjectListener(statusChangedListener);
         Housemate.FACTORY.getEventBus().addHandler(CredentialsSubmittedEvent.TYPE, this);
     }
 
     public void startLogin() {
         if(Cookies.getCookieNames().contains(SESSION_COOKIE))
-            Housemate.ENVIRONMENT.getGwtResources().getRouter().login(
+            Housemate.INJECTOR.getInstance(Router.class).login(
                     new Session(Cookies.getCookie(SESSION_COOKIE)));
         else {
             Housemate.FACTORY.getLoginView().show(null);
@@ -60,7 +61,7 @@ public class LoginManager implements CredentialsSubmittedHandler {
     public void logout() {
         Cookies.removeCookie(SESSION_COOKIE);
         isLoggedIn = false;
-        Housemate.ENVIRONMENT.getGwtResources().getRouter().logout();
+        Housemate.INJECTOR.getInstance(Router.class).logout();
         Housemate.FACTORY.getLoginView().show(null);
         Housemate.FACTORY.getLoginView().enable();
     }
@@ -68,7 +69,7 @@ public class LoginManager implements CredentialsSubmittedHandler {
     @Override
     public void onCredentialsSubmitted(CredentialsSubmittedEvent event) {
         if(!isLoggedIn)
-            Housemate.ENVIRONMENT.getGwtResources().getRouter().login(
+            Housemate.INJECTOR.getInstance(Router.class).login(
                     new UsernamePassword(event.getUsername(), event.getPassword(), true));
     }
 

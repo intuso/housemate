@@ -2,10 +2,11 @@ package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.real.impl.type.DaysType;
 import com.intuso.housemate.plugin.api.ServerConditionFactory;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -34,8 +35,9 @@ public class DayOfTheWeekFactory implements ServerConditionFactory<DayOfTheWeek>
     }
 
     @Override
-    public DayOfTheWeek create(ServerRealResources resources, String id, String name, String description,
-                                  ServerRealConditionOwner owner) throws HousemateException {
-        return new DayOfTheWeek(resources, id, name, description, owner, daysType);
+    public DayOfTheWeek create(Log log, String id, String name, String description,
+                                  ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler)
+            throws HousemateException {
+        return new DayOfTheWeek(log, id, name, description, owner, lifecycleHandler, daysType);
     }
 }

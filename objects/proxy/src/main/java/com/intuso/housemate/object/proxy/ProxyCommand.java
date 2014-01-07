@@ -1,9 +1,9 @@
 package com.intuso.housemate.object.proxy;
 
+import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
@@ -11,37 +11,34 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @param <RESOURCES> the type of the resources
- * @param <CHILD_RESOURCES> the type of the child resources
  * @param <PARAMETER> the type of the parameters
  * @param <PARAMETERS> the type of the parameters list
  * @param <COMMAND> the type of the command
  */
 public abstract class ProxyCommand<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, ListData<ParameterData>, PARAMETERS>, ?>,
-            CHILD_RESOURCES extends ProxyResources<? extends HousemateObjectFactory<? extends ProxyResources<?, ?>, ParameterData, ? extends PARAMETER>, ?>,
-            PARAMETER extends ProxyParameter<?, ?, PARAMETER>,
-            PARAMETERS extends ProxyList<?, ?, ParameterData, PARAMETER, PARAMETERS>,
-            COMMAND extends ProxyCommand<RESOURCES, CHILD_RESOURCES, PARAMETER, PARAMETERS, COMMAND>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, CommandData, ListData<ParameterData>, PARAMETERS, COMMAND, CommandListener<? super COMMAND>>
+            PARAMETER extends ProxyParameter<?, PARAMETER>,
+            PARAMETERS extends ProxyList<ParameterData, PARAMETER, PARAMETERS>,
+            COMMAND extends ProxyCommand<PARAMETER, PARAMETERS, COMMAND>>
+        extends ProxyObject<CommandData, ListData<ParameterData>, PARAMETERS, COMMAND, CommandListener<? super COMMAND>>
         implements Command<PARAMETERS, COMMAND> {
 
     private int nextId;
     private Map<String, CommandListener<? super COMMAND>> listenerMap = new HashMap<String, CommandListener<? super COMMAND>>();
 
     /**
-     * @param resources {@inheritDoc}
-     * @param childResources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected ProxyCommand(RESOURCES resources, CHILD_RESOURCES childResources, CommandData data) {
-        super(resources, childResources, data);
+    protected ProxyCommand(Log log, Injector injector, CommandData data) {
+        super(log, injector, data);
     }
 
     @Override

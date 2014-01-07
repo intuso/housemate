@@ -1,8 +1,8 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 
 /**
@@ -31,7 +31,7 @@ public class ArduinoTemperatureSensorFactory implements RealDeviceFactory<Arduin
     }
 
     @Override
-    public ArduinoTemperatureSensor create(RealResources resources, String id, String name, String description) throws HousemateException {
-        return new ArduinoTemperatureSensor(resources, serialPort, id, name, description);
+    public ArduinoTemperatureSensor create(Log log, String id, String name, String description) throws HousemateException {
+        return new ArduinoTemperatureSensor(log, serialPort, id, name, description);
     }
 }

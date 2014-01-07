@@ -1,8 +1,9 @@
 package com.intuso.housemate.sample.plugin.condition;
 
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.plugin.api.ServerConditionFactory;
+import com.intuso.utilities.log.Log;
 
 /**
  * Example factory for conditions with a non-simple constructor. This factory also has a non-simple
@@ -36,8 +37,8 @@ public class ReallyComplexConditionFactory implements ServerConditionFactory<Com
     }
 
     @Override
-    public ComplexCondition create(ServerRealResources resources, String id, String name, String description,
-                                   ServerRealConditionOwner owner) {
-        return new ComplexCondition(resources, id, name, description, owner, complexArg);
+    public ComplexCondition create(Log log, String id, String name, String description,
+                                   ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler) {
+        return new ComplexCondition(log, id, name, description, owner, lifecycleHandler, complexArg);
     }
 }

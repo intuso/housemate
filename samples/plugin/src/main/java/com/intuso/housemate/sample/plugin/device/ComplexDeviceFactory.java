@@ -1,7 +1,7 @@
 package com.intuso.housemate.sample.plugin.device;
 
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.utilities.log.Log;
 
 /**
  * Example factory for devices with a non-simple constructor. This factory has a simple
@@ -30,7 +30,7 @@ public class ComplexDeviceFactory implements RealDeviceFactory<ComplexDevice> {
     }
 
     @Override
-    public ComplexDevice create(RealResources resources, String id, String name, String description) {
-        return new ComplexDevice(resources, id, name, description, simpleArg);
+    public ComplexDevice create(Log log, String id, String name, String description) {
+        return new ComplexDevice(log, id, name, description, simpleArg);
     }
 }

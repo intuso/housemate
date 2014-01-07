@@ -1,8 +1,8 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.intuso.housemate.annotations.basic.Property;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.device.StatefulPoweredDevice;
+import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 
@@ -23,8 +23,8 @@ public class ArduinoIndicator extends StatefulPoweredDevice {
      *
      * @param name the name of the device
      */
-    protected ArduinoIndicator(RealResources resources, SerialPort serialPort, String id, String name, String description) {
-        super(resources, id, name, description);
+    protected ArduinoIndicator(Log log, SerialPort serialPort, String id, String name, String description) {
+        super(log, id, name, description);
         this.serialPort = serialPort;
         getCustomPropertyIds().add("colour");
         getCustomPropertyIds().add("intensity");

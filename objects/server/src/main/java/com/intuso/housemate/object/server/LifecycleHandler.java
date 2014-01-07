@@ -20,13 +20,6 @@ public interface LifecycleHandler {
     ServerRealCommand createAddUserCommand(ServerRealList<UserData, ServerRealUser> users);
 
     /**
-     * Creates a command to remove the user
-     * @param user the user to remove when the command is performed
-     * @return a command that when performed (correctly) will remove the given user
-     */
-    ServerRealCommand createRemoveUserCommand(ServerRealUser user);
-
-    /**
      * Creates a command for adding devices
      * @param devices the list to add the devices to
      * @return a command that when performed (correctly) will add a device to the given list
@@ -39,12 +32,6 @@ public interface LifecycleHandler {
      * @return a command that when performed (correctly) will add an automation to the given list
      */
     ServerRealCommand createAddAutomationCommand(ServerRealList<AutomationData, ServerRealAutomation> automations);
-
-    /**
-     * Notifies that an automation was removed
-     * @param path the path of the automation that was removed
-     */
-    void automationRemoved(String[] path);
 
     /**
      * Creates a command for adding conditions

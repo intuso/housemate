@@ -1,30 +1,36 @@
 package com.intuso.housemate.object.server.proxy;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.subtype.SubType;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.subtype.SubTypeListener;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.utilities.log.Log;
 
 public class ServerProxySubType
         extends ServerProxyObject<SubTypeData, NoChildrenData, NoChildrenServerProxyObject, ServerProxySubType, SubTypeListener>
         implements SubType<ServerProxyType> {
 
-    private ServerProxyType type;
+    private ServerProxyList<TypeData<?>, ServerProxyType> types;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ServerProxySubType(ServerProxyResources<NoChildrenServerProxyObjectFactory> resources, SubTypeData data) {
-        super(resources, data);
+    @Inject
+    public ServerProxySubType(Log log, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types,
+                              @Assisted SubTypeData data) {
+        super(log, injector, data);
+        this.types = types;
     }
 
     @Override
     public void getChildObjects() {
         super.getChildObjects();
-        type = getResources().getRoot().getTypes().get(getData().getType());
-        if(type == null)
-            getLog().e("Could not unwrap value, value type \"" + getData().getType() + "\" is not known");
     }
 
     @Override
@@ -34,6 +40,6 @@ public class ServerProxySubType
 
     @Override
     public final ServerProxyType getType() {
-        return type;
+        return types.get(getData().getType());
     }
 }

@@ -20,7 +20,7 @@ import java.util.Map;
  * Time: 21:04
  * To change this template use File | Settings | File Templates.
  */
-public abstract class ComplexWidgetList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<?, ?, DATA, ?, ?, ?, ?>>
+public abstract class ComplexWidgetList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<DATA, ?, ?, ?, ?>>
         extends Accordion implements ListListener<OBJECT> {
 
     private final GWTProxyList<DATA, OBJECT> list;

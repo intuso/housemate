@@ -10,6 +10,7 @@ import com.intuso.housemate.api.object.task.TaskListener;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -31,35 +32,35 @@ public abstract class ServerRealTask
     private ServerRealList<PropertyData, ServerRealProperty<?>> propertyList;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the object's id
      * @param name the object's name
      * @param description the object's description
      */
-    public ServerRealTask(ServerRealResources resources, String id, String name, String description,
+    public ServerRealTask(Log log, String id, String name, String description,
                           ServerRealTaskOwner owner, ServerRealProperty<?>... properties) {
-        this(resources, id, name, description, owner, Lists.newArrayList(properties));
+        this(log, id, name, description, owner, Lists.newArrayList(properties));
     }
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the object's id
      * @param name the object's name
      * @param description the object's description
      * @param properties the task's properties
      */
-    public ServerRealTask(ServerRealResources resources, String id, String name, String description,
+    public ServerRealTask(Log log, String id, String name, String description,
                           final ServerRealTaskOwner owner, java.util.List<ServerRealProperty<?>> properties) {
-        super(resources, new TaskData(id, name, description));
-        removeCommand = new ServerRealCommand(resources, REMOVE_ID, REMOVE_ID, "Remove the task", Lists.<ServerRealParameter<?>>newArrayList()) {
+        super(log, new TaskData(id, name, description));
+        removeCommand = new ServerRealCommand(log, REMOVE_ID, REMOVE_ID, "Remove the task", Lists.<ServerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 owner.remove(ServerRealTask.this);
             }
         };
-        errorValue = new ServerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error", new StringType(resources.getRealResources()), (List)null);
-        executingValue = new ServerRealValue<Boolean>(resources, EXECUTING_ID, EXECUTING_ID, "Whether the task is executing", new BooleanType(resources.getRealResources()), false);
-        propertyList = new ServerRealList<PropertyData, ServerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The task's properties", properties);
+        errorValue = new ServerRealValue<String>(log, ERROR_ID, ERROR_ID, "The current error", new StringType(log), (List)null);
+        executingValue = new ServerRealValue<Boolean>(log, EXECUTING_ID, EXECUTING_ID, "Whether the task is executing", new BooleanType(log), false);
+        propertyList = new ServerRealList<PropertyData, ServerRealProperty<?>>(log, PROPERTIES_ID, PROPERTIES_ID, "The task's properties", properties);
         addChild(removeCommand);
         addChild(errorValue);
         addChild(executingValue);

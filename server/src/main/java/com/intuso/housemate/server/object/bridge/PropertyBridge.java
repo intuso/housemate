@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -18,12 +19,12 @@ public class PropertyBridge
 
     private CommandBridge setCommand;
 
-    public PropertyBridge(ServerBridgeResources resources, Property<?, ?, ?> property,
+    public PropertyBridge(Log log, Property<?, ?, ?> property,
                           ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(resources,
+        super(log,
             new PropertyData(property.getId(), property.getName(), property.getDescription(), property.getTypeId(), property.getTypeInstances()),
             property, types);
-        setCommand = new CommandBridge(resources, property.getSetCommand(), types);
+        setCommand = new CommandBridge(log, property.getSetCommand(), types);
         addChild(setCommand);
     }
 
@@ -43,17 +44,17 @@ public class PropertyBridge
 
     public static class Converter implements Function<Property<?, ?, ?>, PropertyBridge> {
 
-        private final ServerBridgeResources resources;
+        private final Log log;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(ServerBridgeResources resources, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-            this.resources = resources;
+        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+            this.log = log;
             this.types = types;
         }
 
         @Override
         public PropertyBridge apply(Property<?, ?, ?> property) {
-            return new PropertyBridge(resources, property, types);
+            return new PropertyBridge(log, property, types);
         }
     }
 }

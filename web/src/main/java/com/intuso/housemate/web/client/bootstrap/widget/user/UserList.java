@@ -22,7 +22,7 @@ import java.util.List;
 public class UserList extends ObjectList<UserData, GWTProxyUser> {
 
     public UserList(String title, List<String> filteredIds, boolean includeFiltered) {
-        super(Housemate.ENVIRONMENT.getGwtResources().getRoot().getUsers(), title, filteredIds, includeFiltered);
+        super(Housemate.ROOT.getUsers(), title, filteredIds, includeFiltered);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class UserList extends ObjectList<UserData, GWTProxyUser> {
             return new User(object);
         else {
             final SimplePanel panel = new SimplePanel();
-            Housemate.ENVIRONMENT.getGwtResources().getRoot().getUsers().load(new LoadManager("load-user",
+            Housemate.ROOT.getUsers().load(new LoadManager("load-user",
                     new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))) {
                 @Override
                 protected void failed(HousemateObject.TreeLoadInfo path) {
@@ -41,7 +41,7 @@ public class UserList extends ObjectList<UserData, GWTProxyUser> {
 
                 @Override
                 protected void allLoaded() {
-                    panel.add(new User(Housemate.ENVIRONMENT.getGwtResources().getRoot().getUsers().get(id)));
+                    panel.add(new User(Housemate.ROOT.getUsers().get(id)));
                 }
             });
             return panel;

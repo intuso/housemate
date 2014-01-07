@@ -1,5 +1,7 @@
 package com.intuso.housemate.web.client.object;
 
+import com.google.inject.Injector;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.CommandData;
@@ -8,15 +10,13 @@ import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.proxy.ProxyDevice;
 import com.intuso.housemate.object.proxy.ProxyObject;
-import com.intuso.housemate.web.client.GWTResources;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeature;
+import com.intuso.utilities.log.Log;
 
 /**
  */
 public class GWTProxyDevice
         extends ProxyDevice<
-            GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>>,
-            GWTResources<?>,
             GWTProxyCommand,
             GWTProxyList<CommandData, GWTProxyCommand>,
             GWTProxyValue,
@@ -25,9 +25,9 @@ public class GWTProxyDevice
             GWTProxyList<PropertyData, GWTProxyProperty>,
         GWTProxyFeature,
             GWTProxyDevice> {
-    public GWTProxyDevice(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> resources,
-                          GWTResources<?> childResources,
-                          DeviceData data) {
-        super(resources, childResources, data);
+    public GWTProxyDevice(Log log,
+                          Injector injector,
+                          @Assisted DeviceData data) {
+        super(log, injector, data);
     }
 }

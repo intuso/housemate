@@ -1,20 +1,11 @@
 package com.intuso.housemate.sample.plugin;
 
-import com.intuso.housemate.annotations.plugin.AnnotatedPluginDescriptor;
-import com.intuso.housemate.annotations.plugin.Comparators;
-import com.intuso.housemate.annotations.plugin.ConditionFactories;
-import com.intuso.housemate.annotations.plugin.Conditions;
-import com.intuso.housemate.annotations.plugin.DeviceFactories;
-import com.intuso.housemate.annotations.plugin.Devices;
-import com.intuso.housemate.annotations.plugin.TaskFactories;
-import com.intuso.housemate.annotations.plugin.Tasks;
-import com.intuso.housemate.annotations.plugin.Types;
-import com.intuso.housemate.object.real.RealResources;
+import com.intuso.housemate.annotations.plugin.*;
 import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.plugin.api.ServerConditionFactory;
-import com.intuso.housemate.plugin.api.ServerTaskFactory;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.housemate.plugin.api.ServerConditionFactory;
+import com.intuso.housemate.plugin.api.ServerTaskFactory;
 import com.intuso.housemate.sample.plugin.comparator.ComplexLocationComparator;
 import com.intuso.housemate.sample.plugin.comparator.LocationComparator;
 import com.intuso.housemate.sample.plugin.condition.ComplexConditionFactory;
@@ -28,6 +19,7 @@ import com.intuso.housemate.sample.plugin.task.DoYourThingTask;
 import com.intuso.housemate.sample.plugin.task.ReallyComplexTaskFactory;
 import com.intuso.housemate.sample.plugin.type.ComplexLocationType;
 import com.intuso.housemate.sample.plugin.type.LocationType;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -47,10 +39,10 @@ public class SamplePlugin extends AnnotatedPluginDescriptor {
      * Override to add types that do not have simple constructors
      */
     @Override
-    public List<RealType<?, ?, ?>> getTypes(RealResources resources) {
-        List<RealType<?, ?, ?>> result = super.getTypes(resources);
+    public List<RealType<?, ?, ?>> getTypes(Log log) {
+        List<RealType<?, ?, ?>> result = super.getTypes(log);
         Object extraArg = new Object();
-        result.add(new ComplexLocationType(resources, extraArg));
+        result.add(new ComplexLocationType(log, extraArg));
         return result;
     }
 
@@ -58,8 +50,8 @@ public class SamplePlugin extends AnnotatedPluginDescriptor {
      * Override to add comparators that do not have simple constructors
      */
     @Override
-    public List<Comparator<?>> getComparators(RealResources resources) {
-        List<Comparator<?>> result = super.getComparators(resources);
+    public List<Comparator<?>> getComparators(Log log) {
+        List<Comparator<?>> result = super.getComparators(log);
         result.add(new ComplexLocationComparator(complexArg));
         return result;
     }

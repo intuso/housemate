@@ -10,7 +10,6 @@ import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.RouterRootObject;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.comms.transport.socket.client.SocketClient;
 import com.intuso.housemate.platform.android.common.AndroidLogWriter;
 import com.intuso.housemate.platform.android.common.SharedPreferencesReader;
@@ -62,17 +61,7 @@ class AndroidServiceEnvironment implements SharedPreferences.OnSharedPreferenceC
         PreferenceManager.getDefaultSharedPreferences(context).registerOnSharedPreferenceChangeListener(this);
 
         log.addWriter(new AndroidLogWriter(LogLevel.valueOf(properties.get(LOG_LEVEL)), "Service"));
-        router = new SocketClient(new Resources() {
-            @Override
-            public Log getLog() {
-                return log;
-            }
-
-            @Override
-            public PropertyContainer getProperties() {
-                return properties;
-            }
-        });
+        router = new SocketClient(log, properties);
         router.addObjectListener(this);
     }
 

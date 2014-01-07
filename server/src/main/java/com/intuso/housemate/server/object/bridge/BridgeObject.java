@@ -13,6 +13,7 @@ import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.housemate.object.server.RemoteClient;
 import com.intuso.housemate.object.server.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectListener;
 
@@ -27,14 +28,14 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
             CHILD extends BridgeObject<? extends CHILD_DATA, ?, ?, ?, ?>,
             OBJECT extends BridgeObject<DATA, CHILD_DATA, CHILD, OBJECT, LISTENER>,
             LISTENER extends com.intuso.housemate.api.object.ObjectListener>
-        extends HousemateObject<ServerBridgeResources, DATA, CHILD_DATA, CHILD, LISTENER>
+        extends HousemateObject<DATA, CHILD_DATA, CHILD, LISTENER>
         implements RemoteClientListener, ObjectListener<CHILD> {
 
     private final List<RemoteClient> loadedByClients = Lists.newArrayList();
     private final Map<RemoteClient, ListenerRegistration> clientListeners= Maps.newHashMap();
 
-    protected BridgeObject(ServerBridgeResources resources, DATA data) {
-        super(resources, data);
+    protected BridgeObject(Log log, DATA data) {
+        super(log, data);
     }
 
     @Override

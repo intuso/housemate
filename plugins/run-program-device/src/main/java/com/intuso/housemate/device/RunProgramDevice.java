@@ -6,10 +6,10 @@ import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealProperty;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.log.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,12 +31,12 @@ public class RunProgramDevice extends RealDevice {
 	/**
 	 * Property that describes the command to start the program
 	 */
-    private final RealProperty<String> command = StringType.createProperty(getResources(), "command", "Command", "The command for the program", Arrays.asList(""));
+    private final RealProperty<String> command = StringType.createProperty(getLog(), "command", "Command", "The command for the program", Arrays.asList(""));
 
 	/**
 	 * The command to start the program
 	 */
-    private final RealCommand start = new RealCommand(getResources(), "start", "Start", "Start the program", new ArrayList<RealParameter<?>>()) {
+    private final RealCommand start = new RealCommand(getLog(), "start", "Start", "Start the program", new ArrayList<RealParameter<?>>()) {
 		@Override
 		public void perform(TypeInstanceMap values) throws HousemateException {
 			try {
@@ -53,7 +53,7 @@ public class RunProgramDevice extends RealDevice {
 	/**
 	 * The command to stop the program
 	 */
-	private final RealCommand stop = new RealCommand(getResources(), "stop", "Stop", "Stop the program", new ArrayList<RealParameter<?>>()) {
+	private final RealCommand stop = new RealCommand(getLog(), "stop", "Stop", "Stop the program", new ArrayList<RealParameter<?>>()) {
 		@Override
 		public void perform(TypeInstanceMap values) throws HousemateException {
 			Integer pid = getFirstPID();
@@ -71,15 +71,15 @@ public class RunProgramDevice extends RealDevice {
 	/**
 	 * The value for whether the program is running
 	 */
-    private final RealValue<Boolean> runningValue = BooleanType.createValue(getResources(), "running", "Running", "True if the program is currently running", false);
+    private final RealValue<Boolean> runningValue = BooleanType.createValue(getLog(), "running", "Running", "True if the program is currently running", false);
 
 	/**
 	 * Create a new start program device
 	 * @param name the name of the device
 	 * @throws HousemateException
 	 */
-	public RunProgramDevice(RealResources resources, String id, String name, String description) {
-		super(resources, id, name, description);
+	public RunProgramDevice(Log log, String id, String name, String description) {
+		super(log, id, name, description);
         getProperties().add(command);
         getCustomCommandIds().add(start.getId());
         getCommands().add(start);

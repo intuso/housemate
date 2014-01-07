@@ -2,9 +2,10 @@ package com.intuso.housemate.object.server.real;
 
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.list.List;
-import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectListener;
 
@@ -21,24 +22,24 @@ public final class ServerRealList<
         implements List<CHILD>, ObjectListener<CHILD> {
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the object's id
      * @param name the object's name
      * @param description the object's description
      */
-    public ServerRealList(ServerRealResources resources, String id, String name, String description) {
-        super(resources, new ListData<CHILD_DATA>(id, name, description));
+    public ServerRealList(Log log, String id, String name, String description) {
+        super(log, new ListData<CHILD_DATA>(id, name, description));
     }
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the object's id
      * @param name the object's name
      * @param description the object's description
      * @param elements the initial elements in the list
      */
-    public ServerRealList(ServerRealResources resources, String id, String name, String description, java.util.List<CHILD> elements) {
-        this(resources, id, name, description);
+    public ServerRealList(Log log, String id, String name, String description, java.util.List<CHILD> elements) {
+        this(log, id, name, description);
         for(CHILD element : elements)
             addChild(element);
     }

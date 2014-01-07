@@ -24,22 +24,22 @@ public class TypeBridge
     private final static String OPTIONS = "options";
     private final static String SUB_TYPES = "sub-types";
 
-    public TypeBridge(final ServerBridgeResources resources, Type type,
+    public TypeBridge(Log log, Type type,
                       final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(resources, cloneData(resources.getLog(), type));
+        super(log, cloneData(log, type));
         if(type instanceof HousemateObject && ((HousemateObject)type).getChild(OPTIONS) != null) {
-            addChild(new ListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(resources, (List) ((HousemateObject) (type)).getChild(OPTIONS),
-                    new OptionBridge.Converter(resources, types)));
+            addChild(new ListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(log, (List) ((HousemateObject) (type)).getChild(OPTIONS),
+                    new OptionBridge.Converter(log, types)));
         }
         if(type instanceof HousemateObject && ((HousemateObject)type).getChild(SUB_TYPES) != null) {
-            addChild(new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(resources, (List) ((HousemateObject) (type)).getChild(SUB_TYPES),
-                    new SubTypeBridge.Converter(resources, types)));
+            addChild(new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(log, (List) ((HousemateObject) (type)).getChild(SUB_TYPES),
+                    new SubTypeBridge.Converter(log, types)));
         }
     }
 
     private static TypeData<HousemateData<?>> cloneData(Log log, Type type) {
         if(type instanceof HousemateObject)
-            return (TypeData<HousemateData<?>>) ((HousemateObject<?, ?, ?, ?, ?>)type).getData().clone();
+            return (TypeData<HousemateData<?>>) ((HousemateObject<?, ?, ?, ?>)type).getData().clone();
         else {
             log.e("Cannot bridge to a non-real type. Bridged type will have a null data");
             return null;
@@ -48,17 +48,17 @@ public class TypeBridge
 
     public final static class Converter implements Function<Type, TypeBridge> {
 
-        private final ServerBridgeResources resources;
+        private final Log log;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(ServerBridgeResources resources, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-            this.resources = resources;
+        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+            this.log = log;
             this.types = types;
         }
 
         @Override
         public TypeBridge apply(Type type) {
-            return new TypeBridge(resources, type, types);
+            return new TypeBridge(log, type, types);
         }
     }
 }

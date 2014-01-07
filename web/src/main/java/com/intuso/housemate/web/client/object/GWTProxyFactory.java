@@ -1,221 +1,142 @@
 package com.intuso.housemate.web.client.object;
 
-import com.intuso.housemate.api.HousemateException;
+import com.google.inject.Inject;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.automation.AutomationFactory;
 import com.intuso.housemate.api.object.command.CommandData;
+import com.intuso.housemate.api.object.command.CommandFactory;
 import com.intuso.housemate.api.object.condition.ConditionData;
+import com.intuso.housemate.api.object.condition.ConditionFactory;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.device.DeviceFactory;
 import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.list.ListFactory;
 import com.intuso.housemate.api.object.option.OptionData;
+import com.intuso.housemate.api.object.option.OptionFactory;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterFactory;
-import com.intuso.housemate.api.object.automation.AutomationFactory;
-import com.intuso.housemate.api.object.command.CommandFactory;
-import com.intuso.housemate.api.object.condition.ConditionFactory;
 import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.property.PropertyFactory;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
+import com.intuso.housemate.api.object.subtype.SubTypeFactory;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.task.TaskFactory;
-import com.intuso.housemate.api.object.device.DeviceFactory;
-import com.intuso.housemate.api.object.list.ListFactory;
-import com.intuso.housemate.api.object.option.OptionFactory;
-import com.intuso.housemate.api.object.property.PropertyFactory;
-import com.intuso.housemate.api.object.subtype.SubTypeFactory;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeFactory;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.user.UserFactory;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.api.object.value.ValueFactory;
-import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
 import com.intuso.housemate.object.proxy.ProxyObject;
-import com.intuso.housemate.object.proxy.ProxyResources;
-import com.intuso.housemate.web.client.GWTResources;
+import com.intuso.utilities.log.Log;
 
 /**
  */
 public class GWTProxyFactory {
 
-    private final static All allFactory = new All();
-    private final static Automation automationFactory = new Automation();
-    private final static Command commandFactory = new Command();
-    private final static Condition conditionFactory = new Condition();
-    private final static Device deviceFactory = new Device();
-    private final static GenericList listFactory = new GenericList();
-    private final static Option optionFactory = new Option();
-    private final static Parameter parameterFactory = new Parameter();
-    private final static Property propertyFactory = new Property();
-    private final static SubType subTypeFactory = new SubType();
-    private final static Task taskFactory = new Task();
-    private final static Type typeFactory = new Type();
-    private final static User userFactory = new User();
-    private final static Value valueFactory = new Value();
+    public static class All implements HousemateObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> {
 
-    public static class All implements HousemateObjectFactory<GWTResources<?>, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
+        private final Log log;
+        private final Automation automationFactory;
+        private final Command commandFactory;
+        private final Condition conditionFactory;
+        private final Device deviceFactory;
+        private final GenericList listFactory;
+        private final Option optionFactory;
+        private final Parameter parameterFactory;
+        private final Property propertyFactory;
+        private final SubType subTypeFactory;
+        private final Task taskFactory;
+        private final Type typeFactory;
+        private final User userFactory;
+        private final Value valueFactory;
+
+        @Inject
+        public All(Log log, Automation automationFactory, Command commandFactory, Condition conditionFactory,
+                   Device deviceFactory, GenericList listFactory, Option optionFactory, Parameter parameterFactory,
+                   Property propertyFactory, SubType subTypeFactory, Task taskFactory, Type typeFactory,
+                   User userFactory, Value valueFactory) {
+            this.log = log;
+            this.automationFactory = automationFactory;
+            this.commandFactory = commandFactory;
+            this.conditionFactory = conditionFactory;
+            this.deviceFactory = deviceFactory;
+            this.listFactory = listFactory;
+            this.optionFactory = optionFactory;
+            this.parameterFactory = parameterFactory;
+            this.propertyFactory = propertyFactory;
+            this.subTypeFactory = subTypeFactory;
+            this.taskFactory = taskFactory;
+            this.typeFactory = typeFactory;
+            this.userFactory = userFactory;
+            this.valueFactory = valueFactory;
+        }
+
         @Override
-        public ProxyObject<?, ?, ?, ?, ?, ?, ?> create(GWTResources<?> resources, HousemateData<?> data) throws HousemateException {
+        public ProxyObject<?, ?, ?, ?, ?> create(HousemateData<?> data) {
             if(data instanceof ParameterData)
-                return parameterFactory.create(resources, (ParameterData) data);
+                return parameterFactory.create((ParameterData) data);
             else if(data instanceof CommandData)
-                return commandFactory.create(resources, (CommandData) data);
+                return commandFactory.create((CommandData) data);
             else if(data instanceof ConditionData)
-                return conditionFactory.create(resources, (ConditionData) data);
+                return conditionFactory.create((ConditionData) data);
             else if(data instanceof UserData)
-                return userFactory.create(resources, (UserData) data);
+                return userFactory.create((UserData) data);
             else if(data instanceof TaskData)
-                return taskFactory.create(resources, (TaskData) data);
+                return taskFactory.create((TaskData) data);
             else if(data instanceof DeviceData)
-                return deviceFactory.create(resources, (DeviceData) data);
+                return deviceFactory.create((DeviceData) data);
             else if(data instanceof ListData)
-                return listFactory.create(resources, (ListData<HousemateData<?>>) data);
+                return listFactory.create((ListData<HousemateData<?>>) data);
             else if(data instanceof OptionData)
-                return optionFactory.create(resources, (OptionData) data);
+                return optionFactory.create((OptionData) data);
             else if(data instanceof PropertyData)
-                return propertyFactory.create(resources, (PropertyData) data);
+                return propertyFactory.create((PropertyData) data);
             else if(data instanceof AutomationData)
-                return automationFactory.create(resources, (AutomationData) data);
+                return automationFactory.create((AutomationData) data);
             else if(data instanceof SubTypeData)
-                return subTypeFactory.create(resources, (SubTypeData) data);
+                return subTypeFactory.create((SubTypeData) data);
             else if(data instanceof TypeData)
-                return typeFactory.create(resources, (TypeData) data);
+                return typeFactory.create((TypeData) data);
             else if(data instanceof ValueData)
-                return valueFactory.create(resources, (ValueData) data);
-            else
-                throw new HousemateException("Don't know how to create an object from " + data.getClass().getName());
+                return valueFactory.create((ValueData) data);
+            log.w("Don't know how to create an object from " + data.getClass().getName());
+            return null;
         }
     }
 
-    public static class Automation implements AutomationFactory<
-            GWTResources<?>,
-            GWTProxyAutomation> {
-        @Override
-        public GWTProxyAutomation create(GWTResources<?> resources, AutomationData data) throws HousemateException {
-            GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyAutomation(r, resources, data);
-        }
-    }
+    public interface Automation extends AutomationFactory<GWTProxyAutomation> {}
 
-    public static class Command implements CommandFactory<GWTResources<?>, GWTProxyCommand> {
-        @Override
-        public GWTProxyCommand create(GWTResources<?> resources, CommandData data) throws HousemateException {
-            GWTResources<List<ParameterData, GWTProxyParameter>> r = changeFactoryType(resources, new List<ParameterData, GWTProxyParameter>());
-            GWTResources<Parameter> sr = changeFactoryType(resources, parameterFactory);
-            return new GWTProxyCommand(r, sr, data);
-        }
-    }
+    public interface Command extends CommandFactory<GWTProxyCommand> {}
 
-    public static class Condition implements ConditionFactory<GWTResources<?>, GWTProxyCondition> {
-        @Override
-        public GWTProxyCondition create(GWTResources<?> resources, ConditionData data) throws HousemateException {
-            GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyCondition(r, resources, data);
-        }
-    }
+    public interface Condition extends ConditionFactory<GWTProxyCondition> {}
 
-    public static class Device implements DeviceFactory<GWTResources<?>, GWTProxyDevice> {
-        @Override
-        public GWTProxyDevice create(GWTResources<?> resources, DeviceData data) throws HousemateException {
-            GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyDevice(r, resources, data);
-        }
-    }
+    public interface Device extends DeviceFactory<GWTProxyDevice> {}
 
-    public static class GenericList implements ListFactory<GWTResources<?>, HousemateData<?>,
-            ProxyObject<?, ?, ?, ?, ?, ?, ?>,
-            GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>> {
+    public interface GenericList extends ListFactory<HousemateData<?>,
+            ProxyObject<?, ?, ?, ?, ?>,
+            GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> {}
 
-        @Override
-        public GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>> create(GWTResources<?> resources, ListData<HousemateData<?>> data) throws HousemateException {
-            GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>(r, resources, data);
-        }
-    }
-
-    public static class List<
+    public interface List<
             SWBL extends HousemateData<?>,
-            SWR extends ProxyObject<?, ?, ? extends SWBL, ?, ?, ?, ?>>
-            implements ListFactory<GWTResources<? extends HousemateObjectFactory<GWTResources<?>, SWBL, SWR>>, SWBL, SWR, GWTProxyList<SWBL, SWR>> {
+            SWR extends ProxyObject<? extends SWBL, ?, ?, ?, ?>>
+            extends ListFactory<SWBL, SWR, GWTProxyList<SWBL, SWR>> {}
 
-        @Override
-        public GWTProxyList<SWBL, SWR> create(GWTResources<? extends HousemateObjectFactory<GWTResources<?>, SWBL, SWR>> resources,
-                                                        ListData<SWBL> data) throws HousemateException {
-            return new GWTProxyList<SWBL, SWR>(resources, resources, data);
-        }
-    }
+    public interface Option extends OptionFactory<GWTProxyOption> {}
 
-    public static class Option implements OptionFactory<GWTResources<?>, GWTProxyOption> {
-        @Override
-        public GWTProxyOption create(GWTResources<?> resources, OptionData data) throws HousemateException {
-            GWTResources<List<SubTypeData, GWTProxySubType>> r = changeFactoryType(resources, new List<SubTypeData, GWTProxySubType>());
-            GWTResources<SubType> sr = changeFactoryType(resources, subTypeFactory);
-            return new GWTProxyOption(r, sr, data);
-        }
-    }
+    public interface Parameter extends ParameterFactory<GWTProxyParameter> {}
 
-    public static class Parameter implements ParameterFactory<GWTResources<?>, GWTProxyParameter> {
-        @Override
-        public GWTProxyParameter create(GWTResources<?> resources, ParameterData data) throws HousemateException {
-            return new GWTProxyParameter(noFactoryType(resources), data);
-        }
-    }
+    public interface Property extends PropertyFactory<GWTProxyProperty> {}
 
-    public static class Property implements PropertyFactory<GWTResources<?>, GWTProxyProperty> {
-        @Override
-        public GWTProxyProperty create(GWTResources<?> resources, PropertyData data) throws HousemateException {
-            GWTResources<Command> r = changeFactoryType(resources, commandFactory);
-            GWTResources<List<ParameterData, GWTProxyParameter>> sr = changeFactoryType(resources, new List<ParameterData, GWTProxyParameter>());
-            return new GWTProxyProperty(r, sr, data);
-        }
-    }
+    public interface SubType extends SubTypeFactory<GWTProxySubType> {}
 
-    public static class SubType implements SubTypeFactory<GWTResources<?>, GWTProxySubType> {
-        @Override
-        public GWTProxySubType create(GWTResources<?> resources, SubTypeData data) throws HousemateException {
-            return new GWTProxySubType(noFactoryType(resources), data);
-        }
-    }
+    public interface Task extends TaskFactory<GWTProxyTask> {}
 
-    public static class Task implements TaskFactory<GWTResources<?>, GWTProxyTask> {
-        @Override
-        public GWTProxyTask create(GWTResources<?> resources, TaskData data) throws HousemateException {
-            GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyTask(r, resources, data);
-        }
-    }
+    public interface Type extends TypeFactory<GWTProxyType> {}
 
-    public static class Type implements TypeFactory<GWTResources<?>, GWTProxyType> {
-        @Override
-        public GWTProxyType create(GWTResources<?> resources,
-                                             TypeData<?> data) throws HousemateException {
-            GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyType(r, resources, data);
-        }
-    }
+    public interface User extends UserFactory<GWTProxyUser> {}
 
-    public static class User implements UserFactory<GWTResources<?>, GWTProxyUser> {
-        @Override
-        public GWTProxyUser create(GWTResources<?> resources, UserData data) throws HousemateException {
-            GWTResources<All> r = changeFactoryType(resources, allFactory);
-            return new GWTProxyUser(r, resources, data);
-        }
-    }
-
-    public static class Value implements ValueFactory<GWTResources<?>, GWTProxyValue> {
-        @Override
-        public GWTProxyValue create(GWTResources<?> resources, ValueData data) throws HousemateException {
-            return new GWTProxyValue(noFactoryType(resources), data);
-        }
-    }
-
-    public static <NF extends HousemateObjectFactory<? extends ProxyResources<?, ?>, ?, ? extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>>
-            GWTResources<NF> changeFactoryType(GWTResources<?> resources, NF newFactory) {
-        return new GWTResources<NF>(resources.getLog(), resources.getProperties(), resources.getRouter(),
-                newFactory, resources.getFeatureFactory(), resources.getRegexMatcherFactory());
-    }
-
-    public static GWTResources<NoChildrenProxyObjectFactory> noFactoryType(GWTResources<?> resources) {
-        return changeFactoryType(resources, null);
-    }
+    public interface Value extends ValueFactory<GWTProxyValue> {}
 }

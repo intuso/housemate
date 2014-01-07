@@ -1,5 +1,9 @@
 package com.intuso.housemate.object.server.proxy;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
@@ -11,6 +15,7 @@ import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.housemate.object.server.RemoteClient;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.Iterator;
 
@@ -25,11 +30,13 @@ public class ServerProxyList<
         implements List<CHILD> {
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ServerProxyList(ServerProxyResources<? extends HousemateObjectFactory<ServerProxyResources<?>, CHILD_DATA, ? extends CHILD>> resources, ListData<CHILD_DATA> data) {
-        super(resources, data);
+    @Inject
+    public ServerProxyList(Log log, Injector injector, @Assisted ListData<CHILD_DATA> data) {
+        super(log, injector, data);
     }
 
     @Override
@@ -58,11 +65,7 @@ public class ServerProxyList<
      */
     public void add(HousemateData data, RemoteClient clientId) throws HousemateException {
         CHILD child = null;
-        try {
-            child = getResources().getFactory().create(getResources(), (CHILD_DATA)data);
-        } catch(HousemateException e) {
-            throw new HousemateException("Failed to create new list element", e);
-        }
+        child = (CHILD) getInjector().getInstance(new Key<HousemateObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>>() {}).create(data);
         child.init(ServerProxyList.this);
         child.setClient(clientId);
         addChild(child);

@@ -7,9 +7,9 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -22,14 +22,14 @@ public class TransformationOutputType extends RealChoiceType<String> {
     private final TypeSerialiser<String> serialiser;
 
     @Inject
-    public TransformationOutputType(final RealResources realResources, RealList<TypeData<?>, RealType<?, ?, ?>> types,
+    public TransformationOutputType(final Log log, RealList<TypeData<?>, RealType<?, ?, ?>> types,
                                     TypeSerialiser<String> serialiser) {
-        super(realResources, ID, NAME, DESCRIPTION, 1, 1);
+        super(log, ID, NAME, DESCRIPTION, 1, 1);
         this.serialiser = serialiser;
         types.addObjectListener(new ListListener<RealType<?, ?, ?>>() {
             @Override
             public void elementAdded(RealType<?, ?, ?> type) {
-                getOptions().add(new RealOption(realResources, type.getId(), type.getName(), type.getDescription()));
+                getOptions().add(new RealOption(log, type.getId(), type.getName(), type.getDescription()));
             }
 
             @Override

@@ -1,13 +1,17 @@
 package com.intuso.housemate.object.server.proxy;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceListener;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueData;
-import com.intuso.housemate.object.server.real.ServerRealValue;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
+import com.intuso.housemate.object.server.real.ServerRealValue;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -36,14 +40,15 @@ public class ServerProxyDevice
     private ServerRealValue<Boolean> connected;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ServerProxyDevice(ServerProxyResources<ServerProxyFactory.All> resources, DeviceData data) {
-        super(resources, data);
-        connected = new ServerRealValue<Boolean>(resources.getServerRealResources(), CONNECTED_ID, CONNECTED_ID,
-                "Whether the server has a connection open to control the object",
-                new BooleanType(resources.getRealResources()), true);
+    @Inject
+    public ServerProxyDevice(Log log, Injector injector, BooleanType booleanType, @Assisted DeviceData data) {
+        super(log, injector, data);
+        connected = new ServerRealValue<Boolean>(log, CONNECTED_ID, CONNECTED_ID,
+                            "Whether the server has a connection open to control the object", booleanType, true);
     }
 
     @Override

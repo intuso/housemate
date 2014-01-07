@@ -6,8 +6,8 @@ import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.type.ChoiceTypeData;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +24,7 @@ public abstract class RealChoiceType<O>
     private RealList<OptionData, RealOption> options;
 
     /**
-     * @param resources the resources
+     * @param log the log
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
@@ -32,13 +32,13 @@ public abstract class RealChoiceType<O>
      * @param maxValues the maximum number of values the type can have
      * @param options the type's options
      */
-    protected RealChoiceType(RealResources resources, String id, String name, String description, int minValues,
+    protected RealChoiceType(Log log, String id, String name, String description, int minValues,
                              int maxValues, RealOption... options) {
-        this(resources, id, name, description, minValues, maxValues, Arrays.asList(options));
+        this(log, id, name, description, minValues, maxValues, Arrays.asList(options));
     }
 
     /**
-     * @param resources the resources
+     * @param log the log
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
@@ -46,10 +46,10 @@ public abstract class RealChoiceType<O>
      * @param maxValues the maximum number of values the type can have
      * @param options the type's options
      */
-    protected RealChoiceType(RealResources resources, String id, String name, String description, int minValues,
+    protected RealChoiceType(Log log, String id, String name, String description, int minValues,
                              int maxValues, List<RealOption> options) {
-        super(resources, new ChoiceTypeData(id, name, description, minValues, maxValues));
-        this.options = new RealList<OptionData, RealOption>(resources, OPTIONS, OPTIONS, "The options for the choice", options);
+        super(log, new ChoiceTypeData(id, name, description, minValues, maxValues));
+        this.options = new RealList<OptionData, RealOption>(log, OPTIONS, OPTIONS, "The options for the choice", options);
         addChild(this.options);
     }
 

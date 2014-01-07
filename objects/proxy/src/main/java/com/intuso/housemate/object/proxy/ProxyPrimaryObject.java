@@ -1,17 +1,16 @@
 package com.intuso.housemate.object.proxy;
 
+import com.google.inject.Injector;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
 /**
- * @param <RESOURCES> the type of the resources
- * @param <CHILD_RESOURCES> the type of the child resources
  * @param <DATA> the type of the data
  * @param <COMMAND> the type of the command
  * @param <VALUE> the type of the value
@@ -19,23 +18,21 @@ import java.util.List;
  * @param <LISTENER> the type of the listener
  */
 public abstract class ProxyPrimaryObject<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>,?>,
-            CHILD_RESOURCES extends ProxyResources<?, ?>,
             DATA extends HousemateData<HousemateData<?>>,
-            COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
-            VALUE extends ProxyValue<?, ?, VALUE>,
-            PRIMARY_OBJECT extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, DATA, COMMAND, VALUE, PRIMARY_OBJECT, LISTENER>,
+            COMMAND extends ProxyCommand<?, ?, COMMAND>,
+            VALUE extends ProxyValue<?, VALUE>,
+            PRIMARY_OBJECT extends ProxyPrimaryObject<DATA, COMMAND, VALUE, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, DATA, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
+        extends ProxyObject<DATA, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
         implements PrimaryObject<COMMAND, COMMAND, VALUE, VALUE, PRIMARY_OBJECT, LISTENER> {
 
     /**
-     * @param resources {@inheritDoc}
-     * @param childResources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected ProxyPrimaryObject(RESOURCES resources, CHILD_RESOURCES childResources, DATA data) {
-        super(resources, childResources, data);
+    protected ProxyPrimaryObject(Log log, Injector injector, DATA data) {
+        super(log, injector, data);
     }
 
     @Override
@@ -79,9 +76,9 @@ public abstract class ProxyPrimaryObject<
     @Override
     public List<ListenerRegistration> registerListeners() {
         final List<ListenerRegistration> result = super.registerListeners();
-        addChildLoadedListener(RUNNING_ID, new ChildLoadedListener<PRIMARY_OBJECT, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
+        addChildLoadedListener(RUNNING_ID, new ChildLoadedListener<PRIMARY_OBJECT, ProxyObject<?, ?, ?, ?, ?>>() {
             @Override
-            public void childLoaded(PRIMARY_OBJECT object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+            public void childLoaded(PRIMARY_OBJECT object, ProxyObject<?, ?, ?, ?, ?> proxyObject) {
                 result.add(getRunningValue().addObjectListener(new ValueListener<VALUE>() {
 
                     @Override
@@ -97,9 +94,9 @@ public abstract class ProxyPrimaryObject<
                 }));
             }
         });
-        addChildLoadedListener(ERROR_ID, new ChildLoadedListener<PRIMARY_OBJECT, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
+        addChildLoadedListener(ERROR_ID, new ChildLoadedListener<PRIMARY_OBJECT, ProxyObject<?, ?, ?, ?, ?>>() {
             @Override
-            public void childLoaded(PRIMARY_OBJECT object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+            public void childLoaded(PRIMARY_OBJECT object, ProxyObject<?, ?, ?, ?, ?> proxyObject) {
                 result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
 
                     @Override

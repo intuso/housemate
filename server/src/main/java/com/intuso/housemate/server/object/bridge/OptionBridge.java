@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.subtype.SubType;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -22,12 +23,12 @@ public class OptionBridge
 
     private ListBridge<SubTypeData, SubType<?>, SubTypeBridge> subTypes;
 
-    public OptionBridge(ServerBridgeResources resources, Option<?> option,
+    public OptionBridge(Log log, Option<?> option,
                         ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(resources, new OptionData(option.getId(), option.getName(), option.getDescription()));
+        super(log, new OptionData(option.getId(), option.getName(), option.getDescription()));
         if(option.getSubTypes() != null) {
-            subTypes = new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(resources, option.getSubTypes(),
-                    new SubTypeBridge.Converter(resources, types));
+            subTypes = new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(log, option.getSubTypes(),
+                    new SubTypeBridge.Converter(log, types));
             addChild(subTypes);
         }
     }
@@ -39,17 +40,17 @@ public class OptionBridge
 
     public final static class Converter implements Function<Option<?>, OptionBridge> {
 
-        private final ServerBridgeResources resources;
+        private final Log log;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(ServerBridgeResources resources, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-            this.resources = resources;
+        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+            this.log = log;
             this.types = types;
         }
 
         @Override
         public OptionBridge apply(Option<?> option) {
-            return new OptionBridge(resources, option, types);
+            return new OptionBridge(log, option, types);
         }
     }
 }

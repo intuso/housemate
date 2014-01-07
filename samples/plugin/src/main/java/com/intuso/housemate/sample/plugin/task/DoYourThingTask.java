@@ -1,9 +1,9 @@
 package com.intuso.housemate.sample.plugin.task;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.server.real.ServerRealTask;
 import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
+import com.intuso.utilities.log.Log;
 
 /**
  * Example task with a simple constructor that can be used with the
@@ -13,8 +13,8 @@ import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
  */
 public class DoYourThingTask extends ServerRealTask {
 
-    public DoYourThingTask(ServerRealResources resources, String id, String name, String description, ServerRealTaskOwner owner) {
-        super(resources, id, name, description, owner);
+    public DoYourThingTask(Log log, String id, String name, String description, ServerRealTaskOwner owner) {
+        super(log, id, name, description, owner);
     }
 
     @Override

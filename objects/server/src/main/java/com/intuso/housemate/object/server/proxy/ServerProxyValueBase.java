@@ -1,15 +1,17 @@
 package com.intuso.housemate.object.server.proxy;
 
+import com.google.inject.Injector;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -27,14 +29,17 @@ public abstract class ServerProxyValueBase<
         extends ServerProxyObject<DATA, CHILD_DATA, CHILD, VALUE, ValueListener<? super VALUE>>
         implements Value<ServerProxyType, VALUE> {
 
-    private ServerProxyType type;
+    private final ServerProxyList<TypeData<?>, ServerProxyType> types;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ServerProxyValueBase(ServerProxyResources<? extends HousemateObjectFactory<ServerProxyResources<?>, CHILD_DATA, ? extends CHILD>> resources, DATA data) {
-        super(resources, data);
+    public ServerProxyValueBase(Log log, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types,
+                                DATA data) {
+        super(log, injector, data);
+        this.types = types;
     }
 
     @Override
@@ -44,7 +49,7 @@ public abstract class ServerProxyValueBase<
 
     @Override
     public ServerProxyType getType() {
-        return type;
+        return types.get(getData().getType());
     }
 
     @Override
@@ -71,8 +76,5 @@ public abstract class ServerProxyValueBase<
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        type = getResources().getRoot().getTypes().get(getData().getType());
-        if(type == null)
-            getLog().e("Could not unwrap value, value type \"" + getData().getType() + "\" is not known");
     }
 }

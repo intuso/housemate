@@ -1,8 +1,8 @@
 package com.intuso.housemate.sample.plugin.task;
 
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
 import com.intuso.housemate.plugin.api.ServerTaskFactory;
+import com.intuso.utilities.log.Log;
 
 /**
  * Example factory for tasks with a non-simple constructor. This factory has a simple
@@ -31,7 +31,7 @@ public class ComplexTaskFactory implements ServerTaskFactory<ComplexTask> {
     }
 
     @Override
-    public ComplexTask create(ServerRealResources resources, String id, String name, String description, ServerRealTaskOwner owner) {
-        return new ComplexTask(resources, id, name, description, owner, simpleArg);
+    public ComplexTask create(Log log, String id, String name, String description, ServerRealTaskOwner owner) {
+        return new ComplexTask(log, id, name, description, owner, simpleArg);
     }
 }

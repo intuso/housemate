@@ -7,7 +7,7 @@ import com.intuso.utilities.listener.Listener;
  * Listener for when child objects become (un)available
  * @param <OBJECT>
  */
-public interface AvailableChildrenListener<OBJECT extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> extends Listener {
+public interface AvailableChildrenListener<OBJECT extends ProxyObject<?, ?, ?, ?, ?>> extends Listener {
 
     /**
      * Callback for when a child object was added

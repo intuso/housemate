@@ -8,12 +8,12 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
-import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
+import com.intuso.utilities.log.Log;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,10 +43,12 @@ public class CommandTest {
 
     private SimpleProxyObject.List<CommandData, SimpleProxyObject.Command> proxyList
             = new SimpleProxyObject.List<CommandData, SimpleProxyObject.Command>(
-            SimpleProxyFactory.changeFactoryType(TestEnvironment.TEST_INSTANCE.getProxyResources(), new SimpleProxyFactory.Command()),
-            TestEnvironment.TEST_INSTANCE.getProxyResources(),
+            TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+            TestEnvironment.TEST_INSTANCE.getInjector(),
             new ListData(COMMANDS, COMMANDS, COMMANDS));
-    private RealList<CommandData, RealCommand> realList = new RealList<CommandData, RealCommand>(TestEnvironment.TEST_INSTANCE.getRealResources(), COMMANDS, COMMANDS, COMMANDS, new ArrayList<RealCommand>());
+    private RealList<CommandData, RealCommand> realList = new RealList<CommandData, RealCommand>(
+            TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+            COMMANDS, COMMANDS, COMMANDS, new ArrayList<RealCommand>());
     private RealCommand realCommand;
     private SimpleProxyObject.Command proxyCommand;
 
@@ -57,7 +59,8 @@ public class CommandTest {
     public void addLists() throws HousemateException {
         TestEnvironment.TEST_INSTANCE.getProxyRoot().addChild(proxyList);
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
-        realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-command", "My Command", "description", new ArrayList<RealParameter<?>>()) {
+        realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+                "my-command", "My Command", "description", new ArrayList<RealParameter<?>>()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 //To change body of implemented methods use File | Settings | File Templates.
@@ -75,7 +78,8 @@ public class CommandTest {
     @Test
     public void testPerformProxyFunction() throws HousemateException {
         final AtomicBoolean called = new AtomicBoolean(false);
-        RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-other-command", "My Other Command", "description", new ArrayList<RealParameter<?>>()) {
+        RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+                "my-other-command", "My Other Command", "description", new ArrayList<RealParameter<?>>()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 called.set(true);
@@ -90,8 +94,11 @@ public class CommandTest {
     @Test
     public void testParameter() throws HousemateException {
         final AtomicBoolean correctParam = new AtomicBoolean(false);
-        RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-other-command", "My Other Command", "description",
-                Arrays.<RealParameter<?>>asList(IntegerType.createParameter(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-parameter", "My Parameter", "description"))) {
+        RealCommand realCommand = new RealCommand(TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+                "my-other-command", "My Other Command", "description",
+                Arrays.<RealParameter<?>>asList(
+                        IntegerType.createParameter(TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+                                "my-parameter", "My Parameter", "description"))) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 correctParam.set(values.get("my-parameter") != null

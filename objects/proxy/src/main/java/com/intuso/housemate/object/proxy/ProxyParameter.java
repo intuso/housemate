@@ -1,28 +1,29 @@
 package com.intuso.housemate.object.proxy;
 
+import com.google.inject.Injector;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterListener;
+import com.intuso.utilities.log.Log;
 
 /**
- * @param <RESOURCES> the type of the resources
  * @param <TYPE> the type of the type
  * @param <PARAMETER> the type of the parameter
  */
 public abstract class ProxyParameter<
-            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory, ?>,
-            TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
-            PARAMETER extends ProxyParameter<?, TYPE, PARAMETER>>
-        extends ProxyObject<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory, ?>, ParameterData, NoChildrenData, NoChildrenProxyObject, PARAMETER, ParameterListener>
+            TYPE extends ProxyType<?, ?, ?, ?>,
+            PARAMETER extends ProxyParameter<TYPE, PARAMETER>>
+        extends ProxyObject<ParameterData, NoChildrenData, NoChildrenProxyObject, PARAMETER, ParameterListener>
         implements Parameter<TYPE> {
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyParameter(RESOURCES resources, ParameterData data) {
-        super(resources, null, data);
+    public ProxyParameter(Log log, Injector injector, ParameterData data) {
+        super(log, injector, data);
     }
 
     @Override

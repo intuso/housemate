@@ -1,36 +1,33 @@
 package com.intuso.housemate.object.proxy;
 
-import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.google.inject.Injector;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.utilities.log.Log;
 
 /**
- * @param <RESOURCES> the type of the resources
- * @param <CHILD_RESOURCES> the type of the chil resources
  * @param <TYPE> the type of the type
  * @param <SET_COMMAND> the type of the set command
  * @param <PROPERTY> the type of the property
  */
 public abstract class ProxyProperty<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CommandData, SET_COMMAND>, ?>,
-            CHILD_RESOURCES extends ProxyResources<?, ?>,
-            TYPE extends ProxyType<?, ?, ?, ?, ?, ?>,
-            SET_COMMAND extends ProxyCommand<?, ?, ?, ?, SET_COMMAND>,
-            PROPERTY extends ProxyProperty<RESOURCES, CHILD_RESOURCES, TYPE, SET_COMMAND, PROPERTY>>
-        extends ProxyValueBase<RESOURCES, CHILD_RESOURCES, PropertyData, CommandData, SET_COMMAND, TYPE, PROPERTY>
+            TYPE extends ProxyType<?, ?, ?, ?>,
+            SET_COMMAND extends ProxyCommand<?, ?, SET_COMMAND>,
+            PROPERTY extends ProxyProperty<TYPE, SET_COMMAND, PROPERTY>>
+        extends ProxyValueBase<PropertyData, CommandData, SET_COMMAND, TYPE, PROPERTY>
         implements Property<TYPE, SET_COMMAND, PROPERTY> {
 
     /**
-     * @param resources {@inheritDoc}
-     * @param childResources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyProperty(RESOURCES resources, CHILD_RESOURCES childResources, PropertyData data) {
-        super(resources, childResources, data);
+    public ProxyProperty(Log log, Injector injector, PropertyData data) {
+        super(log, injector, data);
     }
 
     @Override

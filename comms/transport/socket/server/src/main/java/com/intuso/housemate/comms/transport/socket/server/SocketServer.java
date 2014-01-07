@@ -4,8 +4,9 @@ import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
+import com.intuso.utilities.log.Log;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,8 +18,6 @@ public class SocketServer extends ExternalClientRouter {
 
     public final static String PORT = "socket.server.port";
 
-    private final Resources resources;
-
     /**
      * The server socket
      */
@@ -29,13 +28,14 @@ public class SocketServer extends ExternalClientRouter {
      */
     private Accepter accepter;
 
+    private final PropertyContainer properties;
     private final Router.Registration routerRegistration;
 
     @Inject
-    public SocketServer(Resources resources, Router router) {
-        super(resources);
-        
-        this.resources = resources;
+    public SocketServer(Log log, PropertyContainer properties, Router router) {
+        super(log);
+
+        this.properties = properties;
         this.routerRegistration = router.registerReceiver(this);
 
         setRouterStatus(Status.Connected);
@@ -60,7 +60,7 @@ public class SocketServer extends ExternalClientRouter {
 
         try {
             // open the server port
-            String port = resources.getProperties().get(PORT);
+            String port = properties.get(PORT);
             if(port == null) {
                 getLog().d("Socket server port not set, using default");
                 port = "46873";

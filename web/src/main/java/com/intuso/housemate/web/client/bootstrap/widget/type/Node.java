@@ -28,7 +28,7 @@ import java.util.Map;
 * To change this template use File | Settings | File Templates.
 */
 public class Node extends Composite
-        implements HasObjectSelectedHandlers, ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
+        implements HasObjectSelectedHandlers, ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?>> {
 
     interface ObjectNodeUiBinder extends UiBinder<FlowPanel, Node> {
     }
@@ -52,17 +52,17 @@ public class Node extends Composite
     protected FlowPanel children;
 
     private final Node root;
-    private final ProxyObject<?, ?, ?, ?, ?, ?, ?> object;
+    private final ProxyObject<?, ?, ?, ?, ?> object;
 
     private final Map<String, Node> childNodes = Maps.newHashMap();
     private boolean childrenAdded = false;
     private boolean expanded = false;
 
-    public Node(ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
+    public Node(ProxyObject<?, ?, ?, ?, ?> object) {
         this(null, object);
     }
 
-    private Node(Node root, final ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
+    private Node(Node root, final ProxyObject<?, ?, ?, ?, ?> object) {
 
         this.root = root != null ? root : this;
         this.object = object;
@@ -77,7 +77,7 @@ public class Node extends Composite
         heading.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                fireEvent(new ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?, ?, ?>>(object));
+                fireEvent(new ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?>>(object));
                 Node.this.root.showObject(object, style.newSelection());
             }
         });
@@ -99,7 +99,7 @@ public class Node extends Composite
     private void show(boolean show) {
         if(!childrenAdded && show) {
             childrenAdded = true;
-            for(ProxyObject<?, ?, ?, ?, ?, ?, ?> child : object.getChildren()) {
+            for(ProxyObject<?, ?, ?, ?, ?> child : object.getChildren()) {
                 Node childNode = new Node(root, child);
                 childNodes.put(child.getId(), childNode);
                 children.add(childNode);
@@ -111,11 +111,11 @@ public class Node extends Composite
         icon.setType(expanded ? IconType.CHEVRON_DOWN : IconType.CHEVRON_RIGHT);
     }
 
-    public void showObject(ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
+    public void showObject(ProxyObject<?, ?, ?, ?, ?> object) {
         root.showObject(object, style.currentSelection());
     }
 
-    private void showObject(ProxyObject<?, ?, ?, ?, ?, ?, ?> object, String style) {
+    private void showObject(ProxyObject<?, ?, ?, ?, ?> object, String style) {
         unhighlightAll(style);
         showObject(object.getPath(), 0, style);
     }
@@ -142,7 +142,7 @@ public class Node extends Composite
     }
 
     @Override
-    public void objectSelected(ProxyObject<?, ?, ?, ?, ?, ?, ?> object) {
-        fireEvent(new ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?, ?, ?>>(object));
+    public void objectSelected(ProxyObject<?, ?, ?, ?, ?> object) {
+        fireEvent(new ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?>>(object));
     }
 }

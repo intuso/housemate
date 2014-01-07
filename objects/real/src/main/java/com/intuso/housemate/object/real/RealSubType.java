@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.subtype.SubType;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.subtype.SubTypeListener;
 import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.utilities.log.Log;
 
 /**
  * @param <O> the type of the sub type's value
@@ -16,15 +17,15 @@ public class RealSubType<O>
     private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the sub type's id
      * @param name the sub type's name
      * @param description the sub type's description
      * @param types the types in the system
      */
-    public RealSubType(RealResources resources, String id, String name, String description, String typeId,
+    public RealSubType(Log log, String id, String name, String description, String typeId,
                        RealList<TypeData<?>, RealType<?, ?, ?>> types) {
-        super(resources, new SubTypeData(id, name, description, typeId));
+        super(log, new SubTypeData(id, name, description, typeId));
         this.types = types;
     }
 

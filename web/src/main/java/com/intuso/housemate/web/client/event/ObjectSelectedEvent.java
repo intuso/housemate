@@ -6,7 +6,7 @@ import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
 
 /**
  */
-public class ObjectSelectedEvent<O extends ProxyObject<?, ?, ?, ?, ?, ?, ?>> extends GwtEvent<ObjectSelectedHandler> {
+public class ObjectSelectedEvent<O extends ProxyObject<?, ?, ?, ?, ?>> extends GwtEvent<ObjectSelectedHandler> {
 
     public final static Type<ObjectSelectedHandler> TYPE = new Type<ObjectSelectedHandler>();
 

@@ -6,8 +6,8 @@ import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.annotations.basic.Value;
 import com.intuso.housemate.annotations.basic.Values;
 import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.sample.plugin.type.Location;
+import com.intuso.utilities.log.Log;
 
 /**
  * Example device with a simple constructor that can be used with the
@@ -23,8 +23,8 @@ public class SimpleDevice extends RealDevice {
     @Property(id = "my-property", name = "My Property", description = "Property to control me", typeId = "double")
     public double myProperty = 1.0;
 
-    public SimpleDevice(RealResources resources, String id, String name, String description) {
-        super(resources, id, name, description);
+    public SimpleDevice(Log log, String id, String name, String description) {
+        super(log, id, name, description);
         getCustomPropertyIds().add("my-property");
     }
 

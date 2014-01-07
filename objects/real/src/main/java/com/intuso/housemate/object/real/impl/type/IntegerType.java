@@ -6,8 +6,8 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealProperty;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -29,48 +29,48 @@ public class IntegerType extends RealSimpleType<Integer> {
     };
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      */
     @Inject
-    public IntegerType(RealResources resources) {
-        super(resources, SimpleTypeData.Type.Integer, SERIALISER);
+    public IntegerType(Log log) {
+        super(log, SimpleTypeData.Type.Integer, SERIALISER);
     }
 
     /**
      * Creates an integer value object
-     * @param resources the resources
+     * @param log the log
      * @param id the value's id
      * @param name the value's name
      * @param description the value's description
      * @param value the initial value
      * @return an integer value object
      */
-    public static RealValue<Integer> createValue(RealResources resources, String id, String name, String description, Integer value) {
-        return new RealValue<Integer>(resources, id, name, description, new IntegerType(resources), value);
+    public static RealValue<Integer> createValue(Log log, String id, String name, String description, Integer value) {
+        return new RealValue<Integer>(log, id, name, description, new IntegerType(log), value);
     }
 
     /**
      * Creates an integer property object
-     * @param resources the resources
+     * @param log the log
      * @param id the property's id
      * @param name the property's name
      * @param description the property's description
      * @param values the initial values
      * @return an integer property object
      */
-    public static RealProperty<Integer> createProperty(RealResources resources, String id, String name, String description, List<Integer> values) {
-        return new RealProperty<Integer>(resources, id, name, description, new IntegerType(resources), values);
+    public static RealProperty<Integer> createProperty(Log log, String id, String name, String description, List<Integer> values) {
+        return new RealProperty<Integer>(log, id, name, description, new IntegerType(log), values);
     }
 
     /**
      * Creates an integer parameter object
-     * @param resources the resources
+     * @param log the log
      * @param id the parameter's id
      * @param name the parameter's name
      * @param description the parameter's description
      * @return an integer parameter object
      */
-    public static RealParameter<Integer> createParameter(RealResources resources, String id, String name, String description) {
-        return new RealParameter<Integer>(resources, id, name, description, new IntegerType(resources));
+    public static RealParameter<Integer> createParameter(Log log, String id, String name, String description) {
+        return new RealParameter<Integer>(log, id, name, description, new IntegerType(log));
     }
 }

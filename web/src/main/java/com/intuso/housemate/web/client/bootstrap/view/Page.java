@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.LoginManager;
 import com.intuso.housemate.web.client.place.AutomationsPlace;
 import com.intuso.housemate.web.client.place.DevicesPlace;
 import com.intuso.housemate.web.client.place.UsersPlace;
@@ -89,6 +90,6 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
 
     @UiHandler("logoutButton")
     public void logoutButtonClicked(ClickEvent e) {
-        Housemate.ENVIRONMENT.getGwtResources().getLoginManager().logout();
+        Housemate.INJECTOR.getInstance(LoginManager.class).logout();
     }
 }

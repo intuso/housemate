@@ -3,17 +3,19 @@ package com.intuso.housemate.server;
 import com.google.inject.*;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.object.real.*;
+import com.intuso.housemate.object.real.RealDevice;
+import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealRootObject;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.*;
 import com.intuso.housemate.object.server.LifecycleHandler;
-import com.intuso.housemate.object.server.proxy.ServerProxyFactory;
-import com.intuso.housemate.object.server.proxy.ServerProxyResources;
+import com.intuso.housemate.object.server.proxy.ServerProxyList;
+import com.intuso.housemate.object.server.proxy.ServerProxyModule;
 import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.server.real.ServerRealRootObject;
 import com.intuso.housemate.server.client.LocalClient;
 import com.intuso.housemate.server.client.LocalClientRoot;
@@ -23,11 +25,8 @@ import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.DeviceFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.housemate.server.object.LifecycleHandlerImpl;
-import com.intuso.housemate.server.object.ServerProxyResourcesImpl;
-import com.intuso.housemate.server.object.ServerRealResourcesImpl;
 import com.intuso.housemate.server.object.bridge.ListBridge;
 import com.intuso.housemate.server.object.bridge.RootObjectBridge;
-import com.intuso.housemate.server.object.bridge.ServerBridgeResources;
 import com.intuso.housemate.server.object.bridge.TypeBridge;
 import com.intuso.housemate.server.object.general.ServerGeneralRootObject;
 import com.intuso.housemate.server.plugin.PluginManager;
@@ -45,6 +44,9 @@ public class ServerModule extends AbstractModule {
 
     @Override
     protected void configure() {
+
+        // install all required modules
+        install(new ServerProxyModule());
 
         // bind everything as singletons that should be
         // root objects
@@ -67,12 +69,6 @@ public class ServerModule extends AbstractModule {
         bind(ConditionFactory.class).in(Scopes.SINGLETON);
         bind(DeviceFactory.class).in(Scopes.SINGLETON);
         bind(TaskFactory.class).in(Scopes.SINGLETON);
-        // resources
-        bind(ResourcesImpl.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<ServerProxyResourcesImpl<ServerProxyFactory.All>>() {}).in(Scopes.SINGLETON);
-        bind(ServerBridgeResources.class).in(Scopes.SINGLETON);
-        bind(ServerRealResourcesImpl.class).in(Scopes.SINGLETON);
-        bind(RealResources.class).in(Scopes.SINGLETON);
         // other things
         bind(Server.class).in(Scopes.SINGLETON);
         bind(LocalClient.class).in(Scopes.SINGLETON);
@@ -82,56 +78,35 @@ public class ServerModule extends AbstractModule {
         bind(LifecycleHandlerImpl.class).in(Scopes.SINGLETON);
 
         // bind implementations
-        bind(Resources.class).to(ResourcesImpl.class);
         bind(Router.class).to(MainRouter.class);
-        bind(ServerRealResources.class).to(ServerRealResourcesImpl.class);
-        bind(new TypeLiteral<ServerProxyResources<ServerProxyFactory.All>>() {}).to(new TypeLiteral<ServerProxyResourcesImpl<ServerProxyFactory.All>>() {
-        });
         bind(LifecycleHandler.class).to(LifecycleHandlerImpl.class);
         bind(new TypeLiteral<Root<?>>() {}).to(RootObjectBridge.class);
     }
 
     @Provides
     @Singleton
-    public RealList<TypeData<?>, RealType<?, ?, ?>> getRealTypes(RealResources resources) {
-        return new RealList<TypeData<?>, RealType<?, ?, ?>>(resources, Root.TYPES_ID, "Types", "Types");
+    public RealList<TypeData<?>, RealType<?, ?, ?>> getRealTypes(Log log) {
+        return new RealList<TypeData<?>, RealType<?, ?, ?>>(log, Root.TYPES_ID, "Types", "Types");
     }
 
     @Provides
     @Singleton
-    public RealList<DeviceData, RealDevice> getRealDevices(LocalClientRoot root) {
-        return root.getDevices();
+    public ServerProxyList<TypeData<?>, ServerProxyType> getServerProxyTypes(Log log, Injector injector) {
+        return new ServerProxyList<TypeData<?>, ServerProxyType>(log, injector, new ListData<TypeData<?>>(Root.TYPES_ID, Root.TYPES_ID, "Proxied types"));
     }
 
     @Provides
     @Singleton
-    public ListBridge<TypeData<?>, ServerProxyType, TypeBridge> getBridgeTypes(ServerBridgeResources resources,
-                                                                               ServerProxyRootObject proxyRoot) {
+    public ListBridge<TypeData<?>, ServerProxyType, TypeBridge> getBridgeTypes(Log log, ServerProxyRootObject proxyRoot) {
         ListBridge<TypeData<?>, ServerProxyType, TypeBridge> typeList =
-                new ListBridge<TypeData<?>, ServerProxyType, TypeBridge>(resources, proxyRoot.getTypes());
-        typeList.convert(new TypeBridge.Converter(resources, typeList));
+                new ListBridge<TypeData<?>, ServerProxyType, TypeBridge>(log, proxyRoot.getTypes());
+        typeList.convert(new TypeBridge.Converter(log, typeList));
         return typeList;
     }
 
-    private static class ResourcesImpl implements Resources {
-
-        private final Log log;
-        private final PropertyContainer properties;
-
-        @Inject
-        private ResourcesImpl(Log log, PropertyContainer properties) {
-            this.log = log;
-            this.properties = properties;
-        }
-
-        @Override
-        public Log getLog() {
-            return log;
-        }
-
-        @Override
-        public PropertyContainer getProperties() {
-            return properties;
-        }
+    @Provides
+    @Singleton
+    public RealList<DeviceData, RealDevice> getRealDevices(Log log) {
+        return new RealList<DeviceData, RealDevice>(log, Root.DEVICES_ID, "Devices", "Devices");
     }
 }

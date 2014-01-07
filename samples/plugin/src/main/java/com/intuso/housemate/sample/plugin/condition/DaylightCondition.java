@@ -1,8 +1,9 @@
 package com.intuso.housemate.sample.plugin.condition;
 
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealCondition;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealResources;
+import com.intuso.utilities.log.Log;
 
 /**
  * Example condition with a simple constructor that can be used with the
@@ -12,8 +13,9 @@ import com.intuso.housemate.object.server.real.ServerRealResources;
  */
 public class DaylightCondition extends ServerRealCondition {
 
-    public DaylightCondition(ServerRealResources resources, String id, String name, String description, ServerRealConditionOwner owner) {
-        super(resources, id, name, description, owner);
+    public DaylightCondition(Log log, String id, String name, String description, ServerRealConditionOwner owner,
+                             LifecycleHandler lifecycleHandler) {
+        super(log, id, name, description, owner, lifecycleHandler);
     }
 
     @Override

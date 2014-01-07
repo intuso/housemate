@@ -6,8 +6,8 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealProperty;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -29,48 +29,48 @@ public class StringType extends RealSimpleType<String> {
     };
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      */
     @Inject
-    public StringType(RealResources resources) {
-        super(resources, SimpleTypeData.Type.String, SERIALISER);
+    public StringType(Log log) {
+        super(log, SimpleTypeData.Type.String, SERIALISER);
     }
 
     /**
      * Creates an string value object
-     * @param resources the resources
+     * @param log the log
      * @param id the value's id
      * @param name the value's name
      * @param description the value's description
      * @param value the initial value
      * @return a string value object
      */
-    public static RealValue<String> createValue(RealResources resources, String id, String name, String description, String value) {
-        return new RealValue<String>(resources, id, name, description, new StringType(resources), value);
+    public static RealValue<String> createValue(Log log, String id, String name, String description, String value) {
+        return new RealValue<String>(log, id, name, description, new StringType(log), value);
     }
 
     /**
      * Creates a string property object
-     * @param resources the resources
+     * @param log the log
      * @param id the property's id
      * @param name the property's name
      * @param description the property's description
      * @param values the initial values
      * @return a string property object
      */
-    public static RealProperty<String> createProperty(RealResources resources, String id, String name, String description, List<String> values) {
-        return new RealProperty<String>(resources, id, name, description, new StringType(resources), values);
+    public static RealProperty<String> createProperty(Log log, String id, String name, String description, List<String> values) {
+        return new RealProperty<String>(log, id, name, description, new StringType(log), values);
     }
 
     /**
      * Creates a string parameter object
-     * @param resources the resources
+     * @param log the log
      * @param id the parameter's id
      * @param name the parameter's name
      * @param description the parameter's description
      * @return a string parameter object
      */
-    public static RealParameter<String> createParameter(RealResources resources, String id, String name, String description) {
-        return new RealParameter<String>(resources, id, name, description, new StringType(resources));
+    public static RealParameter<String> createParameter(Log log, String id, String name, String description) {
+        return new RealParameter<String>(log, id, name, description, new StringType(log));
     }
 }

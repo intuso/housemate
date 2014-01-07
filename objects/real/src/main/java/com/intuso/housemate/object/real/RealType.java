@@ -8,6 +8,7 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.type.TypeListener;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,11 +26,11 @@ public abstract class RealType<
         implements Type, TypeSerialiser<O> {
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected RealType(RealResources resources, DATA data) {
-        super(resources, data);
+    protected RealType(Log log, DATA data) {
+        super(log, data);
     }
 
     public static <O> TypeInstances serialiseAll(TypeSerialiser<O> serialiser, O ... typedValues) {

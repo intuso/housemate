@@ -2,11 +2,12 @@ package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.annotations.plugin.FactoryInformation;
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.server.real.ServerNonLeafCondition;
 import com.intuso.housemate.object.server.real.ServerRealCondition;
+import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 
@@ -19,13 +20,14 @@ public class Not extends ServerNonLeafCondition {
 	
 	/**
 	 * Create a new Not condition
-     * @param resources
+     * @param log
 	 * @param name
 	 * @throws HousemateException
 	 */
     @Inject
-	public Not(ServerRealResources resources, String id, String name, String description, ServerRealConditionOwner owner) throws HousemateException {
-		super(resources, id, name, description, owner);
+	public Not(Log log, String id, String name, String description, ServerRealConditionOwner owner,
+               LifecycleHandler lifecycleHandler) throws HousemateException {
+		super(log, id, name, description, owner, lifecycleHandler);
 
         // todo move this check somewhere else
         /*if(getConditions().size() > 1) {

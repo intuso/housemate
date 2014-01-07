@@ -4,12 +4,12 @@ import com.google.inject.Inject;
 import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.server.real.ServerRealTask;
 import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.TimeUnit;
 import com.intuso.housemate.object.real.impl.type.TimeUnitType;
+import com.intuso.utilities.log.Log;
 
 /**
  * Task that waits for a specified amount of time
@@ -30,16 +30,16 @@ public class Delay extends ServerRealTask {
 
 	/**
 	 * Create a new delay task
-     * @param serverRealResources
+     * @param log
 	 * @param name
 	 * @throws HousemateException
 	 */
     @Inject
-	public Delay(ServerRealResources serverRealResources, String id, String name, String description,
+	public Delay(Log log, String id, String name, String description,
                  ServerRealTaskOwner owner, TimeUnitType timeUnitType, IntegerType integerType) {
-		super(serverRealResources, id, name, description, owner);
-        unit = new ServerRealProperty<TimeUnit>(serverRealResources, "unit", "Unit", "the unit of time to wait for", timeUnitType, TimeUnit.MINUTES);
-        amount = new ServerRealProperty<Integer>(serverRealResources, "amount", "Amount", "the amount of time to wait", integerType, 1);
+		super(log, id, name, description, owner);
+        unit = new ServerRealProperty<TimeUnit>(log, "unit", "Unit", "the unit of time to wait for", timeUnitType, TimeUnit.MINUTES);
+        amount = new ServerRealProperty<Integer>(log, "amount", "Amount", "the amount of time to wait", integerType, 1);
         getProperties().add(unit);
         getProperties().add(amount);
 	}

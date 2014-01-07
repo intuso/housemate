@@ -10,7 +10,7 @@ import com.intuso.housemate.object.proxy.ProxyDevice;
  */
 public abstract class ProxyFeatureFactory<
         FEATURE extends ProxyFeature<?, ?>,
-        DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> {
+        DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?>> {
 
     /**
      * Get a feature of a device

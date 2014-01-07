@@ -6,8 +6,8 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealSubType;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -21,7 +21,7 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
     private final TypeSerialiser<E> serialiser;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
@@ -30,15 +30,15 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
      * @param enumClass the class of the enum
      * @param values the values of the enum
      */
-    protected EnumChoiceType(RealResources resources, String id, String name, String description, int minValues,
+    protected EnumChoiceType(Log log, String id, String name, String description, int minValues,
                              int maxValues, Class<E> enumClass, E[] values) {
-        this(resources, id, name, description, minValues, maxValues, values,
+        this(log, id, name, description, minValues, maxValues, values,
                 new EnumMap<E, List<RealSubType<?>>>(enumClass),
                 new EnumInstanceSerialiser<E>(enumClass));
     }
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
@@ -48,14 +48,14 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
      * @param values the values of the enum
      * @param optionSubTypes the subtypes for each enum value
      */
-    protected EnumChoiceType(RealResources resources, String id, String name, String description, int minValues,
+    protected EnumChoiceType(Log log, String id, String name, String description, int minValues,
                              int maxValues, Class<E> enumClass, E[] values,
                              EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
-        this(resources, id, name, description, minValues, maxValues, values, optionSubTypes,
+        this(log, id, name, description, minValues, maxValues, values, optionSubTypes,
                 new EnumInstanceSerialiser<E>(enumClass));
     }
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
@@ -65,13 +65,13 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
      * @param values the values of the enum
      * @param elementSerialiser the serialiser for the enum elements
      */
-    protected EnumChoiceType(RealResources resources, String id, String name, String description, int minValues,
+    protected EnumChoiceType(Log log, String id, String name, String description, int minValues,
                              int maxValues, Class<E> enumClass, E[] values, TypeSerialiser<E> elementSerialiser) {
-        this(resources, id, name, description, minValues, maxValues, values,
+        this(log, id, name, description, minValues, maxValues, values,
                 new EnumMap<E, List<RealSubType<?>>>(enumClass), elementSerialiser);
     }
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
@@ -81,11 +81,11 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
      * @param optionSubTypes the subtypes for each enum value
      * @param elementSerialiser the serialiser for the enum elements
      */
-    protected EnumChoiceType(RealResources resources, String id, String name, String description, int minValues,
+    protected EnumChoiceType(Log log, String id, String name, String description, int minValues,
                              int maxValues, E[] values, EnumMap<E, List<RealSubType<?>>> optionSubTypes,
                              TypeSerialiser<E> elementSerialiser) {
-        super(resources, id, name, description, minValues, maxValues,
-                convertValuesToOptions(resources, values, optionSubTypes));
+        super(log, id, name, description, minValues, maxValues,
+                convertValuesToOptions(log, values, optionSubTypes));
         this.serialiser = elementSerialiser;
     }
 
@@ -101,21 +101,21 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
 
     /**
      * Converts the values of an enum to option objects
-     * @param resources the resources
+     * @param log the log
      * @param values the enum's values
      * @param optionSubTypes the subtypes for each enum value
      * @param <E> the type of the enum
      * @return a list of option objects, one for each value of the enum
      */
-    private static <E extends Enum<E>> List<RealOption> convertValuesToOptions(final RealResources resources, E[] values,
+    private static <E extends Enum<E>> List<RealOption> convertValuesToOptions(final Log log, E[] values,
                                                                               final EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
         return Lists.transform(Arrays.asList(values), new Function<E, RealOption>() {
             @Override
             public RealOption apply(E value) {
                 if(optionSubTypes.containsKey(value))
-                    return new RealOption(resources, value.name(), value.name(), value.name(), optionSubTypes.get(value));
+                    return new RealOption(log, value.name(), value.name(), value.name(), optionSubTypes.get(value));
                 else
-                    return new RealOption(resources, value.name(), value.name(), value.name());
+                    return new RealOption(log, value.name(), value.name(), value.name());
             }
         });
     }

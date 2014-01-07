@@ -1,11 +1,16 @@
 package com.intuso.housemate.object.server.proxy;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.utilities.log.Log;
 
 public class ServerProxyProperty
         extends ServerProxyValueBase<PropertyData, CommandData, ServerProxyCommand, ServerProxyProperty>
@@ -14,11 +19,14 @@ public class ServerProxyProperty
     private ServerProxyCommand setCommand;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ServerProxyProperty(ServerProxyResources<ServerProxyFactory.Command> resources, PropertyData data) {
-        super(resources, data);
+    @Inject
+    public ServerProxyProperty(Log log, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types,
+                               @Assisted PropertyData data) {
+        super(log, injector, types, data);
     }
 
     @Override

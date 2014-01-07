@@ -45,26 +45,26 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
     private final TypeSerialiser<ValueSource> serialiser;
 
     @Inject
-    public ValueSourceType(RealResources resources, TypeSerialiser<ValueSource> serialiser,
+    public ValueSourceType(Log log, TypeSerialiser<ValueSource> serialiser,
                            RealList<TypeData<?>, RealType<?, ?, ?>> types) {
-        super(resources, ID, NAME, DESCRIPTION, 1, 1, createOptions(resources, types));
+        super(log, ID, NAME, DESCRIPTION, 1, 1, createOptions(log, types));
         this.serialiser = serialiser;
     }
 
-    private static List<RealOption> createOptions(RealResources resources, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+    private static List<RealOption> createOptions(Log log, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
         return Arrays.asList(
-                new RealOption(resources, CONSTANT_ID, CONSTANT_NAME, CONSTANT_DESCRIPTION,
+                new RealOption(log, CONSTANT_ID, CONSTANT_NAME, CONSTANT_DESCRIPTION,
                         Arrays.<RealSubType<?>>asList(
-                                new RealSubType<ConstantInstance<Object>>(resources, "type", "Type", "Type of the value", ConstantType.ID, types))),
-                new RealOption(resources, LOCATION_ID, LOCATION_NAME, LOCATION_DESCRIPTION,
+                                new RealSubType<ConstantInstance<Object>>(log, "type", "Type", "Type of the value", ConstantType.ID, types))),
+                new RealOption(log, LOCATION_ID, LOCATION_NAME, LOCATION_DESCRIPTION,
                         Arrays.<RealSubType<?>>asList(
-                                new RealSubType<RealObjectType.Reference<Value<?, ?>>>(resources, "path", "Path", "Path to the value", RealObjectType.ID, types))),
-                new RealOption(resources, OPERATION_ID, OPERATION_NAME, OPERATION_DESCRIPTION,
+                                new RealSubType<RealObjectType.Reference<Value<?, ?>>>(log, "path", "Path", "Path to the value", RealObjectType.ID, types))),
+                new RealOption(log, OPERATION_ID, OPERATION_NAME, OPERATION_DESCRIPTION,
                         Arrays.<RealSubType<?>>asList(
-                                new RealSubType<Operation>(resources, "operation", "Operation", "The operation to do", OperationType.ID, types))),
-                new RealOption(resources, TRANSFORMATION_ID, TRANSFORMATION_NAME, TRANSFORMATION_DESCRIPTION,
+                                new RealSubType<Operation>(log, "operation", "Operation", "The operation to do", OperationType.ID, types))),
+                new RealOption(log, TRANSFORMATION_ID, TRANSFORMATION_NAME, TRANSFORMATION_DESCRIPTION,
                         Arrays.<RealSubType<?>>asList(
-                                new RealSubType<Transformation>(resources, "path", "Path", "Path to the value", TransformationType.ID, types))));
+                                new RealSubType<Transformation>(log, "path", "Path", "Path to the value", TransformationType.ID, types))));
     }
 
     @Override

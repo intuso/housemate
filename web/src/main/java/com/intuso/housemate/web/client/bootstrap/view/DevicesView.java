@@ -42,7 +42,7 @@ public class DevicesView extends FlowPanel
 
         add(favouritesList);
         add(allList);
-        Button addButton = new PerformButton(Housemate.ENVIRONMENT.getGwtResources().getRoot().getAddDeviceCommand(), IconType.PLUS);
+        Button addButton = new PerformButton(Housemate.ROOT.getAddDeviceCommand(), IconType.PLUS);
         addButton.setSize(ButtonSize.SMALL);
         add(addButton);
     }

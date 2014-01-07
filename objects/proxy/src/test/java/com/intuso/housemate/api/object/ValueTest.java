@@ -6,11 +6,11 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealValue;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
+import com.intuso.utilities.log.Log;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,10 +28,12 @@ public class ValueTest {
 
     private SimpleProxyObject.List<ValueData, SimpleProxyObject.Value> proxyList
             = new SimpleProxyObject.List<ValueData, SimpleProxyObject.Value>(
-                SimpleProxyFactory.changeFactoryType(TestEnvironment.TEST_INSTANCE.getProxyResources(), new SimpleProxyFactory.Value()),
-                TestEnvironment.TEST_INSTANCE.getProxyResources(),
+                TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+                TestEnvironment.TEST_INSTANCE.getInjector(),
             new ListData(VALUES, VALUES, VALUES));
-    private RealList<ValueBaseData<NoChildrenData>, RealValue<?>> realList = new RealList<ValueBaseData<NoChildrenData>, RealValue<?>>(TestEnvironment.TEST_INSTANCE.getRealResources(), VALUES, VALUES, VALUES, new ArrayList<RealValue<?>>());
+    private RealList<ValueBaseData<NoChildrenData>, RealValue<?>> realList = new RealList<ValueBaseData<NoChildrenData>, RealValue<?>>(
+            TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+            VALUES, VALUES, VALUES, new ArrayList<RealValue<?>>());
     private RealValue<Integer> realValue;
     private SimpleProxyObject.Value proxyValue;
 
@@ -42,7 +44,8 @@ public class ValueTest {
     public void addLists() throws HousemateException {
         TestEnvironment.TEST_INSTANCE.getProxyRoot().addChild(proxyList);
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
-        realValue = IntegerType.createValue(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-value", "My Value", "description", 1234);
+        realValue = IntegerType.createValue(TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+                "my-value", "My Value", "description", 1234);
         realList.add(realValue);
         proxyValue = proxyList.get("my-value");
     }

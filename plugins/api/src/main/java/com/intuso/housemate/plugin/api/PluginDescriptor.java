@@ -1,9 +1,9 @@
 package com.intuso.housemate.plugin.api;
 
+import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -40,38 +40,39 @@ public interface PluginDescriptor {
 
     /**
      * Initialises the plugin
-     * @param resources the resources for the plugin
+     * @param log the log to use
+     * @param injector the injector to use
      * @throws HousemateException if the plugin cannot be initialised
      */
-    public void init(Resources resources) throws HousemateException;
+    public void init(Log log, Injector injector) throws HousemateException;
 
     /**
      * Gets the types provided by this plugin
-     * @param resources the resources for the types
+     * @param log the log to use
      * @return the types provided by this plugin
      */
-    public List<RealType<?, ?, ?>> getTypes(RealResources resources);
+    public List<RealType<?, ?, ?>> getTypes(Log log);
 
     /**
      * Gets the comparators provided by this plugin
-     * @param resources the resources for the comparators
+     * @param log the log to use
      * @return the comparators provided by this plugin
      */
-    public List<Comparator<?>> getComparators(RealResources resources);
+    public List<Comparator<?>> getComparators(Log log);
 
     /**
      * Gets the operators provided by this plugin
-     * @param resources the resources for the operators
+     * @param log the log to use
      * @return the operators provided by this plugin
      */
-    public List<Operator<?, ?>> getOperators(RealResources resources);
+    public List<Operator<?, ?>> getOperators(Log log);
 
     /**
      * Gets the transformers provided by this plugin
-     * @param resources the resources for the transformers
+     * @param log the log to use
      * @return the transformers provided by this plugin
      */
-    public List<Transformer<?, ?>> getTransformers (RealResources resources);
+    public List<Transformer<?, ?>> getTransformers (Log log);
 
     /**
      * Gets the device factories provided by this plugin

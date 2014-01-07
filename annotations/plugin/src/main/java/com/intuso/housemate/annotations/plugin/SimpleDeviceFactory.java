@@ -2,8 +2,8 @@ package com.intuso.housemate.annotations.plugin;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.utilities.log.Log;
 
 import java.lang.reflect.Constructor;
 
@@ -36,9 +36,9 @@ public class SimpleDeviceFactory implements RealDeviceFactory<RealDevice> {
     }
 
     @Override
-    public RealDevice create(RealResources resources, String id, String name, String description) throws HousemateException {
+    public RealDevice create(Log log, String id, String name, String description) throws HousemateException {
         try {
-            return constructor.newInstance(resources, id, name, description);
+            return constructor.newInstance(log, id, name, description);
         } catch(Exception e) {
             throw new HousemateException("Failed to create device", e);
         }

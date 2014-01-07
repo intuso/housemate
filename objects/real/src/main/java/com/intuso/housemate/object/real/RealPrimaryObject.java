@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.log.Log;
 
 /**
  * @param <DATA> the type of the data object
@@ -29,13 +30,13 @@ public abstract class RealPrimaryObject<
     private final RealValue<String> error;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param data {@inheritDoc}
      * @param objectType the name of this object type, used child descriptions and log messages
      */
-    public RealPrimaryObject(RealResources resources, DATA data, final String objectType) {
-        super(resources, data);
-        this.remove = new RealCommand(resources, REMOVE_ID, REMOVE_ID, "Remove the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
+    public RealPrimaryObject(Log log, DATA data, final String objectType) {
+        super(log, data);
+        this.remove = new RealCommand(log, REMOVE_ID, REMOVE_ID, "Remove the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning())
@@ -43,8 +44,8 @@ public abstract class RealPrimaryObject<
                 remove();
             }
         };
-        this.running = BooleanType.createValue(resources, RUNNING_ID, RUNNING_ID, "Whether the " + objectType + " is running or not", false);
-        this.start = new RealCommand(resources, START_ID, START_ID, "Start the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
+        this.running = BooleanType.createValue(log, RUNNING_ID, RUNNING_ID, "Whether the " + objectType + " is running or not", false);
+        this.start = new RealCommand(log, START_ID, START_ID, "Start the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(!isRunning()) {
@@ -53,7 +54,7 @@ public abstract class RealPrimaryObject<
                 }
             }
         };
-        this.stop = new RealCommand(resources, STOP_ID, STOP_ID, "Stop the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
+        this.stop = new RealCommand(log, STOP_ID, STOP_ID, "Stop the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning()) {
@@ -62,7 +63,7 @@ public abstract class RealPrimaryObject<
                 }
             }
         };
-        this.error = StringType.createValue(resources, ERROR_ID, ERROR_ID, "Current error for the " + objectType, null);
+        this.error = StringType.createValue(log, ERROR_ID, ERROR_ID, "Current error for the " + objectType, null);
         addChild(this.remove);
         addChild(this.running);
         addChild(this.start);

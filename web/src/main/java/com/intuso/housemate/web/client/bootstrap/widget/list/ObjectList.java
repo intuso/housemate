@@ -32,7 +32,7 @@ import java.util.Set;
  * Time: 21:04
  * To change this template use File | Settings | File Templates.
  */
-public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<?, ?, DATA, ?, ?, ?, ?>>
+public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<DATA, ?, ?, ?, ?>>
         extends Accordion implements AvailableChildrenListener<GWTProxyList<DATA, OBJECT>>, HasSelectedIdsChangedHandlers {
 
     private final GWTProxyList<DATA, OBJECT> list;

@@ -7,7 +7,6 @@ import com.intuso.housemate.api.authentication.AuthenticationMethod;
 import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -40,11 +39,11 @@ public abstract class Router implements Sender, Receiver {
     private Status routerStatus = Status.Disconnected;
 
     /**
-     * @param resources the resources
+     * @param log the log
      */
-    public Router(Resources resources) {
-        this.log = resources.getLog();
-        root = new RouterRootObject(resources, this);
+    public Router(final Log log) {
+        this.log = log;
+        root = new RouterRootObject(log, this);
         root.addObjectListener(new RootListener<RouterRootObject>() {
             @Override
             public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {

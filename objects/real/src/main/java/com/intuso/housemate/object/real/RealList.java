@@ -5,8 +5,9 @@ import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.object.*;
+import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
+import com.intuso.utilities.object.ObjectListener;
 
 import java.util.Iterator;
 
@@ -19,24 +20,24 @@ public final class RealList<
         implements List<CHILD>, ObjectListener<CHILD> {
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the list's id
      * @param name the list's name
      * @param description the list's description
      */
-    public RealList(RealResources resources, String id, String name, String description) {
-        super(resources, new ListData<CHILD_DATA>(id, name, description));
+    public RealList(Log log, String id, String name, String description) {
+        super(log, new ListData<CHILD_DATA>(id, name, description));
     }
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the list's id
      * @param name the list's name
      * @param description the list's description
      * @param elements the list's elements
      */
-    public RealList(RealResources resources, String id, String name, String description, java.util.List<CHILD> elements) {
-        this(resources, id, name, description);
+    public RealList(Log log, String id, String name, String description, java.util.List<CHILD> elements) {
+        this(log, id, name, description);
         for(CHILD element : elements)
             addChild(element);
     }

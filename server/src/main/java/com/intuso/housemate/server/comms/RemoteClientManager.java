@@ -1,5 +1,6 @@
 package com.intuso.housemate.server.comms;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -14,7 +15,7 @@ import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.server.real.ServerRealResources;
+import com.intuso.housemate.object.server.real.ServerRealRootObject;
 import com.intuso.housemate.object.server.real.ServerRealUser;
 import com.intuso.housemate.server.storage.DetailsNotFoundException;
 import com.intuso.housemate.server.storage.Storage;
@@ -33,19 +34,19 @@ public class RemoteClientManager {
     private final static String SERVER_INSTANCE_ID = UUID.randomUUID().toString();
 
     private final Log log;
-    private final ServerRealResources serverRealResources;
+    private final ServerRealRootObject root;
     private final Storage storage;
     
-    private final RemoteClientImpl root;
+    private final RemoteClientImpl rootClient;
     private final Map<String, RemoteClientImpl> lostClients = Maps.newHashMap();
 
     @Inject
-    public RemoteClientManager(Log log, ServerRealResources serverRealResources, Storage storage, MainRouter mainRouter) {
+    public RemoteClientManager(Log log, ServerRealRootObject root, Storage storage, MainRouter mainRouter) {
         this.log = log;
-        this.serverRealResources = serverRealResources;
+        this.root = root;
         this.storage = storage;
-        root = new RemoteClientImpl(UUID.randomUUID().toString(), null, ConnectionType.Router, mainRouter, false);
-        root.setRoute(Lists.<String>newArrayList());
+        rootClient = new RemoteClientImpl(UUID.randomUUID().toString(), null, ConnectionType.Router, mainRouter, false);
+        rootClient.setRoute(Lists.<String>newArrayList());
     }
 
     public void processRequest(AuthenticationRequest request, List<String> route) {
@@ -63,7 +64,7 @@ public class RemoteClientManager {
         }
         client.setRoute(route);
         try {
-            root.addClient(client);
+            rootClient.addClient(client);
         } catch(HousemateException e) {
             log.e("Failed to add reconnected client");
             return false;
@@ -155,7 +156,7 @@ public class RemoteClientManager {
 
             // need to check that an intermediate router has authed its clients
         } else if(method instanceof FromRouter) {
-            String user = root.getAuthenticatedRouter(route);
+            String user = rootClient.getAuthenticatedRouter(route);
             if(user != null)
                 return new AuthenticationResponse(SERVER_INSTANCE_ID, connectionId, user);
             else
@@ -179,11 +180,16 @@ public class RemoteClientManager {
 
     private RemoteClientImpl addClient(String connectionId, String authenticatedUser, List<String> route,
                                        ConnectionType type, boolean clientsAuthenticated) throws HousemateException {
-        return root.addClient(route, connectionId, authenticatedUser, type, clientsAuthenticated);
+        try {
+            throw new Exception("Added client for route " + Joiner.on(",").join(route));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return rootClient.addClient(route, connectionId, authenticatedUser, type, clientsAuthenticated);
     }
 
     public void clientDisconnected(List<String> route) {
-        RemoteClientImpl client = root.getClient(route);
+        RemoteClientImpl client = rootClient.getClient(route);
         if(client != null) {
             client.remove();
             clientDisconnected(client);
@@ -197,7 +203,7 @@ public class RemoteClientManager {
     }
 
     public void connectionLost(List<String> route) {
-        RemoteClientImpl client = root.getClient(route);
+        RemoteClientImpl client = rootClient.getClient(route);
         if(client != null)
             connectionLost(client);
     }
@@ -212,14 +218,14 @@ public class RemoteClientManager {
 
     public void removeClient(RemoteClientImpl client) {
         if(client != null)
-            root.getClient(client.getRoute()).remove();
+            rootClient.getClient(client.getRoute()).remove();
     }
 
     private ServerRealUser getUserForSession(String sessionId) throws HousemateException {
         try {
             TypeInstanceMap details = storage.getValues(new String[]{"sessions"}, sessionId);
             String userId = details.get("user-id").getFirstValue();
-            return serverRealResources.getRoot().getUsers().get(userId);
+            return root.getUsers().get(userId);
         } catch(DetailsNotFoundException e) {
             return null;
         }
@@ -241,12 +247,12 @@ public class RemoteClientManager {
         // todo look up the id of the user with that username
         String userId = username;
         try {
-            TypeInstanceMap details = storage.getValues(serverRealResources.getRoot().getUsers().getPath(), userId);
+            TypeInstanceMap details = storage.getValues(root.getUsers().getPath(), userId);
             TypeInstances storedPasswordHash = details.get("password-hash");
             if(storedPasswordHash != null
                     && storedPasswordHash.getFirstValue() != null
                     && storedPasswordHash.getFirstValue().equals(passwordHash))
-                return serverRealResources.getRoot().getUsers().get(userId);
+                return root.getUsers().get(userId);
             else
                 return null;
         } catch(DetailsNotFoundException e) {
@@ -256,6 +262,6 @@ public class RemoteClientManager {
     }
 
     public RemoteClientImpl getClient(List<String> route) {
-        return root.getClient(route);
+        return rootClient.getClient(route);
     }
 }

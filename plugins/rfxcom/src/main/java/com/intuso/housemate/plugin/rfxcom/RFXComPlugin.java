@@ -1,11 +1,11 @@
 package com.intuso.housemate.plugin.rfxcom;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.*;
+import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.RFXtrx;
 import com.rfxcom.rfxtrx.util.HomeEasy;
 import gnu.io.CommPortIdentifier;
@@ -39,42 +39,42 @@ public class RFXComPlugin implements PluginDescriptor {
     }
 
     @Override
-    public void init(Resources resources) throws HousemateException {
-        resources.getLog().d("Initialising RFXCom plugin");
-        java.util.List<CommPortIdentifier> portIds = RFXtrx.listSuitablePorts(resources.getLog());
+    public void init(Log log, Injector injector) throws HousemateException {
+        log.d("Initialising RFXCom plugin");
+        java.util.List<CommPortIdentifier> portIds = RFXtrx.listSuitablePorts(log);
         CommPortIdentifier portId = null;
         for(CommPortIdentifier pi : portIds) {
-            resources.getLog().d("Found comm port id " + pi.getName());
+            log.d("Found comm port id " + pi.getName());
             if(pi.getName().equals("/dev/ttyUSB0")) {
-                resources.getLog().d("Found required comm port id");
+                log.d("Found required comm port id");
                 portId = pi;
                 break;
             }
         }
         if(portId == null)
             throw new HousemateException("No suitable portId found for Home Easy devices, shutting down");
-        RFXtrx agent = new RFXtrx(portId, resources.getLog());
+        RFXtrx agent = new RFXtrx(portId, log);
         agent.openPort();
         homeEasy = HomeEasy.createUK(agent);
     }
 
     @Override
-    public List<RealType<?, ?, ?>> getTypes(RealResources resources) {
+    public List<RealType<?, ?, ?>> getTypes(Log log) {
         return Lists.newArrayList();
     }
 
     @Override
-    public List<Comparator<?>> getComparators(RealResources resources) {
+    public List<Comparator<?>> getComparators(Log log) {
         return Lists.newArrayList();
     }
 
     @Override
-    public List<Operator<?, ?>> getOperators(RealResources resources) {
+    public List<Operator<?, ?>> getOperators(Log log) {
         return Lists.newArrayList();
     }
 
     @Override
-    public List<Transformer<?, ?>> getTransformers(RealResources resources) {
+    public List<Transformer<?, ?>> getTransformers(Log log) {
         return Lists.newArrayList();
     }
 

@@ -1,28 +1,29 @@
 package com.intuso.housemate.object.proxy;
 
+import com.google.inject.Injector;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.type.RegexTypeData;
 import com.intuso.housemate.api.resources.RegexMatcher;
-import com.intuso.housemate.object.proxy.device.feature.ProxyFeatureFactory;
+import com.intuso.housemate.api.resources.RegexMatcherFactory;
+import com.intuso.utilities.log.Log;
 
 /**
- * @param <RESOURCES> the type of the resources
  * @param <TYPE> the type of the type
  */
 public abstract class ProxyRegexType<
-            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory, ? extends ProxyFeatureFactory<?, ?>>,
-            TYPE extends ProxyRegexType<RESOURCES, TYPE>>
-        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory, ?>, RegexTypeData, NoChildrenData, NoChildrenProxyObject, TYPE> {
+            TYPE extends ProxyRegexType<TYPE>>
+        extends ProxyType<RegexTypeData, NoChildrenData, NoChildrenProxyObject, TYPE> {
 
     private RegexMatcher regexMatcher;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyRegexType(RESOURCES resources, RegexTypeData data) {
-        super(resources, null, data);
-        regexMatcher = resources.getRegexMatcherFactory().createRegexMatcher(getData().getRegexPattern());
+    public ProxyRegexType(Log log, Injector injector, RegexTypeData data) {
+        super(log, injector, data);
+        regexMatcher = injector.getInstance(RegexMatcherFactory.class).createRegexMatcher(getData().getRegexPattern());
     }
 
     /**

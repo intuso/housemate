@@ -16,9 +16,9 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.RouterRootObject;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.platform.android.common.MessageCodes;
 import com.intuso.housemate.platform.android.common.ParcelableMessage;
+import com.intuso.utilities.log.Log;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,8 +34,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection, RootL
     private String id;
     private final Messenger receiver = new Messenger(new MessageHandler());
 
-    AndroidAppRouter(Resources resources, Context context) {
-        super(resources);
+    AndroidAppRouter(Log log, Context context) {
+        super(log);
         this.context = context;
         addObjectListener(this);
     }

@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 public class ServerRealAutomation
         extends ServerRealPrimaryObject<
@@ -28,7 +29,8 @@ public class ServerRealAutomation
     private final ServerRealCommand addConditionCommand;
     private final ServerRealCommand addSatisfiedTaskCommand;
     private final ServerRealCommand addUnsatisfiedTaskCommand;
-    private final LifecycleHandler lifecycleHandler;
+
+    private final ServerRealAutomationOwner owner;
 
     private final ServerRealTaskOwner satisfiedTaskOwner = new ServerRealTaskOwner() {
         @Override
@@ -45,13 +47,13 @@ public class ServerRealAutomation
 
     private ListenerRegistration conditionListenerRegistration;
 
-    public ServerRealAutomation(final ServerRealResources resources, String id, String name, String description,
-                                LifecycleHandler lifecycleHandler) {
-        super(resources, new AutomationData(id, name, description), "automation");
-        this.lifecycleHandler = lifecycleHandler;
-        this.conditions = new ServerRealList<ConditionData, ServerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
-        this.satisfiedTasks = new ServerRealList<TaskData, ServerRealTask>(resources, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
-        this.unsatisfiedTasks = new ServerRealList<TaskData, ServerRealTask>(resources, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+    public ServerRealAutomation(final Log log, String id, String name, String description,
+                                ServerRealAutomationOwner owner, LifecycleHandler lifecycleHandler) {
+        super(log, new AutomationData(id, name, description), "automation");
+        this.owner = owner;
+        this.conditions = new ServerRealList<ConditionData, ServerRealCondition>(log, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
+        this.satisfiedTasks = new ServerRealList<TaskData, ServerRealTask>(log, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.unsatisfiedTasks = new ServerRealList<TaskData, ServerRealTask>(log, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         addConditionCommand = lifecycleHandler.createAddConditionCommand(conditions, this);
         addSatisfiedTaskCommand = lifecycleHandler.createAddSatisfiedTaskCommand(satisfiedTasks, satisfiedTaskOwner);
         addUnsatisfiedTaskCommand = lifecycleHandler.createAddUnsatisfiedTaskCommand(unsatisfiedTasks, unsatisfiedTaskOwner);
@@ -65,8 +67,7 @@ public class ServerRealAutomation
 
     @Override
     protected void remove() {
-        getResources().getRoot().getAutomations().remove(getId());
-        lifecycleHandler.automationRemoved(getPath());
+        owner.remove(this);
     }
 
     @Override

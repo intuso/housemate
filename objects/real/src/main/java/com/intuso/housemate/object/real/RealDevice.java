@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceListener;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueData;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -45,18 +46,18 @@ public class RealDevice
     private RealList<PropertyData, RealProperty<?>> properties;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the device's id
      * @param name the device's name
      * @param description the device's description
      */
-    public RealDevice(RealResources resources, String id, String name, String description, String ... featureIds) {
-        this(resources, id, name, description, Lists.newArrayList(featureIds), Lists.<String>newArrayList(),
+    public RealDevice(Log log, String id, String name, String description, String ... featureIds) {
+        this(log, id, name, description, Lists.newArrayList(featureIds), Lists.<String>newArrayList(),
                 Lists.<String>newArrayList(), Lists.<String>newArrayList());
     }
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the device's id
      * @param name the device's name
      * @param description the device's description
@@ -64,14 +65,14 @@ public class RealDevice
      * @param customValueIds the ids of the device's values that do not belong to a feature
      * @param customPropertyIds the ids of the device's properties that do not belong to a feature
      */
-    public RealDevice(RealResources resources, String id, String name, String description, List<String> featureIds,
+    public RealDevice(Log log, String id, String name, String description, List<String> featureIds,
                       List<String> customCommandIds, List<String> customValueIds, List<String> customPropertyIds) {
-        super(resources,
+        super(log,
                 new DeviceData(id, name, description, featureIds, customCommandIds, customValueIds, customPropertyIds),
                 OBJECT_TYPE);
-        this.commands = new RealList<CommandData, RealCommand>(resources, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION);
-        this.values = new RealList<ValueData, RealValue<?>>(resources, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION);
-        this.properties = new RealList<PropertyData, RealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION);
+        this.commands = new RealList<CommandData, RealCommand>(log, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION);
+        this.values = new RealList<ValueData, RealValue<?>>(log, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION);
+        this.properties = new RealList<PropertyData, RealProperty<?>>(log, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION);
         addChild(this.commands);
         addChild(this.values);
         addChild(this.properties);

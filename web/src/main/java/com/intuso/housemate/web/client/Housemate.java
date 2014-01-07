@@ -7,7 +7,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.intuso.housemate.api.comms.ConnectionStatus;
+import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.RouterRootObject;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.root.Root;
@@ -26,7 +29,8 @@ import java.util.List;
  */
 public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
 
-    public static GWTEnvironment ENVIRONMENT;
+    public static GWTProxyRootObject ROOT;
+    public static Injector INJECTOR;
     public final static ClientFactory FACTORY = GWT.create(ClientFactory.class);
 
     /**
@@ -36,7 +40,7 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
     public void onModuleLoad() {
 
         // we must start the platform and connect the router first
-        ENVIRONMENT = new GWTEnvironment(new PropertyContainer(), FACTORY.getFeatureFactory(), new AsyncCallback<Void>() {
+        INJECTOR = Guice.createInjector(new GWTEnvironment(new PropertyContainer(), FACTORY.getFeatureFactory(), new AsyncCallback<Void>() {
 
             @Override
             public void onFailure(Throwable caught) {
@@ -53,28 +57,29 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                 FACTORY.getPlaceHistoryHandler().register(FACTORY.getPlaceController(), FACTORY.getEventBus(), new DevicesPlace());
 
                 // setup our HM stuff
-                ENVIRONMENT.getGwtResources().getLoginManager().init();
-                ENVIRONMENT.getGwtResources().getRouter().addObjectListener(Housemate.this);
+                INJECTOR.getInstance(LoginManager.class).init();
+                INJECTOR.getInstance(Router.class).addObjectListener(Housemate.this);
                 FACTORY.getEventBus().addHandler(PerformCommandEvent.TYPE, PerformCommandHandler.HANDLER);
 
                 // start the first login
-                ENVIRONMENT.getGwtResources().getLoginManager().startLogin();
+                INJECTOR.getInstance(LoginManager.class).startLogin();
             }
-        });
-        ENVIRONMENT.getGwtResources().getRouter().connect();
+        }));
+        ROOT = INJECTOR.getInstance(GWTProxyRootObject.class);
+        INJECTOR.getInstance(Router.class).connect();
     }
 
     @Override
     public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
         switch (status) {
             case Authenticated:
-                if(ENVIRONMENT.getGwtResources().getRoot() != null)
-                    ENVIRONMENT.getGwtResources().getRoot().uninit();
-                ENVIRONMENT.getGwtResources().setRoot(new GWTProxyRootObject(ENVIRONMENT.getGwtResources(), ENVIRONMENT.getGwtResources()));
+                if(ROOT != null)
+                    ROOT.uninit();
+                ROOT = INJECTOR.getInstance(GWTProxyRootObject.class);
                 // add the main view to the root panel of the page
                 RootPanel.get().add(FACTORY.getPage());
                 // connect the root object
-                ENVIRONMENT.getGwtResources().getRoot().addObjectListener(new RootListener<GWTProxyRootObject>() {
+                ROOT.addObjectListener(new RootListener<GWTProxyRootObject>() {
                     @Override
                     public void connectionStatusChanged(GWTProxyRootObject root, ConnectionStatus status) {
                         if(status == ConnectionStatus.Authenticated) {
@@ -100,7 +105,7 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
                         // do nothing (handled by router listener
                     }
                 });
-                ENVIRONMENT.getGwtResources().getRoot().login(ENVIRONMENT.getGwtResources().getLoginManager().getLoginMethod());
+                ROOT.login(INJECTOR.getInstance(LoginManager.class).getLoginMethod());
                 break;
             case Disconnected:
             case Unauthenticated:
@@ -120,9 +125,9 @@ public class Housemate implements EntryPoint, RootListener<RouterRootObject> {
 
     private void resetContent() {
         RootPanel.get().remove(FACTORY.getPage());
-        if(ENVIRONMENT.getGwtResources().getRoot() != null) {
-            ENVIRONMENT.getGwtResources().getRoot().uninit();
-            ENVIRONMENT.getGwtResources().setRoot(null);
+        if(ROOT != null) {
+            ROOT.uninit();
+            ROOT = null;
         }
     }
 }

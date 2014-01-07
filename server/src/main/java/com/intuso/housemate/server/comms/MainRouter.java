@@ -9,13 +9,13 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.AuthenticationRequest;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.housemate.object.server.RemoteClient;
 import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
 import com.intuso.housemate.server.object.bridge.RootObjectBridge;
 import com.intuso.housemate.server.object.general.ServerGeneralRootObject;
+import com.intuso.utilities.log.Log;
 
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,8 +32,8 @@ public final class MainRouter extends Router {
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
     @Inject
-    public MainRouter(Injector injector, Resources resources) {
-        super(resources);
+    public MainRouter(Log log, Injector injector) {
+        super(log);
 
         this.injector = injector;
 

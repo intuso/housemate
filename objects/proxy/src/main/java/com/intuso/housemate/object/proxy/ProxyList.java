@@ -1,5 +1,7 @@
 package com.intuso.housemate.object.proxy;
 
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
@@ -9,33 +11,30 @@ import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectListener;
 
 import java.util.Iterator;
 
 /**
- * @param <RESOURCES> the type of the resources
- * @param <CHILD_RESOURCES> the type of the child's resources
  * @param <CHILD_DATA> the type of the child's data object
  * @param <CHILD> the type of the child
  * @param <LIST> the type of the list
  */
 public abstract class ProxyList<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>, ?>,
-            CHILD_RESOURCES extends ProxyResources<?, ?>,
             CHILD_DATA extends HousemateData<?>,
-            CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
-            LIST extends ProxyList<RESOURCES, CHILD_RESOURCES, CHILD_DATA, CHILD, LIST>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, ListData<CHILD_DATA>, CHILD_DATA, CHILD, LIST, ListListener<? super CHILD>>
+            CHILD extends ProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
+            LIST extends ProxyList<CHILD_DATA, CHILD, LIST>>
+        extends ProxyObject<ListData<CHILD_DATA>, CHILD_DATA, CHILD, LIST, ListListener<? super CHILD>>
         implements List<CHILD>, ObjectListener<CHILD> {
 
     /**
-     * @param resources {@inheritDoc}
-     * @param childResources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyList(RESOURCES resources, CHILD_RESOURCES childResources, ListData data) {
-        super(resources, childResources, data);
+    public ProxyList(Log log, Injector injector, ListData data) {
+        super(log, injector, data);
     }
 
     @Override
@@ -53,14 +52,12 @@ public abstract class ProxyList<
         result.add(addMessageListener(ADD_TYPE, new Receiver<HousemateData>() {
             @Override
             public void messageReceived(Message<HousemateData> message) throws HousemateException {
-                CHILD child;
-                try {
-                    child = getResources().getObjectFactory().create(getSubResources(), (CHILD_DATA)message.getPayload());
-                } catch(HousemateException e) {
-                    throw new HousemateException("Could not create new list element", e);
-                }
-                child.init(ProxyList.this);
-                addChild(child);
+                CHILD child = (CHILD)getInjector().getInstance(new Key<HousemateObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>>() {}).create(message.getPayload());
+                if(child != null) {
+                    child.init(ProxyList.this);
+                    addChild(child);
+                } else
+                    throw new HousemateException("Could not create new list element");
             }
         }));
         result.add(addMessageListener(REMOVE_TYPE, new Receiver<HousemateData>() {

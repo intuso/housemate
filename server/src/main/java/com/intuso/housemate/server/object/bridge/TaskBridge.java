@@ -12,6 +12,7 @@ import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -36,14 +37,14 @@ public class TaskBridge
     private ValueBridge errorValue;
     private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
-    public TaskBridge(ServerBridgeResources resources, Task<?, ?, ?, ?, ?> task,
+    public TaskBridge(Log log, Task<?, ?, ?, ?, ?> task,
                       ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(resources, new TaskData(task.getId(), task.getName(), task.getDescription()));
-        removeCommand = new CommandBridge(resources, task.getRemoveCommand(), types);
-        executingValue = new ValueBridge(resources,task.getExecutingValue(), types);
-        errorValue = new ValueBridge(resources,task.getErrorValue(), types);
-        propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(resources, task.getProperties(),
-                new PropertyBridge.Converter(resources, types));
+        super(log, new TaskData(task.getId(), task.getName(), task.getDescription()));
+        removeCommand = new CommandBridge(log, task.getRemoveCommand(), types);
+        executingValue = new ValueBridge(log,task.getExecutingValue(), types);
+        errorValue = new ValueBridge(log,task.getErrorValue(), types);
+        propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(log, task.getProperties(),
+                new PropertyBridge.Converter(log, types));
         addChild(removeCommand);
         addChild(executingValue);
         addChild(errorValue);
@@ -84,17 +85,17 @@ public class TaskBridge
 
     public static class Converter implements Function<Task<?, ?, ?, ?, ?>, TaskBridge> {
 
-        private final ServerBridgeResources resources;
+        private final Log log;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(ServerBridgeResources resources, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-            this.resources = resources;
+        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+            this.log = log;
             this.types = types;;
         }
 
         @Override
         public TaskBridge apply(Task<?, ?, ?, ?, ?> command) {
-            return new TaskBridge(resources, command, types);
+            return new TaskBridge(log, command, types);
         }
     }
 }

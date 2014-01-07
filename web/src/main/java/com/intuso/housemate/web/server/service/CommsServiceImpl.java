@@ -2,6 +2,7 @@ package com.intuso.housemate.web.server.service;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.web.client.NotConnectedException;
 import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.server.ContextListener;
@@ -49,7 +50,7 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
         if(endpoint != null)
             endpoint.disconnect();
         this.getThreadLocalRequest().getSession().setAttribute(ATT_NAME, new GWTClientEndpoint(
-                ContextListener.RESOURCES.getRouter()));
+                ContextListener.INJECTOR.getInstance(Router.class)));
     }
 
     private void removeEndpoint() {

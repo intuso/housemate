@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
 
 import java.util.Iterator;
@@ -23,13 +24,13 @@ public class ListBridge<
     private final List<? extends OWR> list;
     private ListenerRegistration otherListListener;
 
-    public ListBridge(ServerBridgeResources resources, List<? extends OWR> list) {
-        super(resources, new ListData(list.getId(), list.getName(), list.getDescription()));
+    public ListBridge(Log log, List<? extends OWR> list) {
+        super(log, new ListData(list.getId(), list.getName(), list.getDescription()));
         this.list = list;
     }
 
-    public ListBridge(ServerBridgeResources resources, List<? extends OWR> list, final Function<? super OWR, ? extends WR> converter) {
-        this(resources, list);
+    public ListBridge(Log log, List<? extends OWR> list, final Function<? super OWR, ? extends WR> converter) {
+        this(log, list);
         convert(converter);
     }
 

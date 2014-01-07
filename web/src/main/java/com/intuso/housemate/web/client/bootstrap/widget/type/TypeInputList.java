@@ -10,7 +10,7 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  */
-public abstract class TypeInputList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<?, ?, DATA, ?, ?, ?, ?>>
+public abstract class TypeInputList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<DATA, ?, ?, ?, ?>>
         extends WidgetList<DATA, OBJECT> {
 
     private final TypeInstanceMap typeInstanceMap;

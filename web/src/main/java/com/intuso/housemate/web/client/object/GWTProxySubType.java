@@ -1,15 +1,19 @@
 package com.intuso.housemate.web.client.object;
 
+import com.google.inject.Injector;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
-import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
 import com.intuso.housemate.object.proxy.ProxySubType;
-import com.intuso.housemate.web.client.GWTResources;
+import com.intuso.utilities.log.Log;
 
 /**
  */
-public class GWTProxySubType extends ProxySubType<GWTResources<NoChildrenProxyObjectFactory>, GWTProxyType,
+public class GWTProxySubType extends ProxySubType<
+        GWTProxyType,
         GWTProxySubType> {
-    public GWTProxySubType(GWTResources<NoChildrenProxyObjectFactory> resources, SubTypeData data) {
-        super(resources, data);
+    public GWTProxySubType(Log log,
+                           Injector injector,
+                           @Assisted SubTypeData data) {
+        super(log, injector, data);
     }
 }

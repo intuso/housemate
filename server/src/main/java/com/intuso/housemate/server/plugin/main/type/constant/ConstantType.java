@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.object.real.*;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -23,8 +24,8 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
     private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
 
     @Inject
-    public ConstantType(RealResources resources, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
-        super(resources, ID, NAME, DESCRIPTION, 1, 1);
+    public ConstantType(Log log, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+        super(log, ID, NAME, DESCRIPTION, 1, 1);
         this.types = types;
         types.addObjectListener(this);
     }
@@ -54,8 +55,8 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
         // don't add self
         if(type.getId().equals(getId()))
             return;
-        RealSubType<Object> subType = new RealSubType<Object>(getResources(), SUB_TYPE_ID, SUB_TYPE_NAME, SUB_TYPE_DESCRIPTION, type.getId(), types);
-        RealOption option = new RealOption(getResources(), type.getId(), type.getName(), type.getDescription(), subType);
+        RealSubType<Object> subType = new RealSubType<Object>(getLog(), SUB_TYPE_ID, SUB_TYPE_NAME, SUB_TYPE_DESCRIPTION, type.getId(), types);
+        RealOption option = new RealOption(getLog(), type.getId(), type.getName(), type.getDescription(), subType);
         getOptions().add(option);
     }
 

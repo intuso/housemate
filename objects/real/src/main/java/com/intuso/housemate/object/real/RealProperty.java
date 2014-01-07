@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,32 +22,32 @@ public class RealProperty<O>
     private RealCommand setCommand;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the property's id
      * @param name the property's name
      * @param description the property's description
      * @param type the property's type
      * @param values the property's initial value
      */
-    public RealProperty(RealResources resources, String id, String name, String description, RealType<?, ?, O> type,
+    public RealProperty(Log log, String id, String name, String description, RealType<?, ?, O> type,
                         O ... values) {
-        this(resources, id, name, description, type, Arrays.asList(values));
+        this(log, id, name, description, type, Arrays.asList(values));
     }
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the property's id
      * @param name the property's name
      * @param description the property's description
      * @param type the property's type
      * @param values the property's initial value
      */
-    public RealProperty(RealResources resources, String id, String name, String description, RealType<?, ?, O> type,
+    public RealProperty(Log log, String id, String name, String description, RealType<?, ?, O> type,
                         List<O> values) {
-        super(resources, new PropertyData(id, name, description, type.getId(),
+        super(log, new PropertyData(id, name, description, type.getId(),
                 RealType.serialiseAll(type, values)), type);
-        setCommand = new RealCommand(resources, SET_COMMAND_ID, SET_COMMAND_ID, "The function to change the property's value",
-                Arrays.<RealParameter<?>>asList(new RealParameter<O>(resources, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
+        setCommand = new RealCommand(log, SET_COMMAND_ID, SET_COMMAND_ID, "The function to change the property's value",
+                Arrays.<RealParameter<?>>asList(new RealParameter<O>(log, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type))) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 List<O> typedValues = RealType.deserialiseAll(getType(), values.get(VALUE_PARAM));

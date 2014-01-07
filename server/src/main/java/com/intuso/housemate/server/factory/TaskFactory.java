@@ -8,7 +8,6 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.object.server.real.*;
@@ -41,21 +40,16 @@ public final class TaskFactory implements PluginListener {
     public final static String TYPE_PARAMETER_DESCRIPTION = "The type of the new task";
 
     private final Log log;
-    private final ServerRealResources serverRealResources;
-    private final RealResources realResources;
     private final Storage storage;
 
     private final Map<String, ServerTaskFactory<?>> factories = Maps.newHashMap();
     private final TaskFactoryType type;
 
     @Inject
-    public TaskFactory(Log log, ServerRealResources serverRealResources, RealResources realResources,
-                       Storage storage, PluginManager pluginManager) {
+    public TaskFactory(Log log, Storage storage, PluginManager pluginManager) {
         this.log = log;
-        this.serverRealResources = serverRealResources;
-        this.realResources = realResources;
         this.storage = storage;
-        type = new TaskFactoryType(realResources);
+        type = new TaskFactoryType(log);
         pluginManager.addPluginListener(this, true);
     }
 
@@ -66,10 +60,10 @@ public final class TaskFactory implements PluginListener {
     public ServerRealCommand createAddTaskCommand(String commandId, String commandName, String commandDescription,
                                                   final ServerRealTaskOwner owner,
                                                   final ServerRealList<TaskData, ServerRealTask> list) {
-        return new ServerRealCommand(serverRealResources, commandId, commandName, commandDescription, Arrays.asList(
-                new ServerRealParameter<String>(serverRealResources, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(realResources)),
-                new ServerRealParameter<String>(serverRealResources, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(realResources)),
-                new ServerRealParameter<ServerTaskFactory<?>>(serverRealResources, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
+        return new ServerRealCommand(log, commandId, commandName, commandDescription, Arrays.asList(
+                new ServerRealParameter<String>(log, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(log)),
+                new ServerRealParameter<String>(log, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(log)),
+                new ServerRealParameter<ServerTaskFactory<?>>(log, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -94,7 +88,7 @@ public final class TaskFactory implements PluginListener {
         ServerTaskFactory<?> taskFactory = type.deserialise(taskType.get(0));
         if(taskFactory == null)
             throw new HousemateException("No factory known for task type " + taskType);
-        return taskFactory.create(serverRealResources, name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), owner);
+        return taskFactory.create(log, name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), owner);
     }
 
     @Override
@@ -102,7 +96,7 @@ public final class TaskFactory implements PluginListener {
         for(ServerTaskFactory<?> factory : plugin.getTaskFactories()) {
             log.d("Adding new task factory for type " + factory.getTypeId());
             factories.put(factory.getTypeId(), factory);
-            type.getOptions().add(new RealOption(realResources, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
+            type.getOptions().add(new RealOption(log, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
         }
     }
 
@@ -115,8 +109,8 @@ public final class TaskFactory implements PluginListener {
     }
 
     private class TaskFactoryType extends RealChoiceType<ServerTaskFactory<?>> {
-        protected TaskFactoryType(RealResources resources) {
-            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
+        protected TaskFactoryType(Log log) {
+            super(log, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
         }
 
         @Override

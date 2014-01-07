@@ -1,9 +1,10 @@
 package com.intuso.housemate.plugin.api;
 
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealCondition;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealResources;
+import com.intuso.utilities.log.Log;
 
 /**
  * @param <CONDITION> the type of the conditions created by this factory
@@ -30,13 +31,13 @@ public interface ServerConditionFactory<CONDITION extends ServerRealCondition> {
 
     /**
      * Creates a condition
-     * @param resources the resources for the condition
+     * @param log the log for the condition
      * @param id the condition's id
      * @param name the condition's name
      * @param description the condition's description
      * @return a new condition
      * @throws HousemateException if the condition cannot be created
      */
-    public CONDITION create(ServerRealResources resources, String id, String name, String description,
-                            ServerRealConditionOwner owner) throws HousemateException;
+    public CONDITION create(Log log, String id, String name, String description,
+                            ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler) throws HousemateException;
 }

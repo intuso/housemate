@@ -6,7 +6,7 @@ import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.annotations.basic.Value;
 import com.intuso.housemate.annotations.basic.Values;
 import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealResources;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -18,8 +18,8 @@ public class TestParentDevice extends RealDevice {
     @Property(id = "switch-number", name = "Switch Number", description = "Switch number", typeId = "integer")
     int switchNumber = 0;
 
-    public TestParentDevice(RealResources resources, String id, String name, String description) {
-        super(resources, id, name, description);
+    public TestParentDevice(Log log, String id, String name, String description) {
+        super(log, id, name, description);
     }
 
     @Command(id = "command", name = "Command", description = "Command to do something")

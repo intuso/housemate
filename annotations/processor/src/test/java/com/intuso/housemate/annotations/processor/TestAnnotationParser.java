@@ -7,14 +7,12 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealProperty;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.DoubleType;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.properties.api.PropertyContainer;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertNotNull;
@@ -24,35 +22,34 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestAnnotationParser {
 
-    private static RealResources createResources() {
-        return new RealResources(new Log(), new PropertyContainer(), null);
+    private static Log createLog() {
+        return new Log();
     }
 
-    private static RealList<TypeData<?>, RealType<?, ?, ?>> createAvailableTypes(RealResources resources) {
+    private static RealList<TypeData<?>, RealType<?, ?, ?>> createAvailableTypes(Log log) {
         RealList<TypeData<?>, RealType<?, ?, ?>> availableTypes = new RealList<TypeData<?>, RealType<?, ?, ?>>(
-                resources, "types", "types", "types");
-        availableTypes.add(new StringType(resources));
-        availableTypes.add(new BooleanType(resources));
-        availableTypes.add(new IntegerType(resources));
-        availableTypes.add(new DoubleType(resources));
+                log, "types", "types", "types");
+        availableTypes.add(new StringType(log));
+        availableTypes.add(new BooleanType(log));
+        availableTypes.add(new IntegerType(log));
+        availableTypes.add(new DoubleType(log));
         return availableTypes;
     }
 
     @Test
     public void testAvailableTypes() {
-        RealResources resources = createResources();
-        new AnnotationProcessor(resources.getLog());
+        new AnnotationProcessor(createLog());
     }
 
     @Test
     public void testCommands() throws HousemateException {
         // create classes
-        RealResources resources = createResources();
-        AnnotationProcessor annotationParser = new AnnotationProcessor(resources.getLog());
-        TestChildDevice testDevice = new TestChildDevice(resources, "test-device", "Test Device", "Test Device");
+        Log log = createLog();
+        AnnotationProcessor annotationParser = new AnnotationProcessor(log);
+        TestChildDevice testDevice = new TestChildDevice(log, "test-device", "Test Device", "Test Device");
 
         // parse all annotations
-        annotationParser.process(createAvailableTypes(resources), testDevice);
+        annotationParser.process(createAvailableTypes(log), testDevice);
 
         // check all parent device elements are created
         assertNotNull(testDevice.getCommands().get("command"));

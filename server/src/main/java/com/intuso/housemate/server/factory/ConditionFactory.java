@@ -8,15 +8,16 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.plugin.api.ServerConditionFactory;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.storage.Storage;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -39,20 +40,19 @@ public final class ConditionFactory implements PluginListener {
     public final static String TYPE_PARAMETER_NAME = "Type";
     public final static String TYPE_PARAMETER_DESCRIPTION = "The type of the new condition";
 
-    private final ServerRealResources serverRealResources;
-    private final RealResources realResources;
+    private final Log log;
     private final Storage storage;
     
     private final Map<String, ServerConditionFactory<?>> factories = Maps.newHashMap();
     private final ConditionFactoryType type;
+    private final LifecycleHandler lifecycleHandler;
 
     @Inject
-    public ConditionFactory(ServerRealResources serverRealResources, RealResources realResources,
-                            Storage storage, PluginManager pluginManager) {
-        this.serverRealResources = serverRealResources;
-        this.realResources = realResources;
+    public ConditionFactory(Log log, Storage storage, PluginManager pluginManager, LifecycleHandler lifecycleHandler) {
+        this.log = log;
         this.storage = storage;
-        type = new ConditionFactoryType(realResources);
+        this.lifecycleHandler = lifecycleHandler;
+        type = new ConditionFactoryType(log);
         pluginManager.addPluginListener(this, true);
     }
 
@@ -63,10 +63,10 @@ public final class ConditionFactory implements PluginListener {
     public ServerRealCommand createAddConditionCommand(String commandId, String commandName, String commandDescription,
                                                        final ServerRealConditionOwner owner,
                                                        final ServerRealList<ConditionData, ServerRealCondition> list) {
-        return new ServerRealCommand(serverRealResources, commandId, commandName, commandDescription, Arrays.asList(
-                new ServerRealParameter<String>(serverRealResources, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(realResources)),
-                new ServerRealParameter<String>(serverRealResources, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(realResources)),
-                new ServerRealParameter<ServerConditionFactory<?>>(serverRealResources, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
+        return new ServerRealCommand(log, commandId, commandName, commandDescription, Arrays.asList(
+                new ServerRealParameter<String>(log, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(log)),
+                new ServerRealParameter<String>(log, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(log)),
+                new ServerRealParameter<ServerConditionFactory<?>>(log, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -91,15 +91,15 @@ public final class ConditionFactory implements PluginListener {
         ServerConditionFactory<?> conditionFactory = type.deserialise(conditionType.get(0));
         if(conditionFactory == null)
             throw new HousemateException("No factory known for condition type " + conditionType);
-        return conditionFactory.create(serverRealResources, name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), owner);
+        return conditionFactory.create(log, name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), owner, lifecycleHandler);
     }
 
     @Override
     public void pluginAdded(PluginDescriptor plugin) {
         for(ServerConditionFactory<?> factory : plugin.getConditionFactories()) {
-            realResources.getLog().d("Adding new condition factory for type " + factory.getTypeId());
+            log.d("Adding new condition factory for type " + factory.getTypeId());
             factories.put(factory.getTypeId(), factory);
-            type.getOptions().add(new RealOption(realResources, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
+            type.getOptions().add(new RealOption(log, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
         }
     }
 
@@ -112,8 +112,8 @@ public final class ConditionFactory implements PluginListener {
     }
 
     private class ConditionFactoryType extends RealChoiceType<ServerConditionFactory<?>> {
-        protected ConditionFactoryType(RealResources resources) {
-            super(resources, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
+        protected ConditionFactoryType(Log log) {
+            super(log, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
         }
 
         @Override

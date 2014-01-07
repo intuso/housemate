@@ -27,6 +27,7 @@ import com.intuso.housemate.server.client.LocalClient;
 import com.intuso.housemate.server.storage.ServerObjectPersister;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
 
 import java.util.HashMap;
@@ -48,21 +49,20 @@ public class RootObjectBridge
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
     @Inject
-    public RootObjectBridge(final ServerBridgeResources resources, ServerRealRootObject realRoot,
+    public RootObjectBridge(Log log, ServerRealRootObject realRoot,
                             ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types,
                             ServerProxyRootObject proxyRoot, LocalClient client, ServerObjectPersister storage) {
-        super(resources, new RootData());
-        resources.setRoot(this);
-        users = new ListBridge<UserData, ServerRealUser, UserBridge>(resources,
-                realRoot.getUsers(), new UserBridge.Converter(resources, types));
+        super(log, new RootData());
+        users = new ListBridge<UserData, ServerRealUser, UserBridge>(log,
+                realRoot.getUsers(), new UserBridge.Converter(log, types));
         this.types = types;
-        devices = new ListBridge<DeviceData, ServerProxyDevice, DeviceBridge>(resources,
-                proxyRoot.getDevices(), new DeviceBridge.Converter(resources, types));
-        automations = new ListBridge<AutomationData, ServerRealAutomation, AutomationBridge>(resources,
-                realRoot.getAutomations(), new AutomationBridge.Converter(resources, types));
-        addUser = new CommandBridge(resources, realRoot.getAddUserCommand(), types);
-        addDevice = new CommandBridge(resources, client.getAddDeviceCommand(), types);
-        addAutomation = new CommandBridge(resources, realRoot.getAddAutomationCommand(), types);
+        devices = new ListBridge<DeviceData, ServerProxyDevice, DeviceBridge>(log,
+                proxyRoot.getDevices(), new DeviceBridge.Converter(log, types));
+        automations = new ListBridge<AutomationData, ServerRealAutomation, AutomationBridge>(log,
+                realRoot.getAutomations(), new AutomationBridge.Converter(log, types));
+        addUser = new CommandBridge(log, realRoot.getAddUserCommand(), types);
+        addDevice = new CommandBridge(log, client.getAddDeviceCommand(), types);
+        addAutomation = new CommandBridge(log, realRoot.getAddAutomationCommand(), types);
         addChild(users);
         addChild(types);
         addChild(devices);
@@ -125,33 +125,33 @@ public class RootObjectBridge
     public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         super.ancestorObjectAdded(ancestorPath, ancestor);
         if(ancestor instanceof HousemateObject)
-            objectAdded(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) ancestor);
+            objectAdded(ancestorPath, (HousemateObject<?, ?, ?, ?>) ancestor);
     }
 
     @Override
     public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
         super.ancestorObjectRemoved(ancestorPath, ancestor);
         if(ancestor instanceof HousemateObject)
-            objectRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?, ?>) ancestor);
+            objectRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?>) ancestor);
     }
 
-    private void objectAdded(String path, HousemateObject<?, ?, ?, ?, ?> object) {
+    private void objectAdded(String path, HousemateObject<?, ?, ?, ?> object) {
         if(objectLifecycleListeners.get(path) != null) {
             String splitPath[] = path.split(BaseObject.PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
                 listener.objectCreated(splitPath, object);
         }
-        for(HousemateObject<?, ?, ?, ?, ?> child : object.getChildren())
+        for(HousemateObject<?, ?, ?, ?> child : object.getChildren())
             objectAdded(path + BaseObject.PATH_SEPARATOR + child.getId(), child);
     }
 
-    private void objectRemoved(String path, HousemateObject<?, ?, ?, ?, ?> object) {
+    private void objectRemoved(String path, HousemateObject<?, ?, ?, ?> object) {
         if(objectLifecycleListeners.get(path) != null) {
             String splitPath[] = path.split(BaseObject.PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
                 listener.objectRemoved(splitPath, object);
         }
-        for(HousemateObject<?, ?, ?, ?, ?> child : object.getChildren())
+        for(HousemateObject<?, ?, ?, ?> child : object.getChildren())
             objectRemoved(path + BaseObject.PATH_SEPARATOR + child.getId(), child);
     }
 

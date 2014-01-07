@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public interface ProxyFeature<
             FEATURE extends ProxyFeature<?, ?>,
-            DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>
+            DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?>>
         extends Feature {
 
     /**

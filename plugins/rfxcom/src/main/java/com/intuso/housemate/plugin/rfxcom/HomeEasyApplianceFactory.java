@@ -1,8 +1,8 @@
 package com.intuso.housemate.plugin.rfxcom;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.util.HomeEasy;
 
 /**
@@ -31,7 +31,7 @@ public class HomeEasyApplianceFactory implements RealDeviceFactory<HomeEasyAppli
     }
 
     @Override
-    public HomeEasyAppliance create(RealResources resources, String id, String name, String description) throws HousemateException {
-        return new HomeEasyAppliance(resources, homeEasy, id, name, description);
+    public HomeEasyAppliance create(Log log, String id, String name, String description) throws HousemateException {
+        return new HomeEasyAppliance(log, homeEasy, id, name, description);
     }
 }

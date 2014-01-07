@@ -1,8 +1,8 @@
 package com.intuso.housemate.object.real.impl.device;
 
 import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.device.feature.RealStatefulPowerControl;
+import com.intuso.utilities.log.Log;
 
 /**
  * Device sub class for all devices that allow simple On/Off functionality. Can be extended again to
@@ -16,13 +16,13 @@ public abstract class StatefulPoweredDevice
     public Values values;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id {@inheritDoc}
      * @param name {@inheritDoc}
      * @param description {@inheritDoc}
      */
-	public StatefulPoweredDevice(RealResources resources, String id, String name, String description) {
-		super(resources, id, name, description);
+	public StatefulPoweredDevice(Log log, String id, String name, String description) {
+		super(log, id, name, description);
 	}
 
     /**

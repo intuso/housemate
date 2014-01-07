@@ -5,9 +5,9 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
 import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.server.plugin.main.type.comparison.Comparison;
 import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueAvailableListener;
@@ -17,6 +17,7 @@ import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -45,11 +46,12 @@ public class ValueComparison extends ServerRealCondition {
 	 * @throws com.intuso.housemate.api.HousemateException
 	 */
     @Inject
-	public ValueComparison(ServerRealResources resources, String id, String name, String description,
-                           ServerRealConditionOwner owner, RealList<TypeData<?>, RealType<?, ?, ?>> types, ComparisonType comparisonType) {
-        super(resources, id, name, description, owner);
+	public ValueComparison(Log log, String id, String name, String description,
+                           ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler,
+                           RealList<TypeData<?>, RealType<?, ?, ?>> types, ComparisonType comparisonType) {
+        super(log, id, name, description, owner, lifecycleHandler);
         this.types = types;
-        comparisonProperty = new ServerRealProperty<Comparison>(resources, COMPARISON_ID, COMPARISON_NAME,
+        comparisonProperty = new ServerRealProperty<Comparison>(log, COMPARISON_ID, COMPARISON_NAME,
                 COMPARISON_DESCRIPTION, comparisonType, (List)null);
         getProperties().add(comparisonProperty);
         propertyListener = new PropertyListener();

@@ -2,8 +2,8 @@ package com.intuso.housemate.server.plugin;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -21,21 +21,21 @@ import java.util.List;
 public class PluginManager {
 
     private final Log log;
-    private final RealResources realResources;
+    private final Injector injector;
 
     private final List<PluginDescriptor> plugins = Lists.newArrayList();
     private final Listeners<PluginListener> pluginListeners = new Listeners<PluginListener>();
 
     @Inject
-    public PluginManager(Log log, RealResources realResources) {
+    public PluginManager(Log log, Injector injector) {
         this.log = log;
-        this.realResources = realResources;
+        this.injector = injector;
     }
 
     public void addPlugin(PluginDescriptor plugin) {
         log.d("New Plugin: " + plugin.getClass().getName());
         try {
-            plugin.init(realResources);
+            plugin.init(log, injector);
         } catch(HousemateException e) {
             log.e("Failed to initialise plugin", e);
             return;

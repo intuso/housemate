@@ -1,6 +1,7 @@
 package com.intuso.housemate.comms.transport.rest.resources;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Injector;
 import com.intuso.housemate.api.authentication.UsernamePassword;
 import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.object.HousemateObject;
@@ -9,9 +10,7 @@ import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -32,10 +31,10 @@ public class ContextualResource
     // TODO hack until figure out why session doesn't work
     private static SimpleProxyObject.Root ROOT;
 
-    private final SimpleProxyResources<SimpleProxyFactory.All> resources;
+    private final Injector injector;
 
-    public ContextualResource(SimpleProxyResources<SimpleProxyFactory.All> resources) {
-        this.resources = resources;
+    public ContextualResource(Injector injector) {
+        this.injector = injector;
     }
 
     // Hack to allow logging in via a browser
@@ -56,7 +55,7 @@ public class ContextualResource
             SimpleProxyObject.Root root = (SimpleProxyObject.Root)request.getAttribute("root");
             root.logout();
         }
-        SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
+        SimpleProxyObject.Root root = injector.getInstance(SimpleProxyObject.Root.class);
         root.addObjectListener(this);
         root.login(new UsernamePassword(username, password, false));
         request.setAttribute("root", root); ROOT = root;

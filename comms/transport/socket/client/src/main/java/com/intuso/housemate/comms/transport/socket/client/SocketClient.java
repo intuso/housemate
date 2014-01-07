@@ -5,7 +5,8 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.NoPayload;
-import com.intuso.housemate.api.resources.Resources;
+import com.intuso.utilities.log.Log;
+import com.intuso.utilities.properties.api.PropertyContainer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,12 +25,7 @@ public class SocketClient extends Router {
     public final static String SERVER_PORT = "socket.server.port";
     public final static String SERVER_HOST = "socket.server.host";
 
-    private final Resources resources;
-
-    /**
-     * True if a connection attempt is underway
-     */
-    private boolean connecting;
+    private PropertyContainer properties;
 
     /**
      * The socket to send/receive over
@@ -59,9 +55,9 @@ public class SocketClient extends Router {
      * @throws HousemateException
      */
     @Inject
-    public SocketClient(Resources resources) {
-        super(resources);
-        this.resources = resources;
+    public SocketClient(Log log, PropertyContainer properties) {
+        super(log);
+        this.properties = properties;
         // create the queues and threads
         outputQueue = new LinkedBlockingQueue<Message>();
     }
@@ -144,8 +140,8 @@ public class SocketClient extends Router {
         @Override
         public void run() {
             setRouterStatus(Status.Connecting);
-            String host = resources.getProperties().get(SERVER_HOST);
-            int port = Integer.parseInt(resources.getProperties().get(SERVER_PORT));
+            String host = properties.get(SERVER_HOST);
+            int port = Integer.parseInt(properties.get(SERVER_PORT));
 
             // log for debug info
             getLog().d("Server host is \"" + host + "\"");

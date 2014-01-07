@@ -1,6 +1,5 @@
 package com.intuso.housemate.server.object;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.automation.Automation;
@@ -13,18 +12,20 @@ import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.real.RealCommand;
+import com.intuso.housemate.object.real.RealDevice;
+import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.object.server.LifecycleHandler;
+import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.DeviceFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.housemate.server.storage.Storage;
-import com.intuso.housemate.object.server.LifecycleHandler;
-import com.intuso.housemate.object.server.real.*;
-import com.intuso.housemate.object.real.*;
-import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.utilities.log.Log;
 
 import java.security.MessageDigest;
@@ -34,8 +35,6 @@ import java.util.Arrays;
 public class LifecycleHandlerImpl implements LifecycleHandler {
 
     private final Log log;
-    private final ServerRealResources serverRealResources;
-    private final RealResources realResources;
     private final Storage storage;
 
     private final DeviceFactory deviceFactory;
@@ -62,12 +61,10 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     };
 
     @Inject
-    public LifecycleHandlerImpl(Log log, ServerRealResources serverRealResources, RealResources realResources,
+    public LifecycleHandlerImpl(Log log,
                                 Storage storage, DeviceFactory deviceFactory, ConditionFactory conditionFactory,
                                 TaskFactory taskFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
         this.log = log;
-        this.serverRealResources = serverRealResources;
-        this.realResources = realResources;
         this.storage = storage;
         this.deviceFactory = deviceFactory;
         this.conditionFactory = conditionFactory;
@@ -77,9 +74,9 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Override
     public ServerRealCommand createAddUserCommand(final ServerRealList<UserData, ServerRealUser> users) {
-        return new ServerRealCommand(serverRealResources, Root.ADD_USER_ID, Root.ADD_USER_ID, "Add a new user", Arrays.<ServerRealParameter<?>>asList(
-                new ServerRealParameter<String>(serverRealResources, "username", "Username", "The username for the new user", new StringType(realResources)),
-                new ServerRealParameter<String>(serverRealResources, "password", "Password", "The password for the new user", new StringType(realResources))
+        return new ServerRealCommand(log, Root.ADD_USER_ID, Root.ADD_USER_ID, "Add a new user", Arrays.<ServerRealParameter<?>>asList(
+                new ServerRealParameter<String>(log, "username", "Username", "The username for the new user", new StringType(log)),
+                new ServerRealParameter<String>(log, "password", "Password", "The password for the new user", new StringType(log))
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -93,23 +90,22 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                 toSave.put("id", values.get("username"));
                 toSave.put("name", values.get("username"));
                 toSave.put("description", values.get("username"));
-                ServerRealUser user = new ServerRealUser(getResources(), toSave.get("id").getFirstValue(),
-                        toSave.get("name").getFirstValue(), toSave.get("description").getFirstValue(), LifecycleHandlerImpl.this);
+                ServerRealUser user = new ServerRealUser(log, toSave.get("id").getFirstValue(),
+                        toSave.get("name").getFirstValue(), toSave.get("description").getFirstValue(), new ServerRealUserOwner() {
+                    @Override
+                    public void remove(ServerRealUser user) {
+                        users.remove(user.getId());
+                        try {
+                            storage.removeValues(user.getPath());
+                        } catch(HousemateException e) {
+                            log.e("Failed to remove stored details for user " + Arrays.toString(user.getPath()));
+                        }
+                    }
+                });
                 users.add(user);
                 storage.saveValues(users.getPath(), user.getId(), toSave);
             }
         };
-    }
-
-    @Override
-    public ServerRealCommand createRemoveUserCommand(final ServerRealUser user) {
-        return new ServerRealCommand(serverRealResources, User.REMOVE_COMMAND_ID, User.REMOVE_COMMAND_ID, "Remove the user", Lists.<ServerRealParameter<?>>newArrayList()) {
-                    @Override
-                    public void perform(TypeInstanceMap values) throws HousemateException {
-                        getResources().getRoot().getUsers().remove(user.getId());
-                        storage.removeValues(user.getPath());
-                    }
-                };
     }
 
     @Override
@@ -120,29 +116,31 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Override
     public ServerRealCommand createAddAutomationCommand(final ServerRealList<AutomationData, ServerRealAutomation> automations) {
-        return new ServerRealCommand(serverRealResources, Root.ADD_AUTOMATION_ID, Root.ADD_AUTOMATION_ID, "Add a new automation", Arrays.<ServerRealParameter<?>>asList(
-                new ServerRealParameter<String>(serverRealResources, "name", "Name", "The name for the new automation", new StringType(realResources)),
-                new ServerRealParameter<String>(serverRealResources, "description", "Description", "The description for the new automation", new StringType(realResources))
+        return new ServerRealCommand(log, Root.ADD_AUTOMATION_ID, Root.ADD_AUTOMATION_ID, "Add a new automation", Arrays.<ServerRealParameter<?>>asList(
+                new ServerRealParameter<String>(log, "name", "Name", "The name for the new automation", new StringType(log)),
+                new ServerRealParameter<String>(log, "description", "Description", "The description for the new automation", new StringType(log))
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 values.put("id", values.get("name")); // todo figure out a better way of getting an id
-                ServerRealAutomation automation = new ServerRealAutomation(getResources(), values.get("id").getFirstValue(),
-                        values.get("name").getFirstValue(), values.get("description").getFirstValue(), LifecycleHandlerImpl.this);
+                ServerRealAutomation automation = new ServerRealAutomation(log, values.get("id").getFirstValue(),
+                        values.get("name").getFirstValue(), values.get("description").getFirstValue(),
+                        new ServerRealAutomationOwner() {
+                            @Override
+                            public void remove(ServerRealAutomation automation) {
+                                automations.remove(automation.getId());
+                                try {
+                                    storage.removeValues(automation.getPath());
+                                } catch(HousemateException e) {
+                                    log.e("Failed to remove stored details for automation " + Arrays.toString(automation.getPath()));
+                                }
+                            }
+                        }, LifecycleHandlerImpl.this);
                 automations.add(automation);
                 storage.saveValues(automations.getPath(), automation.getId(), values);
                 automation.getRunningValue().addObjectListener(runningListener);
             }
         };
-    }
-
-    @Override
-    public void automationRemoved(String[] path) {
-        try {
-            storage.removeValues(path);
-        } catch(HousemateException e) {
-            log.e("Failed to remove stored details for automation " + Arrays.toString(path));
-        }
     }
 
     @Override

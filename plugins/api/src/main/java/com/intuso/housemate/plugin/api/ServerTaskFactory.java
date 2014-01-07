@@ -1,9 +1,9 @@
 package com.intuso.housemate.plugin.api;
 
-import com.intuso.housemate.object.server.real.ServerRealResources;
-import com.intuso.housemate.object.server.real.ServerRealTask;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.object.server.real.ServerRealTask;
 import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
+import com.intuso.utilities.log.Log;
 
 /**
  * @param <TASK> the type of the tasks created by this factory
@@ -30,12 +30,12 @@ public interface ServerTaskFactory<TASK extends ServerRealTask> {
 
     /**
      * Creates a task
-     * @param resources the resources for the task
+     * @param log the resources for the task
      * @param id the task's id
      * @param name the task's name
      * @param description the task's description
      * @return a new task
      * @throws HousemateException if the condition cannot be created
      */
-    public TASK create(ServerRealResources resources, String id, String name, String description, ServerRealTaskOwner owner) throws HousemateException;
+    public TASK create(Log log, String id, String name, String description, ServerRealTaskOwner owner) throws HousemateException;
 }

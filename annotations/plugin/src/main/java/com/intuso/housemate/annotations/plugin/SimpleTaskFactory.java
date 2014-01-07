@@ -1,10 +1,10 @@
 package com.intuso.housemate.annotations.plugin;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.server.real.ServerRealTask;
 import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
 import com.intuso.housemate.plugin.api.ServerTaskFactory;
+import com.intuso.utilities.log.Log;
 
 import java.lang.reflect.Constructor;
 
@@ -37,10 +37,10 @@ public class SimpleTaskFactory implements ServerTaskFactory<ServerRealTask> {
     }
 
     @Override
-    public ServerRealTask create(ServerRealResources resources, String id, String name, String description,
+    public ServerRealTask create(Log log, String id, String name, String description,
                                  ServerRealTaskOwner owner) throws HousemateException {
         try {
-            return constructor.newInstance(resources, id, name, description, owner);
+            return constructor.newInstance(log, id, name, description, owner);
         } catch(Exception e) {
             throw new HousemateException("Failed to create task", e);
         }

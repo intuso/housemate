@@ -5,7 +5,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealParameter;
-import com.intuso.housemate.object.real.RealResources;
+import com.intuso.utilities.log.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,8 +20,8 @@ public class CommandImpl extends RealCommand {
     private final Object instance;
     private final ParameterConverter parameterConverter;
 
-    protected CommandImpl(RealResources resources, String id, String name, String description, List<RealParameter<?>> parameters, Method method, Object instance) {
-        super(resources, id, name, description, parameters);
+    protected CommandImpl(Log log, String id, String name, String description, List<RealParameter<?>> parameters, Method method, Object instance) {
+        super(log, id, name, description, parameters);
         this.method = method;
         this.instance = instance;
         parameterConverter = new ParameterConverter(parameters);

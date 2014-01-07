@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.user.UserListener;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -16,10 +17,10 @@ public class UserBridge
 
     private final CommandBridge removeCommand;
 
-    public UserBridge(ServerBridgeResources resources, User user,
+    public UserBridge(Log log, User user,
                       ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(resources, new UserData(user.getId(), user.getName(), user.getDescription()));
-        removeCommand = new CommandBridge(resources, user.getRemoveCommand(), types);
+        super(log, new UserData(user.getId(), user.getName(), user.getDescription()));
+        removeCommand = new CommandBridge(log, user.getRemoveCommand(), types);
         addChild(removeCommand);
     }
 
@@ -30,17 +31,17 @@ public class UserBridge
 
     public final static class Converter implements Function<User<?>, UserBridge> {
 
-        private final ServerBridgeResources resources;
+        private final Log log;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(ServerBridgeResources resources, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-            this.resources = resources;
+        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+            this.log = log;
             this.types = types;
         }
 
         @Override
         public UserBridge apply(User<?> user) {
-            return new UserBridge(resources, user, types);
+            return new UserBridge(log, user, types);
         }
     }
 }

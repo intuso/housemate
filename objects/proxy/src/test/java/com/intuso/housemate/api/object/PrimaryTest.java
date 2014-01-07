@@ -6,10 +6,10 @@ import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceListener;
 import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
+import com.intuso.utilities.log.Log;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,10 +37,12 @@ public class PrimaryTest {
 
     private SimpleProxyObject.List<DeviceData, SimpleProxyObject.Device> proxyList
             = new SimpleProxyObject.List<DeviceData, SimpleProxyObject.Device>(
-            SimpleProxyFactory.changeFactoryType(TestEnvironment.TEST_INSTANCE.getProxyResources(), new SimpleProxyFactory.Device()),
-            TestEnvironment.TEST_INSTANCE.getProxyResources(),
+            TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+            TestEnvironment.TEST_INSTANCE.getInjector(),
             new ListData(PRIMARIES, PRIMARIES, PRIMARIES));
-    private RealList<DeviceData, RealDevice> realList = new RealList<DeviceData, RealDevice>(TestEnvironment.TEST_INSTANCE.getRealResources(), PRIMARIES, PRIMARIES, PRIMARIES, new ArrayList<RealDevice>());
+    private RealList<DeviceData, RealDevice> realList = new RealList<DeviceData, RealDevice>(
+            TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+            PRIMARIES, PRIMARIES, PRIMARIES, new ArrayList<RealDevice>());
     private RealDevice realPrimary;
     private SimpleProxyObject.Device proxyPrimary;
 
@@ -51,7 +53,8 @@ public class PrimaryTest {
     public void addLists() throws HousemateException {
         TestEnvironment.TEST_INSTANCE.getProxyRoot().addChild(proxyList);
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
-        realPrimary = new RealDevice(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-primary", "My Primary", "description");
+        realPrimary = new RealDevice(TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+                "my-primary", "My Primary", "description");
         realList.add(realPrimary);
         proxyPrimary = proxyList.get("my-primary");
     }

@@ -8,8 +8,8 @@ import com.intuso.utilities.listener.Listener;
  * @param <CHILD> the child type
  */
 public interface ChildLoadedListener<
-            OBJECT extends ProxyObject<?, ?, ?, ?, CHILD, ?, ?>,
-            CHILD extends ProxyObject<?, ?, ?, ?, ?, ?, ?>>
+            OBJECT extends ProxyObject<?, ?, CHILD, ?, ?>,
+            CHILD extends ProxyObject<?, ?, ?, ?, ?>>
         extends Listener {
 
     /**

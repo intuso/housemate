@@ -4,8 +4,8 @@ import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.type.SimpleTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.utilities.log.Log;
 
 /**
  * Base class for types that have a simple type, such as string, integer etc
@@ -15,12 +15,12 @@ public abstract class RealSimpleType<O> extends RealType<SimpleTypeData, NoChild
     private final TypeSerialiser<O> serialiser;
 
     /**
-     * @param resources the resources
+     * @param log the log
      * @param type the type of the simple type
      * @param serialiser the serialiser for the type
      */
-    protected RealSimpleType(RealResources resources, SimpleTypeData.Type type, TypeSerialiser<O> serialiser) {
-        super(resources, new SimpleTypeData(type));
+    protected RealSimpleType(Log log, SimpleTypeData.Type type, TypeSerialiser<O> serialiser) {
+        super(log, new SimpleTypeData(type));
         this.serialiser = serialiser;
     }
 

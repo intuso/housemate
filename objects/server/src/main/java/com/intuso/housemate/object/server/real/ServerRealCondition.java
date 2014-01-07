@@ -11,6 +11,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,40 +32,41 @@ public abstract class ServerRealCondition
     private ServerRealList<ConditionData, ServerRealCondition> conditions;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the object's id
      * @param name the object's name
      * @param description the object's description
      * @param properties the condition's properties
      */
-    public ServerRealCondition(ServerRealResources resources, String id, String name, String description, ServerRealConditionOwner owner,
+    public ServerRealCondition(Log log, String id, String name, String description, ServerRealConditionOwner owner,
+                               LifecycleHandler lifecycleHandler,
                                ServerRealProperty<?>... properties) {
-        this(resources, id, name, description, owner, Arrays.asList(properties));
+        this(log, id, name, description, owner, lifecycleHandler, Arrays.asList(properties));
     }
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the object's id
      * @param name the object's name
      * @param description the object's description
      * @param properties the condition's properties
      */
-    public ServerRealCondition(final ServerRealResources resources, String id, String name, String description,
-                               final ServerRealConditionOwner owner, java.util.List<ServerRealProperty<?>> properties) {
-        super(resources, new ConditionData(id, name, description));
-        removeCommand = new ServerRealCommand(resources, REMOVE_ID, REMOVE_ID, "Remove the condition", Lists.<ServerRealParameter<?>>newArrayList()) {
+    public ServerRealCondition(final Log log, String id, String name, String description,
+                               final ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler,
+                               java.util.List<ServerRealProperty<?>> properties) {
+        super(log, new ConditionData(id, name, description));
+        removeCommand = new ServerRealCommand(log, REMOVE_ID, REMOVE_ID, "Remove the condition", Lists.<ServerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 owner.remove(ServerRealCondition.this);
             }
         };
-        errorValue = new ServerRealValue<String>(resources, ERROR_ID, ERROR_ID, "The current error",
-                new StringType(resources.getRealResources()), (List)null);
-        satisfiedValue = new ServerRealValue<Boolean>(resources, SATISFIED_ID, SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(resources.getRealResources()), false);
-        propertyList = new ServerRealList<PropertyData, ServerRealProperty<?>>(resources, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
-        conditions = new ServerRealList<ConditionData, ServerRealCondition>(resources, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
+        errorValue = new ServerRealValue<String>(log, ERROR_ID, ERROR_ID, "The current error", new StringType(log), (List)null);
+        satisfiedValue = new ServerRealValue<Boolean>(log, SATISFIED_ID, SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(log), false);
+        propertyList = new ServerRealList<PropertyData, ServerRealProperty<?>>(log, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
+        conditions = new ServerRealList<ConditionData, ServerRealCondition>(log, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
         // add a command to add automations to the automation list
-        addConditionCommand = getResources().getInjector().getInstance(LifecycleHandler.class).createAddConditionCommand(conditions, this);
+        addConditionCommand = lifecycleHandler.createAddConditionCommand(conditions, this);
         addChild(removeCommand);
         addChild(errorValue);
         addChild(satisfiedValue);

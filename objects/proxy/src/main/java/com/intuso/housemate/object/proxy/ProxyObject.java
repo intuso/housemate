@@ -1,8 +1,9 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
@@ -14,6 +15,7 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectFactory;
 import com.intuso.utilities.object.ObjectListener;
@@ -23,8 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @param <RESOURCES> the type of the resources
- * @param <CHILD_RESOURCES> the type of the child resources
  * @param <DATA> the type of the data
  * @param <CHILD_DATA> the type of the child data
  * @param <CHILD> the type of the children
@@ -32,33 +32,33 @@ import java.util.Set;
  * @param <LISTENER> the type of the listener
  */
 public abstract class ProxyObject<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, CHILD_DATA, CHILD>, ?>,
-            CHILD_RESOURCES extends ProxyResources<?, ?>,
             DATA extends HousemateData<CHILD_DATA>,
             CHILD_DATA extends HousemateData<?>,
-            CHILD extends ProxyObject<?, ?, ? extends CHILD_DATA, ?, ?, ?, ?>,
-            OBJECT extends ProxyObject<?, CHILD_RESOURCES, DATA, CHILD_DATA, CHILD, OBJECT, LISTENER>,
+            CHILD extends ProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
+            OBJECT extends ProxyObject<DATA, CHILD_DATA, CHILD, OBJECT, LISTENER>,
             LISTENER extends com.intuso.housemate.api.object.ObjectListener>
-        extends HousemateObject<RESOURCES, DATA, CHILD_DATA, CHILD, LISTENER>
+        extends HousemateObject<DATA, CHILD_DATA, CHILD, LISTENER>
         implements ObjectListener<CHILD> {
 
-    private Joiner PATH_JOINER = Joiner.on("/");
-
     private ProxyRoot<?, ?, ?, ?, ?, ?> proxyRoot;
-    private final CHILD_RESOURCES childResources;
+    private final Injector injector;
     private final Map<String, LoadManager> pendingLoads = Maps.newHashMap();
     private final Map<String, ChildOverview> childData = Maps.newHashMap();
     private final Listeners<AvailableChildrenListener<? super OBJECT>> availableChildrenListeners = new Listeners<AvailableChildrenListener<? super OBJECT>>();
     private final Map<String, Listeners<ChildLoadedListener<? super OBJECT, ? super CHILD>>> childLoadedListeners = Maps.newHashMap();
 
     /**
-     * @param resources the resources
-     * @param childResources the child resources
+     * @param log the log
+     * @param injector the injector
      * @param data the data object
      */
-    protected ProxyObject(RESOURCES resources, CHILD_RESOURCES childResources, DATA data) {
-        super(resources, data);
-        this.childResources = childResources;
+    protected ProxyObject(Log log, Injector injector, DATA data) {
+        super(log, data);
+        this.injector = injector;
+    }
+
+    public Injector getInjector() {
+        return injector;
     }
 
     @Override
@@ -81,7 +81,7 @@ public abstract class ProxyObject<
             public void messageReceived(Message<ChildOverview> message) throws HousemateException {
                 ChildOverview cd = message.getPayload();
                 childData.remove(cd.getId());
-                for(AvailableChildrenListener<? super OBJECT> listener : availableChildrenListeners)
+                for (AvailableChildrenListener<? super OBJECT> listener : availableChildrenListeners)
                     listener.childRemoved(getThis(), cd);
             }
         }));
@@ -89,19 +89,19 @@ public abstract class ProxyObject<
             @Override
             public void messageReceived(Message<LoadResponse<CHILD_DATA>> message) throws HousemateException {
                 LoadManager manager = pendingLoads.get(message.getPayload().getLoaderName());
-                if(manager != null) {
-                    if(message.getPayload().getError() != null) {
+                if (manager != null) {
+                    if (message.getPayload().getError() != null) {
                         getLog().e("Failed to load " + message.getPayload().getLoaderName() + " tree " + message.getPayload().getTreeData().getId() + ". " + message.getPayload().getError());
                         manager.responseReceived(message.getPayload().getTreeData().getId(), false);
                     } else {
                         try {
-                            if(message.getPayload().getTreeData().getData() != null) {
+                            if (message.getPayload().getTreeData().getData() != null) {
                                 CHILD object = createObject(message.getPayload().getTreeData());
                                 object.init(ProxyObject.this);
                                 addChild(object);
                             }
                             manager.responseReceived(message.getPayload().getTreeData().getId(), true);
-                        } catch(HousemateException e) {
+                        } catch (HousemateException e) {
                             getLog().e("Failed to unwrap load response", e);
                             manager.responseReceived(message.getPayload().getTreeData().getId(), true);
                         }
@@ -113,7 +113,7 @@ public abstract class ProxyObject<
     }
 
     protected CHILD createObject(TreeData<CHILD_DATA> treeData) throws HousemateException {
-        CHILD object = getResources().getObjectFactory().create(getSubResources(), treeData.getData());
+        CHILD object = (CHILD)injector.getInstance(new Key<HousemateObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>>() {}).create(treeData.getData());
         getLog().d("Created " + object.getId());
         object.initObject(treeData);
         return object;
@@ -126,7 +126,7 @@ public abstract class ProxyObject<
     }
 
     @Override
-    protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {
+    protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?> parent) {
 
         // get the server for this object
         if(this instanceof ProxyRoot)
@@ -139,7 +139,7 @@ public abstract class ProxyObject<
             createChildren(new ObjectFactory<CHILD_DATA, CHILD, HousemateException>() {
                 @Override
                 public CHILD create(CHILD_DATA data) throws HousemateException {
-                    return getResources().getObjectFactory().create(getSubResources(), data);
+                    return (CHILD)injector.getInstance(new Key<HousemateObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>>() {}).create(data);
                 }
             });
         } catch(HousemateException e) {
@@ -148,7 +148,7 @@ public abstract class ProxyObject<
     }
 
     @Override
-    protected void initPostRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {}
+    protected void initPostRecurseHook(HousemateObject<?, ?, ?, ?> parent) {}
 
     /**
      * Sends a message to the server
@@ -166,14 +166,6 @@ public abstract class ProxyObject<
      */
     protected ProxyRoot<?, ?, ?, ?, ?, ?> getProxyRoot() {
         return proxyRoot;
-    }
-
-    /**
-     * Gets the child resources
-     * @return the child resources
-     */
-    protected CHILD_RESOURCES getSubResources() {
-        return childResources;
     }
 
     /**

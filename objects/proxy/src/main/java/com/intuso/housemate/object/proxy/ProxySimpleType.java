@@ -1,23 +1,24 @@
 package com.intuso.housemate.object.proxy;
 
+import com.google.inject.Injector;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.type.SimpleTypeData;
+import com.intuso.utilities.log.Log;
 
 /**
- * @param <RESOURCES> the type of the resources
  * @param <TYPE> the type of the type
  */
 public abstract class ProxySimpleType<
-            RESOURCES extends ProxyResources<NoChildrenProxyObjectFactory, ?>,
-            TYPE extends ProxySimpleType<RESOURCES, TYPE>>
-        extends ProxyType<RESOURCES, ProxyResources<NoChildrenProxyObjectFactory, ?>, SimpleTypeData, NoChildrenData, NoChildrenProxyObject, TYPE> {
+            TYPE extends ProxySimpleType<TYPE>>
+        extends ProxyType<SimpleTypeData, NoChildrenData, NoChildrenProxyObject, TYPE> {
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxySimpleType(RESOURCES resources, SimpleTypeData data) {
-        super(resources, null, data);
+    public ProxySimpleType(Log log, Injector injector, SimpleTypeData data) {
+        super(log, injector, data);
     }
 
     /**

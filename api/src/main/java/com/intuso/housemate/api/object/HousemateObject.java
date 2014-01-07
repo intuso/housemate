@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.log.Log;
@@ -18,17 +17,15 @@ import java.util.Map;
 /**
  * Base class for all Housemate object implementations
  *
- * @param <RESOURCES> the type of the resources
  * @param <DATA> the type of this object's data object
  * @param <CHILD_DATA> the type of this object's children's data objects
  * @param <CHILD> the type of this object's children objects
  * @param <LISTENER> the type of this object's listener
  */
 public abstract class HousemateObject<
-            RESOURCES extends Resources,
             DATA extends HousemateData<CHILD_DATA>,
             CHILD_DATA extends HousemateData<?>,
-            CHILD extends HousemateObject<?, ? extends CHILD_DATA, ?, ?, ?>,
+            CHILD extends HousemateObject<? extends CHILD_DATA, ?, ?, ?>,
             LISTENER extends ObjectListener>
         extends BaseObject<DATA, CHILD_DATA, CHILD, HousemateException>
         implements BaseHousemateObject<LISTENER> {
@@ -41,7 +38,7 @@ public abstract class HousemateObject<
     public final static String LOAD_REQUEST = "load-request";
     public final static String LOAD_RESPONSE = "load-response";
 
-    private final RESOURCES resources;
+    private final Log log;
 
     private String path[];
     private final Listeners<LISTENER> objectListeners = new Listeners<LISTENER>();
@@ -49,12 +46,11 @@ public abstract class HousemateObject<
     private final List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
 
     /**
-     * @param resources the resources
      * @param data the data object
      */
-    protected HousemateObject(RESOURCES resources, DATA data) {
+    protected HousemateObject(Log log, DATA data) {
         super(data);
-        this.resources = resources;
+        this.log = log;
     }
 
     /**
@@ -74,19 +70,11 @@ public abstract class HousemateObject<
     }
 
     /**
-     * Gets this object's resources
-     * @return this object's resources
-     */
-    public final RESOURCES getResources() {
-        return resources;
-    }
-
-    /**
      * Gets this object's log instance
      * @return this object's log instance
      */
-    protected final Log getLog() {
-        return resources.getLog();
+    public final Log getLog() {
+        return log;
     }
 
     /**
@@ -147,7 +135,7 @@ public abstract class HousemateObject<
                 listener.messageReceived(message);
         } else if(message.getPath().length > path.length) {
             String childName = message.getPath()[path.length];
-            HousemateObject<?, ?, ?, ?, ?> child = getChild(childName);
+            HousemateObject<?, ?, ?, ?> child = getChild(childName);
             if(child == null)
                 throw new HousemateException("Unknown child \"" + childName + "\" at depth " + path.length + " of " + Arrays.toString(message.getPath()));
             child.distributeMessage(message);
@@ -159,7 +147,7 @@ public abstract class HousemateObject<
      * Initialise this object
      * @param parent the object's parent
      */
-    public final void init(HousemateObject<?, ?, ?, ?, ?> parent) {
+    public final void init(HousemateObject<?, ?, ?, ?> parent) {
 
         // build the path
         if(parent != null) {
@@ -193,13 +181,13 @@ public abstract class HousemateObject<
      * Hook for further intialisation of this object before initialisation recurses to its children
      * @param parent this object's parent object
      */
-    protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {}
+    protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?> parent) {}
 
     /**
      * Hook for further intialisation of this object after initialisation recurses to its children
      * @param parent this object's parent object
      */
-    protected void initPostRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {}
+    protected void initPostRecurseHook(HousemateObject<?, ?, ?, ?> parent) {}
 
     /**
      * Uninitialise this object
@@ -217,7 +205,7 @@ public abstract class HousemateObject<
      * @param path the path to get the object from
      * @return the object at that path, or null if none exists
      */
-    public final HousemateObject<?, ?, ?, ?, ?> getObject(String[] path) {
+    public final HousemateObject<?, ?, ?, ?> getObject(String[] path) {
         return getChild(this, path);
     }
 
@@ -228,7 +216,7 @@ public abstract class HousemateObject<
      * @param path the path to get the object from
      * @return the object at the path relative to the other object, or null if none exists
      */
-    public final static HousemateObject<?, ?, ?, ?, ?> getChild(HousemateObject<?, ?, ?, ?, ?> current, String[] path) {
+    public final static HousemateObject<?, ?, ?, ?> getChild(HousemateObject<?, ?, ?, ?> current, String[] path) {
         return getChild(current, path, 0);
     }
 
@@ -240,10 +228,10 @@ public abstract class HousemateObject<
      * @param depth the current index in the path
      * @return the object at the path relative to the other object, or null if none exists
      */
-    public final static HousemateObject<?, ?, ?, ?, ?> getChild(HousemateObject<?, ?, ?, ?, ?> current, String[] path, int depth) {
+    public final static HousemateObject<?, ?, ?, ?> getChild(HousemateObject<?, ?, ?, ?> current, String[] path, int depth) {
         if(depth >= path.length)
             return current;
-        HousemateObject<?, ?, ?, ?, ?> next = current.getChild(path[depth]);
+        HousemateObject<?, ?, ?, ?> next = current.getChild(path[depth]);
         if(next == null)
             return null;
         return getChild(next, path, depth + 1);

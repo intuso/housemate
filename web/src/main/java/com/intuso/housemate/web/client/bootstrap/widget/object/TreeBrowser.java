@@ -18,16 +18,16 @@ import java.util.List;
  */
 public class TreeBrowser extends CellTree {
 
-    public TreeBrowser(SelectionModel<ProxyObject<?, ?, ?, ?, ?, ?, ?>> selectionModel,
-                       ProxyObject<?, ?, ?, ?, ?, ?, ?> treeRoot) {
+    public TreeBrowser(SelectionModel<ProxyObject<?, ?, ?, ?, ?>> selectionModel,
+                       ProxyObject<?, ?, ?, ?, ?> treeRoot) {
         super(new Model(selectionModel), treeRoot);
     }
 
     private static class Model implements TreeViewModel {
 
-        private final SelectionModel<ProxyObject<?, ?, ?, ?, ?, ?, ?>> selectionModel;
+        private final SelectionModel<ProxyObject<?, ?, ?, ?, ?>> selectionModel;
 
-        private Model(SelectionModel<ProxyObject<?, ?, ?, ?, ?, ?, ?>> selectionModel) {
+        private Model(SelectionModel<ProxyObject<?, ?, ?, ?, ?>> selectionModel) {
             this.selectionModel = selectionModel;
         }
 
@@ -36,20 +36,20 @@ public class TreeBrowser extends CellTree {
 
             ObjectCell renderer = new ObjectCell();
 
-            ListDataProvider<ProxyObject<?, ?, ?, ?, ?, ?, ?>> dataProvider = new ListDataProvider<ProxyObject<?, ?, ?, ?, ?, ?, ?>>();
-            List<ProxyObject<?, ?, ?, ?, ?, ?, ?>> children = Lists.newArrayList();
-            for(ProxyObject<?, ?, ?, ?, ?, ?, ?> child : ((ProxyObject<?, ?, ?, ?, ?, ?, ?>)value).getChildren())
+            ListDataProvider<ProxyObject<?, ?, ?, ?, ?>> dataProvider = new ListDataProvider<ProxyObject<?, ?, ?, ?, ?>>();
+            List<ProxyObject<?, ?, ?, ?, ?>> children = Lists.newArrayList();
+            for(ProxyObject<?, ?, ?, ?, ?> child : ((ProxyObject<?, ?, ?, ?, ?>)value).getChildren())
                 children.add(child);
-            Collections.sort(children, new Comparator<HousemateObject<?, ?, ?, ?, ?>>() {
+            Collections.sort(children, new Comparator<HousemateObject<?, ?, ?, ?>>() {
                 @Override
-                public int compare(HousemateObject<?, ?, ?, ?, ?> o1, HousemateObject<?, ?, ?, ?, ?> o2) {
+                public int compare(HousemateObject<?, ?, ?, ?> o1, HousemateObject<?, ?, ?, ?> o2) {
                     return o1.getName().compareTo(o2.getName());
                 }
             });
             dataProvider.setList(children);
 
             // Return a node info that pairs the data with a cell.
-            return new DefaultNodeInfo<ProxyObject<?, ?, ?, ?, ?, ?, ?>>(dataProvider, renderer, selectionModel, null);
+            return new DefaultNodeInfo<ProxyObject<?, ?, ?, ?, ?>>(dataProvider, renderer, selectionModel, null);
         }
 
         @Override
@@ -58,9 +58,9 @@ public class TreeBrowser extends CellTree {
         }
     }
 
-    private static class ObjectCell extends AbstractCell<ProxyObject<?, ?, ?, ?, ?, ?, ?>> {
+    private static class ObjectCell extends AbstractCell<ProxyObject<?, ?, ?, ?, ?>> {
         @Override
-        public void render(Context context, ProxyObject<?, ?, ?, ?, ?, ?, ?> value, SafeHtmlBuilder sb) {
+        public void render(Context context, ProxyObject<?, ?, ?, ?, ?> value, SafeHtmlBuilder sb) {
             sb.appendEscaped(value.getName());
         }
     }

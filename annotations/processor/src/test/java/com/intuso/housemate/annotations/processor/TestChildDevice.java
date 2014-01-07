@@ -4,7 +4,7 @@ import com.intuso.housemate.annotations.basic.Command;
 import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.annotations.basic.Value;
 import com.intuso.housemate.annotations.basic.Values;
-import com.intuso.housemate.object.real.RealResources;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -19,8 +19,8 @@ public class TestChildDevice extends TestParentDevice {
 
     int currentVolume = 0;
 
-    public TestChildDevice(RealResources resources, String id, String name, String description) {
-        super(resources, id, name, description);
+    public TestChildDevice(Log log, String id, String name, String description) {
+        super(log, id, name, description);
     }
 
     @Command(id = "turn-up", name = "Turn Up", description = "Increase the volume")

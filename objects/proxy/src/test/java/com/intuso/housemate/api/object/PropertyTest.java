@@ -8,11 +8,11 @@ import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyFactory;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
+import com.intuso.utilities.log.Log;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,10 +31,12 @@ public class PropertyTest {
 
     private SimpleProxyObject.List<PropertyData, SimpleProxyObject.Property> proxyList
             = new SimpleProxyObject.List<PropertyData, SimpleProxyObject.Property>(
-            SimpleProxyFactory.changeFactoryType(TestEnvironment.TEST_INSTANCE.getProxyResources(), new SimpleProxyFactory.Property()),
-            TestEnvironment.TEST_INSTANCE.getProxyResources(),
+            TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+            TestEnvironment.TEST_INSTANCE.getInjector(),
             new ListData(PROPERTIES, PROPERTIES, PROPERTIES));
-    private RealList<PropertyData, RealProperty<?>> realList = new RealList<PropertyData, RealProperty<?>>(TestEnvironment.TEST_INSTANCE.getRealResources(), PROPERTIES, PROPERTIES, PROPERTIES, new ArrayList<RealProperty<?>>());
+    private RealList<PropertyData, RealProperty<?>> realList = new RealList<PropertyData, RealProperty<?>>(
+            TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+            PROPERTIES, PROPERTIES, PROPERTIES, new ArrayList<RealProperty<?>>());
     private RealProperty<Integer> realProperty;
     private SimpleProxyObject.Property proxyProperty;
 
@@ -45,7 +47,8 @@ public class PropertyTest {
     public void addLists() throws HousemateException {
         TestEnvironment.TEST_INSTANCE.getProxyRoot().addChild(proxyList);
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
-        realProperty = IntegerType.createProperty(TestEnvironment.TEST_INSTANCE.getRealResources(), "my-property", "My Property", "description", Arrays.asList(1234));
+        realProperty = IntegerType.createProperty(TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+                "my-property", "My Property", "description", Arrays.asList(1234));
         realList.add(realProperty);
         proxyProperty = proxyList.get("my-property");
     }

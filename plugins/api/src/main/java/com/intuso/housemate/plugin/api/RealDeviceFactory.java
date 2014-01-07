@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.api;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealResources;
+import com.intuso.utilities.log.Log;
 
 /**
  * @param <DEVICE> the type of the devices created by this factory
@@ -29,12 +29,12 @@ public interface RealDeviceFactory<DEVICE extends RealDevice> {
 
     /**
      * Creates a device
-     * @param resources the resources for the device
+     * @param log the log for the device
      * @param id the device's id
      * @param name the device's name
      * @param description the device's description
      * @return a new device
      * @throws HousemateException if the device cannot be created
      */
-    public DEVICE create(RealResources resources, String id, String name, String description) throws HousemateException;
+    public DEVICE create(Log log, String id, String name, String description) throws HousemateException;
 }

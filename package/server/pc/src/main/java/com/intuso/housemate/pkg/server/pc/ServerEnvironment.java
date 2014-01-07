@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.resources.ClientResources;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.server.plugin.PluginManager;
@@ -81,9 +80,6 @@ public class ServerEnvironment {
 
         Log log = injector.getInstance(Log.class);
         PluginManager pluginManager = injector.getInstance(PluginManager.class);
-
-        // add the default plugin
-        pluginManager.addPlugin(new MainPlugin(injector));
 
         // discover plugins from local dir
         File pluginDirectory = new File(properties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + PLUGINS_DIR_NAME);
@@ -281,7 +277,7 @@ public class ServerEnvironment {
 
         // Configure webapp provided as external WAR
         WebAppContext webapp = new WebAppContext();
-        webapp.getServletContext().setAttribute("RESOURCES", injector.getInstance(ClientResources.class));
+        webapp.getServletContext().setAttribute("INJECTOR", injector);
         webapp.setContextPath(properties.get(WEBAPP_PATH) != null ? properties.get(WEBAPP_PATH) : DEFAULT_WEBAPP_PATH);
         webapp.setWar(warFile.getAbsolutePath());
         server.setHandler(webapp);

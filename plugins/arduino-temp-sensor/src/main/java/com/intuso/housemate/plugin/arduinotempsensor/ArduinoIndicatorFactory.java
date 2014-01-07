@@ -1,8 +1,8 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 
 /**
@@ -31,7 +31,7 @@ public class ArduinoIndicatorFactory implements RealDeviceFactory<ArduinoIndicat
     }
 
     @Override
-    public ArduinoIndicator create(RealResources resources, String id, String name, String description) throws HousemateException {
-        return new ArduinoIndicator(resources, serialPort, id, name, description);
+    public ArduinoIndicator create(Log log, String id, String name, String description) throws HousemateException {
+        return new ArduinoIndicator(log, serialPort, id, name, description);
     }
 }

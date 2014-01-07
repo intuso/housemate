@@ -2,15 +2,10 @@ package com.intuso.housemate.server;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.intuso.housemate.object.server.proxy.ServerProxyFactory;
-import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
-import com.intuso.housemate.object.server.real.ServerRealRootObject;
 import com.intuso.housemate.server.comms.MainRouter;
-import com.intuso.housemate.server.object.ServerProxyResourcesImpl;
-import com.intuso.housemate.server.object.ServerRealResourcesImpl;
 import com.intuso.housemate.server.object.bridge.RootObjectBridge;
-import com.intuso.housemate.server.object.bridge.ServerBridgeResources;
+import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.housemate.server.plugin.main.MainPlugin;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,16 +26,18 @@ public class Server {
     }
 
     public final void start() {
-        // set root objects
-        injector.getInstance(ServerRealResourcesImpl.class).setRoot(injector.getInstance(ServerRealRootObject.class));
-        injector.getInstance(new Key<ServerProxyResourcesImpl<ServerProxyFactory.All>>() {}).setRoot(injector.getInstance(ServerProxyRootObject.class));
-        injector.getInstance(ServerBridgeResources.class).setRoot(injector.getInstance(RootObjectBridge.class));
-
         // start the main router
         injector.getInstance(MainRouter.class).start();
+
+        // make sure all the framework is created before we add plugins
+        injector.getInstance(RootObjectBridge.class);
+
+        // add the default plugin
+        injector.getInstance(PluginManager.class).addPlugin(new MainPlugin(injector));
     }
 
     public final void stop() {
+        // stop the main router
         injector.getInstance(MainRouter.class).stop();
     }
 

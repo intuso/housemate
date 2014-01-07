@@ -1,11 +1,11 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.resources.Resources;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.*;
+import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 
@@ -38,8 +38,8 @@ public class ArduinoTemperatureSensorPlugin implements PluginDescriptor {
     }
 
     @Override
-    public void init(Resources resources) throws HousemateException {
-        resources.getLog().d("Initialising Arduino Temperature Sensor plugin");
+    public void init(Log log, Injector injector) throws HousemateException {
+        log.d("Initialising Arduino Temperature Sensor plugin");
         serialPort = new SerialPort("/dev/ttyACM0");
         try {
             if(!serialPort.openPort())
@@ -52,22 +52,22 @@ public class ArduinoTemperatureSensorPlugin implements PluginDescriptor {
     }
 
     @Override
-    public List<RealType<?, ?, ?>> getTypes(RealResources resources) {
+    public List<RealType<?, ?, ?>> getTypes(Log log) {
         return Lists.newArrayList();
     }
 
     @Override
-    public List<Comparator<?>> getComparators(RealResources resources) {
+    public List<Comparator<?>> getComparators(Log log) {
         return Lists.newArrayList();
     }
 
     @Override
-    public List<Operator<?, ?>> getOperators(RealResources resources) {
+    public List<Operator<?, ?>> getOperators(Log log) {
         return Lists.newArrayList();
     }
 
     @Override
-    public List<Transformer<?, ?>> getTransformers(RealResources resources) {
+    public List<Transformer<?, ?>> getTransformers(Log log) {
         return Lists.newArrayList();
     }
 

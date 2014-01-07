@@ -1,7 +1,7 @@
 package com.intuso.housemate.object.proxy;
 
+import com.google.inject.Injector;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.condition.Condition;
 import com.intuso.housemate.api.object.condition.ConditionData;
@@ -9,10 +9,9 @@ import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 /**
- * @param <RESOURCES> the type of the resources
- * @param <CHILD_RESOURCES> the type of the child resources
  * @param <VALUE> the type of the value
  * @param <PROPERTIES> the type of the properties list
  * @param <COMMAND> the type of the add command
@@ -20,31 +19,29 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * @param <CONDITIONS> the type of the conditions list
  */
 public abstract class ProxyCondition<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ?>,
-            CHILD_RESOURCES extends ProxyResources<?, ?>,
-            COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
-            VALUE extends ProxyValue<?, ?, VALUE>,
-            PROPERTIES extends ProxyList<?, ?, PropertyData, ? extends ProxyProperty<?, ?, ?, ?, ?>, PROPERTIES>,
-            CONDITION extends ProxyCondition<RESOURCES, CHILD_RESOURCES, COMMAND, VALUE, PROPERTIES, CONDITION, CONDITIONS>,
-            CONDITIONS extends ProxyList<?, ?, ConditionData, CONDITION, CONDITIONS>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, ConditionData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, CONDITION, ConditionListener<? super CONDITION>>
+            COMMAND extends ProxyCommand<?, ?, COMMAND>,
+            VALUE extends ProxyValue<?, VALUE>,
+            PROPERTIES extends ProxyList<PropertyData, ? extends ProxyProperty<?, ?, ?>, PROPERTIES>,
+            CONDITION extends ProxyCondition<COMMAND, VALUE, PROPERTIES, CONDITION, CONDITIONS>,
+            CONDITIONS extends ProxyList<ConditionData, CONDITION, CONDITIONS>>
+        extends ProxyObject<ConditionData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, CONDITION, ConditionListener<? super CONDITION>>
         implements Condition<COMMAND, VALUE, VALUE, PROPERTIES, COMMAND, CONDITION, CONDITIONS> {
 
     /**
-     * @param resources {@inheritDoc}
-     * @param childResources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyCondition(RESOURCES resources, CHILD_RESOURCES childResources, ConditionData data) {
-        super(resources, childResources, data);
+    public ProxyCondition(Log log, Injector injector, ConditionData data) {
+        super(log, injector, data);
     }
 
     @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
         final java.util.List<ListenerRegistration> result = super.registerListeners();
-        addChildLoadedListener(SATISFIED_ID, new ChildLoadedListener<CONDITION, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
+        addChildLoadedListener(SATISFIED_ID, new ChildLoadedListener<CONDITION, ProxyObject<?, ?, ?, ?, ?>>() {
             @Override
-            public void childLoaded(CONDITION object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+            public void childLoaded(CONDITION object, ProxyObject<?, ?, ?, ?, ?> proxyObject) {
                 result.add(getSatisfiedValue().addObjectListener(new ValueListener<VALUE>() {
 
                     @Override
@@ -60,9 +57,9 @@ public abstract class ProxyCondition<
                 }));
             }
         });
-        addChildLoadedListener(ERROR_ID, new ChildLoadedListener<CONDITION, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
+        addChildLoadedListener(ERROR_ID, new ChildLoadedListener<CONDITION, ProxyObject<?, ?, ?, ?, ?>>() {
             @Override
-            public void childLoaded(CONDITION object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+            public void childLoaded(CONDITION object, ProxyObject<?, ?, ?, ?, ?> proxyObject) {
                 result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
 
                     @Override

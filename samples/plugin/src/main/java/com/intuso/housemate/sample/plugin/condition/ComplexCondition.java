@@ -1,8 +1,9 @@
 package com.intuso.housemate.sample.plugin.condition;
 
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealCondition;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealResources;
+import com.intuso.utilities.log.Log;
 
 /**
  * Complex condition with a non-simple constructor that cannot be used with the
@@ -16,9 +17,9 @@ public class ComplexCondition extends ServerRealCondition {
 
     private final Object extraArg;
 
-    public ComplexCondition(ServerRealResources resources, String id, String name, String description,
-                            ServerRealConditionOwner owner, Object extraArg) {
-        super(resources, id, name, description, owner);
+    public ComplexCondition(Log log, String id, String name, String description,
+                            ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler, Object extraArg) {
+        super(log, id, name, description, owner, lifecycleHandler);
         this.extraArg = extraArg;
     }
 

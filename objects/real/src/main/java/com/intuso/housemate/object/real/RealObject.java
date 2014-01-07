@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.api.object.root.real.RealRoot;
+import com.intuso.utilities.log.Log;
 
 
 public abstract class RealObject<
@@ -12,16 +13,16 @@ public abstract class RealObject<
             CHILD_DATA extends HousemateData<?>,
             CHILD extends RealObject<? extends CHILD_DATA, ?, ?, ?>,
             LISTENER extends ObjectListener>
-        extends HousemateObject<RealResources, DATA, CHILD_DATA, CHILD, LISTENER> {
+        extends HousemateObject<DATA, CHILD_DATA, CHILD, LISTENER> {
 
     private RealRoot<?, ?, ?, ?, ?> realRoot;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected RealObject(RealResources resources, DATA data) {
-        super(resources, data);
+    protected RealObject(Log log, DATA data) {
+        super(log, data);
     }
 
     /**
@@ -44,7 +45,7 @@ public abstract class RealObject<
     }
 
     @Override
-    protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?, ?> parent) {
+    protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?> parent) {
 
         // get the server for this object
         if(this instanceof RealRoot)

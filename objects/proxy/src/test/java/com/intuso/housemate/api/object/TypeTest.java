@@ -1,18 +1,18 @@
 package com.intuso.housemate.api.object;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.TestEnvironment;
 import com.intuso.housemate.api.object.type.RegexTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.object.proxy.NoChildrenProxyObjectFactory;
 import com.intuso.housemate.object.proxy.ProxyRegexType;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyResources;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.RealRegexType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.log.Log;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertFalse;
@@ -65,7 +65,10 @@ public class TypeTest {
 
     @Test
     public void testCustomFormat() throws HousemateException {
-        ProxyRegexType pt = new MyProxyType(TestEnvironment.TEST_INSTANCE.getProxyNoChildrenResources(), new MyRealType(TestEnvironment.TEST_INSTANCE.getRealResources()).getData());
+        ProxyRegexType pt = new MyProxyType(
+                TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
+                TestEnvironment.TEST_INSTANCE.getInjector(),
+                new MyRealType(TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class)).getData());
         assertFalse(pt.isCorrectFormat("some string"));
         assertFalse(pt.isCorrectFormat(";two"));
         assertFalse(pt.isCorrectFormat("one;"));
@@ -112,8 +115,8 @@ public class TypeTest {
 
     private class MyRealType extends RealRegexType<MyClass> {
 
-        protected MyRealType(RealResources resources) throws HousemateException {
-            super(resources, ID, NAME, DESCRIPTION, 1, 1, REGEX);
+        protected MyRealType(Log log) throws HousemateException {
+            super(log, ID, NAME, DESCRIPTION, 1, 1, REGEX);
         }
 
         @Override
@@ -127,9 +130,11 @@ public class TypeTest {
         }
     }
 
-    private class MyProxyType extends ProxyRegexType<SimpleProxyResources<NoChildrenProxyObjectFactory>, MyProxyType> {
-        public MyProxyType(SimpleProxyResources<NoChildrenProxyObjectFactory> resources, RegexTypeData data) {
-            super(resources, data);
+    private class MyProxyType extends ProxyRegexType<MyProxyType> {
+
+        @Inject
+        public MyProxyType(Log log, Injector injector, RegexTypeData data) {
+            super(log, injector, data);
         }
     }
 }

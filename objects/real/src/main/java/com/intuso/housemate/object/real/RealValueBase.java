@@ -6,6 +6,7 @@ import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,12 +31,12 @@ public abstract class RealValueBase<
     private List<O> typedValues;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param data {@inheritDoc}
      * @param type the type of the value's value
      */
-    public RealValueBase(RealResources resources, DATA data, RealType<?, ?, O> type) {
-        super(resources, data);
+    public RealValueBase(Log log, DATA data, RealType<?, ?, O> type) {
+        super(log, data);
         this.type = type;
     }
 

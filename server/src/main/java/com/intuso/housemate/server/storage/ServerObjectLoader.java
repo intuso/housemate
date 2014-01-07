@@ -31,23 +31,23 @@ import java.util.Arrays;
  * Time: 09:05
  * To change this template use File | Settings | File Templates.
  */
-public class ServerObjectLoader {
+public class ServerObjectLoader implements ServerRealAutomationOwner, ServerRealUserOwner {
 
     private final Storage storage;
     private final Log log;
-    private final ServerRealResources serverRealResources;
+    private final ServerRealRootObject root;
     private final ConditionFactory conditionFactory;
     private final TaskFactory taskFactory;
     private final RealList<DeviceData, RealDevice> devices;
     private final LifecycleHandler lifecycleHandler;
 
     @Inject
-    public ServerObjectLoader(Log log, ServerRealResources serverRealResources, Storage storage,
+    public ServerObjectLoader(Log log, ServerRealRootObject root, Storage storage,
                               ConditionFactory conditionFactory, TaskFactory taskFactory,
                               RealList<DeviceData, RealDevice> devices, LifecycleHandler lifecycleHandler) {
         this.storage = storage;
         this.log = log;
-        this.serverRealResources = serverRealResources;
+        this.root = root;
         this.conditionFactory = conditionFactory;
         this.taskFactory = taskFactory;
         this.devices = devices;
@@ -61,12 +61,12 @@ public class ServerObjectLoader {
     }
 
     private void loadUsers() {
-        ServerRealList<UserData, ServerRealUser> realUsers = serverRealResources.getRoot().getUsers();
+        ServerRealList<UserData, ServerRealUser> realUsers = root.getUsers();
         try {
             for(String key : storage.getValuesKeys(realUsers.getPath())) {
                 TypeInstanceMap details = storage.getValues(realUsers.getPath(), key);
-                ServerRealUser user = new ServerRealUser(serverRealResources, details.get("id").getFirstValue(),
-                        details.get("name").getFirstValue(), details.get("description").getFirstValue(), lifecycleHandler);
+                ServerRealUser user = new ServerRealUser(log, details.get("id").getFirstValue(),
+                        details.get("name").getFirstValue(), details.get("description").getFirstValue(), this);
                 realUsers.add(user);
             }
         } catch(DetailsNotFoundException e) {
@@ -86,7 +86,7 @@ public class ServerObjectLoader {
             toSave.put("name", new TypeInstances(new TypeInstance("admin")));
             toSave.put("description", new TypeInstances(new TypeInstance("admin")));
 
-            ServerRealUser user = new ServerRealUser(serverRealResources, "admin", "admin", "Default admin user", lifecycleHandler);
+            ServerRealUser user = new ServerRealUser(log, "admin", "admin", "Default admin user", this);
             try {
                 storage.saveValues(realUsers.getPath(), user.getId(), toSave);
             } catch(HousemateException e) {
@@ -114,13 +114,14 @@ public class ServerObjectLoader {
     }
 
     private void loadAutomations() {
-        ServerRealList<AutomationData, ServerRealAutomation> realAutomations = serverRealResources.getRoot().getAutomations();
+        ServerRealList<AutomationData, ServerRealAutomation> realAutomations = root.getAutomations();
         try {
             for(String id : storage.getValuesKeys(realAutomations.getPath())) {
                 try {
                     TypeInstanceMap details = storage.getValues(realAutomations.getPath(), id);
-                    ServerRealAutomation automation = new ServerRealAutomation(serverRealResources, details.get("id").getFirstValue(),
-                            details.get("name").getFirstValue(), details.get("description").getFirstValue(), lifecycleHandler);
+                    ServerRealAutomation automation = new ServerRealAutomation(log, details.get("id").getFirstValue(),
+                            details.get("name").getFirstValue(), details.get("description").getFirstValue(), this,
+                            lifecycleHandler);
                     automation.init(realAutomations);
                     loadAutomationInfo(automation);
                     realAutomations.add(automation);
@@ -175,6 +176,16 @@ public class ServerObjectLoader {
         } catch(HousemateException e) {
             log.e("Failed to get device names of existing tasks", e);
         }
+    }
+
+    @Override
+    public void remove(ServerRealAutomation automation) {
+        root.getAutomations().remove(automation.getId());
+    }
+
+    @Override
+    public void remove(ServerRealUser user) {
+        root.getUsers().remove(user.getId());
     }
 
     private class CommandListener implements com.intuso.housemate.api.object.command.CommandListener<Command<?, ?>> {

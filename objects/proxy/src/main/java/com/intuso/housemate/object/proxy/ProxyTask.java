@@ -1,46 +1,43 @@
 package com.intuso.housemate.object.proxy;
 
+import com.google.inject.Injector;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.task.Task;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.task.TaskListener;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 /**
- * @param <RESOURCES> the type of the resources
- * @param <CHILD_RESOURCES> the type of the child resources
  * @param <VALUE> the type of the value
  * @param <PROPERTIES> the type of the properties list
  * @param <TASK> the type of the task
  */
 public abstract class ProxyTask<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ?>,
-            CHILD_RESOURCES extends ProxyResources<?, ?>,
-            COMMAND extends ProxyCommand<?, ?, ?, ?, COMMAND>,
-            VALUE extends ProxyValue<?, ?, VALUE>,
-            PROPERTIES extends ProxyList<?, ?, PropertyData, ? extends ProxyProperty<?, ?, ?, ?, ?>, PROPERTIES>,
-            TASK extends ProxyTask<RESOURCES, CHILD_RESOURCES, COMMAND, VALUE, PROPERTIES, TASK>>
-        extends ProxyObject<RESOURCES, CHILD_RESOURCES, TaskData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>, TASK, TaskListener<? super TASK>>
+            COMMAND extends ProxyCommand<?, ?, COMMAND>,
+            VALUE extends ProxyValue<?, VALUE>,
+            PROPERTIES extends ProxyList<PropertyData, ? extends ProxyProperty<?, ?, ?>, PROPERTIES>,
+            TASK extends ProxyTask<COMMAND, VALUE, PROPERTIES, TASK>>
+        extends ProxyObject<TaskData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, TASK, TaskListener<? super TASK>>
         implements Task<COMMAND, VALUE, VALUE, PROPERTIES, TASK> {
 
     /**
-     * @param resources {@inheritDoc}
-     * @param childResources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyTask(RESOURCES resources, CHILD_RESOURCES childResources, TaskData data) {
-        super(resources, childResources, data);
+    public ProxyTask(Log log, Injector injector, TaskData data) {
+        super(log, injector, data);
     }
 
     @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
         final java.util.List<ListenerRegistration>result = super.registerListeners();
-        addChildLoadedListener(EXECUTING_ID, new ChildLoadedListener<TASK, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
+        addChildLoadedListener(EXECUTING_ID, new ChildLoadedListener<TASK, ProxyObject<?, ?, ?, ?, ?>>() {
             @Override
-            public void childLoaded(TASK object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+            public void childLoaded(TASK object, ProxyObject<?, ?, ?, ?, ?> proxyObject) {
                 result.add(getExecutingValue().addObjectListener(new ValueListener<VALUE>() {
 
                     @Override
@@ -56,9 +53,9 @@ public abstract class ProxyTask<
                 }));
             }
         });
-        addChildLoadedListener(ERROR_ID, new ChildLoadedListener<TASK, ProxyObject<?, ?, ?, ?, ?, ?, ?>>() {
+        addChildLoadedListener(ERROR_ID, new ChildLoadedListener<TASK, ProxyObject<?, ?, ?, ?, ?>>() {
             @Override
-            public void childLoaded(TASK object, ProxyObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
+            public void childLoaded(TASK object, ProxyObject<?, ?, ?, ?, ?> proxyObject) {
                 result.add(getErrorValue().addObjectListener(new ValueListener<VALUE>() {
 
                     @Override

@@ -5,10 +5,11 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.plugin.api.ServerConditionFactory;
 import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -39,8 +40,9 @@ public class ValueComparisonFactory implements ServerConditionFactory<ValueCompa
     }
 
     @Override
-    public ValueComparison create(ServerRealResources resources, String id, String name, String description,
-                                  ServerRealConditionOwner owner) throws HousemateException {
-        return new ValueComparison(resources, id, name, description, owner, types, comparisonType);
+    public ValueComparison create(Log log, String id, String name, String description,
+                                  ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler)
+            throws HousemateException {
+        return new ValueComparison(log, id, name, description, owner, lifecycleHandler, types, comparisonType);
     }
 }

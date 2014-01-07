@@ -1,9 +1,11 @@
 package com.intuso.housemate.object.server.proxy;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
@@ -12,6 +14,7 @@ import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +29,13 @@ public class ServerProxyCommand
     private Map<String, CommandListener<? super ServerProxyCommand>> listenerMap = new HashMap<String, CommandListener<? super ServerProxyCommand>>();
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected ServerProxyCommand(ServerProxyResources<? extends HousemateObjectFactory<ServerProxyResources<?>, ListData<ParameterData>, ? extends ServerProxyList<ParameterData, ServerProxyParameter>>> resources, CommandData data) {
-        super(resources, data);
+    @Inject
+    protected ServerProxyCommand(Log log, Injector injector, @Assisted CommandData data) {
+        super(log, injector, data);
     }
 
     @Override

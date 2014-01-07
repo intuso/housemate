@@ -2,9 +2,9 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealValue;
 import com.intuso.housemate.object.real.impl.type.DoubleType;
+import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -20,7 +20,7 @@ import java.io.PipedOutputStream;
  */
 public class ArduinoTemperatureSensor extends RealDevice {
     
-    public final RealValue<Double> temperature = DoubleType.createValue(getResources(), "temperature", "Temperature", "The current temperature", 0.0);
+    public final RealValue<Double> temperature = DoubleType.createValue(getLog(), "temperature", "Temperature", "The current temperature", 0.0);
     
     private final SerialPort serialPort;
     private final SerialPortEventListener eventListener = new EventListener();
@@ -34,8 +34,8 @@ public class ArduinoTemperatureSensor extends RealDevice {
      *
      * @param name the name of the device
      */
-    protected ArduinoTemperatureSensor(RealResources resources, SerialPort serialPort, String id, String name, String description) throws HousemateException {
-        super(resources, id, name, description);
+    protected ArduinoTemperatureSensor(Log log, SerialPort serialPort, String id, String name, String description) throws HousemateException {
+        super(log, id, name, description);
         getCustomValueIds().add(temperature.getId());
         getValues().add(temperature);
         this.serialPort = serialPort;

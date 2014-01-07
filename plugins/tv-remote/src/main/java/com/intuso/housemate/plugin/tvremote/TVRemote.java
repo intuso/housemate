@@ -3,10 +3,10 @@ package com.intuso.housemate.plugin.tvremote;
 import com.intuso.housemate.annotations.basic.Property;
 import com.intuso.housemate.annotations.plugin.FactoryInformation;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.device.feature.RealPlaybackControl;
 import com.intuso.housemate.object.real.device.feature.RealVolumeControl;
 import com.intuso.housemate.object.real.impl.device.PoweredDevice;
+import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
 
@@ -16,8 +16,8 @@ public class TVRemote extends PoweredDevice implements RealPlaybackControl, Real
     @Property(id = "remote-name", name = "Remote Name", description = "The name of the remote you want to use", typeId = "string")
     public String remoteName;
 
-    public TVRemote(RealResources resources, String id, String name, String description) {
-        super(resources, id, name, description);
+    public TVRemote(Log log, String id, String name, String description) {
+        super(log, id, name, description);
         getCustomPropertyIds().add("remote-name");
     }
 

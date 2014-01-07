@@ -9,5 +9,5 @@ import com.intuso.housemate.api.object.command.Command;
  */
 public interface User<REMOVE_COMMAND extends Command<?, ?>>
         extends BaseHousemateObject<UserListener>, RemoveableObject<REMOVE_COMMAND> {
-    public final static String REMOVE_COMMAND_ID = "remove";
+    public final static String REMOVE_ID = "remove";
 }

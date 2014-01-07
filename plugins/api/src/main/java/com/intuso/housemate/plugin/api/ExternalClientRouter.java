@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.api;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.resources.Resources;
+import com.intuso.utilities.log.Log;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,10 +14,10 @@ import com.intuso.housemate.api.resources.Resources;
 public abstract class ExternalClientRouter extends Router {
 
     /**
-     * @param resources the resources
+     * @param log {@inheritDoc}
      */
-    public ExternalClientRouter(Resources resources) {
-        super(resources);
+    public ExternalClientRouter(Log log) {
+        super(log);
     }
 
     public abstract void start() throws HousemateException;

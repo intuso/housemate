@@ -20,7 +20,7 @@ import java.util.Map;
  * Time: 21:04
  * To change this template use File | Settings | File Templates.
  */
-public abstract class WidgetList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<?, ?, ? extends DATA, ?, ?, ?, ?>>
+public abstract class WidgetList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<? extends DATA, ?, ?, ?, ?>>
         extends FlowPanel implements ListListener<OBJECT> {
 
     private final GWTProxyList<DATA, OBJECT> list;

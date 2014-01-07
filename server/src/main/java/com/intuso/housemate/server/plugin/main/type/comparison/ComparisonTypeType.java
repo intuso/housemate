@@ -5,13 +5,13 @@ import com.google.inject.Inject;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.ComparisonType;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 
@@ -26,8 +26,8 @@ public class ComparisonTypeType extends RealChoiceType<ComparisonType> {
     private final TypeSerialiser<ComparisonType> serialiser;
 
     @Inject
-    public ComparisonTypeType(RealResources realResources, TypeSerialiser<ComparisonType> serialiser) {
-        super(realResources, ID, NAME, DESCRIPTION, 1, 1);
+    public ComparisonTypeType(Log log, TypeSerialiser<ComparisonType> serialiser) {
+        super(log, ID, NAME, DESCRIPTION, 1, 1);
         this.serialiser = serialiser;
     }
 
@@ -43,12 +43,12 @@ public class ComparisonTypeType extends RealChoiceType<ComparisonType> {
 
     public final static class Serialiser implements TypeSerialiser<ComparisonType>, PluginListener {
 
-        private final RealResources realResources;
+        private final Log log;
         private final Map<String, ComparisonType> types = Maps.newHashMap();
 
         @Inject
-        public Serialiser(RealResources realResources, PluginManager pluginManager) {
-            this.realResources = realResources;
+        public Serialiser(Log log, PluginManager pluginManager) {
+            this.log = log;
             pluginManager.addPluginListener(this, true);
         }
 
@@ -66,10 +66,10 @@ public class ComparisonTypeType extends RealChoiceType<ComparisonType> {
         public void pluginAdded(PluginDescriptor plugin) {
             ComparisonTypeType type = (ComparisonTypeType) types.get(ID);
             if(type != null) {
-                for(Comparator<?> comparator : plugin.getComparators(realResources)) {
+                for(Comparator<?> comparator : plugin.getComparators(log)) {
                     if(types.get(comparator.getComparisonType().getId()) == null) {
                         types.put(comparator.getComparisonType().getId(), comparator.getComparisonType());
-                        type.getOptions().add(new RealOption(realResources, comparator.getComparisonType().getId(),
+                        type.getOptions().add(new RealOption(log, comparator.getComparisonType().getId(),
                                 comparator.getComparisonType().getName(), comparator.getComparisonType().getDescription()));
                     }
                 }

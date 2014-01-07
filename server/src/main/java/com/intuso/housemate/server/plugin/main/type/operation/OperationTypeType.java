@@ -5,13 +5,13 @@ import com.google.inject.Inject;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.plugin.api.OperationType;
 import com.intuso.housemate.plugin.api.Operator;
 import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 
@@ -26,8 +26,8 @@ public class OperationTypeType extends RealChoiceType<OperationType> {
     private final TypeSerialiser<OperationType> serialiser;
 
     @Inject
-    public OperationTypeType(RealResources realResources, TypeSerialiser<OperationType> serialiser) {
-        super(realResources, ID, NAME, DESCRIPTION, 1, 1);
+    public OperationTypeType(Log log, TypeSerialiser<OperationType> serialiser) {
+        super(log, ID, NAME, DESCRIPTION, 1, 1);
         this.serialiser = serialiser;
     }
 
@@ -43,12 +43,12 @@ public class OperationTypeType extends RealChoiceType<OperationType> {
 
     public final static class Serialiser implements TypeSerialiser<OperationType>, PluginListener {
 
+        private final Log log;
         private final Map<String, OperationType> types = Maps.newHashMap();
-        private final RealResources realResources;
 
         @Inject
-        public Serialiser(RealResources realResources, PluginManager pluginManager) {
-            this.realResources = realResources;
+        public Serialiser(Log log, PluginManager pluginManager) {
+            this.log = log;
             pluginManager.addPluginListener(this, true);
         }
 
@@ -65,10 +65,10 @@ public class OperationTypeType extends RealChoiceType<OperationType> {
         @Override
         public void pluginAdded(PluginDescriptor plugin) {
             OperationTypeType type = (OperationTypeType) types.get(ID);
-            for(Operator<?, ?> operator : plugin.getOperators(realResources)) {
+            for(Operator<?, ?> operator : plugin.getOperators(log)) {
                 if(types.get(operator.getOperationType().getId()) == null) {
                     types.put(operator.getOperationType().getId(), operator.getOperationType());
-                    type.getOptions().add(new RealOption(realResources, operator.getOperationType().getId(),
+                    type.getOptions().add(new RealOption(log, operator.getOperationType().getId(),
                             operator.getOperationType().getName(), operator.getOperationType().getDescription()));
                 }
             }

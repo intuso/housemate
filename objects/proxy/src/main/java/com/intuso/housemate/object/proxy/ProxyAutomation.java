@@ -1,16 +1,14 @@
 package com.intuso.housemate.object.proxy;
 
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.google.inject.Injector;
 import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.automation.AutomationListener;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.task.TaskData;
+import com.intuso.utilities.log.Log;
 
 /**
- * @param <RESOURCES> the type of the resources
- * @param <CHILD_RESOURCES> the type of the child resources
  * @param <ADD_COMMAND> the type of the add command
  * @param <VALUE> the type of the value
  * @param <CONDITION> the type of the conditions
@@ -20,25 +18,23 @@ import com.intuso.housemate.api.object.task.TaskData;
  * @param <AUTOMATION> the type of the automation
  */
 public abstract class ProxyAutomation<
-            RESOURCES extends ProxyResources<? extends HousemateObjectFactory<CHILD_RESOURCES, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?, ?, ?>>, ?>,
-            CHILD_RESOURCES extends ProxyResources<?, ?>,
-            ADD_COMMAND extends ProxyCommand<?, ?, ?, ?, ADD_COMMAND>,
-            VALUE extends ProxyValue<?, ?, VALUE>,
-            CONDITION extends ProxyCondition<?, ?, ?, ?, ?, CONDITION, CONDITIONS>,
-            CONDITIONS extends ProxyList<?, ?, ConditionData, CONDITION, CONDITIONS>,
-            TASK extends ProxyTask<?, ?, ?, ?, ?, TASK>,
-            TASKS extends ProxyList<?, ?, TaskData, TASK, TASKS>,
-            AUTOMATION extends ProxyAutomation<RESOURCES, CHILD_RESOURCES, ADD_COMMAND, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION>>
-        extends ProxyPrimaryObject<RESOURCES, CHILD_RESOURCES, AutomationData, ADD_COMMAND, VALUE, AUTOMATION, AutomationListener<? super AUTOMATION>>
+            ADD_COMMAND extends ProxyCommand<?, ?, ADD_COMMAND>,
+            VALUE extends ProxyValue<?, VALUE>,
+            CONDITION extends ProxyCondition<?, ?, ?, CONDITION, CONDITIONS>,
+            CONDITIONS extends ProxyList<ConditionData, CONDITION, CONDITIONS>,
+            TASK extends ProxyTask<?, ?, ?, TASK>,
+            TASKS extends ProxyList<TaskData, TASK, TASKS>,
+            AUTOMATION extends ProxyAutomation<ADD_COMMAND, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION>>
+        extends ProxyPrimaryObject<AutomationData, ADD_COMMAND, VALUE, AUTOMATION, AutomationListener<? super AUTOMATION>>
         implements Automation<ADD_COMMAND, ADD_COMMAND, ADD_COMMAND, VALUE, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION> {
 
     /**
-     * @param resources {@inheritDoc}
-     * @param childResources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyAutomation(RESOURCES resources, CHILD_RESOURCES childResources, AutomationData data) {
-        super(resources, childResources, data);
+    public ProxyAutomation(Log log, Injector injector, AutomationData data) {
+        super(log, injector, data);
     }
 
     @Override

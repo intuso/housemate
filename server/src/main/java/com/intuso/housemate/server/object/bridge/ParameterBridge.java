@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -16,9 +17,9 @@ public class ParameterBridge
 
     private final TypeBridge type;
 
-    public ParameterBridge(ServerBridgeResources resources, Parameter<?> parameter,
+    public ParameterBridge(Log log, Parameter<?> parameter,
                            ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(resources, new ParameterData(parameter.getId(), parameter.getName(), parameter.getDescription(), parameter.getTypeId()));
+        super(log, new ParameterData(parameter.getId(), parameter.getName(), parameter.getDescription(), parameter.getTypeId()));
         type = types.get(getData().getType());
     }
 
@@ -34,17 +35,17 @@ public class ParameterBridge
 
     public final static class Converter implements Function<Parameter<?>, ParameterBridge> {
 
-        private final ServerBridgeResources resources;
+        private final Log log;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(ServerBridgeResources resources, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-            this.resources = resources;
+        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+            this.log = log;
             this.types = types;
         }
 
         @Override
         public ParameterBridge apply(Parameter<?> parameter) {
-            return new ParameterBridge(resources, parameter, types);
+            return new ParameterBridge(log, parameter, types);
         }
     }
 }

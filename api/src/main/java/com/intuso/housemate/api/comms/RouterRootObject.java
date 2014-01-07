@@ -12,8 +12,8 @@ import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
@@ -21,19 +21,19 @@ import java.util.List;
  * Root object used to handle messaging between a router and the server
  */
 public class RouterRootObject
-        extends HousemateObject<Resources, RootData, HousemateData<?>,
-            HousemateObject<?, ?, ?, ?, ?>, RootListener<? super RouterRootObject>>
+        extends HousemateObject<RootData, HousemateData<?>,
+            HousemateObject<?, ?, ?, ?>, RootListener<? super RouterRootObject>>
         implements Root<RouterRootObject>, ConnectionStatusChangeListener {
 
     private final Router router;
     private final ConnectionManager connectionManager;
 
     /**
-     * @param resources the resources
+     * @param log the log
      * @param router the router to create the root object for
      */
-    protected RouterRootObject(Resources resources, Router router) {
-        super(resources, new RootData());
+    protected RouterRootObject(Log log, Router router) {
+        super(log, new RootData());
         this.router = router;
         connectionManager = new ConnectionManager(router, ConnectionType.Router, ConnectionStatus.Disconnected);
         init(null);

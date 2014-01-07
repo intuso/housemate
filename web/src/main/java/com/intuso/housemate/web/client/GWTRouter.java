@@ -5,13 +5,13 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.resources.Resources;
 import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
+import com.intuso.utilities.log.Log;
 
 /**
  */
-public class GWTComms extends Router {
+public class GWTRouter extends Router {
 
     private AsyncCallback<Void> sendCallback = new AsyncCallback<Void>() {
         @Override
@@ -58,8 +58,8 @@ public class GWTComms extends Router {
      * @throws com.intuso.housemate.api.HousemateException
      *          if an error occurs creating the comms instance
      */
-    protected GWTComms(Resources resources, AsyncCallback<Void> connectCallback) {
-        super(resources);
+    protected GWTRouter(Log log, AsyncCallback<Void> connectCallback) {
+        super(log);
         this.connectCallback = connectCallback;
     }
 

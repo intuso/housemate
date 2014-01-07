@@ -2,8 +2,8 @@ package com.intuso.housemate.annotations.processor;
 
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.real.RealProperty;
-import com.intuso.housemate.object.real.RealResources;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.utilities.log.Log;
 
 import java.lang.reflect.Field;
 
@@ -12,9 +12,9 @@ import java.lang.reflect.Field;
  */
 public class PropertyImpl extends RealProperty<Object> {
 
-    public PropertyImpl(RealResources resources, String id, String name, String description,
+    public PropertyImpl(Log log, String id, String name, String description,
                         RealType<?, ?, Object> type, Object value, final Field field, final Object instance) {
-        super(resources, id, name, description, type, value);
+        super(log, id, name, description, type, value);
         addObjectListener(new ValueListener<RealProperty<Object>>() {
 
             @Override
@@ -27,7 +27,7 @@ public class PropertyImpl extends RealProperty<Object> {
                 try {
                     field.set(instance, value.getTypedValue());
                 } catch(IllegalAccessException e) {
-                    getResources().getLog().e("Failed to update value for annotated property " + getId(), e);
+                    getLog().e("Failed to update value for annotated property " + getId(), e);
                 }
             }
         });

@@ -10,6 +10,7 @@ import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,26 +26,26 @@ public abstract class RealCommand
 
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the command's id
      * @param name the command's name
      * @param description the command's description
      * @param parameters the command's parameters
      */
-    protected RealCommand(RealResources resources, String id, String name, String description, RealParameter<?> ... parameters) {
-        this(resources, id, name, description, Arrays.asList(parameters));
+    protected RealCommand(Log log, String id, String name, String description, RealParameter<?> ... parameters) {
+        this(log, id, name, description, Arrays.asList(parameters));
     }
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
      * @param id the command's id
      * @param name the command's name
      * @param description the command's description
      * @param parameters the command's parameters
      */
-    protected RealCommand(RealResources resources, String id, String name, String description, List<RealParameter<?>> parameters) {
-        super(resources, new CommandData(id, name, description));
-        realParameters = new RealList<ParameterData, RealParameter<?>>(resources, PARAMETERS_ID, PARAMETERS_ID, "The parameters required by the command", parameters);
+    protected RealCommand(Log log, String id, String name, String description, List<RealParameter<?>> parameters) {
+        super(log, new CommandData(id, name, description));
+        realParameters = new RealList<ParameterData, RealParameter<?>>(log, PARAMETERS_ID, PARAMETERS_ID, "The parameters required by the command", parameters);
         addChild(realParameters);
     }
 

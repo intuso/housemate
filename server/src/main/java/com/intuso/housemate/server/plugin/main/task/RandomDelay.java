@@ -3,12 +3,12 @@ package com.intuso.housemate.server.plugin.main.task;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.object.server.real.ServerRealResources;
 import com.intuso.housemate.object.server.real.ServerRealTask;
 import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.TimeUnit;
 import com.intuso.housemate.object.real.impl.type.TimeUnitType;
+import com.intuso.utilities.log.Log;
 
 /**
  * Task that waits for a specified amount of time
@@ -28,17 +28,17 @@ public class RandomDelay extends ServerRealTask {
 
     /**
      * Create a new delay task
-     * @param resources
+     * @param log
      * @param name
      * @throws HousemateException
      */
     @Inject
-    public RandomDelay(ServerRealResources resources, String id, String name, String description,
+    public RandomDelay(Log log, String id, String name, String description,
                        ServerRealTaskOwner owner, TimeUnitType timeUnitType, IntegerType integerType) {
-        super(resources, id, name, description, owner);
-        unit = new ServerRealProperty<TimeUnit>(resources, "unit", "Unit", "the unit of time to wait for",
+        super(log, id, name, description, owner);
+        unit = new ServerRealProperty<TimeUnit>(log, "unit", "Unit", "the unit of time to wait for",
                 timeUnitType, TimeUnit.MINUTES);
-        maxAmount = new ServerRealProperty<Integer>(resources, "amount", "Amount", "the amount of time to wait",
+        maxAmount = new ServerRealProperty<Integer>(log, "amount", "Amount", "the amount of time to wait",
                 integerType, 1);
         getProperties().add(unit);
         getProperties().add(maxAmount);

@@ -1,6 +1,7 @@
 package com.intuso.housemate.object.server.proxy;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.authentication.AuthenticationMethod;
@@ -15,6 +16,7 @@ import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.log.Log;
 
 public class ServerProxyRootObject
         extends ServerProxyObject<RootData, HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>,
@@ -25,15 +27,14 @@ public class ServerProxyRootObject
     private ServerProxyList<DeviceData, ServerProxyDevice> devices;
 
     /**
-     * @param resources {@inheritDoc}
+     * @param log {@inheritDoc}
+     * @param injector {@inheritDoc}
      */
     @Inject
-    public ServerProxyRootObject(ServerProxyResources<ServerProxyFactory.All> resources) {
-        super(resources, new RootData());
-        types = new ServerProxyList<TypeData<?>, ServerProxyType>(
-                ServerProxyFactory.changeFactoryType(resources, new ServerProxyFactory.Type()), new ListData(TYPES_ID, TYPES_ID, "Proxied types"));
-        devices = new ServerProxyList<DeviceData, ServerProxyDevice>(
-                ServerProxyFactory.changeFactoryType(resources, new ServerProxyFactory.Device()), new ListData<DeviceData>(DEVICES_ID, DEVICES_ID, "Proxied devices"));
+    public ServerProxyRootObject(Log log, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types) {
+        super(log, injector, new RootData());
+        this.types = types;
+        devices = new ServerProxyList<DeviceData, ServerProxyDevice>(log, injector, new ListData<DeviceData>(DEVICES_ID, DEVICES_ID, "Proxied devices"));
 
         addChild(types);
         addChild(devices);
