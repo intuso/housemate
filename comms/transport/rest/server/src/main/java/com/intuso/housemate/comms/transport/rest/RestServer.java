@@ -42,7 +42,7 @@ public class RestServer extends ExternalClientRouter {
         this.injector = injector;
         this.routerRegistration = router.registerReceiver(this);
 
-        setRouterStatus(Status.Connected);
+        setRouterStatus(Status.ConnectedToServer);
 
         String port = properties.get(PORT);
         if(port == null) {

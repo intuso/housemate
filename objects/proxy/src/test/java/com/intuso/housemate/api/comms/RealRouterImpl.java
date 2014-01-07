@@ -15,7 +15,7 @@ public class RealRouterImpl extends Router {
     public RealRouterImpl(Log log) {
         super(log);
         connect();
-        setRouterStatus(Status.Connected);
+        setRouterStatus(Status.ConnectedToServer);
         login(null);
     }
 

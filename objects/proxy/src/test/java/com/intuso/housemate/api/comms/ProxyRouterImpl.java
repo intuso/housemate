@@ -15,7 +15,7 @@ public class ProxyRouterImpl extends Router {
     public ProxyRouterImpl(Log log) {
         super(log);
         connect();
-        setRouterStatus(Status.Connected);
+        setRouterStatus(Status.ConnectedToServer);
         login(null);
     }
 

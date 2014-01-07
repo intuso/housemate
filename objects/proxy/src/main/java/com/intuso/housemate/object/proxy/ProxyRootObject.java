@@ -109,10 +109,10 @@ public abstract class ProxyRootObject<
                 connectionManager.authenticationResponseReceived(message.getPayload());
             }
         }));
-        result.add(addMessageListener(STATUS_TYPE, new Receiver<ConnectionStatus>() {
+        result.add(addMessageListener(STATUS_TYPE, new Receiver<Router.Status>() {
             @Override
-            public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
-                connectionManager.routerStatusChanged(message.getPayload());
+            public void messageReceived(Message<Router.Status> message) throws HousemateException {
+                connectionManager.setRouterStatus(message.getPayload());
             }
         }));
         return result;

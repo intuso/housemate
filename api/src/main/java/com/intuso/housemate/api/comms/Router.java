@@ -23,10 +23,11 @@ public abstract class Router implements Sender, Receiver {
     /**
      * Enum of possible connection statuses for a router
      */
-    protected enum Status {
+    public enum Status implements Message.Payload {
         Disconnected,
         Connecting,
-        Connected
+        ConnectedToRouter,
+        ConnectedToServer
     }
 
     private final Log log;
@@ -35,8 +36,6 @@ public abstract class Router implements Sender, Receiver {
     private final Map<String, Receiver<?>> receivers = Maps.newConcurrentMap();
 
     private final RouterRootObject root;
-
-    private Status routerStatus = Status.Disconnected;
 
     /**
      * @param log the log
@@ -47,7 +46,8 @@ public abstract class Router implements Sender, Receiver {
         root.addObjectListener(new RootListener<RouterRootObject>() {
             @Override
             public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
-                Message<ConnectionStatus> message = new Message<ConnectionStatus>(new String[] {""}, Root.STATUS_TYPE, status);
+                Message<Status> message = new Message<Status>(new String[] {""}, Root.STATUS_TYPE,
+                        status == ConnectionStatus.Authenticated ? Status.ConnectedToServer : Status.ConnectedToRouter);
                 for(Receiver receiver : receivers.values()) {
                     try {
                         receiver.messageReceived(message);
@@ -72,12 +72,15 @@ public abstract class Router implements Sender, Receiver {
         return log;
     }
 
+    public Status getRouterStatus() {
+        return root.getRouterStatus();
+    }
+
     /**
      * Updates the router's connection status
      * @param routerStatus the router's new connection status
      */
     protected final void setRouterStatus(Status routerStatus) {
-        this.routerStatus = routerStatus;
         root.setRouterStatus(routerStatus);
     }
 
@@ -95,8 +98,8 @@ public abstract class Router implements Sender, Receiver {
      * @param method the method to authenticate with
      */
     public final void login(AuthenticationMethod method) {
-        if(routerStatus != Status.Connected)
-            throw new HousemateRuntimeException("Cannot login until the router is connected");
+        if(getRouterStatus() != Status.ConnectedToServer)
+            throw new HousemateRuntimeException("Cannot login until the router is connected to the server");
         root.login(method);
     }
 
@@ -126,7 +129,7 @@ public abstract class Router implements Sender, Receiver {
         String clientId = "" + nextId.incrementAndGet();
         receivers.put(clientId, receiver);
         try {
-            receiver.messageReceived(new Message<ConnectionStatus>(new String[] {""}, Root.STATUS_TYPE, root.getStatus()));
+            receiver.messageReceived(new Message<Router.Status>(new String[] {""}, Root.STATUS_TYPE, root.getRouterStatus()));
         } catch(HousemateException e) {
             log.e("Failed to tell new client " + clientId + " the current router status");
         }

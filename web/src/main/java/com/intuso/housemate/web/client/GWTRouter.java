@@ -75,7 +75,7 @@ public class GWTRouter extends Router {
 
             @Override
             public void onSuccess(Void aVoid) {
-                setRouterStatus(Status.Connected);
+                setRouterStatus(Status.ConnectedToRouter);
                 connectCallback.onSuccess(aVoid);
                 // start getting messages
                 requestMessages();

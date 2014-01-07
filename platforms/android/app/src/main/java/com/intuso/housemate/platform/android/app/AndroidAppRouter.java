@@ -111,7 +111,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection, RootL
                     break;
                 case MessageCodes.CONNECTED:
                     id = msg.getData().getString("id");
-                    setRouterStatus(Status.Connected);
+                    setRouterStatus(Status.ConnectedToRouter);
                 default:
                     super.handleMessage(msg);
             }

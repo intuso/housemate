@@ -44,21 +44,16 @@ public class RouterRootObject
         return connectionManager.getStatus();
     }
 
+    public Router.Status getRouterStatus() {
+        return connectionManager.getRouterStatus();
+    }
+
     /**
      * Updates the router's connection status
      * @param status the router's new connection status
      */
     protected void setRouterStatus(Router.Status status) {
-        switch (status) {
-            case Disconnected:
-            case Connecting:
-                connectionManager.routerStatusChanged(ConnectionStatus.Disconnected);
-                break;
-            case Connected:
-                // triggers the router to relog in if it thinks the router that it is connected to is now authenticated.
-                connectionManager.routerStatusChanged(ConnectionStatus.Authenticated);
-                break;
-        }
+        connectionManager.setRouterStatus(status);
     }
 
     @Override
@@ -91,10 +86,10 @@ public class RouterRootObject
                 connectionManager.authenticationResponseReceived(message.getPayload());
             }
         }));
-        result.add(addMessageListener(STATUS_TYPE, new Receiver<ConnectionStatus>() {
+        result.add(addMessageListener(STATUS_TYPE, new Receiver<Router.Status>() {
             @Override
-            public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
-                connectionManager.routerStatusChanged(message.getPayload());
+            public void messageReceived(Message<Router.Status> message) throws HousemateException {
+                connectionManager.setRouterStatus(message.getPayload());
             }
         }));
         return result;

@@ -29,6 +29,7 @@ public class ConnectionManager {
 
     private String serverInstanceId = null;
     private String connectionId = null;
+    private Router.Status routerStatus = Router.Status.Disconnected;
     private ConnectionStatus status = null;
 
     /**
@@ -118,13 +119,20 @@ public class ConnectionManager {
             listener.connectionStatusChanged(status);
     }
 
+    public Router.Status getRouterStatus() {
+        return routerStatus;
+    }
+
     /**
      * Updates the status of the router we use to connect to the server
      * @param routerStatus the router's new status
      */
-    public void routerStatusChanged(ConnectionStatus routerStatus) {
+    public void setRouterStatus(Router.Status routerStatus) {
+        if(this.routerStatus == routerStatus)
+            return;
+        this.routerStatus = routerStatus;
         switch(routerStatus) {
-            case Authenticated:
+            case ConnectedToServer:
                 if(connectionId != null) {
                     sender.sendMessage(new Message<AuthenticationRequest>(path, connectMessageType,
                             new AuthenticationRequest(ConnectionType.Proxy, new Reconnect(connectionId))));

@@ -37,7 +37,7 @@ public final class MainRouter extends Router {
 
         this.injector = injector;
 
-        setRouterStatus(Status.Connected);
+        setRouterStatus(Status.ConnectedToServer);
         login(new InternalAuthentication());
     }
 	

@@ -38,7 +38,7 @@ public class SocketServer extends ExternalClientRouter {
         this.properties = properties;
         this.routerRegistration = router.registerReceiver(this);
 
-        setRouterStatus(Status.Connected);
+        setRouterStatus(Status.ConnectedToServer);
     }
 
     @Override

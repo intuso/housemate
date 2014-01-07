@@ -1,6 +1,5 @@
 package com.intuso.housemate.server.comms;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -180,11 +179,6 @@ public class RemoteClientManager {
 
     private RemoteClientImpl addClient(String connectionId, String authenticatedUser, List<String> route,
                                        ConnectionType type, boolean clientsAuthenticated) throws HousemateException {
-        try {
-            throw new Exception("Added client for route " + Joiner.on(",").join(route));
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
         return rootClient.addClient(route, connectionId, authenticatedUser, type, clientsAuthenticated);
     }
 

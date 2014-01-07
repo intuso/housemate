@@ -157,7 +157,7 @@ public class SocketClient extends Router {
                     socket.setSoTimeout(60000);
 
                     getLog().d("Connected to server, creating reader/writer threads");
-                    setRouterStatus(Status.Connected);
+                    setRouterStatus(Status.ConnectedToRouter);
                     messageSender = new MessageSender();
                     streamReader = new StreamReader();
 
