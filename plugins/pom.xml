@@ -17,7 +17,7 @@
         <module>api</module>
         <module>arduino-temp-sensor</module>
         <module>rfxcom</module>
-        <module>run-program-device</module>
+        <module>run-program</module>
         <module>tv-remote</module>
         <module>twitter</module>
     </modules>

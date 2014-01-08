@@ -7,15 +7,15 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>plugin-run-program-device</artifactId>
+    <artifactId>plugin-run-program</artifactId>
     <packaging>jar</packaging>
-    <name>Housemate Plugin Run Program Device</name>
+    <name>Housemate Plugin Run Program</name>
     <description>Housemate plugin for a device that runs a program</description>
 
 	<dependencies>
 		<dependency>
             <groupId>${project.groupId}</groupId>
-			<artifactId>object-real</artifactId>
+			<artifactId>annotations-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

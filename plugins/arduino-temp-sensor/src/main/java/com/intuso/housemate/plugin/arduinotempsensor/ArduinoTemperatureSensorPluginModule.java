@@ -1,23 +1,22 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
+import com.google.inject.Inject;
 import com.google.inject.Provides;
-import com.google.inject.multibindings.Multibinder;
+import com.intuso.housemate.annotations.plugin.AnnotatedPluginModule;
+import com.intuso.housemate.annotations.plugin.DeviceFactories;
+import com.intuso.housemate.annotations.plugin.PluginInformation;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.plugin.api.PluginModule;
-import com.intuso.housemate.plugin.api.RealDeviceFactory;
-import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 
-/**
- */
-public class ArduinoTemperatureSensorPlugin extends PluginModule {
+@PluginInformation(id = "com.intuso.housemate.plugin.arduino-temp-sensor", name = "Arduino Temperature Sensor plugin", description = "Plugin for temperature sensing using an Arduino")
+@DeviceFactories({ArduinoTemperatureSensorFactory.class, ArduinoIndicatorFactory.class})
+public class ArduinoTemperatureSensorPluginModule extends AnnotatedPluginModule {
 
-    @Override
-    public TypeInfo getTypeInfo() {
-        return new TypeInfo(ArduinoTemperatureSensorPlugin.class.getName(), "Arduino Temp Sensor plugin",
-                "Plugin for temperature sensing using an Arduino");
+    @Inject
+    public ArduinoTemperatureSensorPluginModule(Log log) {
+        super(log);
     }
 
     @Provides
@@ -33,11 +32,5 @@ public class ArduinoTemperatureSensorPlugin extends PluginModule {
             throw new HousemateException("Failed to open connection to Arduino", e);
         }
         return serialPort;
-    }
-
-    @Override
-    public void configureDeviceFactories(Multibinder<RealDeviceFactory<?>> deviceFactoryBindings) {
-        deviceFactoryBindings.addBinding().to(ArduinoTemperatureSensorFactory.class);
-        deviceFactoryBindings.addBinding().to(ArduinoIndicatorFactory.class);
     }
 }

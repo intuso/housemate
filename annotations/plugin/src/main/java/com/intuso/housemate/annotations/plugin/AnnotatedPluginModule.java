@@ -27,7 +27,6 @@ public class AnnotatedPluginModule extends PluginModule {
 
     @Override
     public TypeInfo getTypeInfo() {
-        Class<?> clazz = getClass();
         PluginInformation information = getClass().getAnnotation(PluginInformation.class);
         if(information == null)
             throw new HousemateRuntimeException("Annotated plugin " + getClass().getName() + " has no "

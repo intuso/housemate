@@ -15,7 +15,7 @@
 	<dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>plugin-api</artifactId>
+            <artifactId>annotations-plugin</artifactId>
             <version>${project.version}</version>
         </dependency>
 		<dependency>
