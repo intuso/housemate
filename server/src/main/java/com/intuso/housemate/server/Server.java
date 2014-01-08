@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.object.bridge.RootObjectBridge;
 import com.intuso.housemate.server.plugin.PluginManager;
-import com.intuso.housemate.server.plugin.main.MainPlugin;
+import com.intuso.housemate.server.plugin.main.MainPluginModule;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,7 +33,7 @@ public class Server {
         injector.getInstance(RootObjectBridge.class);
 
         // add the default plugin
-        injector.getInstance(PluginManager.class).addPlugin(new MainPlugin(injector));
+        injector.getInstance(PluginManager.class).addPlugin(MainPluginModule.class);
     }
 
     public final void stop() {

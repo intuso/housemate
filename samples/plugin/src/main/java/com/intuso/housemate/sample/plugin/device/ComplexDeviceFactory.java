@@ -1,36 +1,42 @@
 package com.intuso.housemate.sample.plugin.device;
 
+import com.google.inject.Inject;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.housemate.sample.plugin.CustomArg;
 import com.intuso.utilities.log.Log;
 
 /**
- * Example factory for devices with a non-simple constructor. This factory has a simple
- * constructor so can be used with
- * {@link com.intuso.housemate.annotations.plugin.DeviceFactories} annotations
+ * Example factory for devices with a non-standard constructor.
  *
- * @see com.intuso.housemate.annotations.plugin.AnnotatedPluginDescriptor
+ * @see com.intuso.housemate.annotations.plugin.AnnotatedPluginModule
+ * @see ComplexDevice
  */
 public class ComplexDeviceFactory implements RealDeviceFactory<ComplexDevice> {
 
-    private final Object simpleArg = new Object();
+    private final CustomArg customArg;
+
+    @Inject
+    public ComplexDeviceFactory(CustomArg customArg) {
+        this.customArg = customArg;
+    }
 
     @Override
     public String getTypeId() {
-        return "complex-device-factory";
+        return "really-complex-device-factory";
     }
 
     @Override
     public String getTypeName() {
-        return "Complex Device Factory";
+        return "Really Complex Device Factory";
     }
 
     @Override
     public String getTypeDescription() {
-        return "A factory for complex devices";
+        return "A complex factory for complex devices";
     }
 
     @Override
     public ComplexDevice create(Log log, String id, String name, String description) {
-        return new ComplexDevice(log, id, name, description, simpleArg);
+        return new ComplexDevice(log, id, name, description, customArg);
     }
 }

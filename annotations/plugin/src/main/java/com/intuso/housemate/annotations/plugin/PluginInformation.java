@@ -29,10 +29,4 @@ public @interface PluginInformation {
      * @return the description of the plugin
      */
     String description();
-
-    /**
-     * The author of the plugin
-     * @return the author of the plugin
-     */
-    String author();
 }

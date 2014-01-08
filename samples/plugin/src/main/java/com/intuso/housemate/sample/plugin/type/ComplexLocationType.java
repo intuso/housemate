@@ -1,9 +1,11 @@
 package com.intuso.housemate.sample.plugin.type;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.object.real.RealSubType;
 import com.intuso.housemate.object.real.impl.type.RealCompoundType;
+import com.intuso.housemate.sample.plugin.CustomArg;
 import com.intuso.utilities.log.Log;
 
 public class ComplexLocationType extends RealCompoundType<Location> {
@@ -12,7 +14,8 @@ public class ComplexLocationType extends RealCompoundType<Location> {
     public final static String NAME = "Complex Location Type";
     public final static String DESCRIPTION = "A location type that is complex";
 
-    public ComplexLocationType(Log log, Object extraArg) {
+    @Inject
+    public ComplexLocationType(Log log, CustomArg customArg) {
         super(log, ID, NAME, DESCRIPTION, 1, 1, /* Add sub types here */ Lists.<RealSubType<?>>newArrayList());
     }
 

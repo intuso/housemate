@@ -36,7 +36,7 @@
 					</descriptorRefs>
 					<archive>
                         <manifestEntries>
-                            <Housemate-Plugin>com.intuso.housemate.plugin.rfxcom.RFXComPlugin</Housemate-Plugin>
+                            <Housemate-Plugin>com.intuso.housemate.plugin.rfxcom.RFXComPluginModule</Housemate-Plugin>
                         </manifestEntries>
 					</archive>
 				</configuration>

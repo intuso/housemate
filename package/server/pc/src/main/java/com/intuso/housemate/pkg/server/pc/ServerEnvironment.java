@@ -5,9 +5,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.platform.pc.Properties;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
+import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.housemate.server.plugin.PluginManager;
-import com.intuso.housemate.server.plugin.main.MainPlugin;
 import com.intuso.housemate.server.storage.ServerObjectLoader;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyContainer;
@@ -19,11 +18,9 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -90,8 +87,8 @@ public class ServerEnvironment {
         else {
             log.d("Loading plugins from " + pluginDirectory.getAbsolutePath());
             for(File pluginFile : pluginDirectory.listFiles(new PluginFileFilter())) {
-                for(PluginDescriptor plugin : loadPlugin(pluginFile, log))
-                    pluginManager.addPlugin(plugin);
+                for(Class<? extends PluginModule> pluginModuleClass : getPluginModuleClasses(pluginFile, log))
+                    pluginManager.addPlugin(pluginModuleClass);
             }
         }
     }
@@ -100,12 +97,12 @@ public class ServerEnvironment {
         //CommPortIdentifier.getPortIdentifiers();
     }
 
-    private List<PluginDescriptor> loadPlugin(File file, Log log) {
+    private List<Class<? extends PluginModule>> getPluginModuleClasses(File file, Log log) {
         log.d("Loading plugins from " + file.getAbsolutePath());
         try {
-            ClassLoader cl = new URLClassLoader(new URL[] {file.toURI().toURL()}, PluginDescriptor.class.getClassLoader());
+            ClassLoader cl = new URLClassLoader(new URL[] {file.toURI().toURL()}, PluginModule.class.getClassLoader());
             Enumeration<URL> urls = cl.getResources("META-INF/MANIFEST.MF");
-            List<PluginDescriptor> result = new ArrayList<PluginDescriptor>();
+            List<Class<? extends PluginModule>> result = Lists.newArrayList();
             while(urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 Manifest mf = new Manifest(url.openStream());
@@ -137,40 +134,24 @@ public class ServerEnvironment {
         }
     }
 
-    private List<PluginDescriptor> processManifestAttribute(URL url, Object key, Object value, ClassLoader cl, Log log)
+    private List<Class<? extends PluginModule>> processManifestAttribute(URL url, Object key, Object value, ClassLoader cl, Log log)
             throws HousemateException {
-        List<PluginDescriptor> result = Lists.newArrayList();
-        if(key != null && key.toString().equals(PluginDescriptor.MANIFEST_ATTRIBUTE)
+        List<Class<? extends PluginModule>> result = Lists.newArrayList();
+        if(key != null && key.toString().equals(PluginModule.MANIFEST_ATTRIBUTE)
                 && value instanceof String) {
-            log.d("Found " + PluginDescriptor.MANIFEST_ATTRIBUTE + " attribute in "+ url.toExternalForm());
+            log.d("Found " + PluginModule.MANIFEST_ATTRIBUTE + " attribute in "+ url.toExternalForm());
             String[] classNames = ((String)value).split(",");
             for(String className : classNames) {
-                PluginDescriptor descriptor = null;
                 try {
                     log.d("Loading plugin class " + className);
                     Class<?> clazz = Class.forName(className, true, cl);
-                    if(PluginDescriptor.class.isAssignableFrom(clazz)) {
-                        descriptor = (PluginDescriptor) clazz.getConstructor().newInstance();
+                    if(PluginModule.class.isAssignableFrom(clazz)) {
                         log.d("Successfully loaded plugin class " + className);
+                        result.add((Class<? extends PluginModule>) clazz);
                     } else
-                        throw new HousemateException(clazz.getName() + " is not assignable to " + PluginDescriptor.class.getName());
+                        throw new HousemateException(clazz.getName() + " is not assignable to " + PluginModule.class.getName());
                 } catch(ClassNotFoundException e) {
-                    throw new HousemateException("Could not load plugin descriptor " + className + " from " + url.toExternalForm(), e);
-                } catch(InvocationTargetException e) {
-                    throw new HousemateException("Could not load plugin descriptor " + className + " from " + url.toExternalForm(), e);
-                } catch(NoSuchMethodException e) {
-                    throw new HousemateException("Could not load plugin descriptor " + className + " from " + url.toExternalForm(), e);
-                } catch(InstantiationException e) {
-                    throw new HousemateException("Could not load plugin descriptor " + className + " from " + url.toExternalForm(), e);
-                } catch(IllegalAccessException e) {
-                    throw new HousemateException("Could not load plugin descriptor " + className + " from " + url.toExternalForm(), e);
-                }
-                if(descriptor != null) {
-                    try {
-                        result.add(descriptor);
-                    } catch(Throwable t) {
-                        throw new HousemateException("Failed to initialise plugin descriptor " + className + " from " + url.toExternalForm(), t);
-                    }
+                    throw new HousemateException("Could not load plugin module class " + className + " from " + url.toExternalForm(), e);
                 }
             }
         }

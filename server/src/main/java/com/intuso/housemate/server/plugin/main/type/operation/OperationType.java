@@ -2,6 +2,8 @@ package com.intuso.housemate.server.plugin.main.type.operation;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -11,7 +13,6 @@ import com.intuso.housemate.object.real.RealSubType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealCompoundType;
 import com.intuso.housemate.plugin.api.Operator;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
@@ -19,6 +20,7 @@ import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  */
@@ -109,8 +111,8 @@ public class OperationType extends RealCompoundType<Operation> {
         }
 
         @Override
-        public void pluginAdded(PluginDescriptor plugin) {
-            for(Operator<?, ?> operator : plugin.getOperators(log)) {
+        public void pluginAdded(Injector pluginInjector) {
+            for(Operator<?, ?> operator : pluginInjector.getInstance(new Key<Set<Operator<?, ?>>>() {})) {
                 Map<String, Operator<?, ?>> operatorsByType = operators.get(operator.getOperationType());
                 if(operatorsByType == null) {
                     operatorsByType = Maps.newHashMap();
@@ -121,7 +123,7 @@ public class OperationType extends RealCompoundType<Operation> {
         }
 
         @Override
-        public void pluginRemoved(PluginDescriptor plugin) {
+        public void pluginRemoved(Injector pluginInjector) {
             // todo remove them
         }
     }

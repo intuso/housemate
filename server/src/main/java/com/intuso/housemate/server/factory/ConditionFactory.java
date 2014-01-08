@@ -2,6 +2,8 @@ package com.intuso.housemate.server.factory;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.type.TypeInstance;
@@ -12,7 +14,6 @@ import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.*;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.plugin.api.ServerConditionFactory;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
@@ -21,6 +22,7 @@ import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 /**
  */
@@ -95,8 +97,8 @@ public final class ConditionFactory implements PluginListener {
     }
 
     @Override
-    public void pluginAdded(PluginDescriptor plugin) {
-        for(ServerConditionFactory<?> factory : plugin.getConditionFactories()) {
+    public void pluginAdded(Injector pluginInjector) {
+        for(ServerConditionFactory<?> factory : pluginInjector.getInstance(new Key<Set<ServerConditionFactory<?>>>() {})) {
             log.d("Adding new condition factory for type " + factory.getTypeId());
             factories.put(factory.getTypeId(), factory);
             type.getOptions().add(new RealOption(log, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
@@ -104,8 +106,8 @@ public final class ConditionFactory implements PluginListener {
     }
 
     @Override
-    public void pluginRemoved(PluginDescriptor plugin) {
-        for(ServerConditionFactory<?> factory : plugin.getConditionFactories()) {
+    public void pluginRemoved(Injector pluginInjector) {
+        for(ServerConditionFactory<?> factory : pluginInjector.getInstance(new Key<Set<ServerConditionFactory<?>>>() {})) {
             factories.remove(factory.getTypeId());
             type.getOptions().remove(factory.getTypeId());
         }

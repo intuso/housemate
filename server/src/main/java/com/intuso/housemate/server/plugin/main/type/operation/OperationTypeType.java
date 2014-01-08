@@ -2,18 +2,20 @@ package com.intuso.housemate.server.plugin.main.type.operation;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.plugin.api.OperationType;
 import com.intuso.housemate.plugin.api.Operator;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  */
@@ -63,9 +65,9 @@ public class OperationTypeType extends RealChoiceType<OperationType> {
         }
 
         @Override
-        public void pluginAdded(PluginDescriptor plugin) {
+        public void pluginAdded(Injector pluginInjector) {
             OperationTypeType type = (OperationTypeType) types.get(ID);
-            for(Operator<?, ?> operator : plugin.getOperators(log)) {
+            for(Operator<?, ?> operator : pluginInjector.getInstance(new Key<Set<Operator<?, ?>>>() {})) {
                 if(types.get(operator.getOperationType().getId()) == null) {
                     types.put(operator.getOperationType().getId(), operator.getOperationType());
                     type.getOptions().add(new RealOption(log, operator.getOperationType().getId(),
@@ -75,7 +77,7 @@ public class OperationTypeType extends RealChoiceType<OperationType> {
         }
 
         @Override
-        public void pluginRemoved(PluginDescriptor plugin) {
+        public void pluginRemoved(Injector pluginInjector) {
             // todo remove them
         }
     }

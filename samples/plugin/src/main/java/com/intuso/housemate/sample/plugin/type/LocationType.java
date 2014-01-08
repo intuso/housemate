@@ -1,5 +1,6 @@
 package com.intuso.housemate.sample.plugin.type;
 
+import com.google.inject.Inject;
 import com.intuso.housemate.api.object.type.SimpleTypeData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
@@ -24,6 +25,7 @@ public class LocationType extends RealCompoundType<Location> {
     public final static String LONGITUDE_NAME = "Longitude";
     public final static String LONGITUDE_DESCRIPTION = "The location's longitude";
 
+    @Inject
     protected LocationType(Log log, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
         super(log, ID, NAME, DESCRIPTION, 1, 1,
                 makeLatitudeSubType(log, types), makeLongitudeSubType(log, types));

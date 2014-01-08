@@ -2,6 +2,8 @@ package com.intuso.housemate.server.plugin.main.type.comparison;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -11,7 +13,6 @@ import com.intuso.housemate.object.real.RealSubType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealCompoundType;
 import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
@@ -19,6 +20,7 @@ import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  */
@@ -91,8 +93,8 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     }
 
     @Override
-    public void pluginAdded(PluginDescriptor plugin) {
-        for(Comparator<?> comparator : plugin.getComparators(log)) {
+    public void pluginAdded(Injector pluginInjector) {
+        for(Comparator<?> comparator : pluginInjector.getInstance(new Key<Set<Comparator<?>>>() {})) {
             Map<String, Comparator<?>> comparatorsByType = comparators.get(comparator.getComparisonType());
             if(comparatorsByType == null) {
                 comparatorsByType = Maps.newHashMap();
@@ -103,7 +105,7 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     }
 
     @Override
-    public void pluginRemoved(PluginDescriptor plugin) {
+    public void pluginRemoved(Injector pluginInjector) {
         // todo remove them
     }
 }

@@ -6,10 +6,10 @@ import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
 import com.intuso.utilities.log.Log;
 
 /**
- * Example condition with a simple constructor that can be used with the
+ * Example condition with a standard constructor that can be used with the
  * {@link com.intuso.housemate.annotations.plugin.Conditions} annotation
  *
- * @see com.intuso.housemate.annotations.plugin.AnnotatedPluginDescriptor
+ * @see com.intuso.housemate.annotations.plugin.AnnotatedPluginModule
  */
 public class DaylightCondition extends ServerRealCondition {
 

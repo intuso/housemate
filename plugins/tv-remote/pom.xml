@@ -36,7 +36,7 @@
 					</descriptorRefs>
 					<archive>
                         <manifestEntries>
-                            <Housemate-Plugin>com.intuso.housemate.plugin.tvremote.TVRemotePlugin</Housemate-Plugin>
+                            <Housemate-Plugin>com.intuso.housemate.plugin.tvremote.TVRemotePluginModule</Housemate-Plugin>
                         </manifestEntries>
 					</archive>
 				</configuration>

@@ -1,5 +1,6 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
+import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.plugin.api.RealDeviceFactory;
 import com.intuso.utilities.log.Log;
@@ -11,6 +12,7 @@ public class ArduinoIndicatorFactory implements RealDeviceFactory<ArduinoIndicat
 
     private final SerialPort serialPort;
 
+    @Inject
     public ArduinoIndicatorFactory(SerialPort serialPort) {
         this.serialPort = serialPort;
     }

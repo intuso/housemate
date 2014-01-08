@@ -1,11 +1,12 @@
 package com.intuso.housemate.server.client;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealRootObject;
 import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.plugin.api.PluginDescriptor;
 import com.intuso.housemate.server.comms.InternalAuthentication;
 import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.DeviceFactory;
@@ -13,6 +14,8 @@ import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.utilities.log.Log;
+
+import java.util.Set;
 
 /**
  * Util class for running objects local to the server
@@ -53,15 +56,15 @@ public class LocalClient implements PluginListener {
     }
 
     @Override
-    public void pluginAdded(PluginDescriptor plugin) {
-        for(RealType<?, ?, ?> type : plugin.getTypes(log)) {
+    public void pluginAdded(Injector pluginInjector) {
+        for(RealType<?, ?, ?> type : pluginInjector.getInstance(new Key<Set<RealType<?, ?, ?>>>() {})) {
             log.d("Adding type " + type.getId());
             root.addType(type);
         }
     }
 
     @Override
-    public void pluginRemoved(PluginDescriptor plugin) {
+    public void pluginRemoved(Injector pluginInjector) {
         // todo remove types added by this plugin
     }
 

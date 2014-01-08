@@ -10,10 +10,10 @@ import com.intuso.housemate.sample.plugin.type.Location;
 import com.intuso.utilities.log.Log;
 
 /**
- * Example device with a simple constructor that can be used with the
+ * Example device with a standard constructor that can be used with the
  * {@link com.intuso.housemate.annotations.plugin.Devices} annotation
  *
- * @see com.intuso.housemate.annotations.plugin.AnnotatedPluginDescriptor
+ * @see com.intuso.housemate.annotations.plugin.AnnotatedPluginModule
  */
 public class SimpleDevice extends RealDevice {
 
