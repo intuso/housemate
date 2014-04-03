@@ -8,9 +8,12 @@ import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.storage.ServerObjectLoader;
+import com.intuso.utilities.listener.Listener;
+import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.properties.api.PropertyContainer;
-import com.intuso.utilities.properties.api.PropertyValue;
+import com.intuso.utilities.properties.api.PropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.FileResource;
 import org.eclipse.jetty.util.resource.JarResource;
@@ -24,6 +27,7 @@ import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -39,8 +43,6 @@ public class ServerEnvironment {
     public final static String RUN_WEBAPP = "webapp.run";
     public final static String WEBAPP_PORT = "webapp.port";
     private final static String WEBAPP_PATH = "webapp.path";
-    private final static String USERNAME = "username";
-    private final static String PASSWORD = "password";
 
     private final static String WEBAPP_FOLDER = "webapp";
     private final static String WEBAPP_NAME = "housemate";
@@ -53,10 +55,18 @@ public class ServerEnvironment {
 	 */
 	public ServerEnvironment(String args[]) throws HousemateException {
 
-        PropertyContainer properties = Properties.init(args);
-        setExtraDefaults(properties);
+        ListenersFactory listenersFactory = new ListenersFactory() {
+            @Override
+            public <LISTENER extends Listener> Listeners<LISTENER> create() {
+                return new Listeners<LISTENER>(new CopyOnWriteArrayList<LISTENER>());
+            }
+        };
 
-        Injector injector = Guice.createInjector(new PCServerModule(properties));
+        WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
+        PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, args);
+        setExtraDefaults(defaultProperties);
+
+        Injector injector = Guice.createInjector(new PCServerModule(defaultProperties, properties));
 
         injector.getInstance(com.intuso.housemate.server.Server.class).start();
 
@@ -65,13 +75,11 @@ public class ServerEnvironment {
         startWebapp(injector, properties);
     }
 
-    private void setExtraDefaults(PropertyContainer properties) {
-        properties.set(RUN_WEBAPP, new PropertyValue("default", 0, "true"));
-        properties.set(USERNAME, new PropertyValue("default", 0, "admin"));
-        properties.set(PASSWORD, new PropertyValue("default", 0, "admin"));
+    private void setExtraDefaults(WriteableMapPropertyRepository defaultProperties) {
+        defaultProperties.set(RUN_WEBAPP, "true");
     }
 
-    private void loadPlugins(Injector injector, PropertyContainer properties) {
+    private void loadPlugins(Injector injector, PropertyRepository properties) {
 
         loadSharedJNILibs();
 
@@ -165,7 +173,7 @@ public class ServerEnvironment {
         }
     }
 
-    private void startWebapp(Injector injector, PropertyContainer properties) throws HousemateException {
+    private void startWebapp(Injector injector, PropertyRepository properties) throws HousemateException {
 
         Log log = injector.getInstance(Log.class);
 
@@ -197,7 +205,7 @@ public class ServerEnvironment {
         }
         int port = 46874;
         try {
-            if(properties.containsKey(WEBAPP_PORT))
+            if(properties.keySet().contains(WEBAPP_PORT))
                 port = Integer.parseInt(properties.get(WEBAPP_PORT));
         } catch(Throwable t) {
             log.w("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
@@ -252,7 +260,7 @@ public class ServerEnvironment {
         }
     }
 
-    private void startJetty(Injector injector, PropertyContainer properties, int port, File warFile)
+    private void startJetty(Injector injector, PropertyRepository properties, int port, File warFile)
             throws HousemateException {
         Server server = new Server(port);
 

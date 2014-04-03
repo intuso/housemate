@@ -4,7 +4,8 @@ import com.google.inject.AbstractModule;
 import com.intuso.housemate.pkg.server.pc.storage.SjoerdDBModule;
 import com.intuso.housemate.platform.pc.PCModule;
 import com.intuso.housemate.server.ServerModule;
-import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.api.PropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,18 +16,21 @@ import com.intuso.utilities.properties.api.PropertyContainer;
  */
 public class PCServerModule extends AbstractModule {
 
-    private final PropertyContainer properties;
+    private final WriteableMapPropertyRepository defaultProperties;
+    private final PropertyRepository properties;
 
-    public PCServerModule(PropertyContainer properties) {
+    public PCServerModule(WriteableMapPropertyRepository defaultProperties, PropertyRepository properties) {
+        this.defaultProperties = defaultProperties;
         this.properties = properties;
     }
 
     @Override
     protected void configure() {
-        bind(PropertyContainer.class).toInstance(properties);
-        install(new PCModule(properties, "server.log")); // log and properties provider
-        install(new SjoerdDBModule(properties)); // storage impl
-        install(new TransportsModule(properties)); // socket and rest servers
-        install(new ServerModule(properties)); // main server module
+        bind(PropertyRepository.class).toInstance(properties);
+        install(new PCModule(defaultProperties, "server.log")); // log and properties provider
+        install(new SjoerdDBModule(defaultProperties)); // storage impl
+        install(new TransportsModule(defaultProperties)); // socket and rest servers
+        install(new SerialisersModule());
+        install(new ServerModule(defaultProperties)); // main server module
     }
 }

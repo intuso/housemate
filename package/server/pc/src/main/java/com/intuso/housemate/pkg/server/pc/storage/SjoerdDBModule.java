@@ -4,8 +4,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.server.storage.Storage;
-import com.intuso.utilities.properties.api.PropertyContainer;
-import com.intuso.utilities.properties.api.PropertyValue;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 import java.io.File;
 
@@ -18,9 +18,8 @@ import java.io.File;
  */
 public class SjoerdDBModule extends AbstractModule {
 
-    public SjoerdDBModule(PropertyContainer properties) {
-        properties.set(SjoerdDB.PATH_PROPERTY_KEY,
-                new PropertyValue("internal", 3, properties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + "database"));
+    public SjoerdDBModule(WriteableMapPropertyRepository defaultProperties) {
+        defaultProperties.set(SjoerdDB.PATH_PROPERTY_KEY, defaultProperties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + "database");
     }
 
     @Override

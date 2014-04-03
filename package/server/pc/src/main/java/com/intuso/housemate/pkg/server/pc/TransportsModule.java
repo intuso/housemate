@@ -3,7 +3,8 @@ package com.intuso.housemate.pkg.server.pc;
 import com.google.inject.AbstractModule;
 import com.intuso.housemate.comms.transport.rest.RestServerModule;
 import com.intuso.housemate.comms.transport.socket.server.SocketServerModule;
-import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,15 +15,15 @@ import com.intuso.utilities.properties.api.PropertyContainer;
  */
 public class TransportsModule extends AbstractModule {
 
-    private final PropertyContainer properties;
+    private final WriteableMapPropertyRepository defaultProperties;
 
-    public TransportsModule(PropertyContainer properties) {
-        this.properties = properties;
+    public TransportsModule(WriteableMapPropertyRepository defaultProperties) {
+        this.defaultProperties = defaultProperties;
     }
 
     @Override
     protected void configure() {
-        install(new SocketServerModule(properties));
-        install(new RestServerModule(properties));
+        install(new SocketServerModule(defaultProperties));
+        install(new RestServerModule(defaultProperties));
     }
 }

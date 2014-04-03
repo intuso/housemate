@@ -11,7 +11,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.server.storage.DetailsNotFoundException;
 import com.intuso.housemate.server.storage.Storage;
-import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.api.PropertyRepository;
 
 import java.io.*;
 import java.util.*;
@@ -31,7 +31,7 @@ public class SjoerdDB implements Storage {
     private final String basePath;
 
     @Inject
-    public SjoerdDB(PropertyContainer properties) throws HousemateException {
+    public SjoerdDB(PropertyRepository properties) throws HousemateException {
         String basePath = properties.get(PATH_PROPERTY_KEY);
         File baseDir = new File(basePath);
         if(baseDir.exists()) {
@@ -100,6 +100,18 @@ public class SjoerdDB implements Storage {
             throw new DetailsNotFoundException(e);
         } catch(IOException e) {
             throw new HousemateException("Failed to read details file", e);
+        }
+    }
+
+    @Override
+    public void saveValues(String[] path, TypeInstanceMap details) throws HousemateException {
+        try {
+            String[] newPath = new String[path.length];
+            System.arraycopy(path, 0, newPath, 0, path.length - 1);
+            newPath[path.length - 1] = path[path.length - 1] + PROPERTIES_EXTENSION;
+            saveDetails(getFile(true, newPath), details);
+        } catch(IOException e) {
+            throw new HousemateException("Could not save details", e);
         }
     }
 
@@ -188,9 +200,11 @@ public class SjoerdDB implements Storage {
             for(int i = 0; i < typeInstances.size(); i++) {
                 path.add(Integer.toString(i));
                 TypeInstance typeInstance = typeInstances.get(i);
-                if(typeInstance.getValue() != null)
-                    properties.put(JOINER.join(path), typeInstance.getValue());
-                addValues(properties, path, typeInstance.getChildValues());
+                if(typeInstance != null) {
+                    if(typeInstance.getValue() != null)
+                        properties.put(JOINER.join(path), typeInstance.getValue());
+                    addValues(properties, path, typeInstance.getChildValues());
+                }
                 path.remove(path.size() - 1);
             }
         }
