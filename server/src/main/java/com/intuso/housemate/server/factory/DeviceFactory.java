@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.annotations.processor.AnnotationProcessor;
+import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -14,10 +14,11 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.*;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
-import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.storage.Storage;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -43,16 +44,18 @@ public final class DeviceFactory implements PluginListener {
     public final static String TYPE_PARAMETER_DESCRIPTION = "The type of the new device";
 
     private final Log log;
+    private final ListenersFactory listenersFactory;
     private final Storage storage;
     private final AnnotationProcessor annotationProcessor;
 
-    private final Map<String, RealDeviceFactory<?>> factories = Maps.newHashMap();
+    private final Map<String, Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>>> factoryEntries = Maps.newHashMap();
     private final DeviceFactoryType type;
 
     @Inject
-    public DeviceFactory(Log log, Storage storage,
+    public DeviceFactory(Log log, ListenersFactory listenersFactory, Storage storage,
                          AnnotationProcessor annotationProcessor, PluginManager pluginManager) {
         this.log = log;
+        this.listenersFactory = listenersFactory;
         this.storage = storage;
         this.annotationProcessor = annotationProcessor;
         type = new DeviceFactoryType(log);
@@ -66,10 +69,10 @@ public final class DeviceFactory implements PluginListener {
     public RealCommand createAddDeviceCommand(String commandId, String commandName, String commandDescription,
                                               final RealList<TypeData<?>, RealType<?, ?, ?>> types,
                                               final RealList<DeviceData, RealDevice> devices) {
-        return new RealCommand(log, commandId, commandName, commandDescription, Arrays.asList(
-                new RealParameter<String>(log, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(log)),
-                new RealParameter<String>(log, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(log)),
-                new RealParameter<RealDeviceFactory<?>>(log, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
+        return new RealCommand(log, listenersFactory, commandId, commandName, commandDescription, Arrays.asList(
+                new RealParameter<String>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(log, listenersFactory)),
+                new RealParameter<String>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(log, listenersFactory)),
+                new RealParameter<Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>>>(log, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -82,10 +85,11 @@ public final class DeviceFactory implements PluginListener {
                 TypeInstances description = values.get(DESCRIPTION_PARAMETER_ID);
                 if(description == null || description.getFirstValue() == null)
                     throw new HousemateException("No device description specified");
-                RealDeviceFactory<?> deviceFactory = type.deserialise(deviceType.get(0));
-                if(deviceFactory == null)
+                Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>> deviceFactoryEntry = type.deserialise(deviceType.get(0));
+                if(deviceFactoryEntry == null)
                     throw new HousemateException("No factory known for device type " + deviceType);
-                RealDevice device = deviceFactory.create(log, name.getFirstValue(), name.getFirstValue(), description.getFirstValue());
+                RealDevice device = deviceFactoryEntry.getInjector().getInstance(deviceFactoryEntry.getFactoryKey())
+                        .create(new DeviceData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()));
                 annotationProcessor.process(types, device);
                 devices.add(device);
                 storage.saveValues(devices.getPath(), device.getId(), values);
@@ -95,34 +99,39 @@ public final class DeviceFactory implements PluginListener {
 
     @Override
     public void pluginAdded(Injector pluginInjector) {
-        for(RealDeviceFactory<?> factory : pluginInjector.getInstance(new Key<Set<RealDeviceFactory<?>>>() {})) {
-            log.d("Adding new device factory for type " + factory.getTypeId());
-            factories.put(factory.getTypeId(), factory);
-            type.getOptions().add(new RealOption(log, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
+        Set<Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>>> factoryEntries = Factory.getEntries(log, pluginInjector, com.intuso.housemate.api.object.device.DeviceFactory.class);
+        for(Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>> factoryEntry : factoryEntries) {
+            log.d("Adding new device factory for type " + factoryEntry.getTypeInfo().id());
+            this.factoryEntries.put(factoryEntry.getTypeInfo().id(), factoryEntry);
+            type.getOptions().add(new RealOption(log, listenersFactory, factoryEntry.getTypeInfo().id(),
+                    factoryEntry.getTypeInfo().name(), factoryEntry.getTypeInfo().description()));
         }
     }
 
     @Override
     public void pluginRemoved(Injector pluginInjector) {
-        for(RealDeviceFactory<?> factory : pluginInjector.getInstance(new Key<Set<RealDeviceFactory<?>>>() {})) {
-            factories.remove(factory.getTypeId());
-            type.getOptions().remove(factory.getTypeId());
+        for(com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice> factory : pluginInjector.getInstance(new Key<Set<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>>>() {})) {
+            TypeInfo factoryInformation = factory.getClass().getAnnotation(TypeInfo.class);
+            if(factoryInformation != null) {
+                factoryEntries.remove(factoryInformation.id());
+                type.getOptions().remove(factoryInformation.id());
+            }
         }
     }
 
-    private class DeviceFactoryType extends RealChoiceType<RealDeviceFactory<?>> {
+    private class DeviceFactoryType extends RealChoiceType<Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>>> {
         protected DeviceFactoryType(Log log) {
-            super(log, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
+            super(log, listenersFactory, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
         }
 
         @Override
-        public TypeInstance serialise(RealDeviceFactory<?> o) {
-            return new TypeInstance(o.getTypeId());
+        public TypeInstance serialise(Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>> entry) {
+            return new TypeInstance(entry.getTypeInfo().id());
         }
 
         @Override
-        public RealDeviceFactory<?> deserialise(TypeInstance value) {
-            return value != null && value.getValue() != null ? factories.get(value.getValue()) : null;
+        public Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>> deserialise(TypeInstance value) {
+            return value != null && value.getValue() != null ? factoryEntries.get(value.getValue()) : null;
         }
     }
 }

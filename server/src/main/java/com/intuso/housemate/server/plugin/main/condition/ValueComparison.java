@@ -1,22 +1,26 @@
 package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.server.LifecycleHandler;
+import com.intuso.housemate.object.server.real.ServerRealCondition;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
 import com.intuso.housemate.object.server.real.ServerRealProperty;
+import com.intuso.housemate.plugin.api.Comparator;
+import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.housemate.server.plugin.main.type.comparison.Comparison;
 import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueAvailableListener;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
-import com.intuso.housemate.object.server.real.ServerRealCondition;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -26,6 +30,7 @@ import java.util.List;
  * those specified by the user
  *
  */
+@TypeInfo(id = "value-comparison", name = "Value Comparison", description = "Condition that compares values")
 public class ValueComparison extends ServerRealCondition {
 
     public final static String COMPARISON_ID = "comparison";
@@ -40,18 +45,16 @@ public class ValueComparison extends ServerRealCondition {
     private Value<?, ?> firstValue = null;
     private Value<?, ?> secondValue = null;
 
-    /**
-	 * Create a new day of the week condition
-     * @param name
-	 * @throws com.intuso.housemate.api.HousemateException
-	 */
     @Inject
-	public ValueComparison(Log log, String id, String name, String description,
-                           ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler,
+	public ValueComparison(Log log,
+                           ListenersFactory listenersFactory,
+                           @Assisted ConditionData data,
+                           @Assisted ServerRealConditionOwner owner,
+                           LifecycleHandler lifecycleHandler,
                            RealList<TypeData<?>, RealType<?, ?, ?>> types, ComparisonType comparisonType) {
-        super(log, id, name, description, owner, lifecycleHandler);
+        super(log, listenersFactory, data, owner, lifecycleHandler);
         this.types = types;
-        comparisonProperty = new ServerRealProperty<Comparison>(log, COMPARISON_ID, COMPARISON_NAME,
+        comparisonProperty = new ServerRealProperty<Comparison>(log, listenersFactory, COMPARISON_ID, COMPARISON_NAME,
                 COMPARISON_DESCRIPTION, comparisonType, (List)null);
         getProperties().add(comparisonProperty);
         propertyListener = new PropertyListener();
@@ -98,20 +101,28 @@ public class ValueComparison extends ServerRealCondition {
         else if(comparison.getComparatorsByType().get(firstValue.getType().getId()) == null)
             setError("No comparator for operator " + comparison.getComparisonType().getName() + " and value type " + firstValue.getType().getId());
         else {
-            try {
-                RealType<?, ?, ?> type = types.get(firstValue.getType().getId());
+            RealType<?, ?, ?> type = types.get(firstValue.getType().getId());
+            if(type == null)
+                setError("No type found for id " + firstValue.getType().getId());
+            else {
                 Comparator<Object> comparator = (Comparator<Object>) comparison.getComparatorsByType().get(firstValue.getType().getId());
-                Object first = firstValue.getTypeInstances() != null && firstValue.getTypeInstances().size() > 0
-                        ? type.deserialise(firstValue.getTypeInstances().get(0))
-                        : null;
-                Object second = secondValue.getTypeInstances() != null && secondValue.getTypeInstances().size() > 0
-                        ? type.deserialise(secondValue.getTypeInstances().get(0))
-                        : null;
-                conditionSatisfied(comparator.compare(first, second));
-                setError(null);
-            } catch(HousemateException e) {
-                setError("Error comparing values: " + e.getMessage());
-                getLog().e("Error comparing values", e);
+                if(comparator == null)
+                    setError("No comparator found for type id " + firstValue.getType().getId());
+                else {
+                    try {
+                        Object first = firstValue.getTypeInstances() != null && firstValue.getTypeInstances().size() > 0
+                                ? type.deserialise(firstValue.getTypeInstances().get(0))
+                                : null;
+                        Object second = secondValue.getTypeInstances() != null && secondValue.getTypeInstances().size() > 0
+                                ? type.deserialise(secondValue.getTypeInstances().get(0))
+                                : null;
+                        conditionSatisfied(comparator.compare(first, second));
+                        setError(null);
+                    } catch(HousemateException e) {
+                        setError("Error comparing values: " + e.getMessage());
+                        getLog().e("Error comparing values", e);
+                    }
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ import com.intuso.housemate.server.plugin.main.type.operation.Operation;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.Operator;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -19,7 +20,8 @@ public class OperationOutput extends ValueSource implements ValueAvailableListen
     private final Operation operation;
     private ComputedValue value;
 
-    public OperationOutput(Log log, RealList<TypeData<?>, RealType<?, ?, ?>> types, Operation operation) {
+    public OperationOutput(Log log, ListenersFactory listenersFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types, Operation operation) {
+        super(listenersFactory);
         this.log = log;
         this.types = types;
         this.operation = operation;

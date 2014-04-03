@@ -14,9 +14,11 @@ import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.plugin.api.ServerTaskFactory;
+import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.storage.Storage;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -42,14 +44,16 @@ public final class TaskFactory implements PluginListener {
     public final static String TYPE_PARAMETER_DESCRIPTION = "The type of the new task";
 
     private final Log log;
+    private final ListenersFactory listenersFactory;
     private final Storage storage;
 
-    private final Map<String, ServerTaskFactory<?>> factories = Maps.newHashMap();
+    private final Map<String, Factory.Entry<ServerTaskFactory<?>>> factoryEntries = Maps.newHashMap();
     private final TaskFactoryType type;
 
     @Inject
-    public TaskFactory(Log log, Storage storage, PluginManager pluginManager) {
+    public TaskFactory(Log log, ListenersFactory listenersFactory, Storage storage, PluginManager pluginManager) {
         this.log = log;
+        this.listenersFactory = listenersFactory;
         this.storage = storage;
         type = new TaskFactoryType(log);
         pluginManager.addPluginListener(this, true);
@@ -62,10 +66,10 @@ public final class TaskFactory implements PluginListener {
     public ServerRealCommand createAddTaskCommand(String commandId, String commandName, String commandDescription,
                                                   final ServerRealTaskOwner owner,
                                                   final ServerRealList<TaskData, ServerRealTask> list) {
-        return new ServerRealCommand(log, commandId, commandName, commandDescription, Arrays.asList(
-                new ServerRealParameter<String>(log, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(log)),
-                new ServerRealParameter<String>(log, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(log)),
-                new ServerRealParameter<ServerTaskFactory<?>>(log, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
+        return new ServerRealCommand(log, listenersFactory, commandId, commandName, commandDescription, Arrays.asList(
+                new ServerRealParameter<String>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(log, listenersFactory)),
+                new ServerRealParameter<String>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(log, listenersFactory)),
+                new ServerRealParameter<Factory.Entry<ServerTaskFactory<?>>>(log, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -87,43 +91,48 @@ public final class TaskFactory implements PluginListener {
         TypeInstances description = values.get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateException("No task description specified");
-        ServerTaskFactory<?> taskFactory = type.deserialise(taskType.get(0));
-        if(taskFactory == null)
+        Factory.Entry<ServerTaskFactory<?>> taskFactoryEntry = type.deserialise(taskType.get(0));
+        if(taskFactoryEntry == null)
             throw new HousemateException("No factory known for task type " + taskType);
-        return taskFactory.create(log, name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), owner);
+        return taskFactoryEntry.getInjector().getInstance(taskFactoryEntry.getFactoryKey())
+                .create(new TaskData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), owner);
     }
 
     @Override
     public void pluginAdded(Injector pluginInjector) {
-        for(ServerTaskFactory<?> factory : pluginInjector.getInstance(new Key<Set<ServerTaskFactory<?>>>() {})) {
-            log.d("Adding new task factory for type " + factory.getTypeId());
-            factories.put(factory.getTypeId(), factory);
-            type.getOptions().add(new RealOption(log, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
+        Set<Factory.Entry<ServerTaskFactory<?>>> factoryEntries = Factory.getEntries(log, pluginInjector, ServerTaskFactory.class);
+        for(Factory.Entry<ServerTaskFactory<?>> factoryEntry : factoryEntries) {
+            log.d("Adding new task factory for type " + factoryEntry.getTypeInfo().id());
+            this.factoryEntries.put(factoryEntry.getTypeInfo().id(), factoryEntry);
+            type.getOptions().add(new RealOption(log, listenersFactory, factoryEntry.getTypeInfo().id(),
+                    factoryEntry.getTypeInfo().name(), factoryEntry.getTypeInfo().description()));
         }
     }
 
     @Override
     public void pluginRemoved(Injector pluginInjector) {
-        for(ServerTaskFactory<?> factory : pluginInjector.getInstance(new Key<Set<ServerTaskFactory<?>>>() {
-        })) {
-            factories.remove(factory.getTypeId());
-            type.getOptions().remove(factory.getTypeId());
+        for(ServerTaskFactory<?> factory : pluginInjector.getInstance(new Key<Set<ServerTaskFactory<?>>>() {})) {
+            TypeInfo factoryInformation = factory.getClass().getAnnotation(TypeInfo.class);
+            if(factoryInformation != null) {
+                factoryEntries.remove(factoryInformation.id());
+                type.getOptions().remove(factoryInformation.id());
+            }
         }
     }
 
-    private class TaskFactoryType extends RealChoiceType<ServerTaskFactory<?>> {
+    private class TaskFactoryType extends RealChoiceType<Factory.Entry<ServerTaskFactory<?>>> {
         protected TaskFactoryType(Log log) {
-            super(log, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
+            super(log, listenersFactory, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
         }
 
         @Override
-        public TypeInstance serialise(ServerTaskFactory<?> o) {
-            return new TypeInstance(o.getTypeId());
+        public TypeInstance serialise(Factory.Entry<ServerTaskFactory<?>> entry) {
+            return new TypeInstance(entry.getTypeInfo().id());
         }
 
         @Override
-        public ServerTaskFactory<?> deserialise(TypeInstance value) {
-            return value != null && value.getValue() != null ? factories.get(value.getValue()) : null;
+        public Factory.Entry<ServerTaskFactory<?>> deserialise(TypeInstance value) {
+            return value != null && value.getValue() != null ? factoryEntries.get(value.getValue()) : null;
         }
     }
 }

@@ -2,60 +2,64 @@ package com.intuso.housemate.server.plugin.main.task;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
-import com.intuso.housemate.annotations.plugin.FactoryInformation;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.command.Command;
-import com.intuso.housemate.api.object.command.CommandListener;
+import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.housemate.object.server.real.ServerRealProperty;
 import com.intuso.housemate.object.server.real.ServerRealTask;
 import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
-import com.intuso.housemate.server.object.bridge.RootObjectBridge;
-import com.intuso.housemate.object.real.impl.type.RealObjectType;
+import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
  */
-@FactoryInformation(id = "perform-command", name = "Perform Command", description = "Perform a command in the system")
+@TypeInfo(id = "perform-command", name = "Perform Command", description = "Perform a command in the system")
 public class PerformCommand extends ServerRealTask implements ObjectLifecycleListener {
 
     private final ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> commandPath;
-        private Command<?, ?> command;
-        private ListenerRegistration commandLifecycleListenerRegistration = null;
+    private Command<?, ?, ?> command;
+    private ListenerRegistration commandLifecycleListenerRegistration = null;
 
-        private CommandListener listener = new CommandListener<Command<?, ?>>() {
-            @Override
-            public void commandStarted(Command<?, ?> command) {
-                // do nothing
-            }
-
+    private CommandPerformListener listener = new CommandPerformListener<Command<?, ?, ?>>() {
         @Override
-        public void commandFinished(Command<?, ?> command) {
+        public void commandStarted(Command<?, ?, ?> command) {
             // do nothing
         }
 
         @Override
-        public void commandFailed(Command<?, ?> command, String error) {
+        public void commandFinished(Command<?, ?, ?> command) {
+            // do nothing
+        }
+
+        @Override
+        public void commandFailed(Command<?, ?, ?> command, String error) {
             setError("Failed to perform command: " + error);
         }
     };
 
     @Inject
-    public PerformCommand(Log log, String id, String name, String description,
-                          ServerRealTaskOwner owner, RootObjectBridge root,
-                          RealObjectType<BaseHousemateObject<?>> realObjectType) {
-        super(log, id, name, description, owner);
-        commandPath = new ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>>(log, "command-path", "Command Path", "The path to the command to perform",
-                realObjectType, (List)null);
+    public PerformCommand(Log log,
+                          ListenersFactory listenersFactory,
+                          @Assisted TaskData data,
+                          @Assisted ServerRealTaskOwner owner,
+                          RootBridge root, RealObjectType<BaseHousemateObject<?>> realObjectType) {
+        super(log, listenersFactory, data, owner);
+        commandPath = new ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>>(log, listenersFactory,
+                "command-path", "Command Path", "The path to the command to perform", realObjectType, (List)null);
         getProperties().add(commandPath);
         addPropertyListener(root);
     }
@@ -75,7 +79,7 @@ public class PerformCommand extends ServerRealTask implements ObjectLifecycleLis
                 commandLifecycleListenerRegistration = root.addObjectLifecycleListener(path, PerformCommand.this);
                 HousemateObject<?, ?, ?, ?> object = root.getObject(path);
                 if(object == null)
-                    setError("Cannot find an object at path " + Arrays.toString(path));
+                    setError("Cannot find an object at path " + Joiner.on("/").join(path));
                 else {
                     objectCreated(path, object);
                 }
@@ -89,17 +93,17 @@ public class PerformCommand extends ServerRealTask implements ObjectLifecycleLis
     @Override
     public void objectCreated(String[] path, HousemateObject<?, ?, ?, ?> object) {
         if(!(object instanceof Command))
-            setError("Object at path " + commandPath.getTypedValue() + " is not a command");
+            setError("Object at path " + Joiner.on("/").join(commandPath.getTypedValue().getPath()) + " is not a command");
         else {
             setError(null);
-            command = (Command<?, ?>)object;
+            command = (Command<?, ?, ?>)object;
         }
     }
 
     @Override
     public void objectRemoved(String[] path, HousemateObject<?, ?, ?, ?> object) {
         command = null;
-        setError("Cannot find an object at path " + commandPath.getTypedValue());
+        setError("Cannot find an object at path " + Joiner.on("/").join(commandPath.getTypedValue().getPath()));
     }
 
     @Override

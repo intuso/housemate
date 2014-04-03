@@ -17,6 +17,7 @@ import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
@@ -43,16 +44,16 @@ public class OperationType extends RealCompoundType<Operation> {
     private final TypeSerialiser<Operation> serialiser;
 
     @Inject
-    public OperationType(Log log,
+    public OperationType(Log log, ListenersFactory listenersFactory,
                          RealList<TypeData<?>, RealType<?, ?, ?>> types, TypeSerialiser<Operation> serialiser) {
-        super(log, ID, NAME, DESCRIPTION, 1, 1);
+        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.serialiser = serialiser;
-        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.OperationType>(log,
+        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.OperationType>(log, listenersFactory,
                 OPERATION_TYPE_ID, OPERATION_TYPE_NAME, OPERATION_TYPE_DESCRIPTION, OperationTypeType.ID, types));
-        getSubTypes().add(new RealSubType<ValueSource>(log, VALUE_0_ID, VALUE_0_NAME, VALUE_0_DESCRIPTION,
-                ValueSourceType.ID, types));
-        getSubTypes().add(new RealSubType<ValueSource>(log, VALUE_1_ID, VALUE_1_NAME, VALUE_1_DESCRIPTION,
-                ValueSourceType.ID, types));
+        getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
+                VALUE_0_DESCRIPTION, ValueSourceType.ID, types));
+        getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
+                VALUE_1_DESCRIPTION, ValueSourceType.ID, types));
     }
 
     @Override

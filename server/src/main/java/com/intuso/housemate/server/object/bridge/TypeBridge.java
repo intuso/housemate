@@ -12,6 +12,7 @@ import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeListener;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -24,16 +25,16 @@ public class TypeBridge
     private final static String OPTIONS = "options";
     private final static String SUB_TYPES = "sub-types";
 
-    public TypeBridge(Log log, Type type,
+    public TypeBridge(Log log, ListenersFactory listenersFactory, Type type,
                       final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(log, cloneData(log, type));
+        super(log, listenersFactory, cloneData(log, type));
         if(type instanceof HousemateObject && ((HousemateObject)type).getChild(OPTIONS) != null) {
-            addChild(new ListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(log, (List) ((HousemateObject) (type)).getChild(OPTIONS),
-                    new OptionBridge.Converter(log, types)));
+            addChild(new SingleListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(log, listenersFactory, (List) ((HousemateObject) (type)).getChild(OPTIONS),
+                    new OptionBridge.Converter(log, listenersFactory, types)));
         }
         if(type instanceof HousemateObject && ((HousemateObject)type).getChild(SUB_TYPES) != null) {
-            addChild(new ListBridge<SubTypeData, SubType<?>, SubTypeBridge>(log, (List) ((HousemateObject) (type)).getChild(SUB_TYPES),
-                    new SubTypeBridge.Converter(log, types)));
+            addChild(new SingleListBridge<SubTypeData, SubType<?>, SubTypeBridge>(log, listenersFactory, (List) ((HousemateObject) (type)).getChild(SUB_TYPES),
+                    new SubTypeBridge.Converter(log, listenersFactory, types)));
         }
     }
 
@@ -49,16 +50,18 @@ public class TypeBridge
     public final static class Converter implements Function<Type, TypeBridge> {
 
         private final Log log;
+        private final ListenersFactory listenersFactory;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
             this.log = log;
+            this.listenersFactory = listenersFactory;
             this.types = types;
         }
 
         @Override
         public TypeBridge apply(Type type) {
-            return new TypeBridge(log, type, types);
+            return new TypeBridge(log, listenersFactory, type, types);
         }
     }
 }

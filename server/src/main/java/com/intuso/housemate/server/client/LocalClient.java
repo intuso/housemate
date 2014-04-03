@@ -4,10 +4,13 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
+import com.intuso.housemate.api.comms.ApplicationStatus;
+import com.intuso.housemate.api.comms.ServerConnectionStatus;
+import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.object.real.RealCommand;
-import com.intuso.housemate.object.real.RealRootObject;
+import com.intuso.housemate.object.real.RealRoot;
 import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.server.comms.InternalAuthentication;
 import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.DeviceFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
@@ -23,8 +26,9 @@ import java.util.Set;
 public class LocalClient implements PluginListener {
 
     private final Log log;
-
     private final LocalClientRoot root;
+
+    private boolean typesAdded = false;
 
     @Inject
     public LocalClient(final Log log, final LocalClientRoot root,
@@ -32,11 +36,28 @@ public class LocalClient implements PluginListener {
                        final TaskFactory taskFactory, final PluginManager pluginManager) throws HousemateException {
         this.log = log;
         this.root = root;
-        root.login(new InternalAuthentication());
-        root.addType(deviceFactory.getType());
-        root.addType(conditionFactory.getType());
-        root.addType(taskFactory.getType());
-        pluginManager.addPluginListener(LocalClient.this, true);
+        root.addObjectListener(new RootListener<RealRoot>() {
+            @Override
+            public void statusChanged(RealRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+                if (!typesAdded && applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
+                    typesAdded = true;
+                    root.addType(deviceFactory.getType());
+                    root.addType(conditionFactory.getType());
+                    root.addType(taskFactory.getType());
+                    pluginManager.addPluginListener(LocalClient.this, true);
+                }
+            }
+
+            @Override
+            public void newApplicationInstance(RealRoot root, String instanceId) {
+                // do nothing
+            }
+
+            @Override
+            public void newServerInstance(RealRoot root, String serverId) {
+                // do nothing
+            }
+        });
     }
 
     /**
@@ -51,7 +72,7 @@ public class LocalClient implements PluginListener {
      * Get the root object
      * @return the root object
      */
-    public RealRootObject getRoot() {
+    public RealRoot getRoot() {
         return root;
     }
 

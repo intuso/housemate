@@ -17,6 +17,7 @@ import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
@@ -41,15 +42,15 @@ public class TransformationType extends RealCompoundType<Transformation> {
     private final TypeSerialiser<Transformation> serialiser;
 
     @Inject
-    public TransformationType(final Log log,
+    public TransformationType(final Log log, ListenersFactory listenersFactory,
                               TypeSerialiser<Transformation> serialiser,
                               RealList<TypeData<?>, RealType<?, ?, ?>> types) {
-        super(log, ID, NAME, DESCRIPTION, 1, 1);
+        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.serialiser = serialiser;
-        getSubTypes().add(new RealSubType<String>(log, OUTPUT_TYPE_ID, OUTPUT_TYPE_NAME, OUTPUT_TYPE_DESCRIPTION,
-                TransformationOutputType.ID, types));
-        getSubTypes().add(new RealSubType<ValueSource>(log, VALUE_ID, VALUE_NAME, VALUE_DESCRIPTION,
-                ValueSourceType.ID, types));
+        getSubTypes().add(new RealSubType<String>(log, listenersFactory, OUTPUT_TYPE_ID, OUTPUT_TYPE_NAME,
+                OUTPUT_TYPE_DESCRIPTION, TransformationOutputType.ID, types));
+        getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_ID, VALUE_NAME,
+                VALUE_DESCRIPTION, ValueSourceType.ID, types));
     }
 
     @Override
@@ -65,14 +66,14 @@ public class TransformationType extends RealCompoundType<Transformation> {
     public final static class Serialiser implements TypeSerialiser<Transformation>, PluginListener {
 
         private final Log log;
-        private final TypeSerialiser<String> outputTypeSerialiser;
+        private final TypeSerialiser<RealType<?, ?, ?>> outputTypeSerialiser;
         private final TypeSerialiser<ValueSource> sourceTypeSerialiser;
         private final Map<String, Map<String, Transformer<?, ?>>> transformers = Maps.newHashMap();
 
         @Inject
         public Serialiser(final Log log,
                           PluginManager pluginManager,
-                          TypeSerialiser<String> outputTypeSerialiser,
+                          TypeSerialiser<RealType<?, ?, ?>> outputTypeSerialiser,
                           TypeSerialiser<ValueSource> sourceTypeSerialiser) {
             this.log = log;
             this.outputTypeSerialiser = outputTypeSerialiser;
@@ -92,13 +93,13 @@ public class TransformationType extends RealCompoundType<Transformation> {
 
         @Override
         public Transformation deserialise(TypeInstance instance) {
-            String outputType = null;
+            RealType<?, ?, ?> outputType = null;
             if(instance.getChildValues().get(OUTPUT_TYPE_ID) != null && instance.getChildValues().get(OUTPUT_TYPE_ID).size() != 0)
                 outputType = outputTypeSerialiser.deserialise(instance.getChildValues().get(OUTPUT_TYPE_ID).get(0));
             ValueSource valueSource = null;
             if(instance.getChildValues().get(VALUE_ID) != null && instance.getChildValues().get(VALUE_ID).size() != 0)
                 valueSource = sourceTypeSerialiser.deserialise(instance.getChildValues().get(VALUE_ID).get(0));
-            return new Transformation(outputType, transformers.get(outputType), valueSource);
+            return new Transformation(outputType, transformers.get(outputType.getId()), valueSource);
         }
 
         @Override

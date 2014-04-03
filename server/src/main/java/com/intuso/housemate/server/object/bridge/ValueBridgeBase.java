@@ -8,6 +8,7 @@ import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public abstract class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
     private Value proxyValue;
     private final TypeBridge type;
 
-    public ValueBridgeBase(Log log, WBL data, Value<?, ?> value,
+    public ValueBridgeBase(Log log, ListenersFactory listenersFactory, WBL data, Value<?, ?> value,
                            ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(log, data);
+        super(log, listenersFactory, data);
         proxyValue = value;
         type = types.get(getData().getType());
     }

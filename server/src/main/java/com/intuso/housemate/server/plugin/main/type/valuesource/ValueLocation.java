@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.server.object.bridge.ValueBridge;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 
 /**
  */
@@ -15,7 +16,8 @@ public class ValueLocation extends ValueSource implements ObjectLifecycleListene
     private final RealObjectType.Reference<Value<?, ?>> objectReference;
     private final ListenerRegistration lifecycleListenerRegistration;
 
-    public ValueLocation(RealObjectType.Reference<Value<?, ?>> objectReference, Root<?> root) {
+    public ValueLocation(ListenersFactory listenersFactory, RealObjectType.Reference<Value<?, ?>> objectReference, Root<?> root) {
+        super(listenersFactory);
         this.objectReference = objectReference;
         lifecycleListenerRegistration = objectReference != null
                 ? root.addObjectLifecycleListener(objectReference.getPath(), this)

@@ -7,6 +7,7 @@ import com.google.inject.Injector;
 import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
@@ -24,12 +25,13 @@ public class PluginManager {
     private final Injector injector;
 
     private final Map<Class<? extends PluginModule>, Injector> pluginInjectors = Maps.newHashMap();
-    private final Listeners<PluginListener> pluginListeners = new Listeners<PluginListener>();
+    private final Listeners<PluginListener> pluginListeners;
 
     @Inject
-    public PluginManager(Log log, Injector injector) {
+    public PluginManager(Log log, ListenersFactory listenersFactory, Injector injector) {
         this.log = log;
         this.injector = injector;
+        this.pluginListeners = listenersFactory.create();
     }
 
     public void addPlugin(Class<? extends PluginModule> pluginModuleClass) {

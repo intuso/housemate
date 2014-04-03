@@ -34,17 +34,5 @@
             <artifactId>object-real</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- Annotations -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>annotations-processor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>annotations-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

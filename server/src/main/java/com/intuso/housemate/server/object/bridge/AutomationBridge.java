@@ -10,6 +10,7 @@ import com.intuso.housemate.api.object.task.Task;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -27,19 +28,19 @@ public class AutomationBridge
     private CommandBridge addSatisfiedTask;
     private CommandBridge addUnsatisfiedTask;
     
-    public AutomationBridge(Log log,
+    public AutomationBridge(Log log, ListenersFactory listenersFactory,
                             Automation<?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?, ?>, ?, ?> automation,
                             ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(log, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()), automation, types);
-        conditionList = new ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(log,
-                automation.getConditions(), new ConditionBridge.Converter(log, types));
-        satisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>(log,
-                automation.getSatisfiedTasks(), new TaskBridge.Converter(log, types));
-        unsatisfiedTaskList = new ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>(log,
-                automation.getUnsatisfiedTasks(), new TaskBridge.Converter(log, types));
-        addCondition = new CommandBridge(log, automation.getAddConditionCommand(), types);
-        addSatisfiedTask = new CommandBridge(log, automation.getAddSatisifedTaskCommand(), types);
-        addUnsatisfiedTask = new CommandBridge(log, automation.getAddUnsatisifedTaskCommand(), types);
+        super(log, listenersFactory, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()), automation, types);
+        conditionList = new SingleListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(log, listenersFactory,
+                automation.getConditions(), new ConditionBridge.Converter(log, listenersFactory, types));
+        satisfiedTaskList = new SingleListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>(log, listenersFactory,
+                automation.getSatisfiedTasks(), new TaskBridge.Converter(log, listenersFactory, types));
+        unsatisfiedTaskList = new SingleListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>(log, listenersFactory,
+                automation.getUnsatisfiedTasks(), new TaskBridge.Converter(log, listenersFactory, types));
+        addCondition = new CommandBridge(log, listenersFactory, automation.getAddConditionCommand(), types);
+        addSatisfiedTask = new CommandBridge(log, listenersFactory, automation.getAddSatisifedTaskCommand(), types);
+        addUnsatisfiedTask = new CommandBridge(log, listenersFactory, automation.getAddUnsatisifedTaskCommand(), types);
         addChild(conditionList);
         addChild(satisfiedTaskList);
         addChild(unsatisfiedTaskList);
@@ -81,16 +82,18 @@ public class AutomationBridge
     public final static class Converter implements Function<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> {
 
         private final Log log;
+        private final ListenersFactory listenersFactory;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
             this.log = log;
+            this.listenersFactory = listenersFactory;
             this.types = types;
         }
 
         @Override
         public AutomationBridge apply(Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
-            return new AutomationBridge(log, automation, types);
+            return new AutomationBridge(log, listenersFactory, automation, types);
         }
     }
 }

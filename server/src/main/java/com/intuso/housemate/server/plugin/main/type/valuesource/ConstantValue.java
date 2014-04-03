@@ -4,15 +4,17 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.server.plugin.main.type.constant.ConstantInstance;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.utilities.listener.ListenersFactory;
 
 /**
  */
 public class ConstantValue extends ValueSource {
 
-    private final ConstantInstance<Object> value;
+    private final ConstantInstance value;
 
-    public ConstantValue(RealType<?, ?, Object> type, TypeInstances newValue) {
-        value = new ConstantInstance<Object>(type, newValue);
+    public ConstantValue(ListenersFactory listenersFactory, RealType<?, ?, ?> type, TypeInstances newValue) {
+        super(listenersFactory);
+        value = new ConstantInstance(listenersFactory, type, newValue);
     }
 
     @Override

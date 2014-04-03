@@ -1,12 +1,12 @@
 package com.intuso.housemate.server.object.bridge;
 
-import com.google.common.base.Function;
 import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
 
@@ -14,38 +14,15 @@ import java.util.Iterator;
 
 /**
  */
-public class ListBridge<
+public abstract class ListBridge<
             WBL extends HousemateData<?>,
             OWR extends BaseHousemateObject<?>,
             WR extends BridgeObject<? extends WBL, ?, ?, ?, ?>>
         extends BridgeObject<ListData<WBL>, WBL, WR, ListBridge<WBL, OWR, WR>, ListListener<? super WR>>
         implements List<WR> {
 
-    private final List<? extends OWR> list;
-    private ListenerRegistration otherListListener;
-
-    public ListBridge(Log log, List<? extends OWR> list) {
-        super(log, new ListData(list.getId(), list.getName(), list.getDescription()));
-        this.list = list;
-    }
-
-    public ListBridge(Log log, List<? extends OWR> list, final Function<? super OWR, ? extends WR> converter) {
-        this(log, list);
-        convert(converter);
-    }
-
-    public void convert(final Function<? super OWR, ? extends WR> converter) {
-        otherListListener = list.addObjectListener(new ListListener<OWR>() {
-            @Override
-            public void elementAdded(OWR element) {
-                addChild(converter.apply(element));
-            }
-
-            @Override
-            public void elementRemoved(OWR element) {
-                removeChild(element.getId());
-            }
-        }, true);
+    public ListBridge(Log log, ListenersFactory listenersFactory, ListData<WBL> data) {
+        super(log, listenersFactory, data);
     }
 
     @Override
@@ -55,13 +32,6 @@ public class ListBridge<
             for(WR element : this)
                 listener.elementAdded(element);
         return listenerRegistration;
-    }
-
-    @Override
-    protected java.util.List<ListenerRegistration> registerListeners() {
-        java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(otherListListener);
-        return result;
     }
 
     @Override

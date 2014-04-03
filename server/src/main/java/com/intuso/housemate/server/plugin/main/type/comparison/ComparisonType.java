@@ -17,6 +17,7 @@ import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
@@ -48,20 +49,21 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
 
     @Inject
     public ComparisonType(Log log,
+                          ListenersFactory listenersFactory,
                           RealList<TypeData<?>, RealType<?, ?, ?>> types,
                           TypeSerialiser<com.intuso.housemate.plugin.api.ComparisonType> comparisonTypeSerialiser,
                           TypeSerialiser<ValueSource> sourceTypeSerialiser,
                           PluginManager pluginManager) {
-        super(log, ID, NAME, DESCRIPTION, 1, 1);
+        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.log = log;
         this.comparisonTypeSerialiser = comparisonTypeSerialiser;
         this.sourceTypeSerialiser = sourceTypeSerialiser;
-        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.ComparisonType>(log, COMPARISON_TYPE_ID, COMPARISON_TYPE_NAME,
-                COMPARISON_TYPE_DESCRIPTION, ComparisonTypeType.ID, types));
-        getSubTypes().add(new RealSubType<ValueSource>(log, VALUE_0_ID, VALUE_0_NAME, VALUE_0_DESCRIPTION,
-                ValueSourceType.ID, types));
-        getSubTypes().add(new RealSubType<ValueSource>(log, VALUE_1_ID, VALUE_1_NAME, VALUE_1_DESCRIPTION,
-                ValueSourceType.ID, types));
+        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.ComparisonType>(log, listenersFactory, COMPARISON_TYPE_ID,
+                COMPARISON_TYPE_NAME, COMPARISON_TYPE_DESCRIPTION, ComparisonTypeType.ID, types));
+        getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
+                VALUE_0_DESCRIPTION, ValueSourceType.ID, types));
+        getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
+                VALUE_1_DESCRIPTION, ValueSourceType.ID, types));
         pluginManager.addPluginListener(this, true);
     }
 

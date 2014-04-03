@@ -4,38 +4,57 @@ import com.google.common.base.Function;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
+import com.intuso.housemate.api.object.command.CommandPerformListener;
+import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.parameter.ParameterData;
-import com.intuso.housemate.api.object.list.List;
-import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
+import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
  */
 public class CommandBridge
-        extends BridgeObject<CommandData, ListData<ParameterData>,
-            ListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge,
-        CommandListener<? super CommandBridge>>
-        implements Command<ListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge> {
+        extends BridgeObject<CommandData, HousemateData<?>,
+            BridgeObject<?, ?, ?, ?, ?>, CommandBridge,
+            CommandListener<? super CommandBridge>>
+        implements Command<ValueBridge, ListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge> {
 
-    private Command<?, ?> proxyCommand;
+    private Command<?, ?, ?> proxyCommand;
+    private ValueBridge enabledValue;
     private ListBridge<ParameterData, Parameter<?>, ParameterBridge> parameters;
 
-    public CommandBridge(Log log, Command<? extends List<? extends Parameter<?>>, ?> proxyCommand,
+    public CommandBridge(Log log, ListenersFactory listenersFactory, Command<?, ? extends List<? extends Parameter<?>>, ?> proxyCommand,
                          ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(log, new CommandData(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
+        super(log, listenersFactory,
+                new CommandData(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
         this.proxyCommand = proxyCommand;
-        parameters = new ListBridge<ParameterData, Parameter<?>, ParameterBridge>(log,
-                proxyCommand.getParameters(), new ParameterBridge.Converter(log, types));
+        enabledValue = new ValueBridge(log, listenersFactory, proxyCommand.getEnabledValue(), types);
+        parameters = new SingleListBridge<ParameterData, Parameter<?>, ParameterBridge>(log, listenersFactory,
+                proxyCommand.getParameters(), new ParameterBridge.Converter(log, listenersFactory, types));
+        addChild(enabledValue);
         addChild(parameters);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        java.util.List<Boolean> enableds = RealType.deserialiseAll(BooleanType.SERIALISER, enabledValue.getTypeInstances());
+        return enableds != null && enableds.size() > 0 && enableds.get(0) != null ? enableds.get(0) : false;
+    }
+
+    @Override
+    public ValueBridge getEnabledValue() {
+        return enabledValue;
     }
 
     @Override
@@ -49,12 +68,12 @@ public class CommandBridge
         result.add(addMessageListener(PERFORM_TYPE, new Receiver<ClientPayload<PerformMessageValue>>() {
             @Override
             public void messageReceived(final Message<ClientPayload<PerformMessageValue>> message) throws HousemateException {
-                perform(message.getPayload().getOriginal().getValues(), new CommandListener<CommandBridge>() {
+                perform(message.getPayload().getOriginal().getValues(), new CommandPerformListener<CommandBridge>() {
                     @Override
                     public void commandStarted(CommandBridge command) {
                         try {
                             for(CommandListener<? super CommandBridge> listener : getObjectListeners())
-                                listener.commandStarted(getThis());
+                                listener.commandStarted(getThis(), "");
                             sendMessage(PERFORMING_TYPE, new PerformingMessageValue(message.getPayload().getOriginal().getOpId(), true), message.getPayload().getClient());
                         } catch(HousemateException e) {
                             getLog().e("Failed to send command started message to client");
@@ -93,38 +112,40 @@ public class CommandBridge
     }
 
     @Override
-    public void perform(TypeInstanceMap values, final CommandListener<? super CommandBridge> listener) {
-        proxyCommand.perform(values, new CommandListener<Command<?, ?>>() {
+    public void perform(TypeInstanceMap values, final CommandPerformListener<? super CommandBridge> listener) {
+        proxyCommand.perform(values, new CommandPerformListener<Command<?, ?, ?>>() {
             @Override
-            public void commandStarted(Command<?, ?> command) {
+            public void commandStarted(Command<?, ?, ?> command) {
                 listener.commandStarted(getThis());
             }
 
             @Override
-            public void commandFinished(Command<?, ?> command) {
+            public void commandFinished(Command<?, ?, ?> command) {
                 listener.commandFinished(getThis());
             }
 
             @Override
-            public void commandFailed(Command<?, ?> command, String error) {
+            public void commandFailed(Command<?, ?, ?> command, String error) {
                 listener.commandFailed(getThis(), error);
             }
         });
     }
 
-    public static class Converter implements Function<Command<?, ?>, CommandBridge> {
+    public static class Converter implements Function<Command<?, ?, ?>, CommandBridge> {
 
         private final Log log;
+        private final ListenersFactory listenersFactory;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
             this.log = log;
+            this.listenersFactory = listenersFactory;
             this.types = types;
         }
 
         @Override
-        public CommandBridge apply(Command<?, ?> command) {
-            return new CommandBridge(log, command, types);
+        public CommandBridge apply(Command<?, ?, ?> command) {
+            return new CommandBridge(log, listenersFactory, command, types);
         }
     }
 }

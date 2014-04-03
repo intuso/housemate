@@ -2,24 +2,26 @@ package com.intuso.housemate.server.plugin.main;
 
 import com.google.inject.*;
 import com.google.inject.multibindings.Multibinder;
-import com.intuso.housemate.annotations.plugin.*;
 import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.*;
-import com.intuso.housemate.plugin.api.ServerConditionFactory;
-import com.intuso.housemate.plugin.api.ServerTaskFactory;
+import com.intuso.housemate.plugin.api.*;
 import com.intuso.housemate.server.plugin.main.comparator.BooleanComparators;
 import com.intuso.housemate.server.plugin.main.comparator.DoubleComparators;
 import com.intuso.housemate.server.plugin.main.comparator.IntegerComparators;
 import com.intuso.housemate.server.plugin.main.comparator.StringComparators;
-import com.intuso.housemate.server.plugin.main.condition.DayOfTheWeekFactory;
-import com.intuso.housemate.server.plugin.main.condition.TimeOfTheDayFactory;
-import com.intuso.housemate.server.plugin.main.condition.ValueComparisonFactory;
+import com.intuso.housemate.server.plugin.main.condition.*;
 import com.intuso.housemate.server.plugin.main.device.PowerByCommandDevice;
-import com.intuso.housemate.server.plugin.main.task.DelayFactory;
-import com.intuso.housemate.server.plugin.main.task.PerformCommandFactory;
-import com.intuso.housemate.server.plugin.main.task.RandomDelayFactory;
+import com.intuso.housemate.server.plugin.main.operator.DoubleOperators;
+import com.intuso.housemate.server.plugin.main.operator.IntegerOperators;
+import com.intuso.housemate.server.plugin.main.task.Delay;
+import com.intuso.housemate.server.plugin.main.task.PerformCommand;
+import com.intuso.housemate.server.plugin.main.task.RandomDelay;
+import com.intuso.housemate.server.plugin.main.transformer.FromBoolean;
+import com.intuso.housemate.server.plugin.main.transformer.FromDouble;
+import com.intuso.housemate.server.plugin.main.transformer.FromInteger;
+import com.intuso.housemate.server.plugin.main.transformer.FromString;
 import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType;
 import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonTypeType;
 import com.intuso.housemate.server.plugin.main.type.constant.ConstantType;
@@ -35,7 +37,7 @@ import com.intuso.utilities.log.Log;
 
 /**
  */
-@PluginInformation(id = "main-plugin",
+@TypeInfo(id = "main-plugin",
         name = "Main plugin",
         description = "Plugin containing the core types and factories")
 @Types({StringType.class,
@@ -43,7 +45,15 @@ import com.intuso.utilities.log.Log;
         IntegerType.class,
         DoubleType.class,
         TimeType.class,
-        DaysType.class})
+        DaysType.class,
+        ConstantType.class,
+        ValueSourceType.class,
+        ComparisonTypeType.class,
+        ComparisonType.class,
+        OperationTypeType.class,
+        OperationType.class,
+        TransformationOutputType.class,
+        TransformationType.class})
 @Comparators({StringComparators.Equals.class,
         StringComparators.GreaterThan.class,
         StringComparators.GreaterThanOrEqual.class,
@@ -60,15 +70,44 @@ import com.intuso.utilities.log.Log;
         DoubleComparators.GreaterThanOrEqual.class,
         DoubleComparators.LessThan.class,
         DoubleComparators.LessThanOrEqual.class})
+@Operators({IntegerOperators.Divide.class,
+        IntegerOperators.Max.class,
+        IntegerOperators.Min.class,
+        IntegerOperators.Minus.class,
+        IntegerOperators.Plus.class,
+        IntegerOperators.Times.class,
+        DoubleOperators.Divide.class,
+        DoubleOperators.Max.class,
+        DoubleOperators.Min.class,
+        DoubleOperators.Minus.class,
+        DoubleOperators.Plus.class,
+        DoubleOperators.Times.class})
+@Transformers({FromBoolean.ToDouble.class,
+        FromBoolean.ToInteger.class,
+        FromBoolean.ToString.class,
+        FromDouble.ToInteger.class,
+        FromDouble.ToBoolean.class,
+        FromDouble.ToString.class,
+        FromInteger.ToDouble.class,
+        FromInteger.ToBoolean.class,
+        FromInteger.ToString.class,
+        FromString.ToDouble.class,
+        FromString.ToBoolean.class,
+        FromString.ToInteger.class})
 @Devices({PowerByCommandDevice.class})
-@Conditions({com.intuso.housemate.server.plugin.main.condition.And.class,
-        com.intuso.housemate.server.plugin.main.condition.Or.class,
-        com.intuso.housemate.server.plugin.main.condition.Not.class})
-@Tasks({})
-public class MainPluginModule extends AnnotatedPluginModule {
+@Conditions({And.class,
+        Or.class,
+        Not.class,
+        DayOfTheWeek.class,
+        TimeOfTheDay.class,
+        ValueComparison.class})
+@Tasks({Delay.class,
+        RandomDelay.class,
+        PerformCommand.class})
+public class MainPluginModule extends PluginModule {
 
     @Inject
-    public MainPluginModule(Log log, Injector injector) {
+    public MainPluginModule(Log log) {
         super(log);
     }
 
@@ -78,7 +117,6 @@ public class MainPluginModule extends AnnotatedPluginModule {
         super.configure();
         
         // mark all as singletons
-        bind(ValueComparisonFactory.class).in(Scopes.SINGLETON);
         bind(com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType.class).in(Scopes.SINGLETON);
         bind(ComparisonTypeType.class).in(Scopes.SINGLETON);
         bind(ConstantType.class).in(Scopes.SINGLETON);
@@ -91,9 +129,9 @@ public class MainPluginModule extends AnnotatedPluginModule {
         // bind implementations
         bind(new TypeLiteral<TypeSerialiser<ValueSource>>() {}).to(ValueSourceType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.ComparisonType>>() {}).to(ComparisonTypeType.Serialiser.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<TypeSerialiser<Operation>>() {}).to(OperationType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.OperationType>>() {}).to(OperationTypeType.Serialiser.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<TypeSerialiser<String>>() {}).to(TransformationOutputType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<Operation>>() {}).to(OperationType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<RealType<?, ?, ?>>>() {}).to(TransformationOutputType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<Transformation>>() {}).to(TransformationType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<RealObjectType.Reference<?>>>() {}).to(new Key<RealObjectType.Serialiser<?>>() {}).in(Scopes.SINGLETON);
     }
@@ -101,30 +139,6 @@ public class MainPluginModule extends AnnotatedPluginModule {
     @Override
     public void configureTypes(Multibinder<RealType<?, ?, ?>> typeBindings) {
         super.configureTypes(typeBindings);
-        typeBindings.addBinding().to(ConstantType.class);
         typeBindings.addBinding().to(new Key<RealObjectType<BaseHousemateObject<?>>>() {});
-        typeBindings.addBinding().to(ValueSourceType.class);
-        typeBindings.addBinding().to(ComparisonTypeType.class);
-        typeBindings.addBinding().to(ComparisonType.class);
-        typeBindings.addBinding().to(OperationTypeType.class);
-        typeBindings.addBinding().to(OperationType.class);
-        typeBindings.addBinding().to(TransformationOutputType.class);
-        typeBindings.addBinding().to(TransformationType.class);
-    }
-
-    @Override
-    public void configureConditionFactories(Multibinder<ServerConditionFactory<?>> conditionFactoryBindings) {
-        super.configureConditionFactories(conditionFactoryBindings);
-        conditionFactoryBindings.addBinding().to(DayOfTheWeekFactory.class);
-        conditionFactoryBindings.addBinding().to(TimeOfTheDayFactory.class);
-        conditionFactoryBindings.addBinding().to(ValueComparisonFactory.class);
-    }
-
-    @Override
-    public void configureTaskFactories(Multibinder<ServerTaskFactory<?>> taskFactoryBindings) {
-        super.configureTaskFactories(taskFactoryBindings);
-        taskFactoryBindings.addBinding().to(DelayFactory.class);
-        taskFactoryBindings.addBinding().to(RandomDelayFactory.class);
-        taskFactoryBindings.addBinding().to(PerformCommandFactory.class);
     }
 }

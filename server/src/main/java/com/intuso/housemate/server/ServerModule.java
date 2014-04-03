@@ -8,15 +8,12 @@ import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealRootObject;
+import com.intuso.housemate.object.real.RealRoot;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.*;
 import com.intuso.housemate.object.server.LifecycleHandler;
-import com.intuso.housemate.object.server.proxy.ServerProxyList;
-import com.intuso.housemate.object.server.proxy.ServerProxyModule;
-import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
-import com.intuso.housemate.object.server.real.ServerRealRootObject;
+import com.intuso.housemate.object.server.real.ServerRealRoot;
 import com.intuso.housemate.server.client.LocalClient;
 import com.intuso.housemate.server.client.LocalClientRoot;
 import com.intuso.housemate.server.comms.MainRouter;
@@ -26,35 +23,32 @@ import com.intuso.housemate.server.factory.DeviceFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.housemate.server.object.LifecycleHandlerImpl;
 import com.intuso.housemate.server.object.bridge.ListBridge;
-import com.intuso.housemate.server.object.bridge.RootObjectBridge;
+import com.intuso.housemate.server.object.bridge.MultiListBridge;
+import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.object.bridge.TypeBridge;
-import com.intuso.housemate.server.object.general.ServerGeneralRootObject;
+import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.properties.api.PropertyContainer;
-import com.intuso.utilities.properties.api.PropertyValue;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**
  */
 public class ServerModule extends AbstractModule {
 
-    public ServerModule(PropertyContainer properties) {
-        properties.set(Server.SERVER_NAME, new PropertyValue("default", 0, "My Server"));
+    public ServerModule(WriteableMapPropertyRepository defaultProperties) {
+        defaultProperties.set(Server.SERVER_NAME, "My Server");
     }
 
     @Override
     protected void configure() {
 
-        // install all required modules
-        install(new ServerProxyModule());
-
         // bind everything as singletons that should be
         // root objects
-        bind(ServerProxyRootObject.class).in(Scopes.SINGLETON);
-        bind(ServerRealRootObject.class).in(Scopes.SINGLETON);
-        bind(ServerGeneralRootObject.class).in(Scopes.SINGLETON);
-        bind(RootObjectBridge.class).in(Scopes.SINGLETON);
-        bind(RealRootObject.class).in(Scopes.SINGLETON);
+        bind(ServerRealRoot.class).in(Scopes.SINGLETON);
+        bind(ServerGeneralRoot.class).in(Scopes.SINGLETON);
+        bind(RootBridge.class).in(Scopes.SINGLETON);
+        bind(RealRoot.class).in(Scopes.SINGLETON);
         bind(LocalClientRoot.class).in(Scopes.SINGLETON);
         // common types
         bind(BooleanType.class).in(Scopes.SINGLETON);
@@ -80,33 +74,29 @@ public class ServerModule extends AbstractModule {
         // bind implementations
         bind(Router.class).to(MainRouter.class);
         bind(LifecycleHandler.class).to(LifecycleHandlerImpl.class);
-        bind(new TypeLiteral<Root<?>>() {}).to(RootObjectBridge.class);
+        bind(new TypeLiteral<Root<?>>() {}).to(RootBridge.class);
+        bind(new TypeLiteral<ListBridge<TypeData<?>, ServerProxyType, TypeBridge>>() {})
+                .to(new TypeLiteral<MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge>>() {});
     }
 
     @Provides
     @Singleton
-    public RealList<TypeData<?>, RealType<?, ?, ?>> getRealTypes(Log log) {
-        return new RealList<TypeData<?>, RealType<?, ?, ?>>(log, Root.TYPES_ID, "Types", "Types");
+    public RealList<TypeData<?>, RealType<?, ?, ?>> getRealTypes(Log log, ListenersFactory listenersFactory) {
+        return new RealList<TypeData<?>, RealType<?, ?, ?>>(log, listenersFactory, Root.TYPES_ID, "Types", "Types");
     }
 
     @Provides
     @Singleton
-    public ServerProxyList<TypeData<?>, ServerProxyType> getServerProxyTypes(Log log, Injector injector) {
-        return new ServerProxyList<TypeData<?>, ServerProxyType>(log, injector, new ListData<TypeData<?>>(Root.TYPES_ID, Root.TYPES_ID, "Proxied types"));
-    }
-
-    @Provides
-    @Singleton
-    public ListBridge<TypeData<?>, ServerProxyType, TypeBridge> getBridgeTypes(Log log, ServerProxyRootObject proxyRoot) {
-        ListBridge<TypeData<?>, ServerProxyType, TypeBridge> typeList =
-                new ListBridge<TypeData<?>, ServerProxyType, TypeBridge>(log, proxyRoot.getTypes());
-        typeList.convert(new TypeBridge.Converter(log, typeList));
+    public MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> getBridgeTypes(Log log, ListenersFactory listenersFactory) {
+        MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> typeList = new MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge>(log, listenersFactory,
+                new ListData<TypeData<?>>(Root.TYPES_ID, "Types", "Types"));
+        typeList.setConverter(new TypeBridge.Converter(log, listenersFactory, typeList));
         return typeList;
     }
 
     @Provides
     @Singleton
-    public RealList<DeviceData, RealDevice> getRealDevices(Log log) {
-        return new RealList<DeviceData, RealDevice>(log, Root.DEVICES_ID, "Devices", "Devices");
+    public RealList<DeviceData, RealDevice> getRealDevices(Log log, ListenersFactory listenersFactory) {
+        return new RealList<DeviceData, RealDevice>(log, listenersFactory, Root.DEVICES_ID, "Devices", "Devices");
     }
 }

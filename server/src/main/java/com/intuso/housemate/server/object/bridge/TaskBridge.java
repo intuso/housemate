@@ -12,6 +12,7 @@ import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -37,14 +38,14 @@ public class TaskBridge
     private ValueBridge errorValue;
     private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
-    public TaskBridge(Log log, Task<?, ?, ?, ?, ?> task,
+    public TaskBridge(Log log, ListenersFactory listenersFactory, Task<?, ?, ?, ?, ?> task,
                       ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(log, new TaskData(task.getId(), task.getName(), task.getDescription()));
-        removeCommand = new CommandBridge(log, task.getRemoveCommand(), types);
-        executingValue = new ValueBridge(log,task.getExecutingValue(), types);
-        errorValue = new ValueBridge(log,task.getErrorValue(), types);
-        propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(log, task.getProperties(),
-                new PropertyBridge.Converter(log, types));
+        super(log, listenersFactory, new TaskData(task.getId(), task.getName(), task.getDescription()));
+        removeCommand = new CommandBridge(log, listenersFactory, task.getRemoveCommand(), types);
+        executingValue = new ValueBridge(log, listenersFactory, task.getExecutingValue(), types);
+        errorValue = new ValueBridge(log, listenersFactory, task.getErrorValue(), types);
+        propertyList = new SingleListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(log, listenersFactory, task.getProperties(),
+                new PropertyBridge.Converter(log, listenersFactory, types));
         addChild(removeCommand);
         addChild(executingValue);
         addChild(errorValue);
@@ -86,16 +87,18 @@ public class TaskBridge
     public static class Converter implements Function<Task<?, ?, ?, ?, ?>, TaskBridge> {
 
         private final Log log;
+        private final ListenersFactory listenersFactory;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
             this.log = log;
+            this.listenersFactory = listenersFactory;
             this.types = types;;
         }
 
         @Override
         public TaskBridge apply(Task<?, ?, ?, ?, ?> command) {
-            return new TaskBridge(log, command, types);
+            return new TaskBridge(log, listenersFactory, command, types);
         }
     }
 }

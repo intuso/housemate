@@ -1,7 +1,8 @@
 package com.intuso.housemate.server.plugin.main.type.transformation;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.api.object.list.ListListener;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
@@ -9,55 +10,75 @@ import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
+import com.intuso.housemate.plugin.api.Transformer;
+import com.intuso.housemate.server.plugin.PluginListener;
+import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+
+import java.util.Set;
 
 /**
  */
-public class TransformationOutputType extends RealChoiceType<String> {
+public class TransformationOutputType extends RealChoiceType<RealType<?, ?, ?>> implements PluginListener {
 
     public final static String ID = "output-type";
     public final static String NAME = "Output Type";
     public final static String DESCRIPTION = "The output type of the transformation";
 
-    private final TypeSerialiser<String> serialiser;
+    private final ListenersFactory listenersFactory;
+
+    private final TypeSerialiser<RealType<?, ?, ?>> serialiser;
 
     @Inject
-    public TransformationOutputType(final Log log, RealList<TypeData<?>, RealType<?, ?, ?>> types,
-                                    TypeSerialiser<String> serialiser) {
-        super(log, ID, NAME, DESCRIPTION, 1, 1);
+    public TransformationOutputType(final Log log, ListenersFactory listenersFactory, TypeSerialiser<RealType<?, ?, ?>> serialiser, PluginManager pluginManager) {
+        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
+        this.listenersFactory = listenersFactory;
         this.serialiser = serialiser;
-        types.addObjectListener(new ListListener<RealType<?, ?, ?>>() {
-            @Override
-            public void elementAdded(RealType<?, ?, ?> type) {
-                getOptions().add(new RealOption(log, type.getId(), type.getName(), type.getDescription()));
-            }
-
-            @Override
-            public void elementRemoved(RealType<?, ?, ?> element) {
-                getOptions().remove(element.getId());
-            }
-        });
+        pluginManager.addPluginListener(this, true);
     }
 
     @Override
-    public TypeInstance serialise(String o) {
+    public TypeInstance serialise(RealType<?, ?, ?> o) {
         return serialiser.serialise(o);
     }
 
     @Override
-    public String deserialise(TypeInstance instance) {
+    public RealType<?, ?, ?> deserialise(TypeInstance instance) {
         return serialiser.deserialise(instance);
     }
 
-    public final static class Serialiser implements TypeSerialiser<String> {
-        @Override
-        public TypeInstance serialise(String typeId) {
-            return typeId != null ? new TypeInstance(typeId) : null;
+    @Override
+    public void pluginAdded(Injector pluginInjector) {
+        for(Transformer<?, ?> transformer : pluginInjector.getInstance(new Key<Set<Transformer<?, ?>>>() {}))
+            if(getOptions().getChild(transformer.getOutputTypeId()) == null)
+                getOptions().add(new RealOption(getLog(), listenersFactory,
+                        transformer.getOutputTypeId(), transformer.getOutputTypeId(), transformer.getOutputTypeId())); // todo use the actual type's name and description here
+    }
+
+    @Override
+    public void pluginRemoved(Injector pluginInjector) {
+        // todo remove them, not so easy as there might be many values for one key
+    }
+
+    public final static class Serialiser implements TypeSerialiser<RealType<?, ?, ?>> {
+
+        private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
+
+        @Inject
+        public Serialiser(RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+            this.types = types;
         }
 
         @Override
-        public String deserialise(TypeInstance instance) {
-            return instance != null ? instance.getValue() : null;
+        public TypeInstance serialise(RealType<?, ?, ?> type) {
+            return type != null ? new TypeInstance(type.getId()) : null;
+        }
+
+        @Override
+        public RealType<?, ?, ?> deserialise(TypeInstance instance) {
+            String typeId = instance != null ? instance.getValue() : null;
+            return typeId != null ? types.get(typeId) : null;
         }
     }
 }

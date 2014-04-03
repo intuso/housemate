@@ -3,8 +3,12 @@ package com.intuso.housemate.server.comms;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
+import com.intuso.housemate.api.comms.ApplicationStatus;
+import com.intuso.housemate.api.comms.ClientType;
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.ConnectionType;
+import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.object.server.ClientInstance;
 import com.intuso.housemate.object.server.RemoteClient;
 import com.intuso.housemate.object.server.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -12,54 +16,53 @@ import com.intuso.utilities.listener.Listeners;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Local representation of a remote client. Internal objects should use this to send messages to the client
  */
 public class RemoteClientImpl implements RemoteClient {
 
-    private final String connectionId;
-    private final String authenticatedUser;
-    private final ConnectionType type;
+    private final ClientInstance clientInstance;
+    private final Root<?> root;
     private final MainRouter comms;
     private final BiMap<String, RemoteClientImpl> children = HashBiMap.create();
-    private final Listeners<RemoteClientListener> listeners = new Listeners<RemoteClientListener>();
+    private final Listeners<RemoteClientListener> listeners = new Listeners<RemoteClientListener>(new CopyOnWriteArrayList<RemoteClientListener>());
     private RemoteClientImpl parent;
     private List<String> route = null;
-    private final boolean clientsAuthenticated;
+    private boolean applicationInstanceAllowed = false;
 
-    public RemoteClientImpl(String connectionId, String authenticatedUser, ConnectionType type, MainRouter comms,
-                            boolean clientsAuthenticated) {
-        this.connectionId = connectionId;
-        this.authenticatedUser = authenticatedUser;
-        this.type = type;
+    public RemoteClientImpl(ClientInstance clientInstance, Root<?> root, MainRouter comms) {
+        this.clientInstance = clientInstance;
+        this.root = root;
         this.comms = comms;
-        this.clientsAuthenticated = clientsAuthenticated;
     }
 
     private void setParent(RemoteClientImpl parent) {
         this.parent = parent;
     }
 
-    /**
-     * Get the id of the connection
-     * @return the id of the connection
-     */
-    public String getConnectionId() {
-        return connectionId;
+    public Root<?> getRoot() {
+        return root;
     }
 
     @Override
-    public ConnectionType getType() {
-        return type;
+    public ClientInstance getClientInstance() {
+        return clientInstance;
     }
 
     @Override
     public void sendMessage(String[] path, String type, Message.Payload payload) throws HousemateException {
-        if(route != null)
-            comms.sendMessageToClient(path, type, payload, this);
-        else
+        if(!applicationInstanceAllowed
+                && !(path.length == 1
+                    && (type.equals(Root.CONNECTION_STATUS_TYPE)
+                        || type.equals(Root.SERVER_INSTANCE_ID_TYPE)
+                        || type.equals(Root.APPLICATION_INSTANCE_ID_TYPE))))
+            throw new HousemateException("Remote client is not allowed access");
+        else if(route == null)
             throw new HousemateException("Remote client is not connected");
+        else
+            comms.sendMessageToClient(path, type, payload, this);
     }
 
     @Override
@@ -67,14 +70,20 @@ public class RemoteClientImpl implements RemoteClient {
         return route != null;
     }
 
+    public void setStatus(ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+        this.applicationInstanceAllowed = applicationInstanceStatus == ApplicationInstanceStatus.Allowed;
+        for(RemoteClientListener listener : listeners)
+            listener.statusChanged(applicationStatus, applicationInstanceStatus);
+    }
+
     @Override
     public ListenerRegistration addListener(RemoteClientListener listener) {
         return listeners.addListener(listener);
     }
 
-    public RemoteClientImpl addClient(List<String> route, String connectionId, String authenticatedUser,
-                                      ConnectionType type, boolean clientsAuthenticated) throws HousemateException {
-        RemoteClientImpl client = new RemoteClientImpl(connectionId, authenticatedUser, type, comms,clientsAuthenticated);
+    public RemoteClientImpl addClient(List<String> route, Root<?> root, ClientInstance clientInstance)
+                throws HousemateException {
+        RemoteClientImpl client = new RemoteClientImpl(clientInstance, root, comms);
         client.setRoute(route);
         addClient(client);
         return client;
@@ -105,8 +114,6 @@ public class RemoteClientImpl implements RemoteClient {
 
     public void connectionLost() {
         route = null;
-        for(RemoteClientListener listener : listeners)
-            listener.connectionLost(this);
     }
 
     public List<String> getRoute() {
@@ -115,8 +122,6 @@ public class RemoteClientImpl implements RemoteClient {
 
     public void setRoute(List<String> route) {
         this.route = route;
-        for(RemoteClientListener listener : listeners)
-            listener.reconnected(this);
     }
 
     private static void addClient(RemoteClientImpl parent, RemoteClientImpl current, int currentIndex, RemoteClientImpl client) throws HousemateException {
@@ -140,12 +145,12 @@ public class RemoteClientImpl implements RemoteClient {
             client.setParent(current);
             return;
 
-        // else, check there is an authorised client for the next key
+        // else, check there is a client with access for the next key
         } else {
             if(!current.children.containsKey(client.getRoute().get(currentIndex)))
-                throw new HousemateException("No authorised client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()));
-            else if(current.children.get(client.getRoute().get(currentIndex)).getType() != ConnectionType.Router)
-                throw new HousemateException("Client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()) + " is not of type " + ConnectionType.Router.name());
+                throw new HousemateException("No client with access at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()));
+            else if(current.children.get(client.getRoute().get(currentIndex)).getClientInstance().getClientType() != ClientType.Router)
+                throw new HousemateException("Client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()) + " is not of type " + ClientType.Router.name());
             addClient(current, current.children.get(client.getRoute().get(currentIndex)), currentIndex + 1, client);
         }
     }
@@ -168,23 +173,34 @@ public class RemoteClientImpl implements RemoteClient {
             return null;
     }
 
-    public String getAuthenticatedRouter(List<String> route) {
-        return getAuthenticatedRouter(this, 0, route);
+    public String getRouter(List<String> route) {
+        return getRouter(this, 0, route);
     }
 
-    private static String getAuthenticatedRouter(RemoteClientImpl current, int currentIndex, List<String> route) {
-
-        if(current.clientsAuthenticated)
-            return current.authenticatedUser;
+    private static String getRouter(RemoteClientImpl current, int currentIndex, List<String> route) {
 
         // if at or past the end, return null
-        else if(route.size() <= currentIndex)
+        if(route.size() <= currentIndex)
             return null;
 
         else if(current.children.containsKey(route.get(currentIndex)))
-            return getAuthenticatedRouter(current.children.get(route.get(currentIndex)), currentIndex + 1, route);
+            return getRouter(current.children.get(route.get(currentIndex)), currentIndex + 1, route);
 
         else
             return null;
+    }
+
+    @Override
+    public int hashCode() {
+        return clientInstance.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof RemoteClient && clientInstance.equals(((RemoteClient)o).getClientInstance());
+    }
+
+    public boolean isApplicationInstanceAllowed() {
+        return applicationInstanceAllowed;
     }
 }

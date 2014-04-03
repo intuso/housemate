@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.subtype.SubTypeListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -17,9 +18,9 @@ public class SubTypeBridge
 
     private final TypeBridge type;
 
-    public SubTypeBridge(Log log, SubType<?> subType,
+    public SubTypeBridge(Log log, ListenersFactory listenersFactory, SubType<?> subType,
                          ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(log, new SubTypeData(subType.getId(), subType.getName(), subType.getDescription(), subType.getTypeId()));
+        super(log, listenersFactory, new SubTypeData(subType.getId(), subType.getName(), subType.getDescription(), subType.getTypeId()));
         type = types.get(getData().getType());
     }
 
@@ -36,16 +37,18 @@ public class SubTypeBridge
     public final static class Converter implements Function<SubType<?>, SubTypeBridge> {
 
         private final Log log;
+        private final ListenersFactory listenersFactory;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
             this.log = log;
+            this.listenersFactory = listenersFactory;
             this.types = types;
         }
 
         @Override
         public SubTypeBridge apply(SubType<?> parameter) {
-            return new SubTypeBridge(log, parameter, types);
+            return new SubTypeBridge(log, listenersFactory, parameter, types);
         }
     }
 }

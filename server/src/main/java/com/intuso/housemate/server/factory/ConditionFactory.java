@@ -12,12 +12,13 @@ import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
-import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.plugin.api.ServerConditionFactory;
+import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.storage.Storage;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -43,17 +44,17 @@ public final class ConditionFactory implements PluginListener {
     public final static String TYPE_PARAMETER_DESCRIPTION = "The type of the new condition";
 
     private final Log log;
+    private final ListenersFactory listenersFactory;
     private final Storage storage;
     
-    private final Map<String, ServerConditionFactory<?>> factories = Maps.newHashMap();
+    private final Map<String, Factory.Entry<ServerConditionFactory<?>>> factoryEntries = Maps.newHashMap();
     private final ConditionFactoryType type;
-    private final LifecycleHandler lifecycleHandler;
 
     @Inject
-    public ConditionFactory(Log log, Storage storage, PluginManager pluginManager, LifecycleHandler lifecycleHandler) {
+    public ConditionFactory(Log log, ListenersFactory listenersFactory, Storage storage, PluginManager pluginManager) {
         this.log = log;
+        this.listenersFactory = listenersFactory;
         this.storage = storage;
-        this.lifecycleHandler = lifecycleHandler;
         type = new ConditionFactoryType(log);
         pluginManager.addPluginListener(this, true);
     }
@@ -65,10 +66,10 @@ public final class ConditionFactory implements PluginListener {
     public ServerRealCommand createAddConditionCommand(String commandId, String commandName, String commandDescription,
                                                        final ServerRealConditionOwner owner,
                                                        final ServerRealList<ConditionData, ServerRealCondition> list) {
-        return new ServerRealCommand(log, commandId, commandName, commandDescription, Arrays.asList(
-                new ServerRealParameter<String>(log, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(log)),
-                new ServerRealParameter<String>(log, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(log)),
-                new ServerRealParameter<ServerConditionFactory<?>>(log, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
+        return new ServerRealCommand(log, listenersFactory, commandId, commandName, commandDescription, Arrays.asList(
+                new ServerRealParameter<String>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(log, listenersFactory)),
+                new ServerRealParameter<String>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(log, listenersFactory)),
+                new ServerRealParameter<Factory.Entry<ServerConditionFactory<?>>>(log, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, type)
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -90,42 +91,48 @@ public final class ConditionFactory implements PluginListener {
         TypeInstances description = values.get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateException("No condition description specified");
-        ServerConditionFactory<?> conditionFactory = type.deserialise(conditionType.get(0));
-        if(conditionFactory == null)
+        Factory.Entry<ServerConditionFactory<?>> conditionFactoryEntry = type.deserialise(conditionType.get(0));
+        if(conditionFactoryEntry == null)
             throw new HousemateException("No factory known for condition type " + conditionType);
-        return conditionFactory.create(log, name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), owner, lifecycleHandler);
+        return conditionFactoryEntry.getInjector().getInstance(conditionFactoryEntry.getFactoryKey())
+                .create(new ConditionData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), owner);
     }
 
     @Override
     public void pluginAdded(Injector pluginInjector) {
-        for(ServerConditionFactory<?> factory : pluginInjector.getInstance(new Key<Set<ServerConditionFactory<?>>>() {})) {
-            log.d("Adding new condition factory for type " + factory.getTypeId());
-            factories.put(factory.getTypeId(), factory);
-            type.getOptions().add(new RealOption(log, factory.getTypeId(), factory.getTypeName(), factory.getTypeDescription()));
+        Set<Factory.Entry<ServerConditionFactory<?>>> factoryEntries = Factory.getEntries(log, pluginInjector, ServerConditionFactory.class);
+        for(Factory.Entry<ServerConditionFactory<?>> factoryEntry : factoryEntries) {
+            log.d("Adding new condition factory for type " + factoryEntry.getTypeInfo().id());
+            this.factoryEntries.put(factoryEntry.getTypeInfo().id(), factoryEntry);
+            type.getOptions().add(new RealOption(log, listenersFactory, factoryEntry.getTypeInfo().id(),
+                    factoryEntry.getTypeInfo().name(), factoryEntry.getTypeInfo().description()));
         }
     }
 
     @Override
     public void pluginRemoved(Injector pluginInjector) {
         for(ServerConditionFactory<?> factory : pluginInjector.getInstance(new Key<Set<ServerConditionFactory<?>>>() {})) {
-            factories.remove(factory.getTypeId());
-            type.getOptions().remove(factory.getTypeId());
+            TypeInfo factoryInformation = factory.getClass().getAnnotation(TypeInfo.class);
+            if(factoryInformation != null) {
+                factoryEntries.remove(factoryInformation.id());
+                type.getOptions().remove(factoryInformation.id());
+            }
         }
     }
 
-    private class ConditionFactoryType extends RealChoiceType<ServerConditionFactory<?>> {
+    private class ConditionFactoryType extends RealChoiceType<Factory.Entry<ServerConditionFactory<?>>> {
         protected ConditionFactoryType(Log log) {
-            super(log, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
+            super(log, listenersFactory, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, 1, 1, Arrays.<RealOption>asList());
         }
 
         @Override
-        public TypeInstance serialise(ServerConditionFactory<?> o) {
-            return new TypeInstance(o.getTypeId());
+        public TypeInstance serialise(Factory.Entry<ServerConditionFactory<?>> entry) {
+            return new TypeInstance(entry.getTypeInfo().id());
         }
 
         @Override
-        public ServerConditionFactory<?> deserialise(TypeInstance value) {
-            return value != null && value.getValue() != null ? factories.get(value.getValue()) : null;
+        public Factory.Entry<ServerConditionFactory<?>> deserialise(TypeInstance value) {
+            return value != null && value.getValue() != null ? factoryEntries.get(value.getValue()) : null;
         }
     }
 }

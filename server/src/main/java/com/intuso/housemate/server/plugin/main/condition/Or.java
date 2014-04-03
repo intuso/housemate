@@ -1,12 +1,15 @@
 package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.annotations.plugin.FactoryInformation;
-import com.intuso.housemate.object.server.LifecycleHandler;
-import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.condition.ConditionData;
+import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerNonLeafCondition;
 import com.intuso.housemate.object.server.real.ServerRealCondition;
+import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
+import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Collection;
@@ -16,19 +19,16 @@ import java.util.Map;
  * Class which is true iff at least one of the sub-conditions is true
  *
  */
-@FactoryInformation(id = "or", name = "Or", description = "True if any child condition is true")
+@TypeInfo(id = "or", name = "Or", description = "True if any child condition is true")
 public class Or extends ServerNonLeafCondition {
 
-    /**
-	 * Create a new Or condition
-     * @param log
-	 * @param name
-	 * @throws HousemateException
-	 */
     @Inject
-	public Or(Log log, String id, String name, String description, ServerRealConditionOwner owner,
+	public Or(Log log,
+              ListenersFactory listenersFactory,
+              @Assisted ConditionData data,
+              @Assisted ServerRealConditionOwner owner,
               LifecycleHandler lifecycleHandler) throws HousemateException {
-		super(log, id, name, description, owner, lifecycleHandler);
+		super(log, listenersFactory, data, owner, lifecycleHandler);
     }
 
     /**

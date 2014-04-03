@@ -2,13 +2,17 @@ package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.condition.ConditionData;
+import com.intuso.housemate.object.real.impl.type.Day;
+import com.intuso.housemate.object.real.impl.type.DaysType;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.ServerRealCondition;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
 import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.object.real.impl.type.Day;
-import com.intuso.housemate.object.real.impl.type.DaysType;
+import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Calendar;
@@ -20,6 +24,7 @@ import java.util.Map;
  * those specified by the user
  *
  */
+@TypeInfo(id = "day-of-the-week", name = "Day of the Week", description = "Condition that is true on certain days of the week")
 public class DayOfTheWeek extends ServerRealCondition {
 
     private final Map<Day, Integer> DAY_MAP = new HashMap<Day, Integer>() {
@@ -46,17 +51,15 @@ public class DayOfTheWeek extends ServerRealCondition {
 	 * thread to monitor the day of the week
 	 */
 	private Thread monitor;
-	
-	/**
-	 * Create a new day of the week condition
-     * @param name
-	 * @throws HousemateException 
-	 */
+
     @Inject
-	public DayOfTheWeek(Log log, String id, String name, String description,
-                        ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler, DaysType daysType) throws HousemateException {
-		super(log, id, name, description, owner, lifecycleHandler);
-        days = new ServerRealProperty<Day>(log, DAYS_FIELD, DAYS_FIELD, "The days that satisfy the condition",
+	public DayOfTheWeek(Log log,
+                        ListenersFactory listenersFactory,
+                        @Assisted ConditionData data,
+                        @Assisted ServerRealConditionOwner owner,
+                        LifecycleHandler lifecycleHandler, DaysType daysType) throws HousemateException {
+		super(log, listenersFactory, data, owner, lifecycleHandler);
+        days = new ServerRealProperty<Day>(log, listenersFactory, DAYS_FIELD, DAYS_FIELD, "The days that satisfy the condition",
                 daysType, Lists.<Day>newArrayList());
         getProperties().add(days);
     }

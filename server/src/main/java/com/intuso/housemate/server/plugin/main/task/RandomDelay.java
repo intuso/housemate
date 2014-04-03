@@ -1,19 +1,25 @@
 package com.intuso.housemate.server.plugin.main.task;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.object.server.real.ServerRealTask;
-import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
+import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.TimeUnit;
 import com.intuso.housemate.object.real.impl.type.TimeUnitType;
+import com.intuso.housemate.object.server.real.ServerRealProperty;
+import com.intuso.housemate.object.server.real.ServerRealTask;
+import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
+import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
  * Task that waits for a specified amount of time
  *
  */
+
+@TypeInfo(id = "random-delay", name = "Random Delay", description = "Wait for a random amount of time")
 public class RandomDelay extends ServerRealTask {
 
     /**
@@ -29,16 +35,18 @@ public class RandomDelay extends ServerRealTask {
     /**
      * Create a new delay task
      * @param log
-     * @param name
      * @throws HousemateException
      */
     @Inject
-    public RandomDelay(Log log, String id, String name, String description,
-                       ServerRealTaskOwner owner, TimeUnitType timeUnitType, IntegerType integerType) {
-        super(log, id, name, description, owner);
-        unit = new ServerRealProperty<TimeUnit>(log, "unit", "Unit", "the unit of time to wait for",
+    public RandomDelay(Log log,
+                       ListenersFactory listenersFactory,
+                       @Assisted TaskData data,
+                       @Assisted ServerRealTaskOwner owner,
+                       TimeUnitType timeUnitType, IntegerType integerType) {
+        super(log, listenersFactory, data, owner);
+        unit = new ServerRealProperty<TimeUnit>(log, listenersFactory, "unit", "Unit", "the unit of time to wait for",
                 timeUnitType, TimeUnit.MINUTES);
-        maxAmount = new ServerRealProperty<Integer>(log, "amount", "Amount", "the amount of time to wait",
+        maxAmount = new ServerRealProperty<Integer>(log, listenersFactory, "amount", "Amount", "the amount of time to wait",
                 integerType, 1);
         getProperties().add(unit);
         getProperties().add(maxAmount);

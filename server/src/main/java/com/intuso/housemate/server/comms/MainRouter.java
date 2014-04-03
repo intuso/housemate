@@ -7,15 +7,16 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.comms.message.AuthenticationRequest;
+import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.object.server.ClientPayload;
-import com.intuso.housemate.object.server.RemoteClient;
-import com.intuso.housemate.object.server.proxy.ServerProxyRootObject;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
-import com.intuso.housemate.server.object.bridge.RootObjectBridge;
-import com.intuso.housemate.server.object.general.ServerGeneralRootObject;
+import com.intuso.housemate.server.Server;
+import com.intuso.housemate.server.client.LocalClientRoot;
+import com.intuso.housemate.server.object.general.ServerGeneralRoot;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.properties.api.PropertyRepository;
 
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,13 +33,10 @@ public final class MainRouter extends Router {
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
     @Inject
-    public MainRouter(Log log, Injector injector) {
-        super(log);
-
+    public MainRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector) {
+        super(log, listenersFactory, Server.createApplicationInstanceProperties(listenersFactory, properties));
         this.injector = injector;
-
-        setRouterStatus(Status.ConnectedToServer);
-        login(new InternalAuthentication());
+        setServerConnectionStatus(ServerConnectionStatus.ConnectedToServer);
     }
 	
 	/**
@@ -46,15 +44,22 @@ public final class MainRouter extends Router {
 	 */
     public final void start() {
 
+        // register the main router. This will cause the connection manager to send a message (put a it on our queue)
+        // so we then need to get it and process it to finish the registration. We need this to block so it happens
+        // before we create the external client routers so do this before starting the normal thread
+        register(Server.INTERNAL_APPLICATION);
+        processMessage(incomingMessages.poll());
+        messageProcessor.start();
+
+        // register the local client
+        injector.getInstance(LocalClientRoot.class).register(Server.INTERNAL_APPLICATION);
+
+        // create, start and register all the external routers
         externalClientRouters = injector.getInstance(new Key<Set<ExternalClientRouter>>() {});
-
-		// start the thread that will process incoming messages
-		messageProcessor.start();
-
         for(ExternalClientRouter externalClientRouter : externalClientRouters) {
             try {
                 externalClientRouter.start();
-                externalClientRouter.login(new InternalAuthentication());
+                externalClientRouter.register(Server.INTERNAL_APPLICATION);
             } catch(HousemateException e) {
                 throw new HousemateRuntimeException("Could not start external client router", e);
             }
@@ -100,34 +105,36 @@ public final class MainRouter extends Router {
         // to send a message we tell the outgoing root it is received. Any listeners on the outgoing root
         // will get it. These listeners are all created from the clientHandle and just put messages
         // on their respective clients queues, hence "sending" it to the clients that want it
-        try {
-            messageReceived(message);
-        } catch(HousemateException e) {
-            getLog().e("Failed to send message to client", e);
-            throw e;
-        }
+        messageReceived(message);
 	}
 
-    private Root<?> getRoot(RemoteClient client, Message<?> message) throws HousemateException {
-        if(client == null) {
-            if(message.getPayload() instanceof AuthenticationRequest)
-                return injector.getInstance(ServerGeneralRootObject.class);
-            else
-                throw new UnknownClientRouteException(message.getRoute());
+    private void processMessage(Message<Message.Payload> message) {
+        getLog().d("Message received " + message.toString());
+        try {
+            RemoteClientImpl client = injector.getInstance(RemoteClientManager.class).getClient(message.getRoute());
+            Root<?> root = getRoot(client, message);
+            // wrap payload in new payload in which we can put the client's id
+            message = new Message<Message.Payload>(message.getPath(), message.getType(),
+                    new ClientPayload<Message.Payload>(client, message.getPayload()), message.getRoute());
+            root.messageReceived(message);
+        } catch(Throwable t) {
+            getLog().e("Failed to distribute received message", t);
         }
-        if(client.getType() != null) {
-            // intercept certain messages
-            if(message.getPath().length == 1 && message.getType().equals(Root.DISCONNECT_TYPE))
-                return injector.getInstance(ServerGeneralRootObject.class);
-            switch(client.getType()) {
-                case Real: // the server proxy objects are for remote real objects
-                    return injector.getInstance(ServerProxyRootObject.class);
-                case Proxy: // the server bridge objects are for remote proxy objects
-                    return injector.getInstance(RootObjectBridge.class);
-            }
-        }
-        // all other requests should go to the general root object
-        return injector.getInstance(ServerGeneralRootObject.class);
+    }
+
+    private Root<?> getRoot(RemoteClientImpl client, Message<?> message) throws HousemateException {
+        // intercept certain messages
+        if(message.getPath().length == 1 &&
+                (message.getType().equals(Root.APPLICATION_REGISTRATION_TYPE)
+                    || message.getType().equals(Root.APPLICATION_UNREGISTRATION_TYPE)))
+            return injector.getInstance(ServerGeneralRoot.class);
+        // otherwise send it to the route for the client
+        if(client == null)
+            throw new UnknownClientRouteException(message.getRoute());
+        else if(!client.isApplicationInstanceAllowed())
+            throw new ApplicationInstanceNotAllowedException(client);
+        else
+            return client.getRoot();
     }
 
     private class MessageProcessor extends Thread {
@@ -147,17 +154,7 @@ public final class MainRouter extends Router {
                 } catch(InterruptedException e) {
                     break;
                 }
-                getLog().d("Message received " + message.toString());
-                try {
-                    RemoteClientImpl client = injector.getInstance(RemoteClientManager.class).getClient(message.getRoute());
-                    Root<?> root = getRoot(client, message);
-                    // wrap payload in new payload in which we can put the client's id
-                    message = new Message<Message.Payload>(message.getPath(), message.getType(),
-                            new ClientPayload<Message.Payload>(client, message.getPayload()), message.getRoute());
-                    root.messageReceived(message);
-                } catch(Throwable t) {
-                    getLog().e("Failed to distribute received message", t);
-                }
+                processMessage(message);
             }
         }
     };

@@ -8,6 +8,7 @@ import com.intuso.housemate.server.plugin.main.type.transformation.Transformatio
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.Transformer;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -19,7 +20,8 @@ public class TransformationOutput extends ValueSource implements ValueAvailableL
     private final Transformation transformation;
     private ComputedValue value;
 
-    public TransformationOutput(Log log, RealList<TypeData<?>, RealType<?, ?, ?>> types, Transformation transformation) {
+    public TransformationOutput(Log log, ListenersFactory listenersFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types, Transformation transformation) {
+        super(listenersFactory);
         this.log = log;
         this.types = types;
         this.transformation = transformation;

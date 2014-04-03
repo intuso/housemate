@@ -12,6 +12,7 @@ import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -31,18 +32,19 @@ public class ConditionBridge
     private ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
     private CommandBridge addConditionCommand;
 
-    public ConditionBridge(Log log,
+    public ConditionBridge(Log log, ListenersFactory listenersFactory,
                            Condition<?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?> condition,
                            ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
-        super(log,new ConditionData(condition.getId(), condition.getName(), condition.getDescription()));
-        removeCommand = new CommandBridge(log, condition.getRemoveCommand(), types);
-        satisfiedValue = new ValueBridge(log, condition.getSatisfiedValue(),types);
-        errorValue = new ValueBridge(log, condition.getErrorValue(), types);
-        propertyList = new ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(log, condition.getProperties(),
-                new PropertyBridge.Converter(log, types));
-        conditionList = new ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(log,
-                condition.getConditions(), new Converter(log, types));
-        addConditionCommand = new CommandBridge(log, condition.getAddConditionCommand(), types);
+        super(log, listenersFactory,
+                new ConditionData(condition.getId(), condition.getName(), condition.getDescription()));
+        removeCommand = new CommandBridge(log, listenersFactory, condition.getRemoveCommand(), types);
+        satisfiedValue = new ValueBridge(log, listenersFactory, condition.getSatisfiedValue(),types);
+        errorValue = new ValueBridge(log, listenersFactory, condition.getErrorValue(), types);
+        propertyList = new SingleListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(log, listenersFactory, condition.getProperties(),
+                new PropertyBridge.Converter(log, listenersFactory, types));
+        conditionList = new SingleListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(log, listenersFactory,
+                condition.getConditions(), new Converter(log, listenersFactory, types));
+        addConditionCommand = new CommandBridge(log, listenersFactory, condition.getAddConditionCommand(), types);
         addChild(removeCommand);
         addChild(satisfiedValue);
         addChild(errorValue);
@@ -96,16 +98,18 @@ public class ConditionBridge
     public static class Converter implements Function<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> {
 
         private final Log log;
+        private final ListenersFactory listenersFactory;
         private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
             this.log = log;
+            this.listenersFactory = listenersFactory;
             this.types = types;
         }
 
         @Override
         public ConditionBridge apply(Condition<?, ?, ?, ?, ?, ?, ?> condition) {
-            return new ConditionBridge(log, condition, types);
+            return new ConditionBridge(log, listenersFactory, condition, types);
         }
     }
 }

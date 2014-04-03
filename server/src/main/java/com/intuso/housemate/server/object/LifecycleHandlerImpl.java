@@ -9,9 +9,7 @@ import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
-import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
@@ -26,15 +24,15 @@ import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.DeviceFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.housemate.server.storage.Storage;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class LifecycleHandlerImpl implements LifecycleHandler {
 
     private final Log log;
+    private final ListenersFactory listenersFactory;
     private final Storage storage;
 
     private final DeviceFactory deviceFactory;
@@ -61,10 +59,11 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     };
 
     @Inject
-    public LifecycleHandlerImpl(Log log,
+    public LifecycleHandlerImpl(Log log, ListenersFactory listenersFactory,
                                 Storage storage, DeviceFactory deviceFactory, ConditionFactory conditionFactory,
                                 TaskFactory taskFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
         this.log = log;
+        this.listenersFactory = listenersFactory;
         this.storage = storage;
         this.deviceFactory = deviceFactory;
         this.conditionFactory = conditionFactory;
@@ -74,24 +73,15 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Override
     public ServerRealCommand createAddUserCommand(final ServerRealList<UserData, ServerRealUser> users) {
-        return new ServerRealCommand(log, Root.ADD_USER_ID, Root.ADD_USER_ID, "Add a new user", Arrays.<ServerRealParameter<?>>asList(
-                new ServerRealParameter<String>(log, "username", "Username", "The username for the new user", new StringType(log)),
-                new ServerRealParameter<String>(log, "password", "Password", "The password for the new user", new StringType(log))
+        return new ServerRealCommand(log, listenersFactory, Root.ADD_USER_ID, Root.ADD_USER_ID, "Add a new user", Arrays.<ServerRealParameter<?>>asList(
+                new ServerRealParameter<String>(log, listenersFactory, "username", "Username", "The username for the new user", new StringType(log, listenersFactory))
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                TypeInstanceMap toSave = new TypeInstanceMap();
-                try {
-                    toSave.put("password-hash", new TypeInstances(new TypeInstance(new String(
-                            MessageDigest.getInstance("MD5").digest(values.get("password").getFirstValue().getBytes())))));
-                } catch(NoSuchAlgorithmException e) {
-                    throw new HousemateException("Unable to hash the password to save it securely");
-                }
-                toSave.put("id", values.get("username"));
-                toSave.put("name", values.get("username"));
-                toSave.put("description", values.get("username"));
-                ServerRealUser user = new ServerRealUser(log, toSave.get("id").getFirstValue(),
-                        toSave.get("name").getFirstValue(), toSave.get("description").getFirstValue(), new ServerRealUserOwner() {
+                String username = values.get("username") != null ? values.get("username").getFirstValue() : null;
+                if(username == null)
+                    throw new HousemateException("No username value set");
+                ServerRealUser user = new ServerRealUser(log, listenersFactory, username, username, username, new ServerRealUserOwner() {
                     @Override
                     public void remove(ServerRealUser user) {
                         users.remove(user.getId());
@@ -103,7 +93,6 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                     }
                 });
                 users.add(user);
-                storage.saveValues(users.getPath(), user.getId(), toSave);
             }
         };
     }
@@ -116,14 +105,14 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Override
     public ServerRealCommand createAddAutomationCommand(final ServerRealList<AutomationData, ServerRealAutomation> automations) {
-        return new ServerRealCommand(log, Root.ADD_AUTOMATION_ID, Root.ADD_AUTOMATION_ID, "Add a new automation", Arrays.<ServerRealParameter<?>>asList(
-                new ServerRealParameter<String>(log, "name", "Name", "The name for the new automation", new StringType(log)),
-                new ServerRealParameter<String>(log, "description", "Description", "The description for the new automation", new StringType(log))
+        return new ServerRealCommand(log, listenersFactory, Root.ADD_AUTOMATION_ID, Root.ADD_AUTOMATION_ID, "Add a new automation", Arrays.<ServerRealParameter<?>>asList(
+                new ServerRealParameter<String>(log, listenersFactory, "name", "Name", "The name for the new automation", new StringType(log, listenersFactory)),
+                new ServerRealParameter<String>(log, listenersFactory, "description", "Description", "The description for the new automation", new StringType(log, listenersFactory))
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 values.put("id", values.get("name")); // todo figure out a better way of getting an id
-                ServerRealAutomation automation = new ServerRealAutomation(log, values.get("id").getFirstValue(),
+                ServerRealAutomation automation = new ServerRealAutomation(log, listenersFactory, values.get("id").getFirstValue(),
                         values.get("name").getFirstValue(), values.get("description").getFirstValue(),
                         new ServerRealAutomationOwner() {
                             @Override

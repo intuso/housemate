@@ -1,8 +1,12 @@
 package com.intuso.housemate.server;
 
-import com.intuso.housemate.annotations.basic.Value;
-import com.intuso.housemate.annotations.basic.Values;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.object.real.annotations.Value;
+import com.intuso.housemate.object.real.annotations.Values;
 import com.intuso.housemate.object.real.RealDevice;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -12,8 +16,11 @@ public class TestDevice extends RealDevice {
     @Values
     public MyValues values;
 
-    public TestDevice(Log log, String id, String name, String description) {
-        super(log, id, name, description);
+    @Inject
+    public TestDevice(Log log,
+                      ListenersFactory listenersFactory,
+                      @Assisted DeviceData data) {
+        super(log, listenersFactory, data);
     }
 
     public interface MyValues {

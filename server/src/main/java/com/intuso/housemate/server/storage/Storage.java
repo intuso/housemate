@@ -15,4 +15,6 @@ public interface Storage {
     public TypeInstanceMap getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException;
     public void saveValues(String[] path, String detailsKey, TypeInstanceMap details) throws HousemateException;
     public void removeValues(String[] path) throws HousemateException;
+
+    void saveValues(String[] path, TypeInstanceMap details) throws HousemateException;
 }

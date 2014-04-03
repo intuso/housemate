@@ -6,6 +6,7 @@ import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
 
 /**
 * Created with IntelliJ IDEA.
@@ -18,9 +19,10 @@ public class ConstantInstance<O> implements Value<RealType<?, ?, O>, ConstantIns
 
     private final RealType<?, ?, O> type;
     private final TypeInstances values;
-    private Listeners<ValueListener<? super ConstantInstance<O>>> listeners = new Listeners<ValueListener<? super ConstantInstance<O>>>();
+    private final Listeners<ValueListener<? super ConstantInstance<O>>> listeners;
 
-    public ConstantInstance(RealType<?, ?, O> type, TypeInstances values) {
+    public ConstantInstance(ListenersFactory listenersFactory, RealType<?, ?, O> type, TypeInstances values) {
+        listeners = listenersFactory.create();
         this.type = type;
         this.values = values;
     }

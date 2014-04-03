@@ -12,6 +12,7 @@ import com.intuso.housemate.plugin.api.OperationType;
 import com.intuso.housemate.plugin.api.Operator;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
@@ -19,18 +20,22 @@ import java.util.Set;
 
 /**
  */
-public class OperationTypeType extends RealChoiceType<OperationType> {
+public class OperationTypeType extends RealChoiceType<OperationType> implements PluginListener {
 
     public final static String ID = "operation-type";
     public final static String NAME = "Operation Type";
     public final static String DESCRIPTION = "Type of operation";
 
+    private final ListenersFactory listenersFactory;
+
     private final TypeSerialiser<OperationType> serialiser;
 
     @Inject
-    public OperationTypeType(Log log, TypeSerialiser<OperationType> serialiser) {
-        super(log, ID, NAME, DESCRIPTION, 1, 1);
+    public OperationTypeType(Log log, ListenersFactory listenersFactory, TypeSerialiser<OperationType> serialiser, PluginManager pluginManager) {
+        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
+        this.listenersFactory = listenersFactory;
         this.serialiser = serialiser;
+        pluginManager.addPluginListener(this, true);
     }
 
     @Override
@@ -43,14 +48,25 @@ public class OperationTypeType extends RealChoiceType<OperationType> {
         return serialiser.serialise(o);
     }
 
+    @Override
+    public void pluginAdded(Injector pluginInjector) {
+        for(Operator<?, ?> operator : pluginInjector.getInstance(new Key<Set<Operator<?, ?>>>() {}))
+            if(getOptions().getChild(operator.getOperationType().getId()) == null)
+                getOptions().add(new RealOption(getLog(), listenersFactory,
+                        operator.getOperationType().getId(), operator.getOperationType().getName(), operator.getOperationType().getDescription()));
+    }
+
+    @Override
+    public void pluginRemoved(Injector pluginInjector) {
+        // todo remove them, not so easy as there might be many values for one key
+    }
+
     public final static class Serialiser implements TypeSerialiser<OperationType>, PluginListener {
 
-        private final Log log;
         private final Map<String, OperationType> types = Maps.newHashMap();
 
         @Inject
-        public Serialiser(Log log, PluginManager pluginManager) {
-            this.log = log;
+        public Serialiser(PluginManager pluginManager) {
             pluginManager.addPluginListener(this, true);
         }
 
@@ -66,19 +82,14 @@ public class OperationTypeType extends RealChoiceType<OperationType> {
 
         @Override
         public void pluginAdded(Injector pluginInjector) {
-            OperationTypeType type = (OperationTypeType) types.get(ID);
-            for(Operator<?, ?> operator : pluginInjector.getInstance(new Key<Set<Operator<?, ?>>>() {})) {
-                if(types.get(operator.getOperationType().getId()) == null) {
+            for(Operator<?, ?> operator : pluginInjector.getInstance(new Key<Set<Operator<?, ?>>>() {}))
+                if(types.get(operator.getOperationType().getId()) == null)
                     types.put(operator.getOperationType().getId(), operator.getOperationType());
-                    type.getOptions().add(new RealOption(log, operator.getOperationType().getId(),
-                            operator.getOperationType().getName(), operator.getOperationType().getDescription()));
-                }
-            }
         }
 
         @Override
         public void pluginRemoved(Injector pluginInjector) {
-            // todo remove them
+            // todo remove them, not so easy as there might be many values for one key
         }
     }
 }

@@ -12,6 +12,7 @@ import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.ComparisonType;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
@@ -19,22 +20,26 @@ import java.util.Set;
 
 /**
  */
-public class ComparisonTypeType extends RealChoiceType<ComparisonType> {
+public class ComparisonTypeType extends RealChoiceType<ComparisonType> implements PluginListener {
 
     public final static String ID = "comparison-type";
     public final static String NAME = "Comparison Type";
     public final static String DESCRIPTION = "Type for comparing values";
 
+    private final ListenersFactory listenersFactory;
+
     private final TypeSerialiser<ComparisonType> serialiser;
 
     @Inject
-    public ComparisonTypeType(Log log, TypeSerialiser<ComparisonType> serialiser) {
-        super(log, ID, NAME, DESCRIPTION, 1, 1);
+    public ComparisonTypeType(Log log, ListenersFactory listenersFactory, TypeSerialiser<ComparisonType> serialiser, PluginManager pluginManager) {
+        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
+        this.listenersFactory = listenersFactory;
         this.serialiser = serialiser;
+        pluginManager.addPluginListener(this, true);
     }
 
     @Override
-     public TypeInstance serialise(ComparisonType type) {
+    public TypeInstance serialise(ComparisonType type) {
         return serialiser.serialise(type);
     }
 
@@ -43,14 +48,25 @@ public class ComparisonTypeType extends RealChoiceType<ComparisonType> {
         return serialiser.deserialise(instance);
     }
 
+    @Override
+    public void pluginAdded(Injector pluginInjector) {
+        for(Comparator<?> comparator : pluginInjector.getInstance(new Key<Set<Comparator<?>>>() {}))
+            if(getOptions().getChild(comparator.getComparisonType().getId()) == null)
+                getOptions().add(new RealOption(getLog(), listenersFactory,
+                        comparator.getComparisonType().getId(), comparator.getComparisonType().getName(), comparator.getComparisonType().getDescription()));
+    }
+
+    @Override
+    public void pluginRemoved(Injector pluginInjector) {
+        // todo remove them, not so easy as there might be many values for one key
+    }
+
     public final static class Serialiser implements TypeSerialiser<ComparisonType>, PluginListener {
 
-        private final Log log;
         private final Map<String, ComparisonType> types = Maps.newHashMap();
 
         @Inject
-        public Serialiser(Log log, PluginManager pluginManager) {
-            this.log = log;
+        public Serialiser(PluginManager pluginManager) {
             pluginManager.addPluginListener(this, true);
         }
 
@@ -66,21 +82,14 @@ public class ComparisonTypeType extends RealChoiceType<ComparisonType> {
 
         @Override
         public void pluginAdded(Injector pluginInjector) {
-            ComparisonTypeType type = (ComparisonTypeType) types.get(ID);
-            if(type != null) {
-                for(Comparator<?> comparator : pluginInjector.getInstance(new Key<Set<Comparator<?>>>() {})) {
-                    if(types.get(comparator.getComparisonType().getId()) == null) {
-                        types.put(comparator.getComparisonType().getId(), comparator.getComparisonType());
-                        type.getOptions().add(new RealOption(log, comparator.getComparisonType().getId(),
-                                comparator.getComparisonType().getName(), comparator.getComparisonType().getDescription()));
-                    }
-                }
-            }
+            for(Comparator<?> comparator : pluginInjector.getInstance(new Key<Set<Comparator<?>>>() {}))
+                if(types.get(comparator.getComparisonType().getId()) == null)
+                    types.put(comparator.getComparisonType().getId(), comparator.getComparisonType());
         }
 
         @Override
         public void pluginRemoved(Injector pluginInjector) {
-            // todo remove them
+            // todo remove them, not so easy as there might be many values for one key
         }
     }
 }
