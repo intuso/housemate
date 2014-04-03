@@ -3,6 +3,7 @@ package com.intuso.housemate.object.server.proxy;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.device.DeviceData;
@@ -11,28 +12,29 @@ import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.server.real.ServerRealValue;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
 public class ServerProxyDevice
         extends ServerProxyPrimaryObject<
-                DeviceData,
-        ServerProxyDevice,
-                    DeviceListener<? super ServerProxyDevice>>
+            DeviceData,
+            ServerProxyDevice,
+            DeviceListener<? super ServerProxyDevice>>
         implements Device<
-        ServerProxyCommand,
-        ServerProxyCommand,
-        ServerProxyCommand,
-        ServerProxyList<CommandData, ServerProxyCommand>,
-        ServerRealValue<Boolean>,
-        ServerProxyValue,
-        ServerProxyValue,
-        ServerProxyValue,
-        ServerProxyList<ValueData, ServerProxyValue>,
-        ServerProxyProperty,
-        ServerProxyList<PropertyData, ServerProxyProperty>,
-        ServerProxyDevice> {
+            ServerProxyCommand,
+            ServerProxyCommand,
+            ServerProxyCommand,
+            ServerProxyList<CommandData, ServerProxyCommand>,
+            ServerRealValue<Boolean>,
+            ServerProxyValue,
+            ServerProxyValue,
+            ServerProxyValue,
+            ServerProxyList<ValueData, ServerProxyValue>,
+            ServerProxyProperty,
+            ServerProxyList<PropertyData, ServerProxyProperty>,
+            ServerProxyDevice> {
 
     private ServerProxyList<CommandData, ServerProxyCommand> commands;
     private ServerProxyList<ValueData, ServerProxyValue> values;
@@ -45,9 +47,9 @@ public class ServerProxyDevice
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyDevice(Log log, Injector injector, BooleanType booleanType, @Assisted DeviceData data) {
-        super(log, injector, data);
-        connected = new ServerRealValue<Boolean>(log, CONNECTED_ID, CONNECTED_ID,
+    public ServerProxyDevice(Log log, ListenersFactory listenersFactory, Injector injector, BooleanType booleanType, @Assisted DeviceData data) {
+        super(log, listenersFactory, injector, data);
+        connected = new ServerRealValue<Boolean>(log, listenersFactory, CONNECTED_ID, CONNECTED_ID,
                             "Whether the server has a connection open to control the object", booleanType, true);
     }
 
@@ -102,5 +104,20 @@ public class ServerProxyDevice
     @Override
     public final List<String> getCustomPropertyIds() {
         return getData().getCustomPropertyIds();
+    }
+
+    @Override
+    public void clientContactable(boolean contactable) {
+        connected.setTypedValue(contactable);
+        getStartCommand().getEnabledValue().setTypedValue(contactable);
+        getStopCommand().getEnabledValue().setTypedValue(contactable);
+        for(ServerProxyCommand command : commands)
+            command.getEnabledValue().setTypedValue(contactable);
+    }
+
+    @Override
+    protected void copyValues(HousemateData<?> data) {
+        if(data instanceof DeviceData)
+            getProperties().copyValues(((DeviceData)data).getChildData(PROPERTIES_ID));
     }
 }

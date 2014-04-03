@@ -1,9 +1,11 @@
 package com.intuso.housemate.object.server.real;
 
 import com.google.common.collect.Maps;
+import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.ArrayList;
@@ -16,28 +18,15 @@ public abstract class ServerNonLeafCondition extends ServerRealCondition
     private final Map<ServerRealCondition, Boolean> satisfied = new HashMap<ServerRealCondition, Boolean>();
     private final Map<ServerRealCondition, ListenerRegistration> conditionListenerRegistrations = Maps.newHashMap();
 
-    /**
-     * @param log {@inheritDoc}
-     * @param id the object's id
-     * @param name the object's name
-     * @param description the object's description
-     */
-    public ServerNonLeafCondition(Log log, String id, String name, String description,
+    public ServerNonLeafCondition(Log log, ListenersFactory listenersFactory, ConditionData data,
                                   ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler) {
-        this(log, id, name, description, owner, lifecycleHandler, new ArrayList<ServerRealProperty<?>>());
+        this(log, listenersFactory, data, owner, lifecycleHandler, new ArrayList<ServerRealProperty<?>>());
     }
 
-    /**
-     * @param log {@inheritDoc}
-     * @param id the object's id
-     * @param name the object's name
-     * @param description the object's description
-     * @param properties the properties of the condition
-     */
-    public ServerNonLeafCondition(Log log, String id, String name, String description,
+    public ServerNonLeafCondition(Log log, ListenersFactory listenersFactory, ConditionData data,
                                   ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler,
                                   java.util.List<ServerRealProperty<?>> properties) {
-        super(log, id, name, description, owner, lifecycleHandler, properties);
+        super(log, listenersFactory, data, owner, lifecycleHandler, properties);
     }
 
     @Override

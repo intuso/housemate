@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterListener;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -23,8 +24,8 @@ public class ServerRealParameter<O>
      * @param description the object's description
      * @param type the type of the value
      */
-    public ServerRealParameter(Log log, String id, String name, String description, RealType<?, ?, O> type) {
-        super(log, new ParameterData(id, name, description, type.getId()));
+    public ServerRealParameter(Log log, ListenersFactory listenersFactory, String id, String name, String description, RealType<?, ?, O> type) {
+        super(log, listenersFactory, new ParameterData(id, name, description, type.getId()));
         this.type = type;
     }
 

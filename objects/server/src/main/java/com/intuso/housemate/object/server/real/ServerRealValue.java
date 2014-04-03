@@ -4,6 +4,7 @@ import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -24,9 +25,9 @@ public class ServerRealValue<O>
      * @param type the type of the value
      * @param values the initial values
      */
-    public ServerRealValue(Log log, String id, String name, String description,
+    public ServerRealValue(Log log, ListenersFactory listenersFactory, String id, String name, String description,
                            RealType<?, ?, O> type, O... values) {
-        this(log, id, name, description, type, Arrays.asList(values));
+        this(log, listenersFactory, id, name, description, type, Arrays.asList(values));
     }
 
     /**
@@ -37,9 +38,8 @@ public class ServerRealValue<O>
      * @param type the type of the value
      * @param values the initial values
      */
-    public ServerRealValue(Log log, String id, String name, String description,
+    public ServerRealValue(Log log, ListenersFactory listenersFactory, String id, String name, String description,
                            RealType<?, ?, O> type, List<O> values) {
-        super(log, new ValueData(id, name, description, type.getId(),
-                RealType.serialiseAll(type, values)), type);
+        super(log, listenersFactory, new ValueData(id, name, description, type.getId(), null), type, values);
     }
 }

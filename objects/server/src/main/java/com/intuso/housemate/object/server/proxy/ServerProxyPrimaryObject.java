@@ -9,6 +9,7 @@ import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
  * @param <PRIMARY_OBJECT> the type of the primary object
  * @param <LISTENER> the type of the listener
  */
-public class ServerProxyPrimaryObject<
+public abstract class ServerProxyPrimaryObject<
             DATA extends HousemateData<HousemateData<?>>,
             PRIMARY_OBJECT extends ServerProxyPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
@@ -37,8 +38,8 @@ public class ServerProxyPrimaryObject<
      * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected ServerProxyPrimaryObject(Log log, Injector injector, DATA data) {
-        super(log, injector, data);
+    protected ServerProxyPrimaryObject(Log log, ListenersFactory listenersFactory, Injector injector, DATA data) {
+        super(log, listenersFactory, injector, data);
     }
 
     @Override

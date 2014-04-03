@@ -15,9 +15,11 @@ import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.housemate.object.server.RemoteClient;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @param <CHILD_DATA> the type of the child data
@@ -35,8 +37,15 @@ public class ServerProxyList<
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyList(Log log, Injector injector, @Assisted ListData<CHILD_DATA> data) {
-        super(log, injector, data);
+    public ServerProxyList(Log log, ListenersFactory listenersFactory, Injector injector, @Assisted ListData<CHILD_DATA> data) {
+        super(log, listenersFactory, injector, data);
+    }
+
+    @Override
+    protected void copyValues(HousemateData<?> data) {
+        if(data instanceof ListData)
+            for(Map.Entry<String, ? extends HousemateData<?>> entry : ((ListData<?>)data).getChildData().entrySet())
+                getChild(entry.getKey()).copyValues(entry.getValue());
     }
 
     @Override
@@ -64,13 +73,27 @@ public class ServerProxyList<
      * @throws HousemateException
      */
     public void add(HousemateData data, RemoteClient clientId) throws HousemateException {
-        CHILD child = null;
-        child = (CHILD) getInjector().getInstance(new Key<HousemateObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>>() {}).create(data);
-        child.init(ServerProxyList.this);
-        child.setClient(clientId);
-        addChild(child);
-        for(ListListener<? super CHILD> listener : getObjectListeners())
-            listener.elementAdded(child);
+        // get the current child
+        CHILD child = getChild(data.getId());
+
+        // if there is one and the data is different, then remove the current one
+        if(child != null) {
+            if(!data.equals(child.getData())) {
+                remove(data.getId());
+                child = null;
+            } else
+                child.copyValues(data);
+        }
+
+        // if there isn't a child of that id, then add one
+        if(child == null) {
+            child = (CHILD) getInjector().getInstance(new Key<HousemateObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>>() {}).create(data);
+            child.init(ServerProxyList.this);
+            child.setClient(clientId);
+            addChild(child);
+            for(ListListener<? super CHILD> listener : getObjectListeners())
+                listener.elementAdded(child);
+        }
     }
 
     /**

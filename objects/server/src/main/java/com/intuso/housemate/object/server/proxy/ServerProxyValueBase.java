@@ -1,6 +1,7 @@
 package com.intuso.housemate.object.server.proxy;
 
 import com.google.inject.Injector;
+import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.HousemateData;
@@ -11,6 +12,7 @@ import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -36,9 +38,9 @@ public abstract class ServerProxyValueBase<
      * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ServerProxyValueBase(Log log, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types,
+    public ServerProxyValueBase(Log log, ListenersFactory listenersFactory, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types,
                                 DATA data) {
-        super(log, injector, data);
+        super(log, listenersFactory, injector, data);
         this.types = types;
     }
 
@@ -71,6 +73,17 @@ public abstract class ServerProxyValueBase<
             }
         }));
         return result;
+    }
+
+    @Override
+    protected final void copyValues(HousemateData<?> data) {
+        if(data instanceof ValueBaseData) {
+            try {
+                distributeMessage(new Message<ClientPayload>(getPath(), VALUE_ID, new ClientPayload(null, ((ValueBaseData)data).getTypeInstances())));
+            } catch (HousemateException e) {
+                getLog().e("Failed to update server proxy value based on new value from client");
+            }
+        }
     }
 
     @Override

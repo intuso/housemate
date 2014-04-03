@@ -8,6 +8,7 @@ import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -35,9 +36,9 @@ public abstract class ServerRealPrimaryObject<
      * @param data {@inheritDoc}
      * @param objectType the name of the object type used for descriptions and logging
      */
-    public ServerRealPrimaryObject(Log log, DATA data, final String objectType) {
-        super(log, data);
-        this.remove = new ServerRealCommand(log, REMOVE_ID, REMOVE_ID, "Remove the " + objectType, Lists.<ServerRealParameter<?>>newArrayList()) {
+    public ServerRealPrimaryObject(Log log, ListenersFactory listenersFactory, DATA data, final String objectType) {
+        super(log, listenersFactory, data);
+        this.remove = new ServerRealCommand(log, listenersFactory, REMOVE_ID, REMOVE_ID, "Remove the " + objectType, Lists.<ServerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning())
@@ -45,9 +46,9 @@ public abstract class ServerRealPrimaryObject<
                 remove();
             }
         };
-        this.connected = new ServerRealValue<Boolean>(log, CONNECTED_ID, CONNECTED_ID, "Whether the " + objectType + " is connected or not", new BooleanType(log), true);
-        this.running = new ServerRealValue<Boolean>(log, RUNNING_ID, RUNNING_ID, "Whether the " + objectType + " is running or not", new BooleanType(log), false);
-        this.start = new ServerRealCommand(log, START_ID, START_ID, "Start the " + objectType, Lists.<ServerRealParameter<?>>newArrayList()) {
+        this.connected = new ServerRealValue<Boolean>(log, listenersFactory, CONNECTED_ID, CONNECTED_ID, "Whether the " + objectType + " is connected or not", new BooleanType(log, listenersFactory), true);
+        this.running = new ServerRealValue<Boolean>(log, listenersFactory, RUNNING_ID, RUNNING_ID, "Whether the " + objectType + " is running or not", new BooleanType(log, listenersFactory), false);
+        this.start = new ServerRealCommand(log, listenersFactory, START_ID, START_ID, "Start the " + objectType, Lists.<ServerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(!isRunning()) {
@@ -56,7 +57,7 @@ public abstract class ServerRealPrimaryObject<
                 }
             }
         };
-        this.stop = new ServerRealCommand(log, STOP_ID, STOP_ID, "Stop the " + objectType, Lists.<ServerRealParameter<?>>newArrayList()) {
+        this.stop = new ServerRealCommand(log, listenersFactory, STOP_ID, STOP_ID, "Stop the " + objectType, Lists.<ServerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning()) {
@@ -65,7 +66,7 @@ public abstract class ServerRealPrimaryObject<
                 }
             }
         };
-        this.error = new ServerRealValue<String>(log, ERROR_ID, ERROR_ID, "Current error for the " + objectType, new StringType(log), (String)null);
+        this.error = new ServerRealValue<String>(log, listenersFactory, ERROR_ID, ERROR_ID, "Current error for the " + objectType, new StringType(log, listenersFactory), (String)null);
         addChild(this.remove);
         addChild(this.running);
         addChild(this.start);

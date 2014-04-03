@@ -31,20 +31,18 @@ public class ServerProxyFactory {
     public static class All implements HousemateObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> {
 
         private final Log log;
-        private final Command commandFactory;
-        private final Device deviceFactory;
-        private final GenericList listFactory;
-        private final Option optionFactory;
-        private final Parameter parameterFactory;
-        private final Property propertyFactory;
-        private final SubType subTypeFactory;
-        private final Type typeFactory;
-        private final Value valueFactory;
+        private final CommandFactory<ServerProxyCommand> commandFactory;
+        private final DeviceFactory<ServerProxyDevice> deviceFactory;
+        private final ListFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>, ServerProxyList<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>> listFactory;
+        private final OptionFactory<ServerProxyOption> optionFactory;
+        private final ParameterFactory<ServerProxyParameter> parameterFactory;
+        private final PropertyFactory<ServerProxyProperty> propertyFactory;
+        private final SubTypeFactory<ServerProxySubType> subTypeFactory;
+        private final TypeFactory<ServerProxyType> typeFactory;
+        private final ValueFactory<ServerProxyValue> valueFactory;
 
         @Inject
-        public All(Log log, Command commandFactory, Device deviceFactory, GenericList listFactory, Option optionFactory,
-                   Parameter parameterFactory, Property propertyFactory, SubType subTypeFactory, Type typeFactory,
-                   Value valueFactory) {
+        public All(Log log, CommandFactory<ServerProxyCommand> commandFactory, DeviceFactory<ServerProxyDevice> deviceFactory, ListFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>, ServerProxyList<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>> listFactory, OptionFactory<ServerProxyOption> optionFactory, ParameterFactory<ServerProxyParameter> parameterFactory, PropertyFactory<ServerProxyProperty> propertyFactory, SubTypeFactory<ServerProxySubType> subTypeFactory, TypeFactory<ServerProxyType> typeFactory, ValueFactory<ServerProxyValue> valueFactory) {
             this.log = log;
             this.commandFactory = commandFactory;
             this.deviceFactory = deviceFactory;
@@ -81,29 +79,4 @@ public class ServerProxyFactory {
             return null;
         }
     }
-
-    public interface Parameter extends ParameterFactory<ServerProxyParameter> {}
-
-    public interface Command extends CommandFactory<ServerProxyCommand> {}
-
-    public interface Device extends DeviceFactory<ServerProxyDevice> {}
-
-    public interface GenericList extends ListFactory<HousemateData<?>,
-            ServerProxyObject<?, ?, ?, ?, ?>,
-            ServerProxyList<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>> {}
-
-    public interface List<
-            SWBL extends HousemateData<?>,
-            SWR extends ServerProxyObject<? extends SWBL, ?, ?, ?, ?>>
-            extends ListFactory<SWBL, SWR, ServerProxyList<SWBL, SWR>> {}
-
-    public interface Option extends OptionFactory<ServerProxyOption> {}
-
-    public interface Property extends PropertyFactory<ServerProxyProperty> {}
-
-    public interface SubType extends SubTypeFactory<ServerProxySubType> {}
-
-    public interface Type extends TypeFactory<ServerProxyType> {}
-
-    public interface Value extends ValueFactory<ServerProxyValue> {}
 }

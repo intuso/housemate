@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -36,9 +37,11 @@ public abstract class ServerRealValueBase<
      * @param data {@inheritDoc}
      * @param type the type of the value
      */
-    public ServerRealValueBase(Log log, DATA data, RealType<?, ?, O> type) {
-        super(log, data);
+    public ServerRealValueBase(Log log, ListenersFactory listenersFactory, DATA data, RealType<?, ?, O> type, List<O> typedValues) {
+        super(log, listenersFactory, data);
         this.type = type;
+        this.typedValues = typedValues;
+        this.getData().setTypeInstances(RealType.serialiseAll(getType(), typedValues));
     }
 
     @Override

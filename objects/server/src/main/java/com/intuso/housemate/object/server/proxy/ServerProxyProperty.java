@@ -4,12 +4,13 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.object.command.CommandData;
-import com.intuso.housemate.api.object.command.CommandListener;
+import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 public class ServerProxyProperty
@@ -24,9 +25,9 @@ public class ServerProxyProperty
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyProperty(Log log, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types,
+    public ServerProxyProperty(Log log, ListenersFactory listenersFactory, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types,
                                @Assisted PropertyData data) {
-        super(log, injector, types, data);
+        super(log, listenersFactory, injector, types, data);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class ServerProxyProperty
     }
 
     @Override
-    public void set(final TypeInstances value, CommandListener<? super ServerProxyCommand> listener) {
+    public void set(final TypeInstances value, CommandPerformListener<? super ServerProxyCommand> listener) {
         getSetCommand().perform(new TypeInstanceMap() {
             {
                 put(VALUE_PARAM, value);

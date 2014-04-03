@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 public class ServerRealAutomation
@@ -47,13 +48,13 @@ public class ServerRealAutomation
 
     private ListenerRegistration conditionListenerRegistration;
 
-    public ServerRealAutomation(final Log log, String id, String name, String description,
+    public ServerRealAutomation(final Log log, ListenersFactory listenersFactory, String id, String name, String description,
                                 ServerRealAutomationOwner owner, LifecycleHandler lifecycleHandler) {
-        super(log, new AutomationData(id, name, description), "automation");
+        super(log, listenersFactory, new AutomationData(id, name, description), "automation");
         this.owner = owner;
-        this.conditions = new ServerRealList<ConditionData, ServerRealCondition>(log, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
-        this.satisfiedTasks = new ServerRealList<TaskData, ServerRealTask>(log, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
-        this.unsatisfiedTasks = new ServerRealList<TaskData, ServerRealTask>(log, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.conditions = new ServerRealList<ConditionData, ServerRealCondition>(log, listenersFactory, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
+        this.satisfiedTasks = new ServerRealList<TaskData, ServerRealTask>(log, listenersFactory, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.unsatisfiedTasks = new ServerRealList<TaskData, ServerRealTask>(log, listenersFactory, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         addConditionCommand = lifecycleHandler.createAddConditionCommand(conditions, this);
         addSatisfiedTaskCommand = lifecycleHandler.createAddSatisfiedTaskCommand(satisfiedTasks, satisfiedTaskOwner);
         addUnsatisfiedTaskCommand = lifecycleHandler.createAddUnsatisfiedTaskCommand(unsatisfiedTasks, unsatisfiedTaskOwner);

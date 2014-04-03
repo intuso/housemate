@@ -3,6 +3,7 @@ package com.intuso.housemate.object.server.real;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectListener;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -22,7 +23,7 @@ public class ServerRealObject<
      * @param log {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected ServerRealObject(Log log, DATA data) {
-        super(log, data);
+    protected ServerRealObject(Log log, ListenersFactory listenersFactory, DATA data) {
+        super(log, listenersFactory, data);
     }
 }

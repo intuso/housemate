@@ -4,9 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.comms.ConnectionStatus;
+import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
+import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.device.DeviceData;
@@ -16,12 +17,13 @@ import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
-public class ServerProxyRootObject
+public class ServerProxyRoot
         extends ServerProxyObject<RootData, HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>,
-        ServerProxyRootObject, RootListener<? super ServerProxyRootObject>>
-        implements Root<ServerProxyRootObject> {
+            ServerProxyRoot, RootListener<? super ServerProxyRoot>>
+        implements Root<ServerProxyRoot> {
 
     private ServerProxyList<TypeData<?>, ServerProxyType> types;
     private ServerProxyList<DeviceData, ServerProxyDevice> devices;
@@ -31,10 +33,11 @@ public class ServerProxyRootObject
      * @param injector {@inheritDoc}
      */
     @Inject
-    public ServerProxyRootObject(Log log, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types) {
-        super(log, injector, new RootData());
+    public ServerProxyRoot(Log log, ListenersFactory listenersFactory, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types) {
+        super(log, listenersFactory, injector, new RootData());
+
         this.types = types;
-        devices = new ServerProxyList<DeviceData, ServerProxyDevice>(log, injector, new ListData<DeviceData>(DEVICES_ID, DEVICES_ID, "Proxied devices"));
+        devices = new ServerProxyList<DeviceData, ServerProxyDevice>(log, listenersFactory, injector, new ListData<DeviceData>(DEVICES_ID, DEVICES_ID, "Proxied devices"));
 
         addChild(types);
         addChild(devices);
@@ -43,22 +46,22 @@ public class ServerProxyRootObject
     }
 
     @Override
-    public ConnectionStatus getStatus() {
-        return ConnectionStatus.Authenticated;
+    public ApplicationStatus getApplicationStatus() {
+        return ApplicationStatus.AllowInstances;
     }
 
     @Override
-    public String getConnectionId() {
-        return null;
+    public ApplicationInstanceStatus getApplicationInstanceStatus() {
+        return ApplicationInstanceStatus.Allowed;
     }
 
     @Override
-    public void login(AuthenticationMethod method) {
+    public void register(ApplicationDetails applicationDetails) {
         throw new HousemateRuntimeException("Cannot connect this type of root object");
     }
 
     @Override
-    public void logout() {
+    public void unregister() {
         throw new HousemateRuntimeException("Cannot disconnect this type of root object");
     }
 
@@ -91,5 +94,10 @@ public class ServerProxyRootObject
      */
     public ServerProxyList<DeviceData, ServerProxyDevice> getDevices() {
         return devices;
+    }
+
+    @Override
+    protected void copyValues(HousemateData<?> data) {
+        // do nothing
     }
 }

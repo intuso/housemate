@@ -1,23 +1,14 @@
 package com.intuso.housemate.object.server;
 
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
+import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.ConnectionType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 public interface RemoteClient {
 
-    /**
-     * Gets the type of the remote client
-     * @return the remote client's type
-     */
-    ConnectionType getType();
-
-    /**
-     * Gets the connection id of the remote client
-     * @return the connection id of the remote client
-     */
-    String getConnectionId();
+    ClientInstance getClientInstance();
 
     /**
      * Sends a message to the client
@@ -40,4 +31,6 @@ public interface RemoteClient {
      * @return listener registration
      */
     ListenerRegistration addListener(RemoteClientListener listener);
+
+    public void setStatus(ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus);
 }

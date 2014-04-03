@@ -11,6 +11,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -33,38 +34,34 @@ public abstract class ServerRealCondition
 
     /**
      * @param log {@inheritDoc}
-     * @param id the object's id
-     * @param name the object's name
-     * @param description the object's description
+     * @param data the condition's data
      * @param properties the condition's properties
      */
-    public ServerRealCondition(Log log, String id, String name, String description, ServerRealConditionOwner owner,
+    public ServerRealCondition(Log log, ListenersFactory listenersFactory, ConditionData data, ServerRealConditionOwner owner,
                                LifecycleHandler lifecycleHandler,
                                ServerRealProperty<?>... properties) {
-        this(log, id, name, description, owner, lifecycleHandler, Arrays.asList(properties));
+        this(log, listenersFactory, data, owner, lifecycleHandler, Arrays.asList(properties));
     }
 
     /**
      * @param log {@inheritDoc}
-     * @param id the object's id
-     * @param name the object's name
-     * @param description the object's description
+     * @param data the condition's data
      * @param properties the condition's properties
      */
-    public ServerRealCondition(final Log log, String id, String name, String description,
+    public ServerRealCondition(final Log log, ListenersFactory listenersFactory, ConditionData data,
                                final ServerRealConditionOwner owner, LifecycleHandler lifecycleHandler,
                                java.util.List<ServerRealProperty<?>> properties) {
-        super(log, new ConditionData(id, name, description));
-        removeCommand = new ServerRealCommand(log, REMOVE_ID, REMOVE_ID, "Remove the condition", Lists.<ServerRealParameter<?>>newArrayList()) {
+        super(log, listenersFactory, data);
+        removeCommand = new ServerRealCommand(log, listenersFactory, REMOVE_ID, REMOVE_ID, "Remove the condition", Lists.<ServerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 owner.remove(ServerRealCondition.this);
             }
         };
-        errorValue = new ServerRealValue<String>(log, ERROR_ID, ERROR_ID, "The current error", new StringType(log), (List)null);
-        satisfiedValue = new ServerRealValue<Boolean>(log, SATISFIED_ID, SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(log), false);
-        propertyList = new ServerRealList<PropertyData, ServerRealProperty<?>>(log, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
-        conditions = new ServerRealList<ConditionData, ServerRealCondition>(log, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
+        errorValue = new ServerRealValue<String>(log, listenersFactory, ERROR_ID, ERROR_ID, "The current error", new StringType(log, listenersFactory), (List)null);
+        satisfiedValue = new ServerRealValue<Boolean>(log, listenersFactory, SATISFIED_ID, SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(log, listenersFactory), false);
+        propertyList = new ServerRealList<PropertyData, ServerRealProperty<?>>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
+        conditions = new ServerRealList<ConditionData, ServerRealCondition>(log, listenersFactory, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
         // add a command to add automations to the automation list
         addConditionCommand = lifecycleHandler.createAddConditionCommand(conditions, this);
         addChild(removeCommand);

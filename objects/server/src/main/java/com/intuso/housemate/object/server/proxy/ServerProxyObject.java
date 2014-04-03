@@ -4,7 +4,9 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.comms.ConnectionType;
+import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
+import com.intuso.housemate.api.comms.ApplicationStatus;
+import com.intuso.housemate.api.comms.ClientType;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
@@ -13,6 +15,7 @@ import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.object.server.RemoteClient;
 import com.intuso.housemate.object.server.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
 
@@ -42,8 +45,8 @@ public abstract class ServerProxyObject<
      * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected ServerProxyObject(Log log, Injector injector, DATA data) {
-        super(log, data);
+    protected ServerProxyObject(Log log, ListenersFactory listenersFactory, Injector injector, DATA data) {
+        super(log, listenersFactory, data);
         this.injector = injector;
     }
 
@@ -56,17 +59,18 @@ public abstract class ServerProxyObject<
      * @param client the client
      * @throws HousemateException
      */
-    public void setClient(RemoteClient client) throws HousemateException {
+    public final void setClient(RemoteClient client) throws HousemateException {
         if(this.client != null)
             throw new HousemateException("This object already has a client");
-        else if(client.getType() != ConnectionType.Real)
-            throw new HousemateException("Client is not of type " + ConnectionType.Real);
+        else if(client.getClientInstance().getClientType() != ClientType.Real)
+            throw new HousemateException("Client is not of type " + ClientType.Real);
         if(clientListener != null)
             clientListener.removeListener();
         this.client = client;
         clientListener = client.addListener(this);
         for(ServerProxyObject<?, ?, ?, ?, ?> child : getChildren())
                 ((ServerProxyObject)child).setClient(client);
+        clientContactable(true);
     }
 
     /**
@@ -118,18 +122,20 @@ public abstract class ServerProxyObject<
     }
 
     @Override
-    public void disconnected(RemoteClient client) {
+    public void statusChanged(ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+        if(applicationInstanceStatus == ApplicationInstanceStatus.Allowed)
+            clientContactable(true);
+        else
+            clientContactable(false);
+    }
+
+    @Override
+    public final void disconnected(RemoteClient client) {
         clientListener.removeListener();
         this.client = null;
     }
 
-    @Override
-    public void connectionLost(RemoteClient client) {
-        // do nothing
-    }
+    protected void clientContactable(boolean contactable) {}
 
-    @Override
-    public void reconnected(RemoteClient client) {
-        // do nothing
-    }
+    protected abstract void copyValues(HousemateData<?> data);
 }

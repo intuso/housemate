@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeListener;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 public class ServerProxyType
@@ -19,7 +20,12 @@ public class ServerProxyType
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyType(Log log, Injector injector, @Assisted TypeData<HousemateData<?>> data) {
-        super(log, injector, data);
+    public ServerProxyType(Log log, ListenersFactory listenersFactory, Injector injector, @Assisted TypeData<HousemateData<?>> data) {
+        super(log, listenersFactory, injector, data);
+    }
+
+    @Override
+    protected void copyValues(HousemateData<?> data) {
+        // do nothing
     }
 }

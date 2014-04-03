@@ -39,6 +39,6 @@ public class ClientPayload<PAYLOAD extends Message.Payload> implements Message.P
 
     @Override
     public String toString() {
-        return "from: " + client.getConnectionId() + ", message: " + original.toString();
+        return "from client " + client.getClientInstance() + ": " + original.toString();
     }
 }
