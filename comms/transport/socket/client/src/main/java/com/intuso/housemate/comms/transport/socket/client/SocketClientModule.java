@@ -3,8 +3,7 @@ package com.intuso.housemate.comms.transport.socket.client;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.utilities.properties.api.PropertyContainer;
-import com.intuso.utilities.properties.api.PropertyValue;
+import com.intuso.utilities.properties.api.PropertyRepository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,9 +14,9 @@ import com.intuso.utilities.properties.api.PropertyValue;
  */
 public class SocketClientModule extends AbstractModule {
 
-    public SocketClientModule(PropertyContainer properties) {
-        properties.set(SocketClient.SERVER_HOST, new PropertyValue("default", 0, "localhost"));
-        properties.set(SocketClient.SERVER_PORT, new PropertyValue("default", 0, "46873"));
+    public SocketClientModule(PropertyRepository defaultProperties) {
+        defaultProperties.set(SocketClient.SERVER_HOST, "localhost");
+        defaultProperties.set(SocketClient.SERVER_PORT, "46873");
     }
 
     @Override

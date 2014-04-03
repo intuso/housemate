@@ -25,15 +25,15 @@ public class TestClientDisconnect {
         resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 socketClient, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
-        socketClient.addObjectListener(new RootListener<RouterRootObject>() {
+        socketClient.addObjectListener(new RootListener<RouterRoot>() {
             @Override
-            public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
-                if(status == ConnectionStatus.Authenticated) {
+            public void connectionStatusChanged(RouterRoot routerRoot, ApplicationInstanceStatus status) {
+                if(status == ApplicationInstanceStatus.Allowed) {
                     root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {
 
                         @Override
-                        public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
-                            if(status != ConnectionStatus.Authenticated)
+                        public void connectionStatusChanged(SimpleProxyObject.Root root, ApplicationInstanceStatus status) {
+                            if(status != ApplicationInstanceStatus.Allowed)
                                 return;
                             synchronized(disconnected) {
                                 disconnected.set(false);
@@ -72,13 +72,13 @@ public class TestClientDisconnect {
                             // do nothing
                         }
                     });
-                    root.login(new UsernamePassword("admin", "admin", false));
-                } else if(status == ConnectionStatus.Unauthenticated)
-                    socketClient.login(new UsernamePassword("admin", "admin", false));
+                    root.requestAccess(new UsernamePassword("admin", "admin", false));
+                } else if(status == ApplicationInstanceStatus.UnAllowed)
+                    socketClient.requestAccess(new UsernamePassword("admin", "admin", false));
             }
 
             @Override
-            public void newServerInstance(RouterRootObject root) {
+            public void newServerInstance(RouterRoot root) {
                 // do nothing
             }
         });
@@ -115,15 +115,15 @@ public class TestClientDisconnect {
         resources = new SimpleProxyResources<SimpleProxyFactory.All>(resources.getLog(), resources.getProperties(),
                 comms, resources.getObjectFactory(), resources.getRegexMatcherFactory());
         final SimpleProxyObject.Root root = new SimpleProxyObject.Root(resources, resources);
-        comms.addObjectListener(new RootListener<RouterRootObject>() {
+        comms.addObjectListener(new RootListener<RouterRoot>() {
             @Override
-            public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
-                if (status == ConnectionStatus.Authenticated) {
+            public void connectionStatusChanged(RouterRoot routerRoot, ApplicationInstanceStatus status) {
+                if (status == ApplicationInstanceStatus.Allowed) {
                     root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {
 
                         @Override
-                        public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
-                            if (status != ConnectionStatus.Authenticated)
+                        public void connectionStatusChanged(SimpleProxyObject.Root root, ApplicationInstanceStatus status) {
+                            if (status != ApplicationInstanceStatus.Allowed)
                                 return;
                             synchronized (connectionLost) {
                                 connectionLost.set(false);
@@ -162,13 +162,13 @@ public class TestClientDisconnect {
                             // do nothing
                         }
                     });
-                    root.login(new UsernamePassword("admin", "admin", false));
-                } else if (status == ConnectionStatus.Unauthenticated)
-                    comms.login(new UsernamePassword("admin", "admin", false));
+                    root.requestAccess(new UsernamePassword("admin", "admin", false));
+                } else if (status == ApplicationInstanceStatus.UnAllowed)
+                    comms.requestAccess(new UsernamePassword("admin", "admin", false));
             }
 
             @Override
-            public void newServerInstance(RouterRootObject root) {
+            public void newServerInstance(RouterRoot root) {
                 // do nothing
             }
         });
@@ -210,8 +210,8 @@ public class TestClientDisconnect {
         ListenerRegistration rootListenerRegistration = root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {
 
             @Override
-            public void connectionStatusChanged(SimpleProxyObject.Root root, ConnectionStatus status) {
-                if(status != ConnectionStatus.Authenticated)
+            public void connectionStatusChanged(SimpleProxyObject.Root root, ApplicationInstanceStatus status) {
+                if(status != ApplicationInstanceStatus.Allowed)
                     return;
                 synchronized(connected) {
                     connected.set(true);
@@ -251,17 +251,17 @@ public class TestClientDisconnect {
                 // do nothing
             }
         });
-        ListenerRegistration commsListenerRegistration = comms.addObjectListener(new RootListener<RouterRootObject>() {
+        ListenerRegistration commsListenerRegistration = comms.addObjectListener(new RootListener<RouterRoot>() {
             @Override
-            public void connectionStatusChanged(RouterRootObject routerRoot, ConnectionStatus status) {
-                if(status == ConnectionStatus.Authenticated) {
-                    root.login(new UsernamePassword("admin", "admin", false));
-                } else if(status == ConnectionStatus.Unauthenticated)
-                    comms.login(new UsernamePassword("admin", "admin", false));
+            public void connectionStatusChanged(RouterRoot routerRoot, ApplicationInstanceStatus status) {
+                if(status == ApplicationInstanceStatus.Allowed) {
+                    root.requestAccess(new UsernamePassword("admin", "admin", false));
+                } else if(status == ApplicationInstanceStatus`.UnAllowed)
+                    comms.requestAccess(new UsernamePassword("admin", "admin", false));
             }
 
             @Override
-            public void newServerInstance(RouterRootObject root) {
+            public void newServerInstance(RouterRoot root) {
                 // do nothing
             }
         });

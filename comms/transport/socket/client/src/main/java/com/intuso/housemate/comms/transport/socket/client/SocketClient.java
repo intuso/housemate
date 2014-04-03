@@ -1,18 +1,25 @@
 package com.intuso.housemate.comms.transport.socket.client;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.comms.message.NoPayload;
+import com.intuso.housemate.comms.serialiser.api.Serialiser;
+import com.intuso.housemate.comms.serialiser.api.StreamSerialiserFactory;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.api.PropertyRepository;
+import com.intuso.utilities.properties.api.PropertyValueChangeListener;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -20,50 +27,43 @@ import java.util.concurrent.TimeUnit;
  * Client comms implementation that provides socket-based communications with the server
  *
  */
-public class SocketClient extends Router {
+public class SocketClient extends Router implements PropertyValueChangeListener {
 
     public final static String SERVER_PORT = "socket.server.port";
     public final static String SERVER_HOST = "socket.server.host";
 
-    private PropertyContainer properties;
+    private final PropertyRepository properties;
+    private final StreamSerialiserFactory serialiserFactory;
 
-    /**
-     * The socket to send/receive over
-     */
     private Socket socket;
-
-    /**
-     * The queue that messages to send are put on
-     */
-    private LinkedBlockingQueue<Message> outputQueue;
-
     private final Object connectThreadLock = new Object();
     private ConnectThread connectThread;
 
-    /**
-     * thread that reads the stream and creates copies of messages that were sent by the server
-     */
+    private final LinkedBlockingQueue<Message> outputQueue;
+    private Serialiser serialiser;
     private StreamReader streamReader;
-
-    /**
-     * thread that takes messages off the output queue and writes them to the socket
-     */
     private MessageSender messageSender;
+
+    private final List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
 
     /**
      * Create a new client comms
      * @throws HousemateException
      */
     @Inject
-    public SocketClient(Log log, PropertyContainer properties) {
-        super(log);
+    public SocketClient(Log log, ListenersFactory listenersFactory, PropertyRepository properties, StreamSerialiserFactory serialiserFactory) {
+        super(log, listenersFactory, properties);
         this.properties = properties;
+        this.serialiserFactory = serialiserFactory;
         // create the queues and threads
         outputQueue = new LinkedBlockingQueue<Message>();
     }
 
     @Override
     public final void disconnect() {
+        for(ListenerRegistration listenerRegistration : listenerRegistrations)
+            listenerRegistration.removeListener();
+        listenerRegistrations.clear();
         disconnect(false);
     }
 
@@ -75,9 +75,9 @@ public class SocketClient extends Router {
                     connectThread.join();
                 } catch(InterruptedException e) {}
             }
-            shutdownComms(reconnect);
-//            if(reconnect)
-//                connect();
+            shutdownComms();
+            if(reconnect)
+                connect();
         }
     }
 
@@ -86,6 +86,10 @@ public class SocketClient extends Router {
      */
     @Override
     public final void connect() {
+        if(listenerRegistrations.size() == 0) {
+            listenerRegistrations.add(properties.addListener(SERVER_HOST, this));
+            listenerRegistrations.add(properties.addListener(SERVER_PORT, this));
+        }
         synchronized (connectThreadLock) {
             if(connectThread == null) {
                 connectThread = new ConnectThread();
@@ -97,10 +101,10 @@ public class SocketClient extends Router {
     /**
      * Shutdown the comms connection
      */
-    private void shutdownComms(boolean reconnecting) {
+    private void shutdownComms() {
         synchronized (connectThreadLock) {
             getLog().d("Disconnecting from the server");
-            setRouterStatus(Status.Disconnected);
+            setServerConnectionStatus(ServerConnectionStatus.Disconnected);
             if(socket != null) {
                 try {
                     socket.close();
@@ -136,10 +140,26 @@ public class SocketClient extends Router {
         outputQueue.add(message);
     }
 
+    private void checkProps() {
+        if(properties.get(SocketClient.SERVER_HOST) != null
+                && properties.get(SocketClient.SERVER_PORT) != null)
+            new Thread() {
+                @Override
+                public void run() {
+                    disconnect(true);
+                }
+            }.start();
+    }
+
+    @Override
+    public void propertyValueChanged(String key, String oldValue, String newValue) {
+        checkProps();
+    }
+
     private class ConnectThread extends Thread {
         @Override
         public void run() {
-            setRouterStatus(Status.Connecting);
+            setServerConnectionStatus(ServerConnectionStatus.Connecting);
             String host = properties.get(SERVER_HOST);
             int port = Integer.parseInt(properties.get(SERVER_PORT));
 
@@ -156,8 +176,11 @@ public class SocketClient extends Router {
                     socket.setKeepAlive(true);
                     socket.setSoTimeout(60000);
 
-                    getLog().d("Connected to server, creating reader/writer threads");
-                    setRouterStatus(Status.ConnectedToRouter);
+                    getLog().d("Connected to server, writing details and creating reader/writer threads");
+                    writeDetails();
+                    checkResponse();
+                    serialiser = serialiserFactory.create(socket.getOutputStream(), socket.getInputStream());
+                    setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
                     messageSender = new MessageSender();
                     streamReader = new StreamReader();
 
@@ -177,8 +200,8 @@ public class SocketClient extends Router {
                     getLog().e("Server host \"" + host + ":" + port + "\" is unknown, cannot connect");
                 } catch (IOException e) {
                     getLog().e("Error connecting to server: " + e.getMessage(), e);
-                } catch (HousemateException e) {
-                    getLog().e("Error connecting to server: " + e.getMessage(), e);
+                } catch(HousemateException e) {
+                    getLog().e("Error initiating connection to router", e);
                 }
 
                 getLog().e("Failed to connect to server. Retrying in " + delay + " seconds");
@@ -196,26 +219,48 @@ public class SocketClient extends Router {
         }
     }
 
+    private void writeDetails() throws HousemateException {
+        try {
+            socket.getOutputStream().write((Serialiser.DETAILS_KEY + ":" + serialiserFactory.getType() + "\n").getBytes());
+            socket.getOutputStream().write("\n".getBytes()); // blank line indicates details are finished
+            socket.getOutputStream().flush();
+        } catch (IOException e) {
+            throw new HousemateException("Failed to write client details", e);
+        }
+    }
+
+    private void checkResponse() throws HousemateException {
+        try {
+            StringBuilder data = new StringBuilder();
+            InputStream in = socket.getInputStream();
+            int i;
+            while(true) {
+                if(in.available() == 0)
+                    Thread.sleep(100);
+                else {
+                    i = in.read();
+                    if(i == '\n')
+                        break;
+                    else if(i >= 0)
+                        data.append((char)i);
+                }
+            }
+            getLog().d("Read handshake response from server: " + data);
+            if(!data.toString().equals("Success"))
+                throw new HousemateException("Bad handshake response from server: " + data);
+        } catch(InterruptedException e) {
+            throw new HousemateException("Error reading handshake response from server", e);
+        } catch(IOException e) {
+            throw new HousemateException("Error reading handshake response from server", e);
+        }
+    }
+
     /**
      * Thread to read data off the socket and convert it into message objects
      * @author Tom Clabon
      *
      */
     private class StreamReader extends Thread {
-
-        private ObjectInputStream ois;
-
-        /**
-         * Create a new stream reader
-         * @throws IOException
-         */
-        public StreamReader() throws HousemateException {
-            try {
-                ois = new ObjectInputStream(socket.getInputStream());
-            } catch(IOException e) {
-                throw new HousemateException("Cannot create object reader", e);
-            }
-        }
 
         @Override
         public void run() {
@@ -247,15 +292,13 @@ public class SocketClient extends Router {
         private Message readMessage() throws HousemateException {
             while(true) {
                 try {
-                    Object next = ois.readObject();
-                    if(next instanceof Message)
-                        return (Message)next;
-                    else
-                        getLog().e("Read non Message object: " + next);
+                    return serialiser.read();
+                } catch(HousemateException e) {
+                    getLog().e("Problem reading message, retrying", e);
                 } catch(IOException e) {
-                    throw new HousemateException("Could not read object from the stream", e);
-                } catch(ClassNotFoundException e) {
-                    throw new HousemateException("Could not deserialize object from the stream", e);
+                    throw new HousemateException("Could not read message", e);
+                } catch (InterruptedException e) {
+                    throw new HousemateException("Interrupted waiting to receive message", e);
                 }
             }
         }
@@ -271,17 +314,7 @@ public class SocketClient extends Router {
         /**
          * heartbeat messgae
          */
-        private Message heartbeat = new Message<NoPayload>(new String[] {}, "heartbeat", NoPayload.VALUE);
-
-        private ObjectOutputStream oos;
-
-        public MessageSender() throws HousemateException {
-            try {
-                oos = new ObjectOutputStream(socket.getOutputStream());
-            } catch(IOException e) {
-                throw new HousemateException("Could not create object output stream", e);
-            }
-        }
+        private Message heartbeat = new Message<NoPayload>(new String[] {}, "heartbeat", NoPayload.INSTANCE);
 
         @Override
         public void run() {
@@ -299,7 +332,7 @@ public class SocketClient extends Router {
                         message = heartbeat;
                     } else
                         getLog().d("Sending message " + message.toString());
-                    sendMessage(message);
+                    serialiser.write(message);
                 } catch(InterruptedException e) {
                     if(socket == null || socket.isClosed())
                         break;
@@ -308,26 +341,10 @@ public class SocketClient extends Router {
                     getLog().e("Error sending message to client. Will attempt to reconnect", e);
                     disconnect(true);
                     break;
-                } catch(HousemateException e) {
-                    getLog().e("Error getting message text. Message will not be sent");
                 }
             }
 
             getLog().d("Stopped message sender");
-        }
-
-        /**
-         * Send a message
-         * @param message the message to send
-         * @throws IOException
-         * @throws HousemateException
-         */
-        private void sendMessage(Message message) throws IOException, HousemateException {
-            // send the message and flush it
-            oos.writeObject(message);
-            oos.reset();
-            if(outputQueue.size() == 0)
-                oos.flush();
         }
     }
 }

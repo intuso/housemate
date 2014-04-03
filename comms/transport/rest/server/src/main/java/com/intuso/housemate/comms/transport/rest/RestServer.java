@@ -3,21 +3,18 @@ package com.intuso.housemate.comms.transport.rest;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.resources.RegexMatcher;
 import com.intuso.housemate.comms.transport.rest.resources.ContextualResource;
 import com.intuso.housemate.comms.transport.rest.resources.GenericResource;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.api.PropertyRepository;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
-
-import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,24 +28,15 @@ public class RestServer extends ExternalClientRouter {
     public final static String PORT = "rest.server.port";
 
     private final Injector injector;
-    private final Router.Registration routerRegistration;
     private final Server server;
 
     @Inject
-    public RestServer(Log log, PropertyContainer properties, Injector injector, Router router) {
-
-        super(log);
+    public RestServer(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector, Router router) {
+        super(log, listenersFactory, properties, router);
 
         this.injector = injector;
-        this.routerRegistration = router.registerReceiver(this);
-
-        setRouterStatus(Status.ConnectedToServer);
 
         String port = properties.get(PORT);
-        if(port == null) {
-            log.d("Rest server port not set, using default");
-            port = "46872";
-        }
 
         log.d("Creating REST server on port " + port);
         server = new Server(Integer.parseInt(port));
@@ -60,22 +48,7 @@ public class RestServer extends ExternalClientRouter {
         server.setHandler(handler);
     }
 
-    @Override
-    public void connect() {
-        // do nothing
-    }
-
-    @Override
-    public void disconnect() {
-        // do nothing
-    }
-
-    @Override
-    public void sendMessage(Message<?> message) {
-        routerRegistration.sendMessage(message);
-    }
-
-    public void start() throws HousemateException {
+    public void _start() throws HousemateException {
         try {
             server.start();
         } catch (Exception e) {
@@ -84,7 +57,7 @@ public class RestServer extends ExternalClientRouter {
         }
     }
 
-    public void stop() {
+    public void _stop() {
         try {
             server.stop();
         } catch(Exception e) {
@@ -96,19 +69,5 @@ public class RestServer extends ExternalClientRouter {
         return new ResourceConfig()
                 .register(new GenericResource(this))
                 .register(new ContextualResource(injector));
-    }
-
-    public static class RM implements RegexMatcher {
-
-        private final Pattern pattern;
-
-        public RM(String regexPattern) {
-            pattern = Pattern.compile(regexPattern);
-        }
-
-        @Override
-        public boolean matches(String value) {
-            return pattern.matcher(value).matches();
-        }
     }
 }

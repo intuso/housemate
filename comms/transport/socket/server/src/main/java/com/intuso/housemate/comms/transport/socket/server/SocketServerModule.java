@@ -4,8 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
-import com.intuso.utilities.properties.api.PropertyContainer;
-import com.intuso.utilities.properties.api.PropertyValue;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,8 +15,8 @@ import com.intuso.utilities.properties.api.PropertyValue;
  */
 public class SocketServerModule extends AbstractModule {
 
-    public SocketServerModule(PropertyContainer properties) {
-        properties.set(SocketServer.PORT, new PropertyValue("default", 0, "46873"));
+    public SocketServerModule(WriteableMapPropertyRepository defaultProperties) {
+        defaultProperties.set(SocketServer.PORT, "46873");
     }
 
     @Override

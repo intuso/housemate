@@ -4,8 +4,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
-import com.intuso.utilities.properties.api.PropertyContainer;
-import com.intuso.utilities.properties.api.PropertyValue;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,8 +16,8 @@ import com.intuso.utilities.properties.api.PropertyValue;
  */
 public class RestServerModule extends AbstractModule {
 
-    public RestServerModule(PropertyContainer properties) {
-        properties.set(RestServer.PORT, new PropertyValue("default", 0, "46873"));
+    public RestServerModule(WriteableMapPropertyRepository defaultProperties) {
+        defaultProperties.set(RestServer.PORT, "46872");
     }
 
     @Override

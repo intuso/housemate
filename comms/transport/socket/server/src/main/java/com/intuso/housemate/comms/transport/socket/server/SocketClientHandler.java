@@ -1,17 +1,21 @@
 package com.intuso.housemate.comms.transport.socket.server;
 
+import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.message.NoPayload;
+import com.intuso.housemate.comms.serialiser.api.Serialiser;
+import com.intuso.housemate.comms.serialiser.api.StreamSerialiserFactory;
 import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * this class
  *
  */
-public final class ClientHandle implements Receiver<Message.Payload> {
+public final class SocketClientHandler implements Receiver<Message.Payload> {
 
 	/**
 	 * The log to use
@@ -49,6 +53,8 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 	private final MessageSender messageSender;
 
     private final Router.Registration routerRegistration;
+
+    private final Serialiser serialiser;
 	
 	/**
 	 * Create a new handle for the given client connection
@@ -56,7 +62,7 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 	 * @param log log to use
 	 * @throws HousemateException 
 	 */
-	public ClientHandle(Router router, Socket socket, Log log) throws HousemateException {
+	public SocketClientHandler(Log log, Router router, Socket socket, Set<StreamSerialiserFactory> serialiserFactories) throws HousemateException {
         super();
 
 		// save all the given input params
@@ -71,16 +77,18 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 			this.socket.setKeepAlive(true);
 		} catch (SocketException e1) {
 			this.log.e("Could not set socket keepalive to true. Closing connection");
-			close();
 			throw new HousemateException("Could not set socket keepalive to true. Closing connection");
 		}
 		try {
 			this.socket.setSoTimeout(60000);
 		} catch (SocketException e1) {
 			this.log.e("Could not set read timeout on socket. Closing connection");
-			close();
 			throw new HousemateException("Could not set read timeout on socket. Closing connection from");
 		}
+
+        Map<String, String> clientDetails = readClientData(socket);
+
+        serialiser = getSerialiser(clientDetails, serialiserFactories, socket);
 
         outputQueue = new LinkedBlockingQueue<Message>();
         streamReader = new StreamReader();
@@ -92,6 +100,76 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 		streamReader.start();
 		messageSender.start();
 	}
+
+    private Map<String, String> readClientData(Socket socket) throws HousemateException {
+        try {
+            Map<String, String> result = Maps.newHashMap();
+            StringBuilder data = new StringBuilder();
+            InputStream in = socket.getInputStream();
+            int i;
+            while(true) {
+                if(in.available() == 0)
+                    Thread.sleep(100);
+                else {
+                    i = in.read();
+                    if(i >= 0)
+                        data.append((char)i);
+                }
+                if(data.length() > 1 && data.substring(data.length() - 2).equals("\n\n"))
+                    break;
+            }
+            for(String line : data.toString().split("\n")) {
+                int index = line.indexOf(":");
+                if(index > 0)
+                    result.put(line.substring(0, index), line.substring(index + 1));
+                else if (line.length() > 0)
+                    result.put(line, null);
+            }
+            return result;
+        } catch(InterruptedException e) {
+            throw new HousemateException("Interrupted reading client data", e);
+        } catch(IOException e) {
+            throw new HousemateException("Error reading client data", e);
+        }
+    }
+
+    private Serialiser getSerialiser(Map<String, String> clientDetails,
+                                     Set<StreamSerialiserFactory> serialiserFactories, Socket socket) throws HousemateException {
+        String serialiserType = clientDetails.get(Serialiser.DETAILS_KEY);
+        if(serialiserType == null) {
+            try {
+                socket.getOutputStream().write(("Missing " + Serialiser.DETAILS_KEY + " property\n").getBytes());
+                socket.getOutputStream().flush();
+            } catch(IOException e) {
+                log.e("Failed to send missing serialisation key message to client", e);
+            }
+            throw new HousemateException("No serialisation key in client details");
+        }
+        StreamSerialiserFactory serialiserFactory = null;
+        for(StreamSerialiserFactory sf : serialiserFactories) {
+            if(sf.getType().equals(serialiserType)) {
+                serialiserFactory = sf;
+                break;
+            }
+        }
+        if(serialiserFactory == null) {
+            try {
+                socket.getOutputStream().write(("No serialiser known for serialisation type " + serialiserType + "\n").getBytes());
+                socket.getOutputStream().flush();
+            } catch(IOException e) {
+                log.e("Failed to send unknown serialisation type message to client", e);
+            }
+            throw new HousemateException("Unknown serialiser type " + serialiserType);
+        }
+        try {
+            log.d("Found serialiser type for client: " + serialiserType);
+            socket.getOutputStream().write(("Success\n").getBytes());
+            socket.getOutputStream().flush();
+            return serialiserFactory.create(socket.getOutputStream(), socket.getInputStream());
+        } catch (IOException e) {
+            throw new HousemateException("Failed to create serialiser", e);
+        }
+    }
     
     @Override
     public void messageReceived(Message message) {
@@ -143,19 +221,6 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 	 */
 	private class StreamReader extends Thread {
 		
-		private ObjectInputStream ois;
-		
-		/**
-		 * Create a new Stream Reader
-		 */
-		public StreamReader() throws HousemateException {
-            try {
-			    ois = new ObjectInputStream(socket.getInputStream());
-            } catch(IOException e) {
-                throw new HousemateException("Cannot create object reader", e);
-            }
-		}
-		
 		@Override
 		public void run() {
 			
@@ -180,18 +245,16 @@ public final class ClientHandle implements Receiver<Message.Payload> {
 		 * @return the next message read
 		 * @throws HousemateException malformed message
 		 */
-		public <T extends Message.Payload> Message<T> readMessage() throws HousemateException {
+		public Message<?> readMessage() throws HousemateException {
             while(true) {
                 try {
-                    Object next = ois.readObject();
-                    if(next instanceof Message)
-                        return (Message<T>)next;
-                    else
-                        log.e("Read non Message object: " + next);
+                    return serialiser.read();
+                } catch(HousemateException e) {
+                    log.e("Problem reading message, retrying", e);
                 } catch(IOException e) {
-                    throw new HousemateException("Could not read object from the stream", e);
-                } catch(ClassNotFoundException e) {
-                    throw new HousemateException("Could not deserialize object from the stream", e);
+                    throw new HousemateException("Could not read message", e);
+                } catch (InterruptedException e) {
+                    throw new HousemateException("Interrupted waiting to receive message", e);
                 }
             }
 		}
@@ -207,21 +270,7 @@ public final class ClientHandle implements Receiver<Message.Payload> {
         /**
          * heartbeat messgae
          */
-        private Message heartbeat = new Message<NoPayload>(new String[] {}, "heartbeat", NoPayload.VALUE);
-
-        private ObjectOutputStream oos;
-
-		/**
-		 * Create a new message sender
-		 */
-		public MessageSender() throws HousemateException {
-			// get the output stream
-			try {
-                oos = new ObjectOutputStream(socket.getOutputStream());
-			} catch(IOException e) {
-                throw new HousemateException("Could not create object output stream", e);
-			}
-		}
+        private Message heartbeat = new Message<NoPayload>(new String[] {}, "heartbeat", NoPayload.INSTANCE);
 		
 		@Override
 		public void run() {
@@ -243,30 +292,11 @@ public final class ClientHandle implements Receiver<Message.Payload> {
                         log.d("Sending message " + toSend);
 					
 					// send a message from the proxy output queue
-					sendMessage(toSend);
+					serialiser.write(toSend);
 				}
-			} catch(HousemateException e) {
+			} catch(IOException e) {
 				log.e("Error sending message to client. Closing client connection", e);
 				close();
-			}
-		}
-		
-		/**
-		 * Send a message to the client
-		 * @param message message to send
-		 * @throws HousemateException
-		 */
-		private void sendMessage(Message message) throws HousemateException {
-			try {
-                // send the message and flush it
-                oos.writeObject(message);
-                oos.reset();
-                if(outputQueue.size() == 0)
-                    oos.flush();
-			} catch(IOException e) {
-				log.e("Error sending message to client");
-                e.printStackTrace();
-				throw new HousemateException("Could not send message", e);
 			}
 		}
 	}

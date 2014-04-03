@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>object-proxy</artifactId>
+            <artifactId>object-proxy-simple</artifactId>
             <version>${project.version}</version>
         </dependency>
 
