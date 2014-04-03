@@ -11,10 +11,10 @@ public class PerformCommandEvent extends GwtEvent<PerformCommandHandler> {
 
     public static Type<PerformCommandHandler> TYPE = new Type<PerformCommandHandler>();
 
-    private Command<?, ?> command;
+    private Command<?, ?, ?> command;
     private TypeInstanceMap values;
 
-    public PerformCommandEvent(Command<?, ?> command, TypeInstanceMap values) {
+    public PerformCommandEvent(Command<?, ?, ?> command, TypeInstanceMap values) {
         this.command = command;
         this.values = values;
     }

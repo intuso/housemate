@@ -9,6 +9,7 @@
                     <b:Nav alignment="RIGHT">
                         <b:NavLink ui:field="devicesButton">devices</b:NavLink>
                         <b:NavLink ui:field="automationsButton">automations</b:NavLink>
+                        <b:NavLink ui:field="applicationsButton">applications</b:NavLink>
                         <b:NavLink ui:field="usersButton">users</b:NavLink>
                         <b:NavLink ui:field="logoutButton">logout</b:NavLink>
                     </b:Nav>

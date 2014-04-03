@@ -8,7 +8,6 @@ import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.device.feature.FeatureLoadedListener;
 import com.intuso.housemate.object.proxy.device.feature.ProxyFeature;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
 
 import java.util.List;
@@ -36,17 +35,17 @@ public abstract class GWTProxyFeature
             treeInfos.add(makeTreeInfo(Device.VALUES_ID, getValueIds()));
         if(getPropertyIds().size() > 0)
             treeInfos.add(makeTreeInfo(Device.PROPERTIES_ID, getPropertyIds()));
-        device.load(new LoadManager("featureLoader", treeInfos) {
+        device.load(new LoadManager(new LoadManager.Callback() {
             @Override
-            protected void failed(HousemateObject.TreeLoadInfo failed) {
+            public void failed(HousemateObject.TreeLoadInfo failed) {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
 
             @Override
-            protected void allLoaded() {
+            public void allLoaded() {
                 listener.featureLoaded(device, GWTProxyFeature.this);
             }
-        });
+        }, "featureLoader", treeInfos));
     }
 
     private HousemateObject.TreeLoadInfo makeTreeInfo(String objectName, Set<String> childNames) {

@@ -1,13 +1,18 @@
-package com.intuso.housemate.web.client;
+package com.intuso.housemate.web.client.comms;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.inject.Inject;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.api.comms.ServerConnectionStatus;
+import com.intuso.housemate.web.client.NotConnectedException;
 import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.properties.api.PropertyRepository;
 
 /**
  */
@@ -16,6 +21,11 @@ public class GWTRouter extends Router {
     private AsyncCallback<Void> sendCallback = new AsyncCallback<Void>() {
         @Override
         public void onFailure(Throwable throwable) {
+            if(throwable instanceof NotConnectedException)
+                Window.alert("Connection timed out due to inactivity, reconnecting");
+            else
+                Window.alert("Reconnecting because of unknown error sending a message: " + throwable.getMessage());
+            setServerConnectionStatus(ServerConnectionStatus.Disconnected);
             getLog().e("Failed to send message", throwable);
         }
 
@@ -28,8 +38,11 @@ public class GWTRouter extends Router {
     private AsyncCallback<Message<Message.Payload>[]> receiveCallback = new AsyncCallback<Message<Message.Payload>[]>() {
         @Override
         public void onFailure(Throwable throwable) {
-            Window.alert("Failed to get messages. The error handling of this will be improved in the future. For now, please refresh the page");
-            // todo improve this
+            if(throwable instanceof NotConnectedException)
+                Window.alert("Connection timed out due to inactivity, reconnecting");
+            else
+                Window.alert("Reconnecting because of unknown error getting messages: " + throwable.getMessage());
+            setServerConnectionStatus(ServerConnectionStatus.Disconnected);
         }
 
         @Override
@@ -49,7 +62,6 @@ public class GWTRouter extends Router {
         }
     };
 
-    private final AsyncCallback<Void> connectCallback;
     private final CommsServiceAsync commsService = GWT.create(CommsService.class);
 
     /**
@@ -58,25 +70,23 @@ public class GWTRouter extends Router {
      * @throws com.intuso.housemate.api.HousemateException
      *          if an error occurs creating the comms instance
      */
-    protected GWTRouter(Log log, AsyncCallback<Void> connectCallback) {
-        super(log);
-        this.connectCallback = connectCallback;
+    @Inject
+    public GWTRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties) {
+        super(log, listenersFactory, properties);
     }
 
     @Override
     public void connect() {
-        setRouterStatus(Status.Connecting);
+        setServerConnectionStatus(ServerConnectionStatus.Connecting);
         commsService.connectClient(new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable throwable) {
-                setRouterStatus(Status.Disconnected);
-                connectCallback.onFailure(throwable);
+                setServerConnectionStatus(ServerConnectionStatus.Disconnected);
             }
 
             @Override
             public void onSuccess(Void aVoid) {
-                setRouterStatus(Status.ConnectedToRouter);
-                connectCallback.onSuccess(aVoid);
+                setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
                 // start getting messages
                 requestMessages();
             }
@@ -85,7 +95,7 @@ public class GWTRouter extends Router {
 
     @Override
     public void disconnect() {
-        setRouterStatus(Status.Disconnected);
+        setServerConnectionStatus(ServerConnectionStatus.Disconnected);
         commsService.disconnectClient(new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable caught) {

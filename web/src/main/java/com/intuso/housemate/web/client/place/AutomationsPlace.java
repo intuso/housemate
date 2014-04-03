@@ -76,6 +76,6 @@ public class AutomationsPlace extends HousematePlace {
 
     @Override
     protected HousemateView getView() {
-        return Housemate.FACTORY.getAutomationsView();
+        return Housemate.INJECTOR.getAutomationsView();
     }
 }

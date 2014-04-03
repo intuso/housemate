@@ -29,28 +29,30 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
 
     @Override
     public Message<Message.Payload>[] getMessages(int num, long timeout) throws NotConnectedException {
-        GWTClientEndpoint endpoint = getEndpoint();
-        if(endpoint == null)
-            throw new NotConnectedException();
-        List<Message> result = endpoint.getMessages(num, timeout);
+        List<Message> result = getEndpoint().getMessages(num, timeout);
         return result.toArray(new Message[result.size()]);
     }
 
     @Override
-    public void sendMessageToServer(Message<Message.Payload> message) {
+    public void sendMessageToServer(Message<Message.Payload> message) throws NotConnectedException {
         getEndpoint().sendMessage(message);
     }
 
-    private GWTClientEndpoint getEndpoint() {
-        return (GWTClientEndpoint)this.getThreadLocalRequest().getSession().getAttribute(ATT_NAME);
+    private GWTClientEndpoint getEndpoint() throws NotConnectedException {
+        if(getThreadLocalRequest().getSession().getAttribute(ATT_NAME) != null
+                && getThreadLocalRequest().getSession().getAttribute(ATT_NAME) instanceof GWTClientEndpoint)
+            return (GWTClientEndpoint)getThreadLocalRequest().getSession().getAttribute(ATT_NAME);
+        throw new NotConnectedException();
     }
 
     private void createNewEndpoint() {
-        GWTClientEndpoint endpoint = getEndpoint();
-        if(endpoint != null)
-            endpoint.disconnect();
-        this.getThreadLocalRequest().getSession().setAttribute(ATT_NAME, new GWTClientEndpoint(
-                ContextListener.INJECTOR.getInstance(Router.class)));
+        try {
+            getEndpoint().disconnect();
+        // don't care if it didn't exist
+        } catch (NotConnectedException e) {}
+        this.getThreadLocalRequest().getSession().setAttribute(ATT_NAME,
+                new GWTClientEndpoint(
+                        ContextListener.INJECTOR.getInstance(Router.class)));
     }
 
     private void removeEndpoint() {

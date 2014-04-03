@@ -39,7 +39,12 @@ public class CommandPopup extends Composite implements CommandListener<GWTProxyC
     }
 
     @Override
-    public void commandStarted(GWTProxyCommand command) {
+    public void commandEnabled(GWTProxyCommand command, boolean enabled) {
+        // do nothing
+    }
+
+    @Override
+    public void commandStarted(GWTProxyCommand command, String user) {
         // do nothing
     }
 

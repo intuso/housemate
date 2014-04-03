@@ -80,18 +80,33 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
     protected void onAttach() {
         super.onAttach();
         if(!created) {
-            create(id, this);
+            create(this);
             created = true;
         }
     }
 
-    private native void create(String id, ToggleSwitch toggleSwitch) /*-{
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        if(created)
+            destroy(this);
+    }
+
+    private native void create(ToggleSwitch toggleSwitch) /*-{
         $wnd.$(function() {
+            var id = toggleSwitch.@com.intuso.housemate.web.client.bootstrap.extensions.ToggleSwitch::id;
             var div = $wnd.$('#' + id);
             div.bootstrapSwitch();
             div.on('switch-change', function (e, data) {
                 toggleSwitch.@com.intuso.housemate.web.client.bootstrap.extensions.ToggleSwitch::valueChanged()();
             });
+        });
+    }-*/;
+
+    private native void destroy(ToggleSwitch toggleSwitch) /*-{
+        $wnd.$(function() {
+            var id = toggleSwitch.@com.intuso.housemate.web.client.bootstrap.extensions.ToggleSwitch::id;
+            $wnd.$('#' + id).bootstrapSwitch('destroy');
         });
     }-*/;
 
@@ -109,13 +124,16 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
         divElem.setAttribute(ATTR_ANIMATED, Boolean.toString(animated));
     }
 
-    @Override
     public void setEnabled(boolean enabled) {
-        if(enabled)
-            inputElem.removeAttribute(ATTR_DISABLED);
-        else
-            inputElem.setAttribute(ATTR_DISABLED, "");
+        setEnabled(this, enabled);
     }
+
+    private native void setEnabled(ToggleSwitch toggleSwitch, boolean enabled) /*-{
+        $wnd.$(function() {
+            var id = toggleSwitch.@com.intuso.housemate.web.client.bootstrap.extensions.ToggleSwitch::id;
+            $wnd.$('#' + id).bootstrapSwitch('setActive', enabled);
+        })
+    }-*/;
 
     public void setOnLabel(String label) {
         divElem.setAttribute(ATTR_ON_LABEL, label);
@@ -162,19 +180,20 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
         }
 
         Boolean oldValue = getValue();
+        if (value.equals(oldValue))
+            return;
+
         inputElem.setChecked(value);
         inputElem.setDefaultChecked(value);
-        setState(id, value);
-        if (value.equals(oldValue)) {
-            return;
-        }
+        setState(this, value);
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
     }
 
-    private native void setState(String id, boolean value) /*-{
+    private native void setState(ToggleSwitch toggleSwitch, boolean value) /*-{
         $wnd.$(function() {
+            var id = toggleSwitch.@com.intuso.housemate.web.client.bootstrap.extensions.ToggleSwitch::id;
             $wnd.$('#' + id).bootstrapSwitch('setState', value);
         });
     }-*/;

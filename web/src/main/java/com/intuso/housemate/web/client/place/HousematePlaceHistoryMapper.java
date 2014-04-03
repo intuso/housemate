@@ -8,7 +8,6 @@ import com.google.gwt.place.shared.WithTokenizers;
 @WithTokenizers({
         DevicesPlace.Tokeniser.class,
         AutomationsPlace.Tokeniser.class,
-        UsersPlace.Tokeniser.class
-})
-public interface HousematePlaceHistoryMapper extends PlaceHistoryMapper {
-}
+        UsersPlace.Tokeniser.class,
+        ApplicationsPlace.Tokeniser.class})
+public interface HousematePlaceHistoryMapper extends PlaceHistoryMapper {}

@@ -68,7 +68,7 @@ public class LoginPopup extends Composite implements LoginView {
     protected void submitLogin() {
         username.setEnabled(false);
         password.setEnabled(false);
-        Housemate.FACTORY.getEventBus().fireEvent(new CredentialsSubmittedEvent(username.getText(), password.getText()));
+        Housemate.INJECTOR.getEventBus().fireEvent(new CredentialsSubmittedEvent(username.getText(), password.getText()));
     }
 
     private static native void click(Element submitButton)

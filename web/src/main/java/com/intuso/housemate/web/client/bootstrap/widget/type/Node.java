@@ -13,10 +13,16 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.intuso.housemate.api.object.ChildOverview;
+import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.object.proxy.AvailableChildrenListener;
+import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.event.ObjectSelectedEvent;
 import com.intuso.housemate.web.client.handler.HasObjectSelectedHandlers;
 import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
+import com.intuso.utilities.object.BaseObject;
+import com.intuso.utilities.object.ObjectListener;
 
 import java.util.Map;
 
@@ -28,7 +34,10 @@ import java.util.Map;
 * To change this template use File | Settings | File Templates.
 */
 public class Node extends Composite
-        implements HasObjectSelectedHandlers, ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?>> {
+        implements HasObjectSelectedHandlers,
+            ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?>>,
+            ObjectListener<ProxyObject<?, ?, ?, ?, ?>>,
+            AvailableChildrenListener<ProxyObject<?, ?, ?, ?, ?>> {
 
     interface ObjectNodeUiBinder extends UiBinder<FlowPanel, Node> {
     }
@@ -52,9 +61,12 @@ public class Node extends Composite
     protected FlowPanel children;
 
     private final Node root;
-    private final ProxyObject<?, ?, ?, ?, ?> object;
+    private ProxyObject<?, ?, ?, ?, ?> object;
+    private ProxyObject<?, ?, ?, ?, ?> parent;
+    private ChildOverview childOverview;
 
     private final Map<String, Node> childNodes = Maps.newHashMap();
+    private final Map<Node, HandlerRegistration> childListeners = Maps.newHashMap();
     private boolean childrenAdded = false;
     private boolean expanded = false;
 
@@ -62,15 +74,29 @@ public class Node extends Composite
         this(null, object);
     }
 
-    private Node(Node root, final ProxyObject<?, ?, ?, ?, ?> object) {
+    private Node(Node root, ProxyObject<?, ?, ?, ?, ?> object) {
 
         this.root = root != null ? root : this;
         this.object = object;
 
+        initView();
+    }
+
+    private Node(Node root, final ProxyObject<?, ?, ?, ?, ?> parent, final ChildOverview childOverview) {
+
+        this.root = root != null ? root : this;
+        this.parent = parent;
+        this.childOverview = childOverview;
+
+        initView();
+    }
+
+    private void initView() {
+
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        heading.setText(object.getName());
-        heading.setTitle(object.getDescription());
+        heading.setText(object != null ? object.getName() : childOverview.getName());
+        heading.setTitle(object != null ? object.getDescription() : childOverview.getDescription());
 
         children.getElement().getStyle().setPaddingLeft(10, com.google.gwt.dom.client.Style.Unit.PX);
 
@@ -82,7 +108,7 @@ public class Node extends Composite
             }
         });
 
-        if(object.getChildren().size() > 0) {
+        if(object == null || object.getChildren().size() > 0) {
             icon.setType(IconType.CHEVRON_RIGHT);
             icon.addDomHandler(new ClickHandler() {
                 @Override
@@ -97,13 +123,25 @@ public class Node extends Composite
     }
 
     private void show(boolean show) {
-        if(!childrenAdded && show) {
+        if(show && !childrenAdded) {
             childrenAdded = true;
-            for(ProxyObject<?, ?, ?, ?, ?> child : object.getChildren()) {
-                Node childNode = new Node(root, child);
-                childNodes.put(child.getId(), childNode);
-                children.add(childNode);
-                childNode.addObjectSelectedHandler(this);
+            if(object != null) {
+                object.addChildListener(this, true, false);
+                object.addAvailableChildrenListener(this, true);
+            } else {
+                parent.load(new LoadManager(new LoadManager.Callback() {
+                    @Override
+                    public void failed(HousemateObject.TreeLoadInfo path) {
+                        // todo show an error
+                    }
+
+                    @Override
+                    public void allLoaded() {
+                        object = parent.getChild(childOverview.getId());
+                        object.addChildListener(Node.this, true, false);
+                        object.addAvailableChildrenListener(Node.this, true);
+                    }
+                }, "treeBrowse loader", new HousemateObject.TreeLoadInfo(childOverview.getId())));
             }
         }
         expanded = show;
@@ -144,5 +182,53 @@ public class Node extends Composite
     @Override
     public void objectSelected(ProxyObject<?, ?, ?, ?, ?> object) {
         fireEvent(new ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?>>(object));
+    }
+
+    @Override
+    public void childObjectAdded(String childId, ProxyObject<?, ?, ?, ?, ?> child) {
+        if(!childNodes.containsKey(child.getId())) {
+            Node childNode = new Node(root, child);
+            childNodes.put(child.getId(), childNode);
+            children.add(childNode);
+            childListeners.put(childNode, childNode.addObjectSelectedHandler(this));
+        }
+    }
+
+    @Override
+    public void childObjectRemoved(String childId, ProxyObject<?, ?, ?, ?, ?> child) {
+        Node childNode = childNodes.get(child.getId());
+        if(childNode != null) {
+            children.remove(childNode);
+            childListeners.get(childNode).removeHandler();
+        }
+    }
+
+    @Override
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
+        // do nothing
+    }
+
+    @Override
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
+        // do nothing
+    }
+
+    @Override
+    public void childAdded(ProxyObject<?, ?, ?, ?, ?> object, ChildOverview childOverview) {
+        if(!childNodes.containsKey(childOverview.getId())) {
+            Node childNode = new Node(root, object, childOverview);
+            childNodes.put(childOverview.getId(), childNode);
+            children.add(childNode);
+            childListeners.put(childNode, childNode.addObjectSelectedHandler(this));
+        }
+    }
+
+    @Override
+    public void childRemoved(ProxyObject<?, ?, ?, ?, ?> object, ChildOverview childOverview) {
+        Node childNode = childNodes.get(childOverview.getId());
+        if(childNode != null) {
+            children.remove(childNode);
+            childListeners.get(childNode).removeHandler();
+        }
     }
 }

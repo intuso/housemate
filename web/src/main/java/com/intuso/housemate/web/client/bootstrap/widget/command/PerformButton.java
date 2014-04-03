@@ -92,7 +92,7 @@ public class PerformButton extends Button implements ClickHandler {
             if(values == null && command.getParameters() != null && command.getParameters().size() > 0) {
                 new CommandPopup(command);
             } else
-                Housemate.FACTORY.getEventBus().fireEvent(
+                Housemate.INJECTOR.getEventBus().fireEvent(
                         new PerformCommandEvent(command, values != null ? values : new TypeInstanceMap()));
         }
     }

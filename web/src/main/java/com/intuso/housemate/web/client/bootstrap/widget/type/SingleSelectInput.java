@@ -56,12 +56,13 @@ public class SingleSelectInput extends Composite implements TypeInput {
 
         // get the selected id, or if not set choose the first one
         String optionId = null;
-        if(typeInstances.get(0).getValue() == null) {
+        if(typeInstances == null || typeInstances.get(0) == null || typeInstances.get(0).getValue() == null) {
             if(options.size() > 0)
                 optionId = options.iterator().next().getId();
         } else
             optionId = typeInstances.get(0).getValue();
-        typeInstances.get(0).setValue(optionId);
+        if(typeInstances != null && typeInstances.get(0) != null)
+            typeInstances.get(0).setValue(optionId);
 
         // highlight the selected option in the list and show it's sub options
         if(optionId != null && options.getChild(optionId) != null) {
@@ -84,6 +85,10 @@ public class SingleSelectInput extends Composite implements TypeInput {
         GWTProxyOption option = options.get(optionId);
         if(option != null && option.getSubTypes() != null) {
             for(GWTProxySubType subType : option.getSubTypes()) {
+                if(typeInstances.get(0) == null)
+                    typeInstances.add(0, new TypeInstance());
+                if(typeInstances.get(0).getChildValues() == null)
+                    typeInstances.add(0, new TypeInstance());
                 if(typeInstances.get(0).getChildValues().get(subType.getId()) == null)
                     typeInstances.get(0).getChildValues().put(subType.getId(), new TypeInstances());
                 TypeInput input = TypeInputList.getInput(subType.getType(), typeInstances.get(0).getChildValues().get(subType.getId()));

@@ -22,7 +22,7 @@ import java.util.List;
 public class DeviceList extends ObjectList<DeviceData, GWTProxyDevice> {
 
     public DeviceList(String title, List<String> filteredIds, boolean includeFiltered) {
-        super(Housemate.ROOT.getDevices(), title, filteredIds, includeFiltered);
+        super(Housemate.INJECTOR.getProxyRoot().getDevices(), title, filteredIds, includeFiltered);
     }
 
     @Override
@@ -31,20 +31,20 @@ public class DeviceList extends ObjectList<DeviceData, GWTProxyDevice> {
             return new Device(object);
         else {
             final SimplePanel panel = new SimplePanel();
-            Housemate.ROOT.getDevices().load(new LoadManager("load-device",
-                    new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))) {
+            Housemate.INJECTOR.getProxyRoot().getDevices().load(new LoadManager(new LoadManager.Callback() {
                 @Override
-                protected void failed(HousemateObject.TreeLoadInfo path) {
+                public void failed(HousemateObject.TreeLoadInfo path) {
                     panel.clear();
                     panel.add(new Label("Failed to load device"));
                 }
 
                 @Override
-                protected void allLoaded() {
+                public void allLoaded() {
                     panel.clear();
-                    panel.add(new Device(Housemate.ROOT.getDevices().get(id)));
+                    panel.add(new Device(Housemate.INJECTOR.getProxyRoot().getDevices().get(id)));
                 }
-            });
+            }, "load-device",
+                    new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
             return panel;
         }
     }

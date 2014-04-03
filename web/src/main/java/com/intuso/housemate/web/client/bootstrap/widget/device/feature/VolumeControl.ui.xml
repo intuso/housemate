@@ -3,8 +3,8 @@
              xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
+        <h:command.PerformButton ui:field="muteButton" icon="VOLUME_OFF"/>
         <b:ButtonGroup>
-            <h:command.PerformButton ui:field="muteButton" icon="VOLUME_OFF"/>
             <h:command.PerformButton ui:field="downButton" icon="VOLUME_DOWN"/>
             <h:command.PerformButton ui:field="upButton" icon="VOLUME_UP"/>
         </b:ButtonGroup>

@@ -4,9 +4,9 @@ import com.intuso.housemate.web.client.place.AutomationsPlace;
 
 /**
  */
-public class AutomationActivity extends HousemateActivity<AutomationsPlace> {
+public class AutomationsActivity extends HousemateActivity<AutomationsPlace> {
 
-    protected AutomationActivity(AutomationsPlace place) {
+    protected AutomationsActivity(AutomationsPlace place) {
         super(place);
     }
 }

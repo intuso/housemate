@@ -4,9 +4,9 @@ import com.intuso.housemate.web.client.place.DevicesPlace;
 
 /**
  */
-public class DeviceActivity extends HousemateActivity<DevicesPlace> {
+public class DevicesActivity extends HousemateActivity<DevicesPlace> {
 
-    protected DeviceActivity(DevicesPlace place) {
+    protected DevicesActivity(DevicesPlace place) {
         super(place);
     }
 }

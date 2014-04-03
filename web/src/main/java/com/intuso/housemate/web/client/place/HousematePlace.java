@@ -64,20 +64,19 @@ public abstract class HousematePlace extends Place {
     }
 
     public final void loadData(final AcceptsOneWidget acceptsOneWidget) {
-        Housemate.ROOT.load(new LoadManager("web", createTreeLoadInfos()) {
+        Housemate.INJECTOR.getProxyRoot().load(new LoadManager(new LoadManager.Callback() {
             @Override
-            protected void failed(HousemateObject.TreeLoadInfo path) {
+            public void failed(HousemateObject.TreeLoadInfo path) {
                 // todo notify someone/thing
-                acceptsOneWidget.setWidget(getView());
             }
 
             @Override
-            protected void allLoaded() {
+            public void allLoaded() {
                 HousemateView view = getView();
                 view.newPlace(HousematePlace.this);
                 acceptsOneWidget.setWidget(view);
             }
-        });
+        }, "web", createTreeLoadInfos()));
     }
 
     protected abstract List<HousemateObject.TreeLoadInfo> createTreeLoadInfos();

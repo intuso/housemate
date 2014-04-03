@@ -17,6 +17,8 @@ public abstract class TypeInputList<DATA extends HousemateData<?>, OBJECT extend
 
     public TypeInputList(GWTProxyList<DATA, OBJECT> list, TypeInstances typeInstances) {
         super(list, null, null, true);
+        while(typeInstances.size() > 0 && typeInstances.get(0) == null)
+            typeInstances.remove(0);
         if(typeInstances.size() == 0)
             typeInstances.add(new TypeInstance());
         typeInstanceMap = typeInstances.get(0).getChildValues();

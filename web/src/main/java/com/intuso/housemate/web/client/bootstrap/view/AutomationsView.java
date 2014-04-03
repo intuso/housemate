@@ -4,13 +4,15 @@ import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.common.collect.Lists;
+import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.intuso.housemate.web.client.Housemate;
+import com.google.inject.Inject;
 import com.intuso.housemate.web.client.bootstrap.widget.automation.AutomationList;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.handler.MultiListSelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
+import com.intuso.housemate.web.client.object.GWTProxyRoot;
 import com.intuso.housemate.web.client.place.AutomationsPlace;
 
 import java.util.List;
@@ -25,12 +27,16 @@ import java.util.Set;
  */
 public class AutomationsView extends FlowPanel
         implements com.intuso.housemate.web.client.ui.view.AutomationsView, SelectedIdsChangedHandler {
-    
+
+    private final PlaceHistoryMapper placeHistoryMapper;
     private final AutomationList favouritesList;
     private final AutomationList allList;
     private final MultiListSelectedIdsChangedHandler selectedIdsChangedHandler;
-    
-    public AutomationsView() {
+
+    @Inject
+    public AutomationsView(PlaceHistoryMapper placeHistoryMapper, GWTProxyRoot root) {
+
+        this.placeHistoryMapper = placeHistoryMapper;
 
         selectedIdsChangedHandler = new MultiListSelectedIdsChangedHandler(this);
 
@@ -42,14 +48,14 @@ public class AutomationsView extends FlowPanel
         
         add(favouritesList);
         add(allList);
-        Button addButton = new PerformButton(Housemate.ROOT.getAddAutomationCommand(), IconType.PLUS);
+        Button addButton = new PerformButton(root.getAddAutomationCommand(), IconType.PLUS);
         addButton.setSize(ButtonSize.SMALL);
         add(addButton);
     }
 
     @Override
     public void selectedIdsChanged(Set<String> ids) {
-        History.newItem(Housemate.FACTORY.getPlaceHistoryMapper().getToken(new AutomationsPlace(ids)), false);
+        History.newItem(placeHistoryMapper.getToken(new AutomationsPlace(ids)), false);
     }
 
     @Override

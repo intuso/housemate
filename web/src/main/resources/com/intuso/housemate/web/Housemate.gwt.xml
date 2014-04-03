@@ -12,6 +12,9 @@
     <inherits name='com.github.gwtbootstrap.Bootstrap'/>
     <set-property name="bootstrap.responsiveDesign" value="true"/>
 
+    <!-- Gin -->
+    <inherits name="com.google.gwt.inject.Inject"/>
+
     <!-- Housemate lib                                              -->
     <inherits name='com.intuso.housemate.object.Proxy'/>
 
@@ -20,11 +23,6 @@
 
     <!-- Specify the app entry point class.                         -->
     <entry-point class='com.intuso.housemate.web.client.Housemate'/>
-
-    <!-- specify the implementation of ClientFactory to use -->
-    <replace-with class="com.intuso.housemate.web.client.bootstrap.BootstrapClientFactory">
-        <when-type-is class="com.intuso.housemate.web.client.ClientFactory"/>
-    </replace-with>
 
     <!-- Bootstrap customisation -->
     <source path='resources'/>

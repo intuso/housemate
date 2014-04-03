@@ -33,7 +33,7 @@ public class GWTClientEndpoint implements Receiver, Sender {
 
     public void disconnect() {
         q.clear();
-        registration.remove();
+        registration.unregister();
     }
 
     @Override
@@ -50,22 +50,17 @@ public class GWTClientEndpoint implements Receiver, Sender {
         List<Message> result = new ArrayList<Message>();
         q.drainTo(result, max);
         
-        // if there are any, return now
-        if(result.size() > 0)
-            return result;
-        
-        // otherwise wait for one
-        try {
-            Message message = q.poll(timeout, TimeUnit.MILLISECONDS);
-
-            // if we got one, add it to the result
-            if(message != null)
-                result.add(message);
-
-            // return the result
-            return result;
-        } catch(InterruptedException e) {
-            return result;
+        // if there aren't any, wait for one
+        if(result.size() == 0) {
+            try {
+                Message<?> message = q.poll(timeout, TimeUnit.MILLISECONDS);
+                if(message != null)
+                    result.add(message);
+                // don't care, just means we didn't receive a message before the timeout so we return an empty list
+            } catch(InterruptedException e) {}
         }
+
+        // return whatever we have
+        return result;
     }
 }

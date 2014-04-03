@@ -1,8 +1,11 @@
 package com.intuso.housemate.web.client.object;
 
 import com.google.inject.Inject;
+import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
+import com.intuso.housemate.api.object.application.ApplicationData;
+import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.automation.AutomationFactory;
 import com.intuso.housemate.api.object.command.CommandData;
@@ -33,110 +36,99 @@ import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.utilities.log.Log;
 
 /**
- */
-public class GWTProxyFactory {
+* Created with IntelliJ IDEA.
+* User: tomc
+* Date: 14/01/14
+* Time: 18:47
+* To change this template use File | Settings | File Templates.
+*/
+public class GWTProxyFactory implements HousemateObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> {
 
-    public static class All implements HousemateObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> {
+    private final Log log;
+    private final HousemateObjectFactory<ApplicationData, GWTProxyApplication> applicationFactory;
+    private final HousemateObjectFactory<ApplicationInstanceData, GWTProxyApplicationInstance> applicationInstanceFactory;
+    private final HousemateObjectFactory<AutomationData, GWTProxyAutomation> automationFactory;
+    private final HousemateObjectFactory<CommandData, GWTProxyCommand> commandFactory;
+    private final HousemateObjectFactory<ConditionData, GWTProxyCondition> conditionFactory;
+    private final HousemateObjectFactory<DeviceData, GWTProxyDevice> deviceFactory;
+    private final HousemateObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory;
+    private final HousemateObjectFactory<OptionData, GWTProxyOption> optionFactory;
+    private final HousemateObjectFactory<ParameterData, GWTProxyParameter> parameterFactory;
+    private final HousemateObjectFactory<PropertyData, GWTProxyProperty> propertyFactory;
+    private final HousemateObjectFactory<SubTypeData, GWTProxySubType> subTypeFactory;
+    private final HousemateObjectFactory<TaskData,GWTProxyTask> taskFactory;
+    private final HousemateObjectFactory<TypeData<HousemateData<?>>, GWTProxyType> typeFactory;
+    private final HousemateObjectFactory<UserData, GWTProxyUser> userFactory;
+    private final HousemateObjectFactory<ValueData, GWTProxyValue> valueFactory;
 
-        private final Log log;
-        private final Automation automationFactory;
-        private final Command commandFactory;
-        private final Condition conditionFactory;
-        private final Device deviceFactory;
-        private final GenericList listFactory;
-        private final Option optionFactory;
-        private final Parameter parameterFactory;
-        private final Property propertyFactory;
-        private final SubType subTypeFactory;
-        private final Task taskFactory;
-        private final Type typeFactory;
-        private final User userFactory;
-        private final Value valueFactory;
-
-        @Inject
-        public All(Log log, Automation automationFactory, Command commandFactory, Condition conditionFactory,
-                   Device deviceFactory, GenericList listFactory, Option optionFactory, Parameter parameterFactory,
-                   Property propertyFactory, SubType subTypeFactory, Task taskFactory, Type typeFactory,
-                   User userFactory, Value valueFactory) {
-            this.log = log;
-            this.automationFactory = automationFactory;
-            this.commandFactory = commandFactory;
-            this.conditionFactory = conditionFactory;
-            this.deviceFactory = deviceFactory;
-            this.listFactory = listFactory;
-            this.optionFactory = optionFactory;
-            this.parameterFactory = parameterFactory;
-            this.propertyFactory = propertyFactory;
-            this.subTypeFactory = subTypeFactory;
-            this.taskFactory = taskFactory;
-            this.typeFactory = typeFactory;
-            this.userFactory = userFactory;
-            this.valueFactory = valueFactory;
-        }
-
-        @Override
-        public ProxyObject<?, ?, ?, ?, ?> create(HousemateData<?> data) {
-            if(data instanceof ParameterData)
-                return parameterFactory.create((ParameterData) data);
-            else if(data instanceof CommandData)
-                return commandFactory.create((CommandData) data);
-            else if(data instanceof ConditionData)
-                return conditionFactory.create((ConditionData) data);
-            else if(data instanceof UserData)
-                return userFactory.create((UserData) data);
-            else if(data instanceof TaskData)
-                return taskFactory.create((TaskData) data);
-            else if(data instanceof DeviceData)
-                return deviceFactory.create((DeviceData) data);
-            else if(data instanceof ListData)
-                return listFactory.create((ListData<HousemateData<?>>) data);
-            else if(data instanceof OptionData)
-                return optionFactory.create((OptionData) data);
-            else if(data instanceof PropertyData)
-                return propertyFactory.create((PropertyData) data);
-            else if(data instanceof AutomationData)
-                return automationFactory.create((AutomationData) data);
-            else if(data instanceof SubTypeData)
-                return subTypeFactory.create((SubTypeData) data);
-            else if(data instanceof TypeData)
-                return typeFactory.create((TypeData) data);
-            else if(data instanceof ValueData)
-                return valueFactory.create((ValueData) data);
-            log.w("Don't know how to create an object from " + data.getClass().getName());
-            return null;
-        }
+    @Inject
+    public GWTProxyFactory(Log log,
+                           HousemateObjectFactory<ApplicationData, GWTProxyApplication> applicationFactory,
+                           HousemateObjectFactory<ApplicationInstanceData, GWTProxyApplicationInstance> applicationInstanceFactory,
+                           HousemateObjectFactory<AutomationData, GWTProxyAutomation> automationFactory,
+                           HousemateObjectFactory<CommandData, GWTProxyCommand> commandFactory,
+                           HousemateObjectFactory<ConditionData, GWTProxyCondition> conditionFactory,
+                           HousemateObjectFactory<DeviceData, GWTProxyDevice> deviceFactory,
+                           HousemateObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory,
+                           HousemateObjectFactory<OptionData, GWTProxyOption> optionFactory,
+                           HousemateObjectFactory<ParameterData, GWTProxyParameter> parameterFactory,
+                           HousemateObjectFactory<PropertyData, GWTProxyProperty> propertyFactory,
+                           HousemateObjectFactory<SubTypeData, GWTProxySubType> subTypeFactory,
+                           HousemateObjectFactory<TaskData,GWTProxyTask> taskFactory,
+                           HousemateObjectFactory<TypeData<HousemateData<?>>, GWTProxyType> typeFactory,
+                           HousemateObjectFactory<UserData, GWTProxyUser> userFactory,
+                           HousemateObjectFactory<ValueData, GWTProxyValue> valueFactory) {
+        this.log = log;
+        this.applicationFactory = applicationFactory;
+        this.applicationInstanceFactory = applicationInstanceFactory;
+        this.automationFactory = automationFactory;
+        this.commandFactory = commandFactory;
+        this.conditionFactory = conditionFactory;
+        this.deviceFactory = deviceFactory;
+        this.listFactory = listFactory;
+        this.optionFactory = optionFactory;
+        this.parameterFactory = parameterFactory;
+        this.propertyFactory = propertyFactory;
+        this.subTypeFactory = subTypeFactory;
+        this.taskFactory = taskFactory;
+        this.typeFactory = typeFactory;
+        this.userFactory = userFactory;
+        this.valueFactory = valueFactory;
     }
 
-    public interface Automation extends AutomationFactory<GWTProxyAutomation> {}
-
-    public interface Command extends CommandFactory<GWTProxyCommand> {}
-
-    public interface Condition extends ConditionFactory<GWTProxyCondition> {}
-
-    public interface Device extends DeviceFactory<GWTProxyDevice> {}
-
-    public interface GenericList extends ListFactory<HousemateData<?>,
-            ProxyObject<?, ?, ?, ?, ?>,
-            GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> {}
-
-    public interface List<
-            SWBL extends HousemateData<?>,
-            SWR extends ProxyObject<? extends SWBL, ?, ?, ?, ?>>
-            extends ListFactory<SWBL, SWR, GWTProxyList<SWBL, SWR>> {}
-
-    public interface Option extends OptionFactory<GWTProxyOption> {}
-
-    public interface Parameter extends ParameterFactory<GWTProxyParameter> {}
-
-    public interface Property extends PropertyFactory<GWTProxyProperty> {}
-
-    public interface SubType extends SubTypeFactory<GWTProxySubType> {}
-
-    public interface Task extends TaskFactory<GWTProxyTask> {}
-
-    public interface Type extends TypeFactory<GWTProxyType> {}
-
-    public interface User extends UserFactory<GWTProxyUser> {}
-
-    public interface Value extends ValueFactory<GWTProxyValue> {}
+    @Override
+    public ProxyObject<?, ?, ?, ?, ?> create(HousemateData<?> data) {
+        if(data instanceof ParameterData)
+            return parameterFactory.create((ParameterData) data);
+        else if(data instanceof CommandData)
+            return commandFactory.create((CommandData) data);
+        else if(data instanceof ConditionData)
+            return conditionFactory.create((ConditionData) data);
+        else if(data instanceof ApplicationData)
+            return applicationFactory.create((ApplicationData) data);
+        else if(data instanceof ApplicationInstanceData)
+            return applicationInstanceFactory.create((ApplicationInstanceData) data);
+        else if(data instanceof UserData)
+            return userFactory.create((UserData) data);
+        else if(data instanceof TaskData)
+            return taskFactory.create((TaskData) data);
+        else if(data instanceof DeviceData)
+            return deviceFactory.create((DeviceData) data);
+        else if(data instanceof ListData)
+            return listFactory.create((ListData<HousemateData<?>>) data);
+        else if(data instanceof OptionData)
+            return optionFactory.create((OptionData) data);
+        else if(data instanceof PropertyData)
+            return propertyFactory.create((PropertyData) data);
+        else if(data instanceof AutomationData)
+            return automationFactory.create((AutomationData) data);
+        else if(data instanceof SubTypeData)
+            return subTypeFactory.create((SubTypeData) data);
+        else if(data instanceof TypeData)
+            return typeFactory.create((TypeData) data);
+        else if(data instanceof ValueData)
+            return valueFactory.create((ValueData) data);
+        log.w("Don't know how to create an object from " + data.getClass().getName());
+        return null;
+    }
 }

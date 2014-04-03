@@ -6,7 +6,9 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.extensions.ToggleSwitch;
+import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
@@ -72,7 +74,7 @@ public class StatefulPowerControl
     }
 
     public class StatefulPowerControlWidget extends ToggleSwitch
-            implements ValueListener<GWTProxyValue>,CommandListener<GWTProxyCommand>,ValueChangeHandler<Boolean> {
+            implements ValueListener<GWTProxyValue>, CommandListener<GWTProxyCommand>,ValueChangeHandler<Boolean> {
 
         private StatefulPowerControlWidget() {
 
@@ -82,8 +84,13 @@ public class StatefulPowerControl
             GWTProxyValue isOn = getIsOnValue();
             if(isOn != null)
                 isOn.addObjectListener(this);
-
             setValue(isOn());
+
+            if(getOnCommand() != null && getOffCommand() != null) {
+                getOnCommand().addObjectListener(this);
+                getOffCommand().addObjectListener(this);
+                commandEnabled(/* args not used so can be anything */ null, false);
+            }
 
             addValueChangeHandler(this);
         }
@@ -100,7 +107,12 @@ public class StatefulPowerControl
         }
 
         @Override
-        public void commandStarted(GWTProxyCommand command) {
+        public void commandEnabled(GWTProxyCommand command, boolean enabled) {
+            setEnabled(getOnCommand().isEnabled() && getOffCommand().isEnabled());
+        }
+
+        @Override
+        public void commandStarted(GWTProxyCommand command, String user) {
             // do nothing
         }
 
@@ -112,16 +124,12 @@ public class StatefulPowerControl
         @Override
         public void commandFailed(GWTProxyCommand command, String error) {
             setEnabled(true);
-            // todo notify the failure
         }
 
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
             setEnabled(false);
-            if(event.getValue())
-                getOnCommand().perform(this);
-            else
-                getOffCommand().perform(this);
+            Housemate.INJECTOR.getEventBus().fireEvent(new PerformCommandEvent(event.getValue() ? getOnCommand() : getOffCommand(), null));
         }
     }
 }

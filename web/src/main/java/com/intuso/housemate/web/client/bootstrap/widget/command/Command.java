@@ -10,14 +10,14 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.intuso.housemate.api.object.command.CommandListener;
+import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.bootstrap.widget.type.ParameterInputList;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 
 /**
  */
-public class Command extends Composite implements CommandListener<GWTProxyCommand> {
+public class Command extends Composite implements CommandPerformListener<GWTProxyCommand> {
 
     interface CommandUiBinder extends UiBinder<FlowPanel, Command> {}
 

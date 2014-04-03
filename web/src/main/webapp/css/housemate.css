@@ -4,6 +4,12 @@
     }
 }
 
+@media(min-width: 980px) {
+    .modal {
+        margin-top: 0 !important;
+    }
+}
+
 body {
     color: #800090 !important;
 }

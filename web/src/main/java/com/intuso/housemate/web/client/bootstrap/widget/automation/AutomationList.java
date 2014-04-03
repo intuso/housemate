@@ -22,7 +22,7 @@ import java.util.List;
 public class AutomationList extends ObjectList<AutomationData, GWTProxyAutomation> {
     
     public AutomationList(String title, List<String> filteredIds, boolean includeFiltered) {
-        super(Housemate.ROOT.getAutomations(), title, filteredIds, includeFiltered);
+        super(Housemate.INJECTOR.getProxyRoot().getAutomations(), title, filteredIds, includeFiltered);
     }
 
     @Override
@@ -31,19 +31,19 @@ public class AutomationList extends ObjectList<AutomationData, GWTProxyAutomatio
             return new Automation(object);
         else {
             final SimplePanel panel = new SimplePanel();
-            Housemate.ROOT.getAutomations().load(new LoadManager("load-automation",
-                    new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))) {
+            Housemate.INJECTOR.getProxyRoot().getAutomations().load(new LoadManager(new LoadManager.Callback() {
                 @Override
-                protected void failed(HousemateObject.TreeLoadInfo path) {
+                public void failed(HousemateObject.TreeLoadInfo path) {
                     panel.remove(panel.getWidget());
                     panel.add(new Label("Failed to load automation"));
                 }
 
                 @Override
-                protected void allLoaded() {
-                    panel.add(new Automation(Housemate.ROOT.getAutomations().get(id)));
+                public void allLoaded() {
+                    panel.add(new Automation(Housemate.INJECTOR.getProxyRoot().getAutomations().get(id)));
                 }
-            });
+            }, "load-automation",
+                    new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
             return panel;
         }
     }

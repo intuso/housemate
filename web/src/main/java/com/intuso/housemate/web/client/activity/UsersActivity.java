@@ -4,9 +4,9 @@ import com.intuso.housemate.web.client.place.UsersPlace;
 
 /**
  */
-public class UserActivity extends HousemateActivity<UsersPlace> {
+public class UsersActivity extends HousemateActivity<UsersPlace> {
 
-    protected UserActivity(UsersPlace place) {
+    protected UsersActivity(UsersPlace place) {
         super(place);
     }
 }

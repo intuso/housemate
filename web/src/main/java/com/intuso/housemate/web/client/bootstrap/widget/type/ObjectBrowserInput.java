@@ -21,7 +21,7 @@ public class ObjectBrowserInput extends FlowPanel implements TypeInput {
         if(typeInstances.size() == 0)
             typeInstances.add(new TypeInstance());
 
-        rootNode = new Node(Housemate.ROOT);
+        rootNode = new Node(Housemate.INJECTOR.getProxyRoot());
         rootNode.addObjectSelectedHandler(new ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?>>() {
             @Override
             public void objectSelected(ProxyObject<?, ?, ?, ?, ?> object) {
@@ -31,7 +31,7 @@ public class ObjectBrowserInput extends FlowPanel implements TypeInput {
         add(rootNode);
         if(typeInstances.getFirstValue() != null) {
             HousemateObject<?, ?, ?, ?> object =
-                    HousemateObject.getChild(Housemate.ROOT,
+                    HousemateObject.getChild(Housemate.INJECTOR.getProxyRoot(),
                     typeInstances.getFirstValue().split("/"), 1);
             if(object instanceof ProxyObject)
                 rootNode.showObject((ProxyObject<?, ?, ?, ?, ?>) object);

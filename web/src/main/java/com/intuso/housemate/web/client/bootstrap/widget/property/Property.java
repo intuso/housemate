@@ -53,6 +53,6 @@ public class Property extends Composite {
 
     @UiHandler("updateButton")
     protected void onPerform(ClickEvent event) {
-        Housemate.FACTORY.getEventBus().fireEvent(new PerformCommandEvent(property.getSetCommand(), values));
+        Housemate.INJECTOR.getEventBus().fireEvent(new PerformCommandEvent(property.getSetCommand(), values));
     }
 }

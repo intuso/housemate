@@ -22,7 +22,7 @@ import java.util.List;
 public class UserList extends ObjectList<UserData, GWTProxyUser> {
 
     public UserList(String title, List<String> filteredIds, boolean includeFiltered) {
-        super(Housemate.ROOT.getUsers(), title, filteredIds, includeFiltered);
+        super(Housemate.INJECTOR.getProxyRoot().getUsers(), title, filteredIds, includeFiltered);
     }
 
     @Override
@@ -31,19 +31,19 @@ public class UserList extends ObjectList<UserData, GWTProxyUser> {
             return new User(object);
         else {
             final SimplePanel panel = new SimplePanel();
-            Housemate.ROOT.getUsers().load(new LoadManager("load-user",
-                    new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))) {
+            Housemate.INJECTOR.getProxyRoot().getUsers().load(new LoadManager(new LoadManager.Callback() {
                 @Override
-                protected void failed(HousemateObject.TreeLoadInfo path) {
+                public void failed(HousemateObject.TreeLoadInfo path) {
                     panel.remove(panel.getWidget());
                     panel.add(new Label("Failed to load user"));
                 }
 
                 @Override
-                protected void allLoaded() {
-                    panel.add(new User(Housemate.ROOT.getUsers().get(id)));
+                public void allLoaded() {
+                    panel.add(new User(Housemate.INJECTOR.getProxyRoot().getUsers().get(id)));
                 }
-            });
+            }, "load-user",
+                    new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
             return panel;
         }
     }
