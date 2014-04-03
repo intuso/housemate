@@ -1,4 +1,4 @@
-package com.intuso.housemate.annotations.plugin;
+package com.intuso.housemate.plugin.api;
 
 import com.intuso.housemate.object.real.RealType;
 

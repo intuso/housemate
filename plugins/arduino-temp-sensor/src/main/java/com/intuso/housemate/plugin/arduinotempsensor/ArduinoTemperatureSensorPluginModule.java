@@ -2,17 +2,18 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.google.inject.Provides;
-import com.intuso.housemate.annotations.plugin.AnnotatedPluginModule;
-import com.intuso.housemate.annotations.plugin.DeviceFactories;
-import com.intuso.housemate.annotations.plugin.PluginInformation;
+import com.intuso.housemate.plugin.api.PluginModule;
+import com.intuso.housemate.plugin.api.Devices;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 
-@PluginInformation(id = "com.intuso.housemate.plugin.arduino-temp-sensor", name = "Arduino Temperature Sensor plugin", description = "Plugin for temperature sensing using an Arduino")
-@DeviceFactories({ArduinoTemperatureSensorFactory.class, ArduinoIndicatorFactory.class})
-public class ArduinoTemperatureSensorPluginModule extends AnnotatedPluginModule {
+@TypeInfo(id = "com.intuso.housemate.plugin.arduino-temp-sensor", name = "Arduino Temperature Sensor plugin", description = "Plugin for temperature sensing using an Arduino")
+@Devices({ArduinoTemperatureSensor.class,
+        ArduinoIndicator.class})
+public class ArduinoTemperatureSensorPluginModule extends PluginModule {
 
     @Inject
     public ArduinoTemperatureSensorPluginModule(Log log) {

@@ -1,9 +1,14 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealValue;
 import com.intuso.housemate.object.real.impl.type.DoubleType;
+import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -18,9 +23,11 @@ import java.io.PipedOutputStream;
 
 /**
  */
+
+@TypeInfo(id = "arduino-temp-sensor", name = "Arduino Temperature Sensor", description = "Arduino Temperature Sensor")
 public class ArduinoTemperatureSensor extends RealDevice {
-    
-    public final RealValue<Double> temperature = DoubleType.createValue(getLog(), "temperature", "Temperature", "The current temperature", 0.0);
+
+    public final RealValue<Double> temperature = DoubleType.createValue(getLog(), getListenersFactory(), "temperature", "Temperature", "The current temperature", 0.0);
     
     private final SerialPort serialPort;
     private final SerialPortEventListener eventListener = new EventListener();
@@ -29,13 +36,12 @@ public class ArduinoTemperatureSensor extends RealDevice {
     private BufferedReader in;
     private LineReader lineReader;
 
-    /**
-     * Create a new device
-     *
-     * @param name the name of the device
-     */
-    protected ArduinoTemperatureSensor(Log log, SerialPort serialPort, String id, String name, String description) throws HousemateException {
-        super(log, id, name, description);
+    @Inject
+    protected ArduinoTemperatureSensor(Log log,
+                                       ListenersFactory listenersFactory,
+                                       @Assisted DeviceData data,
+                                       SerialPort serialPort) {
+        super(log, listenersFactory, data);
         getCustomValueIds().add(temperature.getId());
         getValues().add(temperature);
         this.serialPort = serialPort;

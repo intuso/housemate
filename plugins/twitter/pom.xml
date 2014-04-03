@@ -15,9 +15,16 @@
 	<dependencies>
 		<dependency>
             <groupId>${project.groupId}</groupId>
-			<artifactId>object-proxy</artifactId>
+			<artifactId>object-proxy-simple</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice.version}</version>
+        </dependency>
+
 		<dependency>
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-core</artifactId>

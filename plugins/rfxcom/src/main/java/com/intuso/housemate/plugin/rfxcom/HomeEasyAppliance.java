@@ -1,10 +1,15 @@
 package com.intuso.housemate.plugin.rfxcom;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.impl.device.StatefulPoweredDevice;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
+import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.util.HomeEasy;
 
@@ -15,6 +20,7 @@ import java.util.Arrays;
  * Housemate device that controls a USB relay
  *
  */
+@TypeInfo(id = "home-easy", name = "Home Easy", description = "Remote Home Easy switch")
 public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueListener<RealProperty<?>> {
 
     private HomeEasy homeEasy;
@@ -27,20 +33,19 @@ public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueLis
     /**
      * The number of the relay this device "controls"
      */
-    public final RealProperty<Integer> houseId = IntegerType.createProperty(getLog(), "house-id", "House ID", "HomeEasy house ID (in decimal)", Arrays.asList(0));
+    public final RealProperty<Integer> houseId = IntegerType.createProperty(getLog(), getListenersFactory(), "house-id", "House ID", "HomeEasy house ID (in decimal)", Arrays.asList(0));
 
     /**
      * The number of the relay this device "controls"
      */
-    public final RealProperty<Integer> unitId = IntegerType.createProperty(getLog(), "unit-id", "Unit ID", "HomeEasy unit ID", Arrays.asList(1));
+    public final RealProperty<Integer> unitId = IntegerType.createProperty(getLog(), getListenersFactory(), "unit-id", "Unit ID", "HomeEasy unit ID", Arrays.asList(1));
 
-	/**
-	 * Create a new USB relay device
-	 * @param name the name of the device
-	 * @throws HousemateException
-	 */
-	public HomeEasyAppliance(Log log, HomeEasy homeEasy, String id, String name, String description) throws HousemateException {
-		super(log, id, name, description);
+    @Inject
+	public HomeEasyAppliance(Log log,
+                             ListenersFactory listenersFactory,
+                             @Assisted DeviceData data,
+                             HomeEasy homeEasy) {
+		super(log, listenersFactory, data);
         getCustomPropertyIds().add(houseId.getId());
         getProperties().add(houseId);
         getCustomPropertyIds().add(unitId.getId());

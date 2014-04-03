@@ -4,17 +4,19 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.authentication.UsernamePassword;
-import com.intuso.housemate.api.comms.ConnectionStatus;
+import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
+import com.intuso.housemate.api.comms.ApplicationStatus;
+import com.intuso.housemate.api.comms.ServerConnectionStatus;
+import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyObject;
+import com.intuso.housemate.object.proxy.simple.*;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.api.PropertyRepository;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -30,7 +32,9 @@ import java.util.*;
  * Main class for "tweeting" Housemate events
  */
 public class HousemateTweeter {
-	
+
+    private final static String INSTANCE_ID = "application.instance.id";
+
 	/**
 	 * Key in props file for the user's access key
 	 */
@@ -53,7 +57,10 @@ public class HousemateTweeter {
 
     private final Log log;
 
-    private final Map<SimpleProxyObject.Device, java.util.List<ListenerRegistration>> listeners;
+    private final ApplicationDetails applicationDetails;
+    private final String applicationInstanceId;
+
+    private final Map<SimpleProxyDevice, java.util.List<ListenerRegistration>> listeners;
     private DeviceListListener deviceListListener = new DeviceListListener();
     private DeviceListener deviceListener = new DeviceListener();
 
@@ -62,11 +69,13 @@ public class HousemateTweeter {
 	 * @throws HousemateException
 	 */
 	@Inject
-	public HousemateTweeter(final Log log, final PropertyContainer properties, Injector injector) throws HousemateException {
+	public HousemateTweeter(final Log log, final PropertyRepository properties, Injector injector) throws HousemateException {
 
         this.log = log;
+        this.applicationDetails = new ApplicationDetails(HousemateTweeter.class.getName(), "Housemate Tweeter", "Housemate Tweeter");
+        this.applicationInstanceId = properties.get(INSTANCE_ID);
 
-        listeners = new HashMap<SimpleProxyObject.Device, java.util.List<ListenerRegistration>>();
+        listeners = new HashMap<SimpleProxyDevice, java.util.List<ListenerRegistration>>();
 
 		dateFormat = new SimpleDateFormat("h:mm a");
         DateFormatSymbols dateFormatSymbols = dateFormat.getDateFormatSymbols();
@@ -80,55 +89,85 @@ public class HousemateTweeter {
 		log.d("Loaded token and secret. If these are wrong or no longer valid please delete the file \"" + getTokenCredentialsPropsFile().getAbsolutePath() + "\" to force the addon to get a new token and secret");
 
 		// setup the housemate stuff
-        final SimpleProxyObject.Root root = injector.getInstance(SimpleProxyObject.Root.class);
-        root.addObjectListener(new RootListener<SimpleProxyObject.Root>() {
+        final SimpleProxyRoot root = injector.getInstance(SimpleProxyRoot.class);
+        root.addObjectListener(new RootListener<SimpleProxyRoot>() {
 
             @Override
-            public void connectionStatusChanged(final SimpleProxyObject.Root root, ConnectionStatus status) {
-                switch (status) {
+            public void statusChanged(final SimpleProxyRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+                switch (serverConnectionStatus) {
                     case Disconnected:
                         log.d("Disconnected from server");
-                        break;
+                        tweet("Disconnected from server");
+                        return;
                     case Connecting:
-                        log.d("Reconnecting to server");
+                        log.d("Connected to server");
+                        tweet("Connected to server");
+                        return;
+                    case ConnectedToRouter:
+                        log.d("Connected to router");
+                        tweet("Connected to router");
+                        return;
+                    case ConnectedToServer:
+                        log.d("Connected to server");
+                        tweet("Connected to server");
+                        // don't return in this case, let it drop through to handle the other status(es)
+                }
+                switch (applicationInstanceStatus) {
+                    case Unregistered:
+                        log.d("Application not registered with the server");
+                        tweet("Application not registered with the server");
                         break;
-                    case Unauthenticated:
-                        log.d("Connected to server but not authenticated");
+                    case Rejected:
+                        log.d("Access to the server rejected");
+                        tweet("Access to the server rejected");
                         break;
-                    case Authenticating:
-                        log.d("Authenticating with server");
+                    case Expired:
+                        log.d("Access to the server expired");
+                        tweet("Access to the server expired");
                         break;
-                    case Authenticated:
-                        log.e("Authenticated with server");
-                        root.load(new LoadManager("twitterClient", new HousemateObject.TreeLoadInfo(Root.DEVICES_ID),
-                                new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)) {
+                    case Pending:
+                        log.d("Access to the server pending");
+                        tweet("Access to the server pending");
+                        break;
+                    case Allowed:
+                        log.d("Access to the server allowed");
+                        tweet("Access to the server allowed");
+                        root.load(new LoadManager(new LoadManager.Callback() {
                             @Override
-                            protected void failed(HousemateObject.TreeLoadInfo tl) {
+                            public void failed(HousemateObject.TreeLoadInfo tl) {
                                 tweet("Could not load devices from server. Do you have permission?");
                             }
 
                             @Override
-                            protected void allLoaded() {
+                            public void allLoaded() {
                                 root.getDevices().addObjectListener(deviceListListener, true);
                             }
-                        });
+                        }, "twitterClient",
+                                new HousemateObject.TreeLoadInfo(Root.DEVICES_ID),
+                                new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
                         break;
                 }
             }
 
             @Override
-            public void newServerInstance(SimpleProxyObject.Root root) {
-                tweet("Server instance changed. Reconnecting");
-                root.login(new UsernamePassword(properties.get("username"), properties.get("password"), true));
+            public void newApplicationInstance(SimpleProxyRoot root, String instanceId) {
+                // do nothing
+            }
+
+            @Override
+            public void newServerInstance(SimpleProxyRoot root, String serverId) {
+                log.d("Server instance changed");
+                tweet("Server instance changed");
+                root.register(applicationDetails);
             }
         });
 
-        root.login(new UsernamePassword(properties.get("username"), properties.get("password"), true));
+        root.register(applicationDetails);
 	}
 
 	/**
-	 * Get the file where token authentication is stored
-	 * @return the file where token authentication is stored
+	 * Get the file where oauth token is stored
+	 * @return the file where oauth token is stored
 	 */
 	private File getTokenCredentialsPropsFile() {
 		return new File(System.getProperty("user.home") + File.separator + ".housemate" + File.separator + "twitter_auth");
@@ -206,9 +245,9 @@ public class HousemateTweeter {
 		}
 	}
 
-    private class DeviceListListener implements ListListener<SimpleProxyObject.Device> {
+    private class DeviceListListener implements ListListener<SimpleProxyDevice> {
         @Override
-        public void elementAdded(SimpleProxyObject.Device device) {
+        public void elementAdded(SimpleProxyDevice device) {
             java.util.List<ListenerRegistration> registrations = new ArrayList<ListenerRegistration>();
             listeners.put(device, registrations);
             registrations.add(device.getCommands().addObjectListener(new CommandListListener(device, registrations), true));
@@ -219,7 +258,7 @@ public class HousemateTweeter {
         }
 
         @Override
-        public void elementRemoved(SimpleProxyObject.Device device) {
+        public void elementRemoved(SimpleProxyDevice device) {
             if(listeners.get(device) != null)
                 for(ListenerRegistration registration : listeners.remove(device))
                     registration.removeListener();
@@ -227,151 +266,162 @@ public class HousemateTweeter {
         }
     };
 
-    private class DeviceListener implements com.intuso.housemate.api.object.device.DeviceListener<SimpleProxyObject.Device> {
+    private class DeviceListener implements com.intuso.housemate.api.object.device.DeviceListener<SimpleProxyDevice> {
+
         @Override
-        public void error(SimpleProxyObject.Device device, String description) {
+        public void deviceConnected(SimpleProxyDevice device, boolean connected) {
+            tweet("\"" + device.getName() + "\" device is " + (connected ? "not " : "") + "connected");
+        }
+
+        @Override
+        public void error(SimpleProxyDevice device, String description) {
             tweet("\"" + device.getName() + "\" device " + (description == null ? "not " : "") + "in error" + (description == null ? "" : ": " + description));
         }
 
         @Override
-        public void running(SimpleProxyObject.Device device, boolean running) {
+        public void running(SimpleProxyDevice device, boolean running) {
             tweet("\"" + device.getName() + "\" device is " + (running ? "" : "not ") + "running");
         }
     };
 
-    private class CommandListListener implements ListListener<SimpleProxyObject.Command> {
+    private class CommandListListener implements ListListener<SimpleProxyCommand> {
 
-        private final Map<SimpleProxyObject.Command, ListenerRegistration> commandListenerRegistrations = Maps.newHashMap();
+        private final Map<SimpleProxyCommand, ListenerRegistration> commandListenerRegistrations = Maps.newHashMap();
         private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
         private final CommandListener listener;
 
-        private CommandListListener(SimpleProxyObject.Device device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+        private CommandListListener(SimpleProxyDevice device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new CommandListener(device);
         }
 
         @Override
-        public void elementAdded(SimpleProxyObject.Command element) {
+        public void elementAdded(SimpleProxyCommand element) {
             ListenerRegistration listenerRegistration = element.addObjectListener(listener);
             deviceListenerRegistrations.add(listenerRegistration);
             commandListenerRegistrations.put(element, listenerRegistration);
         }
 
         @Override
-        public void elementRemoved(SimpleProxyObject.Command element) {
+        public void elementRemoved(SimpleProxyCommand element) {
             if(commandListenerRegistrations.get(element) != null)
                 commandListenerRegistrations.remove(element).removeListener();
         }
     }
 
-    private class CommandListener implements com.intuso.housemate.api.object.command.CommandListener<SimpleProxyObject.Command> {
+    private class CommandListener implements com.intuso.housemate.api.object.command.CommandListener<SimpleProxyCommand> {
 
-        private final SimpleProxyObject.Device device;
+        private final SimpleProxyDevice device;
 
-        private CommandListener(SimpleProxyObject.Device device) {
+        private CommandListener(SimpleProxyDevice device) {
             this.device = device;
         }
 
         @Override
-        public void commandStarted(SimpleProxyObject.Command command) {
-            tweet("Performing \"" + device.getName() + "\" command \"" + command.getId() + "\"");
+        public void commandEnabled(SimpleProxyCommand command, boolean enabled) {
+            tweet("\"" + device.getName() + "\" command \"" + command.getName() + (enabled ? "\" enabled" : "\" disabled"));
         }
 
         @Override
-        public void commandFinished(SimpleProxyObject.Command command) {
-            tweet("Finished performing \"" + device.getName() + "\" command \"" + command.getId() + "\"");
+        public void commandStarted(SimpleProxyCommand command, String user) {
+            tweet("\"" + device.getName() + "\" command \"" + command.getName() + "\" started by " + user);
         }
 
         @Override
-        public void commandFailed(SimpleProxyObject.Command command, String reason) {
-            tweet("Failed to perform \"" + device.getName() + "\" command \"" + command.getId() + "\": " + reason);
+        public void commandFinished(SimpleProxyCommand command) {
+            tweet("\"" + device.getName() + "\" command \"" + command.getName() + "\" finished");
+        }
+
+        @Override
+        public void commandFailed(SimpleProxyCommand command, String reason) {
+            tweet("\"" + device.getName() + "\" command \"" + command.getName() + "\" failed: " + reason);
         }
     }
 
-    private class ValueListListener implements ListListener<SimpleProxyObject.Value> {
+    private class ValueListListener implements ListListener<SimpleProxyValue> {
 
-        private final Map<SimpleProxyObject.Value, ListenerRegistration> valueListenerRegistrations = Maps.newHashMap();
+        private final Map<SimpleProxyValue, ListenerRegistration> valueListenerRegistrations = Maps.newHashMap();
         private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
         private final ValueListener listener;
 
-        private ValueListListener(SimpleProxyObject.Device device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+        private ValueListListener(SimpleProxyDevice device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new ValueListener(device);
         }
 
         @Override
-        public void elementAdded(SimpleProxyObject.Value element) {
+        public void elementAdded(SimpleProxyValue element) {
             ListenerRegistration listenerRegistration = element.addObjectListener(listener);
             deviceListenerRegistrations.add(listenerRegistration);
             valueListenerRegistrations.put(element, listenerRegistration);
         }
 
         @Override
-        public void elementRemoved(SimpleProxyObject.Value element) {
+        public void elementRemoved(SimpleProxyValue element) {
             if(valueListenerRegistrations.get(element) != null)
                 valueListenerRegistrations.remove(element).removeListener();
         }
     }
 
-    private class ValueListener implements com.intuso.housemate.api.object.value.ValueListener<SimpleProxyObject.Value> {
+    private class ValueListener implements com.intuso.housemate.api.object.value.ValueListener<SimpleProxyValue> {
 
-        private final SimpleProxyObject.Device device;
+        private final SimpleProxyDevice device;
 
-        private ValueListener(SimpleProxyObject.Device device) {
+        private ValueListener(SimpleProxyDevice device) {
             this.device = device;
         }
 
         @Override
-        public void valueChanging(SimpleProxyObject.Value value) {
+        public void valueChanging(SimpleProxyValue value) {
             // do nothing
         }
 
         @Override
-        public void valueChanged(SimpleProxyObject.Value value) {
+        public void valueChanged(SimpleProxyValue value) {
             tweet("\"" + device.getName() + "\" value \"" + value.getId() + "\" is \"" + value.getTypeInstances() + "\"");
         }
     }
 
-    private class PropertyListListener implements ListListener<SimpleProxyObject.Property> {
+    private class PropertyListListener implements ListListener<SimpleProxyProperty> {
 
-        private final Map<SimpleProxyObject.Property, ListenerRegistration> propertyListenerRegistrations = Maps.newHashMap();
+        private final Map<SimpleProxyProperty, ListenerRegistration> propertyListenerRegistrations = Maps.newHashMap();
         private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
         private final PropertyListener listener;
 
-        private PropertyListListener(SimpleProxyObject.Device device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+        private PropertyListListener(SimpleProxyDevice device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new PropertyListener(device);
         }
 
         @Override
-        public void elementAdded(SimpleProxyObject.Property element) {
+        public void elementAdded(SimpleProxyProperty element) {
             ListenerRegistration listenerRegistration = element.addObjectListener(listener);
             deviceListenerRegistrations.add(listenerRegistration);
             propertyListenerRegistrations.put(element, listenerRegistration);
         }
 
         @Override
-        public void elementRemoved(SimpleProxyObject.Property element) {
+        public void elementRemoved(SimpleProxyProperty element) {
             if(propertyListenerRegistrations.get(element) != null)
                 propertyListenerRegistrations.remove(element).removeListener();
         }
     }
 
-    private class PropertyListener implements com.intuso.housemate.api.object.value.ValueListener<SimpleProxyObject.Property> {
+    private class PropertyListener implements com.intuso.housemate.api.object.value.ValueListener<SimpleProxyProperty> {
 
-        private final SimpleProxyObject.Device device;
+        private final SimpleProxyDevice device;
 
-        private PropertyListener(SimpleProxyObject.Device device) {
+        private PropertyListener(SimpleProxyDevice device) {
             this.device = device;
         }
 
         @Override
-        public void valueChanging(SimpleProxyObject.Property value) {
+        public void valueChanging(SimpleProxyProperty value) {
             // do nothing
         }
 
         @Override
-        public void valueChanged(SimpleProxyObject.Property property) {
+        public void valueChanged(SimpleProxyProperty property) {
             tweet("\"" + device.getName() + "\" property \"" + property.getId() + "\" is now set to \"" + property.getTypeInstances() + "\"");
         }
     }

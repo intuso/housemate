@@ -1,6 +1,4 @@
-package com.intuso.housemate.annotations.plugin;
-
-import com.intuso.housemate.plugin.api.Transformer;
+package com.intuso.housemate.plugin.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

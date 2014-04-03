@@ -3,18 +3,18 @@ package com.intuso.housemate.plugin.rfxcom;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.intuso.housemate.annotations.plugin.AnnotatedPluginModule;
-import com.intuso.housemate.annotations.plugin.DeviceFactories;
-import com.intuso.housemate.annotations.plugin.PluginInformation;
+import com.intuso.housemate.plugin.api.PluginModule;
+import com.intuso.housemate.plugin.api.Devices;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.RFXtrx;
 import com.rfxcom.rfxtrx.util.HomeEasy;
 import gnu.io.CommPortIdentifier;
 
-@PluginInformation(id = "com.intuso.housemate.plugin.rfxcom", name = "RFXCom plugin", description = "Plugin for devices that work using a RFXCom Transceiver")
-@DeviceFactories(HomeEasyApplianceFactory.class)
-public class RFXComPluginModule extends AnnotatedPluginModule {
+@TypeInfo(id = "com.intuso.housemate.plugin.rfxcom", name = "RFXCom plugin", description = "Plugin for devices that work using a RFXCom Transceiver")
+@Devices(HomeEasyAppliance.class)
+public class RFXComPluginModule extends PluginModule {
 
     @Inject
     public RFXComPluginModule(Log log) {

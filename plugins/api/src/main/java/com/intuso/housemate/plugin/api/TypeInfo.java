@@ -1,33 +1,14 @@
 package com.intuso.housemate.plugin.api;
 
-/**
- * Created with IntelliJ IDEA.
- * User: tomc
- * Date: 08/01/14
- * Time: 08:42
- * To change this template use File | Settings | File Templates.
- */
-public class TypeInfo {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    private final String id;
-    private final String name;
-    private final String description;
-
-    public TypeInfo(String id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface TypeInfo {
+    public String id();
+    public String name();
+    public String description();
 }

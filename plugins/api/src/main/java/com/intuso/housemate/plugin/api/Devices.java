@@ -1,6 +1,6 @@
-package com.intuso.housemate.annotations.plugin;
+package com.intuso.housemate.plugin.api;
 
-import com.intuso.housemate.plugin.api.RealDeviceFactory;
+import com.intuso.housemate.object.real.RealDevice;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,11 +12,11 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface DeviceFactories {
+public @interface Devices {
 
     /**
      * The list of the device factories the plugin provides
      * @return the list of the device factories the plugin provides
      */
-    Class<? extends RealDeviceFactory<?>>[] value();
+    Class<? extends RealDevice>[] value();
 }

@@ -1,23 +1,30 @@
 package com.intuso.housemate.plugin.tvremote;
 
-import com.intuso.housemate.annotations.basic.Property;
-import com.intuso.housemate.annotations.plugin.FactoryInformation;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.object.real.annotations.Property;
 import com.intuso.housemate.object.real.device.feature.RealPlaybackControl;
 import com.intuso.housemate.object.real.device.feature.RealVolumeControl;
 import com.intuso.housemate.object.real.impl.device.PoweredDevice;
+import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
 
-@FactoryInformation(id = "tv-remote", name = "TV Remote", description = "TV Remote")
+@TypeInfo(id = "tv-remote", name = "TV Remote", description = "TV Remote")
 public class TVRemote extends PoweredDevice implements RealPlaybackControl, RealVolumeControl {
 
     @Property(id = "remote-name", name = "Remote Name", description = "The name of the remote you want to use", typeId = "string")
     public String remoteName;
 
-    public TVRemote(Log log, String id, String name, String description) {
-        super(log, id, name, description);
+    @Inject
+    public TVRemote(Log log,
+                    ListenersFactory listenersFactory,
+                    @Assisted DeviceData data) {
+        super(log, listenersFactory, data);
         getCustomPropertyIds().add("remote-name");
     }
 

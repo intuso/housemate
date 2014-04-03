@@ -27,7 +27,6 @@
     </properties>
 
     <modules>
-        <module>annotations</module>
         <module>api</module>
         <module>server</module>
         <module>comms</module>
