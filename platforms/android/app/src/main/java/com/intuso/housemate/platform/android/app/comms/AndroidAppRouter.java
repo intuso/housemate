@@ -1,4 +1,4 @@
-package com.intuso.housemate.platform.android.app;
+package com.intuso.housemate.platform.android.app.comms;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,17 +8,16 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
-import com.intuso.housemate.api.HousemateException;
+import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.authentication.FromRouter;
-import com.intuso.housemate.api.comms.ConnectionStatus;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.comms.RouterRootObject;
-import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.platform.android.common.MessageCodes;
 import com.intuso.housemate.platform.android.common.ParcelableMessage;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.properties.api.PropertyRepository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,31 +26,46 @@ import com.intuso.utilities.log.Log;
  * Time: 21:00
  * To change this template use File | Settings | File Templates.
  */
-public class AndroidAppRouter extends Router implements ServiceConnection, RootListener<RouterRootObject> {
+public class AndroidAppRouter extends Router implements ServiceConnection {
+
+    private final static Intent SERVER_INTENT = new Intent("com.intuso.housemate.service");
 
     private final Context context;
     private Messenger sender;
     private String id;
     private final Messenger receiver = new Messenger(new MessageHandler());
 
-    AndroidAppRouter(Log log, Context context) {
-        super(log);
+    @Inject
+    public AndroidAppRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Context context) {
+        super(log, listenersFactory, properties);
         this.context = context;
-        addObjectListener(this);
     }
 
     @Override
     public void connect() {
         getLog().d("Connecting service");
-        if(sender == null)
-            context.bindService(new Intent("com.intuso.housemate.service"), this, Context.BIND_AUTO_CREATE);
+        setServerConnectionStatus(ServerConnectionStatus.Connecting);
+        if(sender == null) {
+            context.startService(SERVER_INTENT);
+            context.bindService(SERVER_INTENT, this, Context.BIND_AUTO_CREATE);
+        }
     }
 
     @Override
     public void disconnect() {
         getLog().d("Disconnecting service");
-        if(sender != null)
+        if(sender != null) {
+            try {
+                getLog().d("Removing server registration");
+                android.os.Message msg = android.os.Message.obtain(null, MessageCodes.UNREGISTER);
+                msg.getData().putString("id", id);
+                sender.send(msg);
+            } catch (RemoteException e) {
+                getLog().e("Failed to send disconnect message to service", e);
+            }
             context.unbindService(this);
+            sender = null;
+        }
     }
 
     @Override
@@ -72,7 +86,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection, RootL
         getLog().d("Service connected");
         sender = new Messenger(binder);
         try {
-            android.os.Message msg = android.os.Message.obtain(null, MessageCodes.CONNECT);
+            getLog().d("Creating server registration");
+            android.os.Message msg = android.os.Message.obtain(null, MessageCodes.REGISTER);
             msg.replyTo = receiver;
             sender.send(msg);
         } catch (RemoteException e) {
@@ -82,19 +97,9 @@ public class AndroidAppRouter extends Router implements ServiceConnection, RootL
 
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
-        getLog().d("Service disconnected");
+        setServerConnectionStatus(ServerConnectionStatus.Disconnected);
+        getLog().d("Service connection lost unexpectedly");
         sender = null;
-    }
-
-    @Override
-    public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
-        if(status == ConnectionStatus.Unauthenticated)
-            login(new FromRouter());
-    }
-
-    @Override
-    public void newServerInstance(RouterRootObject root) {
-        // TODO
     }
 
     private class MessageHandler extends Handler {
@@ -103,15 +108,12 @@ public class AndroidAppRouter extends Router implements ServiceConnection, RootL
             switch (msg.what) {
                 case MessageCodes.SEND_MESSAGE:
                     msg.getData().setClassLoader(Message.class.getClassLoader());
-                    try {
-                        messageReceived(((ParcelableMessage)msg.getData().getParcelable("message")).getMessage());
-                    } catch (HousemateException e) {
-                        getLog().e("Failed to process received message", e);
-                    }
+                    messageReceived(((ParcelableMessage) msg.getData().getParcelable("message")).getMessage());
                     break;
-                case MessageCodes.CONNECTED:
+                case MessageCodes.REGISTERED:
+                    getLog().d("Registration created");
                     id = msg.getData().getString("id");
-                    setRouterStatus(Status.ConnectedToRouter);
+                    break;
                 default:
                     super.handleMessage(msg);
             }

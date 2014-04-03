@@ -4,8 +4,16 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-    <TextView android:id="@+id/router_status"
+    <TextView android:id="@+id/server_connection_status"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:text="@string/main_welcomeMessage"/>
+              android:layout_height="wrap_content"
+              android:text=""/>
+    <TextView android:id="@+id/application_status"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text=""/>
+    <TextView android:id="@+id/application_instance_status"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text=""/>
 </LinearLayout>

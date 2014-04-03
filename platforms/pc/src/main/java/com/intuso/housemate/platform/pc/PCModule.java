@@ -1,7 +1,7 @@
 package com.intuso.housemate.platform.pc;
 
 import com.google.inject.AbstractModule;
-import com.intuso.utilities.properties.api.PropertyContainer;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,17 +12,17 @@ import com.intuso.utilities.properties.api.PropertyContainer;
  */
 public class PCModule extends AbstractModule {
 
-    private final PropertyContainer properties;
+    private final WriteableMapPropertyRepository defaultProperties;
     private final String defaultLogName;
 
-    public PCModule(PropertyContainer properties, String defaultLogName) {
-        this.properties = properties;
+    public PCModule(WriteableMapPropertyRepository defaultProperties, String defaultLogName) {
+        this.defaultProperties = defaultProperties;
         this.defaultLogName = defaultLogName;
     }
 
     @Override
     protected void configure() {
-        install(new PCLogModule(properties, defaultLogName));
+        install(new PCLogModule(defaultProperties, defaultLogName));
         install(new PCRegexMatcherModule());
     }
 }

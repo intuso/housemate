@@ -1,8 +1,9 @@
 package com.intuso.housemate.platform.pc;
 
-import com.intuso.utilities.properties.api.PropertyContainer;
-import com.intuso.utilities.properties.reader.commandline.CommandLineReader;
-import com.intuso.utilities.properties.reader.file.FileReader;
+import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.properties.api.PropertyRepository;
+import com.intuso.utilities.properties.reader.commandline.CommandLinePropertyRepository;
+import com.intuso.utilities.properties.reader.file.FilePropertyRepository;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,48 +18,65 @@ import java.io.IOException;
  */
 public class Properties {
 
-    public final static String HOUSEMATE_CONFIG_DIR = "HOUSEMATE_CONFIG_DIR";
-    public final static String HOUSEMATE_PROPS_FILE = "housemate.props";
+    public final static String HOUSEMATE_CONFIG_DIR = "conf.dir";
+    public final static String HOUSEMATE_PROPS_FILE = "conf.file";
+    public final static String APPLICATION_CONFIG_DIR = "application.conf.dir";
+    public final static String APPLICATION_PROPS_FILE = "application.conf.file";
 
     private Properties() {}
 
-    public static PropertyContainer init(String[] args) {
+    public static PropertyRepository create(ListenersFactory listenersFactory, PropertyRepository parent, String[] args) {
 
-        PropertyContainer properties = new PropertyContainer();
+        // set the defaults
+        parent.set(HOUSEMATE_CONFIG_DIR, System.getProperty("user.home") + File.separator + ".housemate");
+        parent.set(HOUSEMATE_PROPS_FILE, "housemate.props");
+        parent.set(APPLICATION_CONFIG_DIR, "./");
+        parent.set(APPLICATION_PROPS_FILE, "housemate.props");
 
-        // convert the command line args into a map of values that are set
-        properties.read(new CommandLineReader("commandLine", 1, args));
+        // read the command lines args now so we can use them to setup the file properties
+        CommandLinePropertyRepository clProperties = new CommandLinePropertyRepository(listenersFactory, parent, args);
 
-        String dir;
-        // get the base housemate config directory. If overridden, use that, else use env var value. If that not set then quit
-        if(properties.get(HOUSEMATE_CONFIG_DIR) != null) {
-            System.out.println("Overriding " + HOUSEMATE_CONFIG_DIR + " to " + properties.get(HOUSEMATE_CONFIG_DIR));
-            dir = properties.get(HOUSEMATE_CONFIG_DIR);
-        } else {
-            dir = System.getenv(HOUSEMATE_CONFIG_DIR);
-            if(dir == null)
-                dir = System.getProperty("user.home") + File.separator + ".housemate";
-        }
-
-        File configDirectory = new File(dir);
-
+        // read system file properties
+        File configDirectory = new File(clProperties.get(HOUSEMATE_CONFIG_DIR));
         // create the directory if it does not exist
         if(!configDirectory.exists())
             configDirectory.mkdirs();
-
         // get the props file
-        File props_file = new File(configDirectory, HOUSEMATE_PROPS_FILE);
-        if(props_file.exists()) {
-            try {
-                properties.read(new FileReader("propertiesFile", 1, props_file));
-            } catch (FileNotFoundException e) {
-                System.out.println("WARN: Could not find server properties file \"" + props_file.getAbsolutePath() + "\"");
-            } catch (IOException e) {
-                System.err.println("ERROR: Could not read server properties from file");
-                e.printStackTrace();
-            }
+        File props_file = new File(configDirectory, clProperties.get(HOUSEMATE_PROPS_FILE));
+        FilePropertyRepository systemProperties = null;
+        try {
+            if(!props_file.exists())
+                props_file.createNewFile();
+            systemProperties = new FilePropertyRepository(listenersFactory, parent, props_file);
+        } catch (FileNotFoundException e) {
+            System.out.println("WARN: Could not find system properties file \"" + props_file.getAbsolutePath() + "\"");
+        } catch (IOException e) {
+            System.err.println("ERROR: Could not read system properties from file");
+            e.printStackTrace();
         }
 
-        return properties;
+        configDirectory = new File(clProperties.get(APPLICATION_CONFIG_DIR));
+        // create the directory if it does not exist
+        if(!configDirectory.exists())
+            configDirectory.mkdirs();
+        // get the props file
+        props_file = new File(configDirectory, clProperties.get(APPLICATION_PROPS_FILE));
+        FilePropertyRepository applicationProperties = null;
+        try {
+            if(!props_file.exists())
+                props_file.createNewFile();
+            applicationProperties = new FilePropertyRepository(listenersFactory,
+                    systemProperties != null ? systemProperties : parent, props_file);
+        } catch (FileNotFoundException e) {
+            System.out.println("WARN: Could not find application properties file \"" + props_file.getAbsolutePath() + "\"");
+        } catch (IOException e) {
+            System.err.println("ERROR: Could not read application properties from file");
+            e.printStackTrace();
+        }
+
+        // wrap the defaults and file properties with the command line properties
+        return new CommandLinePropertyRepository(listenersFactory,
+                applicationProperties != null ? applicationProperties :
+                    systemProperties != null ? systemProperties : parent, args);
     }
 }

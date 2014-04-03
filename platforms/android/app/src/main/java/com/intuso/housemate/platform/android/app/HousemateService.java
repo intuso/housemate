@@ -1,7 +1,6 @@
 package com.intuso.housemate.platform.android.app;
 
-import android.app.Activity;
-import com.google.common.collect.Lists;
+import android.app.Service;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.platform.android.app.comms.AndroidAppRouter;
 import com.intuso.housemate.platform.android.common.AndroidLogWriter;
@@ -22,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Time: 09:35
  * To change this template use File | Settings | File Templates.
  */
-public abstract class HousemateActivity extends Activity {
+public abstract class HousemateService extends Service {
 
     private Log log;
     private ListenersFactory listenersFactory;
@@ -30,8 +29,8 @@ public abstract class HousemateActivity extends Activity {
     private Router router;
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    public void onCreate() {
+        super.onCreate();
         log = new Log(new AndroidLogWriter(LogLevel.DEBUG, getApplicationContext().getPackageName()));
         listenersFactory = new ListenersFactory() {
             @Override
@@ -44,8 +43,8 @@ public abstract class HousemateActivity extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         log = null;
         properties = null;
         router.disconnect();

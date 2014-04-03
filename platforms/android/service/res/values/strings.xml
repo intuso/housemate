@@ -4,6 +4,10 @@
     <!-- Activity -->
     <string name="activity_name">Housemate</string>
 
+    <!-- Permission -->
+    <string name="permission_name_access">Housemate</string>
+    <string name="permission_description_access">Access Housemate Server</string>
+
     <!-- Action bar -->
     <string name="action_settings">Settings</string>
 
@@ -20,5 +24,6 @@
     <string name="pref_title_auth_password">Password</string>
 
     <!-- Service -->
-    <string name="service_name">Housemate Service</string>
+    <string name="service_name_connection">Housemate Connection Service</string>
+    <string name="service_name_router">Housemate App Service</string>
 </resources>

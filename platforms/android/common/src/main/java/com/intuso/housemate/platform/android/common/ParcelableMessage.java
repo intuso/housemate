@@ -4,11 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.intuso.housemate.api.authentication.*;
-import com.intuso.housemate.api.comms.ConnectionStatus;
-import com.intuso.housemate.api.comms.ConnectionType;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.message.*;
+import com.intuso.housemate.api.comms.*;
+import com.intuso.housemate.api.comms.access.ApplicationDetails;
+import com.intuso.housemate.api.comms.access.ApplicationRegistration;
+import com.intuso.housemate.api.comms.message.NoPayload;
+import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
@@ -21,12 +21,14 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.type.*;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.value.ValueData;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -107,22 +109,17 @@ public class ParcelableMessage implements Parcelable {
         } else if(payload instanceof Command.PerformingMessageValue) {
             parcel.writeString("commandPerforming");
             writeCommandPerforming(parcel, flags, (Command.PerformingMessageValue) payload);
-        } else if(payload instanceof AuthenticationRequest) {
-            parcel.writeString("authenticationRequest");
-            writeAuthenticationRequest(parcel, flags, (AuthenticationRequest) payload);
-        } else if(payload instanceof ReconnectResponse) {
-            parcel.writeString("reconnectResponse");
-        } else if(payload instanceof AuthenticationResponse) {
-            parcel.writeString("authenticationResponse");
-            writeAuthenticationResponse(parcel, flags, (AuthenticationResponse) payload);
+        } else if(payload instanceof ApplicationRegistration) {
+            parcel.writeString("applicationRegistration");
+            writeApplicationRegistration(parcel, flags, (ApplicationRegistration) payload);
         } else if(payload instanceof StringPayload) {
             parcel.writeString("string");
-            parcel.writeString(((StringPayload)payload).getValue());
+            parcel.writeString(((StringPayload) payload).getValue());
         } else if(payload instanceof NoPayload) {
             parcel.writeString("none");
-        } else if(payload instanceof ConnectionStatus) {
+        } else if(payload instanceof Root.ConnectionStatus) {
             parcel.writeString("connectionStatus");
-            parcel.writeString(((ConnectionStatus) payload).name());
+            writeConnectionStatus(parcel, flags, (Root.ConnectionStatus)payload);
         } else {
             // TODO log unknown type
             parcel.writeString("unknown");
@@ -200,12 +197,24 @@ public class ParcelableMessage implements Parcelable {
             ValueData valueData = (ValueData)data;
             parcel.writeString(valueData.getType());
             writeTypeInstances(parcel, flags, valueData.getTypeInstances());
+        } else if(data instanceof DeviceData) {
+            DeviceData deviceData = (DeviceData)data;
+            writeStrings(parcel, deviceData.getFeatureIds());
+            writeStrings(parcel, deviceData.getCustomCommandIds());
+            writeStrings(parcel, deviceData.getCustomValueIds());
+            writeStrings(parcel, deviceData.getCustomPropertyIds());
         }
 
         // write the children
         parcel.writeInt(data.getChildData().size());
         for(HousemateData<?> child : data.getChildData().values())
             writeHousemateData(parcel, flags, child);
+    }
+
+    private static void writeStrings(Parcel parcel, Collection<String> strings) {
+        parcel.writeInt(strings.size());
+        for(String s : strings)
+            parcel.writeString(s);
     }
 
     private static void writeTypeInstance(Parcel parcel, int flags, TypeInstance typeInstance) {
@@ -240,33 +249,18 @@ public class ParcelableMessage implements Parcelable {
         }
     }
 
-    private static void writeAuthenticationRequest(Parcel parcel, int flags, AuthenticationRequest authenticationRequest) {
-        parcel.writeString(authenticationRequest.getType().name());
-        if(authenticationRequest.getMethod() instanceof FromRouter)
-            parcel.writeString("fromRouter");
-        else if(authenticationRequest.getMethod() instanceof Reconnect) {
-            parcel.writeString("reconnect");
-            parcel.writeString(((Reconnect)authenticationRequest.getMethod()).getConnectionId());
-        } else if(authenticationRequest.getMethod() instanceof UsernamePassword){
-            UsernamePassword usernamePassword = (UsernamePassword)authenticationRequest.getMethod();
-            parcel.writeString("usernamePassword");
-            parcel.writeString(usernamePassword.getUsername());
-            parcel.writeString(usernamePassword.getPassword());
-            parcel.writeString(Boolean.toString(usernamePassword.isCreateSession()));
-            parcel.writeString(Boolean.toString(usernamePassword.isClientsAuthenticated()));
-        } else if(authenticationRequest.getMethod() instanceof Session) {
-            parcel.writeString("session");
-            parcel.writeString(((Session)authenticationRequest.getMethod()).getSessionId());
-        } else {
-            // TODO log unknown type
-        }
+    private static void writeApplicationRegistration(Parcel parcel, int flags, ApplicationRegistration applicationRegistration) {
+        parcel.writeString(applicationRegistration.getType().name());
+        parcel.writeString(applicationRegistration.getApplicationDetails().getApplicationId());
+        parcel.writeString(applicationRegistration.getApplicationDetails().getApplicationName());
+        parcel.writeString(applicationRegistration.getApplicationDetails().getApplicationDescription());
+        parcel.writeString(applicationRegistration.getApplicationInstanceId());
     }
 
-    private static void writeAuthenticationResponse(Parcel parcel, int flags, AuthenticationResponse authenticationResponse) {
-        parcel.writeString(authenticationResponse.getServerInstanceId());
-        parcel.writeString(authenticationResponse.getConnectionId());
-        parcel.writeString(authenticationResponse.getUserId());
-        parcel.writeString(authenticationResponse.getProblem());
+    private static void writeConnectionStatus(Parcel parcel, int flags, Root.ConnectionStatus connectionStatus) {
+        parcel.writeString(connectionStatus.getServerConnectionStatus().name());
+        parcel.writeString(connectionStatus.getApplicationStatus().name());
+        parcel.writeString(connectionStatus.getApplicationInstanceStatus().name());
     }
 
     private static void writeLoadRequest(Parcel parcel, int flags, HousemateObject.LoadRequest loadRequest) {
@@ -349,18 +343,14 @@ public class ParcelableMessage implements Parcelable {
             return readCommandPerform(parcel);
         else if(payloadType.equals("commandPerforming"))
             return readCommandPerforming(parcel);
-        else if(payloadType.equals("authenticationRequest"))
-            return readAuthenticationRequest(parcel);
-        else if(payloadType.equals("reconnectResponse"))
-            return new ReconnectResponse();
-        else if(payloadType.equals("authenticationResponse"))
-            return readAuthenticationResponse(parcel);
+        else if(payloadType.equals("applicationRegistration"))
+            return readAccessRequest(parcel);
         else if(payloadType.equals("string"))
             return new StringPayload(parcel.readString());
         else if(payloadType.equals("none"))
-            return NoPayload.VALUE;
+            return NoPayload.INSTANCE;
         else if(payloadType.equals("connectionStatus"))
-            return ConnectionStatus.valueOf(parcel.readString());
+            return readConnectionStatus(parcel);
         else {
             // TODO log unknown type
             return null;
@@ -384,7 +374,7 @@ public class ParcelableMessage implements Parcelable {
         else if(dataType.equals("condition"))
             result = new ConditionData(parcel.readString(), parcel.readString(), parcel.readString());
         else if(dataType.equals("device"))
-            result = new DeviceData(parcel.readString(), parcel.readString(), parcel.readString());
+            result = new DeviceData(parcel.readString(), parcel.readString(), parcel.readString(), readStrings(parcel), readStrings(parcel), readStrings(parcel), readStrings(parcel));
         else if(dataType.equals("list"))
             result = new ListData<HousemateData<?>>(parcel.readString(), parcel.readString(), parcel.readString());
         else if(dataType.equals("option"))
@@ -426,6 +416,14 @@ public class ParcelableMessage implements Parcelable {
         return result;
     }
 
+    private static List<String> readStrings(Parcel parcel) {
+        int size = parcel.readInt();
+        List<String> result = Lists.newArrayListWithCapacity(size);
+        for(int i = 0; i < size; i++)
+            result.add(parcel.readString());
+        return result;
+    }
+
     private static TypeInstance readTypeInstance(Parcel parcel) {
         return new TypeInstance(parcel.readString(), readTypeInstanceMap(parcel));
     }
@@ -446,26 +444,18 @@ public class ParcelableMessage implements Parcelable {
         return result;
     }
 
-    private static AuthenticationRequest readAuthenticationRequest(Parcel parcel) {
-        ConnectionType connectionType = ConnectionType.valueOf(parcel.readString());
-        String methodType = parcel.readString();
-        AuthenticationMethod method = null;
-        if(methodType.equals("fromRouter"))
-            method = new FromRouter();
-        else if(methodType.equals("reconnect"))
-            method = new Reconnect(parcel.readString());
-        else if(methodType.equals("usernamePassword"))
-            method = new UsernamePassword(parcel.readString(), parcel.readString(), Boolean.parseBoolean(parcel.readString()), Boolean.parseBoolean(parcel.readString()));
-        else if(methodType.equals("session"))
-            method = new Session(parcel.readString());
-        else {
-            // TODO log unknown type
-        }
-        return new AuthenticationRequest(connectionType, method);
+    private static ApplicationRegistration readAccessRequest(Parcel parcel) {
+        ClientType clientType = ClientType.valueOf(parcel.readString());
+        return new ApplicationRegistration(
+                new ApplicationDetails(parcel.readString(), parcel.readString(), parcel.readString()),
+                parcel.readString(),
+                clientType);
     }
 
-    private static AuthenticationResponse readAuthenticationResponse(Parcel parcel) {
-        return new AuthenticationResponse(parcel.readString(), parcel.readString(), parcel.readString(), parcel.readString());
+    private static Root.ConnectionStatus readConnectionStatus(Parcel parcel) {
+        return new Root.ConnectionStatus(ServerConnectionStatus.valueOf(parcel.readString()),
+                ApplicationStatus.valueOf(parcel.readString()),
+                ApplicationInstanceStatus.valueOf(parcel.readString()));
     }
 
     private static HousemateObject.LoadRequest readLoadRequest(Parcel parcel) {

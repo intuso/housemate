@@ -4,24 +4,13 @@
     <PreferenceCategory
             android:title="@string/pref_title_server">
         <EditTextPreference
-                android:key="server.host"
+                android:key="socket.server.host"
                 android:title="@string/pref_title_server_host"
                 android:defaultValue="" />
         <EditTextPreference
-                android:key="server.port"
+                android:key="socket.server.port"
                 android:title="@string/pref_title_server_port"
                 android:inputType="number"
                 android:defaultValue="46873" />
-    </PreferenceCategory>
-    <PreferenceCategory
-            android:title="@string/pref_title_auth">
-        <EditTextPreference
-                android:key="username"
-                android:title="@string/pref_title_auth_username"
-                android:defaultValue="admin" />
-        <EditTextPreference
-                android:key="password"
-                android:title="@string/pref_title_auth_password"
-                android:defaultValue="admin" />
     </PreferenceCategory>
 </PreferenceScreen>
