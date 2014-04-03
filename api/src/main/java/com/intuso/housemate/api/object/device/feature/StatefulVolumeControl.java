@@ -1,6 +1,5 @@
 package com.intuso.housemate.api.object.device.feature;
 
-import com.intuso.housemate.annotations.feature.Id;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.value.Value;
 
@@ -9,8 +8,8 @@ import com.intuso.housemate.api.object.value.Value;
  * @param <COMMAND> the command type
  * @param <VALUE> the value type
  */
-@Id("stateful-volume-control")
-public interface StatefulVolumeControl<COMMAND extends Command<?, ?>, VALUE extends Value<?, ?>>
+@FeatureId("stateful-volume-control")
+public interface StatefulVolumeControl<COMMAND extends Command<?, ?, ?>, VALUE extends Value<?, ?>>
         extends VolumeControl<COMMAND> {
 
     public final static String ID = "stateful-volume-control";

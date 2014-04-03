@@ -19,4 +19,18 @@ public final class AutomationData extends HousemateData<HousemateData<?>> {
     public HousemateData clone() {
         return new AutomationData(getId(), getName(), getDescription());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof AutomationData))
+            return false;
+        AutomationData other = (AutomationData)o;
+        if(!other.getChildData(Automation.CONDITIONS_ID).equals(getChildData(Automation.CONDITIONS_ID)))
+            return false;
+        if(!other.getChildData(Automation.SATISFIED_TASKS_ID).equals(getChildData(Automation.SATISFIED_TASKS_ID)))
+            return false;
+        if(!other.getChildData(Automation.UNSATISFIED_TASKS_ID).equals(getChildData(Automation.UNSATISFIED_TASKS_ID)))
+            return false;
+        return true;
+    }
 }

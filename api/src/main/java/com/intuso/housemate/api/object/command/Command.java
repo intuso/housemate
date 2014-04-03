@@ -2,31 +2,40 @@ package com.intuso.housemate.api.object.command;
 
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.BaseHousemateObject;
-import com.intuso.housemate.api.object.parameter.Parameter;
-import com.intuso.housemate.api.object.parameter.HasParameters;
 import com.intuso.housemate.api.object.list.List;
+import com.intuso.housemate.api.object.parameter.HasParameters;
+import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
+import com.intuso.housemate.api.object.value.Value;
 
 /**
- * @param <PL> the type of the propeties list
- * @param <C> the type of the command
+ * @param <ENABLED_VALUE> the type of the value for the enabled status of the command
+ * @param <PARAMETERS> the type of the propeties list
+ * @param <COMMAND> the type of the command
  */
 public interface Command<
-            PL extends List<? extends Parameter<?>>,
-            C extends Command<?, ?>>
-        extends BaseHousemateObject<CommandListener<? super C>>, HasParameters<PL> {
+            ENABLED_VALUE extends Value<?, ?>,
+            PARAMETERS extends List<? extends Parameter<?>>,
+            COMMAND extends Command<?, ?, ?>>
+        extends
+            BaseHousemateObject<CommandListener<? super COMMAND>>,
+            HasParameters<PARAMETERS> {
 
+    public final static String ENABLED_ID = "enabled";
     public final static String PARAMETERS_ID = "parameters";
     public final static String PERFORM_TYPE = "perform";
     public final static String PERFORMING_TYPE = "performing";
     public final static String FAILED_TYPE = "failed";
+
+    public boolean isEnabled();
+    public ENABLED_VALUE getEnabledValue();
 
     /**
      * Performs the command
      * @param values the values of the parameters
      * @param listener the listener to call about progress of the command
      */
-    public void perform(TypeInstanceMap values, CommandListener<? super C> listener);
+    public void perform(TypeInstanceMap values, CommandPerformListener<? super COMMAND> listener);
 
     /**
      * Message payload for a perform command call

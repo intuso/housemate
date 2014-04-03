@@ -19,4 +19,16 @@ public final class ConditionData extends HousemateData<HousemateData<?>> {
     public HousemateData clone() {
         return new ConditionData(getId(), getName(), getDescription());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof ConditionData))
+            return false;
+        ConditionData other = (ConditionData)o;
+        if(!other.getChildData(Condition.PROPERTIES_ID).equals(getChildData(Condition.PROPERTIES_ID)))
+            return false;
+        if(!other.getChildData(Condition.CONDITIONS_ID).equals(getChildData(Condition.CONDITIONS_ID)))
+            return false;
+        return true;
+    }
 }

@@ -10,7 +10,7 @@ public class NoPayload implements Message.Payload {
 
     private static final long serialVersionUID = -1L;
 
-    public final static NoPayload VALUE = new NoPayload();
+    public final static NoPayload INSTANCE = new NoPayload();
 
     private NoPayload() {}
 

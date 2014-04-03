@@ -7,6 +7,6 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
  * Factory for commands
  */
 public interface CommandFactory<
-            C extends Command<?, ?>>
+            C extends Command<?, ?, ?>>
         extends HousemateObjectFactory<CommandData, C> {
 }

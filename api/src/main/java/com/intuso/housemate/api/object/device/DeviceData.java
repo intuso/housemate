@@ -70,4 +70,35 @@ public final class DeviceData extends HousemateData<HousemateData<?>> {
         return new DeviceData(getId(), getName(), getDescription(), featureIds, customCommandIds, customValueIds,
                 customPropertyIds);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof DeviceData))
+            return false;
+        DeviceData other = (DeviceData)o;
+        if(!listsEqual(other.featureIds, featureIds))
+            return false;
+        if(!listsEqual(other.customCommandIds, customCommandIds))
+            return false;
+        if(!listsEqual(other.customValueIds, customValueIds))
+            return false;
+        if(!listsEqual(other.customPropertyIds, customPropertyIds))
+            return false;
+        if(!other.getChildData(Device.COMMANDS_ID).equals(getChildData(Device.COMMANDS_ID)))
+            return false;
+        if(!other.getChildData(Device.VALUES_ID).equals(getChildData(Device.VALUES_ID)))
+            return false;
+        if(!other.getChildData(Device.PROPERTIES_ID).equals(getChildData(Device.PROPERTIES_ID)))
+            return false;
+        return true;
+    }
+
+    private <T> boolean listsEqual(List<T> one, List<T> two) {
+        if(one.size() != two.size())
+            return false;
+        for(int i = 0; i < one.size(); i++)
+            if(!one.get(i).equals(two.get(i)))
+                return false;
+        return true;
+    }
 }

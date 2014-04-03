@@ -1,16 +1,14 @@
 package com.intuso.housemate.api.comms;
 
-import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.authentication.Reconnect;
-import com.intuso.housemate.api.comms.message.AuthenticationRequest;
-import com.intuso.housemate.api.comms.message.AuthenticationResponse;
+import com.intuso.housemate.api.comms.access.ApplicationDetails;
+import com.intuso.housemate.api.comms.access.ApplicationRegistration;
 import com.intuso.housemate.api.comms.message.NoPayload;
-import com.intuso.housemate.api.comms.message.ReconnectResponse;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.properties.api.PropertyRepository;
 
 /**
  *
@@ -19,133 +17,125 @@ import com.intuso.utilities.listener.Listeners;
  */
 public class ConnectionManager {
 
-    private final Listeners<ConnectionStatusChangeListener> listeners = new Listeners<ConnectionStatusChangeListener>();
+    public final static String APPLICATION_INSTANCE_ID = "application.instance.id";
+    private final static String[] ROOT_PATH = new String[] {""};
 
-    private final Sender sender;
-    private final String[] path;
-    private final String connectMessageType;
-    private final String disconnectMessageType;
-    private final ConnectionType clientType;
+    private final Listeners<ConnectionListener> listeners;
+
+    private final PropertyRepository properties;
+    private final ClientType clientType;
 
     private String serverInstanceId = null;
-    private String connectionId = null;
-    private Router.Status routerStatus = Router.Status.Disconnected;
-    private ConnectionStatus status = null;
+
+    private ServerConnectionStatus serverConnectionStatus = ServerConnectionStatus.Disconnected;
+    private ApplicationStatus applicationStatus = ApplicationStatus.Unregistered;
+    private ApplicationInstanceStatus applicationInstanceStatus = ApplicationInstanceStatus.Unregistered;
 
     /**
-     * @param sender the message sender the connection manager can use to communicate with the server
+     * @param listenersFactory
      * @param clientType the type of the client's connection
-     * @param initialStatus the initial connection status
      */
-    public ConnectionManager(Sender sender, ConnectionType clientType, ConnectionStatus initialStatus) {
-        this.sender = sender;
-        this.path = new String[] {""};
-        this.connectMessageType = Root.CONNECTION_REQUEST_TYPE;
-        this.disconnectMessageType = Root.DISCONNECT_TYPE;
+    public ConnectionManager(ListenersFactory listenersFactory, PropertyRepository properties, ClientType clientType) {
+        this.listeners = listenersFactory.create();
+        this.properties = properties;
         this.clientType = clientType;
-        this.status = initialStatus;
     }
 
     /**
-     * Adds listener to be notified of connection status changes
+     * Adds listener to be notified of status changes
      * @param listener the listener to add
      * @return listener registration
      */
-    public ListenerRegistration addStatusChangeListener(ConnectionStatusChangeListener listener) {
+    public ListenerRegistration addStatusChangeListener(ConnectionListener listener) {
         return listeners.addListener(listener);
     }
 
-    /**
-     * Gets the current connection status
-     * @return the current connections status
-     */
-    public ConnectionStatus getStatus() {
-        return status;
+    public ServerConnectionStatus getServerConnectionStatus() {
+        return serverConnectionStatus;
     }
 
     /**
-     * Gets the connection id
-     * @return the connection id
+     * Gets the current application status
+     * @return the current connections application status
      */
-    public String getConnectionId() {
-        return connectionId;
+    public ApplicationStatus getApplicationStatus() {
+        return applicationStatus;
     }
 
     /**
-     * Authenticates with the server
-     * @param method the method to authenticate with
+     * Gets the current application instance status
+     * @return the current connections application instance status
      */
-    public void login(AuthenticationMethod method) {
-        if(status == ConnectionStatus.Disconnected || status == ConnectionStatus.Connecting)
-            throw new HousemateRuntimeException("Cannot attempt authentication until connection is complete");
-        else if(status == ConnectionStatus.Authenticated)
-            throw new HousemateRuntimeException("Authentication already succeeded");
-        else if(status == ConnectionStatus.Authenticating)
-            throw new HousemateRuntimeException("Authentication already in progress");
-        status = ConnectionStatus.Authenticating;
-        for(ConnectionStatusChangeListener listener : listeners)
-            listener.connectionStatusChanged(status);
-        sender.sendMessage(new Message<AuthenticationRequest>(path, connectMessageType, new AuthenticationRequest(clientType, method)));
+    public ApplicationInstanceStatus getApplicationInstanceStatus() {
+        return applicationInstanceStatus;
+    }
+
+    /**
+     * Requests access to the server
+     */
+    public void register(ApplicationDetails applicationDetails, Sender sender) {
+        if(serverConnectionStatus != ServerConnectionStatus.ConnectedToServer)
+            throw new HousemateRuntimeException("Cannot request access until a server connection has been established");
+        else if(applicationInstanceStatus != ApplicationInstanceStatus.Unregistered)
+            throw new HousemateRuntimeException("Registration already in progress or done");
+        if(applicationDetails != null) {
+            updateStatus(serverConnectionStatus, applicationStatus, ApplicationInstanceStatus.Pending);
+            sender.sendMessage(new Message<ApplicationRegistration>(ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
+                    new ApplicationRegistration(applicationDetails, properties.get(APPLICATION_INSTANCE_ID), clientType)));
+        } else {
+            throw new HousemateRuntimeException("Null application or instance details");
+        }
     }
 
     /**
      * Logs out of the server
      */
-    public void logout() {
-        sender.sendMessage(new Message<NoPayload>(path, disconnectMessageType, NoPayload.VALUE));
-        status = ConnectionStatus.Unauthenticated;
-        for(ConnectionStatusChangeListener listener : listeners)
-            listener.connectionStatusChanged(status);
+    public void unregister(Sender sender) {
+        sender.sendMessage(new Message<NoPayload>(ROOT_PATH, Root.APPLICATION_UNREGISTRATION_TYPE, NoPayload.INSTANCE));
+        properties.remove(APPLICATION_INSTANCE_ID);
+        updateStatus(serverConnectionStatus, ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered);
+    }
+
+    public void setServerInstanceId(String serverInstanceId) {
+        if(this.serverInstanceId != null && !this.serverInstanceId.equals(serverInstanceId)) {
+            for(ConnectionListener listener : listeners)
+                listener.newServerInstance(serverInstanceId);
+            updateStatus(serverConnectionStatus, ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered);
+        }
+        this.serverInstanceId = serverInstanceId;
+    }
+
+    public void setApplicationInstanceId(String applicationInstanceId) {
+        if(!properties.keySet().contains(APPLICATION_INSTANCE_ID)
+                || properties.get(APPLICATION_INSTANCE_ID) == null
+                || !properties.get(APPLICATION_INSTANCE_ID).equals(applicationInstanceId)) {
+            properties.set(APPLICATION_INSTANCE_ID, applicationInstanceId);
+            for(ConnectionListener listener : listeners)
+                listener.newApplicationInstance(applicationInstanceId);
+        }
     }
 
     /**
-     * Processes a response to an authentication request
-     * @param response the response received
+     * Updates the server connection status of the router we use to connect to the server
+     * @param serverConnectionStatus the router's new server connection status
      */
-    public void authenticationResponseReceived(AuthenticationResponse response) {
-        if(response instanceof ReconnectResponse)
-            status = ConnectionStatus.Authenticated;
-        else if(serverInstanceId != null && !serverInstanceId.equals(response.getServerInstanceId())) {
-            connectionId = null;
-            status = ConnectionStatus.Unauthenticated;
-            for(ConnectionStatusChangeListener listener : listeners)
-                listener.newServerInstance();
-        } else {
-            serverInstanceId = response.getServerInstanceId();
-            connectionId = response.getConnectionId();
-            status = connectionId != null ? ConnectionStatus.Authenticated : ConnectionStatus.AuthenticationFailed;
-        }
-        for(ConnectionStatusChangeListener listener : listeners)
-            listener.connectionStatusChanged(status);
+    public void setConnectionStatus(ServerConnectionStatus serverConnectionStatus,
+                                    ApplicationStatus applicationStatus,
+                                    ApplicationInstanceStatus applicationInstanceStatus) {
+        updateStatus(serverConnectionStatus, applicationStatus, applicationInstanceStatus);
     }
 
-    public Router.Status getRouterStatus() {
-        return routerStatus;
-    }
-
-    /**
-     * Updates the status of the router we use to connect to the server
-     * @param routerStatus the router's new status
-     */
-    public void setRouterStatus(Router.Status routerStatus) {
-        if(this.routerStatus == routerStatus)
-            return;
-        this.routerStatus = routerStatus;
-        switch(routerStatus) {
-            case ConnectedToServer:
-                if(connectionId != null) {
-                    sender.sendMessage(new Message<AuthenticationRequest>(path, connectMessageType,
-                            new AuthenticationRequest(ConnectionType.Proxy, new Reconnect(connectionId))));
-                    status = ConnectionStatus.Authenticating;
-                    return;
-                } else
-                    status = ConnectionStatus.Unauthenticated;
-                break;
-            default:
-                status = ConnectionStatus.Disconnected;
-                break;
+    private void updateStatus(ServerConnectionStatus serverConnectionStatus,
+                              ApplicationStatus applicationStatus,
+                              ApplicationInstanceStatus applicationInstanceStatus) {
+        if(this.serverConnectionStatus != serverConnectionStatus
+                || this.applicationStatus != applicationStatus
+                || this.applicationInstanceStatus != applicationInstanceStatus) {
+            this.serverConnectionStatus = serverConnectionStatus;
+            this.applicationStatus = applicationStatus;
+            this.applicationInstanceStatus = applicationInstanceStatus;
+            for(ConnectionListener listener : listeners)
+                listener.statusChanged(serverConnectionStatus, applicationStatus, applicationInstanceStatus);
         }
-        for(ConnectionStatusChangeListener listener : Lists.newArrayList(listeners))
-            listener.connectionStatusChanged(status);
     }
 }

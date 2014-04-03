@@ -16,7 +16,7 @@ public class Message<T extends Message.Payload> implements Serializable {
 	private String[] path;
     private String type;
     private List<String> route;
-	private T content;
+	private T payload;
 
     private Message() {
         path = null;
@@ -45,7 +45,7 @@ public class Message<T extends Message.Payload> implements Serializable {
         this.path = new String[path.length];
         System.arraycopy(path, 0, this.path, 0, path.length);
         this.type = type;
-        this.content = payload;
+        this.payload = payload;
         this.route = Lists.newLinkedList(route);
     }
 
@@ -69,7 +69,7 @@ public class Message<T extends Message.Payload> implements Serializable {
      * Gets the route of the message
      * @return the message route
      */
-    public List<String> getRoute() {
+    public final List<String> getRoute() {
         return route;
     }
 
@@ -85,7 +85,7 @@ public class Message<T extends Message.Payload> implements Serializable {
      * Gets the message type
      * @return the message type
      */
-    public String getType() {
+    public final String getType() {
         return type;
     }
 
@@ -94,12 +94,12 @@ public class Message<T extends Message.Payload> implements Serializable {
 	 * @return the payload
 	 */
 	public final T getPayload() {
-		return content;
+		return payload;
 	}
     
     @Override
     public String toString() {
-        return "{ route: " + routeToString(route) + ", path: " + Arrays.toString(path) + ", type: " + type + ", content: " + (content == null ? "null" : content.toString()) + "}";
+        return "{ route: " + routeToString(route) + ", path: " + Arrays.toString(path) + ", type: " + type + ", payload: " + (payload == null ? "null" : payload.toString()) + "}";
     }
 
     /**

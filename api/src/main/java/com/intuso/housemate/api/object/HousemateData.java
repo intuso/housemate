@@ -76,4 +76,9 @@ public abstract class HousemateData<DATA extends HousemateData<?>>
             result.addChildData(child.getValue().deepClone());
         return result;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return getClass().equals(o.getClass()) && ((HousemateData)o).getId().equals(getId());
+    }
 }

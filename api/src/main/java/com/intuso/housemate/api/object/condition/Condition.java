@@ -17,11 +17,11 @@ import com.intuso.housemate.api.object.value.Value;
  * @param <CONDITIONS> the type of the conditions list
  */
 public interface Condition<
-            REMOVE_COMMAND extends Command<?, ?>,
+            REMOVE_COMMAND extends Command<?, ?, ?>,
             ERROR_VALUE extends Value<?, ?>,
             SATISFIED_VALUE extends Value<?, ?>,
             PROPERTIES extends List<? extends Property<?, ?, ?>>,
-            ADD_COMMAND extends Command<?, ?>,
+            ADD_COMMAND extends Command<?, ?, ?>,
             CONDITION extends Condition<REMOVE_COMMAND, ERROR_VALUE, SATISFIED_VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS>,
             CONDITIONS extends List<? extends CONDITION>>
         extends BaseHousemateObject<ConditionListener<? super CONDITION>>,

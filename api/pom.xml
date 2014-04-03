@@ -51,12 +51,5 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-
-        <!-- Annotations -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>annotations-feature</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

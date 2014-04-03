@@ -1,13 +1,11 @@
 package com.intuso.housemate.api.object.command;
 
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.parameter.ParameterData;
-import com.intuso.housemate.api.object.list.ListData;
 
 /**
  * Data object for a command
  */
-public final class CommandData extends HousemateData<ListData<ParameterData>> {
+public final class CommandData extends HousemateData<HousemateData<?>> {
 
     private static final long serialVersionUID = -1L;
 

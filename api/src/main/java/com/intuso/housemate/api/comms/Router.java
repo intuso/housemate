@@ -3,12 +3,14 @@ package com.intuso.housemate.api.comms;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.authentication.AuthenticationMethod;
+import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.properties.api.PropertyRepository;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,34 +22,28 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class Router implements Sender, Receiver {
 
-    /**
-     * Enum of possible connection statuses for a router
-     */
-    public enum Status implements Message.Payload {
-        Disconnected,
-        Connecting,
-        ConnectedToRouter,
-        ConnectedToServer
-    }
-
     private final Log log;
 
     private final AtomicInteger nextId = new AtomicInteger(-1);
     private final Map<String, Receiver<?>> receivers = Maps.newConcurrentMap();
 
-    private final RouterRootObject root;
+    private final RouterRoot root;
 
     /**
      * @param log the log
+     * @param listenersFactory
      */
-    public Router(final Log log) {
+    public Router(final Log log, ListenersFactory listenersFactory, PropertyRepository properties) {
         this.log = log;
-        root = new RouterRootObject(log, this);
-        root.addObjectListener(new RootListener<RouterRootObject>() {
+        root = new RouterRoot(log, listenersFactory, properties, this);
+        root.addObjectListener(new RootListener<RouterRoot>() {
+
             @Override
-            public void connectionStatusChanged(RouterRootObject root, ConnectionStatus status) {
-                Message<Status> message = new Message<Status>(new String[] {""}, Root.STATUS_TYPE,
-                        status == ConnectionStatus.Authenticated ? Status.ConnectedToServer : Status.ConnectedToRouter);
+            public void statusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+                boolean allowed = applicationInstanceStatus == ApplicationInstanceStatus.Allowed;
+                Message<Root.ConnectionStatus> message = new Message<Root.ConnectionStatus>(new String[] {""}, Root.CONNECTION_STATUS_TYPE,
+                        new Root.ConnectionStatus(allowed ? ServerConnectionStatus.ConnectedToServer : ServerConnectionStatus.ConnectedToRouter,
+                                ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered));
                 for(Receiver receiver : receivers.values()) {
                     try {
                         receiver.messageReceived(message);
@@ -58,7 +54,12 @@ public abstract class Router implements Sender, Receiver {
             }
 
             @Override
-            public void newServerInstance(RouterRootObject root) {
+            public void newApplicationInstance(RouterRoot root, String instanceId) {
+                // do nothing
+            }
+
+            @Override
+            public void newServerInstance(RouterRoot root, String serverId) {
                 // do nothing
             }
         });
@@ -72,16 +73,24 @@ public abstract class Router implements Sender, Receiver {
         return log;
     }
 
-    public Status getRouterStatus() {
-        return root.getRouterStatus();
+    public ApplicationStatus getApplicationStatus() {
+        return root.getApplicationStatus();
+    }
+
+    public ApplicationInstanceStatus getApplicationInstanceStatus() {
+        return root.getApplicationInstanceStatus();
+    }
+
+    public ServerConnectionStatus getServerConnectionStatus() {
+        return root.getServerConnectionStatus();
     }
 
     /**
      * Updates the router's connection status
-     * @param routerStatus the router's new connection status
+     * @param serverConnectionStatus the router's new connection status
      */
-    protected final void setRouterStatus(Status routerStatus) {
-        root.setRouterStatus(routerStatus);
+    protected final void setServerConnectionStatus(ServerConnectionStatus serverConnectionStatus) {
+        root.setServerConnectionStatus(serverConnectionStatus);
     }
 
     /**
@@ -89,25 +98,24 @@ public abstract class Router implements Sender, Receiver {
      * @param listener the listener to add
      * @return the listener registration
      */
-    public ListenerRegistration addObjectListener(RootListener<? super RouterRootObject> listener) {
+    public ListenerRegistration addObjectListener(RootListener<? super RouterRoot> listener) {
         return root.addObjectListener(listener);
     }
 
     /**
      * Logs in to the server
-     * @param method the method to authenticate with
      */
-    public final void login(AuthenticationMethod method) {
-        if(getRouterStatus() != Status.ConnectedToServer)
-            throw new HousemateRuntimeException("Cannot login until the router is connected to the server");
-        root.login(method);
+    public final void register(ApplicationDetails applicationDetails) {
+        if(getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer)
+            throw new HousemateRuntimeException("Cannot request access until the router is connected to the server");
+        root.register(applicationDetails);
     }
 
     /**
      * Logs out of the server
      */
-    public final void logout() {
-        root.logout();
+    public final void unregister() {
+        root.unregister();
     }
 
     /**
@@ -129,7 +137,10 @@ public abstract class Router implements Sender, Receiver {
         String clientId = "" + nextId.incrementAndGet();
         receivers.put(clientId, receiver);
         try {
-            receiver.messageReceived(new Message<Router.Status>(new String[] {""}, Root.STATUS_TYPE, root.getRouterStatus()));
+            boolean allowed = root.getApplicationInstanceStatus() == ApplicationInstanceStatus.Allowed;
+            receiver.messageReceived(new Message<Root.ConnectionStatus>(new String[] {""}, Root.CONNECTION_STATUS_TYPE,
+                    new Root.ConnectionStatus(allowed ? ServerConnectionStatus.ConnectedToServer : ServerConnectionStatus.ConnectedToRouter,
+                            ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered)));
         } catch(HousemateException e) {
             log.e("Failed to tell new client " + clientId + " the current router status");
         }
@@ -137,19 +148,28 @@ public abstract class Router implements Sender, Receiver {
     }
 
     @Override
-    public final void messageReceived(Message message) throws HousemateException {
-        // get the key
-        String key = message.getNextClientKey();
+    public final void messageReceived(Message message) {
+        try {
+            // get the key
+            String key = message.getNextClientKey();
 
-        // if no key then it's intended for this router's root object
-        if(key == null) {
-            root.distributeMessage(message);
-        } else {
-            Receiver receiver = receivers.get(key);
-            if(receiver == null)
-                root.unknownClient(key);
-            else
-                receiver.messageReceived(message);
+            // if no key then it's intended for this router's root object
+            if(key == null) {
+                root.distributeMessage(message);
+            } else {
+                Receiver receiver = receivers.get(key);
+                if(receiver == null)
+                    root.unknownClient(key);
+                else {
+                    try {
+                        receiver.messageReceived(message);
+                    } catch(Throwable t) {
+                        log.e("Receiver failed to process message", t);
+                    }
+                }
+            }
+        } catch(Throwable t) {
+            log.e("Error processing received message", t);
         }
     }
 
@@ -176,7 +196,7 @@ public abstract class Router implements Sender, Receiver {
         /**
          * Removes this client registration
          */
-        public synchronized final void remove() {
+        public synchronized final void unregister() {
             connected = false;
             if(clientId != null)
                 receivers.remove(clientId);

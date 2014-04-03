@@ -29,4 +29,9 @@ public final class CompoundTypeData extends TypeData<ListData<SubTypeData>> {
     public HousemateData clone() {
         return new CompoundTypeData(getId(), getName(), getDescription(), getMinValues(), getMaxValues());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return getClass().equals(o.getClass()) && ((HousemateData)o).getId().equals(getId());
+    }
 }

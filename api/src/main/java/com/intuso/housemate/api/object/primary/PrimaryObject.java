@@ -15,8 +15,8 @@ import com.intuso.housemate.api.object.value.Value;
  * @param <LISTENER> the type of the primary object's listener
  */
 public interface PrimaryObject<
-            REMOVE_COMMAND extends Command<?, ?>,
-            START_STOP_COMMAND extends Command<?, ?>,
+            REMOVE_COMMAND extends Command<?, ?, ?>,
+            START_STOP_COMMAND extends Command<?, ?, ?>,
             RUNNING_VALUE extends Value<?, ?>,
             ERROR_VALUE extends Value<?, ?>,
             PRIMARY_OBJECT extends PrimaryObject<REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, PRIMARY_OBJECT, LISTENER>,

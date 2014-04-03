@@ -21,9 +21,9 @@ import com.intuso.housemate.api.object.value.Value;
  * @param <A> the type of the automation
  */
 public interface Automation<
-            REMOVE_COMMAND extends Command<?, ?>,
-            START_STOP_COMMAND extends Command<?, ?>,
-            ADD_COMMMAND extends Command<?, ?>,
+            REMOVE_COMMAND extends Command<?, ?, ?>,
+            START_STOP_COMMAND extends Command<?, ?, ?>,
+            ADD_COMMMAND extends Command<?, ?, ?>,
             RUNNING_VALUE extends Value<?, ?>,
             ERROR_VALUE extends Value<?, ?>,
             CONDITION extends Condition<?, ?, ?, ?, ?, ?, ?>,

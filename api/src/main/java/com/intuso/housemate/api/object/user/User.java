@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.command.Command;
 /**
  * @param <REMOVE_COMMAND> the type of the remove command
  */
-public interface User<REMOVE_COMMAND extends Command<?, ?>>
+public interface User<REMOVE_COMMAND extends Command<?, ?, ?>>
         extends BaseHousemateObject<UserListener>, RemoveableObject<REMOVE_COMMAND> {
     public final static String REMOVE_ID = "remove";
 }

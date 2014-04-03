@@ -5,6 +5,7 @@
     <inherits name="com.google.common.base.Base"/>
     <inherits name="com.google.common.collect.Collect"/>
 
+    <inherits name='com.intuso.utilities.Properties'/>
     <inherits name='com.intuso.utilities.Log'/>
     <inherits name='com.intuso.utilities.Listener'/>
     <inherits name='com.intuso.utilities.Object'/>

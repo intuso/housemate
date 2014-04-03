@@ -1,10 +1,7 @@
 package com.intuso.housemate.api.object.root;
 
-import com.intuso.housemate.api.authentication.AuthenticationMethod;
-import com.intuso.housemate.api.comms.ConnectionStatus;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.comms.Sender;
+import com.intuso.housemate.api.comms.*;
+import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
@@ -16,12 +13,14 @@ import com.intuso.utilities.listener.ListenerRegistration;
 public interface Root<ROOT extends Root<?>>
         extends BaseHousemateObject<RootListener<? super ROOT>>, Receiver<Message.Payload>, Sender {
 
-    public final static String STATUS_TYPE = "status";
-    public final static String CONNECTION_REQUEST_TYPE = "connection-request";
-    public final static String CONNECTION_RESPONSE_TYPE = "connection-response";
-    public final static String DISCONNECT_TYPE = "disconnect";
+    public final static String SERVER_INSTANCE_ID_TYPE = "server-instance-id";
+    public final static String APPLICATION_INSTANCE_ID_TYPE = "application-instance-id";
+    public final static String CONNECTION_STATUS_TYPE = "connection-status";
+    public final static String APPLICATION_REGISTRATION_TYPE = "application-registration";
+    public final static String APPLICATION_UNREGISTRATION_TYPE = "application-unregistration";
     public final static String CONNECTION_LOST_TYPE = "connection-lost";
 
+    public final static String APPLICATIONS_ID = "applications";
     public final static String USERS_ID = "users";
     public final static String TYPES_ID = "types";
     public final static String DEVICES_ID = "devices";
@@ -30,28 +29,20 @@ public interface Root<ROOT extends Root<?>>
     public final static String ADD_DEVICE_ID = "add-device";
     public final static String ADD_AUTOMATION_ID = "add-automation";
 
-    /**
-     * Gets the current connection status
-     * @return the current connection status
-     */
-    public ConnectionStatus getStatus();
-
-    /**
-     * Gets the connection id
-     * @return the connection id
-     */
-    public String getConnectionId();
+    public ApplicationStatus getApplicationStatus();
+    public ApplicationInstanceStatus getApplicationInstanceStatus();
 
     /**
      * Logs in to the server
-     * @param method the method used to authenticate with
+     * @param applicationDetails
+     *
      */
-    public void login(AuthenticationMethod method);
+    public void register(ApplicationDetails applicationDetails);
 
     /**
      * Logs out of the server
      */
-    public void logout();
+    public void unregister();
 
     /**
      * Add a listener for lifecycle updates about an object
@@ -68,4 +59,37 @@ public interface Root<ROOT extends Root<?>>
      */
     public HousemateObject<?, ?, ?, ?> getObject(String[] path);
 
+    public class ConnectionStatus implements Message.Payload {
+
+        private ServerConnectionStatus serverConnectionStatus;
+        private ApplicationStatus applicationStatus;
+        private ApplicationInstanceStatus applicationInstanceStatus;
+
+        private ConnectionStatus() {}
+
+        public ConnectionStatus(ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+            this.serverConnectionStatus = serverConnectionStatus;
+            this.applicationStatus = applicationStatus;
+            this.applicationInstanceStatus = applicationInstanceStatus;
+        }
+
+        public ServerConnectionStatus getServerConnectionStatus() {
+            return serverConnectionStatus;
+        }
+
+        public ApplicationStatus getApplicationStatus() {
+            return applicationStatus;
+        }
+
+        public ApplicationInstanceStatus getApplicationInstanceStatus() {
+            return applicationInstanceStatus;
+        }
+
+        @Override
+        public String toString() {
+            return "serverConnectionStatus=" + serverConnectionStatus
+                   + ", applicationStatus=" + applicationStatus
+                   + ", applicationInstanceStatus=" + applicationInstanceStatus;
+        }
+    }
 }

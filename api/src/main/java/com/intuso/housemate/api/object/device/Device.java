@@ -25,9 +25,9 @@ import com.intuso.housemate.api.object.value.Value;
  * @param <DEVICE> the type of the device
  */
 public interface Device<
-            REMOVE_COMMAND extends Command<?, ?>,
-            START_STOP_COMMAND extends Command<?, ?>,
-            COMMAND extends Command<?, ?>,
+            REMOVE_COMMAND extends Command<?, ?, ?>,
+            START_STOP_COMMAND extends Command<?, ?, ?>,
+            COMMAND extends Command<?, ?, ?>,
             COMMANDS extends List<? extends COMMAND>,
             CONNECTED_VALUE extends Value<?, ?>,
             RUNNING_VALUE extends Value<?, ?>,

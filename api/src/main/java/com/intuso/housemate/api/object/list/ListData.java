@@ -3,6 +3,7 @@ package com.intuso.housemate.api.object.list;
 import com.intuso.housemate.api.object.HousemateData;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Data object for a list
@@ -25,5 +26,21 @@ public final class ListData<DATA extends HousemateData<?>> extends HousemateData
     @Override
     public HousemateData clone() {
         return new ListData(getId(), getName(), getDescription());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof ListData))
+            return false;
+        ListData<DATA> other = (ListData<DATA>)o;
+        if(other.getChildData().size() != getChildData().size())
+            return false;
+        for(Map.Entry<String, ? extends HousemateData<?>> entry : getChildData().entrySet()) {
+            if(!getChildData().containsKey(entry.getKey()))
+                return false;
+            else if(!getChildData().get(entry.getKey()).equals(entry.getValue()))
+                return false;
+        }
+        return true;
     }
 }

@@ -1,14 +1,13 @@
 package com.intuso.housemate.api.object.device.feature;
 
-import com.intuso.housemate.annotations.feature.Id;
 import com.intuso.housemate.api.object.command.Command;
 
 /**
  * Interface for all devices that allow power control
  * @param <COMMAND> the command type
  */
-@Id("power-control")
-public interface PowerControl<COMMAND extends Command<?, ?>>
+@FeatureId("power-control")
+public interface PowerControl<COMMAND extends Command<?, ?, ?>>
         extends Feature {
 
     public final static String ID = "power-control";

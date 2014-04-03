@@ -3,10 +3,12 @@ package com.intuso.housemate.api.object;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
 
@@ -33,24 +35,29 @@ public abstract class HousemateObject<
     public final static String EVERYTHING = "*";
     public final static String EVERYTHING_RECURSIVE = "**";
 
-    public final static String CHILD_ADDED = "child-added";
-    public final static String CHILD_REMOVED = "child-removed";
     public final static String LOAD_REQUEST = "load-request";
     public final static String LOAD_RESPONSE = "load-response";
+    public final static String CHILD_OVERVIEWS_REQUEST = "child-overviews-request";
+    public final static String CHILD_OVERVIEWS_RESPONSE = "child-overviews-response";
+    public final static String CHILD_ADDED = "child-added";
+    public final static String CHILD_REMOVED = "child-removed";
 
     private final Log log;
+    private final ListenersFactory listenersFactory;
 
     private String path[];
-    private final Listeners<LISTENER> objectListeners = new Listeners<LISTENER>();
+    private final Listeners<LISTENER> objectListeners;
     private final Map<String, Listeners<Receiver<?>>> messageListeners = Maps.newHashMap();
     private final List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
 
     /**
      * @param data the data object
      */
-    protected HousemateObject(Log log, DATA data) {
-        super(data);
+    protected HousemateObject(Log log, ListenersFactory listenersFactory, DATA data) {
+        super(listenersFactory, data);
         this.log = log;
+        this.listenersFactory = listenersFactory;
+        this.objectListeners = listenersFactory.create();
     }
 
     /**
@@ -75,6 +82,10 @@ public abstract class HousemateObject<
      */
     public final Log getLog() {
         return log;
+    }
+
+    public final ListenersFactory getListenersFactory() {
+        return listenersFactory;
     }
 
     /**
@@ -111,7 +122,7 @@ public abstract class HousemateObject<
     protected ListenerRegistration addMessageListener(String type, Receiver listener) {
         Listeners<Receiver<?>> listeners = messageListeners.get(type);
         if(listeners == null) {
-            listeners = new Listeners<Receiver<?>>();
+            listeners = listenersFactory.create();
             messageListeners.put(type, listeners);
         }
         return listeners.addListener(listener);
@@ -177,6 +188,10 @@ public abstract class HousemateObject<
         return Lists.newArrayList();
     }
 
+    protected void addListenerRegistration(ListenerRegistration listenerRegistration) {
+        listenerRegistrations.add(listenerRegistration);
+    }
+
     /**
      * Hook for further intialisation of this object before initialisation recurses to its children
      * @param parent this object's parent object
@@ -198,6 +213,7 @@ public abstract class HousemateObject<
         listenerRegistrations.clear();
         for(CHILD child : getChildren())
             child.uninit();
+        getChildren().clear();
     }
 
     /**
@@ -237,6 +253,35 @@ public abstract class HousemateObject<
         return getChild(next, path, depth + 1);
     }
 
+    public static class ChildOverviews implements Message.Payload {
+
+        private List<ChildOverview> childOverviews;
+        private String error;
+
+        private ChildOverviews() {}
+
+        public ChildOverviews(List<ChildOverview> childOverviews) {
+            this(childOverviews, null);
+        }
+
+        public ChildOverviews(String error) {
+            this(null, error);
+        }
+
+        public ChildOverviews(List<ChildOverview> childOverviews, String error) {
+            this.childOverviews = childOverviews;
+            this.error = error;
+        }
+
+        public List<ChildOverview> getChildOverviews() {
+            return childOverviews;
+        }
+
+        public String getError() {
+            return error;
+        }
+    }
+
     /**
      * Container class for data about what objects a client wants to load
      */
@@ -247,6 +292,42 @@ public abstract class HousemateObject<
         private String id;
         private boolean load;
         private Map<String, TreeLoadInfo> children;
+
+        public static TreeLoadInfo create(String ... path) {
+            return create(path, null);
+        }
+
+        public static TreeLoadInfo create(String[] path, String ending) {
+            if(ending == null) {
+                if(path == null)
+                    throw new HousemateRuntimeException("Null path to load");
+                else if(path.length == 0)
+                    throw new HousemateRuntimeException("Empty path to load");
+                final HousemateObject.TreeLoadInfo root = new HousemateObject.TreeLoadInfo(path[0]);
+                HousemateObject.TreeLoadInfo current = root;
+                for(int i = 1; i < path.length; i++) {
+                    HousemateObject.TreeLoadInfo child = new HousemateObject.TreeLoadInfo(path[i]);
+                    current.getChildren().put(path[i], child);
+                    current = child;
+                }
+                return root;
+            } else {
+                if(path == null || path.length == 0)
+                    return new HousemateObject.TreeLoadInfo(ending);
+                else {
+                    final HousemateObject.TreeLoadInfo root = new HousemateObject.TreeLoadInfo(path[0]);
+                    HousemateObject.TreeLoadInfo current = root;
+                    for(int i = 1; i < path.length; i++) {
+                        HousemateObject.TreeLoadInfo child = new HousemateObject.TreeLoadInfo(path[i]);
+                        current.getChildren().put(path[i], child);
+                        current = child;
+                    }
+                    HousemateObject.TreeLoadInfo child = new HousemateObject.TreeLoadInfo(ending);
+                    current.getChildren().put(ending, child);
+                    return root;
+                }
+            }
+        }
 
         private TreeLoadInfo() {}
 
@@ -445,7 +526,7 @@ public abstract class HousemateObject<
 
         @Override
         public String toString() {
-            return loaderName + " tree " + treeData.getId() + " " + (treeData.getData() != null ? "data" : "failed because " + error);
+            return loaderName + " tree " + treeData.getId() + " " + (treeData.getData() != null ? "data" : (error != null ? "failed because " + error : ""));
         }
     }
 }

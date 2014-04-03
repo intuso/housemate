@@ -8,7 +8,7 @@ import com.intuso.housemate.api.object.value.Value;
  * @param <START_STOP_COMMAND> the type of the command
  * @param <RUNNING_VALUE> the type of the value
  */
-public interface RunnableObject<START_STOP_COMMAND extends Command<?, ?>, RUNNING_VALUE extends Value<?, ?>> {
+public interface RunnableObject<START_STOP_COMMAND extends Command<?, ?, ?>, RUNNING_VALUE extends Value<?, ?>> {
 
     /**
      * Gets the start command

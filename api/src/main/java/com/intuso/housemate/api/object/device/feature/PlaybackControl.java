@@ -1,14 +1,13 @@
 package com.intuso.housemate.api.object.device.feature;
 
-import com.intuso.housemate.annotations.feature.Id;
 import com.intuso.housemate.api.object.command.Command;
 
 /**
  * Interface for all devices that allow playback
  * @param <COMMAND> the command type
  */
-@Id("playback-control")
-public interface PlaybackControl<COMMAND extends Command<?, ?>>
+@FeatureId("playback-control")
+public interface PlaybackControl<COMMAND extends Command<?, ?, ?>>
         extends Feature {
 
     public final static String ID = "playback-control";

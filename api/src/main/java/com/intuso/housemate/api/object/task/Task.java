@@ -15,7 +15,7 @@ import com.intuso.housemate.api.object.value.Value;
  * @param <TASK> the type of the task
  */
 public interface Task<
-            REMOVE_COMMAND extends Command<?, ?>,
+            REMOVE_COMMAND extends Command<?, ?, ?>,
             EXECUTING_VALUE extends Value<?, ?>,
             ERROR_VALUE extends Value<?, ?>,
             PROPERTIES extends List<? extends Property<?, ?, ?>>,
