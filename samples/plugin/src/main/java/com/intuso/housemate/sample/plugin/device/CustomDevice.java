@@ -1,21 +1,17 @@
 package com.intuso.housemate.sample.plugin.device;
 
-import com.intuso.housemate.annotations.basic.Command;
-import com.intuso.housemate.annotations.basic.Parameter;
-import com.intuso.housemate.annotations.basic.Property;
-import com.intuso.housemate.annotations.basic.Value;
-import com.intuso.housemate.annotations.basic.Values;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.object.real.RealDevice;
+import com.intuso.housemate.object.real.annotations.*;
+import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.housemate.sample.plugin.type.Location;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
-/**
- * Example device with a standard constructor that can be used with the
- * {@link com.intuso.housemate.annotations.plugin.Devices} annotation
- *
- * @see com.intuso.housemate.annotations.plugin.AnnotatedPluginModule
- */
-public class SimpleDevice extends RealDevice {
+@TypeInfo(id = "custom-device", name = "Custom Device", description = "Device that does some custom thing")
+public class CustomDevice extends RealDevice {
 
     @Values
     public MyValues values;
@@ -23,8 +19,11 @@ public class SimpleDevice extends RealDevice {
     @Property(id = "my-property", name = "My Property", description = "Property to control me", typeId = "double")
     public double myProperty = 1.0;
 
-    public SimpleDevice(Log log, String id, String name, String description) {
-        super(log, id, name, description);
+    @Inject
+    public CustomDevice(Log log,
+                        ListenersFactory listenersFactory,
+                        @Assisted DeviceData data) {
+        super(log, listenersFactory, data);
         getCustomPropertyIds().add("my-property");
     }
 

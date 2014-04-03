@@ -1,22 +1,24 @@
 package com.intuso.housemate.sample.plugin.task;
 
 import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.object.server.real.ServerRealTask;
 import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
+import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
-/**
- * Example task with a standard constructor that can be used with the
- * {@link com.intuso.housemate.annotations.plugin.Tasks} annotation
- *
- * @see com.intuso.housemate.annotations.plugin.AnnotatedPluginModule
- */
+@TypeInfo(id = "do-your-thing", name = "Do Your Thing", description = "Special task that does your thing")
 public class DoYourThingTask extends ServerRealTask {
 
     @Inject
-    public DoYourThingTask(Log log, String id, String name, String description, ServerRealTaskOwner owner) {
-        super(log, id, name, description, owner);
+    public DoYourThingTask(Log log,
+                           ListenersFactory listenersFactory,
+                           @Assisted TaskData data,
+                           @Assisted ServerRealTaskOwner owner) {
+        super(log, listenersFactory, data, owner);
     }
 
     @Override

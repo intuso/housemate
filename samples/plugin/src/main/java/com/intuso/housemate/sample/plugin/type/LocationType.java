@@ -9,6 +9,7 @@ import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealSubType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealCompoundType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 public class LocationType extends RealCompoundType<Location> {
@@ -26,21 +27,21 @@ public class LocationType extends RealCompoundType<Location> {
     public final static String LONGITUDE_DESCRIPTION = "The location's longitude";
 
     @Inject
-    protected LocationType(Log log, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
-        super(log, ID, NAME, DESCRIPTION, 1, 1,
-                makeLatitudeSubType(log, types), makeLongitudeSubType(log, types));
+    protected LocationType(Log log, ListenersFactory listenersFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1,
+                1, makeLatitudeSubType(log, listenersFactory, types), makeLongitudeSubType(log, listenersFactory, types));
     }
 
-    private static RealSubType<Double> makeLatitudeSubType(Log log,
+    private static RealSubType<Double> makeLatitudeSubType(Log log, ListenersFactory listenersFactory,
                                                            RealList<TypeData<?>, RealType<?, ?, ?>> types) {
-        return new RealSubType<Double>(log, LATITUDE_ID, LATITUDE_NAME, LATITUDE_DESCRIPTION,
-                SimpleTypeData.Type.Double.getId(), types);
+        return new RealSubType<Double>(log, listenersFactory, LATITUDE_ID, LATITUDE_NAME,
+                LATITUDE_DESCRIPTION, SimpleTypeData.Type.Double.getId(), types);
     }
 
-    private static RealSubType<Double> makeLongitudeSubType(Log log,
+    private static RealSubType<Double> makeLongitudeSubType(Log log, ListenersFactory listenersFactory,
                                                             RealList<TypeData<?>, RealType<?, ?, ?>> types) {
-        return new RealSubType<Double>(log, LONGITUDE_ID, LONGITUDE_NAME, LONGITUDE_DESCRIPTION,
-                SimpleTypeData.Type.Double.getId(), types);
+        return new RealSubType<Double>(log, listenersFactory, LONGITUDE_ID, LONGITUDE_NAME,
+                LONGITUDE_DESCRIPTION, SimpleTypeData.Type.Double.getId(), types);
     }
 
     @Override

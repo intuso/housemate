@@ -20,7 +20,7 @@
 		</dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>annotations-plugin</artifactId>
+            <artifactId>plugin-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 	</dependencies>
