@@ -1,8 +1,8 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.type.ObjectTypeData;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -14,10 +14,9 @@ public abstract class ProxyObjectType<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyObjectType(Log log, Injector injector, ObjectTypeData data) {
-        super(log, injector, data);
+    public ProxyObjectType(Log log, ListenersFactory listenersFactory, ObjectTypeData data) {
+        super(log, listenersFactory, data);
     }
 }

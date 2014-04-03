@@ -1,15 +1,15 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceListener;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueData;
+import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.proxy.device.feature.ProxyFeature;
-import com.intuso.housemate.object.proxy.device.feature.ProxyFeatureFactory;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
  * @param <DEVICE> the type of the device
  */
 public abstract class ProxyDevice<
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
+            COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
             COMMANDS extends ProxyList<CommandData, COMMAND, COMMANDS>,
             VALUE extends ProxyValue<?, VALUE>,
             VALUES extends ProxyList<ValueData, VALUE, VALUES>,
@@ -37,11 +37,10 @@ public abstract class ProxyDevice<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyDevice(Log log, Injector injector, DeviceData data) {
-        super(log, injector, data);
+    public ProxyDevice(Log log, ListenersFactory listenersFactory, DeviceData data) {
+        super(log, listenersFactory, data);
     }
 
     @Override
@@ -57,6 +56,31 @@ public abstract class ProxyDevice<
     @Override
     public final PROPERTIES getProperties() {
         return (PROPERTIES) getChild(PROPERTIES_ID);
+    }
+
+    @Override
+    public List<ListenerRegistration> registerListeners() {
+        final java.util.List<ListenerRegistration> result = super.registerListeners();
+        addChildLoadedListener(CONNECTED_ID, new ChildLoadedListener<DEVICE, ProxyObject<?, ?, ?, ?, ?>>() {
+            @Override
+            public void childLoaded(DEVICE object, ProxyObject<?, ?, ?, ?, ?> proxyObject) {
+                result.add(getConnectedValue().addObjectListener(new ValueListener<VALUE>() {
+                    @Override
+                    public void valueChanging(VALUE value) {
+                        // do nothing
+                    }
+
+                    @Override
+                    public void valueChanged(VALUE value) {
+                        // call our own listeners
+                        boolean connected = isConnected();
+                        for(DeviceListener<? super DEVICE> listener : getObjectListeners())
+                            listener.deviceConnected(getThis(), connected);
+                    }
+                }));
+            }
+        });
+        return result;
     }
 
     @Override
@@ -91,7 +115,5 @@ public abstract class ProxyDevice<
         return getData().getCustomPropertyIds();
     }
 
-    public <F extends FEATURE> F getFeature(String featureId) {
-        return getInjector().getInstance(new Key<ProxyFeatureFactory<FEATURE, DEVICE>>() {}).getFeature(featureId, getThis());
-    }
+    public abstract <F extends FEATURE> F getFeature(String featureId);
 }

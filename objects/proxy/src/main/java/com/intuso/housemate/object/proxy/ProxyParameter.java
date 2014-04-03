@@ -1,10 +1,10 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterListener;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -19,11 +19,10 @@ public abstract class ProxyParameter<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyParameter(Log log, Injector injector, ParameterData data) {
-        super(log, injector, data);
+    public ProxyParameter(Log log, ListenersFactory listenersFactory, ParameterData data) {
+        super(log, listenersFactory, data);
     }
 
     @Override

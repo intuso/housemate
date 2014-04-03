@@ -1,6 +1,5 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.HousemateData;
@@ -9,6 +8,7 @@ import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -31,11 +31,10 @@ public abstract class ProxyValueBase<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyValueBase(Log log, Injector injector, DATA data) {
-        super(log, injector, data);
+    public ProxyValueBase(Log log, ListenersFactory listenersFactory, DATA data) {
+        super(log, listenersFactory, data);
     }
 
     @Override
@@ -68,5 +67,4 @@ public abstract class ProxyValueBase<
     public final TypeInstances getTypeInstances() {
         return getData().getTypeInstances();
     }
-
 }

@@ -18,19 +18,5 @@
 			<artifactId>api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-assistedinject</artifactId>
-            <version>${guice.version}</version>
-        </dependency>
-
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>object-real</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
 	</dependencies>
 </project>

@@ -2,22 +2,23 @@ package com.intuso.housemate.object.proxy;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
-import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.authentication.AuthenticationMethod;
+import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.*;
-import com.intuso.housemate.api.comms.message.AuthenticationResponse;
+import com.intuso.housemate.api.comms.access.ApplicationDetails;
+import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.root.proxy.ProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectListener;
+import com.intuso.utilities.properties.api.PropertyRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,9 @@ import java.util.Set;
  * @param <COMMAND> the type of the command
  * @param <ROOT> the type of the root
  */
-public abstract class ProxyRootObject<
+public abstract class ProxyRoot<
+            APPLICATION extends ProxyApplication<?, ?, ?, ?, APPLICATION>,
+            APPLICATIONS extends ProxyList<?, APPLICATION, APPLICATIONS>,
             USER extends ProxyUser<?, USER>,
             USERS extends ProxyList<?, USER, USERS>,
             TYPE extends ProxyType<?, ?, ?, ?>,
@@ -45,10 +48,11 @@ public abstract class ProxyRootObject<
             DEVICES extends ProxyList<?, DEVICE, DEVICES>,
             AUTOMATION extends ProxyAutomation<?, ?, ?, ?, ?, ?, ?>,
             AUTOMATIONS extends ProxyList<?, AUTOMATION, AUTOMATIONS>,
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
-            ROOT extends ProxyRootObject<USER, USERS, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
+            COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
+            ROOT extends ProxyRoot<APPLICATION, APPLICATIONS, USER, USERS, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
         extends ProxyObject<RootData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, ROOT, RootListener<? super ROOT>>
-        implements ProxyRoot<USERS, TYPES, DEVICES, AUTOMATIONS, COMMAND, ROOT>, ObjectListener<ProxyObject<?, ?, ?, ?, ?>>, ConnectionStatusChangeListener {
+        implements com.intuso.housemate.api.object.root.proxy.ProxyRoot<APPLICATIONS, USERS, TYPES, DEVICES, AUTOMATIONS, COMMAND, ROOT>,
+            ObjectListener<ProxyObject<?, ?, ?, ?, ?>> {
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
 
@@ -57,35 +61,34 @@ public abstract class ProxyRootObject<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param router The router to connect through
      */
-    public ProxyRootObject(Log log, Injector injector, Router router) {
-        super(log, injector, new RootData());
-        routerRegistration = router.registerReceiver(this);
-        connectionManager = new ConnectionManager(routerRegistration, ConnectionType.Proxy, ConnectionStatus.Unauthenticated);
+    public ProxyRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router) {
+        super(log, listenersFactory, new RootData());
+        connectionManager = new ConnectionManager(listenersFactory, properties, ClientType.Proxy);
         init(null);
+        routerRegistration = router.registerReceiver(this);
     }
 
     @Override
-    public ConnectionStatus getStatus() {
-        return connectionManager.getStatus();
+    public ApplicationStatus getApplicationStatus() {
+        return connectionManager.getApplicationStatus();
     }
 
     @Override
-    public String getConnectionId() {
-        return connectionManager.getConnectionId();
+    public ApplicationInstanceStatus getApplicationInstanceStatus() {
+        return connectionManager.getApplicationInstanceStatus();
     }
 
     @Override
-    public void login(AuthenticationMethod method) {
-        connectionManager.login(method);
+    public void register(ApplicationDetails applicationDetails) {
+        connectionManager.register(applicationDetails, routerRegistration);
     }
 
     @Override
-    public void logout() {
-        connectionManager.logout();
-        routerRegistration.remove();
+    public void unregister() {
+        connectionManager.unregister(routerRegistration);
+        routerRegistration.unregister();
     }
 
     @Override
@@ -95,6 +98,12 @@ public abstract class ProxyRootObject<
 
     @Override
     public void sendMessage(Message<?> message) {
+        // if we're not allowed to send messages, and it's not a registration message, then throw an exception
+        if(getApplicationInstanceStatus() != ApplicationInstanceStatus.Allowed
+                && !(message.getPath().length == 1 &&
+                (message.getType().equals(APPLICATION_REGISTRATION_TYPE)
+                        || message.getType().equals(APPLICATION_UNREGISTRATION_TYPE))))
+            throw new HousemateRuntimeException("Client application instance is not allowed access to the server");
         routerRegistration.sendMessage(message);
     }
 
@@ -102,20 +111,58 @@ public abstract class ProxyRootObject<
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
         result.add(addChildListener(this));
-        result.add(connectionManager.addStatusChangeListener(this));
-        result.add(addMessageListener(CONNECTION_RESPONSE_TYPE, new Receiver<AuthenticationResponse>() {
+        result.add(connectionManager.addStatusChangeListener(new ConnectionListener() {
+
             @Override
-            public void messageReceived(Message<AuthenticationResponse> message) throws HousemateException {
-                connectionManager.authenticationResponseReceived(message.getPayload());
+            public void statusChanged(ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+                for (RootListener<? super ROOT> listener : getObjectListeners())
+                    listener.statusChanged(getThis(), serverConnectionStatus, applicationStatus, applicationInstanceStatus);
+            }
+
+            @Override
+            public void newApplicationInstance(String instanceId) {
+                for (RootListener<? super ROOT> listener : getObjectListeners())
+                    listener.newApplicationInstance(getThis(), instanceId);
+            }
+
+            @Override
+            public void newServerInstance(String serverId) {
+                Set<String> ids = Sets.newHashSet();
+                for (HousemateObject<?, ?, ?, ?> child : getChildren()) {
+                    child.uninit();
+                    ids.add(child.getId());
+                }
+                for (String id : ids)
+                    removeChild(id);
+                for (RootListener<? super ROOT> listener : getObjectListeners())
+                    listener.newServerInstance(getThis(), serverId);
             }
         }));
-        result.add(addMessageListener(STATUS_TYPE, new Receiver<Router.Status>() {
+        result.add(addMessageListener(SERVER_INSTANCE_ID_TYPE, new Receiver<StringPayload>() {
             @Override
-            public void messageReceived(Message<Router.Status> message) throws HousemateException {
-                connectionManager.setRouterStatus(message.getPayload());
+            public void messageReceived(Message<StringPayload> message) throws HousemateException {
+                connectionManager.setServerInstanceId(message.getPayload().getValue());
+            }
+        }));
+        result.add(addMessageListener(APPLICATION_INSTANCE_ID_TYPE, new Receiver<StringPayload>() {
+            @Override
+            public void messageReceived(Message<StringPayload> message) throws HousemateException {
+                connectionManager.setApplicationInstanceId(message.getPayload().getValue());
+            }
+        }));
+        result.add(addMessageListener(CONNECTION_STATUS_TYPE, new Receiver<ConnectionStatus>() {
+            @Override
+            public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
+                connectionManager.setConnectionStatus(message.getPayload().getServerConnectionStatus(),
+                        message.getPayload().getApplicationStatus(), message.getPayload().getApplicationInstanceStatus());
             }
         }));
         return result;
+    }
+
+    @Override
+    public APPLICATIONS getApplications() {
+        return (APPLICATIONS) getChild(APPLICATIONS_ID);
     }
 
     @Override
@@ -210,28 +257,16 @@ public abstract class ProxyRootObject<
         String path = Joiner.on(PATH_SEPARATOR).join(ancestorPath);
         Listeners<ObjectLifecycleListener> listeners = objectLifecycleListeners.get(path);
         if(listeners == null) {
-            listeners = new Listeners<ObjectLifecycleListener>();
+            listeners = getListenersFactory().create();
             objectLifecycleListeners.put(path, listeners);
         }
         return listeners.addListener(listener);
     }
 
-    @Override
-    public final void connectionStatusChanged(ConnectionStatus status) {
-        for(RootListener<? super ROOT> listener : getObjectListeners())
-            listener.connectionStatusChanged(getThis(), status);
-    }
-
-    @Override
-    public final void newServerInstance() {
-        Set<String> ids = Sets.newHashSet();
-        for(HousemateObject<?, ?, ?, ?> child : getChildren()) {
-            child.uninit();
-            ids.add(child.getId());
-        }
-        for(String id : ids)
-            removeChild(id);
-        for(RootListener<? super ROOT> listener : getObjectListeners())
-            listener.newServerInstance(getThis());
+    public void clearLoadedObjects() {
+        sendMessage(CLEAR_LOADED, new StringPayload(""));
+        // clone the set so we can edit it while we iterate it
+        for(String childName : Sets.newHashSet(getChildNames()))
+            removeChild(childName);
     }
 }

@@ -1,6 +1,5 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.condition.Condition;
@@ -9,6 +8,7 @@ import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -19,7 +19,7 @@ import com.intuso.utilities.log.Log;
  * @param <CONDITIONS> the type of the conditions list
  */
 public abstract class ProxyCondition<
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
+            COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
             VALUE extends ProxyValue<?, VALUE>,
             PROPERTIES extends ProxyList<PropertyData, ? extends ProxyProperty<?, ?, ?>, PROPERTIES>,
             CONDITION extends ProxyCondition<COMMAND, VALUE, PROPERTIES, CONDITION, CONDITIONS>,
@@ -29,11 +29,10 @@ public abstract class ProxyCondition<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyCondition(Log log, Injector injector, ConditionData data) {
-        super(log, injector, data);
+    public ProxyCondition(Log log, ListenersFactory listenersFactory, ConditionData data) {
+        super(log, listenersFactory, data);
     }
 
     @Override

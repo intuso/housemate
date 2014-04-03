@@ -1,6 +1,5 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.task.Task;
@@ -8,6 +7,7 @@ import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.task.TaskListener;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -16,7 +16,7 @@ import com.intuso.utilities.log.Log;
  * @param <TASK> the type of the task
  */
 public abstract class ProxyTask<
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
+            COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
             VALUE extends ProxyValue<?, VALUE>,
             PROPERTIES extends ProxyList<PropertyData, ? extends ProxyProperty<?, ?, ?>, PROPERTIES>,
             TASK extends ProxyTask<COMMAND, VALUE, PROPERTIES, TASK>>
@@ -25,11 +25,10 @@ public abstract class ProxyTask<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyTask(Log log, Injector injector, TaskData data) {
-        super(log, injector, data);
+    public ProxyTask(Log log, ListenersFactory listenersFactory, TaskData data) {
+        super(log, listenersFactory, data);
     }
 
     @Override

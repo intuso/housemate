@@ -1,8 +1,8 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.type.SimpleTypeData;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -14,11 +14,10 @@ public abstract class ProxySimpleType<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxySimpleType(Log log, Injector injector, SimpleTypeData data) {
-        super(log, injector, data);
+    public ProxySimpleType(Log log, ListenersFactory listenersFactory, SimpleTypeData data) {
+        super(log, listenersFactory, data);
     }
 
     /**

@@ -1,9 +1,7 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.ObjectListener;
-import com.intuso.utilities.log.Log;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,12 +12,13 @@ import com.intuso.utilities.log.Log;
  */
 public final class NoChildrenProxyObject extends ProxyObject<NoChildrenData, NoChildrenData, NoChildrenProxyObject,
         NoChildrenProxyObject, ObjectListener> {
-    /**
-     * @param log      the log
-     * @param injector the injector
-     * @param data     the data object
-     */
-    private NoChildrenProxyObject(Log log, Injector injector, NoChildrenData data) {
-        super(log, injector, data);
+
+    private NoChildrenProxyObject() {
+        super(null, null, null);
+    }
+
+    @Override
+    protected NoChildrenProxyObject createChildInstance(NoChildrenData noChildrenData) {
+        return null;
     }
 }

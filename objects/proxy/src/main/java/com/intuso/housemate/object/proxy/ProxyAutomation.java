@@ -1,11 +1,11 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.automation.AutomationListener;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.task.TaskData;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -18,7 +18,7 @@ import com.intuso.utilities.log.Log;
  * @param <AUTOMATION> the type of the automation
  */
 public abstract class ProxyAutomation<
-            ADD_COMMAND extends ProxyCommand<?, ?, ADD_COMMAND>,
+            ADD_COMMAND extends ProxyCommand<?, ?, ?, ADD_COMMAND>,
             VALUE extends ProxyValue<?, VALUE>,
             CONDITION extends ProxyCondition<?, ?, ?, CONDITION, CONDITIONS>,
             CONDITIONS extends ProxyList<ConditionData, CONDITION, CONDITIONS>,
@@ -30,11 +30,10 @@ public abstract class ProxyAutomation<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyAutomation(Log log, Injector injector, AutomationData data) {
-        super(log, injector, data);
+    public ProxyAutomation(Log log, ListenersFactory listenersFactory, AutomationData data) {
+        super(log, listenersFactory, data);
     }
 
     @Override

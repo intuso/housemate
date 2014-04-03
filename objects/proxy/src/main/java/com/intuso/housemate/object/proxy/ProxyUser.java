@@ -1,10 +1,10 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.user.UserListener;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -12,18 +12,17 @@ import com.intuso.utilities.log.Log;
  * @param <USER> the type of the user
  */
 public abstract class ProxyUser<
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
+            COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
             USER extends ProxyUser<COMMAND, USER>>
         extends ProxyObject<UserData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, USER, UserListener>
         implements User<COMMAND> {
 
     /**
      * @param log {@inheritDoc}
-     * @param injector{@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyUser(Log log, Injector injector, UserData data) {
-        super(log, injector, data);
+    public ProxyUser(Log log, ListenersFactory listenersFactory, UserData data) {
+        super(log, listenersFactory, data);
     }
 
     @Override

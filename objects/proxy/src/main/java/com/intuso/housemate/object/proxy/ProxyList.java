@@ -1,16 +1,14 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectListener;
 
@@ -30,11 +28,10 @@ public abstract class ProxyList<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxyList(Log log, Injector injector, ListData data) {
-        super(log, injector, data);
+    public ProxyList(Log log, ListenersFactory listenersFactory, ListData data) {
+        super(log, listenersFactory, data);
     }
 
     @Override
@@ -49,10 +46,10 @@ public abstract class ProxyList<
     @Override
     protected java.util.List registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(ADD_TYPE, new Receiver<HousemateData>() {
+        result.add(addMessageListener(ADD_TYPE, new Receiver<CHILD_DATA>() {
             @Override
-            public void messageReceived(Message<HousemateData> message) throws HousemateException {
-                CHILD child = (CHILD)getInjector().getInstance(new Key<HousemateObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>>() {}).create(message.getPayload());
+            public void messageReceived(Message<CHILD_DATA> message) throws HousemateException {
+                CHILD child = createChildInstance(message.getPayload());
                 if(child != null) {
                     child.init(ProxyList.this);
                     addChild(child);

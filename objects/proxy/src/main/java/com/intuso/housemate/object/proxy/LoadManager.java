@@ -12,24 +12,27 @@ import java.util.Set;
 /**
  * Base class for managing the loading of remote objects
  */
-public abstract class LoadManager {
+public class LoadManager {
 
+    private final Callback callback;
     private final String name;
     private final Map<String, HousemateObject.TreeLoadInfo> toLoad;
     private final Set<String> loaded = Sets.newHashSet();
 
-    protected LoadManager(String name, HousemateObject.TreeLoadInfo... toLoad) {
-        this(name, Lists.newArrayList(toLoad));
+    public LoadManager(Callback callback, String name, HousemateObject.TreeLoadInfo... toLoad) {
+        this(callback, name, Lists.newArrayList(toLoad));
     }
 
-    protected LoadManager(String name, List<HousemateObject.TreeLoadInfo> toLoad) {
+    public LoadManager(Callback callback, String name, List<HousemateObject.TreeLoadInfo> toLoad) {
+        this.callback = callback;
         this.name = name;
         this.toLoad = Maps.newHashMap();
         for(HousemateObject.TreeLoadInfo tl : toLoad)
             this.toLoad.put(tl.getId(), tl);
     }
 
-    protected LoadManager(String name, Map<String, HousemateObject.TreeLoadInfo> toLoad) {
+    public LoadManager(Callback callback, String name, Map<String, HousemateObject.TreeLoadInfo> toLoad) {
+        this.callback = callback;
         this.name = name;
         this.toLoad = toLoad;
     }
@@ -56,22 +59,27 @@ public abstract class LoadManager {
      * @param succeeded true if the load was successful
      */
     protected final void responseReceived(String objectId, boolean succeeded) {
-        if(toLoad.containsKey(objectId))
-            loaded.add(objectId);
-        if(!succeeded)
-            failed(toLoad.get(objectId));
+        if(objectId != null) {
+            if(toLoad.containsKey(objectId))
+                loaded.add(objectId);
+            if(!succeeded)
+                callback.failed(toLoad.get(objectId));
+        }
         if(toLoad.size() == loaded.size())
-            allLoaded();
+            callback.allLoaded();
     }
 
-    /**
-     * Callback for when the load of some objects failed
-     * @param path the path of the failed object
-     */
-    protected abstract void failed(HousemateObject.TreeLoadInfo path);
+    public static interface Callback {
 
-    /**
-     * Callback for when all required objects have been loaded
-     */
-    protected abstract void allLoaded();
+        /**
+         * Callback for when the load of some objects failed
+         * @param path the path of the failed object
+         */
+        public void failed(HousemateObject.TreeLoadInfo path);
+
+        /**
+         * Callback for when all required objects have been loaded
+         */
+        public void allLoaded();
+    }
 }

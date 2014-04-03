@@ -1,10 +1,10 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.subtype.SubType;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.subtype.SubTypeListener;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -19,11 +19,10 @@ public abstract class ProxySubType<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ProxySubType(Log log, Injector injector, SubTypeData data) {
-        super(log, injector, data);
+    public ProxySubType(Log log, ListenersFactory listenersFactory, SubTypeData data) {
+        super(log, listenersFactory, data);
     }
 
     @Override

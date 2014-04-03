@@ -1,11 +1,11 @@
 package com.intuso.housemate.object.proxy;
 
-import com.google.inject.Injector;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public abstract class ProxyPrimaryObject<
             DATA extends HousemateData<HousemateData<?>>,
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
+            COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
             VALUE extends ProxyValue<?, VALUE>,
             PRIMARY_OBJECT extends ProxyPrimaryObject<DATA, COMMAND, VALUE, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
@@ -28,11 +28,11 @@ public abstract class ProxyPrimaryObject<
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
+     * @param listenersFactory
      * @param data {@inheritDoc}
      */
-    protected ProxyPrimaryObject(Log log, Injector injector, DATA data) {
-        super(log, injector, data);
+    protected ProxyPrimaryObject(Log log, ListenersFactory listenersFactory, DATA data) {
+        super(log, listenersFactory, data);
     }
 
     @Override
