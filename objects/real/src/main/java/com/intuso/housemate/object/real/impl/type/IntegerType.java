@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealValue;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -32,8 +33,8 @@ public class IntegerType extends RealSimpleType<Integer> {
      * @param log {@inheritDoc}
      */
     @Inject
-    public IntegerType(Log log) {
-        super(log, SimpleTypeData.Type.Integer, SERIALISER);
+    public IntegerType(Log log, ListenersFactory listenersFactory) {
+        super(log, listenersFactory, SimpleTypeData.Type.Integer, SERIALISER);
     }
 
     /**
@@ -45,8 +46,9 @@ public class IntegerType extends RealSimpleType<Integer> {
      * @param value the initial value
      * @return an integer value object
      */
-    public static RealValue<Integer> createValue(Log log, String id, String name, String description, Integer value) {
-        return new RealValue<Integer>(log, id, name, description, new IntegerType(log), value);
+    public static RealValue<Integer> createValue(Log log, ListenersFactory listenersFactory,
+                                                 String id, String name, String description, Integer value) {
+        return new RealValue<Integer>(log, listenersFactory, id, name, description, new IntegerType(log, listenersFactory), value);
     }
 
     /**
@@ -58,8 +60,9 @@ public class IntegerType extends RealSimpleType<Integer> {
      * @param values the initial values
      * @return an integer property object
      */
-    public static RealProperty<Integer> createProperty(Log log, String id, String name, String description, List<Integer> values) {
-        return new RealProperty<Integer>(log, id, name, description, new IntegerType(log), values);
+    public static RealProperty<Integer> createProperty(Log log, ListenersFactory listenersFactory,
+                                                       String id, String name, String description, List<Integer> values) {
+        return new RealProperty<Integer>(log, listenersFactory, id, name, description, new IntegerType(log, listenersFactory), values);
     }
 
     /**
@@ -70,7 +73,8 @@ public class IntegerType extends RealSimpleType<Integer> {
      * @param description the parameter's description
      * @return an integer parameter object
      */
-    public static RealParameter<Integer> createParameter(Log log, String id, String name, String description) {
-        return new RealParameter<Integer>(log, id, name, description, new IntegerType(log));
+    public static RealParameter<Integer> createParameter(Log log, ListenersFactory listenersFactory,
+                                                         String id, String name, String description) {
+        return new RealParameter<Integer>(log, listenersFactory, id, name, description, new IntegerType(log, listenersFactory));
     }
 }

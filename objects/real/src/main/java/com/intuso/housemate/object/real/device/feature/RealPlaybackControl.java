@@ -1,13 +1,13 @@
 package com.intuso.housemate.object.real.device.feature;
 
-import com.intuso.housemate.annotations.basic.Command;
-import com.intuso.housemate.annotations.feature.Id;
+import com.intuso.housemate.object.real.annotations.Command;
+import com.intuso.housemate.api.object.device.feature.FeatureId;
 import com.intuso.housemate.api.HousemateException;
 
 /**
  * Interface to mark real devices that provide playback control
  */
-@Id("playback-control")
+@FeatureId("playback-control")
 public interface RealPlaybackControl extends RealFeature {
 
     /**

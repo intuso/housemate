@@ -8,6 +8,7 @@ import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.impl.type.*;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -19,8 +20,10 @@ public class RealObjectModule extends AbstractModule {
 
         // bind everything as singletons that should be
         // root objects
-        bind(RealRootObject.class).in(Scopes.SINGLETON);;
+        bind(RealRoot.class).in(Scopes.SINGLETON);;
         // common types
+        bind(ApplicationStatusType.class).in(Scopes.SINGLETON);
+        bind(ApplicationInstanceStatusType.class).in(Scopes.SINGLETON);
         bind(BooleanType.class).in(Scopes.SINGLETON);
         bind(DaysType.class).in(Scopes.SINGLETON);
         bind(DoubleType.class).in(Scopes.SINGLETON);
@@ -32,13 +35,13 @@ public class RealObjectModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public RealList<TypeData<?>, RealType<?, ?, ?>> getRealTypes(Log log) {
-        return new RealList<TypeData<?>, RealType<?, ?, ?>>(log, Root.TYPES_ID, "Types", "Types");
+    public RealList<TypeData<?>, RealType<?, ?, ?>> getRealTypes(Log log, ListenersFactory listenersFactory) {
+        return new RealList<TypeData<?>, RealType<?, ?, ?>>(log, listenersFactory, Root.TYPES_ID, "Types", "Types");
     }
 
     @Provides
     @Singleton
-    public RealList<DeviceData, RealDevice> getRealDevices(Log log) {
-        return new RealList<DeviceData, RealDevice>(log, Root.DEVICES_ID, "Devices", "Devices");
+    public RealList<DeviceData, RealDevice> getRealDevices(Log log, ListenersFactory listenersFactory) {
+        return new RealList<DeviceData, RealDevice>(log, listenersFactory, Root.DEVICES_ID, "Devices", "Devices");
     }
 }

@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealValue;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -32,8 +33,8 @@ public class StringType extends RealSimpleType<String> {
      * @param log {@inheritDoc}
      */
     @Inject
-    public StringType(Log log) {
-        super(log, SimpleTypeData.Type.String, SERIALISER);
+    public StringType(Log log, ListenersFactory listenersFactory) {
+        super(log, listenersFactory, SimpleTypeData.Type.String, SERIALISER);
     }
 
     /**
@@ -45,8 +46,9 @@ public class StringType extends RealSimpleType<String> {
      * @param value the initial value
      * @return a string value object
      */
-    public static RealValue<String> createValue(Log log, String id, String name, String description, String value) {
-        return new RealValue<String>(log, id, name, description, new StringType(log), value);
+    public static RealValue<String> createValue(Log log, ListenersFactory listenersFactory,
+                                                String id, String name, String description, String value) {
+        return new RealValue<String>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory), value);
     }
 
     /**
@@ -58,8 +60,9 @@ public class StringType extends RealSimpleType<String> {
      * @param values the initial values
      * @return a string property object
      */
-    public static RealProperty<String> createProperty(Log log, String id, String name, String description, List<String> values) {
-        return new RealProperty<String>(log, id, name, description, new StringType(log), values);
+    public static RealProperty<String> createProperty(Log log, ListenersFactory listenersFactory,
+                                                      String id, String name, String description, List<String> values) {
+        return new RealProperty<String>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory), values);
     }
 
     /**
@@ -70,7 +73,8 @@ public class StringType extends RealSimpleType<String> {
      * @param description the parameter's description
      * @return a string parameter object
      */
-    public static RealParameter<String> createParameter(Log log, String id, String name, String description) {
-        return new RealParameter<String>(log, id, name, description, new StringType(log));
+    public static RealParameter<String> createParameter(Log log, ListenersFactory listenersFactory,
+                                                        String id, String name, String description) {
+        return new RealParameter<String>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory));
     }
 }

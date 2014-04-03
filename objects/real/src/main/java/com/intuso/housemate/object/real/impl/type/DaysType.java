@@ -1,6 +1,7 @@
 package com.intuso.housemate.object.real.impl.type;
 
 import com.google.inject.Inject;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -15,7 +16,7 @@ public class DaysType extends EnumChoiceType<Day> {
      * @param log {@inheritDoc}
      */
     @Inject
-    public DaysType(Log log) {
-        super(log, ID, NAME, "Selection of days", 0, -1, Day.class, Day.values());
+    public DaysType(Log log, ListenersFactory listenersFactory) {
+        super(log, listenersFactory, ID, NAME, "Selection of days", 0, -1, Day.class, Day.values());
     }
 }

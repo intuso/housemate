@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceListener;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueData;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -47,32 +48,32 @@ public class RealDevice
 
     /**
      * @param log {@inheritDoc}
-     * @param id the device's id
-     * @param name the device's name
-     * @param description the device's description
+     * @param listenersFactory
+     * @param data the device's data
+     * @param featureIds the ids of the features the device has
      */
-    public RealDevice(Log log, String id, String name, String description, String ... featureIds) {
-        this(log, id, name, description, Lists.newArrayList(featureIds), Lists.<String>newArrayList(),
-                Lists.<String>newArrayList(), Lists.<String>newArrayList());
+    public RealDevice(Log log, ListenersFactory listenersFactory, DeviceData data, String... featureIds) {
+        this(log, listenersFactory, data, Lists.newArrayList(featureIds),
+                Lists.<String>newArrayList(), Lists.<String>newArrayList(), Lists.<String>newArrayList());
     }
 
     /**
      * @param log {@inheritDoc}
-     * @param id the device's id
-     * @param name the device's name
-     * @param description the device's description
+     * @param listenersFactory
+     * @param data the device's data
+     * @param featureIds the ids of the features the device has
      * @param customCommandIds the ids of the device's commands that do not belong to a feature
      * @param customValueIds the ids of the device's values that do not belong to a feature
      * @param customPropertyIds the ids of the device's properties that do not belong to a feature
      */
-    public RealDevice(Log log, String id, String name, String description, List<String> featureIds,
+    public RealDevice(Log log, ListenersFactory listenersFactory, DeviceData data, List<String> featureIds,
                       List<String> customCommandIds, List<String> customValueIds, List<String> customPropertyIds) {
-        super(log,
-                new DeviceData(id, name, description, featureIds, customCommandIds, customValueIds, customPropertyIds),
+        super(log, listenersFactory,
+                new DeviceData(data.getId(), data.getName(), data.getDescription(), featureIds, customCommandIds, customValueIds, customPropertyIds),
                 OBJECT_TYPE);
-        this.commands = new RealList<CommandData, RealCommand>(log, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION);
-        this.values = new RealList<ValueData, RealValue<?>>(log, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION);
-        this.properties = new RealList<PropertyData, RealProperty<?>>(log, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION);
+        this.commands = new RealList<CommandData, RealCommand>(log, listenersFactory, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION);
+        this.values = new RealList<ValueData, RealValue<?>>(log, listenersFactory, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION);
+        this.properties = new RealList<PropertyData, RealProperty<?>>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION);
         addChild(this.commands);
         addChild(this.values);
         addChild(this.properties);

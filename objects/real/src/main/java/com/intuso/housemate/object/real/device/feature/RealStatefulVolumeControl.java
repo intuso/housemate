@@ -1,13 +1,13 @@
 package com.intuso.housemate.object.real.device.feature;
 
-import com.intuso.housemate.annotations.basic.Value;
-import com.intuso.housemate.annotations.feature.Id;
+import com.intuso.housemate.object.real.annotations.Value;
+import com.intuso.housemate.api.object.device.feature.FeatureId;
 import com.intuso.housemate.api.object.device.feature.StatefulVolumeControl;
 
 /**
  * Interface to mark real devices that provide stateful volume control
  */
-@Id("stateful-volume-control")
+@FeatureId("stateful-volume-control")
 public interface RealStatefulVolumeControl extends RealVolumeControl {
     public interface Values {
 

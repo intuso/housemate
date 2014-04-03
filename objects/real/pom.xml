@@ -19,9 +19,9 @@
 			<version>${project.version}</version>
 		</dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>annotations-basic</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+            <version>${guice.version}</version>
         </dependency>
 	</dependencies>
 </project>

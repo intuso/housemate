@@ -2,12 +2,8 @@ package com.intuso.housemate.object.real;
 
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.type.Type;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.type.TypeListener;
-import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.api.object.type.*;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -27,10 +23,11 @@ public abstract class RealType<
 
     /**
      * @param log {@inheritDoc}
+     * @param listenersFactory
      * @param data {@inheritDoc}
      */
-    protected RealType(Log log, DATA data) {
-        super(log, data);
+    protected RealType(Log log, ListenersFactory listenersFactory, DATA data) {
+        super(log, listenersFactory, data);
     }
 
     public static <O> TypeInstances serialiseAll(TypeSerialiser<O> serialiser, O ... typedValues) {

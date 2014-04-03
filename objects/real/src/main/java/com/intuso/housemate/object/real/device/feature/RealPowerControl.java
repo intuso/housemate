@@ -1,14 +1,14 @@
 package com.intuso.housemate.object.real.device.feature;
 
-import com.intuso.housemate.annotations.basic.Command;
-import com.intuso.housemate.annotations.feature.Id;
+import com.intuso.housemate.object.real.annotations.Command;
+import com.intuso.housemate.api.object.device.feature.FeatureId;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.feature.PowerControl;
 
 /**
  * Interface to mark real devices that provide power control
  */
-@Id("power-control")
+@FeatureId("power-control")
 public interface RealPowerControl extends RealFeature {
 
     /**

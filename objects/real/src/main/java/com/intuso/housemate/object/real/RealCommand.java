@@ -3,13 +3,16 @@ package com.intuso.housemate.object.real;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandListener;
+import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.parameter.ParameterData;
-import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
+import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -18,35 +21,40 @@ import java.util.List;
 /**
  */
 public abstract class RealCommand
-        extends RealObject<CommandData, ListData<ParameterData>, RealList<ParameterData, RealParameter<?>>,
-            CommandListener<? super RealCommand>>
-        implements Command<RealList<ParameterData, RealParameter<?>>, RealCommand> {
+        extends RealObject<CommandData, HousemateData<?>, RealObject<?, ?, ?, ?>, CommandListener<? super RealCommand>>
+        implements Command<RealValue<Boolean>, RealList<ParameterData, RealParameter<?>>, RealCommand> {
 
-    private RealList<ParameterData, RealParameter<?>> realParameters;
+    private final static String ENABLED_DESCRIPTION = "Whether the command is enabled or not";
 
+    private final RealValue<Boolean> enabledValue;
+    private final RealList<ParameterData, RealParameter<?>> parameters;
 
     /**
      * @param log {@inheritDoc}
+     * @param listenersFactory
      * @param id the command's id
      * @param name the command's name
      * @param description the command's description
      * @param parameters the command's parameters
      */
-    protected RealCommand(Log log, String id, String name, String description, RealParameter<?> ... parameters) {
-        this(log, id, name, description, Arrays.asList(parameters));
+    protected RealCommand(Log log, ListenersFactory listenersFactory, String id, String name, String description, RealParameter<?>... parameters) {
+        this(log, listenersFactory, id, name, description, Arrays.asList(parameters));
     }
 
     /**
      * @param log {@inheritDoc}
+     * @param listenersFactory
      * @param id the command's id
      * @param name the command's name
      * @param description the command's description
      * @param parameters the command's parameters
      */
-    protected RealCommand(Log log, String id, String name, String description, List<RealParameter<?>> parameters) {
-        super(log, new CommandData(id, name, description));
-        realParameters = new RealList<ParameterData, RealParameter<?>>(log, PARAMETERS_ID, PARAMETERS_ID, "The parameters required by the command", parameters);
-        addChild(realParameters);
+    protected RealCommand(Log log, ListenersFactory listenersFactory, String id, String name, String description, List<RealParameter<?>> parameters) {
+        super(log, listenersFactory, new CommandData(id, name, description));
+        enabledValue = new RealValue<Boolean>(log, listenersFactory, ENABLED_ID, ENABLED_ID, ENABLED_DESCRIPTION, new BooleanType(log, listenersFactory), true);
+        this.parameters = new RealList<ParameterData, RealParameter<?>>(log, listenersFactory, PARAMETERS_ID, PARAMETERS_ID, "The parameters required by the command", parameters);
+        addChild(enabledValue);
+        addChild(this.parameters);
     }
 
     @Override
@@ -55,7 +63,8 @@ public abstract class RealCommand
         result.add(addMessageListener(PERFORM_TYPE, new Receiver<PerformMessageValue>() {
             @Override
             public void messageReceived(final Message<Command.PerformMessageValue> message) throws HousemateException {
-                perform(message.getPayload().getValues(), new CommandListener<RealCommand>() {
+                perform(message.getPayload().getValues(), new CommandPerformListener<RealCommand>() {
+
                     @Override
                     public void commandStarted(RealCommand command) {
                         sendMessage(PERFORMING_TYPE, new Command.PerformingMessageValue(message.getPayload().getOpId(), true));
@@ -77,12 +86,22 @@ public abstract class RealCommand
     }
 
     @Override
-    public RealList<ParameterData, RealParameter<?>> getParameters() {
-        return realParameters;
+    public boolean isEnabled() {
+        return enabledValue.getTypedValue();
     }
 
     @Override
-    public void perform(TypeInstanceMap values, CommandListener<? super RealCommand> listener) {
+    public RealValue<Boolean> getEnabledValue() {
+        return enabledValue;
+    }
+
+    @Override
+    public RealList<ParameterData, RealParameter<?>> getParameters() {
+        return parameters;
+    }
+
+    @Override
+    public void perform(TypeInstanceMap values, CommandPerformListener<? super RealCommand> listener) {
         try {
             listener.commandStarted(this);
             perform(values);

@@ -11,6 +11,7 @@ import com.intuso.housemate.api.object.type.ObjectTypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -31,11 +32,12 @@ public class RealObjectType<O extends BaseHousemateObject<?>>
 
     /**
      * @param log the log
+     * @param listenersFactory
      * @param root the root to get the object from
      */
     @Inject
-    public RealObjectType(Log log, Root<?> root) {
-        super(log, new ObjectTypeData(ID, NAME, "Path to an object", 1, 1));
+    public RealObjectType(Log log, ListenersFactory listenersFactory, Root<?> root) {
+        super(log, listenersFactory, new ObjectTypeData(ID, NAME, "Path to an object", 1, 1));
         serialiser = new Serialiser<O>(root);
     }
 

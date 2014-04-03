@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectListener;
 import com.intuso.housemate.api.object.root.real.RealRoot;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 
@@ -19,10 +20,11 @@ public abstract class RealObject<
 
     /**
      * @param log {@inheritDoc}
+     * @param listenersFactory
      * @param data {@inheritDoc}
      */
-    protected RealObject(Log log, DATA data) {
-        super(log, data);
+    protected RealObject(Log log, ListenersFactory listenersFactory, DATA data) {
+        super(log, listenersFactory, data);
     }
 
     /**

@@ -3,6 +3,7 @@ package com.intuso.housemate.object.real.impl.type;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -19,8 +20,8 @@ public class TimeType extends RealRegexType<Time> {
      * @param log the log
      */
     @Inject
-    public TimeType(Log log) {
-        super(log, ID, NAME, DESCRIPTION, 1, 1, REGEX);
+    public TimeType(Log log, ListenersFactory listenersFactory) {
+        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1, REGEX);
     }
 
     @Override

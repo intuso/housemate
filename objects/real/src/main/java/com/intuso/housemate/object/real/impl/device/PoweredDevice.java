@@ -1,7 +1,9 @@
 package com.intuso.housemate.object.real.impl.device;
 
+import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.device.feature.RealPowerControl;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -12,13 +14,7 @@ public abstract class PoweredDevice
         extends RealDevice
         implements RealPowerControl {
 
-    /**
-     * @param log {@inheritDoc}
-     * @param id {@inheritDoc}
-     * @param name {@inheritDoc}
-     * @param description {@inheritDoc}
-     */
-	public PoweredDevice(Log log, String id, String name, String description) {
-		super(log, id, name, description);
+	public PoweredDevice(Log log, ListenersFactory listenersFactory, DeviceData data) {
+		super(log, listenersFactory, data);
 	}
 }

@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.type.CompoundTypeData;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealSubType;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -29,6 +30,7 @@ public abstract class RealCompoundType<O>
 
     /**
      * @param log {@inheritDoc}
+     * @param listenersFactory
      * @param id the compound type's id
      * @param name the compound type's name
      * @param description the compound type's description
@@ -36,13 +38,14 @@ public abstract class RealCompoundType<O>
      * @param maxValues the maximum number of values the type can have
      * @param subTypes the compound type's sub types
      */
-    protected RealCompoundType(Log log, String id, String name, String description, int minValues,
-                               int maxValues, RealSubType<?> ... subTypes) {
-        this(log, id, name, description, minValues, maxValues, Arrays.asList(subTypes));
+    protected RealCompoundType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+                               int maxValues, RealSubType<?>... subTypes) {
+        this(log, listenersFactory, id, name, description, minValues, maxValues, Arrays.asList(subTypes));
     }
 
     /**
      * @param log {@inheritDoc}
+     * @param listenersFactory
      * @param id the compound type's id
      * @param name the compound type's name
      * @param description the compound type's description
@@ -50,10 +53,10 @@ public abstract class RealCompoundType<O>
      * @param maxValues the maximum number of values the type can have
      * @param subTypes the compound type's sub types
      */
-    protected RealCompoundType(Log log, String id, String name, String description, int minValues,
+    protected RealCompoundType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
                                int maxValues, List<RealSubType<?>> subTypes) {
-        super(log, new CompoundTypeData(id, name, description, minValues, maxValues));
-        this.subTypes = new RealList<SubTypeData, RealSubType<?>>(log, SUB_TYPES_ID, SUB_TYPES_NAME, SUB_TYPES_DESCRIPTION);
+        super(log, listenersFactory, new CompoundTypeData(id, name, description, minValues, maxValues));
+        this.subTypes = new RealList<SubTypeData, RealSubType<?>>(log, listenersFactory, SUB_TYPES_ID, SUB_TYPES_NAME, SUB_TYPES_DESCRIPTION);
         addChild(this.subTypes);
         for(RealSubType<?> subType : subTypes)
             this.subTypes.add(subType);

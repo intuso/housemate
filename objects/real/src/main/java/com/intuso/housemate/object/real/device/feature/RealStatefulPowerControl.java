@@ -1,13 +1,13 @@
 package com.intuso.housemate.object.real.device.feature;
 
-import com.intuso.housemate.annotations.basic.Value;
-import com.intuso.housemate.annotations.feature.Id;
+import com.intuso.housemate.object.real.annotations.Value;
+import com.intuso.housemate.api.object.device.feature.FeatureId;
 import com.intuso.housemate.api.object.device.feature.StatefulPowerControl;
 
 /**
  * Interface to mark real devices that provide stateful power control
  */
-@Id("stateful-power-control")
+@FeatureId("stateful-power-control")
 public interface RealStatefulPowerControl extends RealPowerControl {
     public interface Values {
 

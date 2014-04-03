@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeSerialiser;
 import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealSubType;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -22,6 +23,7 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
 
     /**
      * @param log {@inheritDoc}
+     * @param listenersFactory
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
@@ -30,62 +32,65 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
      * @param enumClass the class of the enum
      * @param values the values of the enum
      */
-    protected EnumChoiceType(Log log, String id, String name, String description, int minValues,
-                             int maxValues, Class<E> enumClass, E[] values) {
-        this(log, id, name, description, minValues, maxValues, values,
-                new EnumMap<E, List<RealSubType<?>>>(enumClass),
-                new EnumInstanceSerialiser<E>(enumClass));
+    protected EnumChoiceType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+                             int maxValues, Class<E> enumClass, E... values) {
+        this(log, listenersFactory, id, name, description, minValues,
+                maxValues,
+                new EnumMap<E, List<RealSubType<?>>>(enumClass), new EnumInstanceSerialiser<E>(enumClass), values);
     }
 
     /**
      * @param log {@inheritDoc}
+     * @param listenersFactory
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
      * @param minValues the minimum number of values the type can have
      * @param maxValues the maximum number of values the type can have
      * @param enumClass the class of the enum
-     * @param values the values of the enum
      * @param optionSubTypes the subtypes for each enum value
+     * @param values the values of the enum
      */
-    protected EnumChoiceType(Log log, String id, String name, String description, int minValues,
-                             int maxValues, Class<E> enumClass, E[] values,
-                             EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
-        this(log, id, name, description, minValues, maxValues, values, optionSubTypes,
-                new EnumInstanceSerialiser<E>(enumClass));
+    protected EnumChoiceType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+                             int maxValues, Class<E> enumClass,
+                             EnumMap<E, List<RealSubType<?>>> optionSubTypes, E... values) {
+        this(log, listenersFactory, id, name, description, minValues, maxValues,
+                optionSubTypes, new EnumInstanceSerialiser<E>(enumClass), values);
     }
     /**
      * @param log {@inheritDoc}
+     * @param listenersFactory
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
      * @param minValues the minimum number of values the type can have
      * @param maxValues the maximum number of values the type can have
      * @param enumClass the class of the enum
-     * @param values the values of the enum
      * @param elementSerialiser the serialiser for the enum elements
+     * @param values the values of the enum
      */
-    protected EnumChoiceType(Log log, String id, String name, String description, int minValues,
-                             int maxValues, Class<E> enumClass, E[] values, TypeSerialiser<E> elementSerialiser) {
-        this(log, id, name, description, minValues, maxValues, values,
-                new EnumMap<E, List<RealSubType<?>>>(enumClass), elementSerialiser);
+    protected EnumChoiceType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+                             int maxValues, Class<E> enumClass, TypeSerialiser<E> elementSerialiser, E... values) {
+        this(log, listenersFactory, id, name, description, minValues,
+                maxValues, new EnumMap<E, List<RealSubType<?>>>(enumClass), elementSerialiser, values);
     }
     /**
      * @param log {@inheritDoc}
+     * @param listenersFactory
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
      * @param minValues the minimum number of values the type can have
      * @param maxValues the maximum number of values the type can have
-     * @param values the values of the enum
      * @param optionSubTypes the subtypes for each enum value
      * @param elementSerialiser the serialiser for the enum elements
+     * @param values the values of the enum
      */
-    protected EnumChoiceType(Log log, String id, String name, String description, int minValues,
-                             int maxValues, E[] values, EnumMap<E, List<RealSubType<?>>> optionSubTypes,
-                             TypeSerialiser<E> elementSerialiser) {
-        super(log, id, name, description, minValues, maxValues,
-                convertValuesToOptions(log, values, optionSubTypes));
+    protected EnumChoiceType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+                             int maxValues, EnumMap<E, List<RealSubType<?>>> optionSubTypes,
+                             TypeSerialiser<E> elementSerialiser, E... values) {
+        super(log, listenersFactory, id, name, description, minValues,
+                maxValues, convertValuesToOptions(log, listenersFactory, values, optionSubTypes));
         this.serialiser = elementSerialiser;
     }
 
@@ -101,21 +106,21 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
 
     /**
      * Converts the values of an enum to option objects
+     *
      * @param log the log
-     * @param values the enum's values
-     * @param optionSubTypes the subtypes for each enum value
-     * @param <E> the type of the enum
-     * @return a list of option objects, one for each value of the enum
+     * @param listenersFactory
+     *@param values the enum's values
+     * @param optionSubTypes the subtypes for each enum value   @return a list of option objects, one for each value of the enum
      */
-    private static <E extends Enum<E>> List<RealOption> convertValuesToOptions(final Log log, E[] values,
-                                                                              final EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
+    private static <E extends Enum<E>> List<RealOption> convertValuesToOptions(final Log log, final ListenersFactory listenersFactory, E[] values,
+                                                                               final EnumMap<E, List<RealSubType<?>>> optionSubTypes) {
         return Lists.transform(Arrays.asList(values), new Function<E, RealOption>() {
             @Override
             public RealOption apply(E value) {
                 if(optionSubTypes.containsKey(value))
-                    return new RealOption(log, value.name(), value.name(), value.name(), optionSubTypes.get(value));
+                    return new RealOption(log, listenersFactory, value.name(), value.name(), value.name(), optionSubTypes.get(value));
                 else
-                    return new RealOption(log, value.name(), value.name(), value.name());
+                    return new RealOption(log, listenersFactory, value.name(), value.name(), value.name());
             }
         });
     }

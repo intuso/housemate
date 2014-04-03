@@ -1,6 +1,7 @@
 package com.intuso.housemate.object.real.impl.type;
 
 import com.google.inject.Inject;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -15,7 +16,7 @@ public class TimeUnitType extends EnumChoiceType<TimeUnit> {
      * @param log the log
      */
     @Inject
-    public TimeUnitType(Log log) {
-        super(log, ID, NAME, "A unit of time", 1, 1, TimeUnit.class, TimeUnit.values());
+    public TimeUnitType(Log log, ListenersFactory listenersFactory) {
+        super(log, listenersFactory, ID, NAME, "A unit of time", 1, 1, TimeUnit.class, TimeUnit.values());
     }
 }
