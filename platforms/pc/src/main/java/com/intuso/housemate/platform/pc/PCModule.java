@@ -1,6 +1,7 @@
 package com.intuso.housemate.platform.pc;
 
 import com.google.inject.AbstractModule;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**
@@ -24,5 +25,6 @@ public class PCModule extends AbstractModule {
     protected void configure() {
         install(new PCLogModule(defaultProperties, defaultLogName));
         install(new PCRegexMatcherModule());
+        bind(ListenersFactory.class).to(CopyOnWriteListenersFactory.class);
     }
 }

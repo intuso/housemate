@@ -77,7 +77,7 @@ public class PerformCommand extends ServerRealTask implements ObjectLifecycleLis
             public void valueChanged(ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> property) {
                 String[] path = property.getTypedValue().getPath();
                 commandLifecycleListenerRegistration = root.addObjectLifecycleListener(path, PerformCommand.this);
-                HousemateObject<?, ?, ?, ?> object = root.getObject(path);
+                HousemateObject<?, ?, ?, ?> object = HousemateObject.getChild((HousemateObject<?,?,?,?>) root, path, 1);
                 if(object == null)
                     setError("Cannot find an object at path " + Joiner.on("/").join(path));
                 else {

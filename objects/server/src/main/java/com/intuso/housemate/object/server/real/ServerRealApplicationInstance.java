@@ -36,8 +36,7 @@ public class ServerRealApplicationInstance
 
     public ServerRealApplicationInstance(Log log, ListenersFactory listenersFactory, String instanceId,
                                          ApplicationInstanceStatusType applicationInstanceStatusType,
-                                         ApplicationStatus initialApplicationStatus,
-                                         ApplicationInstanceStatus initialStatus) {
+                                         ApplicationStatus initialApplicationStatus) {
         super(log, listenersFactory, new ApplicationInstanceData(instanceId, instanceId, instanceId));
         this.applicationStatus = initialApplicationStatus;
         allowCommand = new ServerRealCommand(log, listenersFactory, ALLOW_COMMAND_ID, ALLOW_COMMAND_ID, "Allow access to the application instance",
@@ -55,7 +54,7 @@ public class ServerRealApplicationInstance
             }
         };
         statusValue = new ServerRealValue<ApplicationInstanceStatus>(log, listenersFactory, STATUS_VALUE_ID, STATUS_VALUE_ID,
-                "The status of the application instance", applicationInstanceStatusType, initialStatus);
+                "The status of the application instance", applicationInstanceStatusType, null);
         addChild(allowCommand);
         addChild(rejectCommand);
         addChild(statusValue);

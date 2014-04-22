@@ -41,6 +41,7 @@ import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFact
 import com.intuso.housemate.web.client.place.HousematePlaceController;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryHandler;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryMapper;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
@@ -87,5 +88,6 @@ public class MainModule extends AbstractGinModule {
         bind(Router.class).to(GWTRouter.class);
         bind(new Key<ProxyFeatureFactory<GWTProxyFeature, GWTProxyDevice>>() {}).to(GWTProxyFeatureFactory.class);
         bind(RegexMatcherFactory.class).to(GWTRegexMatcherFactory.class);
+        bind(ListenersFactory.class).to(GWTListenersFactory.class);
     }
 }

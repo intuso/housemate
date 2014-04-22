@@ -34,13 +34,13 @@ public class ServerRealApplication
      * @param details the application details
      */
     public ServerRealApplication(Log log, ListenersFactory listenersFactory, ApplicationDetails details, RealType<?, ?,
-            ApplicationStatus> applicationStatusType, ApplicationStatus initialStatus) {
+            ApplicationStatus> applicationStatusType) {
         this(log, listenersFactory, details.getApplicationId(), details.getApplicationName(), details.getApplicationDescription(),
-                applicationStatusType, initialStatus);
+                applicationStatusType);
     }
 
     public ServerRealApplication(Log log, ListenersFactory listenersFactory, String id, String name, String description,
-                                 RealType<?, ?, ApplicationStatus> applicationStatusType, ApplicationStatus initialStatus) {
+                                 RealType<?, ?, ApplicationStatus> applicationStatusType) {
         super(log, listenersFactory, new ApplicationData(id, name, description));
         this.applicationInstances = new ServerRealList<ApplicationInstanceData, ServerRealApplicationInstance>(
                 log, listenersFactory, APPLICATION_INSTANCES_ID, APPLICATION_INSTANCES_ID, "The application's instances");
@@ -66,7 +66,7 @@ public class ServerRealApplication
             }
         };
         statusValue = new ServerRealValue<ApplicationStatus>(log, listenersFactory, STATUS_VALUE_ID, STATUS_VALUE_ID,
-                "The status of the application instances", applicationStatusType, initialStatus);
+                "The status of the application instances", applicationStatusType, null);
         addChild(applicationInstances);
         addChild(allowCommand);
         addChild(someCommand);

@@ -52,9 +52,10 @@ public class AccessManager {
         String appId = request.getApplicationDetails().getApplicationId();
         ServerRealApplication application = realRoot.getApplications().get(appId);
         if(application == null) {
-            realRoot.getApplications().add(new ServerRealApplication(log, listenersFactory, request.getApplicationDetails(),
-                    injector.getInstance(ApplicationStatusType.class), getInitialStatus(appId)));
-            application = realRoot.getApplications().get(appId);
+            application = new ServerRealApplication(log, listenersFactory, request.getApplicationDetails(),
+                    injector.getInstance(ApplicationStatusType.class));
+            realRoot.getApplications().add(application);
+            application.setStatus(getInitialStatus(appId));
         }
 
         // get the application instance supplied by the client
@@ -63,10 +64,12 @@ public class AccessManager {
         // and a new instance for the id
         if(instanceId == null || application.getApplicationInstances().get(instanceId) == null) {
             instanceId = UUID.randomUUID().toString();
-            application.getApplicationInstances().add(
+            ServerRealApplicationInstance applicationInstance =
                     new ServerRealApplicationInstance(log, listenersFactory, instanceId,
                             injector.getInstance(ApplicationInstanceStatusType.class),
-                            application.getStatus(), getInitialStatus(application)));
+                            application.getStatus());
+            application.getApplicationInstances().add(applicationInstance);
+            applicationInstance.setStatus(getInitialStatus(application));
         }
 
         return new ClientInstance(request.getApplicationDetails(), instanceId, request.getType());

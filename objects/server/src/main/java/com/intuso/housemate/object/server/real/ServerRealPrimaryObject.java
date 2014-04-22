@@ -42,7 +42,7 @@ public abstract class ServerRealPrimaryObject<
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(isRunning())
-                    throw new HousemateException("Cannot remove while " + objectType + " is still running");
+                    throw new HousemateException("Cannot remove " + objectType + " while it is still running");
                 remove();
             }
         };

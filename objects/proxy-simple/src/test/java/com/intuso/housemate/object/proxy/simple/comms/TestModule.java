@@ -1,5 +1,6 @@
 package com.intuso.housemate.object.proxy.simple.comms;
 
+import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
@@ -11,6 +12,8 @@ import com.intuso.housemate.object.proxy.ProxyRoot;
 import com.intuso.housemate.object.proxy.simple.TestProxyRoot;
 import com.intuso.housemate.object.proxy.simple.TestRealRoot;
 import com.intuso.housemate.object.real.RealRoot;
+import com.intuso.utilities.listener.Listener;
+import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.log.LogLevel;
@@ -52,6 +55,12 @@ public class TestModule extends AbstractModule {
                         return Pattern.compile(pattern).matcher(string).matches();
                     }
                 };
+            }
+        });
+        bind(ListenersFactory.class).toInstance(new ListenersFactory() {
+            @Override
+            public <LISTENER extends Listener> Listeners<LISTENER> create() {
+                return new Listeners<LISTENER>(Lists.<LISTENER>newArrayList());
             }
         });
     }

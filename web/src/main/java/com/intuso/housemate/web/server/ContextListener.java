@@ -25,7 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ContextListener implements ServletContextListener {
 
     private final static ApplicationDetails APPLICATION_DETAILS = new ApplicationDetails(ContextListener.class.getPackage().getName(), "Housemate Web Interface Server", "Housemate Web Interface Server");
-    private final static String INSTANCE_ID = "application.instance.id";
 
     public static Injector INJECTOR;
 

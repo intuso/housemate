@@ -51,7 +51,8 @@ public class ValueComparison extends ServerRealCondition {
                            @Assisted ConditionData data,
                            @Assisted ServerRealConditionOwner owner,
                            LifecycleHandler lifecycleHandler,
-                           RealList<TypeData<?>, RealType<?, ?, ?>> types, ComparisonType comparisonType) {
+                           RealList<TypeData<?>, RealType<?, ?, ?>> types,
+                           ComparisonType comparisonType) {
         super(log, listenersFactory, data, owner, lifecycleHandler);
         this.types = types;
         comparisonProperty = new ServerRealProperty<Comparison>(log, listenersFactory, COMPARISON_ID, COMPARISON_NAME,

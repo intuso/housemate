@@ -5,6 +5,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.object.BaseHousemateObject;
+import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.ObjectTypeData;
@@ -138,7 +139,7 @@ public class RealObjectType<O extends BaseHousemateObject<?>>
                 return null;
             List<String> pathList = Lists.newArrayList(SPLITTER.split(value.getValue()));
             String[] path = pathList.toArray(new String[pathList.size()]);
-            return new Reference(path, (O) root.getObject(path));
+            return new Reference(path, (O) HousemateObject.getChild((HousemateObject)root, path, 1));
         }
     }
 }

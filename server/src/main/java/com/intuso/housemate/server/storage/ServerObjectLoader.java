@@ -3,7 +3,6 @@ package com.intuso.housemate.server.storage;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
 import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
@@ -77,7 +76,7 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
                 TypeInstanceMap details = storage.getValues(realApplications.getPath(), key);
                 ServerRealApplication application = new ServerRealApplication(log, listenersFactory, details.get("id").getFirstValue(),
                         details.get("name").getFirstValue(), details.get("description").getFirstValue(),
-                        injector.getInstance(ApplicationStatusType.class), ApplicationStatus.SomeInstances);
+                        injector.getInstance(ApplicationStatusType.class));
                 realApplications.add(application);
                 loadApplicationInstances(application.getApplicationInstances(), application.getStatus());
             }
@@ -94,7 +93,7 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
                 TypeInstanceMap details = storage.getValues(realApplicationInstances.getPath(), key);
                 ServerRealApplicationInstance applicationInstance = new ServerRealApplicationInstance(log, listenersFactory,
                         details.get("id").getFirstValue(), injector.getInstance(ApplicationInstanceStatusType.class),
-                        applicationStatus, ApplicationInstanceStatus.Pending);
+                        applicationStatus);
                 realApplicationInstances.add(applicationInstance);
             }
         } catch(DetailsNotFoundException e) {
