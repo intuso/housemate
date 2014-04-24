@@ -16,6 +16,7 @@ import com.intuso.utilities.log.Log;
 public class TransformationOutput extends ValueSource implements ValueAvailableListener {
 
     private final Log log;
+    private final ListenersFactory listenersFactory;
     private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
     private final Transformation transformation;
     private ComputedValue value;
@@ -23,9 +24,10 @@ public class TransformationOutput extends ValueSource implements ValueAvailableL
     public TransformationOutput(Log log, ListenersFactory listenersFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types, Transformation transformation) {
         super(listenersFactory);
         this.log = log;
+        this.listenersFactory = listenersFactory;
         this.types = types;
         this.transformation = transformation;
-        transformation.getValueSource().addValueAvailableListener(this);
+        transformation.getValueSource().addValueAvailableListener(this, true);
     }
 
     public Transformation getTransformation() {
@@ -56,7 +58,7 @@ public class TransformationOutput extends ValueSource implements ValueAvailableL
                 value = null;
             }
             if(value == null)
-                value = new ComputedValue(outputType);
+                value = new ComputedValue(listenersFactory, outputType);
             value.setTypeInstances(new TypeInstances(outputType.serialise(result)));
         } catch(HousemateException e) {
             log.e("Failed to transform value", e);

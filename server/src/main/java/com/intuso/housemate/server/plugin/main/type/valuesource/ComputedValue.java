@@ -6,6 +6,7 @@ import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,8 +21,9 @@ public class ComputedValue implements Value<RealType<?, ?, ?>, ComputedValue> {
     private TypeInstances typeInstances;
     private Listeners<ValueListener<? super ComputedValue>> listeners;
 
-    public ComputedValue(RealType<?, ?, ?> type) {
+    public ComputedValue(ListenersFactory listenersFactory, RealType<?, ?, ?> type) {
         this.type = type;
+        this.listeners = listenersFactory.create();
     }
 
     @Override

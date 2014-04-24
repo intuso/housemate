@@ -16,6 +16,7 @@ import com.intuso.utilities.log.Log;
 public class OperationOutput extends ValueSource implements ValueAvailableListener {
 
     private final Log log;
+    private final ListenersFactory listenersFactory;
     private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
     private final Operation operation;
     private ComputedValue value;
@@ -23,10 +24,11 @@ public class OperationOutput extends ValueSource implements ValueAvailableListen
     public OperationOutput(Log log, ListenersFactory listenersFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types, Operation operation) {
         super(listenersFactory);
         this.log = log;
+        this.listenersFactory = listenersFactory;
         this.types = types;
         this.operation = operation;
-        operation.getFirstValueSource().addValueAvailableListener(this);
-        operation.getSecondValueSource().addValueAvailableListener(this);
+        operation.getFirstValueSource().addValueAvailableListener(this, true);
+        operation.getSecondValueSource().addValueAvailableListener(this, true);
     }
 
     public Operation getOperation() {
@@ -36,7 +38,7 @@ public class OperationOutput extends ValueSource implements ValueAvailableListen
     private void operate() {
 
         Value firstValue = operation.getFirstValueSource().getValue();
-        Value secondValue = operation.getFirstValueSource().getValue();
+        Value secondValue = operation.getSecondValueSource().getValue();
 
         if(firstValue == null || secondValue == null) {
             if(value != null) {
@@ -59,7 +61,7 @@ public class OperationOutput extends ValueSource implements ValueAvailableListen
                     value = null;
                 }
                 if(value == null)
-                    value = new ComputedValue(outputType);
+                    value = new ComputedValue(listenersFactory, outputType);
                 value.setTypeInstances(new TypeInstances(outputType.serialise(result)));
             } catch(HousemateException e) {
                 log.e("Failed to operate on values", e);

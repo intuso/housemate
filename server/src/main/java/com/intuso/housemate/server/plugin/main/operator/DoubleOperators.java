@@ -11,7 +11,7 @@ public class DoubleOperators {
 
     private DoubleOperators() {}
 
-    private static double getInt(Double doubleObject) {
+    private static double getDouble(Double doubleObject) {
         return doubleObject == null ? 0 : doubleObject;
     }
     
@@ -34,7 +34,7 @@ public class DoubleOperators {
 
         @Override
         public Double apply(Double first, Double second) throws HousemateException {
-            return getInt(first) + getInt(second);
+            return getDouble(first) + getDouble(second);
         }
     }
 
@@ -57,7 +57,7 @@ public class DoubleOperators {
 
         @Override
         public Double apply(Double first, Double second) throws HousemateException {
-            return getInt(first) - getInt(second);
+            return getDouble(first) - getDouble(second);
         }
     }
 
@@ -80,7 +80,7 @@ public class DoubleOperators {
 
         @Override
         public Double apply(Double first, Double second) throws HousemateException {
-            return getInt(first) * getInt(second);
+            return getDouble(first) * getDouble(second);
         }
     }
 
@@ -103,7 +103,7 @@ public class DoubleOperators {
 
         @Override
         public Double apply(Double first, Double second) throws HousemateException {
-            return getInt(first) / getInt(second);
+            return getDouble(first) / getDouble(second);
         }
     }
 
@@ -126,7 +126,7 @@ public class DoubleOperators {
 
         @Override
         public Double apply(Double first, Double second) throws HousemateException {
-            return Math.max(getInt(first), getInt(second));
+            return Math.max(getDouble(first), getDouble(second));
         }
     }
 
@@ -149,7 +149,7 @@ public class DoubleOperators {
 
         @Override
         public Double apply(Double first, Double second) throws HousemateException {
-            return Math.min(getInt(first), getInt(second));
+            return Math.min(getDouble(first), getDouble(second));
         }
     }
 }

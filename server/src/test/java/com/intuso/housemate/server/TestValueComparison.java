@@ -20,8 +20,7 @@ import com.intuso.housemate.object.real.impl.type.RealObjectType;
 import com.intuso.housemate.object.server.real.ServerRealCondition;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
 import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.ComparisonType;
+import com.intuso.housemate.plugin.api.*;
 import com.intuso.housemate.server.client.LocalClient;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.factory.ConditionFactory;
@@ -32,10 +31,12 @@ import com.intuso.housemate.server.plugin.main.MainPluginModule;
 import com.intuso.housemate.server.plugin.main.comparator.DoubleComparators;
 import com.intuso.housemate.server.plugin.main.comparator.IntegerComparators;
 import com.intuso.housemate.server.plugin.main.condition.ValueComparison;
+import com.intuso.housemate.server.plugin.main.operator.DoubleOperators;
+import com.intuso.housemate.server.plugin.main.transformer.FromInteger;
 import com.intuso.housemate.server.plugin.main.type.comparison.Comparison;
-import com.intuso.housemate.server.plugin.main.type.valuesource.ConstantValue;
-import com.intuso.housemate.server.plugin.main.type.valuesource.ValueLocation;
-import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
+import com.intuso.housemate.server.plugin.main.type.operation.Operation;
+import com.intuso.housemate.server.plugin.main.type.transformation.Transformation;
+import com.intuso.housemate.server.plugin.main.type.valuesource.*;
 import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -45,6 +46,7 @@ import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -103,10 +105,30 @@ public class TestValueComparison {
     }
 
     @Test
-    public void testConstantAndLocationGreaterThan() throws HousemateException, InterruptedException {
+    public void testLocationSources() throws HousemateException, InterruptedException {
         final Object lock = new Object();
+
+        RealList<TypeData<?>, RealType<?, ?, ?>> types = injector.getInstance(new Key<RealList<TypeData<?>, RealType<?, ?, ?>>>() {});
+
+        // create value one as (((double) 2) + 3.0)
+        RealType<?, ?, ?> integerType = new IntegerType(log, listenersFactory);
         RealType<?, ?, ?> doubleType = new DoubleType(log, listenersFactory);
-        ConstantValue valueOne = new ConstantValue(listenersFactory, doubleType, new TypeInstances(new TypeInstance("2.0")));
+        ConstantValue intTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("2")));
+        ConstantValue doubleThree = new ConstantValue(listenersFactory, doubleType, new TypeInstances(new TypeInstance("3.0")));
+        TransformationOutput doubleTwo = new TransformationOutput(log, listenersFactory, types,
+                new Transformation(doubleType, new HashMap<String, Transformer<?, ?>>() {
+                    {
+                        put(SimpleTypeData.Type.Integer.getId(), new FromInteger.ToDouble());
+                    }
+                }, intTwo));
+        OperationOutput valueOne = new OperationOutput(log, listenersFactory, types,
+                new Operation(OperationType.Simple.Plus, new HashMap<String, Operator<?, ?>>() {
+                    {
+                        put(SimpleTypeData.Type.Double.getId(), new DoubleOperators.Plus());
+                    }
+                }, doubleTwo, doubleThree));
+
+        // create second value as one from the device
         String[] valuePath = new String[] {"", "devices", "device", "values", "dv"};
         ValueLocation valueTwo = new ValueLocation(listenersFactory,
                 new RealObjectType.Reference<Value<?, ?>>(valuePath),
@@ -152,7 +174,7 @@ public class TestValueComparison {
                 }
             }
         });
-        device.values.doubleValue(2.0);
+        device.values.doubleValue(5.0);
         synchronized (lock) {
             lock.wait();
         }
