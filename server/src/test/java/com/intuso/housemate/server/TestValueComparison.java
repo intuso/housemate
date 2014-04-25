@@ -115,6 +115,9 @@ public class TestValueComparison {
         RealType<?, ?, ?> doubleType = new DoubleType(log, listenersFactory);
         ConstantValue intTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("2")));
         ConstantValue doubleThree = new ConstantValue(listenersFactory, doubleType, new TypeInstances(new TypeInstance("3.0")));
+
+        Thread.sleep(100); // let types and transformers be added
+
         TransformationOutput doubleTwo = new TransformationOutput(log, listenersFactory, types,
                 new Transformation(doubleType, new HashMap<String, Transformer<?, ?>>() {
                     {
