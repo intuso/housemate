@@ -42,8 +42,7 @@ public class UserList extends ObjectList<UserData, GWTProxyUser> {
                 public void allLoaded() {
                     panel.add(new User(Housemate.INJECTOR.getProxyRoot().getUsers().get(id)));
                 }
-            }, "load-user",
-                    new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+            }, "loadUser" + id, new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
             return panel;
         }
     }

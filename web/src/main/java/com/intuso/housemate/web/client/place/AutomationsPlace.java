@@ -67,11 +67,12 @@ public class AutomationsPlace extends HousematePlace {
 
     @Override
     public List<HousemateObject.TreeLoadInfo> createTreeLoadInfos() {
-        HousemateObject.TreeLoadInfo treeLoadInfo = new HousemateObject.TreeLoadInfo(Root.AUTOMATIONS_ID);
+        HousemateObject.TreeLoadInfo listInfo = new HousemateObject.TreeLoadInfo(Root.AUTOMATIONS_ID);
         if(automationIds != null)
             for(String automationId : automationIds)
-                treeLoadInfo.getChildren().put(automationId, new HousemateObject.TreeLoadInfo(automationId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
-        return Lists.newArrayList(treeLoadInfo);
+                listInfo.getChildren().put(automationId, new HousemateObject.TreeLoadInfo(automationId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+        HousemateObject.TreeLoadInfo addInfo = new HousemateObject.TreeLoadInfo(Root.ADD_AUTOMATION_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE));
+        return Lists.newArrayList(listInfo, addInfo);
     }
 
     @Override

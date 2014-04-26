@@ -67,11 +67,12 @@ public class DevicesPlace extends HousematePlace {
 
     @Override
     public List<HousemateObject.TreeLoadInfo> createTreeLoadInfos() {
-        HousemateObject.TreeLoadInfo treeLoadInfo = new HousemateObject.TreeLoadInfo(Root.DEVICES_ID);
+        HousemateObject.TreeLoadInfo listInfo = new HousemateObject.TreeLoadInfo(Root.DEVICES_ID);
         if(deviceIds != null)
             for(String deviceId : deviceIds)
-                treeLoadInfo.getChildren().put(deviceId, new HousemateObject.TreeLoadInfo(deviceId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
-        return Lists.newArrayList(treeLoadInfo);
+                listInfo.getChildren().put(deviceId, new HousemateObject.TreeLoadInfo(deviceId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+        HousemateObject.TreeLoadInfo addInfo = new HousemateObject.TreeLoadInfo(Root.ADD_DEVICE_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE));
+        return Lists.newArrayList(listInfo, addInfo);
     }
 
     @Override

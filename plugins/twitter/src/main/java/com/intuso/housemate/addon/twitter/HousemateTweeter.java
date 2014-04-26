@@ -142,7 +142,7 @@ public class HousemateTweeter {
                             public void allLoaded() {
                                 root.getDevices().addObjectListener(deviceListListener, true);
                             }
-                        }, "twitterClient",
+                        }, "twitterClientInitialLoad",
                                 new HousemateObject.TreeLoadInfo(Root.DEVICES_ID),
                                 new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
                         break;

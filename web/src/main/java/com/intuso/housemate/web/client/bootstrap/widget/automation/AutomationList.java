@@ -42,7 +42,7 @@ public class AutomationList extends ObjectList<AutomationData, GWTProxyAutomatio
                 public void allLoaded() {
                     panel.add(new Automation(Housemate.INJECTOR.getProxyRoot().getAutomations().get(id)));
                 }
-            }, "load-automation",
+            }, "loadAutomation-" + id,
                     new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
             return panel;
         }

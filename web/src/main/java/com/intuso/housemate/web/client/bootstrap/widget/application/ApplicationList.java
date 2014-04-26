@@ -42,7 +42,7 @@ public class ApplicationList extends ObjectList<ApplicationData, GWTProxyApplica
                 public void allLoaded() {
                     panel.add(new Application(Housemate.INJECTOR.getProxyRoot().getApplications().get(id)));
                 }
-            }, "load-application",
+            }, "loadApplication-" + id,
                     new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
             return panel;
         }

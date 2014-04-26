@@ -67,11 +67,12 @@ public class UsersPlace extends HousematePlace {
 
     @Override
     public List<HousemateObject.TreeLoadInfo> createTreeLoadInfos() {
-        HousemateObject.TreeLoadInfo treeLoadInfo = new HousemateObject.TreeLoadInfo(Root.USERS_ID);
+        HousemateObject.TreeLoadInfo listInfo = new HousemateObject.TreeLoadInfo(Root.USERS_ID);
         if(userIds != null)
             for(String userId : userIds)
-                treeLoadInfo.getChildren().put(userId, new HousemateObject.TreeLoadInfo(userId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
-        return Lists.newArrayList(treeLoadInfo);
+                listInfo.getChildren().put(userId, new HousemateObject.TreeLoadInfo(userId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+        HousemateObject.TreeLoadInfo addInfo = new HousemateObject.TreeLoadInfo(Root.ADD_USER_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE));
+        return Lists.newArrayList(listInfo, addInfo);
     }
 
     @Override

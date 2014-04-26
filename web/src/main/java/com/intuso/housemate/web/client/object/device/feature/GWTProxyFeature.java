@@ -45,7 +45,7 @@ public abstract class GWTProxyFeature
             public void allLoaded() {
                 listener.featureLoaded(device, GWTProxyFeature.this);
             }
-        }, "featureLoader", treeInfos));
+        }, "featureLoader-" + listener.hashCode(), treeInfos));
     }
 
     private HousemateObject.TreeLoadInfo makeTreeInfo(String objectName, Set<String> childNames) {

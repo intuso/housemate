@@ -76,7 +76,7 @@ public abstract class HousematePlace extends Place {
                 view.newPlace(HousematePlace.this);
                 acceptsOneWidget.setWidget(view);
             }
-        }, "web", createTreeLoadInfos()));
+        }, "webPlaceData-" + hashCode(), createTreeLoadInfos()));
     }
 
     protected abstract List<HousemateObject.TreeLoadInfo> createTreeLoadInfos();

@@ -43,7 +43,7 @@ public class DeviceList extends ObjectList<DeviceData, GWTProxyDevice> {
                     panel.clear();
                     panel.add(new Device(Housemate.INJECTOR.getProxyRoot().getDevices().get(id)));
                 }
-            }, "load-device",
+            }, "loadDevice-" + id,
                     new HousemateObject.TreeLoadInfo(id, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
             return panel;
         }

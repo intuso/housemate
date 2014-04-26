@@ -141,7 +141,7 @@ public class Node extends Composite
                         object.addChildListener(Node.this, true, false);
                         object.addAvailableChildrenListener(Node.this, true);
                     }
-                }, "treeBrowse loader", new HousemateObject.TreeLoadInfo(childOverview.getId())));
+                }, "treeBrowseNodeLoader-" + childOverview.getId(), new HousemateObject.TreeLoadInfo(childOverview.getId())));
             }
         }
         expanded = show;

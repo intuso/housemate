@@ -74,8 +74,7 @@ public class Housemate implements EntryPoint {
                 INJECTOR.getProxyRoot().clearLoadedObjects();
                 INJECTOR.getProxyRoot().loadChildOverviews();
                 List<HousemateObject.TreeLoadInfo> loadInfos = Lists.newArrayList();
-                for (String childId : new String[]{Root.TYPES_ID, Root.ADD_DEVICE_ID, Root.ADD_AUTOMATION_ID, Root.ADD_USER_ID})
-                    loadInfos.add(new HousemateObject.TreeLoadInfo(childId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                loadInfos.add(new HousemateObject.TreeLoadInfo(Root.TYPES_ID));
                 INJECTOR.getProxyRoot().load(new LoadManager(new LoadManager.Callback() {
                     @Override
                     public void failed(HousemateObject.TreeLoadInfo tl) {
@@ -89,7 +88,7 @@ public class Housemate implements EntryPoint {
                         // force the page to reload by going to a "new" place
                         INJECTOR.getPlaceController().goTo(INJECTOR.getPlaceHistoryMapper().getPlace(History.getToken()));
                     }
-                }, "webUI", loadInfos));
+                }, "webInitialLoad", loadInfos));
             }
         }
 
