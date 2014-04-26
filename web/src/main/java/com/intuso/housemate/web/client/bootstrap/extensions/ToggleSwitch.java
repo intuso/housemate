@@ -79,17 +79,13 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
     @Override
     protected void onAttach() {
         super.onAttach();
-        if(!created) {
-            create(this);
-            created = true;
-        }
+        create(this);
     }
 
     @Override
     protected void onDetach() {
         super.onDetach();
-        if(created)
-            destroy(this);
+        destroy(this);
     }
 
     private native void create(ToggleSwitch toggleSwitch) /*-{
