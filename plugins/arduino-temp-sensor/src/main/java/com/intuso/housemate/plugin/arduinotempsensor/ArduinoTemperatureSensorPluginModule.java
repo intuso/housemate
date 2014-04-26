@@ -2,6 +2,7 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.housemate.plugin.api.Devices;
 import com.intuso.housemate.api.HousemateException;
@@ -21,6 +22,7 @@ public class ArduinoTemperatureSensorPluginModule extends PluginModule {
     }
 
     @Provides
+    @Singleton
     public SerialPort getSerialPort(Log log) throws HousemateException {
         log.d("Initialising Arduino Temperature Sensor plugin");
         SerialPort serialPort = new SerialPort("/dev/ttyACM0");
