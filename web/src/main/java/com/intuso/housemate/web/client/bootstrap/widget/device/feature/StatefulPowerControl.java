@@ -129,7 +129,7 @@ public class StatefulPowerControl
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
             setEnabled(false);
-            Housemate.INJECTOR.getEventBus().fireEvent(new PerformCommandEvent(event.getValue() ? getOnCommand() : getOffCommand(), null));
+            Housemate.INJECTOR.getEventBus().fireEvent(new PerformCommandEvent(event.getValue() ? getOffCommand() : getOnCommand(), null));
         }
     }
 }
