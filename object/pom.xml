@@ -8,7 +8,7 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>objects</artifactId>
+    <artifactId>object</artifactId>
     <packaging>pom</packaging>
     <name>Housemate Objects</name>
     <description>Objects for the Housemate framework</description>

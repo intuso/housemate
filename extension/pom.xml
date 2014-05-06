@@ -8,13 +8,13 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>sample</artifactId>
+    <artifactId>extension</artifactId>
     <packaging>pom</packaging>
-    <name>Housemate Samples</name>
-    <description>Samples for the Housemate framework</description>
+    <name>Housemate Extension</name>
+    <description>Extensions for the Housemate framework</description>
 
     <modules>
-        <module>plugin</module>
+        <module>android</module>
     </modules>
 
 </project>

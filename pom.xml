@@ -28,15 +28,16 @@
 
     <modules>
         <module>api</module>
-        <module>server</module>
         <module>comms</module>
-        <module>objects</module>
+        <module>extension</module>
+        <module>object</module>
+        <module>package</module>
         <module>persistence</module>
-	    <module>platform</module>
+        <module>platform</module>
         <module>plugin</module>
         <module>sample</module>
+        <module>server</module>
         <module>web</module>
-        <module>package</module>
     </modules>
 
     <dependencies>
