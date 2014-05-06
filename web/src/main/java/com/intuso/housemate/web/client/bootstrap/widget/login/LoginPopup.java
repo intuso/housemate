@@ -77,12 +77,7 @@ public class LoginPopup extends Composite implements LoginView {
     }-*/;
 
     @Override
-    public void show(String message) {
-        if(message != null) {
-            this.message.setVisible(true);
-            this.message.setText(message);
-        } else
-            this.message.setVisible(false);
+    public void show() {
         modal.show();
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             public void execute() {
@@ -111,5 +106,14 @@ public class LoginPopup extends Composite implements LoginView {
     public void disable() {
         username.setEnabled(false);
         password.setEnabled(false);
+    }
+
+    @Override
+    public void setMessage(String message) {
+        if(message != null) {
+            this.message.setVisible(true);
+            this.message.setText(message);
+        } else
+            this.message.setVisible(false);
     }
 }

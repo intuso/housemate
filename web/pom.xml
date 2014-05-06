@@ -35,32 +35,6 @@
 
     <dependencies>
 
-        <!-- Utilities -->
-        <dependency>
-            <groupId>com.intuso.utilities</groupId>
-            <artifactId>wrapper</artifactId>
-            <version>${intuso.utils.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.intuso.utilities</groupId>
-            <artifactId>listener</artifactId>
-            <version>${intuso.utils.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.intuso.utilities</groupId>
-            <artifactId>log</artifactId>
-            <version>${intuso.utils.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>com.intuso.utilities</groupId>
-            <artifactId>properties-api</artifactId>
-            <version>${intuso.utils.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
         <!-- Housemate -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -89,11 +63,47 @@
             <artifactId>comms-transport-socket-client</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>persistence-flatfile</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Utilities -->
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>wrapper</artifactId>
+            <version>${intuso.utils.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>listener</artifactId>
+            <version>${intuso.utils.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>log</artifactId>
+            <version>${intuso.utils.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>properties-api</artifactId>
+            <version>${intuso.utils.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
 
         <dependency>
             <groupId>com.google.gwt.inject</groupId>
             <artifactId>gin</artifactId>
             <version>2.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-servlet</artifactId>
+            <version>${guice.version}</version>
         </dependency>
 
         <!-- GWT -->

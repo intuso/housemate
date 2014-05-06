@@ -1,4 +1,4 @@
-package com.intuso.housemate.server.storage;
+package com.intuso.housemate.persistence.api;
 
 /**
  */

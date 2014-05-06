@@ -21,6 +21,7 @@ import com.intuso.utilities.log.Log;
 */
 public final class SimpleProxyUser extends ProxyUser<
         SimpleProxyCommand,
+        SimpleProxyProperty,
         SimpleProxyUser> {
 
     private final Injector injector;

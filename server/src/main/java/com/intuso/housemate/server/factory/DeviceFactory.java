@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -12,12 +11,13 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.*;
+import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
-import com.intuso.housemate.server.storage.Storage;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -45,18 +45,18 @@ public final class DeviceFactory implements PluginListener {
 
     private final Log log;
     private final ListenersFactory listenersFactory;
-    private final Storage storage;
+    private final Persistence persistence;
     private final AnnotationProcessor annotationProcessor;
 
     private final Map<String, Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>>> factoryEntries = Maps.newHashMap();
     private final DeviceFactoryType type;
 
     @Inject
-    public DeviceFactory(Log log, ListenersFactory listenersFactory, Storage storage,
+    public DeviceFactory(Log log, ListenersFactory listenersFactory, Persistence persistence,
                          AnnotationProcessor annotationProcessor, PluginManager pluginManager) {
         this.log = log;
         this.listenersFactory = listenersFactory;
-        this.storage = storage;
+        this.persistence = persistence;
         this.annotationProcessor = annotationProcessor;
         type = new DeviceFactoryType(log);
         pluginManager.addPluginListener(this, true);
@@ -92,7 +92,7 @@ public final class DeviceFactory implements PluginListener {
                         .create(new DeviceData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()));
                 annotationProcessor.process(types, device);
                 devices.add(device);
-                storage.saveValues(devices.getPath(), device.getId(), values);
+                persistence.saveValues(devices.getPath(), device.getId(), values);
             }
         };
     }

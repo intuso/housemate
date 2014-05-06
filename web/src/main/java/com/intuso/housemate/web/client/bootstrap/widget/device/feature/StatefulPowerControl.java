@@ -84,7 +84,7 @@ public class StatefulPowerControl
             GWTProxyValue isOn = getIsOnValue();
             if(isOn != null)
                 isOn.addObjectListener(this);
-            setValue(!isOn());
+            setValue(isOn());
 
             if(getOnCommand() != null && getOffCommand() != null) {
                 getOnCommand().addObjectListener(this);
@@ -102,7 +102,7 @@ public class StatefulPowerControl
 
         @Override
         public void valueChanged(GWTProxyValue value) {
-            setValue(!isOn());
+            setValue(isOn());
             setEnabled(true);
         }
 
@@ -129,7 +129,7 @@ public class StatefulPowerControl
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
             setEnabled(false);
-            Housemate.INJECTOR.getEventBus().fireEvent(new PerformCommandEvent(event.getValue() ? getOffCommand() : getOnCommand(), null));
+            Housemate.INJECTOR.getEventBus().fireEvent(new PerformCommandEvent(event.getValue() ? getOnCommand() : getOffCommand(), null));
         }
     }
 }

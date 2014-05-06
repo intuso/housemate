@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.server.storage.Storage;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -17,12 +17,12 @@ import com.intuso.utilities.log.Log;
 public class ValueWatcher implements ValueListener<Value<?, ?>> {
 
     private final Log log;
-    private final Storage storage;
+    private final Persistence persistence;
 
     @Inject
-    public ValueWatcher(Log log, Storage storage) {
+    public ValueWatcher(Log log, Persistence persistence) {
         this.log = log;
-        this.storage = storage;
+        this.persistence = persistence;
     }
 
 
@@ -34,7 +34,7 @@ public class ValueWatcher implements ValueListener<Value<?, ?>> {
     @Override
     public void valueChanged(Value<?, ?> value) {
         try {
-            storage.saveTypeInstances(value.getPath(), value.getTypeInstances());
+            persistence.saveTypeInstances(value.getPath(), value.getTypeInstances());
         } catch(HousemateException e) {
             log.e("Failed to save property value", e);
         }

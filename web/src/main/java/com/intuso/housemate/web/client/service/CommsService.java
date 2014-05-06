@@ -14,4 +14,6 @@ public interface CommsService extends RemoteService {
     void disconnectClient();
     Message<Message.Payload>[] getMessages(int num, long timeout) throws NotConnectedException;
     void sendMessageToServer(Message<Message.Payload> message) throws NotConnectedException;
+    void resetPassword(String username);
+    Boolean checkCredentials(String username, String password);
 }

@@ -10,6 +10,10 @@ import com.intuso.housemate.api.object.value.Value;
  */
 public interface RunnableObject<START_STOP_COMMAND extends Command<?, ?, ?>, RUNNING_VALUE extends Value<?, ?>> {
 
+    public final static String RUNNING_ID = "running";
+    public final static String START_ID = "start";
+    public final static String STOP_ID = "stop";
+
     /**
      * Gets the start command
      * @return the start command

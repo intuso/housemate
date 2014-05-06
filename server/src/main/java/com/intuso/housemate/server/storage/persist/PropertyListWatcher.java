@@ -6,8 +6,8 @@ import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.server.storage.DetailsNotFoundException;
-import com.intuso.housemate.server.storage.Storage;
+import com.intuso.housemate.persistence.api.DetailsNotFoundException;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -26,20 +26,20 @@ public class PropertyListWatcher implements ListListener<Property<?, ?, ?>> {
     private final Multimap<Property<?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
-    private final Storage storage;
+    private final Persistence persistence;
     private final ValueWatcher valueWatcher;
 
     @Inject
-    public PropertyListWatcher(Log log, Storage storage, ValueWatcher valueWatcher) {
+    public PropertyListWatcher(Log log, Persistence persistence, ValueWatcher valueWatcher) {
         this.log = log;
-        this.storage = storage;
+        this.persistence = persistence;
         this.valueWatcher = valueWatcher;
     }
 
     @Override
     public void elementAdded(Property<?, ?, ?> property) {
         try {
-            property.set(storage.getTypeInstances(property.getPath()),
+            property.set(persistence.getTypeInstances(property.getPath()),
                     new CommandPerformListener(log, "Set property value " + Arrays.toString(property.getPath())));
         } catch(DetailsNotFoundException e) {
             log.w("No details found for property value " + Arrays.toString(property.getPath()));

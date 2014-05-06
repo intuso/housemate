@@ -7,14 +7,17 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.user.UserListener;
+import com.intuso.housemate.object.real.impl.type.Email;
+import com.intuso.housemate.object.real.impl.type.EmailType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 public class ServerRealUser
         extends ServerRealObject<UserData, HousemateData<?>, ServerRealObject<?, ? ,?, ?>, UserListener>
-        implements User<ServerRealCommand> {
+        implements User<ServerRealCommand, ServerRealProperty<Email>> {
 
     private final ServerRealCommand remove;
+    private final ServerRealProperty<Email> emailProperty;
 
     /**
      * @param log {@inheritDoc}
@@ -31,10 +34,18 @@ public class ServerRealUser
                 owner.remove(ServerRealUser.this);
             }
         };
+        this.emailProperty = new ServerRealProperty<Email>(log, listenersFactory, EMAIL_ID, EMAIL_ID, "The user's email address", new EmailType(log, listenersFactory), (Email)null);
+        addChild(remove);
+        addChild(emailProperty);
     }
 
     @Override
     public ServerRealCommand getRemoveCommand() {
         return remove;
+    }
+
+    @Override
+    public ServerRealProperty<Email> getEmailProperty() {
+        return emailProperty;
     }
 }

@@ -54,6 +54,7 @@ public class ServerModule extends AbstractModule {
         bind(BooleanType.class).in(Scopes.SINGLETON);
         bind(DaysType.class).in(Scopes.SINGLETON);
         bind(DoubleType.class).in(Scopes.SINGLETON);
+        bind(EmailType.class).in(Scopes.SINGLETON);
         bind(IntegerType.class).in(Scopes.SINGLETON);
         bind(RealObjectType.class).in(Scopes.SINGLETON);
         bind(StringType.class).in(Scopes.SINGLETON);

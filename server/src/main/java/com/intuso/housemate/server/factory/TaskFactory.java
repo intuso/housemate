@@ -13,11 +13,11 @@ import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.object.server.real.*;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.plugin.api.ServerTaskFactory;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
-import com.intuso.housemate.server.storage.Storage;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -45,16 +45,16 @@ public final class TaskFactory implements PluginListener {
 
     private final Log log;
     private final ListenersFactory listenersFactory;
-    private final Storage storage;
+    private final Persistence persistence;
 
     private final Map<String, Factory.Entry<ServerTaskFactory<?>>> factoryEntries = Maps.newHashMap();
     private final TaskFactoryType type;
 
     @Inject
-    public TaskFactory(Log log, ListenersFactory listenersFactory, Storage storage, PluginManager pluginManager) {
+    public TaskFactory(Log log, ListenersFactory listenersFactory, Persistence persistence, PluginManager pluginManager) {
         this.log = log;
         this.listenersFactory = listenersFactory;
-        this.storage = storage;
+        this.persistence = persistence;
         type = new TaskFactoryType(log);
         pluginManager.addPluginListener(this, true);
     }
@@ -76,7 +76,7 @@ public final class TaskFactory implements PluginListener {
                 ServerRealTask task = createTask(values, owner);
                 // todo process annotations
                 list.add(task);
-                storage.saveValues(list.getPath(), task.getId(), values);
+                persistence.saveValues(list.getPath(), task.getId(), values);
             }
         };
     }

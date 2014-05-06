@@ -26,11 +26,7 @@ public interface PrimaryObject<
             RunnableObject<START_STOP_COMMAND, RUNNING_VALUE>,
             RemoveableObject<REMOVE_COMMAND> {
 
-    public final static String REMOVE_ID = "remove";
     public final static String CONNECTED_ID = "connected";
-    public final static String RUNNING_ID = "running";
-    public final static String START_ID = "start";
-    public final static String STOP_ID = "stop";
     public final static String ERROR_ID = "error";
 
     /**

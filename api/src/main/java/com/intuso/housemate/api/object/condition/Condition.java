@@ -29,7 +29,6 @@ public interface Condition<
             HasConditions<CONDITIONS>,
             RemoveableObject<REMOVE_COMMAND> {
 
-    public final static String REMOVE_ID = "remove";
     public final static String SATISFIED_ID = "satisfied";
     public final static String ERROR_ID = "error";
     public final static String PROPERTIES_ID = "properties";

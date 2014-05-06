@@ -13,8 +13,8 @@ import com.intuso.housemate.api.object.task.Task;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
-import com.intuso.housemate.server.storage.DetailsNotFoundException;
-import com.intuso.housemate.server.storage.Storage;
+import com.intuso.housemate.persistence.api.DetailsNotFoundException;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -35,16 +35,16 @@ public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?
     private final Multimap<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
-    private final Storage storage;
+    private final Persistence persistence;
     private final ValueWatcher valueWatcher;
     private final ConditionListWatcher conditionListWatcher;
     private final TaskListWatcher taskListWatcher;
 
     @Inject
-    public AutomationListWatcher(Log log, Storage storage, ValueWatcher valueWatcher,
+    public AutomationListWatcher(Log log, Persistence persistence, ValueWatcher valueWatcher,
                                  ConditionListWatcher conditionListWatcher, TaskListWatcher taskListWatcher) {
         this.log = log;
-        this.storage = storage;
+        this.persistence = persistence;
         this.valueWatcher = valueWatcher;
         this.conditionListWatcher = conditionListWatcher;
         this.taskListWatcher = taskListWatcher;
@@ -59,7 +59,7 @@ public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?
         listeners.put(automation, automation.getSatisfiedTasks().addObjectListener(taskListWatcher, true));
         listeners.put(automation, automation.getUnsatisfiedTasks().addObjectListener(taskListWatcher, true));
         try {
-            TypeInstances instances = storage.getTypeInstances(automation.getRunningValue().getPath());
+            TypeInstances instances = persistence.getTypeInstances(automation.getRunningValue().getPath());
             if(instances.size() > 0 && BooleanType.SERIALISER.deserialise(instances.get(0)))
                 automation.getStartCommand().perform(new TypeInstanceMap(),
                         new CommandPerformListener(log, "Start automation \"" + automation.getId() + "\""));
@@ -79,7 +79,7 @@ public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?
             for(ListenerRegistration registration : registrations)
                 registration.removeListener();
         try {
-            storage.removeValues(automation.getPath());
+            persistence.removeValues(automation.getPath());
         } catch(HousemateException e) {
             log.e("Failed to delete automation properties", e);
         }

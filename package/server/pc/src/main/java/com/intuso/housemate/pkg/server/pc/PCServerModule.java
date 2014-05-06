@@ -1,7 +1,7 @@
 package com.intuso.housemate.pkg.server.pc;
 
 import com.google.inject.AbstractModule;
-import com.intuso.housemate.pkg.server.pc.storage.SjoerdDBModule;
+import com.intuso.housemate.persistence.flatfile.FlatFilePersistenceModule;
 import com.intuso.housemate.platform.pc.PCModule;
 import com.intuso.housemate.server.ServerModule;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -28,7 +28,7 @@ public class PCServerModule extends AbstractModule {
     protected void configure() {
         bind(PropertyRepository.class).toInstance(properties);
         install(new PCModule(defaultProperties, "server.log")); // log and properties provider
-        install(new SjoerdDBModule(defaultProperties)); // storage impl
+        install(new FlatFilePersistenceModule(defaultProperties)); // storage impl
         install(new TransportsModule(defaultProperties)); // socket and rest servers
         install(new SerialisersModule());
         install(new ServerModule(defaultProperties)); // main server module

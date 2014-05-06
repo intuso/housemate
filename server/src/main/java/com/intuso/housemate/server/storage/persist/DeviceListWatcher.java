@@ -10,8 +10,8 @@ import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
-import com.intuso.housemate.server.storage.DetailsNotFoundException;
-import com.intuso.housemate.server.storage.Storage;
+import com.intuso.housemate.persistence.api.DetailsNotFoundException;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -30,14 +30,14 @@ public class DeviceListWatcher implements ListListener<Device<?, ?, ?, ?, ?, ?, 
     private final Multimap<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
-    private final Storage storage;
+    private final Persistence persistence;
     private final ValueWatcher valueWatcher;
     private final PropertyListWatcher propertyListWatcher;
 
     @Inject
-    public DeviceListWatcher(Log log, Storage storage, ValueWatcher valueWatcher, PropertyListWatcher propertyListWatcher) {
+    public DeviceListWatcher(Log log, Persistence persistence, ValueWatcher valueWatcher, PropertyListWatcher propertyListWatcher) {
         this.log = log;
-        this.storage = storage;
+        this.persistence = persistence;
         this.valueWatcher = valueWatcher;
         this.propertyListWatcher = propertyListWatcher;
     }
@@ -47,7 +47,7 @@ public class DeviceListWatcher implements ListListener<Device<?, ?, ?, ?, ?, ?, 
         listeners.put(device, device.getRunningValue().addObjectListener(valueWatcher));
         listeners.put(device, device.getProperties().addObjectListener(propertyListWatcher, true));
         try {
-            TypeInstances instances = storage.getTypeInstances(device.getRunningValue().getPath());
+            TypeInstances instances = persistence.getTypeInstances(device.getRunningValue().getPath());
             if(instances.size() > 0 && BooleanType.SERIALISER.deserialise(instances.get(0)))
                 device.getStartCommand().perform(new TypeInstanceMap(),
                         new CommandPerformListener(log, "Start device \"" + device.getId() + "\""));
@@ -65,7 +65,7 @@ public class DeviceListWatcher implements ListListener<Device<?, ?, ?, ?, ?, ?, 
             for(ListenerRegistration registration : registrations)
                 registration.removeListener();
         try {
-            storage.removeValues(device.getPath());
+            persistence.removeValues(device.getPath());
         } catch(HousemateException e) {
             log.e("Failed to delete device properties", e);
         }

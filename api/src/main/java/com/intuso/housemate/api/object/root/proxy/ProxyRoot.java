@@ -25,7 +25,7 @@ import com.intuso.housemate.api.object.user.User;
  */
 public interface ProxyRoot<
             APPLICATIONS extends List<? extends Application<?, ?, ?, ?, ?>>,
-            USERS extends List<? extends User>,
+            USERS extends List<? extends User<?, ?>>,
             TYPES extends List<? extends Type>,
             DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
             AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,

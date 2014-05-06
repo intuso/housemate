@@ -1,6 +1,7 @@
 package com.intuso.housemate.server.storage.persist;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.list.ListListener;
@@ -8,11 +9,11 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.User;
-import com.intuso.housemate.server.storage.Storage;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,40 +22,44 @@ import java.util.Map;
  * Time: 19:41
  * To change this template use File | Settings | File Templates.
  */
-public class UserListWatcher implements ListListener<User<?>> {
+public class UserListWatcher implements ListListener<User<?, ?>> {
 
-    private final Map<User<?>, ListenerRegistration> listeners = Maps.newHashMap();
+    private final Multimap<User<?, ?>, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
-    private final Storage storage;
+    private final Persistence persistence;
+    private final ValueWatcher valueWatcher;
 
     @Inject
-    public UserListWatcher(Log log, Storage storage) {
+    public UserListWatcher(Log log, Persistence persistence, ValueWatcher valueWatcher) {
         this.log = log;
-        this.storage = storage;
+        this.persistence = persistence;
+        this.valueWatcher = valueWatcher;
     }
 
     @Override
-    public void elementAdded(User<?> user) {
+    public void elementAdded(User<?, ?> user) {
         //listeners.put(application, application.getStatusValue().addObjectListener(valueWatcher));
         TypeInstanceMap toSave = new TypeInstanceMap();
         toSave.put("id", new TypeInstances(new TypeInstance(user.getId())));
         toSave.put("name", new TypeInstances(new TypeInstance(user.getName())));
         toSave.put("description", new TypeInstances(new TypeInstance(user.getDescription())));
         try {
-            storage.saveValues(user.getPath(), toSave);
+            persistence.saveValues(user.getPath(), toSave);
         } catch (HousemateException e) {
             log.e("Failed to save new user values", e);
         }
+        listeners.put(user, user.getEmailProperty().addObjectListener(valueWatcher));
     }
 
     @Override
-    public void elementRemoved(User<?> user) {
-        ListenerRegistration registration = listeners.remove(user);
-        if(registration != null)
-            registration.removeListener();
+    public void elementRemoved(User<?, ?> user) {
+        Collection<ListenerRegistration> registrations = listeners.removeAll(user);
+        if(registrations != null)
+            for(ListenerRegistration registration : registrations)
+                registration.removeListener();
         try {
-            storage.removeValues(user.getPath());
+            persistence.removeValues(user.getPath());
         } catch(HousemateException e) {
             log.e("Failed to delete automation properties", e);
         }

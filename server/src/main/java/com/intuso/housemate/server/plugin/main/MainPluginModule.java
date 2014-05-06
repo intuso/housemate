@@ -46,6 +46,7 @@ import com.intuso.utilities.log.Log;
         DoubleType.class,
         TimeType.class,
         DaysType.class,
+        EmailType.class,
         ConstantType.class,
         ValueSourceType.class,
         ComparisonTypeType.class,

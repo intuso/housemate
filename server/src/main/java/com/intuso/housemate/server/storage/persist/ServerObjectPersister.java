@@ -46,7 +46,7 @@ public class ServerObjectPersister {
         automations.addObjectListener(automationListWatcher, true);
     }
 
-    public void watchUsers(List<? extends User<?>> users) {
+    public void watchUsers(List<? extends User<?, ?>> users) {
         users.addObjectListener(userListWatcher);
     }
 

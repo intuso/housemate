@@ -8,6 +8,8 @@ import com.intuso.housemate.api.object.command.Command;
  */
 public interface RemoveableObject<REMOVE_COMMAND extends Command<?, ?, ?>> {
 
+    public final static String REMOVE_ID = "remove";
+
     /**
      * Gets the remove command
      * @return the remove command

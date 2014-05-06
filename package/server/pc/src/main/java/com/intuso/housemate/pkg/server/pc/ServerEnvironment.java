@@ -266,7 +266,7 @@ public class ServerEnvironment {
 
         // Configure webapp provided as external WAR
         WebAppContext webapp = new WebAppContext();
-        webapp.getServletContext().setAttribute("INJECTOR", injector);
+        webapp.getServletContext().setAttribute(Injector.class.getName(), injector);
         webapp.setContextPath(properties.get(WEBAPP_PATH) != null ? properties.get(WEBAPP_PATH) : DEFAULT_WEBAPP_PATH);
         webapp.setWar(warFile.getAbsolutePath());
         server.setHandler(webapp);

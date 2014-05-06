@@ -24,7 +24,6 @@ public interface Task<
             HasProperties<PROPERTIES>,
             RemoveableObject<REMOVE_COMMAND> {
 
-    public final static String REMOVE_ID = "remove";
     public final static String EXECUTING_ID = "executing";
     public final static String ERROR_ID = "error";
     public final static String PROPERTIES_ID = "properties";

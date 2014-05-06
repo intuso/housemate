@@ -1,10 +1,8 @@
-package com.intuso.housemate.server;
+package com.intuso.housemate.persistence.api;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.server.storage.DetailsNotFoundException;
-import com.intuso.housemate.server.storage.Storage;
 
 import java.util.Set;
 
@@ -15,7 +13,7 @@ import java.util.Set;
  * Time: 08:10
  * To change this template use File | Settings | File Templates.
  */
-public class NoStorage implements Storage {
+public class NoPersistence implements Persistence {
 
     @Override
     public TypeInstances getTypeInstances(String[] path) throws DetailsNotFoundException, HousemateException {

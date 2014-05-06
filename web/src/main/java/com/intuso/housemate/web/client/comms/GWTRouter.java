@@ -1,6 +1,5 @@
 package com.intuso.housemate.web.client.comms;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -8,7 +7,6 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.web.client.NotConnectedException;
-import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -62,7 +60,7 @@ public class GWTRouter extends Router {
         }
     };
 
-    private final CommsServiceAsync commsService = GWT.create(CommsService.class);
+    private final CommsServiceAsync commsService;
 
     /**
      * Create a new comms instance
@@ -71,8 +69,9 @@ public class GWTRouter extends Router {
      *          if an error occurs creating the comms instance
      */
     @Inject
-    public GWTRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties) {
+    public GWTRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties, CommsServiceAsync commsService) {
         super(log, listenersFactory, properties);
+        this.commsService = commsService;
     }
 
     @Override

@@ -4,8 +4,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
+import com.intuso.housemate.persistence.api.NoPersistence;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
-import com.intuso.housemate.server.storage.Storage;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.log.LogLevel;
@@ -34,7 +35,7 @@ public class TestModule extends AbstractModule {
     protected void configure() {
         bind(ListenersFactory.class).toInstance(listenersFactory);
         bind(PropertyRepository.class).toInstance(WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, defaultProperties));
-        bind(Storage.class).to(NoStorage.class);
+        bind(Persistence.class).to(NoPersistence.class);
         Multibinder.newSetBinder(binder(), ExternalClientRouter.class);
     }
 

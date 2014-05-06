@@ -17,13 +17,15 @@ import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.impl.type.Email;
+import com.intuso.housemate.object.real.impl.type.EmailType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.*;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.DeviceFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
-import com.intuso.housemate.server.storage.Storage;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -33,7 +35,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     private final Log log;
     private final ListenersFactory listenersFactory;
-    private final Storage storage;
+    private final Persistence persistence;
 
     private final DeviceFactory deviceFactory;
     private final ConditionFactory conditionFactory;
@@ -51,7 +53,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
         @Override
         public void valueChanged(Value<?, ?> value) {
             try {
-                storage.saveTypeInstances(value.getPath(), value.getTypeInstances());
+                persistence.saveTypeInstances(value.getPath(), value.getTypeInstances());
             } catch(HousemateException e) {
                 log.e("Failed to save running value of device", e);
             }
@@ -60,11 +62,11 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Inject
     public LifecycleHandlerImpl(Log log, ListenersFactory listenersFactory,
-                                Storage storage, DeviceFactory deviceFactory, ConditionFactory conditionFactory,
+                                Persistence persistence, DeviceFactory deviceFactory, ConditionFactory conditionFactory,
                                 TaskFactory taskFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
         this.log = log;
         this.listenersFactory = listenersFactory;
-        this.storage = storage;
+        this.persistence = persistence;
         this.deviceFactory = deviceFactory;
         this.conditionFactory = conditionFactory;
         this.taskFactory = taskFactory;
@@ -74,25 +76,30 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     @Override
     public ServerRealCommand createAddUserCommand(final ServerRealList<UserData, ServerRealUser> users) {
         return new ServerRealCommand(log, listenersFactory, Root.ADD_USER_ID, Root.ADD_USER_ID, "Add a new user", Arrays.<ServerRealParameter<?>>asList(
-                new ServerRealParameter<String>(log, listenersFactory, "username", "Username", "The username for the new user", new StringType(log, listenersFactory))
+                new ServerRealParameter<String>(log, listenersFactory, "username", "Username", "The username for the new user", new StringType(log, listenersFactory)),
+                new ServerRealParameter<Email>(log, listenersFactory, "email", "Email Address", "The new user's email address", new EmailType(log, listenersFactory))
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 String username = values.get("username") != null ? values.get("username").getFirstValue() : null;
                 if(username == null)
                     throw new HousemateException("No username value set");
+                Email email = values.get("email") != null ? new Email(values.get("username").getFirstValue()) : null;
+                if(email == null)
+                    throw new HousemateException("No email value set");
                 ServerRealUser user = new ServerRealUser(log, listenersFactory, username, username, username, new ServerRealUserOwner() {
                     @Override
                     public void remove(ServerRealUser user) {
                         users.remove(user.getId());
                         try {
-                            storage.removeValues(user.getPath());
+                            persistence.removeValues(user.getPath());
                         } catch(HousemateException e) {
                             log.e("Failed to remove stored details for user " + Arrays.toString(user.getPath()));
                         }
                     }
                 });
                 users.add(user);
+                user.getEmailProperty().setTypedValue(email);
             }
         };
     }
@@ -119,14 +126,14 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                             public void remove(ServerRealAutomation automation) {
                                 automations.remove(automation.getId());
                                 try {
-                                    storage.removeValues(automation.getPath());
+                                    persistence.removeValues(automation.getPath());
                                 } catch(HousemateException e) {
                                     log.e("Failed to remove stored details for automation " + Arrays.toString(automation.getPath()));
                                 }
                             }
                         }, LifecycleHandlerImpl.this);
                 automations.add(automation);
-                storage.saveValues(automations.getPath(), automation.getId(), values);
+                persistence.saveValues(automations.getPath(), automation.getId(), values);
                 automation.getRunningValue().addObjectListener(runningListener);
             }
         };

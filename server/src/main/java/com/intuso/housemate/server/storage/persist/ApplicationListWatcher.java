@@ -9,9 +9,9 @@ import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.persistence.api.DetailsNotFoundException;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.server.Server;
-import com.intuso.housemate.server.storage.DetailsNotFoundException;
-import com.intuso.housemate.server.storage.Storage;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -30,14 +30,14 @@ public class ApplicationListWatcher implements ListListener<Application<?, ?, ?,
     private final Map<Application<?, ?, ?, ?, ?>, ListenerRegistration> listeners = Maps.newHashMap();
 
     private final Log log;
-    private final Storage storage;
+    private final Persistence persistence;
     private final ValueWatcher valueWatcher;
     private final ApplicationInstanceListWatcher instanceListWatcher;
 
     @Inject
-    public ApplicationListWatcher(Log log, Storage storage, ValueWatcher valueWatcher, ApplicationInstanceListWatcher instanceListWatcher) {
+    public ApplicationListWatcher(Log log, Persistence persistence, ValueWatcher valueWatcher, ApplicationInstanceListWatcher instanceListWatcher) {
         this.log = log;
-        this.storage = storage;
+        this.persistence = persistence;
         this.valueWatcher = valueWatcher;
         this.instanceListWatcher = instanceListWatcher;
     }
@@ -54,14 +54,14 @@ public class ApplicationListWatcher implements ListListener<Application<?, ?, ?,
         toSave.put("name", new TypeInstances(new TypeInstance(application.getName())));
         toSave.put("description", new TypeInstances(new TypeInstance(application.getDescription())));
         try {
-            storage.saveValues(application.getPath(), toSave);
+            persistence.saveValues(application.getPath(), toSave);
         } catch (HousemateException e) {
             log.e("Failed to save new application values", e);
         }
         listeners.put(application, application.getStatusValue().addObjectListener(valueWatcher));
         listeners.put(application, application.getApplicationInstances().addObjectListener(instanceListWatcher, true));
         try {
-            TypeInstances instances = storage.getTypeInstances(application.getStatusValue().getPath());
+            TypeInstances instances = persistence.getTypeInstances(application.getStatusValue().getPath());
             if(instances.getFirstValue() != null) {
                 ApplicationStatus applicationStatus = ApplicationStatus.valueOf(instances.getFirstValue());
                 if(applicationStatus == ApplicationStatus.AllowInstances)
@@ -87,7 +87,7 @@ public class ApplicationListWatcher implements ListListener<Application<?, ?, ?,
         if(registration != null)
             registration.removeListener();
         try {
-            storage.removeValues(application.getPath());
+            persistence.removeValues(application.getPath());
         } catch(HousemateException e) {
             log.e("Failed to delete automation properties", e);
         }

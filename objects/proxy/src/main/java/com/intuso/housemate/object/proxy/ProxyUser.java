@@ -13,9 +13,10 @@ import com.intuso.utilities.log.Log;
  */
 public abstract class ProxyUser<
             COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
-            USER extends ProxyUser<COMMAND, USER>>
+            PROPERTY extends ProxyProperty<?, ?, PROPERTY>,
+            USER extends ProxyUser<COMMAND, PROPERTY, USER>>
         extends ProxyObject<UserData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, USER, UserListener>
-        implements User<COMMAND> {
+        implements User<COMMAND, PROPERTY> {
 
     /**
      * @param log {@inheritDoc}
@@ -28,5 +29,10 @@ public abstract class ProxyUser<
     @Override
     public COMMAND getRemoveCommand() {
         return (COMMAND) getChild(REMOVE_ID);
+    }
+
+    @Override
+    public PROPERTY getEmailProperty() {
+        return (PROPERTY) getChild(EMAIL_ID);
     }
 }

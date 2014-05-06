@@ -22,6 +22,8 @@ import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.object.real.impl.type.ApplicationStatusType;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.*;
+import com.intuso.housemate.persistence.api.DetailsNotFoundException;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -42,21 +44,21 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
     private final ListenersFactory listenersFactory;
     private final Injector injector;
     private final ServerRealRoot root;
-    private final Storage storage;
+    private final Persistence persistence;
     private final ConditionFactory conditionFactory;
     private final TaskFactory taskFactory;
     private final RealList<DeviceData, RealDevice> devices;
     private final LifecycleHandler lifecycleHandler;
 
     @Inject
-    public ServerObjectLoader(Log log, ListenersFactory listenersFactory, Injector injector, ServerRealRoot root, Storage storage,
-                              ConditionFactory conditionFactory, TaskFactory taskFactory,
+    public ServerObjectLoader(Log log, ListenersFactory listenersFactory, Injector injector, ServerRealRoot root,
+                              Persistence persistence, ConditionFactory conditionFactory, TaskFactory taskFactory,
                               RealList<DeviceData, RealDevice> devices, LifecycleHandler lifecycleHandler) {
         this.log = log;
         this.listenersFactory = listenersFactory;
         this.injector = injector;
         this.root = root;
-        this.storage = storage;
+        this.persistence = persistence;
         this.conditionFactory = conditionFactory;
         this.taskFactory = taskFactory;
         this.devices = devices;
@@ -72,8 +74,8 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
 
     private void loadApplications(ServerRealList<ApplicationData, ServerRealApplication> realApplications) {
         try {
-            for(String key : storage.getValuesKeys(realApplications.getPath())) {
-                TypeInstanceMap details = storage.getValues(realApplications.getPath(), key);
+            for(String key : persistence.getValuesKeys(realApplications.getPath())) {
+                TypeInstanceMap details = persistence.getValues(realApplications.getPath(), key);
                 ServerRealApplication application = new ServerRealApplication(log, listenersFactory, details.get("id").getFirstValue(),
                         details.get("name").getFirstValue(), details.get("description").getFirstValue(),
                         injector.getInstance(ApplicationStatusType.class));
@@ -89,8 +91,8 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
 
     private void loadApplicationInstances(ServerRealList<ApplicationInstanceData, ServerRealApplicationInstance> realApplicationInstances, ApplicationStatus applicationStatus) {
         try {
-            for(String key : storage.getValuesKeys(realApplicationInstances.getPath())) {
-                TypeInstanceMap details = storage.getValues(realApplicationInstances.getPath(), key);
+            for(String key : persistence.getValuesKeys(realApplicationInstances.getPath())) {
+                TypeInstanceMap details = persistence.getValues(realApplicationInstances.getPath(), key);
                 ServerRealApplicationInstance applicationInstance = new ServerRealApplicationInstance(log, listenersFactory,
                         details.get("id").getFirstValue(), injector.getInstance(ApplicationInstanceStatusType.class),
                         applicationStatus);
@@ -105,8 +107,8 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
 
     private void loadUsers(ServerRealList<UserData, ServerRealUser> realUsers) {
         try {
-            for(String key : storage.getValuesKeys(realUsers.getPath())) {
-                TypeInstanceMap details = storage.getValues(realUsers.getPath(), key);
+            for(String key : persistence.getValuesKeys(realUsers.getPath())) {
+                TypeInstanceMap details = persistence.getValues(realUsers.getPath(), key);
                 ServerRealUser user = new ServerRealUser(log, listenersFactory, details.get("id").getFirstValue(),
                         details.get("name").getFirstValue(), details.get("description").getFirstValue(), this);
                 realUsers.add(user);
@@ -124,7 +126,7 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
 
             ServerRealUser user = new ServerRealUser(log, listenersFactory, "admin", "admin", "Default admin user", this);
             try {
-                storage.saveValues(realUsers.getPath(), user.getId(), toSave);
+                persistence.saveValues(realUsers.getPath(), user.getId(), toSave);
             } catch(HousemateException e) {
                 log.e("Failed to save details for admin user, no one will be able to gain access");
             }
@@ -134,9 +136,9 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
 
     private void loadDevices(String[] path, Command<?, ?, ?> addDeviceCommand) {
         try {
-            for(String key : storage.getValuesKeys(path)) {
+            for(String key : persistence.getValuesKeys(path)) {
                 try {
-                    addDeviceCommand.perform(storage.getValues(path, key),
+                    addDeviceCommand.perform(persistence.getValues(path, key),
                             new CommandPerformListener("Load device \"" + key + "\""));
                 } catch(HousemateException e) {
                     log.e("Failed to load device", e);
@@ -151,9 +153,9 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
 
     private void loadAutomations(ServerRealList<AutomationData, ServerRealAutomation> realAutomations) {
         try {
-            for(String id : storage.getValuesKeys(realAutomations.getPath())) {
+            for(String id : persistence.getValuesKeys(realAutomations.getPath())) {
                 try {
-                    TypeInstanceMap details = storage.getValues(realAutomations.getPath(), id);
+                    TypeInstanceMap details = persistence.getValues(realAutomations.getPath(), id);
                     ServerRealAutomation automation = new ServerRealAutomation(log, listenersFactory, details.get("id").getFirstValue(),
                             details.get("name").getFirstValue(), details.get("description").getFirstValue(), this,
                             lifecycleHandler);
@@ -175,9 +177,9 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
 
     private void loadConditions(ServerRealList<ConditionData, ServerRealCondition> conditions, ServerRealConditionOwner owner) {
         try {
-            for(String conditionName : storage.getValuesKeys(conditions.getPath())) {
+            for(String conditionName : persistence.getValuesKeys(conditions.getPath())) {
                 try {
-                    TypeInstanceMap details = storage.getValues(conditions.getPath(), conditionName);
+                    TypeInstanceMap details = persistence.getValues(conditions.getPath(), conditionName);
                     ServerRealCondition condition = conditionFactory.createCondition(details, owner);
                     conditions.add(condition);
                     loadConditions(condition.getConditions(), condition);
@@ -194,9 +196,9 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
 
     private void loadTasks(ServerRealList<TaskData, ServerRealTask> tasks, ServerRealTaskOwner owner) {
         try {
-            for(String taskName : storage.getValuesKeys(tasks.getPath())) {
+            for(String taskName : persistence.getValuesKeys(tasks.getPath())) {
                 try {
-                    TypeInstanceMap details = storage.getValues(tasks.getPath(), taskName);
+                    TypeInstanceMap details = persistence.getValues(tasks.getPath(), taskName);
                     tasks.add(taskFactory.createTask(details, owner));
                 } catch(HousemateException e) {
                     log.e("Failed to load task", e);

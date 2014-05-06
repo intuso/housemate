@@ -40,7 +40,7 @@ import java.util.Set;
 public abstract class ProxyRoot<
             APPLICATION extends ProxyApplication<?, ?, ?, ?, APPLICATION>,
             APPLICATIONS extends ProxyList<?, APPLICATION, APPLICATIONS>,
-            USER extends ProxyUser<?, USER>,
+            USER extends ProxyUser<?, ?, USER>,
             USERS extends ProxyList<?, USER, USERS>,
             TYPE extends ProxyType<?, ?, ?, ?>,
             TYPES extends ProxyList<?, TYPE, TYPES>,

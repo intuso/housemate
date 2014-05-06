@@ -14,15 +14,18 @@ import com.intuso.utilities.log.Log;
  */
 public class UserBridge
         extends BridgeObject<UserData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, UserBridge, UserListener>
-        implements User<CommandBridge> {
+        implements User<CommandBridge, PropertyBridge> {
 
     private final CommandBridge removeCommand;
+    private final PropertyBridge emailProperty;
 
     public UserBridge(Log log, ListenersFactory listenersFactory, User user,
                       ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
         super(log, listenersFactory, new UserData(user.getId(), user.getName(), user.getDescription()));
         removeCommand = new CommandBridge(log, listenersFactory, user.getRemoveCommand(), types);
+        emailProperty = new PropertyBridge(log, listenersFactory, user.getEmailProperty(), types);
         addChild(removeCommand);
+        addChild(emailProperty);
     }
 
     @Override
@@ -30,7 +33,12 @@ public class UserBridge
         return removeCommand;
     }
 
-    public final static class Converter implements Function<User<?>, UserBridge> {
+    @Override
+    public PropertyBridge getEmailProperty() {
+        return emailProperty;
+    }
+
+    public final static class Converter implements Function<User<?, ?>, UserBridge> {
 
         private final Log log;
         private final ListenersFactory listenersFactory;
@@ -43,7 +51,7 @@ public class UserBridge
         }
 
         @Override
-        public UserBridge apply(User<?> user) {
+        public UserBridge apply(User<?, ?> user) {
             return new UserBridge(log, listenersFactory, user, types);
         }
     }

@@ -14,6 +14,7 @@ import com.intuso.utilities.log.Log;
  */
 public class GWTProxyUser extends ProxyUser<
         GWTProxyCommand,
+        GWTProxyProperty,
         GWTProxyUser> {
 
     private final GWTGinjector injector;

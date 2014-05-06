@@ -15,6 +15,11 @@ public class TextInput extends TextBox implements TypeInput {
         if(typeInstances.size() == 0)
             typeInstances.add(new TypeInstance());
 
+        if(typeInstances.get(0) == null) {
+            typeInstances.remove(0);
+            typeInstances.add(0, new TypeInstance());
+        }
+
         if(typeInstances.getFirstValue() == null)
             setText("");
         else

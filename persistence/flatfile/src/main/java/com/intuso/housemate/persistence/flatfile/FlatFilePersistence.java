@@ -1,4 +1,4 @@
-package com.intuso.housemate.pkg.server.pc.storage;
+package com.intuso.housemate.persistence.flatfile;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -9,16 +9,16 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.server.storage.DetailsNotFoundException;
-import com.intuso.housemate.server.storage.Storage;
+import com.intuso.housemate.persistence.api.DetailsNotFoundException;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
 import java.io.*;
 import java.util.*;
 
-public class SjoerdDB implements Storage {
+public class FlatFilePersistence implements Persistence {
 
-    public final static String PATH_PROPERTY_KEY = "dbPath";
+    public final static String PATH_PROPERTY_KEY = "persistence.flatfile.base";
 
     public final static String PROPERTY_VALUE_KEY = "value";
     public final static String PROPERTIES_EXTENSION = ".properties";
@@ -31,7 +31,7 @@ public class SjoerdDB implements Storage {
     private final String basePath;
 
     @Inject
-    public SjoerdDB(PropertyRepository properties) throws HousemateException {
+    public FlatFilePersistence(PropertyRepository properties) throws HousemateException {
         String basePath = properties.get(PATH_PROPERTY_KEY);
         File baseDir = new File(basePath);
         if(baseDir.exists()) {

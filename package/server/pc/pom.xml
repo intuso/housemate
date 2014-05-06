@@ -56,6 +56,13 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Persistence implementation -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>persistence-flatfile</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Depend on web so it gets built before we add it to the package -->
         <dependency>
             <groupId>${project.groupId}</groupId>
