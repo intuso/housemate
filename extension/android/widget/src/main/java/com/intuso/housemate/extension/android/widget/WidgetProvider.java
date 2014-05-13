@@ -13,6 +13,7 @@ import android.content.Context;
 public class WidgetProvider extends AppWidgetProvider {
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
+        WidgetService.deleteWidgets(context, appWidgetIds);
         super.onDeleted(context, appWidgetIds);
     }
 }

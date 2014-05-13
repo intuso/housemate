@@ -11,10 +11,11 @@
 
 	<artifactId>extension-android-widget</artifactId>
 	<packaging>apk</packaging>
-    <name>Housemate Android Widgets</name>
+    <name>Housemate Extension Android Widgets</name>
     <description>Android widgets for the Housemate framework</description>
 
 	<properties>
+        <android.sdk.path>/opt/adt/sdk</android.sdk.path>
         <android.platform.version>4.0.1.2</android.platform.version>
         <android.plugin.version>3.6.0</android.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

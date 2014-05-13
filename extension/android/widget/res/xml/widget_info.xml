@@ -3,6 +3,6 @@
                     android:minWidth="40dp"
                     android:minHeight="40dp"
                     android:resizeMode="none"
-                    android:initialLayout="@layout/widget"
+                    android:initialLayout="@layout/stateful_power_widget"
                     android:updatePeriodMillis="0"
-                    android:configure="com.intuso.housemate.extension.android.widget.WidgetConfigureActivity"/>
+                    android:configure="com.intuso.housemate.extension.android.widget.configure.WidgetConfigureActivity"/>
