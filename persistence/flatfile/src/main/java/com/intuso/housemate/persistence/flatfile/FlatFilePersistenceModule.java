@@ -15,7 +15,6 @@ import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 public class FlatFilePersistenceModule extends AbstractModule {
 
     public FlatFilePersistenceModule(WriteableMapPropertyRepository defaultProperties) {
-
         defaultProperties.set(FlatFilePersistence.PATH_PROPERTY_KEY, "./database");
     }
 

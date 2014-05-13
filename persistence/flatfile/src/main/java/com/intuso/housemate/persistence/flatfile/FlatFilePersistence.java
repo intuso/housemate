@@ -11,6 +11,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
 import java.io.*;
@@ -31,9 +32,10 @@ public class FlatFilePersistence implements Persistence {
     private final String basePath;
 
     @Inject
-    public FlatFilePersistence(PropertyRepository properties) throws HousemateException {
+    public FlatFilePersistence(Log log, PropertyRepository properties) throws HousemateException {
         String basePath = properties.get(PATH_PROPERTY_KEY);
         File baseDir = new File(basePath);
+        log.d("Using flat file storage, base path is " + baseDir.getAbsolutePath());
         if(baseDir.exists()) {
             if(!baseDir.isDirectory())
                 throw new HousemateException("File storage base directory is not a directory");

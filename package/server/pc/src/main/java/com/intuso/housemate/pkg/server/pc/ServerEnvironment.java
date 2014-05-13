@@ -73,6 +73,8 @@ public class ServerEnvironment {
         loadPlugins(injector, properties);
         injector.getInstance(ServerObjectLoader.class).loadObjects();
         startWebapp(injector, properties);
+
+        injector.getInstance(com.intuso.housemate.server.Server.class).acceptClients();
     }
 
     private void setExtraDefaults(WriteableMapPropertyRepository defaultProperties) {

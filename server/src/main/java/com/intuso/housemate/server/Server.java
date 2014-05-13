@@ -50,6 +50,10 @@ public class Server {
         injector.getInstance(PluginManager.class).addPlugin(MainPluginModule.class);
     }
 
+    public final void acceptClients() {
+        injector.getInstance(MainRouter.class).startExternalRouters();
+    }
+
     public final void stop() {
         // stop the main router
         injector.getInstance(MainRouter.class).stop();

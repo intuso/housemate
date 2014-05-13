@@ -47,14 +47,16 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
         return new ProxyClientHelper<ROOT>(log, proxyRoot, router);
     }
 
-    public static ProxyClientHelper newClientHelper(Injector injector) {
+    public static <ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> ProxyClientHelper<ROOT>
+                newClientHelper(Injector injector) {
         return new ProxyClientHelper(
                 injector.getInstance(Log.class),
                 injector.getInstance(SimpleProxyRoot.class),
                 injector.getInstance(Router.class));
     }
 
-    public static ProxyClientHelper newClientHelper(Module... modules) {
+    public static <ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> ProxyClientHelper<ROOT>
+                newClientHelper(Module... modules) {
         return ProxyClientHelper.newClientHelper(Guice.createInjector(modules));
     }
 
@@ -62,42 +64,43 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
         return proxyRoot;
     }
 
-    public ProxyClientHelper applicationDetails(ApplicationDetails applicationDetails) {
+    public ProxyClientHelper<ROOT> applicationDetails(ApplicationDetails applicationDetails) {
         this.applicationDetails = applicationDetails;
         return this;
     }
 
-    public ProxyClientHelper load(HousemateObject.TreeLoadInfo treeLoadInfo) {
+    public ProxyClientHelper<ROOT> load(HousemateObject.TreeLoadInfo treeLoadInfo) {
         toLoad.add(treeLoadInfo);
         return this;
     }
 
-    private ProxyClientHelper load(String[] path, String ending) {
+    private ProxyClientHelper<ROOT> load(String[] path, String ending) {
         return load(HousemateObject.TreeLoadInfo.create(path, ending));
     }
 
-    public ProxyClientHelper load(String ... path) {
+    public ProxyClientHelper<ROOT> load(String ... path) {
         return load(path, null);
     }
 
-    public ProxyClientHelper loadAllChildren(String ... path) {
+    public ProxyClientHelper<ROOT> loadAllChildren(String ... path) {
         return load(path, HousemateObject.EVERYTHING);
     }
 
-    public ProxyClientHelper loadAllDescendants(String... path) {
+    public ProxyClientHelper<ROOT> loadAllDescendants(String... path) {
         return load(path, HousemateObject.EVERYTHING_RECURSIVE);
     }
 
-    public ProxyClientHelper callback(LoadManager.Callback callback) {
+    public ProxyClientHelper<ROOT> callback(LoadManager.Callback callback) {
         this.callback = callback;
         return this;
     }
 
-    public void start() {
+    public ProxyClientHelper<ROOT> start() {
         proxyListenerRegistration = proxyRoot.addObjectListener(new ProxyRootListener());
         RouterListener routerListener = new RouterListener();
         routerListenerRegistration = router.addObjectListener(routerListener);
         routerListener.statusChanged(null, ServerConnectionStatus.Disconnected, ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered);
+        return this;
     }
 
     public void unregister() {
