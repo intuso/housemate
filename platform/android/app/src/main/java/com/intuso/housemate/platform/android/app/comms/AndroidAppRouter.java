@@ -31,6 +31,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     private final static Intent SERVER_INTENT = new Intent("com.intuso.housemate.service");
 
     private final Context context;
+    private ConnectThread connectThread;
     private Messenger sender;
     private String id;
     private final Messenger receiver = new Messenger(new MessageHandler());
@@ -45,10 +46,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     public void connect() {
         getLog().d("Connecting service");
         setServerConnectionStatus(ServerConnectionStatus.Connecting);
-        if(sender == null) {
-            context.startService(SERVER_INTENT);
-            context.bindService(SERVER_INTENT, this, Context.BIND_AUTO_CREATE);
-        }
+        connectThread = new ConnectThread();
+        connectThread.start();
     }
 
     @Override
@@ -84,6 +83,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName className, IBinder binder) {
         getLog().d("Service connected");
+        connectThread.interrupt();
+        connectThread = null;
         sender = new Messenger(binder);
         try {
             getLog().d("Creating server registration");
@@ -98,8 +99,9 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
         setServerConnectionStatus(ServerConnectionStatus.Disconnected);
-        getLog().d("Service connection lost unexpectedly");
+        getLog().d("Service connection lost unexpectedly, trying to re-establish connection");
         sender = null;
+        connect();
     }
 
     private class MessageHandler extends Handler {
@@ -116,6 +118,21 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                     break;
                 default:
                     super.handleMessage(msg);
+            }
+        }
+    }
+
+    private class ConnectThread extends Thread {
+        @Override
+        public void run() {
+            while(!isInterrupted() && sender == null) {
+                context.startService(SERVER_INTENT);
+                context.bindService(SERVER_INTENT, AndroidAppRouter.this, Context.BIND_AUTO_CREATE);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    break;
+                }
             }
         }
     }

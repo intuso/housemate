@@ -70,6 +70,10 @@ public class AppService extends Service implements ServiceConnection {
     private class MessageHandler extends Handler {
         @Override
         public void handleMessage(android.os.Message msg) {
+
+            if(router == null)
+                return;
+
             Router.Registration registration;
             String id;
             switch (msg.what) {

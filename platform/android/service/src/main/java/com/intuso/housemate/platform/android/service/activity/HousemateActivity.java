@@ -8,14 +8,12 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.comms.RouterRoot;
-import com.intuso.housemate.api.comms.ServerConnectionStatus;
+import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.platform.android.service.R;
 import com.intuso.housemate.platform.android.service.service.ConnectionService;
@@ -49,7 +47,11 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
     protected void onStop() {
         super.onStop();
         if(bound)
-            unbindService(this);
+            try {
+                unbindService(this);
+            } catch (Throwable t) {
+                Log.d("HM Activity", "Failed to unbind from service");
+            }
     }
 
     @Override
@@ -75,11 +77,14 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         bound = true;
-        routerRegistration = ((ConnectionService.Binder)binder).getRouter().addObjectListener(this);
+        Router router = ((ConnectionService.Binder)binder).getRouter();
+        routerRegistration = router.addObjectListener(this);
+        statusChanged(null, router.getServerConnectionStatus(), router.getApplicationStatus(), router.getApplicationInstanceStatus());
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
+        bound = false;
         routerRegistration.removeListener();
         routerRegistration = null;
     }

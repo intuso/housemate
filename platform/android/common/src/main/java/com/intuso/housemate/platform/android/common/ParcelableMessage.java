@@ -287,7 +287,7 @@ public class ParcelableMessage implements Parcelable {
     private static void writeTreeData(Parcel parcel, int flags, HousemateObject.TreeData<?> treeData) {
         parcel.writeString(treeData.getId());
         writeHousemateData(parcel, flags, treeData.getData());
-        parcel.writeInt(treeData.getChildData().size());
+        parcel.writeInt(treeData.getChildData() != null ? treeData.getChildData().size() : 0);
         for(Map.Entry<String, ChildOverview> entry : treeData.getChildData().entrySet()) {
             parcel.writeString(entry.getKey());
             parcel.writeString(entry.getValue().getId());
