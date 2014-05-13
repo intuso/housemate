@@ -11,10 +11,11 @@
 
 	<artifactId>extension-android-nfc</artifactId>
 	<packaging>apk</packaging>
-    <name>Housemate Android NFC</name>
+    <name>Housemate Extension Android NFC</name>
     <description>NFC Service for the Housemate framework</description>
 
 	<properties>
+        <android.sdk.path>/opt/adt/sdk</android.sdk.path>
         <android.platform.version>4.0.1.2</android.platform.version>
         <android.plugin.version>3.6.0</android.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
