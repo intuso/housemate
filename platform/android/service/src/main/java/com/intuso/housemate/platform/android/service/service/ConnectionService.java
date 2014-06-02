@@ -2,7 +2,7 @@ package com.intuso.housemate.platform.android.service.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.*;
+import android.os.IBinder;
 import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.root.RootListener;
@@ -27,6 +27,9 @@ public class ConnectionService extends Service {
     private final static String LOG_LEVEL = "log.level";
     private final static ApplicationDetails APPLICATION_DETAILS =
             new ApplicationDetails(ConnectionService.class.getPackage().getName(), "Android Service", "Android Service");
+
+    public final static String NETWORK_AVAILABLE_ACTION = "networkAvailable";
+    public final static String NETWORK_AVAILABLE = "networkAvailable";
 
     private final Binder binder = new Binder();
 
@@ -96,6 +99,20 @@ public class ConnectionService extends Service {
         super.onDestroy();
         routerListenerRegistration.removeListener();
         router.disconnect();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        int result = super.onStartCommand(intent, flags, startId);
+        if(NETWORK_AVAILABLE_ACTION.equals(intent.getAction())) {
+            if(intent.getExtras().containsKey(NETWORK_AVAILABLE)) {
+                if(intent.getBooleanExtra(NETWORK_AVAILABLE, true))
+                    router.connect();
+                else
+                    router.disconnect();
+            }
+        }
+        return result;
     }
 
     public class Binder extends android.os.Binder {

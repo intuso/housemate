@@ -9,6 +9,7 @@
         android:targetSdkVersion="14" />
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <permission android:name="com.intuso.housemate.android.permission.ACCESS"
                 android:label="@string/permission_name_access"
@@ -19,9 +20,10 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
-        android:label="@string/activity_name"
+        android:label="@string/application_name"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.HousemateActivity" >
+        <activity android:name=".activity.HousemateActivity"
+                android:label="@string/activity_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -35,6 +37,11 @@
                 <action android:name="com.intuso.housemate.service.connection" />
             </intent-filter>
         </service>
+        <receiver android:name=".service.NetworkStateReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
         <service android:name=".service.AppService"
                  android:permission="com.intuso.housemate.android.permission.ACCESS"
                  android:exported="true"

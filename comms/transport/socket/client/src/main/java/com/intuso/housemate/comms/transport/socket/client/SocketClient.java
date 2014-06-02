@@ -17,6 +17,7 @@ import com.intuso.utilities.properties.api.PropertyValueChangeListener;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -36,13 +37,14 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
     private final StreamSerialiserFactory serialiserFactory;
 
     private Socket socket;
-    private final Object connectThreadLock = new Object();
     private ConnectThread connectThread;
 
     private final LinkedBlockingQueue<Message> outputQueue;
     private Serialiser serialiser;
     private StreamReader streamReader;
     private MessageSender messageSender;
+
+    private boolean shouldBeConnected = false;
 
     private final List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
 
@@ -60,79 +62,79 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
     }
 
     @Override
-    public final void disconnect() {
+    public synchronized final void connect() {
+
+        if(shouldBeConnected)
+            return;
+        shouldBeConnected = true;
+
+        listenerRegistrations.add(properties.addListener(SERVER_HOST, this));
+        listenerRegistrations.add(properties.addListener(SERVER_PORT, this));
+
+        connectThread = new ConnectThread();
+        connectThread.start();
+    }
+
+    @Override
+    public synchronized final void disconnect() {
+
+        if(!shouldBeConnected)
+            return;
+        shouldBeConnected = false;
+
+        _disconnect();
+    }
+
+    private synchronized void _disconnect() {
+
         for(ListenerRegistration listenerRegistration : listenerRegistrations)
             listenerRegistration.removeListener();
         listenerRegistrations.clear();
-        disconnect(false);
-    }
 
-    private void disconnect(boolean reconnect) {
-        synchronized (connectThreadLock) {
-            if(connectThread != null) {
-                connectThread.interrupt();
-                try {
-                    connectThread.join();
-                } catch(InterruptedException e) {}
-            }
-            shutdownComms();
-            if(reconnect)
-                connect();
-        }
-    }
+        shutdownComms();
 
-    /**
-     * Connect to the server
-     */
-    @Override
-    public final void connect() {
-        if(listenerRegistrations.size() == 0) {
-            listenerRegistrations.add(properties.addListener(SERVER_HOST, this));
-            listenerRegistrations.add(properties.addListener(SERVER_PORT, this));
-        }
-        synchronized (connectThreadLock) {
-            if(connectThread == null) {
-                connectThread = new ConnectThread();
-                connectThread.start();
-            }
-        }
+        if(shouldBeConnected)
+            connect();
     }
 
     /**
      * Shutdown the comms connection
      */
     private void shutdownComms() {
-        synchronized (connectThreadLock) {
-            getLog().d("Disconnecting from the server");
-            setServerConnectionStatus(ServerConnectionStatus.Disconnected);
-            if(socket != null) {
-                try {
-                    socket.close();
-                } catch(IOException e) {
-                    if(!socket.isClosed())
-                        getLog().e("Error closing client connection to server");
-                }
-                socket = null;
-            }
+        getLog().d("Disconnecting from the server");
 
-            getLog().d("Interrupting all reader/writer threads");
-            if(streamReader != null)
-                streamReader.interrupt();
-            if(messageSender != null)
-                messageSender.interrupt();
+        if(connectThread != null)
+            connectThread.interrupt();
 
+        if(socket != null) {
             try {
-                getLog().d("Joining all reader/writer threads");
-                if(streamReader != null)
-                    streamReader.join();
-                if(messageSender != null)
-                    messageSender.join();
-            } catch(InterruptedException e) {
-                getLog().e("Interrupted while waiting for reader/writer threads to stop");
+                socket.close();
+            } catch(IOException e) {
+                if(!socket.isClosed())
+                    getLog().e("Error closing client connection to server");
             }
-
-            getLog().d("Disconnected");
+            socket = null;
         }
+
+        getLog().d("Interrupting all reader/writer threads");
+        if(streamReader != null) {
+            streamReader.interrupt();
+            streamReader = null;
+        }
+        if(messageSender != null) {
+            messageSender.interrupt();
+            messageSender = null;
+        }
+
+        getLog().d("Disconnected");
+
+        // run in a new thread so we don't connect in this one if the callback wants to reconnect
+        new Thread() {
+            @Override
+            public void run() {
+                setServerConnectionStatus(ServerConnectionStatus.Disconnected);
+            }
+        }.start();
     }
 
     @Override
@@ -143,10 +145,11 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
     private void checkProps() {
         if(properties.get(SocketClient.SERVER_HOST) != null
                 && properties.get(SocketClient.SERVER_PORT) != null)
+            // in a new thread so it doesn't block the caller
             new Thread() {
                 @Override
                 public void run() {
-                    disconnect(true);
+                    _disconnect();
                 }
             }.start();
     }
@@ -167,12 +170,14 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
             getLog().d("Server host is \"" + host + "\"");
             getLog().d("Server port is \"" + port + "\"");
             int delay = 1;
-            while(socket == null || !socket.isConnected()) {
+            while(!isInterrupted() && (socket == null || !socket.isConnected())) {
                 try {
                     getLog().d("Attempting to connect");
 
-                    // create the socket and the streams
-                    socket = new Socket(host, port);
+                    // create the socket and the streams. Create then connect, so that socket is assigned before
+                    // the connection is attempted.
+                    socket = new Socket();
+                    socket.connect(new InetSocketAddress(host, port));
                     socket.setKeepAlive(true);
                     socket.setSoTimeout(60000);
 
@@ -191,9 +196,6 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     getLog().d("Connected to server");
 
                     // return from the method
-                    synchronized (connectThreadLock) {
-                        connectThread = null;
-                    }
                     return;
 
                 } catch (UnknownHostException e) {
@@ -209,9 +211,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     Thread.sleep(delay * 1000);
                 } catch(InterruptedException e) {
                     getLog().e("Interrupted waiting to retry connection. Aborting trying to connect");
-                    synchronized (connectThreadLock) {
-                        connectThread = null;
-                    }
+                    disconnect();
                     return;
                 }
                 delay = Math.min(60, delay * 2);
@@ -278,7 +278,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                 }
             } catch (HousemateException e) {
                 getLog().e("Error reading from server socket connection", e);
-                disconnect(true);
+                _disconnect();
             }
 
             getLog().d("Stopped stream reader");
@@ -338,8 +338,8 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                         break;
                     getLog().d("Interrupted waiting for message to send. Trying again");
                 } catch(IOException e) {
-                    getLog().e("Error sending message to client. Will attempt to reconnect", e);
-                    disconnect(true);
+                    getLog().e("Error sending message to client", e);
+                    _disconnect();
                     break;
                 }
             }
