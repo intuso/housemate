@@ -50,12 +50,12 @@ public final class MainRouter extends Router {
         register(Server.INTERNAL_APPLICATION);
         processMessage(incomingMessages.poll());
         messageProcessor.start();
-    }
-
-    public final void startExternalRouters() {
 
         // register the local client
         injector.getInstance(LocalClientRoot.class).register(Server.INTERNAL_APPLICATION);
+    }
+
+    public final void startExternalRouters() {
 
         // create, start and register all the external routers
         externalClientRouters = injector.getInstance(new Key<Set<ExternalClientRouter>>() {});

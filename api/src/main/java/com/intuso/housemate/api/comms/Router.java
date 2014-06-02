@@ -89,7 +89,7 @@ public abstract class Router implements Sender, Receiver {
      * Updates the router's connection status
      * @param serverConnectionStatus the router's new connection status
      */
-    protected final void setServerConnectionStatus(ServerConnectionStatus serverConnectionStatus) {
+    public final void setServerConnectionStatus(ServerConnectionStatus serverConnectionStatus) {
         root.setServerConnectionStatus(serverConnectionStatus);
     }
 
@@ -105,7 +105,7 @@ public abstract class Router implements Sender, Receiver {
     /**
      * Logs in to the server
      */
-    public final void register(ApplicationDetails applicationDetails) {
+    public void register(ApplicationDetails applicationDetails) {
         if(getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer)
             throw new HousemateRuntimeException("Cannot request access until the router is connected to the server");
         root.register(applicationDetails);
@@ -114,7 +114,7 @@ public abstract class Router implements Sender, Receiver {
     /**
      * Logs out of the server
      */
-    public final void unregister() {
+    public void unregister() {
         root.unregister();
     }
 
@@ -148,7 +148,7 @@ public abstract class Router implements Sender, Receiver {
     }
 
     @Override
-    public final void messageReceived(Message message) {
+    public void messageReceived(Message message) {
         try {
             // get the key
             String key = message.getNextClientKey();
