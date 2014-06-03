@@ -54,7 +54,7 @@ public class OperationOutput extends ValueSource implements ValueAvailableListen
             Operator<Object, Object> operator = (Operator<Object, Object>) operation.getOperatorsByType().get(inputType.getId());
             RealType<?, ?, Object> outputType = (RealType<?, ?, Object>) types.get(operator.getOutputTypeId());
             try {
-                Object result = operator.apply(inputType.deserialise(firstValue.getTypeInstances().get(0)), inputType.deserialise(secondValue.getTypeInstances().get(0)));
+                Object result = operator.apply(inputType.deserialise(firstValue.getTypeInstances().getElements().get(0)), inputType.deserialise(secondValue.getTypeInstances().getElements().get(0)));
                 if(value != null && !value.getType().getId().equals(outputType.getId())) {
                     for(ValueAvailableListener listener : listeners)
                         listener.valueUnavailable(this);

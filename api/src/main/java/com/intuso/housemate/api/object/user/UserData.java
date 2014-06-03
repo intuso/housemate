@@ -10,7 +10,7 @@ public final class UserData extends HousemateData<HousemateData<?>> {
 
     private static final long serialVersionUID = -1L;
 
-    private UserData() {}
+    public UserData() {}
 
     public UserData(String id, String name, String description) {
         super(id, name,  description);

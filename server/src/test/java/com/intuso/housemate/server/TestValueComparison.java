@@ -197,9 +197,9 @@ public class TestValueComparison {
 
     private ValueComparison makeValueComparison(ComparisonType operator, ValueSource sourceOne, ValueSource sourceTwo) throws HousemateException {
         TypeInstanceMap values = new TypeInstanceMap();
-        values.put(ConditionFactory.TYPE_PARAMETER_ID, new TypeInstances(new TypeInstance("value-comparison")));
-        values.put(ConditionFactory.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance("Test")));
-        values.put(ConditionFactory.DESCRIPTION_PARAMETER_ID, new TypeInstances(new TypeInstance("Test VC")));
+        values.getChildren().put(ConditionFactory.TYPE_PARAMETER_ID, new TypeInstances(new TypeInstance("value-comparison")));
+        values.getChildren().put(ConditionFactory.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance("Test")));
+        values.getChildren().put(ConditionFactory.DESCRIPTION_PARAMETER_ID, new TypeInstances(new TypeInstance("Test VC")));
         ValueComparison valueComparison = (ValueComparison) injector.getInstance(ConditionFactory.class).createCondition(values,
                 new ServerRealConditionOwner() {
                     @Override

@@ -86,19 +86,19 @@ public class TransformationType extends RealCompoundType<Transformation> {
             if(transformationInstance == null)
                 return null;
             TypeInstance result = new TypeInstance();
-            result.getChildValues().put(OUTPUT_TYPE_ID, new TypeInstances(outputTypeSerialiser.serialise(transformationInstance.getOutputType())));
-            result.getChildValues().put(VALUE_ID, new TypeInstances(sourceTypeSerialiser.serialise(transformationInstance.getValueSource())));
+            result.getChildValues().getChildren().put(OUTPUT_TYPE_ID, new TypeInstances(outputTypeSerialiser.serialise(transformationInstance.getOutputType())));
+            result.getChildValues().getChildren().put(VALUE_ID, new TypeInstances(sourceTypeSerialiser.serialise(transformationInstance.getValueSource())));
             return result;
         }
 
         @Override
         public Transformation deserialise(TypeInstance instance) {
             RealType<?, ?, ?> outputType = null;
-            if(instance.getChildValues().get(OUTPUT_TYPE_ID) != null && instance.getChildValues().get(OUTPUT_TYPE_ID).size() != 0)
-                outputType = outputTypeSerialiser.deserialise(instance.getChildValues().get(OUTPUT_TYPE_ID).get(0));
+            if(instance.getChildValues().getChildren().get(OUTPUT_TYPE_ID) != null && instance.getChildValues().getChildren().get(OUTPUT_TYPE_ID).getElements().size() != 0)
+                outputType = outputTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(OUTPUT_TYPE_ID).getElements().get(0));
             ValueSource valueSource = null;
-            if(instance.getChildValues().get(VALUE_ID) != null && instance.getChildValues().get(VALUE_ID).size() != 0)
-                valueSource = sourceTypeSerialiser.deserialise(instance.getChildValues().get(VALUE_ID).get(0));
+            if(instance.getChildValues().getChildren().get(VALUE_ID) != null && instance.getChildValues().getChildren().get(VALUE_ID).getElements().size() != 0)
+                valueSource = sourceTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(VALUE_ID).getElements().get(0));
             return new Transformation(outputType, transformers.get(outputType.getId()), valueSource);
         }
 

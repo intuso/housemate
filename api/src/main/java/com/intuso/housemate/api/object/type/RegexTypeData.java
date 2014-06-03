@@ -13,7 +13,7 @@ public final class RegexTypeData extends TypeData<NoChildrenData> {
 
     private String regexPattern;
 
-    private RegexTypeData() {}
+    public RegexTypeData() {}
 
     /**
      * @param id {@inheritDoc}
@@ -34,6 +34,10 @@ public final class RegexTypeData extends TypeData<NoChildrenData> {
      */
     public String getRegexPattern() {
         return regexPattern;
+    }
+
+    public void setRegexPattern(String regexPattern) {
+        this.regexPattern = regexPattern;
     }
 
     @Override

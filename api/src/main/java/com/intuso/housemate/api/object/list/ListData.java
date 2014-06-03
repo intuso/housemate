@@ -13,7 +13,7 @@ public final class ListData<DATA extends HousemateData<?>> extends HousemateData
 
     private static final long serialVersionUID = -1L;
 
-    private ListData() {}
+    public ListData() {}
 
     public ListData(String id, String name, String description, DATA... childData) {
         this(id, name, description, Arrays.asList(childData));

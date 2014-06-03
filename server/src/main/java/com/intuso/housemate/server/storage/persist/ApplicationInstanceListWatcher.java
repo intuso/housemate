@@ -42,9 +42,9 @@ public class ApplicationInstanceListWatcher implements ListListener<ApplicationI
     @Override
     public void elementAdded(ApplicationInstance<?, ?, ?> applicationInstance) {
         TypeInstanceMap toSave = new TypeInstanceMap();
-        toSave.put("id", new TypeInstances(new TypeInstance(applicationInstance.getId())));
-        toSave.put("name", new TypeInstances(new TypeInstance(applicationInstance.getName())));
-        toSave.put("description", new TypeInstances(new TypeInstance(applicationInstance.getDescription())));
+        toSave.getChildren().put("id", new TypeInstances(new TypeInstance(applicationInstance.getId())));
+        toSave.getChildren().put("name", new TypeInstances(new TypeInstance(applicationInstance.getName())));
+        toSave.getChildren().put("description", new TypeInstances(new TypeInstance(applicationInstance.getDescription())));
         try {
             persistence.saveValues(applicationInstance.getPath(), toSave);
         } catch (HousemateException e) {

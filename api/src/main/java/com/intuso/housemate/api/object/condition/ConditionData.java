@@ -9,7 +9,7 @@ public final class ConditionData extends HousemateData<HousemateData<?>> {
 
     private static final long serialVersionUID = -1L;
 
-    private ConditionData() {}
+    public ConditionData() {}
 
     public ConditionData(String id, String name, String description) {
         super(id, name, description);

@@ -41,9 +41,9 @@ public class UserListWatcher implements ListListener<User<?, ?>> {
     public void elementAdded(User<?, ?> user) {
         //listeners.put(application, application.getStatusValue().addObjectListener(valueWatcher));
         TypeInstanceMap toSave = new TypeInstanceMap();
-        toSave.put("id", new TypeInstances(new TypeInstance(user.getId())));
-        toSave.put("name", new TypeInstances(new TypeInstance(user.getName())));
-        toSave.put("description", new TypeInstances(new TypeInstance(user.getDescription())));
+        toSave.getChildren().put("id", new TypeInstances(new TypeInstance(user.getId())));
+        toSave.getChildren().put("name", new TypeInstances(new TypeInstance(user.getName())));
+        toSave.getChildren().put("description", new TypeInstances(new TypeInstance(user.getDescription())));
         try {
             persistence.saveValues(user.getPath(), toSave);
         } catch (HousemateException e) {

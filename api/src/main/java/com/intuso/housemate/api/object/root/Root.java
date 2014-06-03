@@ -65,7 +65,7 @@ public interface Root<ROOT extends Root<?>>
         private ApplicationStatus applicationStatus;
         private ApplicationInstanceStatus applicationInstanceStatus;
 
-        private ConnectionStatus() {}
+        public ConnectionStatus() {}
 
         public ConnectionStatus(ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
             this.serverConnectionStatus = serverConnectionStatus;
@@ -77,12 +77,24 @@ public interface Root<ROOT extends Root<?>>
             return serverConnectionStatus;
         }
 
+        public void setServerConnectionStatus(ServerConnectionStatus serverConnectionStatus) {
+            this.serverConnectionStatus = serverConnectionStatus;
+        }
+
         public ApplicationStatus getApplicationStatus() {
             return applicationStatus;
         }
 
+        public void setApplicationStatus(ApplicationStatus applicationStatus) {
+            this.applicationStatus = applicationStatus;
+        }
+
         public ApplicationInstanceStatus getApplicationInstanceStatus() {
             return applicationInstanceStatus;
+        }
+
+        public void setApplicationInstanceStatus(ApplicationInstanceStatus applicationInstanceStatus) {
+            this.applicationInstanceStatus = applicationInstanceStatus;
         }
 
         @Override
@@ -91,5 +103,8 @@ public interface Root<ROOT extends Root<?>>
                    + ", applicationStatus=" + applicationStatus
                    + ", applicationInstanceStatus=" + applicationInstanceStatus;
         }
+
+        @Override
+        public void ensureSerialisable() {}
     }
 }

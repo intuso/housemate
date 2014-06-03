@@ -60,24 +60,24 @@ public abstract class RealCommand
     @Override
     protected final List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(PERFORM_TYPE, new Receiver<PerformMessageValue>() {
+        result.add(addMessageListener(PERFORM_TYPE, new Receiver<PerformPayload>() {
             @Override
-            public void messageReceived(final Message<Command.PerformMessageValue> message) throws HousemateException {
+            public void messageReceived(final Message<PerformPayload> message) throws HousemateException {
                 perform(message.getPayload().getValues(), new CommandPerformListener<RealCommand>() {
 
                     @Override
                     public void commandStarted(RealCommand command) {
-                        sendMessage(PERFORMING_TYPE, new Command.PerformingMessageValue(message.getPayload().getOpId(), true));
+                        sendMessage(PERFORMING_TYPE, new PerformingPayload(message.getPayload().getOpId(), true));
                     }
 
                     @Override
                     public void commandFinished(RealCommand command) {
-                        sendMessage(PERFORMING_TYPE, new PerformingMessageValue(message.getPayload().getOpId(), false));
+                        sendMessage(PERFORMING_TYPE, new PerformingPayload(message.getPayload().getOpId(), false));
                     }
 
                     @Override
                     public void commandFailed(RealCommand command, String error) {
-                        sendMessage(FAILED_TYPE, new FailedMessageValue(message.getPayload().getOpId(), error));
+                        sendMessage(FAILED_TYPE, new FailedPayload(message.getPayload().getOpId(), error));
                     }
                 });
             }

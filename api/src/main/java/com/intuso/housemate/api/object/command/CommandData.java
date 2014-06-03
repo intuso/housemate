@@ -9,7 +9,7 @@ public final class CommandData extends HousemateData<HousemateData<?>> {
 
     private static final long serialVersionUID = -1L;
 
-    private CommandData() {}
+    public CommandData() {}
 
     public CommandData(String id, String name, String description) {
         super(id, name, description);

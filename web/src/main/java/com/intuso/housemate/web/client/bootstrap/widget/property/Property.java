@@ -42,13 +42,13 @@ public class Property extends Composite {
 
         values = new TypeInstanceMap();
         if(property.getTypeInstances() != null)
-            values.put(com.intuso.housemate.api.object.property.Property.VALUE_PARAM, property.getTypeInstances());
+            values.getChildren().put(com.intuso.housemate.api.object.property.Property.VALUE_PARAM, property.getTypeInstances());
         else
-            values.put(com.intuso.housemate.api.object.property.Property.VALUE_PARAM, new TypeInstances());
+            values.getChildren().put(com.intuso.housemate.api.object.property.Property.VALUE_PARAM, new TypeInstances());
 
         final GWTProxyType type = property.getType();
         if(type != null)
-            typeContainer.add(TypeInputList.getInput(type, values.get(com.intuso.housemate.api.object.property.Property.VALUE_PARAM)));
+            typeContainer.add(TypeInputList.getInput(type, values.getChildren().get(com.intuso.housemate.api.object.property.Property.VALUE_PARAM)));
         else {
             Housemate.INJECTOR.getProxyRoot().getTypes().load(new LoadManager(new LoadManager.Callback() {
                 @Override
@@ -60,7 +60,7 @@ public class Property extends Composite {
                 public void allLoaded() {
                     GWTProxyType loadedType = property.getType();
                     if(loadedType != null)
-                        typeContainer.setWidget(TypeInputList.getInput(loadedType, values.get(com.intuso.housemate.api.object.property.Property.VALUE_PARAM)));
+                        typeContainer.setWidget(TypeInputList.getInput(loadedType, values.getChildren().get(com.intuso.housemate.api.object.property.Property.VALUE_PARAM)));
                 }
             }, "loadPropertyType-" + property.getId(), new HousemateObject.TreeLoadInfo(property.getTypeId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
         }

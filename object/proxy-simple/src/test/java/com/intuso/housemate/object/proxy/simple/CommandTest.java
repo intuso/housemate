@@ -107,16 +107,16 @@ public class CommandTest {
                                 "my-parameter", "My Parameter", "description"))) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                correctParam.set(values.get("my-parameter") != null
-                        && values.get("my-parameter").getFirstValue() != null
-                        && values.get("my-parameter").getFirstValue().equals("1234"));
+                correctParam.set(values.getChildren().get("my-parameter") != null
+                        && values.getChildren().get("my-parameter").getFirstValue() != null
+                        && values.getChildren().get("my-parameter").getFirstValue().equals("1234"));
             }
         };
         realList.add(realCommand);
         SimpleProxyCommand proxyCommand = proxyList.get("my-other-command");
         proxyCommand.perform(new TypeInstanceMap() {
             {
-                put("my-parameter", new TypeInstances(new TypeInstance("1234")));
+                getChildren().put("my-parameter", new TypeInstances(new TypeInstance("1234")));
             }
         }, EMPTY_FUNCTION_LISTENER);
         assertEquals(true, correctParam.get());

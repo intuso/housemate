@@ -12,12 +12,12 @@ public class TextInput extends TextBox implements TypeInput {
 
     public TextInput(TypeData typeData, final TypeInstances typeInstances) {
 
-        if(typeInstances.size() == 0)
-            typeInstances.add(new TypeInstance());
+        if(typeInstances.getElements().size() == 0)
+            typeInstances.getElements().add(new TypeInstance());
 
-        if(typeInstances.get(0) == null) {
-            typeInstances.remove(0);
-            typeInstances.add(0, new TypeInstance());
+        if(typeInstances.getElements().get(0) == null) {
+            typeInstances.getElements().remove(0);
+            typeInstances.getElements().add(0, new TypeInstance());
         }
 
         if(typeInstances.getFirstValue() == null)
@@ -30,7 +30,7 @@ public class TextInput extends TextBox implements TypeInput {
             @Override
             public void onChange(ChangeEvent event) {
                 if(validator.isValid(getText())) {
-                    typeInstances.get(0).setValue(getText());
+                    typeInstances.getElements().get(0).setValue(getText());
                 } else {
                     // TODO show invalid input
                 }

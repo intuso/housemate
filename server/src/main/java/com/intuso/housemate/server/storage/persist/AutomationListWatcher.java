@@ -60,7 +60,7 @@ public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?
         listeners.put(automation, automation.getUnsatisfiedTasks().addObjectListener(taskListWatcher, true));
         try {
             TypeInstances instances = persistence.getTypeInstances(automation.getRunningValue().getPath());
-            if(instances.size() > 0 && BooleanType.SERIALISER.deserialise(instances.get(0)))
+            if(instances.getElements().size() > 0 && BooleanType.SERIALISER.deserialise(instances.getElements().get(0)))
                 automation.getStartCommand().perform(new TypeInstanceMap(),
                         new CommandPerformListener(log, "Start automation \"" + automation.getId() + "\""));
         } catch(DetailsNotFoundException e) {

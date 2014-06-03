@@ -18,7 +18,7 @@ public class CheckBoxInput extends CheckBox implements TypeInput {
         addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
-                typeInstances.set(0, new TypeInstance(event.getValue().toString()));
+                typeInstances.getElements().set(0, new TypeInstance(event.getValue().toString()));
             }
         });
     }

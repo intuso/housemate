@@ -40,20 +40,20 @@ public interface Command<
     /**
      * Message payload for a perform command call
      */
-    public static class PerformMessageValue implements Message.Payload {
+    public static class PerformPayload implements Message.Payload {
 
         private static final long serialVersionUID = -1L;
 
         private String opId;
         private TypeInstanceMap values;
 
-        private PerformMessageValue() {}
+        public PerformPayload() {}
 
         /**
          * @param opId the operation id of the command used to associate progress messages with the original call
          * @param values the values to perform with
          */
-        public PerformMessageValue(String opId, TypeInstanceMap values) {
+        public PerformPayload(String opId, TypeInstanceMap values) {
             this.opId = opId;
             this.values = values;
         }
@@ -66,6 +66,10 @@ public interface Command<
             return opId;
         }
 
+        public void setOpId(String opId) {
+            this.opId = opId;
+        }
+
         /**
          * Gets the values
          * @return the values
@@ -73,25 +77,35 @@ public interface Command<
         public TypeInstanceMap getValues() {
             return values;
         }
+
+        public void setValues(TypeInstanceMap values) {
+            this.values = values;
+        }
+
+        @Override
+        public void ensureSerialisable() {
+            if(values != null)
+                values.ensureSerialisable();
+        }
     }
 
     /**
      * Message payload for command progress
      */
-    public static class PerformingMessageValue implements Message.Payload {
+    public static class PerformingPayload implements Message.Payload {
 
         private static final long serialVersionUID = -1L;
 
         private String opId;
         private boolean performing;
 
-        private PerformingMessageValue() {}
+        public PerformingPayload() {}
 
         /**
          * @param opId the operation id of the original call
          * @param performing true if the command is currently in progress
          */
-        public PerformingMessageValue(String opId, boolean performing) {
+        public PerformingPayload(String opId, boolean performing) {
             this.opId = opId;
             this.performing = performing;
         }
@@ -104,6 +118,10 @@ public interface Command<
             return opId;
         }
 
+        public void setOpId(String opId) {
+            this.opId = opId;
+        }
+
         /**
          * Gets if the operation is currently in progress
          * @return true if the operation is currently in progress
@@ -112,29 +130,36 @@ public interface Command<
             return performing;
         }
 
+        public void setPerforming(boolean performing) {
+            this.performing = performing;
+        }
+
         @Override
         public String toString() {
             return opId + " " + performing;
         }
+
+        @Override
+        public void ensureSerialisable() {}
     }
 
     /**
      * Message payload for failed commands
      */
-    public static class FailedMessageValue implements Message.Payload {
+    public static class FailedPayload implements Message.Payload {
 
         private static final long serialVersionUID = -1L;
 
         private String opId;
         private String cause;
 
-        private FailedMessageValue() {}
+        public FailedPayload() {}
 
         /**
          * @param opId the operation id of the original call
          * @param cause the cause of the failure
          */
-        public FailedMessageValue(String opId, String cause) {
+        public FailedPayload(String opId, String cause) {
             this.opId = opId;
             this.cause = cause;
         }
@@ -147,6 +172,10 @@ public interface Command<
             return opId;
         }
 
+        public void setOpId(String opId) {
+            this.opId = opId;
+        }
+
         /**
          * Gets the cause of the failure
          * @return the cause of the failure
@@ -154,5 +183,12 @@ public interface Command<
         public String getCause() {
             return cause;
         }
+
+        public void setCause(String cause) {
+            this.cause = cause;
+        }
+
+        @Override
+        public void ensureSerialisable() {}
     }
 }

@@ -48,7 +48,7 @@ public class DeviceListWatcher implements ListListener<Device<?, ?, ?, ?, ?, ?, 
         listeners.put(device, device.getProperties().addObjectListener(propertyListWatcher, true));
         try {
             TypeInstances instances = persistence.getTypeInstances(device.getRunningValue().getPath());
-            if(instances.size() > 0 && BooleanType.SERIALISER.deserialise(instances.get(0)))
+            if(instances.getElements().size() > 0 && BooleanType.SERIALISER.deserialise(instances.getElements().get(0)))
                 device.getStartCommand().perform(new TypeInstanceMap(),
                         new CommandPerformListener(log, "Start device \"" + device.getId() + "\""));
         } catch(DetailsNotFoundException e) {

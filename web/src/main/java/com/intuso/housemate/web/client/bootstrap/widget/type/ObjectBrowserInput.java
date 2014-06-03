@@ -18,14 +18,14 @@ public class ObjectBrowserInput extends FlowPanel implements TypeInput {
 
     public ObjectBrowserInput(ObjectTypeData typeData, final TypeInstances typeInstances) {
 
-        if(typeInstances.size() == 0)
-            typeInstances.add(new TypeInstance());
+        if(typeInstances.getElements().size() == 0)
+            typeInstances.getElements().add(new TypeInstance());
 
         rootNode = new Node(Housemate.INJECTOR.getProxyRoot());
         rootNode.addObjectSelectedHandler(new ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?>>() {
             @Override
             public void objectSelected(ProxyObject<?, ?, ?, ?, ?> object) {
-                typeInstances.get(0).setValue(Joiner.on("/").join(object.getPath()));
+                typeInstances.getElements().get(0).setValue(Joiner.on("/").join(object.getPath()));
             }
         });
         add(rootNode);

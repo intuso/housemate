@@ -89,25 +89,25 @@ public class OperationType extends RealCompoundType<Operation> {
             if(operationInstance == null)
                 return null;
             TypeInstance result = new TypeInstance();
-            result.getChildValues().put(OPERATION_TYPE_ID, new TypeInstances(operationTypeSerialiser.serialise(operationInstance.getOperationType())));
-            result.getChildValues().put(VALUE_0_ID, new TypeInstances(sourceTypeSerialiser.serialise(operationInstance.getFirstValueSource())));
-            result.getChildValues().put(VALUE_1_ID, new TypeInstances(sourceTypeSerialiser.serialise(operationInstance.getSecondValueSource())));
+            result.getChildValues().getChildren().put(OPERATION_TYPE_ID, new TypeInstances(operationTypeSerialiser.serialise(operationInstance.getOperationType())));
+            result.getChildValues().getChildren().put(VALUE_0_ID, new TypeInstances(sourceTypeSerialiser.serialise(operationInstance.getFirstValueSource())));
+            result.getChildValues().getChildren().put(VALUE_1_ID, new TypeInstances(sourceTypeSerialiser.serialise(operationInstance.getSecondValueSource())));
             return result;
         }
 
         @Override
         public Operation deserialise(TypeInstance instance) {
             if(instance == null
-                    || instance.getChildValues().get(OPERATION_TYPE_ID) == null
-                    || instance.getChildValues().get(OPERATION_TYPE_ID).size() == 0)
+                    || instance.getChildValues().getChildren().get(OPERATION_TYPE_ID) == null
+                    || instance.getChildValues().getChildren().get(OPERATION_TYPE_ID).getElements().size() == 0)
                 return null;
             ValueSource value0 = null;
-            if(instance.getChildValues().get(VALUE_0_ID) != null && instance.getChildValues().get(VALUE_0_ID).size() != 0)
-                value0 = sourceTypeSerialiser.deserialise(instance.getChildValues().get(VALUE_0_ID).get(0));
+            if(instance.getChildValues().getChildren().get(VALUE_0_ID) != null && instance.getChildValues().getChildren().get(VALUE_0_ID).getElements().size() != 0)
+                value0 = sourceTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(VALUE_0_ID).getElements().get(0));
             ValueSource value1 = null;
-            if(instance.getChildValues().get(VALUE_1_ID) != null && instance.getChildValues().get(VALUE_1_ID).size() != 0)
-                value1 = sourceTypeSerialiser.deserialise(instance.getChildValues().get(VALUE_1_ID).get(0));
-            com.intuso.housemate.plugin.api.OperationType operationType = operationTypeSerialiser.deserialise(instance.getChildValues().get(OPERATION_TYPE_ID).get(0));
+            if(instance.getChildValues().getChildren().get(VALUE_1_ID) != null && instance.getChildValues().getChildren().get(VALUE_1_ID).getElements().size() != 0)
+                value1 = sourceTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(VALUE_1_ID).getElements().get(0));
+            com.intuso.housemate.plugin.api.OperationType operationType = operationTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(OPERATION_TYPE_ID).getElements().get(0));
             return new Operation(operationType, operators.get(operationType), value0, value1);
         }
 

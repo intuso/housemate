@@ -18,7 +18,7 @@ public class Message<T extends Message.Payload> implements Serializable {
     private List<String> route;
 	private T payload;
 
-    private Message() {
+    public Message() {
         path = null;
         type = null;
         route = Lists.newLinkedList();
@@ -73,6 +73,10 @@ public class Message<T extends Message.Payload> implements Serializable {
         return route;
     }
 
+    public void setRoute(List<String> route) {
+        this.route = route == null || route instanceof Serializable ? route : Lists.newArrayList(route);
+    }
+
     /**
 	 * Gets the path of the object the message is for
 	 * @return the path of the object the message is for
@@ -80,6 +84,10 @@ public class Message<T extends Message.Payload> implements Serializable {
 	public final String[] getPath() {
 		return path;
 	}
+
+    public void setPath(String[] path) {
+        this.path = path;
+    }
 
     /**
      * Gets the message type
@@ -89,6 +97,10 @@ public class Message<T extends Message.Payload> implements Serializable {
         return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
     /**
 	 * Gets the payload
 	 * @return the payload
@@ -96,7 +108,11 @@ public class Message<T extends Message.Payload> implements Serializable {
 	public final T getPayload() {
 		return payload;
 	}
-    
+
+    public void setPayload(T payload) {
+        this.payload = payload;
+    }
+
     @Override
     public String toString() {
         return "{ route: " + routeToString(route) + ", path: " + Arrays.toString(path) + ", type: " + type + ", payload: " + (payload == null ? "null" : payload.toString()) + "}";
@@ -112,8 +128,16 @@ public class Message<T extends Message.Payload> implements Serializable {
         return "[" + Joiner.on(",").join(list) + "]";
     }
 
+    public void ensureSerialisable() {
+        if(route != null && !(route instanceof Serializable))
+            route = Lists.newArrayList(route);
+        payload.ensureSerialisable();
+    }
+
     /**
      * Base interface for all message payloads
      */
-    public interface Payload extends Serializable {}
+    public interface Payload extends Serializable {
+        void ensureSerialisable();
+    }
 }

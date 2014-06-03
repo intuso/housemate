@@ -36,11 +36,19 @@ public abstract class TypeData<CHILD_DATA extends HousemateData<?>>
         return minValues;
     }
 
+    public void setMinValues(int minValues) {
+        this.minValues = minValues;
+    }
+
     /**
      * Get the maximum number of values an instance of this type should have
      * @return the maximum number of values an instance of this type should have
      */
     public int getMaxValues() {
         return maxValues;
+    }
+
+    public void setMaxValues(int maxValues) {
+        this.maxValues = maxValues;
     }
 }

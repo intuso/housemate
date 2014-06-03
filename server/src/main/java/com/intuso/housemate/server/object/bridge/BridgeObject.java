@@ -63,26 +63,26 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
                 String childId = loadInfo.getId();
                 if(client.getClientInstance().getClientType() != ClientType.Proxy) {
                     getLog().e("Client requesting an object is not of type " + ClientType.Proxy);
-                    sendMessage(LOAD_RESPONSE, new LoadResponse<HousemateData<?>>(loaderName, new TreeData<HousemateData<?>>(childId, null, null, null), "Connection type is not " + ClientType.Proxy.name()), client);
+                    sendMessage(LOAD_RESPONSE, new LoadResponse(loaderName, new TreeData(childId, null, null, null), "Connection type is not " + ClientType.Proxy.name()), client);
                 } else if(childId.equals(HousemateObject.EVERYTHING_RECURSIVE)
                         || childId.equals(HousemateObject.EVERYTHING)) {
                     for(CHILD child : getChildren()) {
                         if(!child.isLoadedBy(client)) {
-                            TreeData<HousemateData<?>> data = child.getDataForClient(client, loadInfo);
-                            sendMessage(LOAD_RESPONSE, new LoadResponse<HousemateData<?>>(loaderName, data), client);
+                            TreeData data = child.getDataForClient(client, loadInfo);
+                            sendMessage(LOAD_RESPONSE, new LoadResponse(loaderName, data), client);
                         }
                     }
-                    sendMessage(LOAD_RESPONSE, new LoadResponse<HousemateData<?>>(loaderName, new TreeData<HousemateData<?>>(childId, null, null, null)), client);
+                    sendMessage(LOAD_RESPONSE, new LoadResponse(loaderName, new TreeData(childId, null, null, null)), client);
                 } else {
                     BridgeObject<?, ?, ?, ?, ?> child = getChild(childId);
                     if (child == null) {
                         getLog().w("Load request received from " + Arrays.toString(message.getRoute().toArray(new String[message.getRoute().size()])) + " for non-existant object \"" + childId + "\"");
-                        sendMessage(LOAD_RESPONSE, new LoadResponse<HousemateData<?>>(loaderName, new TreeData<HousemateData<?>>(childId, null, null, null), "Object does not exist or you do not have permission to see it"), client);
+                        sendMessage(LOAD_RESPONSE, new LoadResponse(loaderName, new TreeData(childId, null, null, null), "Object does not exist or you do not have permission to see it"), client);
                     } else if(!child.isLoadedBy(client)) {
-                        TreeData<HousemateData<?>> data = child.getDataForClient(client, loadInfo);
-                        sendMessage(LOAD_RESPONSE, new LoadResponse<HousemateData<?>>(loaderName, data), client);
+                        TreeData data = child.getDataForClient(client, loadInfo);
+                        sendMessage(LOAD_RESPONSE, new LoadResponse(loaderName, data), client);
                     } else
-                        sendMessage(LOAD_RESPONSE, new LoadResponse<HousemateData<?>>(loaderName, new TreeData<HousemateData<?>>(childId, null, null, null)), client);
+                        sendMessage(LOAD_RESPONSE, new LoadResponse(loaderName, new TreeData(childId, null, null, null)), client);
                 }
             }
         }));
@@ -129,10 +129,10 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
         return result;
     }
 
-    protected TreeData<HousemateData<?>> getDataForClient(RemoteClient client, TreeLoadInfo loadInfo) {
+    protected TreeData getDataForClient(RemoteClient client, TreeLoadInfo loadInfo) {
         clientListeners.put(client, client.addListener(this));
         loadedByClients.add(client);
-        Map<String, TreeData<?>> children = Maps.newHashMap();
+        Map<String, TreeData> children = Maps.newHashMap();
         Map<String, ChildOverview> childData = Maps.newHashMap();
         if(loadInfo.getId().equals(HousemateObject.EVERYTHING_RECURSIVE)) {
             for(CHILD child : getChildren()) {
@@ -151,7 +151,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
             for(CHILD child : getChildren())
                 childData.put(child.getId(), new ChildOverview(child.getId(), child.getName(), child.getDescription()));
         }
-        return new TreeData<HousemateData<?>>(getId(), getData().clone(), children, childData);
+        return new TreeData(getId(), getData().clone(), children, childData);
     }
 
     protected boolean isLoadedBy(RemoteClient client) {

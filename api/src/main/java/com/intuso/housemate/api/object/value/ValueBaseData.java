@@ -28,6 +28,10 @@ public abstract class ValueBaseData<WBL extends HousemateData<?>>
         return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
     /**
      * Gets the current value
      * @return the current value
@@ -42,5 +46,12 @@ public abstract class ValueBaseData<WBL extends HousemateData<?>>
      */
     public void setTypeInstances(TypeInstances typeInstances) {
         this.typeInstances = typeInstances;
+    }
+
+    @Override
+    public void ensureSerialisable() {
+        super.ensureSerialisable();
+        if(typeInstances != null)
+            typeInstances.ensureSerialisable();
     }
 }

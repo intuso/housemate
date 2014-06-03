@@ -40,7 +40,7 @@ public class ServerProxyProperty
     public void set(final TypeInstances value, CommandPerformListener<? super ServerProxyCommand> listener) {
         getSetCommand().perform(new TypeInstanceMap() {
             {
-                put(VALUE_PARAM, value);
+                getChildren().put(VALUE_PARAM, value);
             }
         }, listener);
     }

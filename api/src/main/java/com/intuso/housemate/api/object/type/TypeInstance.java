@@ -63,6 +63,10 @@ public class TypeInstance implements Message.Payload {
         return childValues;
     }
 
+    public void setChildValues(TypeInstanceMap childValues) {
+        this.childValues = childValues;
+    }
+
     @Override
     public boolean equals(Object o) {
         if(o == null || !(o instanceof TypeInstance))
@@ -71,16 +75,22 @@ public class TypeInstance implements Message.Payload {
         if((value == null && other.value != null)
                 || !value.equals(other.value))
             return false;
-        if(childValues.size() != other.childValues.size())
+        if(childValues.getChildren().size() != other.childValues.getChildren().size())
             return false;
-        for(Map.Entry<String, TypeInstances> entry : childValues.entrySet())
-            if(!other.childValues.containsKey(entry.getKey()) || !entry.getValue().equals(other.childValues.get(entry.getKey())))
+        for(Map.Entry<String, TypeInstances> entry : childValues.getChildren().entrySet())
+            if(!other.childValues.getChildren().containsKey(entry.getKey()) || !entry.getValue().equals(other.childValues.getChildren().get(entry.getKey())))
                 return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return value + " and " + childValues.size() + " children";
+        return value + " and " + childValues.getChildren().size() + " children";
+    }
+
+    @Override
+    public void ensureSerialisable() {
+        if(childValues != null)
+            childValues.ensureSerialisable();
     }
 }

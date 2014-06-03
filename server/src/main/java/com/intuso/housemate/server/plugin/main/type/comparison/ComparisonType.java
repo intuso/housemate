@@ -72,25 +72,25 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
         if(comparisonInstance == null)
             return null;
         TypeInstance result = new TypeInstance();
-        result.getChildValues().put(COMPARISON_TYPE_ID, new TypeInstances(comparisonTypeSerialiser.serialise(comparisonInstance.getComparisonType())));
-        result.getChildValues().put(VALUE_0_ID, new TypeInstances(sourceTypeSerialiser.serialise(comparisonInstance.getFirstValueSource())));
-        result.getChildValues().put(VALUE_1_ID, new TypeInstances(sourceTypeSerialiser.serialise(comparisonInstance.getSecondValueSource())));
+        result.getChildValues().getChildren().put(COMPARISON_TYPE_ID, new TypeInstances(comparisonTypeSerialiser.serialise(comparisonInstance.getComparisonType())));
+        result.getChildValues().getChildren().put(VALUE_0_ID, new TypeInstances(sourceTypeSerialiser.serialise(comparisonInstance.getFirstValueSource())));
+        result.getChildValues().getChildren().put(VALUE_1_ID, new TypeInstances(sourceTypeSerialiser.serialise(comparisonInstance.getSecondValueSource())));
         return result;
     }
 
     @Override
     public Comparison deserialise(TypeInstance instance) {
         if(instance == null
-                || instance.getChildValues().get(COMPARISON_TYPE_ID) == null
-                || instance.getChildValues().get(COMPARISON_TYPE_ID).size() == 0)
+                || instance.getChildValues().getChildren().get(COMPARISON_TYPE_ID) == null
+                || instance.getChildValues().getChildren().get(COMPARISON_TYPE_ID).getElements().size() == 0)
             return null;
         ValueSource value0 = null;
-        if(instance.getChildValues().get(VALUE_0_ID) != null && instance.getChildValues().get(VALUE_0_ID).size() != 0)
-            value0 = sourceTypeSerialiser.deserialise(instance.getChildValues().get(VALUE_0_ID).get(0));
+        if(instance.getChildValues().getChildren().get(VALUE_0_ID) != null && instance.getChildValues().getChildren().get(VALUE_0_ID).getElements().size() != 0)
+            value0 = sourceTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(VALUE_0_ID).getElements().get(0));
         ValueSource value1 = null;
-        if(instance.getChildValues().get(VALUE_1_ID) != null && instance.getChildValues().get(VALUE_1_ID).size() != 0)
-            value1 = sourceTypeSerialiser.deserialise(instance.getChildValues().get(VALUE_1_ID).get(0));
-        com.intuso.housemate.plugin.api.ComparisonType comparisonType = comparisonTypeSerialiser.deserialise(instance.getChildValues().get(COMPARISON_TYPE_ID).get(0));
+        if(instance.getChildValues().getChildren().get(VALUE_1_ID) != null && instance.getChildValues().getChildren().get(VALUE_1_ID).getElements().size() != 0)
+            value1 = sourceTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(VALUE_1_ID).getElements().get(0));
+        com.intuso.housemate.plugin.api.ComparisonType comparisonType = comparisonTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(COMPARISON_TYPE_ID).getElements().get(0));
         return new Comparison(comparisonType, comparators.get(comparisonType), value0, value1);
     }
 

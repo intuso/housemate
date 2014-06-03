@@ -107,20 +107,20 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
             if(source instanceof ConstantValue) {
                 TypeInstanceMap childValues = new TypeInstanceMap();
                 TypeInstance typeInstance = new TypeInstance(source.getValue().getType().getId());
-                typeInstance.getChildValues().put(ConstantType.SUB_TYPE_ID, source.getValue().getTypeInstances());
-                childValues.put("type", new TypeInstances(typeInstance));
+                typeInstance.getChildValues().getChildren().put(ConstantType.SUB_TYPE_ID, source.getValue().getTypeInstances());
+                childValues.getChildren().put("type", new TypeInstances(typeInstance));
                 return new TypeInstance(CONSTANT_ID, childValues);
             } else if(source instanceof ValueLocation) {
                 TypeInstanceMap childValues = new TypeInstanceMap();
-                childValues.put("path", new TypeInstances(realObjectTypeSerialiser.serialise(((ValueLocation) source).getObjectReference())));
+                childValues.getChildren().put("path", new TypeInstances(realObjectTypeSerialiser.serialise(((ValueLocation) source).getObjectReference())));
                 return new TypeInstance(LOCATION_ID, childValues);
             } else if(source instanceof OperationOutput) {
                 TypeInstanceMap childValues = new TypeInstanceMap();
-                childValues.put("operation", new TypeInstances(operationSerialiser.serialise(((OperationOutput)source).getOperation())));
+                childValues.getChildren().put("operation", new TypeInstances(operationSerialiser.serialise(((OperationOutput)source).getOperation())));
                 return new TypeInstance(OPERATION_ID, childValues);
             } else if(source instanceof TransformationOutput) {
                 TypeInstanceMap childValues = new TypeInstanceMap();
-                childValues.put("transformation", new TypeInstances(transformationSerialiser.serialise(((TransformationOutput)source).getTransformation())));
+                childValues.getChildren().put("transformation", new TypeInstances(transformationSerialiser.serialise(((TransformationOutput)source).getTransformation())));
                 return new TypeInstance(TRANSFORMATION_ID, childValues);
             } else
                 return null;
@@ -131,7 +131,7 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
             if(value == null || value.getValue() == null)
                 return null;
             if(value.getValue().equals(CONSTANT_ID)) {
-                TypeInstances typeValue = value.getChildValues().get("type");
+                TypeInstances typeValue = value.getChildValues().getChildren().get("type");
                 if(typeValue == null)
                     return null;
                 String typeId = typeValue.getFirstValue();
@@ -144,21 +144,21 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
                     log.w("Cannot deserialise constant, no type for id " + typeId);
                     return null;
                 }
-                return new ConstantValue(listenersFactory, type, typeValue.get(0).getChildValues().get(ConstantType.SUB_TYPE_ID));
+                return new ConstantValue(listenersFactory, type, typeValue.getElements().get(0).getChildValues().getChildren().get(ConstantType.SUB_TYPE_ID));
             } else if(value.getValue().equals(LOCATION_ID)) {
-                if(value.getChildValues().get("path") != null && value.getChildValues().get("path").size() > 0) {
-                    RealObjectType.Reference<?> object = realObjectTypeSerialiser.deserialise(value.getChildValues().get("path").get(0));
+                if(value.getChildValues().getChildren().get("path") != null && value.getChildValues().getChildren().get("path").getElements().size() > 0) {
+                    RealObjectType.Reference<?> object = realObjectTypeSerialiser.deserialise(value.getChildValues().getChildren().get("path").getElements().get(0));
                     return new ValueLocation(listenersFactory, (RealObjectType.Reference<Value<?, ?>>)object, root);
                 } else
                     return null;
             } else if(value.getValue().equals(OPERATION_ID)) {
-                if(value.getChildValues().get("operation") != null && value.getChildValues().get("operation").size() > 0)
-                    return new OperationOutput(log, listenersFactory, types, operationSerialiser.deserialise(value.getChildValues().get("operation").get(0)));
+                if(value.getChildValues().getChildren().get("operation") != null && value.getChildValues().getChildren().get("operation").getElements().size() > 0)
+                    return new OperationOutput(log, listenersFactory, types, operationSerialiser.deserialise(value.getChildValues().getChildren().get("operation").getElements().get(0)));
                 else
                     return null;
             } else if(value.getValue().equals(TRANSFORMATION_ID)) {
-                if(value.getChildValues().get("transformation") != null && value.getChildValues().get("transformation").size() > 0)
-                    return new TransformationOutput(log, listenersFactory, types, transformationSerialiser.deserialise(value.getChildValues().get("transformation").get(0)));
+                if(value.getChildValues().getChildren().get("transformation") != null && value.getChildValues().getChildren().get("transformation").getElements().size() > 0)
+                    return new TransformationOutput(log, listenersFactory, types, transformationSerialiser.deserialise(value.getChildValues().getChildren().get("transformation").getElements().get(0)));
                 else
                     return null;
             } else

@@ -37,7 +37,7 @@ public class MultiSelectInput extends ListBox implements TypeInput {
                 addItem(option.getName());
                 i++;
             }
-            for(TypeInstance typeInstance : typeInstances)
+            for(TypeInstance typeInstance : typeInstances.getElements())
                 selectedOptions.add(typeInstance.getValue());
             for(String id : selectedOptions) {
                 GWTProxyOption option = options.get(id);
@@ -55,9 +55,9 @@ public class MultiSelectInput extends ListBox implements TypeInput {
                 for(int i = 0; i < getItemCount(); i++)
                     if(isItemSelected(i))
                         selectedOptions.add(getItemText(i));
-                typeInstances.clear();
+                typeInstances.getElements().clear();
                 for(String selectedOption : selectedOptions)
-                    typeInstances.add(new TypeInstance(selectedOption));
+                    typeInstances.getElements().add(new TypeInstance(selectedOption));
             }
         });
     }

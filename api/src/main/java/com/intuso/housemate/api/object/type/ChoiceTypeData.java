@@ -11,7 +11,7 @@ public final class ChoiceTypeData extends TypeData<ListData<OptionData>> {
 
     private static final long serialVersionUID = -1L;
 
-    private ChoiceTypeData() {}
+    public ChoiceTypeData() {}
 
     /**
      * @param id {@inheritDoc}

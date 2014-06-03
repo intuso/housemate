@@ -16,7 +16,7 @@ import java.io.*;
  */
 public class JavabinSerialiser implements Serialiser {
 
-    public final static String TYPE = "javabin";
+    public final static String TYPE = "application/x-java-serialized-object";
 
     public static class Factory implements StreamSerialiserFactory {
 

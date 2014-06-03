@@ -39,7 +39,7 @@ public abstract class RealType<
             return null;
         TypeInstances result = new TypeInstances();
         for(O typedValue : typedValues)
-            result.add(serialiser.serialise(typedValue));
+            result.getElements().add(serialiser.serialise(typedValue));
         return result;
     }
 
@@ -47,7 +47,7 @@ public abstract class RealType<
         if(values == null)
             return null;
         List<O> result = Lists.newArrayList();
-        for(TypeInstance value : values)
+        for(TypeInstance value : values.getElements())
             result.add(serialiser.deserialise(value));
         return result;
     }

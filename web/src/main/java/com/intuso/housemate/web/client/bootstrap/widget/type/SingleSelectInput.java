@@ -39,8 +39,8 @@ public class SingleSelectInput extends Composite implements TypeInput {
 
     public SingleSelectInput(GWTProxyType type, final TypeInstances typeInstances) {
 
-        if(typeInstances.size() == 0)
-            typeInstances.add(new TypeInstance());
+        if(typeInstances.getElements().size() == 0)
+            typeInstances.getElements().add(new TypeInstance());
 
         options = (GWTProxyList<OptionData, GWTProxyOption>) type.getChild(OPTIONS);
 
@@ -56,13 +56,13 @@ public class SingleSelectInput extends Composite implements TypeInput {
 
         // get the selected id, or if not set choose the first one
         String optionId = null;
-        if(typeInstances == null || typeInstances.get(0) == null || typeInstances.get(0).getValue() == null) {
+        if(typeInstances == null || typeInstances.getElements().get(0) == null || typeInstances.getElements().get(0).getValue() == null) {
             if(options.size() > 0)
                 optionId = options.iterator().next().getId();
         } else
-            optionId = typeInstances.get(0).getValue();
-        if(typeInstances != null && typeInstances.get(0) != null)
-            typeInstances.get(0).setValue(optionId);
+            optionId = typeInstances.getElements().get(0).getValue();
+        if(typeInstances != null && typeInstances.getElements().get(0) != null)
+            typeInstances.getElements().get(0).setValue(optionId);
 
         // highlight the selected option in the list and show it's sub options
         if(optionId != null && options.getChild(optionId) != null) {
@@ -74,7 +74,7 @@ public class SingleSelectInput extends Composite implements TypeInput {
             @Override
             public void onChange(ChangeEvent event) {
                 String optionId = optionMap.inverse().get(listBox.getSelectedIndex()).getId();
-                typeInstances.get(0).setValue(optionId);
+                typeInstances.getElements().get(0).setValue(optionId);
                 showOptions(optionId, typeInstances);
             }
         });
@@ -85,13 +85,13 @@ public class SingleSelectInput extends Composite implements TypeInput {
         GWTProxyOption option = options.get(optionId);
         if(option != null && option.getSubTypes() != null) {
             for(GWTProxySubType subType : option.getSubTypes()) {
-                if(typeInstances.get(0) == null)
-                    typeInstances.add(0, new TypeInstance());
-                if(typeInstances.get(0).getChildValues() == null)
-                    typeInstances.add(0, new TypeInstance());
-                if(typeInstances.get(0).getChildValues().get(subType.getId()) == null)
-                    typeInstances.get(0).getChildValues().put(subType.getId(), new TypeInstances());
-                TypeInput input = TypeInputList.getInput(subType.getType(), typeInstances.get(0).getChildValues().get(subType.getId()));
+                if(typeInstances.getElements().get(0) == null)
+                    typeInstances.getElements().add(0, new TypeInstance());
+                if(typeInstances.getElements().get(0).getChildValues() == null)
+                    typeInstances.getElements().add(0, new TypeInstance());
+                if(typeInstances.getElements().get(0).getChildValues().getChildren().get(subType.getId()) == null)
+                    typeInstances.getElements().get(0).getChildValues().getChildren().put(subType.getId(), new TypeInstances());
+                TypeInput input = TypeInputList.getInput(subType.getType(), typeInstances.getElements().get(0).getChildValues().getChildren().get(subType.getId()));
                 subTypesPanel.add(input);
             }
         }

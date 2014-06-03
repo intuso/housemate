@@ -1,9 +1,11 @@
 package com.intuso.housemate.api.object;
 
+import com.google.common.collect.Maps;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.utilities.object.Data;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,12 +54,20 @@ public abstract class HousemateData<DATA extends HousemateData<?>>
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     /**
      * Gets the object's description
      * @return the object's description
      */
     public final String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
@@ -80,5 +90,14 @@ public abstract class HousemateData<DATA extends HousemateData<?>>
     @Override
     public boolean equals(Object o) {
         return getClass().equals(o.getClass()) && ((HousemateData)o).getId().equals(getId());
+    }
+
+    @Override
+    public void ensureSerialisable() {
+        if(getChildData() != null && !(getChildData() instanceof HashMap))
+            setChildData(Maps.newHashMap(getChildData()));
+        if(getChildData() != null)
+            for(DATA childData : getChildData().values())
+                childData.ensureSerialisable();
     }
 }

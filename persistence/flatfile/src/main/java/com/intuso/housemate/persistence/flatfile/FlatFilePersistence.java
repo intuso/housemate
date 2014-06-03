@@ -56,14 +56,14 @@ public class FlatFilePersistence implements Persistence {
         } catch(IOException e) {
             throw new HousemateException("Failed to get value", e);
         }
-        TypeInstances instances = details.get(PROPERTY_VALUE_KEY);
+        TypeInstances instances = details.getChildren().get(PROPERTY_VALUE_KEY);
         return instances;
     }
 
     @Override
     public void saveTypeInstances(String[] path, TypeInstances value) throws HousemateException {
         TypeInstanceMap details = new TypeInstanceMap();
-        details.put(PROPERTY_VALUE_KEY, value);
+        details.getChildren().put(PROPERTY_VALUE_KEY, value);
         try {
             saveDetails(getFile(true, path, VALUE_FILENAME), details);
         } catch(IOException e) {
@@ -161,25 +161,25 @@ public class FlatFilePersistence implements Persistence {
     private void addValue(TypeInstanceMap typeInstanceMap, String path, String value) {
         List<String> pathElements = Lists.newArrayList(SPLITTER.split(path));
         for(int i = 0; i < pathElements.size() - 2; i += 2) {
-            TypeInstances typeInstances = typeInstanceMap.get(pathElements.get(i));
+            TypeInstances typeInstances = typeInstanceMap.getChildren().get(pathElements.get(i));
             if(typeInstances == null) {
                 typeInstances = new TypeInstances();
-                typeInstanceMap.put(pathElements.get(i), typeInstances);
+                typeInstanceMap.getChildren().put(pathElements.get(i), typeInstances);
             }
             int index = Integer.parseInt(pathElements.get(i + 1));
-            while(typeInstances.size() <= index)
-                typeInstances.add(new TypeInstance());
-            typeInstanceMap = typeInstances.get(index).getChildValues();
+            while(typeInstances.getElements().size() <= index)
+                typeInstances.getElements().add(new TypeInstance());
+            typeInstanceMap = typeInstances.getElements().get(index).getChildValues();
         }
-        TypeInstances typeInstances = typeInstanceMap.get(pathElements.get(pathElements.size() - 2));
+        TypeInstances typeInstances = typeInstanceMap.getChildren().get(pathElements.get(pathElements.size() - 2));
         if(typeInstances == null) {
             typeInstances = new TypeInstances();
-            typeInstanceMap.put(pathElements.get(pathElements.size() - 2), typeInstances);
+            typeInstanceMap.getChildren().put(pathElements.get(pathElements.size() - 2), typeInstances);
         }
         int index = Integer.parseInt(pathElements.get(pathElements.size() - 1));
-        while(typeInstances.size() <= index)
-            typeInstances.add(new TypeInstance());
-        typeInstances.get(index).setValue(value);
+        while(typeInstances.getElements().size() <= index)
+            typeInstances.getElements().add(new TypeInstance());
+        typeInstances.getElements().get(index).setValue(value);
     }
 
     private void saveDetails(File file, TypeInstanceMap details) throws IOException {
@@ -190,7 +190,7 @@ public class FlatFilePersistence implements Persistence {
     }
 
     private void addValues(Properties properties, List<String> path, TypeInstanceMap typeInstances) {
-        for(Map.Entry<String, TypeInstances> entry : typeInstances.entrySet()) {
+        for(Map.Entry<String, TypeInstances> entry : typeInstances.getChildren().entrySet()) {
             path.add(entry.getKey());
             addValue(properties, path, entry.getValue());
             path.remove(path.size() - 1);
@@ -199,9 +199,9 @@ public class FlatFilePersistence implements Persistence {
 
     private void addValue(Properties properties, List<String> path, TypeInstances typeInstances) {
         if(typeInstances != null) {
-            for(int i = 0; i < typeInstances.size(); i++) {
+            for(int i = 0; i < typeInstances.getElements().size(); i++) {
                 path.add(Integer.toString(i));
-                TypeInstance typeInstance = typeInstances.get(i);
+                TypeInstance typeInstance = typeInstances.getElements().get(i);
                 if(typeInstance != null) {
                     if(typeInstance.getValue() != null)
                         properties.put(JOINER.join(path), typeInstance.getValue());

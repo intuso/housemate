@@ -32,7 +32,7 @@ public class PropertyBridge
     @Override
     public void set(final TypeInstances value, CommandPerformListener<? super CommandBridge> listener) {
         TypeInstanceMap values = new TypeInstanceMap();
-        values.put(VALUE_PARAM, value);
+        values.getChildren().put(VALUE_PARAM, value);
         setCommand.perform(values, listener);
     }
 

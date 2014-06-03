@@ -12,7 +12,7 @@ public class StringPayload implements Message.Payload {
 
     private String value;
 
-    private StringPayload() {}
+    public StringPayload() {}
 
     /**
      * @param value the payload to send
@@ -25,13 +25,19 @@ public class StringPayload implements Message.Payload {
      * Gets the string payload
      * @return the string payload
      */
-
     public String getValue() {
         return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return value;
     }
+
+    @Override
+    public void ensureSerialisable() {}
 }

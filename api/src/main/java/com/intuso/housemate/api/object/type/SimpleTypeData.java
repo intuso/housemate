@@ -46,7 +46,7 @@ public final class SimpleTypeData extends TypeData<NoChildrenData> {
 
     private Type type;
 
-    private SimpleTypeData() {}
+    public SimpleTypeData() {}
 
     /**
      * @param type the type of the type
@@ -62,6 +62,10 @@ public final class SimpleTypeData extends TypeData<NoChildrenData> {
      */
     public final Type getType() {
         return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     @Override

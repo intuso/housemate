@@ -12,7 +12,7 @@ public final class CompoundTypeData extends TypeData<ListData<SubTypeData>> {
 
     private static final long serialVersionUID = -1L;
 
-    private CompoundTypeData() {}
+    public CompoundTypeData() {}
 
     /**
      * @param id {@inheritDoc}

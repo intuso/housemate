@@ -47,9 +47,9 @@ public abstract class ProxyCommand<
     @Override
     protected List<ListenerRegistration> registerListeners() {
         final List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(PERFORMING_TYPE, new Receiver<PerformingMessageValue>() {
+        result.add(addMessageListener(PERFORMING_TYPE, new Receiver<PerformingPayload>() {
             @Override
-            public void messageReceived(Message<PerformingMessageValue> message) throws HousemateException {
+            public void messageReceived(Message<PerformingPayload> message) throws HousemateException {
                 CommandPerformListener<? super COMMAND> performer = listenerMap.get(message.getPayload().getOpId());
                 if(message.getPayload().isPerforming()) {
                     if(performer != null)
@@ -65,9 +65,9 @@ public abstract class ProxyCommand<
                 }
             }
         }));
-        result.add(addMessageListener(FAILED_TYPE, new Receiver<FailedMessageValue>() {
+        result.add(addMessageListener(FAILED_TYPE, new Receiver<FailedPayload>() {
             @Override
-            public void messageReceived(Message<FailedMessageValue> message) throws HousemateException {
+            public void messageReceived(Message<FailedPayload> message) throws HousemateException {
                 CommandPerformListener<? super COMMAND> performer = listenerMap.remove(message.getPayload().getOpId());
                 if(performer != null)
                     performer.commandFailed(getThis(), message.getPayload().getCause());
@@ -126,6 +126,6 @@ public abstract class ProxyCommand<
     public final synchronized void perform(TypeInstanceMap values, CommandPerformListener<? super COMMAND> listener) {
         String id = "" + nextId++;
         listenerMap.put(id, listener);
-        sendMessage(PERFORM_TYPE, new PerformMessageValue(id, values));
+        sendMessage(PERFORM_TYPE, new PerformPayload(id, values));
     }
 }

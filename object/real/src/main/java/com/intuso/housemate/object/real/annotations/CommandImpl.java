@@ -50,11 +50,11 @@ public class CommandImpl extends RealCommand {
         public Object[] convert(TypeInstanceMap values) {
             Object[] result = new Object[parameters.size()];
             for(int i = 0; i < result.length; i++) {
-                TypeInstances typeInstances = values.get(parameters.get(i).getId());
-                if(typeInstances == null || typeInstances.size() == 0)
+                TypeInstances typeInstances = values.getChildren().get(parameters.get(i).getId());
+                if(typeInstances == null || typeInstances.getElements().size() == 0)
                     result[i] = null;
                 else
-                    result[i] = parameters.get(i).getType().deserialise(typeInstances.get(0));
+                    result[i] = parameters.get(i).getType().deserialise(typeInstances.getElements().get(0));
             }
             return result;
         }

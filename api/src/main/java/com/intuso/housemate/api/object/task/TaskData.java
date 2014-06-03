@@ -10,7 +10,7 @@ public final class TaskData extends HousemateData<HousemateData<?>> {
 
     private static final long serialVersionUID = -1L;
 
-    private TaskData() {}
+    public TaskData() {}
 
     public TaskData(String id, String name, String description) {
         super(id, name, description);

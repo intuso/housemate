@@ -74,9 +74,9 @@ public class ServerProxyCommand
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(PERFORMING_TYPE, new Receiver<ClientPayload<PerformingMessageValue>>() {
+        result.add(addMessageListener(PERFORMING_TYPE, new Receiver<ClientPayload<PerformingPayload>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<PerformingMessageValue>> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<PerformingPayload>> message) throws HousemateException {
                 CommandPerformListener<? super ServerProxyCommand> performer = listenerMap.get(message.getPayload().getOriginal().getOpId());
                 if(message.getPayload().getOriginal().isPerforming()) {
                     if(performer != null)
@@ -92,9 +92,9 @@ public class ServerProxyCommand
                 }
             }
         }));
-        result.add(addMessageListener(FAILED_TYPE, new Receiver<ClientPayload<FailedMessageValue>>() {
+        result.add(addMessageListener(FAILED_TYPE, new Receiver<ClientPayload<FailedPayload>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<FailedMessageValue>> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<FailedPayload>> message) throws HousemateException {
                 CommandPerformListener<? super ServerProxyCommand> performer = listenerMap.remove(message.getPayload().getOriginal().getOpId());
                 if(performer != null)
                     performer.commandFailed(ServerProxyCommand.this, message.getPayload().getOriginal().getCause());
@@ -110,7 +110,7 @@ public class ServerProxyCommand
         if(isEnabled()) {
             try {
                 String id = "" + nextId++;
-                sendMessage(PERFORM_TYPE, new PerformMessageValue(id, values));
+                sendMessage(PERFORM_TYPE, new PerformPayload(id, values));
                 listenerMap.put(id, listener);
             } catch(HousemateException e) {
                 listener.commandFailed(getThis(), "Failed to send message to client: " + e.getMessage());

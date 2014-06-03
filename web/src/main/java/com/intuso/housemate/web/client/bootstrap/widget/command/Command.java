@@ -50,7 +50,7 @@ public class Command extends Composite implements CommandPerformListener<GWTProx
     @UiHandler("performButton")
     protected void onPerform(ClickEvent event) {
         performButton.setEnabled(false);
-        command.perform(values.get(0).getChildValues(), this);
+        command.perform(values.getElements().get(0).getChildValues(), this);
     }
 
     @Override

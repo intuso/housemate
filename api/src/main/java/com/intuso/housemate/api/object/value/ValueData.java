@@ -12,7 +12,7 @@ public final class ValueData extends ValueBaseData<NoChildrenData> {
 
     private static final long serialVersionUID = -1L;
 
-    protected ValueData() {}
+    public ValueData() {}
 
     public ValueData(String id, String name, String description, String type, TypeInstances values) {
         super(id, name,  description, type, values);

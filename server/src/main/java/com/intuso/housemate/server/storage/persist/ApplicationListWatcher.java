@@ -50,9 +50,9 @@ public class ApplicationListWatcher implements ListListener<Application<?, ?, ?,
             return;
 
         TypeInstanceMap toSave = new TypeInstanceMap();
-        toSave.put("id", new TypeInstances(new TypeInstance(application.getId())));
-        toSave.put("name", new TypeInstances(new TypeInstance(application.getName())));
-        toSave.put("description", new TypeInstances(new TypeInstance(application.getDescription())));
+        toSave.getChildren().put("id", new TypeInstances(new TypeInstance(application.getId())));
+        toSave.getChildren().put("name", new TypeInstances(new TypeInstance(application.getName())));
+        toSave.getChildren().put("description", new TypeInstances(new TypeInstance(application.getDescription())));
         try {
             persistence.saveValues(application.getPath(), toSave);
         } catch (HousemateException e) {

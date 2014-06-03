@@ -41,4 +41,7 @@ public class ClientPayload<PAYLOAD extends Message.Payload> implements Message.P
     public String toString() {
         return "from client " + client.getClientInstance() + ": " + original.toString();
     }
+
+    @Override
+    public void ensureSerialisable() {} // this class is used server-side only
 }

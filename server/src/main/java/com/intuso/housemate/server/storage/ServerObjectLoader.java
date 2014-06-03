@@ -76,8 +76,8 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         try {
             for(String key : persistence.getValuesKeys(realApplications.getPath())) {
                 TypeInstanceMap details = persistence.getValues(realApplications.getPath(), key);
-                ServerRealApplication application = new ServerRealApplication(log, listenersFactory, details.get("id").getFirstValue(),
-                        details.get("name").getFirstValue(), details.get("description").getFirstValue(),
+                ServerRealApplication application = new ServerRealApplication(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
+                        details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(),
                         injector.getInstance(ApplicationStatusType.class));
                 realApplications.add(application);
                 loadApplicationInstances(application.getApplicationInstances(), application.getStatus());
@@ -94,7 +94,7 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
             for(String key : persistence.getValuesKeys(realApplicationInstances.getPath())) {
                 TypeInstanceMap details = persistence.getValues(realApplicationInstances.getPath(), key);
                 ServerRealApplicationInstance applicationInstance = new ServerRealApplicationInstance(log, listenersFactory,
-                        details.get("id").getFirstValue(), injector.getInstance(ApplicationInstanceStatusType.class),
+                        details.getChildren().get("id").getFirstValue(), injector.getInstance(ApplicationInstanceStatusType.class),
                         applicationStatus);
                 realApplicationInstances.add(applicationInstance);
             }
@@ -109,8 +109,8 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         try {
             for(String key : persistence.getValuesKeys(realUsers.getPath())) {
                 TypeInstanceMap details = persistence.getValues(realUsers.getPath(), key);
-                ServerRealUser user = new ServerRealUser(log, listenersFactory, details.get("id").getFirstValue(),
-                        details.get("name").getFirstValue(), details.get("description").getFirstValue(), this);
+                ServerRealUser user = new ServerRealUser(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
+                        details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(), this);
                 realUsers.add(user);
             }
         } catch(DetailsNotFoundException e) {
@@ -120,9 +120,9 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         }
         if(realUsers.getChildren().size() == 0) {
             TypeInstanceMap toSave = new TypeInstanceMap();
-            toSave.put("id", new TypeInstances(new TypeInstance("admin")));
-            toSave.put("name", new TypeInstances(new TypeInstance("admin")));
-            toSave.put("description", new TypeInstances(new TypeInstance("admin")));
+            toSave.getChildren().put("id", new TypeInstances(new TypeInstance("admin")));
+            toSave.getChildren().put("name", new TypeInstances(new TypeInstance("admin")));
+            toSave.getChildren().put("description", new TypeInstances(new TypeInstance("admin")));
 
             ServerRealUser user = new ServerRealUser(log, listenersFactory, "admin", "admin", "Default admin user", this);
             try {
@@ -156,8 +156,8 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
             for(String id : persistence.getValuesKeys(realAutomations.getPath())) {
                 try {
                     TypeInstanceMap details = persistence.getValues(realAutomations.getPath(), id);
-                    ServerRealAutomation automation = new ServerRealAutomation(log, listenersFactory, details.get("id").getFirstValue(),
-                            details.get("name").getFirstValue(), details.get("description").getFirstValue(), this,
+                    ServerRealAutomation automation = new ServerRealAutomation(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
+                            details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(), this,
                             lifecycleHandler);
                     automation.init(realAutomations);
                     loadConditions(automation.getConditions(), automation);

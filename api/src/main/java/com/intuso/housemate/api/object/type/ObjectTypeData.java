@@ -11,7 +11,7 @@ public final class ObjectTypeData extends TypeData<NoChildrenData> {
 
     private static final long serialVersionUID = -1L;
 
-    private ObjectTypeData() {}
+    public ObjectTypeData() {}
 
     /**
      * @param id {@inheritDoc}

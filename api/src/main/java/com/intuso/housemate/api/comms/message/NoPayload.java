@@ -18,4 +18,7 @@ public class NoPayload implements Message.Payload {
     public String toString() {
         return "";
     }
+
+    @Override
+    public void ensureSerialisable() {}
 }

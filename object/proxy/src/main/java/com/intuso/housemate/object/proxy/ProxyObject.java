@@ -91,9 +91,9 @@ public abstract class ProxyObject<
                     listener.childRemoved(getThis(), childOverview);
             }
         }));
-        result.add(addMessageListener(LOAD_RESPONSE, new Receiver<LoadResponse<CHILD_DATA>>() {
+        result.add(addMessageListener(LOAD_RESPONSE, new Receiver<LoadResponse>() {
             @Override
-            public void messageReceived(Message<LoadResponse<CHILD_DATA>> message) throws HousemateException {
+            public void messageReceived(Message<LoadResponse> message) throws HousemateException {
                 LoadManager manager = pendingLoads.get(message.getPayload().getLoaderName());
                 if (manager != null) {
                     if (message.getPayload().getError() != null) {
@@ -118,18 +118,18 @@ public abstract class ProxyObject<
         return result;
     }
 
-    protected final CHILD createChild(TreeData<CHILD_DATA> treeData) throws HousemateException {
-        CHILD object = createChildInstance(treeData.getData());
+    protected final CHILD createChild(TreeData treeData) throws HousemateException {
+        CHILD object = createChildInstance((CHILD_DATA)treeData.getData());
         object.initObject(treeData);
         return object;
     }
 
     protected abstract CHILD createChildInstance(CHILD_DATA child_data);
 
-    protected void initObject(TreeData<?> treeData) throws HousemateException {
+    protected void initObject(TreeData treeData) throws HousemateException {
         childOverviews.putAll(treeData.getChildData());
-        for(TreeData<?> childData : treeData.getChildren().values())
-            addChild(createChild((TreeData<CHILD_DATA>) childData));
+        for(TreeData childData : treeData.getChildren().values())
+            addChild(createChild(childData));
     }
 
     @Override

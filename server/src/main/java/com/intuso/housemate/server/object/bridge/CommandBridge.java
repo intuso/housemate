@@ -65,16 +65,16 @@ public class CommandBridge
     @Override
     protected final java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(PERFORM_TYPE, new Receiver<ClientPayload<PerformMessageValue>>() {
+        result.add(addMessageListener(PERFORM_TYPE, new Receiver<ClientPayload<PerformPayload>>() {
             @Override
-            public void messageReceived(final Message<ClientPayload<PerformMessageValue>> message) throws HousemateException {
+            public void messageReceived(final Message<ClientPayload<PerformPayload>> message) throws HousemateException {
                 perform(message.getPayload().getOriginal().getValues(), new CommandPerformListener<CommandBridge>() {
                     @Override
                     public void commandStarted(CommandBridge command) {
                         try {
                             for(CommandListener<? super CommandBridge> listener : getObjectListeners())
                                 listener.commandStarted(getThis(), "");
-                            sendMessage(PERFORMING_TYPE, new PerformingMessageValue(message.getPayload().getOriginal().getOpId(), true), message.getPayload().getClient());
+                            sendMessage(PERFORMING_TYPE, new PerformingPayload(message.getPayload().getOriginal().getOpId(), true), message.getPayload().getClient());
                         } catch(HousemateException e) {
                             getLog().e("Failed to send command started message to client");
                             getLog().e(e.getMessage());
@@ -86,7 +86,7 @@ public class CommandBridge
                         try {
                             for(CommandListener<? super CommandBridge> listener : getObjectListeners())
                                 listener.commandFinished(getThis());
-                            sendMessage(PERFORMING_TYPE, new PerformingMessageValue(message.getPayload().getOriginal().getOpId(), false), message.getPayload().getClient());
+                            sendMessage(PERFORMING_TYPE, new PerformingPayload(message.getPayload().getOriginal().getOpId(), false), message.getPayload().getClient());
                         } catch(HousemateException e) {
                             getLog().e("Failed to send command finished message to client");
                             getLog().e(e.getMessage());
@@ -99,7 +99,7 @@ public class CommandBridge
 
                             for(CommandListener<? super CommandBridge> listener : getObjectListeners())
                                 listener.commandFailed(getThis(), error);
-                            sendMessage(FAILED_TYPE, new FailedMessageValue(message.getPayload().getOriginal().getOpId(), error), message.getPayload().getClient());
+                            sendMessage(FAILED_TYPE, new FailedPayload(message.getPayload().getOriginal().getOpId(), error), message.getPayload().getClient());
                         } catch(HousemateException e) {
                             getLog().e("Failed to send command failed message to client");
                             getLog().e(e.getMessage());

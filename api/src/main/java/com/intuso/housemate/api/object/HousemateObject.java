@@ -12,9 +12,8 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Base class for all Housemate object implementations
@@ -258,7 +257,7 @@ public abstract class HousemateObject<
         private List<ChildOverview> childOverviews;
         private String error;
 
-        private ChildOverviews() {}
+        public ChildOverviews() {}
 
         public ChildOverviews(List<ChildOverview> childOverviews) {
             this(childOverviews, null);
@@ -277,8 +276,22 @@ public abstract class HousemateObject<
             return childOverviews;
         }
 
+        public void setChildOverviews(List<ChildOverview> childOverviews) {
+            this.childOverviews = childOverviews == null || childOverviews instanceof Serializable ? childOverviews : Lists.newArrayList(childOverviews);
+        }
+
         public String getError() {
             return error;
+        }
+
+        public void setError(String error) {
+            this.error = error;
+        }
+
+        @Override
+        public void ensureSerialisable() {
+            if(childOverviews != null && !(childOverviews instanceof ArrayList))
+                childOverviews = Lists.newArrayList(childOverviews);
         }
     }
 
@@ -329,7 +342,7 @@ public abstract class HousemateObject<
             }
         }
 
-        private TreeLoadInfo() {}
+        public TreeLoadInfo() {}
 
         public TreeLoadInfo(String id, TreeLoadInfo ... children) {
             this(id, asMap(children));
@@ -355,6 +368,10 @@ public abstract class HousemateObject<
             return id;
         }
 
+        public void setId(String id) {
+            this.id = id;
+        }
+
         /**
          * Is there data to load
          * @return true if there is data to load
@@ -378,24 +395,36 @@ public abstract class HousemateObject<
         public Map<String, TreeLoadInfo> getChildren() {
             return children;
         }
+
+        public void setChildren(Map<String, TreeLoadInfo> children) {
+            this.children = children == null || children instanceof Serializable ? children : Maps.newHashMap(children);
+        }
+
+        @Override
+        public void ensureSerialisable() {
+            if(children != null && !(children instanceof HashMap))
+                children = Maps.newHashMap(children);
+            if(children != null)
+                for(TreeLoadInfo child : children.values())
+                    child.ensureSerialisable();
+        }
     }
 
     /**
      * Container class for loaded objects
-     * @param <DATA>
      */
-    public static class TreeData<DATA extends HousemateData<?>> implements Message.Payload {
+    public static class TreeData implements Message.Payload {
 
         private static final long serialVersionUID = -1L;
 
         private String id;
-        private DATA data;
-        private Map<String, TreeData<?>> children;
+        private HousemateData<?> data;
+        private Map<String, TreeData> children;
         private Map<String, ChildOverview> childData;
 
-        private TreeData() {}
+        public TreeData() {}
 
-        public TreeData(String id, DATA data, Map<String, TreeData<?>> children, Map<String, ChildOverview> childData) {
+        public TreeData(String id, HousemateData<?> data, Map<String, TreeData> children, Map<String, ChildOverview> childData) {
             this.id = id;
             this.data = data;
             this.children = children;
@@ -410,20 +439,32 @@ public abstract class HousemateObject<
             return id;
         }
 
+        public void setId(String id) {
+            this.id = id;
+        }
+
         /**
          * Get the object data
          * @return the object data
          */
-        public DATA getData() {
+        public HousemateData<?> getData() {
             return data;
+        }
+
+        public void setData(HousemateData<?> data) {
+            this.data = data;
         }
 
         /**
          * Get the children object data
-         * @returnthe children object data
+         * @return the children object data
          */
-        public Map<String, TreeData<?>> getChildren() {
+        public Map<String, TreeData> getChildren() {
             return children;
+        }
+
+        public void setChildren(Map<String, TreeData> children) {
+            this.children = children == null || children instanceof Serializable ? children : Maps.newHashMap(children);
         }
 
         /**
@@ -432,6 +473,23 @@ public abstract class HousemateObject<
          */
         public Map<String, ChildOverview> getChildData() {
             return childData;
+        }
+
+        public void setChildData(Map<String, ChildOverview> childData) {
+            this.childData = childData == null || childData instanceof Serializable ? childData : Maps.newHashMap(childData);
+        }
+
+        @Override
+        public void ensureSerialisable() {
+            if(children != null && !(children instanceof HashMap))
+                children = Maps.newHashMap(children);
+            if(childData != null && !(childData instanceof HashMap))
+                childData = Maps.newHashMap(childData);
+            if(data != null)
+                data.ensureSerialisable();
+            if(children != null)
+                for(TreeData child : children.values())
+                    child.ensureSerialisable();
         }
     }
 
@@ -443,16 +501,16 @@ public abstract class HousemateObject<
         private static final long serialVersionUID = -1L;
 
         private String loaderName;
-        private TreeLoadInfo path;
+        private TreeLoadInfo loadInfo;
 
-        private LoadRequest() {}
+        public LoadRequest() {}
 
         /**
-         * @param path the id of the child object to load
+         * @param loadInfo the id of the child object to load
          */
-        public LoadRequest(String loaderName, TreeLoadInfo path) {
+        public LoadRequest(String loaderName, TreeLoadInfo loadInfo) {
             this.loaderName = loaderName;
-            this.path = path;
+            this.loadInfo = loadInfo;
         }
 
         /**
@@ -463,38 +521,52 @@ public abstract class HousemateObject<
             return loaderName;
         }
 
+        public void setLoaderName(String loaderName) {
+            this.loaderName = loaderName;
+        }
+
         /**
          * Gets the id of the child object to load
          * @return the id of the child object to load
          */
         public TreeLoadInfo getLoadInfo() {
-            return path;
+            return loadInfo;
+        }
+
+        public void setLoadInfo(TreeLoadInfo loadInfo) {
+            this.loadInfo = loadInfo;
         }
 
         @Override
         public String toString() {
-            return loaderName + " " + path.getId();
+            return loaderName + " " + loadInfo.getId();
+        }
+
+        @Override
+        public void ensureSerialisable() {
+            if(loadInfo != null)
+                loadInfo.ensureSerialisable();
         }
     }
 
     /**
      * Message payload for a load response of a remote object
      */
-    public static class LoadResponse<DATA extends HousemateData<?>> implements Message.Payload {
+    public static class LoadResponse implements Message.Payload {
 
         private static final long serialVersionUID = -1L;
 
         private String loaderName;
-        private TreeData<DATA> treeData;
+        private TreeData treeData;
         private String error;
 
-        private LoadResponse() {}
+        public LoadResponse() {}
 
-        public LoadResponse(String loaderName, TreeData<DATA> treeData) {
+        public LoadResponse(String loaderName, TreeData treeData) {
             this(loaderName, treeData, null);
         }
 
-        public LoadResponse(String loaderName, TreeData<DATA> treeData, String error) {
+        public LoadResponse(String loaderName, TreeData treeData, String error) {
             this.loaderName = loaderName;
             this.treeData = treeData;
             this.error = error;
@@ -508,12 +580,20 @@ public abstract class HousemateObject<
             return loaderName;
         }
 
+        public void setLoaderName(String loaderName) {
+            this.loaderName = loaderName;
+        }
+
         /**
          * Get the loaded object's data
          * @return the loaded object's data
          */
-        public TreeData<DATA> getTreeData() {
+        public TreeData getTreeData() {
             return treeData;
+        }
+
+        public void setTreeData(TreeData treeData) {
+            this.treeData = treeData;
         }
 
         /**
@@ -524,9 +604,19 @@ public abstract class HousemateObject<
             return error;
         }
 
+        public void setError(String error) {
+            this.error = error;
+        }
+
         @Override
         public String toString() {
             return loaderName + " tree " + treeData.getId() + " " + (treeData.getData() != null ? "data" : (error != null ? "failed because " + error : ""));
+        }
+
+        @Override
+        public void ensureSerialisable() {
+            if(treeData != null)
+                treeData.ensureSerialisable();
         }
     }
 }

@@ -9,7 +9,7 @@ public final class ApplicationData extends HousemateData<HousemateData<?>> {
 
     private static final long serialVersionUID = -1L;
 
-    private ApplicationData() {}
+    public ApplicationData() {}
 
     public ApplicationData(String id, String name, String description) {
         super(id, name,  description);

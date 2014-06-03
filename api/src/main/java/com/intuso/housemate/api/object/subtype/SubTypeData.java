@@ -13,7 +13,7 @@ public final class SubTypeData extends HousemateData<NoChildrenData> {
 
     private String type;
 
-    private SubTypeData() {}
+    public SubTypeData() {}
 
     public SubTypeData(String id, String name, String description, String type) {
         super(id, name, description);
@@ -26,6 +26,10 @@ public final class SubTypeData extends HousemateData<NoChildrenData> {
      */
     public String getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

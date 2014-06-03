@@ -6,7 +6,7 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.comms.serialiser.javabin.JavabinSerialiserClientModule;
+import com.intuso.housemate.comms.serialiser.json.JsonSerialiserClientModule;
 import com.intuso.housemate.comms.transport.socket.client.SocketClientModule;
 import com.intuso.housemate.persistence.flatfile.FlatFilePersistenceModule;
 import com.intuso.housemate.platform.pc.PCClientModule;
@@ -49,7 +49,7 @@ public class ContextListener extends GuiceServletContextListener {
             PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, new String[]{"-log.stdout.level", "DEBUG"});
             INJECTOR = Guice.createInjector(
                     new PCClientModule(defaultProperties, properties, "web-server.log"),
-                    new JavabinSerialiserClientModule(),
+                    new JsonSerialiserClientModule(),
                     new SocketClientModule(defaultProperties),
                     new FlatFilePersistenceModule(defaultProperties));
         }

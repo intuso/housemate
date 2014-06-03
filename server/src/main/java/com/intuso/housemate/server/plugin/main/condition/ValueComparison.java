@@ -111,11 +111,11 @@ public class ValueComparison extends ServerRealCondition {
                     setError("No comparator found for type id " + firstValue.getType().getId());
                 else {
                     try {
-                        Object first = firstValue.getTypeInstances() != null && firstValue.getTypeInstances().size() > 0
-                                ? type.deserialise(firstValue.getTypeInstances().get(0))
+                        Object first = firstValue.getTypeInstances() != null && firstValue.getTypeInstances().getElements().size() > 0
+                                ? type.deserialise(firstValue.getTypeInstances().getElements().get(0))
                                 : null;
-                        Object second = secondValue.getTypeInstances() != null && secondValue.getTypeInstances().size() > 0
-                                ? type.deserialise(secondValue.getTypeInstances().get(0))
+                        Object second = secondValue.getTypeInstances() != null && secondValue.getTypeInstances().getElements().size() > 0
+                                ? type.deserialise(secondValue.getTypeInstances().getElements().get(0))
                                 : null;
                         conditionSatisfied(comparator.compare(first, second));
                         setError(null);

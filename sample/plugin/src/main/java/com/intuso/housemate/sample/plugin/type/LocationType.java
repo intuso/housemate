@@ -47,20 +47,20 @@ public class LocationType extends RealCompoundType<Location> {
     @Override
     public TypeInstance serialise(Location location) {
         TypeInstance result = new TypeInstance();
-        result.getChildValues().put(LATITUDE_ID, new TypeInstances(new TypeInstance(Double.toString(location.getLatitiude()))));
-        result.getChildValues().put(LONGITUDE_ID, new TypeInstances(new TypeInstance(Double.toString(location.getLongitude()))));
+        result.getChildValues().getChildren().put(LATITUDE_ID, new TypeInstances(new TypeInstance(Double.toString(location.getLatitiude()))));
+        result.getChildValues().getChildren().put(LONGITUDE_ID, new TypeInstances(new TypeInstance(Double.toString(location.getLongitude()))));
         return result;
     }
 
     @Override
     public Location deserialise(TypeInstance instance) {
         if(instance == null
-                || instance.getChildValues().get(LATITUDE_ID) == null
-                || instance.getChildValues().get(LONGITUDE_ID) == null)
+                || instance.getChildValues().getChildren().get(LATITUDE_ID) == null
+                || instance.getChildValues().getChildren().get(LONGITUDE_ID) == null)
             return null;
         try {
-            return new Location(Double.parseDouble(instance.getChildValues().get(LATITUDE_ID).getFirstValue()),
-                    Double.parseDouble(instance.getChildValues().get(LONGITUDE_ID).getFirstValue()));
+            return new Location(Double.parseDouble(instance.getChildValues().getChildren().get(LATITUDE_ID).getFirstValue()),
+                    Double.parseDouble(instance.getChildValues().getChildren().get(LONGITUDE_ID).getFirstValue()));
         } catch(NumberFormatException e) {
             getLog().e("Failed to deserialise location lat/long to double form");
             return null;

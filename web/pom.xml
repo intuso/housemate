@@ -55,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>comms-serialiser-javabin</artifactId>
+            <artifactId>comms-serialiser-json</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

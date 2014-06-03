@@ -32,7 +32,7 @@ public abstract class ProxyProperty<
     @Override
     public void set(final TypeInstances value, CommandPerformListener<? super SET_COMMAND> listener) {
         TypeInstanceMap values = new TypeInstanceMap();
-        values.put(VALUE_ID, value);
+        values.getChildren().put(VALUE_ID, value);
         getSetCommand().perform(values, listener);
     }
 

@@ -76,16 +76,16 @@ public final class DeviceFactory implements PluginListener {
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                TypeInstances deviceType = values.get(TYPE_PARAMETER_ID);
+                TypeInstances deviceType = values.getChildren().get(TYPE_PARAMETER_ID);
                 if(deviceType == null || deviceType.getFirstValue() == null)
                     throw new HousemateException("No device type specified");
-                TypeInstances name = values.get(NAME_PARAMETER_ID);
+                TypeInstances name = values.getChildren().get(NAME_PARAMETER_ID);
                 if(name == null || name.getFirstValue() == null)
                     throw new HousemateException("No device name specified");
-                TypeInstances description = values.get(DESCRIPTION_PARAMETER_ID);
+                TypeInstances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
                 if(description == null || description.getFirstValue() == null)
                     throw new HousemateException("No device description specified");
-                Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>> deviceFactoryEntry = type.deserialise(deviceType.get(0));
+                Factory.Entry<com.intuso.housemate.api.object.device.DeviceFactory<? extends RealDevice>> deviceFactoryEntry = type.deserialise(deviceType.getElements().get(0));
                 if(deviceFactoryEntry == null)
                     throw new HousemateException("No factory known for device type " + deviceType);
                 RealDevice device = deviceFactoryEntry.getInjector().getInstance(deviceFactoryEntry.getFactoryKey())

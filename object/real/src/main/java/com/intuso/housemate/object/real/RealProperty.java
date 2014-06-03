@@ -54,7 +54,7 @@ public class RealProperty<O>
                 new RealParameter<O>(log, listenersFactory, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type)) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                List<O> typedValues = RealType.deserialiseAll(getType(), values.get(VALUE_PARAM));
+                List<O> typedValues = RealType.deserialiseAll(getType(), values.getChildren().get(VALUE_PARAM));
                 RealProperty.this.setTypedValues(typedValues);
             }
         };
@@ -65,7 +65,7 @@ public class RealProperty<O>
     public void set(final TypeInstances values, CommandPerformListener<? super RealCommand> listener) {
         getSetCommand().perform(new TypeInstanceMap() {
             {
-                put(VALUE_ID, values);
+                getChildren().put(VALUE_ID, values);
             }
         }, listener);
     }

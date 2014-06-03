@@ -9,7 +9,7 @@ public final class ApplicationInstanceData extends HousemateData<HousemateData<?
 
     private static final long serialVersionUID = -1L;
 
-    private ApplicationInstanceData() {}
+    public ApplicationInstanceData() {}
 
     public ApplicationInstanceData(String id, String name, String description) {
         super(id, name,  description);

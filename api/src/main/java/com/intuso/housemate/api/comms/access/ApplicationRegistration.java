@@ -14,7 +14,7 @@ public final class ApplicationRegistration implements Message.Payload {
     private String applicationInstanceId;
     private ClientType type;
 
-    private ApplicationRegistration() {}
+    public ApplicationRegistration() {}
 
     /**
      * @param type the type of the connection. NB this affects what data you can/can't receive. For user interface
@@ -31,20 +31,31 @@ public final class ApplicationRegistration implements Message.Payload {
         return applicationDetails;
     }
 
+    public void setApplicationDetails(ApplicationDetails applicationDetails) {
+        this.applicationDetails = applicationDetails;
+    }
+
     public String getApplicationInstanceId() {
         return applicationInstanceId;
     }
 
-    /**
-     * Gets the connection type for the request
-     * @return the connection type for the request
-     */
+    public void setApplicationInstanceId(String applicationInstanceId) {
+        this.applicationInstanceId = applicationInstanceId;
+    }
+
     public ClientType getType() {
         return type;
+    }
+
+    public void setType(ClientType type) {
+        this.type = type;
     }
 
     @Override
     public String toString() {
         return type.name();
     }
+
+    @Override
+    public void ensureSerialisable() {}
 }

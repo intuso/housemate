@@ -51,7 +51,7 @@ public class TransformationOutput extends ValueSource implements ValueAvailableL
         Transformer<Object, Object> transformer = (Transformer<Object, Object>) transformation.getTransformersByType().get(inputType.getId());
         RealType<?, ?, Object> outputType = (RealType<?, ?, Object>) types.get(transformer.getOutputTypeId());
         try {
-            Object result = transformer.apply(inputType.deserialise(inputValue.getTypeInstances().get(0)));
+            Object result = transformer.apply(inputType.deserialise(inputValue.getTypeInstances().getElements().get(0)));
             if(value != null && !value.getType().getId().equals(outputType.getId())) {
                 for(ValueAvailableListener listener : listeners)
                     listener.valueUnavailable(this);

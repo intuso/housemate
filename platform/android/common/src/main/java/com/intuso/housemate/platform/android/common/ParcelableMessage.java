@@ -91,24 +91,24 @@ public class ParcelableMessage implements Parcelable {
         } else if(payload instanceof HousemateObject.LoadRequest) {
             parcel.writeString("loadRequest");
             writeLoadRequest(parcel, flags, (HousemateObject.LoadRequest) payload);
-        } else if(payload instanceof HousemateObject.LoadResponse<?>) {
+        } else if(payload instanceof HousemateObject.LoadResponse) {
             parcel.writeString("loadResponse");
-            writeLoadResponse(parcel, flags, (HousemateObject.LoadResponse<?>) payload);
+            writeLoadResponse(parcel, flags, (HousemateObject.LoadResponse) payload);
         } else if(payload instanceof HousemateObject.TreeLoadInfo) {
             parcel.writeString("treeLoadInfo");
             writeTreeLoadInfo(parcel, flags, (HousemateObject.TreeLoadInfo) payload);
-        } else if(payload instanceof HousemateObject.TreeData<?>) {
+        } else if(payload instanceof HousemateObject.TreeData) {
             parcel.writeString("treeData");
-            writeTreeData(parcel, flags, (HousemateObject.TreeData<?>) payload);
-        } else if(payload instanceof Command.FailedMessageValue) {
+            writeTreeData(parcel, flags, (HousemateObject.TreeData) payload);
+        } else if(payload instanceof Command.FailedPayload) {
             parcel.writeString("commandFailed");
-            writeCommandFailed(parcel, flags, (Command.FailedMessageValue) payload);
-        } else if(payload instanceof Command.PerformMessageValue) {
+            writeCommandFailed(parcel, flags, (Command.FailedPayload) payload);
+        } else if(payload instanceof Command.PerformPayload) {
             parcel.writeString("commandPerform");
-            writeCommandPerform(parcel, flags, (Command.PerformMessageValue) payload);
-        } else if(payload instanceof Command.PerformingMessageValue) {
+            writeCommandPerform(parcel, flags, (Command.PerformPayload) payload);
+        } else if(payload instanceof Command.PerformingPayload) {
             parcel.writeString("commandPerforming");
-            writeCommandPerforming(parcel, flags, (Command.PerformingMessageValue) payload);
+            writeCommandPerforming(parcel, flags, (Command.PerformingPayload) payload);
         } else if(payload instanceof ApplicationRegistration) {
             parcel.writeString("applicationRegistration");
             writeApplicationRegistration(parcel, flags, (ApplicationRegistration) payload);
@@ -231,8 +231,8 @@ public class ParcelableMessage implements Parcelable {
         if(typeInstances == null)
             parcel.writeInt(0);
         else {
-            parcel.writeInt(typeInstances.size());
-            for(TypeInstance typeInstance : typeInstances)
+            parcel.writeInt(typeInstances.getElements().size());
+            for(TypeInstance typeInstance : typeInstances.getElements())
                 writeTypeInstance(parcel, flags, typeInstance);
         }
     }
@@ -241,8 +241,8 @@ public class ParcelableMessage implements Parcelable {
         if(typeInstanceMap == null)
             parcel.writeInt(0);
         else {
-            parcel.writeInt(typeInstanceMap.size());
-            for(Map.Entry<String, TypeInstances> entry : typeInstanceMap.entrySet()) {
+            parcel.writeInt(typeInstanceMap.getChildren().size());
+            for(Map.Entry<String, TypeInstances> entry : typeInstanceMap.getChildren().entrySet()) {
                 parcel.writeString(entry.getKey());
                 writeTypeInstances(parcel, flags, entry.getValue());
             }
@@ -268,7 +268,7 @@ public class ParcelableMessage implements Parcelable {
         writeTreeLoadInfo(parcel, flags, loadRequest.getLoadInfo());
     }
 
-    private static void writeLoadResponse(Parcel parcel, int flags, HousemateObject.LoadResponse<?> loadResponse) {
+    private static void writeLoadResponse(Parcel parcel, int flags, HousemateObject.LoadResponse loadResponse) {
         parcel.writeString(loadResponse.getLoaderName());
         writeTreeData(parcel, flags, loadResponse.getTreeData());
         parcel.writeString(loadResponse.getError());
@@ -284,7 +284,7 @@ public class ParcelableMessage implements Parcelable {
         }
     }
 
-    private static void writeTreeData(Parcel parcel, int flags, HousemateObject.TreeData<?> treeData) {
+    private static void writeTreeData(Parcel parcel, int flags, HousemateObject.TreeData treeData) {
         parcel.writeString(treeData.getId());
         writeHousemateData(parcel, flags, treeData.getData());
         parcel.writeInt(treeData.getChildData() != null ? treeData.getChildData().size() : 0);
@@ -295,25 +295,25 @@ public class ParcelableMessage implements Parcelable {
             parcel.writeString(entry.getValue().getDescription());
         }
         parcel.writeInt(treeData.getChildren().size());
-        for(Map.Entry<String, HousemateObject.TreeData<?>> entry : treeData.getChildren().entrySet()) {
+        for(Map.Entry<String, HousemateObject.TreeData> entry : treeData.getChildren().entrySet()) {
             parcel.writeString(entry.getKey());
             writeTreeData(parcel, flags, entry.getValue());
         }
     }
 
-    private static void writeCommandFailed(Parcel parcel, int flags, Command.FailedMessageValue failedMessageValue) {
-        parcel.writeString(failedMessageValue.getOpId());
-        parcel.writeString(failedMessageValue.getCause());
+    private static void writeCommandFailed(Parcel parcel, int flags, Command.FailedPayload failedPayload) {
+        parcel.writeString(failedPayload.getOpId());
+        parcel.writeString(failedPayload.getCause());
     }
 
-    private static void writeCommandPerform(Parcel parcel, int flags, Command.PerformMessageValue performMessageValue) {
-        parcel.writeString(performMessageValue.getOpId());
-        writeTypeInstanceMap(parcel, flags, performMessageValue.getValues());
+    private static void writeCommandPerform(Parcel parcel, int flags, Command.PerformPayload performPayload) {
+        parcel.writeString(performPayload.getOpId());
+        writeTypeInstanceMap(parcel, flags, performPayload.getValues());
     }
 
-    private static void writeCommandPerforming(Parcel parcel, int flags, Command.PerformingMessageValue performingMessageValue) {
-        parcel.writeString(performingMessageValue.getOpId());
-        parcel.writeString(Boolean.toString(performingMessageValue.isPerforming()));
+    private static void writeCommandPerforming(Parcel parcel, int flags, Command.PerformingPayload performingPayload) {
+        parcel.writeString(performingPayload.getOpId());
+        parcel.writeString(Boolean.toString(performingPayload.isPerforming()));
     }
 
     private static Message.Payload readPayload(Parcel parcel) {
@@ -432,7 +432,7 @@ public class ParcelableMessage implements Parcelable {
         TypeInstances result = new TypeInstances();
         int num = parcel.readInt();
         for(int i = 0; i < num; i++)
-            result.add(readTypeInstance(parcel));
+            result.getElements().add(readTypeInstance(parcel));
         return result;
     }
 
@@ -440,7 +440,7 @@ public class ParcelableMessage implements Parcelable {
         TypeInstanceMap result = new TypeInstanceMap();
         int num = parcel.readInt();
         for(int i = 0; i < num; i++)
-            result.put(parcel.readString(), readTypeInstances(parcel));
+            result.getChildren().put(parcel.readString(), readTypeInstances(parcel));
         return result;
     }
 
@@ -462,8 +462,8 @@ public class ParcelableMessage implements Parcelable {
         return new HousemateObject.LoadRequest(parcel.readString(), readTreeLoadInfo(parcel));
     }
 
-    private static HousemateObject.LoadResponse<?> readLoadResponse(Parcel parcel) {
-        return new HousemateObject.LoadResponse<HousemateData<?>>(parcel.readString(), readTreeData(parcel), parcel.readString());
+    private static HousemateObject.LoadResponse readLoadResponse(Parcel parcel) {
+        return new HousemateObject.LoadResponse(parcel.readString(), readTreeData(parcel), parcel.readString());
     }
 
     private static HousemateObject.TreeLoadInfo readTreeLoadInfo(Parcel parcel) {
@@ -475,9 +475,9 @@ public class ParcelableMessage implements Parcelable {
         return result;
     }
 
-    private static HousemateObject.TreeData<HousemateData<?>> readTreeData(Parcel parcel) {
-        HousemateObject.TreeData<HousemateData<?>> result = new HousemateObject.TreeData<HousemateData<?>>(parcel.readString(),
-                readHousemateData(parcel), Maps.<String, HousemateObject.TreeData<?>>newHashMap(), Maps.<String, ChildOverview>newHashMap());
+    private static HousemateObject.TreeData readTreeData(Parcel parcel) {
+        HousemateObject.TreeData result = new HousemateObject.TreeData(parcel.readString(),
+                readHousemateData(parcel), Maps.<String, HousemateObject.TreeData>newHashMap(), Maps.<String, ChildOverview>newHashMap());
         int num = parcel.readInt();
         for(int i = 0; i < num; i++)
             result.getChildData().put(parcel.readString(), new ChildOverview(parcel.readString(), parcel.readString(), parcel.readString()));
@@ -487,16 +487,16 @@ public class ParcelableMessage implements Parcelable {
         return result;
     }
 
-    private static Command.FailedMessageValue readCommandFailed(Parcel parcel) {
-        return new Command.FailedMessageValue(parcel.readString(), parcel.readString());
+    private static Command.FailedPayload readCommandFailed(Parcel parcel) {
+        return new Command.FailedPayload(parcel.readString(), parcel.readString());
     }
 
-    private static Command.PerformMessageValue readCommandPerform(Parcel parcel) {
-        return new Command.PerformMessageValue(parcel.readString(), readTypeInstanceMap(parcel));
+    private static Command.PerformPayload readCommandPerform(Parcel parcel) {
+        return new Command.PerformPayload(parcel.readString(), readTypeInstanceMap(parcel));
     }
 
-    private static Command.PerformingMessageValue readCommandPerforming(Parcel parcel) {
-        return new Command.PerformingMessageValue(parcel.readString(), Boolean.parseBoolean(parcel.readString()));
+    private static Command.PerformingPayload readCommandPerforming(Parcel parcel) {
+        return new Command.PerformingPayload(parcel.readString(), Boolean.parseBoolean(parcel.readString()));
     }
 
     public final static Parcelable.Creator<ParcelableMessage> CREATOR = new Creator<ParcelableMessage>() {

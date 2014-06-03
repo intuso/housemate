@@ -81,10 +81,10 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                String username = values.get("username") != null ? values.get("username").getFirstValue() : null;
+                String username = values.getChildren().get("username") != null ? values.getChildren().get("username").getFirstValue() : null;
                 if(username == null)
                     throw new HousemateException("No username value set");
-                Email email = values.get("email") != null ? new Email(values.get("username").getFirstValue()) : null;
+                Email email = values.getChildren().get("email") != null ? new Email(values.getChildren().get("username").getFirstValue()) : null;
                 if(email == null)
                     throw new HousemateException("No email value set");
                 ServerRealUser user = new ServerRealUser(log, listenersFactory, username, username, username, new ServerRealUserOwner() {
@@ -118,9 +118,9 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
         )) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                values.put("id", values.get("name")); // todo figure out a better way of getting an id
-                ServerRealAutomation automation = new ServerRealAutomation(log, listenersFactory, values.get("id").getFirstValue(),
-                        values.get("name").getFirstValue(), values.get("description").getFirstValue(),
+                values.getChildren().put("id", values.getChildren().get("name")); // todo figure out a better way of getting an id
+                ServerRealAutomation automation = new ServerRealAutomation(log, listenersFactory, values.getChildren().get("id").getFirstValue(),
+                        values.getChildren().get("name").getFirstValue(), values.getChildren().get("description").getFirstValue(),
                         new ServerRealAutomationOwner() {
                             @Override
                             public void remove(ServerRealAutomation automation) {

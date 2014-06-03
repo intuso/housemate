@@ -82,16 +82,16 @@ public final class ConditionFactory implements PluginListener {
     }
 
     public ServerRealCondition createCondition(TypeInstanceMap values, ServerRealConditionOwner owner) throws HousemateException {
-        TypeInstances conditionType = values.get(TYPE_PARAMETER_ID);
+        TypeInstances conditionType = values.getChildren().get(TYPE_PARAMETER_ID);
         if(conditionType == null || conditionType.getFirstValue() == null)
             throw new HousemateException("No condition type specified");
-        TypeInstances name = values.get(NAME_PARAMETER_ID);
+        TypeInstances name = values.getChildren().get(NAME_PARAMETER_ID);
         if(name == null || name.getFirstValue() == null)
             throw new HousemateException("No condition name specified");
-        TypeInstances description = values.get(DESCRIPTION_PARAMETER_ID);
+        TypeInstances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateException("No condition description specified");
-        Factory.Entry<ServerConditionFactory<?>> conditionFactoryEntry = type.deserialise(conditionType.get(0));
+        Factory.Entry<ServerConditionFactory<?>> conditionFactoryEntry = type.deserialise(conditionType.getElements().get(0));
         if(conditionFactoryEntry == null)
             throw new HousemateException("No factory known for condition type " + conditionType);
         return conditionFactoryEntry.getInjector().getInstance(conditionFactoryEntry.getFactoryKey())

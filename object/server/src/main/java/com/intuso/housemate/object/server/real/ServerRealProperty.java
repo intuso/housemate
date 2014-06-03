@@ -51,7 +51,7 @@ public class ServerRealProperty<O>
                 Arrays.<ServerRealParameter<?>>asList(new ServerRealParameter<O>(log, listenersFactory, VALUE_PARAM, VALUE_PARAM, "The new values for the property", type))) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                List<O> objects = RealType.deserialiseAll(getType(), values.get(VALUE_PARAM));
+                List<O> objects = RealType.deserialiseAll(getType(), values.getChildren().get(VALUE_PARAM));
                 ServerRealProperty.this.setTypedValues(objects);
             }
         };
@@ -62,7 +62,7 @@ public class ServerRealProperty<O>
     public void set(final TypeInstances value, CommandPerformListener<? super ServerRealCommand> listener) {
         getSetCommand().perform(new TypeInstanceMap() {
             {
-                put(VALUE_ID, value);
+                getChildren().put(VALUE_ID, value);
             }
         }, listener);
     }

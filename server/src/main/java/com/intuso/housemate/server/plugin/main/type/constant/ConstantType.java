@@ -51,7 +51,7 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
             getLog().w("Cannot deserialise constant, no type for id " + typeId);
             return null;
         }
-        return new ConstantInstance<Object>(listenersFactory, (RealType<?,?,Object>) type, value.getChildValues().get(SUB_TYPE_ID));
+        return new ConstantInstance<Object>(listenersFactory, (RealType<?,?,Object>) type, value.getChildValues().getChildren().get(SUB_TYPE_ID));
     }
 
     @Override
