@@ -96,7 +96,7 @@ public class SocketServer extends ExternalClientRouter {
             while(!isInterrupted()) {
 
                 // get the next client connection
-                Socket socket;
+                final Socket socket;
                 try {
                     socket = serverSocket.accept();
                 } catch (IOException e) {
@@ -106,20 +106,23 @@ public class SocketServer extends ExternalClientRouter {
                     continue;
                 }
 
-                try {
-                    // pass it off to a separate class
-                    // TODO read client "contract" - version, mime type etc
-                    // could also read a name to call the client so that we can show something useful when showing
-                    // who's connected?
-                    new SocketClientHandler(getLog(), SocketServer.this, socket, serialiserFactories);
-                } catch(HousemateException e) {
-                    getLog().e("Could not create client handle for new client connection", e);
-                    try {
-                        socket.close();
-                    } catch (IOException e1) {
-                        getLog().e("Failed to create client connection and close the socket", e);
+                // pass it off to a separate class, in a new thread so if there are any problems, we don't block
+                // other connections
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            new SocketClientHandler(getLog(), SocketServer.this, socket, serialiserFactories);
+                        } catch (HousemateException e) {
+                            getLog().e("Could not create client handle for new client connection", e);
+                            try {
+                                socket.close();
+                            } catch (IOException e1) {
+                                getLog().e("Failed to create client connection and close the socket", e);
+                            }
+                        }
                     }
-                }
+                }.start();
             }
         }
     }

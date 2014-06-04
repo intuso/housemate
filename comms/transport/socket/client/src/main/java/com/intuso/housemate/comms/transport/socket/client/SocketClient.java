@@ -221,7 +221,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
     private void writeDetails() throws HousemateException {
         try {
-            socket.getOutputStream().write((Serialiser.DETAILS_KEY + ":" + serialiserFactory.getType() + "\n").getBytes());
+            socket.getOutputStream().write((Serialiser.DETAILS_KEY + "=" + serialiserFactory.getType() + "\n").getBytes());
             socket.getOutputStream().write("\n".getBytes()); // blank line indicates details are finished
             socket.getOutputStream().flush();
         } catch (IOException e) {

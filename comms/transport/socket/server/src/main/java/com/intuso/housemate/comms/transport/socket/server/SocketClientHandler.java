@@ -112,14 +112,14 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
                     Thread.sleep(100);
                 else {
                     i = in.read();
-                    if(i >= 0)
+                    if(i >= 0 && i != '\r')
                         data.append((char)i);
                 }
                 if(data.length() > 1 && data.substring(data.length() - 2).equals("\n\n"))
                     break;
             }
             for(String line : data.toString().split("\n")) {
-                int index = line.indexOf(":");
+                int index = line.indexOf("=");
                 if(index > 0)
                     result.put(line.substring(0, index), line.substring(index + 1));
                 else if (line.length() > 0)
