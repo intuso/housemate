@@ -78,8 +78,8 @@ public class StatefulPowerControl
 
         private StatefulPowerControlWidget() {
 
-            setOnLabel("on");
-            setOffLabel("off");
+            setOnLabel("On");
+            setOffLabel("Off");
 
             GWTProxyValue isOn = getIsOnValue();
             if(isOn != null)

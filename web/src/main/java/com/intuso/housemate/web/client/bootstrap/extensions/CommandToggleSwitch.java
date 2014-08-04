@@ -20,7 +20,7 @@ public abstract class CommandToggleSwitch
 
     protected final void setValue(GWTProxyValue value) {
         value.addObjectListener(this);
-        setValue(!isTrue());
+        setValue(isTrue());
         addValueChangeHandler(this);
     }
 
@@ -31,7 +31,7 @@ public abstract class CommandToggleSwitch
 
     @Override
     public void valueChanged(GWTProxyValue value) {
-        setValue(!isTrue());
+        setValue(isTrue());
         setEnabled(true);
     }
 
@@ -55,9 +55,9 @@ public abstract class CommandToggleSwitch
     public void onValueChange(ValueChangeEvent<Boolean> event) {
         setEnabled(false);
         if(event.getValue())
-            getTrueCommand().perform(this);
-        else
             getFalseCommand().perform(this);
+        else
+            getTrueCommand().perform(this);
     }
 
     protected abstract boolean isTrue();
