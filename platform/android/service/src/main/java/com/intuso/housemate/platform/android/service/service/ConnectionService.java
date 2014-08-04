@@ -72,6 +72,8 @@ public class ConnectionService extends Service {
         log = new Log(new AndroidLogWriter(LogLevel.valueOf(properties.get(LOG_LEVEL)), "Housemate Service"));
         router = new SocketClient(log, listenersFactory, properties, new JavabinSerialiser.Factory());
 
+        log.d("Connection Service created");
+
         // listen on the router root object, then connect the router
         routerListenerRegistration = router.addObjectListener(new RootListener<RouterRoot>() {
             @Override
@@ -97,6 +99,7 @@ public class ConnectionService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        log.d("Connection Service destroyed");
         routerListenerRegistration.removeListener();
         router.disconnect();
     }
@@ -105,6 +108,7 @@ public class ConnectionService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(NETWORK_AVAILABLE_ACTION.equals(intent.getAction())) {
             if(intent.getExtras().containsKey(NETWORK_AVAILABLE)) {
+                log.d("Received network available update: " + intent.getBooleanExtra(NETWORK_AVAILABLE, true));
                 if(intent.getBooleanExtra(NETWORK_AVAILABLE, true))
                     router.connect();
                 else

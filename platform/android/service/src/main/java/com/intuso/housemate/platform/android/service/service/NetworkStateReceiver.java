@@ -15,13 +15,9 @@ import android.net.NetworkInfo;
  */
 public class NetworkStateReceiver extends BroadcastReceiver {
 
-    private boolean networkAvailable = false;
-
     public void onReceive(Context context, Intent intent) {
+        boolean networkAvailable = false;
         if(intent.getExtras() != null) {
-            // if failing over, just ignore this broadcast and wait for the next one
-            if(intent.getBooleanExtra(ConnectivityManager.EXTRA_IS_FAILOVER, false))
-                return;
             // otherwise, check if the current network is connected
             NetworkInfo ni = (NetworkInfo) intent.getExtras().get(ConnectivityManager.EXTRA_NETWORK_INFO);
             if(ni != null && ni.getState() == NetworkInfo.State.CONNECTED)

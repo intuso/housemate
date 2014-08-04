@@ -114,6 +114,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                     break;
                 case MessageCodes.REGISTERED:
                     getLog().d("Registration created");
+                    setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
                     id = msg.getData().getString("id");
                     break;
                 default:

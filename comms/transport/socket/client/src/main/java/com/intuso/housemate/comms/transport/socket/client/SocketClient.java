@@ -95,6 +95,8 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
         if(shouldBeConnected)
             connect();
+        else
+            getLog().d("Should not be connected, leaving disconnected");
     }
 
     /**
