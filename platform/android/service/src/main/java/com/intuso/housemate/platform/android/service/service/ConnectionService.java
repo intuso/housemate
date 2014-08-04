@@ -103,7 +103,6 @@ public class ConnectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        int result = super.onStartCommand(intent, flags, startId);
         if(NETWORK_AVAILABLE_ACTION.equals(intent.getAction())) {
             if(intent.getExtras().containsKey(NETWORK_AVAILABLE)) {
                 if(intent.getBooleanExtra(NETWORK_AVAILABLE, true))
@@ -112,7 +111,7 @@ public class ConnectionService extends Service {
                     router.disconnect();
             }
         }
-        return result;
+        return START_STICKY;
     }
 
     public class Binder extends android.os.Binder {

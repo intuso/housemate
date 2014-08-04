@@ -9,7 +9,7 @@ import android.net.NetworkInfo;
 /**
  * Created by tomc on 02/06/14.
  *
- * Socket client should handle all this by itself anyway, but when it can't conenct it backs off which means it may take
+ * Socket client should handle all this by itself anyway, but when it can't connect it backs off which means it may take
  * a while to connect again when the network becomes available. By handling this here, we can tell it to connect as soon
  * as the network is available.
  */
@@ -19,6 +19,10 @@ public class NetworkStateReceiver extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
         if(intent.getExtras() != null) {
+            // if failing over, just ignore this broadcast and wait for the next one
+            if(intent.getBooleanExtra(ConnectivityManager.EXTRA_IS_FAILOVER, false))
+                return;
+            // otherwise, check if the current network is connected
             NetworkInfo ni = (NetworkInfo) intent.getExtras().get(ConnectivityManager.EXTRA_NETWORK_INFO);
             if(ni != null && ni.getState() == NetworkInfo.State.CONNECTED)
                 networkAvailable = true;
