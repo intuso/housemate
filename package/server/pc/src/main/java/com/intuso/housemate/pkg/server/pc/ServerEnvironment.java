@@ -68,12 +68,25 @@ public class ServerEnvironment {
 
         Injector injector = Guice.createInjector(new PCServerModule(defaultProperties, properties));
 
+        Log log = injector.getInstance(Log.class);
+
+        log.d("Starting server");
         injector.getInstance(com.intuso.housemate.server.Server.class).start();
+        log.d("Started server");
 
+        log.d("Loading plugins");
         loadPlugins(injector, properties);
-        injector.getInstance(ServerObjectLoader.class).loadObjects();
-        startWebapp(injector, properties);
+        log.d("Loaded plugins");
 
+        log.d("Loading objects");
+        injector.getInstance(ServerObjectLoader.class).loadObjects();
+        log.d("Loaded objects");
+
+        log.d("Starting webapp");
+        startWebapp(injector, properties);
+        log.d("Started webapp");
+
+        log.d("Finished startup, accepting external client requests");
         injector.getInstance(com.intuso.housemate.server.Server.class).acceptClients();
     }
 
