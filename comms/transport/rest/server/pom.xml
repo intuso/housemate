@@ -12,12 +12,9 @@
     <name>Housemate Comms Transport REST Server</name>
     <description>Server for REST transport between Housemate components</description>
 
-    <properties>
-        <jackson.version>2.2.1</jackson.version>
-    </properties>
-
     <dependencies>
 
+        <!-- Housemate API deps -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>plugin-api</artifactId>
@@ -29,12 +26,21 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Housemate JSON serialisation -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>comms-serialiser-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Guice stuff -->
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-multibindings</artifactId>
             <version>${guice.version}</version>
         </dependency>
 
+        <!-- Jetty server stuff -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
@@ -49,16 +55,6 @@
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
             <version>2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 

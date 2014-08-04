@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.comms.transport.rest.json.GsonJsonProvider;
 import com.intuso.housemate.comms.transport.rest.resources.ContextualResource;
 import com.intuso.housemate.comms.transport.rest.resources.GenericResource;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyModule;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -34,7 +36,7 @@ public class RestServer extends ExternalClientRouter {
     public RestServer(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector, Router router) {
         super(log, listenersFactory, properties, router);
 
-        this.injector = injector;
+        this.injector = injector.createChildInjector(new SimpleProxyModule());
 
         String port = properties.get(PORT);
 
@@ -67,6 +69,7 @@ public class RestServer extends ExternalClientRouter {
 
     private ResourceConfig resourceConfig() {
         return new ResourceConfig()
+                .register(GsonJsonProvider.class)
                 .register(new GenericResource(this))
                 .register(new ContextualResource(injector));
     }

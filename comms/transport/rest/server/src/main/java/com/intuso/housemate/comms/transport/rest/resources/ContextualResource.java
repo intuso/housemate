@@ -19,6 +19,7 @@ import com.intuso.housemate.object.proxy.simple.SimpleProxyRoot;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,6 +29,8 @@ import javax.ws.rs.core.Context;
  * To change this template use File | Settings | File Templates.
  */
 @Path("/contextual")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class ContextualResource implements RootListener<SimpleProxyRoot>, CommandPerformListener<SimpleProxyCommand> {
 
     // TODO hack until figure out why session doesn't work
@@ -60,7 +63,8 @@ public class ContextualResource implements RootListener<SimpleProxyRoot>, Comman
         SimpleProxyRoot root = injector.getInstance(SimpleProxyRoot.class);
         root.addObjectListener(this);
         root.register(new ApplicationDetails(appId, appId, appId));
-        request.setAttribute("root", root); ROOT = root;
+        request.setAttribute("root", root);
+        ROOT = root;
     }
 
     @Path("/devices")

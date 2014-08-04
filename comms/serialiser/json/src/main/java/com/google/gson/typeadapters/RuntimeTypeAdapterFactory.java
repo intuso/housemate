@@ -118,13 +118,13 @@ import java.util.Map;
  *       .registerSubtype(Diamond.class);
  * }</pre>
  */
-public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
+public class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     private final Class<?> baseType;
     private final String typeFieldName;
     private final Map<String, Class<?>> labelToSubtype = new LinkedHashMap<String, Class<?>>();
     private final Map<Class<?>, String> subtypeToLabel = new LinkedHashMap<Class<?>, String>();
 
-    private RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName) {
+    protected RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName) {
         if (typeFieldName == null || baseType == null) {
             throw new NullPointerException();
         }
