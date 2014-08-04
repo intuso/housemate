@@ -106,7 +106,7 @@ public class ConnectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(NETWORK_AVAILABLE_ACTION.equals(intent.getAction())) {
+        if(intent != null && NETWORK_AVAILABLE_ACTION.equals(intent.getAction())) {
             if(intent.getExtras().containsKey(NETWORK_AVAILABLE)) {
                 log.d("Received network available update: " + intent.getBooleanExtra(NETWORK_AVAILABLE, true));
                 if(intent.getBooleanExtra(NETWORK_AVAILABLE, true))

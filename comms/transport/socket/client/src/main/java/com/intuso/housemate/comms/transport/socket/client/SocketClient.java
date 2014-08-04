@@ -64,13 +64,17 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
     @Override
     public synchronized final void connect() {
 
-        if(shouldBeConnected)
+        if (shouldBeConnected)
             return;
         shouldBeConnected = true;
 
         listenerRegistrations.add(properties.addListener(SERVER_HOST, this));
         listenerRegistrations.add(properties.addListener(SERVER_PORT, this));
 
+        _connect();
+    }
+
+    private synchronized void _connect() {
         connectThread = new ConnectThread();
         connectThread.start();
     }
@@ -82,19 +86,19 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
             return;
         shouldBeConnected = false;
 
+        for(ListenerRegistration listenerRegistration : listenerRegistrations)
+            listenerRegistration.removeListener();
+        listenerRegistrations.clear();
+
         _disconnect();
     }
 
     private synchronized void _disconnect() {
 
-        for(ListenerRegistration listenerRegistration : listenerRegistrations)
-            listenerRegistration.removeListener();
-        listenerRegistrations.clear();
-
         shutdownComms();
 
         if(shouldBeConnected)
-            connect();
+            _connect();
         else
             getLog().d("Should not be connected, leaving disconnected");
     }
@@ -213,7 +217,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     Thread.sleep(delay * 1000);
                 } catch(InterruptedException e) {
                     getLog().e("Interrupted waiting to retry connection. Aborting trying to connect");
-                    disconnect();
+                    _disconnect();
                     return;
                 }
                 delay = Math.min(60, delay * 2);

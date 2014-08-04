@@ -50,7 +50,7 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
             try {
                 unbindService(this);
             } catch (Throwable t) {
-                Log.d("HM Activity", "Failed to unbind from service");
+                Log.d("HM Activity", "Failed to unbind from service", t);
             }
     }
 
