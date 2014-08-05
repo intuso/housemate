@@ -152,12 +152,12 @@ public class WidgetService extends HousemateService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int result = super.onStartCommand(intent, flags, startId);
-        if(DELETE_WIDGETS_ACTION.equals(intent.getAction())) {
+        if(intent != null && DELETE_WIDGETS_ACTION.equals(intent.getAction())) {
             for(int widgetId : intent.getIntArrayExtra(WIDGET_ID)) {
                 getProperties().remove(PROPERTY_PREFIX + widgetId);
                 widgetHandlers.remove(widgetId);
             }
-        } else if(PERFORM_COMMAND_ACTION.equals(intent.getAction())) {
+        } else if(intent != null && PERFORM_COMMAND_ACTION.equals(intent.getAction())) {
             if(status == Status.LOADED) {
                 int widgetId = intent.getIntExtra(WIDGET_ID, -1);
                 WidgetHandler widgetHandler = widgetHandlers.get(widgetId);
