@@ -192,40 +192,45 @@ public class ServerEnvironment {
 
         Log log = injector.getInstance(Log.class);
 
-        if(properties.get(RUN_WEBAPP) != null
-                && properties.get(RUN_WEBAPP).equalsIgnoreCase("false")) {
-            log.d("Not starting webapp");
-            return;
-        }
-        File webappDirectory = new File(properties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + WEBAPP_FOLDER);
-        if(!webappDirectory.exists())
-            webappDirectory.mkdir();
-        File webappFile = new File(webappDirectory, WEBAPP_NAME + ".war");
-        if(webappFile.isDirectory())
-            webappFile.delete();
-        if(!webappFile.exists()) {
-            URL url = getClass().getResource("/" + webappFile.getName());
-            if(url == null) {
-                log.e("Could not find existing webapp and could not find it in jar. Cannot start web interface");
+        try {
+
+            if (properties.get(RUN_WEBAPP) != null
+                    && properties.get(RUN_WEBAPP).equalsIgnoreCase("false")) {
+                log.d("Not starting webapp");
                 return;
             }
-            copyWebapp(url, webappFile, log);
-        }
-        File webappDir = new File(webappDirectory, WEBAPP_NAME);
-        if(webappDir.isFile())
-            webappDir.delete();
-        if(!webappDir.exists()) {
-            webappDir.mkdir();
-            unpackWar(webappFile, webappDir);
-        }
-        int port = 46874;
-        try {
-            if(properties.keySet().contains(WEBAPP_PORT))
-                port = Integer.parseInt(properties.get(WEBAPP_PORT));
+            File webappDirectory = new File(properties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + WEBAPP_FOLDER);
+            if (!webappDirectory.exists())
+                webappDirectory.mkdir();
+            File webappFile = new File(webappDirectory, WEBAPP_NAME + ".war");
+            if (webappFile.isDirectory())
+                webappFile.delete();
+            if (!webappFile.exists()) {
+                URL url = getClass().getResource("/" + webappFile.getName());
+                if (url == null) {
+                    log.e("Could not find existing webapp and could not find it in jar. Cannot start web interface");
+                    return;
+                }
+                copyWebapp(url, webappFile, log);
+            }
+            File webappDir = new File(webappDirectory, WEBAPP_NAME);
+            if (webappDir.isFile())
+                webappDir.delete();
+            if (!webappDir.exists()) {
+                webappDir.mkdir();
+                unpackWar(webappFile, webappDir);
+            }
+            int port = 46874;
+            try {
+                if (properties.keySet().contains(WEBAPP_PORT))
+                    port = Integer.parseInt(properties.get(WEBAPP_PORT));
+            } catch (Throwable t) {
+                log.w("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
+            }
+            startJetty(injector, properties, port, webappDir);
         } catch(Throwable t) {
-            log.w("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
+            log.e("Failed to start web server", t);
         }
-        startJetty(injector, properties, port, webappDir);
     }
 
     private void copyWebapp(URL fromUrl, File toFile, Log log) throws HousemateException {

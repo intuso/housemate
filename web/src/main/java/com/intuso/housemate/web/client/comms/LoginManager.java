@@ -28,6 +28,8 @@ public class LoginManager implements CredentialsSubmittedHandler, RootListener<R
     private final Router router;
     private final GWTProxyRoot proxyRoot;
 
+    private boolean connectedToServer = false;
+
     @Inject
     public LoginManager(Log log, PropertyRepository properties, LoginView loginView, Router router, EventBus eventBus,
                         GWTProxyRoot proxyRoot, CommsServiceAsync commsService) {
@@ -42,17 +44,25 @@ public class LoginManager implements CredentialsSubmittedHandler, RootListener<R
     }
 
     @Override
-    public void statusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
-        if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer) {
-            switch (applicationInstanceStatus) {
-                case Allowed:
-                    proxyRoot.register(Housemate.APPLICATION_DETAILS);
-                    break;
-                case Unregistered:
-                    login();
-                    break;
-            }
+    public void serverConnectionStatusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus) {
+        boolean connectedToServer = serverConnectionStatus == ServerConnectionStatus.ConnectedToServer
+                || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily;
+        if(this.connectedToServer != connectedToServer) {
+            this.connectedToServer = connectedToServer;
+            if(connectedToServer)
+                login();
         }
+    }
+
+    @Override
+    public void applicationStatusChanged(RouterRoot root, ApplicationStatus applicationStatus) {
+
+    }
+
+    @Override
+    public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
+        if(applicationInstanceStatus == ApplicationInstanceStatus.Allowed)
+            proxyRoot.register(Housemate.APPLICATION_DETAILS);
     }
 
     @Override

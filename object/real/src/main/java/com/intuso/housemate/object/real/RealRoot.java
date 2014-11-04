@@ -53,7 +53,7 @@ public class RealRoot
 
         this.types = types;
         this.devices = devices;
-        this.connectionManager = new ConnectionManager(listenersFactory, properties, ClientType.Real);
+        this.connectionManager = new ConnectionManager(listenersFactory, properties, ClientType.Real, this);
 
         init(null);
 
@@ -79,12 +79,12 @@ public class RealRoot
 
     @Override
     public void register(ApplicationDetails applicationDetails) {
-        connectionManager.register(applicationDetails, routerRegistration);
+        connectionManager.register(applicationDetails);
     }
 
     @Override
     public void unregister() {
-        connectionManager.unregister(routerRegistration);
+        connectionManager.unregister();
     }
 
     @Override
@@ -114,14 +114,21 @@ public class RealRoot
         result.add(connectionManager.addStatusChangeListener(new ConnectionListener() {
 
             @Override
-            public void statusChanged(ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
-                if (resend && applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
-                    types.resendElements();
-                    devices.resendElements();
-                    resend = false;
-                }
-                for (RootListener<? super RealRoot> listener : getObjectListeners())
-                    listener.statusChanged(RealRoot.this, serverConnectionStatus, applicationStatus, applicationInstanceStatus);
+            public void serverConnectionStatusChanged(ServerConnectionStatus serverConnectionStatus) {
+                for(RootListener<? super RealRoot> listener : getObjectListeners())
+                    listener.serverConnectionStatusChanged(RealRoot.this, serverConnectionStatus);
+            }
+
+            @Override
+            public void applicationStatusChanged(ApplicationStatus applicationStatus) {
+                for(RootListener<? super RealRoot> listener : getObjectListeners())
+                    listener.applicationStatusChanged(RealRoot.this, applicationStatus);
+            }
+
+            @Override
+            public void applicationInstanceStatusChanged(ApplicationInstanceStatus applicationInstanceStatus) {
+                for(RootListener<? super RealRoot> listener : getObjectListeners())
+                    listener.applicationInstanceStatusChanged(RealRoot.this, applicationInstanceStatus);
             }
 
             @Override
@@ -149,11 +156,22 @@ public class RealRoot
                 connectionManager.setApplicationInstanceId(message.getPayload().getValue());
             }
         }));
-        result.add(addMessageListener(CONNECTION_STATUS_TYPE, new Receiver<ConnectionStatus>() {
+        result.add(addMessageListener(SERVER_CONNECTION_STATUS_TYPE, new Receiver<ServerConnectionStatus>() {
             @Override
-            public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
-                connectionManager.setConnectionStatus(message.getPayload().getServerConnectionStatus(),
-                        message.getPayload().getApplicationStatus(), message.getPayload().getApplicationInstanceStatus());
+            public void messageReceived(Message<ServerConnectionStatus> message) throws HousemateException {
+                connectionManager.setServerConnectionStatus(message.getPayload());
+            }
+        }));
+        result.add(addMessageListener(APPLICATION_STATUS_TYPE, new Receiver<ApplicationStatus>() {
+            @Override
+            public void messageReceived(Message<ApplicationStatus> message) throws HousemateException {
+                connectionManager.setApplicationStatus(message.getPayload());
+            }
+        }));
+        result.add(addMessageListener(APPLICATION_INSTANCE_STATUS_TYPE, new Receiver<ApplicationInstanceStatus>() {
+            @Override
+            public void messageReceived(Message<ApplicationInstanceStatus> message) throws HousemateException {
+                connectionManager.setApplicationInstanceStatus(message.getPayload());
             }
         }));
         return result;

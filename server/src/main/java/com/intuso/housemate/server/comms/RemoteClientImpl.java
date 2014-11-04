@@ -2,6 +2,7 @@ package com.intuso.housemate.server.comms;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
 import com.intuso.housemate.api.comms.ApplicationStatus;
@@ -15,6 +16,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -30,6 +32,7 @@ public class RemoteClientImpl implements RemoteClient {
     private final Listeners<RemoteClientListener> listeners = new Listeners<RemoteClientListener>(new CopyOnWriteArrayList<RemoteClientListener>());
     private RemoteClientImpl parent;
     private List<String> route = null;
+    private List<Message<?>> messageQueue = new CopyOnWriteArrayList<Message<?>>();
     private boolean applicationInstanceAllowed = false;
 
     public RemoteClientImpl(ClientInstance clientInstance, Root<?> root, MainRouter comms) {
@@ -55,12 +58,14 @@ public class RemoteClientImpl implements RemoteClient {
     public void sendMessage(String[] path, String type, Message.Payload payload) throws HousemateException {
         if(!applicationInstanceAllowed
                 && !(path.length == 1
-                    && (type.equals(Root.CONNECTION_STATUS_TYPE)
+                    && (type.equals(Root.SERVER_CONNECTION_STATUS_TYPE)
+                        || type.equals(Root.APPLICATION_STATUS_TYPE)
+                        || type.equals(Root.APPLICATION_INSTANCE_STATUS_TYPE)
                         || type.equals(Root.SERVER_INSTANCE_ID_TYPE)
                         || type.equals(Root.APPLICATION_INSTANCE_ID_TYPE))))
             throw new HousemateException("Remote client is not allowed access");
         else if(route == null)
-            throw new HousemateException("Remote client is not connected");
+            messageQueue.add(new Message<Message.Payload>(path, type, payload));
         else
             comms.sendMessageToClient(path, type, payload, this);
     }
@@ -74,6 +79,8 @@ public class RemoteClientImpl implements RemoteClient {
         this.applicationInstanceAllowed = applicationInstanceStatus == ApplicationInstanceStatus.Allowed;
         for(RemoteClientListener listener : listeners)
             listener.statusChanged(applicationStatus, applicationInstanceStatus);
+        for(Message<?> queuedMessage : messageQueue)
+            comms.sendMessageToClient(queuedMessage.getPath(), queuedMessage.getType(), queuedMessage.getPayload(), this);
     }
 
     @Override
@@ -84,7 +91,7 @@ public class RemoteClientImpl implements RemoteClient {
     public RemoteClientImpl addClient(List<String> route, Root<?> root, ClientInstance clientInstance)
                 throws HousemateException {
         RemoteClientImpl client = new RemoteClientImpl(clientInstance, root, comms);
-        client.setRoute(route);
+        client.setBaseRoute(route);
         addClient(client);
         return client;
     }
@@ -103,9 +110,9 @@ public class RemoteClientImpl implements RemoteClient {
         parent = null;
     }
 
-    public void disconnected() {
+    public void unregister() {
         for(RemoteClientListener listener : listeners)
-            listener.disconnected(this);
+            listener.unregistered(this);
     }
 
     public Set<RemoteClientImpl> getChildren() {
@@ -120,8 +127,13 @@ public class RemoteClientImpl implements RemoteClient {
         return route;
     }
 
-    public void setRoute(List<String> route) {
+    public void setBaseRoute(List<String> route) {
         this.route = route;
+        for(Map.Entry<String, RemoteClientImpl> entry : children.entrySet()) {
+            List<String> childRoute = Lists.newArrayList(route);
+            childRoute.add(entry.getKey());
+            entry.getValue().setBaseRoute(childRoute);
+        }
     }
 
     private static void addClient(RemoteClientImpl parent, RemoteClientImpl current, int currentIndex, RemoteClientImpl client) throws HousemateException {

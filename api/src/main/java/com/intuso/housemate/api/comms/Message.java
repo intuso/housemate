@@ -31,7 +31,7 @@ public class Message<T extends Message.Payload> implements Serializable {
 	 * @param payload the message payload
 	 */
     public Message(String path[], String type, T payload) {
-		this(path, type, payload, Lists.<String>newLinkedList());
+		this(path, type, payload, null);
 	}
 
     /**
@@ -46,7 +46,7 @@ public class Message<T extends Message.Payload> implements Serializable {
         System.arraycopy(path, 0, this.path, 0, path.length);
         this.type = type;
         this.payload = payload;
-        this.route = Lists.newLinkedList(route);
+        this.route = route != null ? Lists.newLinkedList(route) : Lists.<String>newArrayList();
     }
 
     /**
@@ -125,7 +125,7 @@ public class Message<T extends Message.Payload> implements Serializable {
      * @return
      */
     public static <T> String routeToString(List<T> list) {
-        return "[" + Joiner.on(",").join(list) + "]";
+        return "[" + (list != null ? Joiner.on(",").join(list) : "") + "]";
     }
 
     public void ensureSerialisable() {

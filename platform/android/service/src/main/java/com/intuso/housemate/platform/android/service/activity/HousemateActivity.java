@@ -79,7 +79,9 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
         bound = true;
         Router router = ((ConnectionService.Binder)binder).getRouter();
         routerRegistration = router.addObjectListener(this);
-        statusChanged(null, router.getServerConnectionStatus(), router.getApplicationStatus(), router.getApplicationInstanceStatus());
+        serverConnectionStatusChanged(null, router.getServerConnectionStatus());
+        applicationStatusChanged(null, router.getApplicationStatus());
+        applicationInstanceStatusChanged(null, router.getApplicationInstanceStatus());
     }
 
     @Override
@@ -90,15 +92,30 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
     }
 
     @Override
-    public void statusChanged(RouterRoot root,
-                              final ServerConnectionStatus serverConnectionStatus,
-                              final ApplicationStatus applicationStatus,
-                              final ApplicationInstanceStatus applicationInstanceStatus) {
+    public void serverConnectionStatusChanged(RouterRoot root, final ServerConnectionStatus serverConnectionStatus) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 ((TextView) findViewById(R.id.server_connection_status)).setText("Server Connection Status: " + serverConnectionStatus);
+            }
+        });
+    }
+
+    @Override
+    public void applicationStatusChanged(RouterRoot root, final ApplicationStatus applicationStatus) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 ((TextView) findViewById(R.id.application_status)).setText("Application Status: " + applicationStatus);
+            }
+        });
+    }
+
+    @Override
+    public void applicationInstanceStatusChanged(RouterRoot root, final ApplicationInstanceStatus applicationInstanceStatus) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 ((TextView) findViewById(R.id.application_instance_status)).setText("Application Instance Status: " + applicationInstanceStatus);
             }
         });

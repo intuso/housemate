@@ -23,7 +23,7 @@ public class GWTRouter extends Router {
                 Window.alert("Connection timed out due to inactivity, reconnecting");
             else
                 Window.alert("Reconnecting because of unknown error sending a message: " + throwable.getMessage());
-            setServerConnectionStatus(ServerConnectionStatus.Disconnected);
+            setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
             getLog().e("Failed to send message", throwable);
         }
 
@@ -40,7 +40,7 @@ public class GWTRouter extends Router {
                 Window.alert("Connection timed out due to inactivity, reconnecting");
             else
                 Window.alert("Reconnecting because of unknown error getting messages: " + throwable.getMessage());
-            setServerConnectionStatus(ServerConnectionStatus.Disconnected);
+            setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
         }
 
         @Override
@@ -80,7 +80,7 @@ public class GWTRouter extends Router {
         commsService.connectClient(new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable throwable) {
-                setServerConnectionStatus(ServerConnectionStatus.Disconnected);
+                setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
             }
 
             @Override
@@ -94,7 +94,7 @@ public class GWTRouter extends Router {
 
     @Override
     public void disconnect() {
-        setServerConnectionStatus(ServerConnectionStatus.Disconnected);
+        setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
         commsService.disconnectClient(new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable caught) {

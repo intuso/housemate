@@ -96,7 +96,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
     }
 
     @Override
-    public void disconnected(RemoteClient client) {
+    public void unregistered(RemoteClient client) {
         if(clientListeners.containsKey(client))
             clientListeners.remove(client).removeListener();
         loadedByClients.remove(client);

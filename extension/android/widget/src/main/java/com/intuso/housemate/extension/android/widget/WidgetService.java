@@ -101,7 +101,17 @@ public class WidgetService extends HousemateService {
                 .start();
         clientHelper.getRoot().addObjectListener(new RootListener<AndroidProxyRoot>() {
             @Override
-            public void statusChanged(AndroidProxyRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+            public void serverConnectionStatusChanged(AndroidProxyRoot root, ServerConnectionStatus serverConnectionStatus) {
+                updateStatus();
+            }
+
+            @Override
+            public void applicationStatusChanged(AndroidProxyRoot root, ApplicationStatus applicationStatus) {
+                updateStatus();
+            }
+
+            @Override
+            public void applicationInstanceStatusChanged(AndroidProxyRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
                 updateStatus();
             }
 

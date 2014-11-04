@@ -21,7 +21,6 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.type.*;
@@ -117,9 +116,15 @@ public class ParcelableMessage implements Parcelable {
             parcel.writeString(((StringPayload) payload).getValue());
         } else if(payload instanceof NoPayload) {
             parcel.writeString("none");
-        } else if(payload instanceof Root.ConnectionStatus) {
-            parcel.writeString("connectionStatus");
-            writeConnectionStatus(parcel, flags, (Root.ConnectionStatus)payload);
+        } else if(payload instanceof ServerConnectionStatus) {
+            parcel.writeString("serverConnectionStatus");
+            writeServerConnectionStatus(parcel, flags, (ServerConnectionStatus) payload);
+        } else if(payload instanceof ApplicationStatus) {
+            parcel.writeString("applicationStatus");
+            writeApplicationStatus(parcel, flags, (ApplicationStatus)payload);
+        } else if(payload instanceof ApplicationInstanceStatus) {
+            parcel.writeString("applicationInstanceStatus");
+            writeApplicationInstanceStatus(parcel, flags, (ApplicationInstanceStatus)payload);
         } else {
             // TODO log unknown type
             parcel.writeString("unknown");
@@ -257,10 +262,16 @@ public class ParcelableMessage implements Parcelable {
         parcel.writeString(applicationRegistration.getApplicationInstanceId());
     }
 
-    private static void writeConnectionStatus(Parcel parcel, int flags, Root.ConnectionStatus connectionStatus) {
-        parcel.writeString(connectionStatus.getServerConnectionStatus().name());
-        parcel.writeString(connectionStatus.getApplicationStatus().name());
-        parcel.writeString(connectionStatus.getApplicationInstanceStatus().name());
+    private static void writeServerConnectionStatus(Parcel parcel, int flags, ServerConnectionStatus serverConnectionStatus) {
+        parcel.writeString(serverConnectionStatus.name());
+    }
+
+    private static void writeApplicationStatus(Parcel parcel, int flags, ApplicationStatus applicationStatus) {
+        parcel.writeString(applicationStatus.name());
+    }
+
+    private static void writeApplicationInstanceStatus(Parcel parcel, int flags, ApplicationInstanceStatus applicationInstanceStatus) {
+        parcel.writeString(applicationInstanceStatus.name());
     }
 
     private static void writeLoadRequest(Parcel parcel, int flags, HousemateObject.LoadRequest loadRequest) {
@@ -349,8 +360,12 @@ public class ParcelableMessage implements Parcelable {
             return new StringPayload(parcel.readString());
         else if(payloadType.equals("none"))
             return NoPayload.INSTANCE;
-        else if(payloadType.equals("connectionStatus"))
-            return readConnectionStatus(parcel);
+        else if(payloadType.equals("serverConnectionStatus"))
+            return readServerConnectionStatus(parcel);
+        else if(payloadType.equals("applicationStatus"))
+            return readApplicationStatus(parcel);
+        else if(payloadType.equals("applicationInstanceStatus"))
+            return readApplicationInstanceStatus(parcel);
         else {
             // TODO log unknown type
             return null;
@@ -452,10 +467,16 @@ public class ParcelableMessage implements Parcelable {
                 clientType);
     }
 
-    private static Root.ConnectionStatus readConnectionStatus(Parcel parcel) {
-        return new Root.ConnectionStatus(ServerConnectionStatus.valueOf(parcel.readString()),
-                ApplicationStatus.valueOf(parcel.readString()),
-                ApplicationInstanceStatus.valueOf(parcel.readString()));
+    private static ServerConnectionStatus readServerConnectionStatus(Parcel parcel) {
+        return ServerConnectionStatus.valueOf(parcel.readString());
+    }
+
+    private static ApplicationStatus readApplicationStatus(Parcel parcel) {
+        return ApplicationStatus.valueOf(parcel.readString());
+    }
+
+    private static ApplicationInstanceStatus readApplicationInstanceStatus(Parcel parcel) {
+        return ApplicationInstanceStatus.valueOf(parcel.readString());
     }
 
     private static HousemateObject.LoadRequest readLoadRequest(Parcel parcel) {

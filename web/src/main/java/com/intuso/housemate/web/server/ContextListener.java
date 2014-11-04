@@ -6,8 +6,11 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.comms.serialiser.json.JsonSerialiserClientModule;
 import com.intuso.housemate.comms.transport.socket.client.SocketClientModule;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.persistence.flatfile.FlatFilePersistenceModule;
 import com.intuso.housemate.platform.pc.PCClientModule;
 import com.intuso.housemate.platform.pc.Properties;
@@ -19,6 +22,7 @@ import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 import javax.servlet.ServletContextEvent;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -62,20 +66,39 @@ public class ContextListener extends GuiceServletContextListener {
 
         super.contextInitialized(servletContextEvent);
 
-        // will be null if started in dev mode, in which case the server is run separately
-        final PropertyRepository properties = INJECTOR.getInstance(PropertyRepository.class);
-        final Router router = INJECTOR.getInstance(Router.class);
         final Log log = INJECTOR.getInstance(Log.class);
+        final Router router = INJECTOR.getInstance(Router.class);
+        Persistence persistence = INJECTOR.getInstance(Persistence.class);
+
+        checkDefaultUser(log, persistence);
+
+        // will be null if started in dev mode, in which case the server is run separately
         router.addObjectListener(new RootListener<RouterRoot>() {
 
+            private boolean needsRegistering = true;
+
             @Override
-            public void statusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+            public void serverConnectionStatusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus) {
                 log.d("Server connection status: " + serverConnectionStatus);
-                log.d("Application status: " + applicationStatus);
-                log.d("Application instance status: " + applicationInstanceStatus);
-                if (serverConnectionStatus == ServerConnectionStatus.ConnectedToServer
-                        && applicationInstanceStatus == ApplicationInstanceStatus.Unregistered)
+                if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
+                    needsRegistering = true;
+                    router.connect();
+                } else if(serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily)
+                    needsRegistering = false;
+                else if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer && needsRegistering) {
+                    needsRegistering = false;
                     router.register(APPLICATION_DETAILS);
+                }
+            }
+
+            @Override
+            public void applicationStatusChanged(RouterRoot root, ApplicationStatus applicationStatus) {
+                log.d("Application status: " + applicationStatus);
+            }
+
+            @Override
+            public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
+                log.d("Application instance status: " + applicationInstanceStatus);
             }
 
             @Override
@@ -95,5 +118,24 @@ public class ContextListener extends GuiceServletContextListener {
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         INJECTOR.getInstance(Router.class).disconnect();
         super.contextDestroyed(servletContextEvent);
+    }
+
+    private void checkDefaultUser(Log log, Persistence persistence) {
+        try {
+            boolean createUser = false;
+            Set<String> values = persistence.getValuesKeys(new String[] {});
+            if(values.contains("users")) {
+                values = persistence.getValuesKeys(new String[] {"users"});
+                if(values.size() == 0)
+                    createUser = true;
+            } else
+                createUser = true;
+            if(createUser) {
+                log.d("Creating default user/password admin/admin");
+                persistence.saveTypeInstances(new String[]{"users", "admin", "password"}, new TypeInstances(new TypeInstance("admin")));
+            }
+        } catch(Throwable t) {
+            log.e("Failed to ensure default user exists");
+        }
     }
 }

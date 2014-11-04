@@ -11,7 +11,9 @@ import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.rfxcom.rfxtrx.util.HomeEasy;
+import com.rfxcom.rfxtrx.homeeasy.Appliance;
+import com.rfxcom.rfxtrx.homeeasy.HomeEasy;
+import com.rfxcom.rfxtrx.homeeasy.House;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -28,7 +30,7 @@ public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueLis
 	/**
 	 * The unit to control
 	 */
-	private HomeEasy.Appliance appliance;
+	private Appliance appliance;
 
     /**
      * The number of the relay this device "controls"
@@ -61,18 +63,19 @@ public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueLis
      * @param unitcode
 	 * @throws HousemateException 
 	 */
-	private void createHed(int id, int unitcode) {
+	private void createAppliance(int id, int unitcode) {
 		
-        appliance = homeEasy.createAppliance(id, (byte) unitcode);
-        appliance.addListener(new HomeEasy.KnownApplianceStateListener() {
+        appliance = new Appliance(new House(homeEasy, id), (byte) unitcode);
+        appliance.addCallback(new Appliance.Callback() {
+
             @Override
-            public void nowOff(HomeEasy.Appliance a) {
-                setOff();
+            public void turnedOn(Appliance a) {
+                setOn();
             }
 
             @Override
-            public void nowOn(HomeEasy.Appliance a) {
-                setOn();
+            public void turnedOff(Appliance a) {
+                setOff();
             }
         });
 	}
@@ -113,7 +116,7 @@ public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueLis
         }
 
         getErrorValue().setTypedValues((String)null);
-        createHed(houseId, unitId);
+        createAppliance(houseId, unitId);
 	}
 	
 	@Override

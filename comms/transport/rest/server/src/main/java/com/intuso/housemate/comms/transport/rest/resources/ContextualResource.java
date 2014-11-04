@@ -105,7 +105,17 @@ public class ContextualResource implements RootListener<SimpleProxyRoot>, Comman
     }
 
     @Override
-    public void statusChanged(SimpleProxyRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+    public void serverConnectionStatusChanged(SimpleProxyRoot root, ServerConnectionStatus serverConnectionStatus) {
+        // todo let the client know?
+    }
+
+    @Override
+    public void applicationStatusChanged(SimpleProxyRoot root, ApplicationStatus applicationStatus) {
+        // todo let the client know?
+    }
+
+    @Override
+    public void applicationInstanceStatusChanged(SimpleProxyRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
         if(applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
             ROOT.load(new LoadManager(new LoadManager.Callback() {
                 @Override

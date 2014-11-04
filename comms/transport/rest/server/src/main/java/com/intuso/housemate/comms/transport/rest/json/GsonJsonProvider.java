@@ -3,8 +3,8 @@ package com.intuso.housemate.comms.transport.rest.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
-import com.intuso.housemate.comms.serialiser.json.config.HousemateDataAdapter;
-import com.intuso.housemate.comms.serialiser.json.config.PayloadDataAdapter;
+import com.intuso.housemate.comms.serialiser.json.config.DataAdapter;
+import com.intuso.housemate.comms.serialiser.json.config.PayloadAdapter;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -30,8 +30,8 @@ public class GsonJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     public GsonJsonProvider() {
         gson = new GsonBuilder()
-                .registerTypeAdapterFactory(new HousemateDataAdapter())
-                .registerTypeAdapterFactory(new PayloadDataAdapter())
+                .registerTypeAdapterFactory(new DataAdapter())
+                .registerTypeAdapterFactory(new PayloadAdapter())
                 .create();
     }
 

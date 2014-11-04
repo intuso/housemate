@@ -76,11 +76,29 @@ public class ConnectionService extends Service {
 
         // listen on the router root object, then connect the router
         routerListenerRegistration = router.addObjectListener(new RootListener<RouterRoot>() {
+            private boolean needsRegistering = true;
+
             @Override
-            public void statusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
-                if (serverConnectionStatus == ServerConnectionStatus.ConnectedToServer
-                        && applicationInstanceStatus == ApplicationInstanceStatus.Unregistered)
+            public void serverConnectionStatusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus) {
+                log.d("Server connection status: " + serverConnectionStatus);
+                if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
+                    needsRegistering = true;
+                    router.connect();
+                } else if(serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily)
+                    needsRegistering = false;
+                else if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer && needsRegistering) {
+                    needsRegistering = false;
                     router.register(APPLICATION_DETAILS);
+                }
+            }
+
+            @Override
+            public void applicationStatusChanged(RouterRoot root, ApplicationStatus applicationStatus) {
+
+            }
+
+            @Override
+            public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
             }
 
             @Override

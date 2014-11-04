@@ -36,15 +36,25 @@ public class RouterRoot
     protected RouterRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router) {
         super(log, listenersFactory, new RootData());
         this.router = router;
-        connectionManager = new ConnectionManager(listenersFactory, properties, ClientType.Router);
+        connectionManager = new ConnectionManager(listenersFactory, properties, ClientType.Router, this);
         connectionManager.addStatusChangeListener(new ConnectionListener() {
 
             @Override
-            public void statusChanged(ServerConnectionStatus serverConnectionStatus,
-                                      ApplicationStatus applicationStatus,
-                                      ApplicationInstanceStatus applicationInstanceStatus) {
+            public void serverConnectionStatusChanged(ServerConnectionStatus serverConnectionStatus) {
                 for(RootListener<? super RouterRoot> listener : getObjectListeners())
-                    listener.statusChanged(RouterRoot.this, serverConnectionStatus, applicationStatus, applicationInstanceStatus);
+                    listener.serverConnectionStatusChanged(RouterRoot.this, serverConnectionStatus);
+            }
+
+            @Override
+            public void applicationStatusChanged(ApplicationStatus applicationStatus) {
+                for(RootListener<? super RouterRoot> listener : getObjectListeners())
+                    listener.applicationStatusChanged(RouterRoot.this, applicationStatus);
+            }
+
+            @Override
+            public void applicationInstanceStatusChanged(ApplicationInstanceStatus applicationInstanceStatus) {
+                for(RootListener<? super RouterRoot> listener : getObjectListeners())
+                    listener.applicationInstanceStatusChanged(RouterRoot.this, applicationInstanceStatus);
             }
 
             @Override
@@ -86,17 +96,17 @@ public class RouterRoot
      * @param status the router's new connection status
      */
     protected void setServerConnectionStatus(ServerConnectionStatus status) {
-        connectionManager.setConnectionStatus(status, ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered);
+        connectionManager.setServerConnectionStatus(status);
     }
 
     @Override
     public void register(ApplicationDetails applicationDetails) {
-        connectionManager.register(applicationDetails, router);
+        connectionManager.register(applicationDetails);
     }
 
     @Override
     public void unregister() {
-        connectionManager.unregister(router);
+        connectionManager.unregister();
     }
 
     @Override
@@ -119,11 +129,22 @@ public class RouterRoot
                 connectionManager.setApplicationInstanceId(message.getPayload().getValue());
             }
         }));
-        result.add(addMessageListener(CONNECTION_STATUS_TYPE, new Receiver<ConnectionStatus>() {
+        result.add(addMessageListener(SERVER_CONNECTION_STATUS_TYPE, new Receiver<ServerConnectionStatus>() {
             @Override
-            public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
-                connectionManager.setConnectionStatus(message.getPayload().getServerConnectionStatus(),
-                        message.getPayload().getApplicationStatus(), message.getPayload().getApplicationInstanceStatus());
+            public void messageReceived(Message<ServerConnectionStatus> message) throws HousemateException {
+                connectionManager.setServerConnectionStatus(message.getPayload());
+            }
+        }));
+        result.add(addMessageListener(APPLICATION_STATUS_TYPE, new Receiver<ApplicationStatus>() {
+            @Override
+            public void messageReceived(Message<ApplicationStatus> message) throws HousemateException {
+                connectionManager.setApplicationStatus(message.getPayload());
+            }
+        }));
+        result.add(addMessageListener(APPLICATION_INSTANCE_STATUS_TYPE, new Receiver<ApplicationInstanceStatus>() {
+            @Override
+            public void messageReceived(Message<ApplicationInstanceStatus> message) throws HousemateException {
+                connectionManager.setApplicationInstanceStatus(message.getPayload());
             }
         }));
         return result;

@@ -6,5 +6,5 @@ import com.intuso.utilities.listener.Listener;
 
 public interface RemoteClientListener extends Listener {
     public void statusChanged(ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus);
-    public void disconnected(RemoteClient client);
+    public void unregistered(RemoteClient client);
 }

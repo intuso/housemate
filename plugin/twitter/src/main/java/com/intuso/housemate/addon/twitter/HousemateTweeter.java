@@ -93,11 +93,15 @@ public class HousemateTweeter {
         root.addObjectListener(new RootListener<SimpleProxyRoot>() {
 
             @Override
-            public void statusChanged(final SimpleProxyRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+            public void serverConnectionStatusChanged(SimpleProxyRoot root, ServerConnectionStatus serverConnectionStatus) {
                 switch (serverConnectionStatus) {
-                    case Disconnected:
-                        log.d("Disconnected from server");
-                        tweet("Disconnected from server");
+                    case DisconnectedPermanently:
+                        log.d("Disconnected permanently from server");
+                        tweet("Disconnected permanently from server");
+                        return;
+                    case DisconnectedTemporarily:
+                        log.d("Disconnected temporarily from server");
+                        tweet("Disconnected temporarily from server");
                         return;
                     case Connecting:
                         log.d("Connected to server");
@@ -112,6 +116,13 @@ public class HousemateTweeter {
                         tweet("Connected to server");
                         // don't return in this case, let it drop through to handle the other status(es)
                 }
+            }
+
+            @Override
+            public void applicationStatusChanged(SimpleProxyRoot root, ApplicationStatus applicationStatus) {}
+
+            @Override
+            public void applicationInstanceStatusChanged(final SimpleProxyRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
                 switch (applicationInstanceStatus) {
                     case Unregistered:
                         log.d("Application not registered with the server");

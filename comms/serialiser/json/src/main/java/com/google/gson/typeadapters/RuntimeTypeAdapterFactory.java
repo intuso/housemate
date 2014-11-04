@@ -119,12 +119,15 @@ import java.util.Map;
  * }</pre>
  */
 public class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
+
     private final Class<?> baseType;
     private final String typeFieldName;
+    private final String enumValueFieldName;
     private final Map<String, Class<?>> labelToSubtype = new LinkedHashMap<String, Class<?>>();
     private final Map<Class<?>, String> subtypeToLabel = new LinkedHashMap<Class<?>, String>();
 
-    protected RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName) {
+    protected RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName, String enumValueFieldName) {
+        this.enumValueFieldName = enumValueFieldName;
         if (typeFieldName == null || baseType == null) {
             throw new NullPointerException();
         }
@@ -136,8 +139,8 @@ public class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
      * Creates a new runtime type adapter using for {@code baseType} using {@code
      * typeFieldName} as the type field name. Type field names are case sensitive.
      */
-    public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType, String typeFieldName) {
-        return new RuntimeTypeAdapterFactory<T>(baseType, typeFieldName);
+    public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType, String typeFieldName, String enumValueFieldName) {
+        return new RuntimeTypeAdapterFactory<T>(baseType, typeFieldName, enumValueFieldName);
     }
 
     /**
@@ -145,7 +148,7 @@ public class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
      * the type field name.
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType) {
-        return new RuntimeTypeAdapterFactory<T>(baseType, "type");
+        return new RuntimeTypeAdapterFactory<T>(baseType, "type", "value");
     }
 
     /**
@@ -204,13 +207,23 @@ public class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
                             + " because it does not define a field named " + typeFieldName);
                 }
                 String label = labelJsonElement.getAsString();
-                @SuppressWarnings("unchecked") // registration requires that subtype extends T
-                        TypeAdapter<R> delegate = (TypeAdapter<R>) labelToDelegate.get(label);
-                if (delegate == null) {
-                    throw new JsonParseException("cannot deserialize " + baseType + " subtype named "
-                            + label + "; did you forget to register a subtype?");
+                Class<?> clazz = labelToSubtype.get(label);
+                if(Enum.class.isAssignableFrom(clazz)) {
+                    JsonElement valueJsonElement = jsonElement.getAsJsonObject().remove(enumValueFieldName);
+                    if (valueJsonElement == null) {
+                        throw new JsonParseException("cannot deserialize " + baseType
+                                + " because it is an enum but does not define a field named " + enumValueFieldName);
+                    }
+                    return (R) Enum.valueOf((Class<Enum>)clazz, valueJsonElement.getAsString());
+                } else {
+                    @SuppressWarnings("unchecked") // registration requires that subtype extends T
+                            TypeAdapter<R> delegate = (TypeAdapter<R>) labelToDelegate.get(label);
+                    if (delegate == null) {
+                        throw new JsonParseException("cannot deserialize " + baseType + " subtype named "
+                                + label + "; did you forget to register a subtype?");
+                    }
+                    return delegate.fromJsonTree(jsonElement);
                 }
-                return delegate.fromJsonTree(jsonElement);
             }
 
             @Override public void write(JsonWriter out, R value) throws IOException {
@@ -219,13 +232,19 @@ public class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
                 else {
                     Class<?> srcType = value.getClass();
                     String label = subtypeToLabel.get(srcType);
-                    @SuppressWarnings("unchecked") // registration requires that subtype extends T
-                            TypeAdapter<R> delegate = (TypeAdapter<R>) subtypeToDelegate.get(srcType);
-                    if (delegate == null) {
-                        throw new JsonParseException("cannot serialize " + srcType.getName()
-                                + "; did you forget to register a subtype?");
+                    JsonObject jsonObject;
+                    if(Enum.class.isAssignableFrom(srcType)) {
+                        jsonObject = new JsonObject();
+                        jsonObject.addProperty(enumValueFieldName, ((Enum)value).name());
+                    } else {
+                        @SuppressWarnings("unchecked") // registration requires that subtype extends T
+                                TypeAdapter<R> delegate = (TypeAdapter<R>) subtypeToDelegate.get(srcType);
+                        if (delegate == null) {
+                            throw new JsonParseException("cannot serialize " + srcType.getName()
+                                    + "; did you forget to register a subtype?");
+                        }
+                        jsonObject = delegate.toJsonTree(value).getAsJsonObject();
                     }
-                    JsonObject jsonObject = delegate.toJsonTree(value).getAsJsonObject();
                     if (jsonObject.has(typeFieldName)) {
                         throw new JsonParseException("cannot serialize " + srcType.getName()
                                 + " because it already defines a field named " + typeFieldName);

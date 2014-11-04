@@ -65,7 +65,7 @@ public abstract class ProxyRoot<
      */
     public ProxyRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router) {
         super(log, listenersFactory, new RootData());
-        connectionManager = new ConnectionManager(listenersFactory, properties, ClientType.Proxy);
+        connectionManager = new ConnectionManager(listenersFactory, properties, ClientType.Proxy, this);
         init(null);
         routerRegistration = router.registerReceiver(this);
     }
@@ -82,12 +82,12 @@ public abstract class ProxyRoot<
 
     @Override
     public void register(ApplicationDetails applicationDetails) {
-        connectionManager.register(applicationDetails, routerRegistration);
+        connectionManager.register(applicationDetails);
     }
 
     @Override
     public void unregister() {
-        connectionManager.unregister(routerRegistration);
+        connectionManager.unregister();
         routerRegistration.unregister();
     }
 
@@ -114,9 +114,21 @@ public abstract class ProxyRoot<
         result.add(connectionManager.addStatusChangeListener(new ConnectionListener() {
 
             @Override
-            public void statusChanged(ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+            public void serverConnectionStatusChanged(ServerConnectionStatus serverConnectionStatus) {
                 for (RootListener<? super ROOT> listener : getObjectListeners())
-                    listener.statusChanged(getThis(), serverConnectionStatus, applicationStatus, applicationInstanceStatus);
+                    listener.serverConnectionStatusChanged(getThis(), serverConnectionStatus);
+            }
+
+            @Override
+            public void applicationStatusChanged(ApplicationStatus applicationStatus) {
+                for (RootListener<? super ROOT> listener : getObjectListeners())
+                    listener.applicationStatusChanged(getThis(), applicationStatus);
+            }
+
+            @Override
+            public void applicationInstanceStatusChanged(ApplicationInstanceStatus applicationInstanceStatus) {
+                for (RootListener<? super ROOT> listener : getObjectListeners())
+                    listener.applicationInstanceStatusChanged(getThis(), applicationInstanceStatus);
             }
 
             @Override
@@ -150,11 +162,22 @@ public abstract class ProxyRoot<
                 connectionManager.setApplicationInstanceId(message.getPayload().getValue());
             }
         }));
-        result.add(addMessageListener(CONNECTION_STATUS_TYPE, new Receiver<ConnectionStatus>() {
+        result.add(addMessageListener(SERVER_CONNECTION_STATUS_TYPE, new Receiver<ServerConnectionStatus>() {
             @Override
-            public void messageReceived(Message<ConnectionStatus> message) throws HousemateException {
-                connectionManager.setConnectionStatus(message.getPayload().getServerConnectionStatus(),
-                        message.getPayload().getApplicationStatus(), message.getPayload().getApplicationInstanceStatus());
+            public void messageReceived(Message<ServerConnectionStatus> message) throws HousemateException {
+                connectionManager.setServerConnectionStatus(message.getPayload());
+            }
+        }));
+        result.add(addMessageListener(APPLICATION_STATUS_TYPE, new Receiver<ApplicationStatus>() {
+            @Override
+            public void messageReceived(Message<ApplicationStatus> message) throws HousemateException {
+                connectionManager.setApplicationStatus(message.getPayload());
+            }
+        }));
+        result.add(addMessageListener(APPLICATION_INSTANCE_STATUS_TYPE, new Receiver<ApplicationInstanceStatus>() {
+            @Override
+            public void messageReceived(Message<ApplicationInstanceStatus> message) throws HousemateException {
+                connectionManager.setApplicationInstanceStatus(message.getPayload());
             }
         }));
         return result;

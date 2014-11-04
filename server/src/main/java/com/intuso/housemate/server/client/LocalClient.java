@@ -37,8 +37,19 @@ public class LocalClient implements PluginListener {
         this.log = log;
         this.root = root;
         root.addObjectListener(new RootListener<RealRoot>() {
+
             @Override
-            public void statusChanged(RealRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+            public void serverConnectionStatusChanged(RealRoot root, ServerConnectionStatus serverConnectionStatus) {
+                // do nothing
+            }
+
+            @Override
+            public void applicationStatusChanged(RealRoot root, ApplicationStatus applicationStatus) {
+                // do nothing
+            }
+
+            @Override
+            public void applicationInstanceStatusChanged(RealRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
                 if (!typesAdded && applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
                     typesAdded = true;
                     root.addType(deviceFactory.getType());

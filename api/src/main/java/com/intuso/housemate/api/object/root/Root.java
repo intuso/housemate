@@ -15,7 +15,9 @@ public interface Root<ROOT extends Root<?>>
 
     public final static String SERVER_INSTANCE_ID_TYPE = "server-instance-id";
     public final static String APPLICATION_INSTANCE_ID_TYPE = "application-instance-id";
-    public final static String CONNECTION_STATUS_TYPE = "connection-status";
+    public final static String SERVER_CONNECTION_STATUS_TYPE = "server-connection-status";
+    public final static String APPLICATION_STATUS_TYPE = "application-status";
+    public final static String APPLICATION_INSTANCE_STATUS_TYPE = "application-instance-status";
     public final static String APPLICATION_REGISTRATION_TYPE = "application-registration";
     public final static String APPLICATION_UNREGISTRATION_TYPE = "application-unregistration";
     public final static String CONNECTION_LOST_TYPE = "connection-lost";
@@ -58,53 +60,4 @@ public interface Root<ROOT extends Root<?>>
      * @return the object at that path, or null if there isn't one
      */
     public HousemateObject<?, ?, ?, ?> getObject(String[] path);
-
-    public class ConnectionStatus implements Message.Payload {
-
-        private ServerConnectionStatus serverConnectionStatus;
-        private ApplicationStatus applicationStatus;
-        private ApplicationInstanceStatus applicationInstanceStatus;
-
-        public ConnectionStatus() {}
-
-        public ConnectionStatus(ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
-            this.serverConnectionStatus = serverConnectionStatus;
-            this.applicationStatus = applicationStatus;
-            this.applicationInstanceStatus = applicationInstanceStatus;
-        }
-
-        public ServerConnectionStatus getServerConnectionStatus() {
-            return serverConnectionStatus;
-        }
-
-        public void setServerConnectionStatus(ServerConnectionStatus serverConnectionStatus) {
-            this.serverConnectionStatus = serverConnectionStatus;
-        }
-
-        public ApplicationStatus getApplicationStatus() {
-            return applicationStatus;
-        }
-
-        public void setApplicationStatus(ApplicationStatus applicationStatus) {
-            this.applicationStatus = applicationStatus;
-        }
-
-        public ApplicationInstanceStatus getApplicationInstanceStatus() {
-            return applicationInstanceStatus;
-        }
-
-        public void setApplicationInstanceStatus(ApplicationInstanceStatus applicationInstanceStatus) {
-            this.applicationInstanceStatus = applicationInstanceStatus;
-        }
-
-        @Override
-        public String toString() {
-            return "serverConnectionStatus=" + serverConnectionStatus
-                   + ", applicationStatus=" + applicationStatus
-                   + ", applicationInstanceStatus=" + applicationInstanceStatus;
-        }
-
-        @Override
-        public void ensureSerialisable() {}
-    }
 }

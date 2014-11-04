@@ -8,7 +8,11 @@ import com.intuso.utilities.listener.Listener;
  */
 public interface ConnectionListener extends Listener {
 
-    public void statusChanged(ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus);
+    public void serverConnectionStatusChanged(ServerConnectionStatus serverConnectionStatus);
+
+    public void applicationStatusChanged(ApplicationStatus applicationStatus);
+
+    public void applicationInstanceStatusChanged(ApplicationInstanceStatus applicationInstanceStatus);
 
     public void newApplicationInstance(String instanceId);
 

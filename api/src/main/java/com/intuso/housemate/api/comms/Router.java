@@ -29,6 +29,8 @@ public abstract class Router implements Sender, Receiver {
 
     private final RouterRoot root;
 
+    private boolean fullyConnected = false;
+
     /**
      * @param log the log
      * @param listenersFactory
@@ -39,16 +41,34 @@ public abstract class Router implements Sender, Receiver {
         root.addObjectListener(new RootListener<RouterRoot>() {
 
             @Override
-            public void statusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
-                boolean allowed = applicationInstanceStatus == ApplicationInstanceStatus.Allowed;
-                Message<Root.ConnectionStatus> message = new Message<Root.ConnectionStatus>(new String[] {""}, Root.CONNECTION_STATUS_TYPE,
-                        new Root.ConnectionStatus(allowed ? ServerConnectionStatus.ConnectedToServer : ServerConnectionStatus.ConnectedToRouter,
-                                ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered));
-                for(Receiver receiver : receivers.values()) {
-                    try {
-                        receiver.messageReceived(message);
-                    } catch(HousemateException e) {
-                        log.e("Failed to notify client of new router status", e);
+            public void serverConnectionStatusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus) {
+                checkFullyConnected();
+            }
+
+            @Override
+            public void applicationStatusChanged(RouterRoot root, ApplicationStatus applicationStatus) {
+                checkFullyConnected();
+            }
+
+            @Override
+            public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
+                checkFullyConnected();
+            }
+
+            public void checkFullyConnected() {
+                boolean fullyConnected = (root.getServerConnectionStatus() == ServerConnectionStatus.ConnectedToServer || root.getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily)
+                        && root.getApplicationInstanceStatus() == ApplicationInstanceStatus.Allowed;
+                if(Router.this.fullyConnected != fullyConnected) {
+                    Router.this.fullyConnected = fullyConnected;
+                    Message<ServerConnectionStatus> message = new Message<ServerConnectionStatus>(new String[]{""},
+                            Root.SERVER_CONNECTION_STATUS_TYPE,
+                            fullyConnected ? ServerConnectionStatus.ConnectedToServer : ServerConnectionStatus.ConnectedToRouter);
+                    for (Receiver receiver : receivers.values()) {
+                        try {
+                            receiver.messageReceived(message);
+                        } catch (HousemateException e) {
+                            log.e("Failed to notify client of new router status", e);
+                        }
                     }
                 }
             }
@@ -106,7 +126,7 @@ public abstract class Router implements Sender, Receiver {
      * Logs in to the server
      */
     public void register(ApplicationDetails applicationDetails) {
-        if(getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer)
+        if(!(getServerConnectionStatus() == ServerConnectionStatus.ConnectedToServer || getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily))
             throw new HousemateRuntimeException("Cannot request access until the router is connected to the server");
         root.register(applicationDetails);
     }
@@ -137,10 +157,7 @@ public abstract class Router implements Sender, Receiver {
         String clientId = "" + nextId.incrementAndGet();
         receivers.put(clientId, receiver);
         try {
-            boolean allowed = root.getApplicationInstanceStatus() == ApplicationInstanceStatus.Allowed;
-            receiver.messageReceived(new Message<Root.ConnectionStatus>(new String[] {""}, Root.CONNECTION_STATUS_TYPE,
-                    new Root.ConnectionStatus(allowed ? ServerConnectionStatus.ConnectedToServer : ServerConnectionStatus.ConnectedToRouter,
-                            ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered)));
+            receiver.messageReceived(new Message<ServerConnectionStatus>(new String[] {""}, Root.SERVER_CONNECTION_STATUS_TYPE, root.getServerConnectionStatus()));
         } catch(HousemateException e) {
             log.e("Failed to tell new client " + clientId + " the current router status");
         }

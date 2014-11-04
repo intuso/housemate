@@ -33,26 +33,22 @@ public class Housemate implements EntryPoint {
     private final RootListener<RouterRoot> routerRootListener = new RootListener<RouterRoot>() {
 
         @Override
-        public void statusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
-            switch (serverConnectionStatus) {
-                // reconnect
-                case Disconnected:
-                    INJECTOR.getRouter().connect();
-                    // don't break, but drop though
-                case Connecting:
-                case ConnectedToRouter:
-                    resetContent();
-                    break;
-                case ConnectedToServer:
-                    switch (applicationInstanceStatus) {
-                        case Allowed:
-                            break;
-                        default:
-                            resetContent();
-                            break;
-                    }
-                    break;
+        public void serverConnectionStatusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus) {
+            if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
+                resetContent();
+                INJECTOR.getRouter().connect();
             }
+        }
+
+        @Override
+        public void applicationStatusChanged(RouterRoot root, ApplicationStatus applicationStatus) {
+            // do nothing
+        }
+
+        @Override
+        public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
+            if(applicationInstanceStatus != ApplicationInstanceStatus.Allowed)
+                resetContent();
         }
 
         @Override
@@ -67,9 +63,18 @@ public class Housemate implements EntryPoint {
     };
 
     private final RootListener<GWTProxyRoot> proxyRootListener = new RootListener<GWTProxyRoot>() {
+        @Override
+        public void serverConnectionStatusChanged(GWTProxyRoot root, ServerConnectionStatus serverConnectionStatus) {
+            // do nothing
+        }
 
         @Override
-        public void statusChanged(GWTProxyRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+        public void applicationStatusChanged(GWTProxyRoot root, ApplicationStatus applicationStatus) {
+            // do nothing
+        }
+
+        @Override
+        public void applicationInstanceStatusChanged(GWTProxyRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
             if (applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
                 INJECTOR.getProxyRoot().clearLoadedObjects();
                 INJECTOR.getProxyRoot().loadChildOverviews();

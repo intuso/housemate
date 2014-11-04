@@ -97,7 +97,7 @@ public abstract class HousemateData<DATA extends HousemateData<?>>
         if(getChildData() != null && !(getChildData() instanceof HashMap))
             setChildData(Maps.newHashMap(getChildData()));
         if(getChildData() != null)
-            for(DATA childData : getChildData().values())
+            for(HousemateData<?> childData : getChildData().values())
                 childData.ensureSerialisable();
     }
 }

@@ -15,8 +15,8 @@ import com.intuso.utilities.properties.api.PropertyRepository;
 public class SocketClientModule extends AbstractModule {
 
     public SocketClientModule(PropertyRepository defaultProperties) {
-        defaultProperties.set(SocketClient.SERVER_HOST, "localhost");
-        defaultProperties.set(SocketClient.SERVER_PORT, "46873");
+        defaultProperties.set(SocketClient.HOST, "localhost");
+        defaultProperties.set(SocketClient.PORT, "46873");
     }
 
     @Override

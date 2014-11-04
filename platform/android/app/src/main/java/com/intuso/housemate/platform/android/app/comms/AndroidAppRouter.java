@@ -98,7 +98,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
-        setServerConnectionStatus(ServerConnectionStatus.Disconnected);
+        setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
         getLog().d("Service connection lost unexpectedly, trying to re-establish connection");
         sender = null;
         connect();

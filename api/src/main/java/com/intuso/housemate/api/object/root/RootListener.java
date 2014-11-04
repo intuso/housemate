@@ -11,7 +11,11 @@ import com.intuso.housemate.api.object.ObjectListener;
  */
 public interface RootListener<ROOT extends Root<?>> extends ObjectListener {
 
-    public void statusChanged(ROOT root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus);
+    public void serverConnectionStatusChanged(ROOT root, ServerConnectionStatus serverConnectionStatus);
+
+    public void applicationStatusChanged(ROOT root, ApplicationStatus applicationStatus);
+
+    public void applicationInstanceStatusChanged(ROOT root, ApplicationInstanceStatus applicationInstanceStatus);
 
     public void newApplicationInstance(ROOT root, String instanceId);
 

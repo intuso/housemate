@@ -99,7 +99,7 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
         proxyListenerRegistration = proxyRoot.addObjectListener(new ProxyRootListener());
         RouterListener routerListener = new RouterListener();
         routerListenerRegistration = router.addObjectListener(routerListener);
-        routerListener.statusChanged(null, ServerConnectionStatus.Disconnected, ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered);
+        routerListener.serverConnectionStatusChanged(null, ServerConnectionStatus.DisconnectedPermanently);
         return this;
     }
 
@@ -120,16 +120,30 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
 
     private class RouterListener implements RootListener<RouterRoot> {
 
+        private boolean needsRegistering = true;
+
         @Override
-        public void statusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
-            log.d("Router connection status: serverConnectionStatus=" + serverConnectionStatus
-                    + ", applicationStatus=" + applicationStatus
-                    + ", applicationInstanceStatus=" + applicationInstanceStatus);
-            if(serverConnectionStatus == ServerConnectionStatus.Disconnected)
+        public void serverConnectionStatusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus) {
+            log.d("Router serverConnectionStatus = " + serverConnectionStatus);
+            if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
+                needsRegistering = true;
                 router.connect();
-            else if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer
-                    && applicationInstanceStatus == ApplicationInstanceStatus.Unregistered)
+            } else if(serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily)
+                needsRegistering = false;
+            else if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer && needsRegistering) {
+                needsRegistering = false;
                 router.register(applicationDetails);
+            }
+        }
+
+        @Override
+        public void applicationStatusChanged(RouterRoot root, ApplicationStatus applicationStatus) {
+            log.d("Router applicationStatus = " + applicationStatus);
+        }
+
+        @Override
+        public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
+            log.d("Router applicationInstanceStatus = " + applicationInstanceStatus);
         }
 
         @Override
@@ -145,14 +159,30 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
 
     private class ProxyRootListener implements RootListener<ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> {
 
+        private boolean needsRegistering = true;
+
         @Override
-        public void statusChanged(ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> root,
-                                  ServerConnectionStatus serverConnectionStatus, ApplicationStatus applicationStatus,
-                                  ApplicationInstanceStatus applicationInstanceStatus) {
-            if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer
-                    && applicationInstanceStatus == ApplicationInstanceStatus.Unregistered)
+        public void serverConnectionStatusChanged(ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> root, ServerConnectionStatus serverConnectionStatus) {
+            log.d("Root serverConnectionStatus = " + serverConnectionStatus);
+            if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently)
+                needsRegistering = true;
+            else if(serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily)
+                needsRegistering = false;
+            else if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer && needsRegistering) {
+                needsRegistering = false;
                 proxyRoot.register(applicationDetails);
-            else if(applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
+            }
+        }
+
+        @Override
+        public void applicationStatusChanged(ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> root, ApplicationStatus applicationStatus) {
+            log.d("Root applicationStatus = " + applicationStatus);
+        }
+
+        @Override
+        public void applicationInstanceStatusChanged(ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> root, ApplicationInstanceStatus applicationInstanceStatus) {
+            log.d("Root applicationInstanceStatus = " + applicationInstanceStatus);
+            if(applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
                 if(!rootCleared)
                     proxyRoot.clearLoadedObjects();
                 if(toLoad.size() > 0)

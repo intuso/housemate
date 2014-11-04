@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
 import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstance;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
@@ -17,6 +16,7 @@ import com.intuso.housemate.object.server.RemoteClient;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
+import java.util.List;
 import java.util.Set;
 
 public class ServerRealApplicationInstance
@@ -54,7 +54,7 @@ public class ServerRealApplicationInstance
             }
         };
         statusValue = new ServerRealValue<ApplicationInstanceStatus>(log, listenersFactory, STATUS_VALUE_ID, STATUS_VALUE_ID,
-                "The status of the application instance", applicationInstanceStatusType, null);
+                "The status of the application instance", applicationInstanceStatusType, (List)null);
         addChild(allowCommand);
         addChild(rejectCommand);
         addChild(statusValue);
@@ -70,8 +70,7 @@ public class ServerRealApplicationInstance
         for(RemoteClient client : clients) {
             try {
                 client.setStatus(applicationStatus, status);
-                client.sendMessage(new String[]{""}, Root.CONNECTION_STATUS_TYPE,
-                        new Root.ConnectionStatus(ServerConnectionStatus.ConnectedToServer, applicationStatus, status));
+                client.sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, status);
             } catch (HousemateException e) {
                 getLog().e("Failed to send status to client as it is not connected");
             }
@@ -82,8 +81,7 @@ public class ServerRealApplicationInstance
         this.applicationStatus = applicationStatus;
         for(RemoteClient client : clients) {
             try {
-                client.sendMessage(new String[]{""}, Root.CONNECTION_STATUS_TYPE,
-                        new Root.ConnectionStatus(ServerConnectionStatus.ConnectedToServer, applicationStatus, getStatus()));
+                client.sendMessage(new String[]{""}, Root.APPLICATION_STATUS_TYPE, applicationStatus);
             } catch (HousemateException e) {
                 getLog().e("Failed to send application status to client as it is not connected");
             }

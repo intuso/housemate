@@ -42,8 +42,9 @@ public class TestProxyRoot extends ProxyRoot<
     public TestProxyRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector, ProxyRouterImpl router) {
         super(log, listenersFactory, properties, router);
         try {
-            distributeMessage(new Message<ConnectionStatus>(new String[] {""}, Root.CONNECTION_STATUS_TYPE,
-                    new ConnectionStatus(ServerConnectionStatus.ConnectedToServer, ApplicationStatus.AllowInstances, ApplicationInstanceStatus.Allowed)));
+            distributeMessage(new Message<ServerConnectionStatus>(new String[] {""}, Root.SERVER_CONNECTION_STATUS_TYPE, ServerConnectionStatus.ConnectedToServer));
+            distributeMessage(new Message<ApplicationStatus>(new String[] {""}, Root.APPLICATION_STATUS_TYPE, ApplicationStatus.AllowInstances));
+            distributeMessage(new Message<ApplicationInstanceStatus>(new String[] {""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, ApplicationInstanceStatus.Allowed));
         } catch (HousemateException e) {
             e.printStackTrace();
         }

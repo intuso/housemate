@@ -100,7 +100,7 @@ public class ServerGeneralRoot
             @Override
             public void messageReceived(Message<ClientPayload<NoPayload>> message) throws HousemateException {
                 // build the disconnecting client's route as the router's route + the end client id
-                injector.getInstance(RemoteClientManager.class).clientDisconnected(message.getRoute());
+                injector.getInstance(RemoteClientManager.class).clientUnregistered(message.getRoute());
             }
         }));
         result.add(addMessageListener(Root.CONNECTION_LOST_TYPE, new Receiver<ClientPayload<StringPayload>>() {

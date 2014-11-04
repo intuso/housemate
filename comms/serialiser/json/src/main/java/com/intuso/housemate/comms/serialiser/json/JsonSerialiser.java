@@ -1,15 +1,14 @@
 package com.intuso.housemate.comms.serialiser.json;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.comms.serialiser.api.Serialiser;
 import com.intuso.housemate.comms.serialiser.api.StreamSerialiserFactory;
-import com.intuso.housemate.comms.serialiser.json.config.HousemateDataAdapter;
-import com.intuso.housemate.comms.serialiser.json.config.PayloadDataAdapter;
+import com.intuso.housemate.comms.serialiser.json.config.GsonConfig;
 
 import java.io.*;
 
@@ -44,16 +43,23 @@ public class JsonSerialiser implements Serialiser {
     private final JsonReader jsonReader;
 
     public JsonSerialiser(OutputStream outputStream, InputStream inputStream) throws IOException {
-        gson = new GsonBuilder()
-                .registerTypeAdapterFactory(new HousemateDataAdapter())
-                .registerTypeAdapterFactory(new PayloadDataAdapter())
-                .create();
-        jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-        jsonReader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        try {
+            gson = GsonConfig.createGson();
+            jsonWriter = new JsonWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+            jsonReader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+        } catch(Throwable t) {
+            throw new HousemateRuntimeException("Failed to create json serialiser");
+        }
+    }
+
+    public Gson getGson() {
+        return gson;
     }
 
     @Override
     public void write(Message<?> message) throws IOException {
+        if(message != null)
+            message.ensureSerialisable();
         gson.toJson(message, messageType, jsonWriter);
         jsonWriter.flush();
     }

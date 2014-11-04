@@ -130,7 +130,7 @@ public abstract class ServerProxyObject<
     }
 
     @Override
-    public final void disconnected(RemoteClient client) {
+    public final void unregistered(RemoteClient client) {
         clientListener.removeListener();
         this.client = null;
     }

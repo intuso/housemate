@@ -18,27 +18,30 @@ import com.intuso.utilities.properties.api.PropertyRepository;
 public class ConnectionManager {
 
     public final static String APPLICATION_INSTANCE_ID = "application.instance.id";
-    private final static String[] ROOT_PATH = new String[] {""};
+    public final static String[] ROOT_PATH = new String[] {""};
 
     private final Listeners<ConnectionListener> listeners;
 
     private final PropertyRepository properties;
     private final ClientType clientType;
+    private final Sender sender;
 
     private String serverInstanceId = null;
 
-    private ServerConnectionStatus serverConnectionStatus = ServerConnectionStatus.Disconnected;
+    private ServerConnectionStatus serverConnectionStatus = ServerConnectionStatus.DisconnectedPermanently;
     private ApplicationStatus applicationStatus = ApplicationStatus.Unregistered;
     private ApplicationInstanceStatus applicationInstanceStatus = ApplicationInstanceStatus.Unregistered;
 
     /**
      * @param listenersFactory
      * @param clientType the type of the client's connection
+     * @param sender
      */
-    public ConnectionManager(ListenersFactory listenersFactory, PropertyRepository properties, ClientType clientType) {
+    public ConnectionManager(ListenersFactory listenersFactory, PropertyRepository properties, ClientType clientType, Sender sender) {
         this.listeners = listenersFactory.create();
         this.properties = properties;
         this.clientType = clientType;
+        this.sender = sender;
     }
 
     /**
@@ -73,34 +76,41 @@ public class ConnectionManager {
     /**
      * Requests access to the server
      */
-    public void register(ApplicationDetails applicationDetails, Sender sender) {
-        if(serverConnectionStatus != ServerConnectionStatus.ConnectedToServer)
-            throw new HousemateRuntimeException("Cannot request access until a server connection has been established");
-        else if(applicationInstanceStatus != ApplicationInstanceStatus.Unregistered)
-            throw new HousemateRuntimeException("Registration already in progress or done");
-        if(applicationDetails != null) {
-            updateStatus(serverConnectionStatus, applicationStatus, ApplicationInstanceStatus.Pending);
-            sender.sendMessage(new Message<ApplicationRegistration>(ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
-                    new ApplicationRegistration(applicationDetails, properties.get(APPLICATION_INSTANCE_ID), clientType)));
-        } else {
-            throw new HousemateRuntimeException("Null application or instance details");
+    public void register(ApplicationDetails applicationDetails) {
+        switch (serverConnectionStatus) {
+            case DisconnectedPermanently:
+            case Connecting:
+            case ConnectedToRouter:
+                throw new HousemateRuntimeException("Cannot request access until a server connection has been established");
+            case ConnectedToServer:
+            case DisconnectedTemporarily:
+                if(applicationInstanceStatus != ApplicationInstanceStatus.Unregistered)
+                    throw new HousemateRuntimeException("Registration already in progress or done");
+                else if(applicationDetails != null) {
+                    setApplicationInstanceStatus(ApplicationInstanceStatus.Pending);
+                    sender.sendMessage(new Message<ApplicationRegistration>(ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
+                            new ApplicationRegistration(applicationDetails, properties.get(APPLICATION_INSTANCE_ID), clientType)));
+                } else
+                    throw new HousemateRuntimeException("Null application or instance details");
         }
     }
 
     /**
      * Logs out of the server
      */
-    public void unregister(Sender sender) {
+    public void unregister() {
         sender.sendMessage(new Message<NoPayload>(ROOT_PATH, Root.APPLICATION_UNREGISTRATION_TYPE, NoPayload.INSTANCE));
         properties.remove(APPLICATION_INSTANCE_ID);
-        updateStatus(serverConnectionStatus, ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered);
+        setApplicationStatus(ApplicationStatus.Unregistered);
+        setApplicationInstanceStatus(ApplicationInstanceStatus.Unregistered);
     }
 
     public void setServerInstanceId(String serverInstanceId) {
         if(this.serverInstanceId != null && !this.serverInstanceId.equals(serverInstanceId)) {
             for(ConnectionListener listener : listeners)
                 listener.newServerInstance(serverInstanceId);
-            updateStatus(serverConnectionStatus, ApplicationStatus.Unregistered, ApplicationInstanceStatus.Unregistered);
+            setApplicationStatus(ApplicationStatus.Unregistered);
+            setApplicationInstanceStatus(ApplicationInstanceStatus.Unregistered);
         }
         this.serverInstanceId = serverInstanceId;
     }
@@ -119,23 +129,27 @@ public class ConnectionManager {
      * Updates the server connection status of the router we use to connect to the server
      * @param serverConnectionStatus the router's new server connection status
      */
-    public void setConnectionStatus(ServerConnectionStatus serverConnectionStatus,
-                                    ApplicationStatus applicationStatus,
-                                    ApplicationInstanceStatus applicationInstanceStatus) {
-        updateStatus(serverConnectionStatus, applicationStatus, applicationInstanceStatus);
+    public void setServerConnectionStatus(ServerConnectionStatus serverConnectionStatus) {
+        if(this.serverConnectionStatus != serverConnectionStatus) {
+            this.serverConnectionStatus = serverConnectionStatus;
+            for (ConnectionListener listener : listeners)
+                listener.serverConnectionStatusChanged(serverConnectionStatus);
+        }
     }
 
-    private void updateStatus(ServerConnectionStatus serverConnectionStatus,
-                              ApplicationStatus applicationStatus,
-                              ApplicationInstanceStatus applicationInstanceStatus) {
-        if(this.serverConnectionStatus != serverConnectionStatus
-                || this.applicationStatus != applicationStatus
-                || this.applicationInstanceStatus != applicationInstanceStatus) {
-            this.serverConnectionStatus = serverConnectionStatus;
+    public void setApplicationStatus(ApplicationStatus applicationStatus) {
+        if(this.applicationStatus != applicationStatus) {
             this.applicationStatus = applicationStatus;
+            for (ConnectionListener listener : listeners)
+                listener.applicationStatusChanged(applicationStatus);
+        }
+    }
+
+    public void setApplicationInstanceStatus(ApplicationInstanceStatus applicationInstanceStatus) {
+        if(this.applicationInstanceStatus != applicationInstanceStatus) {
             this.applicationInstanceStatus = applicationInstanceStatus;
-            for(ConnectionListener listener : listeners)
-                listener.statusChanged(serverConnectionStatus, applicationStatus, applicationInstanceStatus);
+            for (ConnectionListener listener : listeners)
+                listener.applicationInstanceStatusChanged(applicationInstanceStatus);
         }
     }
 }

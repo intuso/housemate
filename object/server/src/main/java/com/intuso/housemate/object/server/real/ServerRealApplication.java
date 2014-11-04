@@ -66,7 +66,7 @@ public class ServerRealApplication
             }
         };
         statusValue = new ServerRealValue<ApplicationStatus>(log, listenersFactory, STATUS_VALUE_ID, STATUS_VALUE_ID,
-                "The status of the application instances", applicationStatusType, null);
+                "The status of the application instances", applicationStatusType, (ApplicationStatus)null);
         addChild(applicationInstances);
         addChild(allowCommand);
         addChild(someCommand);

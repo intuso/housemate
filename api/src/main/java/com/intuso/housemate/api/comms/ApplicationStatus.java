@@ -7,10 +7,13 @@ package com.intuso.housemate.api.comms;
  * Time: 08:59
  * To change this template use File | Settings | File Templates.
  */
-public enum ApplicationStatus {
+public enum ApplicationStatus implements Message.Payload {
     Unregistered,
     AllowInstances,
     SomeInstances,
     RejectInstances,
-    Expired
+    Expired;
+
+    @Override
+    public void ensureSerialisable() {}
 }

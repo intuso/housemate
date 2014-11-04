@@ -6,7 +6,6 @@ import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
 import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.comms.access.ApplicationRegistration;
 import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.root.Root;
@@ -80,20 +79,18 @@ public class AccessManager {
         ServerRealApplication application = realRoot.getApplications().get(client.getClientInstance().getApplicationDetails().getApplicationId());
         ServerRealApplicationInstance applicationInstance = application.getApplicationInstances().get(client.getClientInstance().getApplicationInstanceId());
 
-                // ensure the client belongs to the application instance
-        applicationInstance.addClient(client);
-
         // tell the client what access etc it has
         try {
-            client.sendMessage(new String[]{""}, Root.SERVER_INSTANCE_ID_TYPE,
-                    new StringPayload(Server.INSTANCE_ID));
-            client.sendMessage(new String[] {""}, Root.APPLICATION_INSTANCE_ID_TYPE,
-                    new StringPayload(client.getClientInstance().getApplicationInstanceId()));
-            client.sendMessage(new String[]{""}, Root.CONNECTION_STATUS_TYPE,
-                    new Root.ConnectionStatus(ServerConnectionStatus.ConnectedToServer, application.getStatus(), applicationInstance.getStatus()));
+            client.sendMessage(new String[] {""}, Root.SERVER_INSTANCE_ID_TYPE, new StringPayload(Server.INSTANCE_ID));
+            client.sendMessage(new String[] {""}, Root.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(client.getClientInstance().getApplicationInstanceId()));
+            client.sendMessage(new String[] {""}, Root.APPLICATION_STATUS_TYPE, application.getStatus());
+            client.sendMessage(new String[] {""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, applicationInstance.getStatus());
         } catch(HousemateException e) {
             log.e("Failed to tell application instance about statuses", e);
         }
+
+        // ensure the client belongs to the application instance
+        applicationInstance.addClient(client);
     }
 
     private final static Set<String> allowedAllApps = Sets.newHashSet(

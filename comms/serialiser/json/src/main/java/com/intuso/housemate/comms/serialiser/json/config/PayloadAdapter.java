@@ -1,10 +1,19 @@
 package com.intuso.housemate.comms.serialiser.json.config;
 
 import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
-import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
+import com.intuso.housemate.api.comms.ApplicationStatus;
+import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.ServerConnectionStatus;
+import com.intuso.housemate.api.comms.access.ApplicationRegistration;
+import com.intuso.housemate.api.comms.message.NoPayload;
+import com.intuso.housemate.api.comms.message.StringPayload;
+import com.intuso.housemate.api.object.ChildOverview;
+import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
+import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.DeviceData;
@@ -22,14 +31,29 @@ import com.intuso.housemate.api.object.value.ValueData;
 /**
  * Created by tomc on 04/06/14.
  */
-public class HousemateDataAdapter extends RuntimeTypeAdapterFactory<HousemateData> {
+public class PayloadAdapter extends RuntimeTypeAdapterFactory<Message.Payload> {
 
-    public HousemateDataAdapter() {
-        super(HousemateData.class, "class");
+    public final static String TYPE_FIELD_NAME = "_type";
+    public static final String ENUM_VALUE_FIELD_NAME = "value";
+
+    public PayloadAdapter() {
+        super(Message.Payload.class, TYPE_FIELD_NAME, ENUM_VALUE_FIELD_NAME);
+        registerSubtype(ApplicationRegistration.class, "applicationRegistration");
+        registerSubtype(NoPayload.class, "none");
+        registerSubtype(StringPayload.class, "string");
+        registerSubtype(ChildOverview.class, "childOverview");
+        registerSubtype(HousemateObject.ChildOverviews.class, "childOverviews");
+        registerSubtype(HousemateObject.TreeLoadInfo.class, "treeLoadInfo");
+        registerSubtype(HousemateObject.TreeData.class, "tree");
+        registerSubtype(HousemateObject.LoadRequest.class, "loadRequest");
+        registerSubtype(HousemateObject.LoadResponse.class, "loadResponse");
         registerSubtype(NoChildrenData.class, "noChildren");
         registerSubtype(ApplicationData.class, "application");
         registerSubtype(ApplicationInstanceData.class, "applicationInstance");
         registerSubtype(CommandData.class, "command");
+        registerSubtype(Command.PerformPayload.class, "commandPerform");
+        registerSubtype(Command.PerformingPayload.class, "commandPerforming");
+        registerSubtype(Command.FailedPayload.class, "commandFailed");
         registerSubtype(ConditionData.class, "condition");
         registerSubtype(DeviceData.class, "device");
         registerSubtype(ListData.class, "list");
@@ -37,6 +61,9 @@ public class HousemateDataAdapter extends RuntimeTypeAdapterFactory<HousemateDat
         registerSubtype(ParameterData.class, "parameter");
         registerSubtype(PropertyData.class, "property");
         registerSubtype(RootData.class, "root");
+        registerSubtype(ServerConnectionStatus.class, "serverConnectionStatus");
+        registerSubtype(ApplicationStatus.class, "applicationStatus");
+        registerSubtype(ApplicationInstanceStatus.class, "applicationInstanceStatus");
         registerSubtype(SubTypeData.class, "subType");
         registerSubtype(TaskData.class, "task");
         registerSubtype(ChoiceTypeData.class, "choiceType");
@@ -44,6 +71,9 @@ public class HousemateDataAdapter extends RuntimeTypeAdapterFactory<HousemateDat
         registerSubtype(ObjectTypeData.class, "objectType");
         registerSubtype(RegexTypeData.class, "regexType");
         registerSubtype(SimpleTypeData.class, "simpleType");
+        registerSubtype(TypeInstance.class, "typeInstance");
+        registerSubtype(TypeInstanceMap.class, "typeInstanceMap");
+        registerSubtype(TypeInstances.class, "typeInstances");
         registerSubtype(UserData.class, "user");
         registerSubtype(ValueData.class, "value");
     }
