@@ -11,8 +11,8 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.platform.android.common.JsonMessage;
 import com.intuso.housemate.platform.android.common.MessageCodes;
-import com.intuso.housemate.platform.android.common.ParcelableMessage;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
@@ -106,7 +106,7 @@ public class AppService extends Service implements ServiceConnection {
                     if(registration != null) {
                         Message<?> message;
                         try {
-                            message = ((ParcelableMessage) msg.getData().getParcelable("message")).getMessage();
+                            message = ((JsonMessage) msg.getData().getParcelable("message")).getMessage();
                         } catch(Throwable t) {
                             log.e("Failed to get message from parcelable");
                             break;
@@ -135,7 +135,7 @@ public class AppService extends Service implements ServiceConnection {
         public void messageReceived(Message<Message.Payload> message) throws HousemateException {
             try {
                 android.os.Message msg = android.os.Message.obtain(null, MessageCodes.SEND_MESSAGE);
-                msg.getData().putParcelable("message", new ParcelableMessage(message));
+                msg.getData().putParcelable("message", new JsonMessage(message));
                 clientReceiver.send(msg);
             } catch(DeadObjectException e) {
                 log.d("Client no longer connected");

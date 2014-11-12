@@ -171,10 +171,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
     protected <MV extends Message.Payload> void broadcastMessage(String type, MV content) {
         for(RemoteClient client : loadedByClients) {
             try {
-                if(client.isCurrentlyConnected())
-                    sendMessage(type, content, client);
-                else
-                    getLog().w("Not sending message to client " + client.getClientInstance() + " as it's not currently connected");
+                sendMessage(type, content, client);
             } catch(HousemateException e) {
                 getLog().e("Failed to broadcast message to client");
                 getLog().e(e.getMessage());

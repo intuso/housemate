@@ -2,6 +2,7 @@ package com.intuso.housemate.comms.transport.socket.server;
 
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
@@ -16,8 +17,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A class that is created for each client that connects. This class starts threads that live as long as the client connection.
@@ -38,11 +37,6 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
 	private final Socket socket;
 	
 	/**
-	 * Message output queue
-	 */
-	private final LinkedBlockingQueue<Message> outputQueue;
-	
-	/**
 	 * The thread that reads from the socket's input stream 
 	 */
 	private final StreamReader streamReader;
@@ -50,7 +44,7 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
 	/**
 	 * The thread that takes messages and writes them to the socket's output stream 
 	 */
-	private final MessageSender messageSender;
+	private final HeartbeatSender heartbeatSender;
 
     private final Router.Registration routerRegistration;
 
@@ -90,15 +84,14 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
 
         serialiser = getSerialiser(clientDetails, serialiserFactories, socket);
 
-        outputQueue = new LinkedBlockingQueue<Message>();
         streamReader = new StreamReader();
-        messageSender = new MessageSender();
+        heartbeatSender = new HeartbeatSender();
 
         routerRegistration = router.registerReceiver(this);
 		
 		// start the reader/writer threads 
 		streamReader.start();
-		messageSender.start();
+		heartbeatSender.start();
 	}
 
     private Map<String, String> readClientData(Socket socket) throws HousemateException {
@@ -173,7 +166,18 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
     
     @Override
     public void messageReceived(Message message) {
-        outputQueue.add(message);
+        log.d("Sending message " + message);
+        _sendMessage(message);
+    }
+
+    private synchronized void _sendMessage(Message message) {
+        try {
+            serialiser.write(message);
+        } catch (IOException e) {
+            log.e("Failed to write message to client, closing connection");
+            close();
+            throw new HousemateRuntimeException("Client connection no longer open", e);
+        }
     }
 	
 	/**
@@ -190,12 +194,12 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
 				
 				// interrupt the reader/writer threads
 				streamReader.interrupt();
-				messageSender.interrupt();
+				heartbeatSender.interrupt();
 				
 				// wait for the reader/writer threads to stop
 				try {
 					streamReader.join();
-					messageSender.join();
+					heartbeatSender.join();
 				} catch(InterruptedException e) {
 					log.e("Interrupted waiting for reader/writer threads to stop");
 				}
@@ -265,39 +269,17 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
 	 * @author Tom Clabon
 	 *
 	 */
-	private class MessageSender extends Thread {
+	private class HeartbeatSender extends Thread {
 
         /**
-         * heartbeat messgae
+         * heartbeat message
          */
         private Message heartbeat = new Message<NoPayload>(new String[] {}, "heartbeat", NoPayload.INSTANCE);
 		
 		@Override
 		public void run() {
-
-			try {
-				
-				// while we should keep running
-				while(!isInterrupted()) {
-					Message toSend;
-					try {
-						toSend = outputQueue.poll(30, TimeUnit.SECONDS);
-					} catch (InterruptedException e) {
-						log.e("Interrupted waiting for message to send, breaking loop");
-						break;
-					}
-					if(toSend == null)
-						toSend = heartbeat;
-                    else
-                        log.d("Sending message " + toSend);
-					
-					// send a message from the proxy output queue
-					serialiser.write(toSend);
-				}
-			} catch(IOException e) {
-				log.e("Error sending message to client. Closing client connection", e);
-				close();
-			}
+            while(!isInterrupted())
+                _sendMessage(heartbeat);
 		}
 	}
 }

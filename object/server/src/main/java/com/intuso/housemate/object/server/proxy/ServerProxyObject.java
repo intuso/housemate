@@ -82,8 +82,6 @@ public abstract class ServerProxyObject<
     protected final void sendMessage(String type, Message.Payload payload) throws HousemateException {
         if(client == null)
             throw new HousemateException("Client has disconnected. This object should no longer be used");
-        else if(!client.isCurrentlyConnected())
-            throw new HousemateException("Client is not currently connected");
         else
             client.sendMessage(getPath(), type, payload);
     }

@@ -14,6 +14,7 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import jssc.SerialPortList;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.FileResource;
 import org.eclipse.jetty.util.resource.JarResource;
@@ -117,6 +118,7 @@ public class ServerEnvironment {
     }
 
     private void loadSharedJNILibs() {
+        SerialPortList.getPortNames();
         //CommPortIdentifier.getPortIdentifiers();
     }
 

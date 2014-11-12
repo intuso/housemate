@@ -18,20 +18,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>api</artifactId>
             <version>${project.version}</version>
-            <!-- Needs AOP version of guice -->
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.inject</groupId>
-                    <artifactId>guice</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>${guice.version}</version>
-            <classifier>no_aop</classifier>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>comms-serialiser-json</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

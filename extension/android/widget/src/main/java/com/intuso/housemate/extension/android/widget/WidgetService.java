@@ -30,14 +30,16 @@ import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
  */
 public class WidgetService extends HousemateService {
 
-    private int requestCode= 0;
-
     public static enum Status {
+        NO_NETWORK,
         NOT_CONNECTED,
         NOT_ALLOWED,
         NOT_LOADED,
         LOADED
     }
+
+    public final static String NETWORK_AVAILABLE_ACTION = "networkAvailable";
+    public final static String NETWORK_AVAILABLE = "networkAvailable";
 
     private final static String DELETE_WIDGETS_ACTION = "deleteWidgets";
     private final static String PERFORM_COMMAND_ACTION = "performCommand";
@@ -57,6 +59,8 @@ public class WidgetService extends HousemateService {
     private ProxyClientHelper<AndroidProxyRoot> clientHelper;
     private AppWidgetManager appWidgetManager;
     private Status status = Status.NOT_CONNECTED;
+
+    private boolean networkAvailable = true;
 
     public static void deleteWidgets(Context context, int[] widgetIds) {
         Intent intent = new Intent(context, WidgetService.class);
@@ -97,8 +101,7 @@ public class WidgetService extends HousemateService {
                               public void allLoaded() {
                                   updateStatus();
                               }
-                          })
-                .start();
+                          });
         clientHelper.getRoot().addObjectListener(new RootListener<AndroidProxyRoot>() {
             @Override
             public void serverConnectionStatusChanged(AndroidProxyRoot root, ServerConnectionStatus serverConnectionStatus) {
@@ -125,6 +128,7 @@ public class WidgetService extends HousemateService {
                 // do nothing
             }
         });
+        clientHelper.start();
         for(String key : getProperties().keySet())
             if(key.startsWith(PROPERTY_PREFIX))
                 addWidgetHandler(Integer.parseInt(key.substring(PROPERTY_PREFIX.length())), decodePropertyValue(getProperties().get(key)));
@@ -132,7 +136,9 @@ public class WidgetService extends HousemateService {
 
     private void updateStatus() {
         Status oldStatus = status;
-        if(getRouter().getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer)
+        if(!networkAvailable)
+            status = Status.NO_NETWORK;
+        else if(!(getRouter().getServerConnectionStatus() == ServerConnectionStatus.ConnectedToServer || getRouter().getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily))
             status = Status.NOT_CONNECTED;
         else if(getRoot().getApplicationInstanceStatus() != ApplicationInstanceStatus.Allowed)
             status = Status.NOT_ALLOWED;
@@ -179,6 +185,11 @@ public class WidgetService extends HousemateService {
                     widgetHandler.handleAction(intent.getStringExtra(ACTION));
             } else
                 Toast.makeText(getApplicationContext(), "Not currently connected to server. Please retry later", Toast.LENGTH_SHORT).show();
+        } else if(intent != null && NETWORK_AVAILABLE_ACTION.equals(intent.getAction())) {
+            if(intent.getExtras().containsKey(NETWORK_AVAILABLE)) {
+                getLog().d("Received network available update: " + intent.getBooleanExtra(NETWORK_AVAILABLE, true));
+                networkAvailable = intent.getBooleanExtra(NETWORK_AVAILABLE, true);
+            }
         }
         return result;
     }

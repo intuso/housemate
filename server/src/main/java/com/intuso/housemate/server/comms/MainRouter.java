@@ -102,7 +102,7 @@ public final class MainRouter extends Router {
         throw new HousemateRuntimeException("The main router cannot be disconnected");
     }
 
-    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClientImpl client) {
+    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClientImpl client) throws HousemateException {
         Message<?> message = new Message<Message.Payload>(path, type, payload, client.getRoute());
         getLog().d("Sending message " + message.toString());
         // to send a message we tell the outgoing root it is received. Any listeners on the outgoing root

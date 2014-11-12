@@ -38,7 +38,7 @@ public class ConnectionService extends Service {
 
     private PropertyRepository properties;
     private Log log;
-    private Router router;
+    private SocketClient router;
     private ListenerRegistration routerListenerRegistration;
 
     public ConnectionService() {
@@ -84,9 +84,7 @@ public class ConnectionService extends Service {
                 if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
                     needsRegistering = true;
                     router.connect();
-                } else if(serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily)
-                    needsRegistering = false;
-                else if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer && needsRegistering) {
+                } else if((serverConnectionStatus == ServerConnectionStatus.ConnectedToServer || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily) && needsRegistering) {
                     needsRegistering = false;
                     router.register(APPLICATION_DETAILS);
                 }
@@ -111,6 +109,7 @@ public class ConnectionService extends Service {
                 // do nothing
             }
         });
+        // connections happen in a different thread so we can call this without blocking
         router.connect();
     }
 
@@ -128,9 +127,9 @@ public class ConnectionService extends Service {
             if(intent.getExtras().containsKey(NETWORK_AVAILABLE)) {
                 log.d("Received network available update: " + intent.getBooleanExtra(NETWORK_AVAILABLE, true));
                 if(intent.getBooleanExtra(NETWORK_AVAILABLE, true))
-                    router.connect();
+                    router._ensureConnected();
                 else
-                    router.disconnect();
+                    router._disconnect(false);
             }
         }
         return START_STICKY;

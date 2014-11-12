@@ -59,12 +59,10 @@ public class StatefulPowerControlWidgetHandler
 
         // make the remote views
         RemoteViews views = new RemoteViews(getWidgetService().getApplicationContext().getPackageName(), R.layout.stateful_power_widget);
-
-        // listen for button presses
-        views.setOnClickPendingIntent(R.id.button, getWidgetService().makePendingIntent(this,
-                getFeature() != null && !getFeature().isOn() ? StatefulPowerControl.ON_COMMAND : StatefulPowerControl.OFF_COMMAND));
-
         switch (getServiceStatus()) {
+            case NO_NETWORK:
+                views.setTextViewText(R.id.device_label, "No network");
+                break;
             case NOT_CONNECTED:
                 views.setTextViewText(R.id.device_label, "Not connected");
                 break;
@@ -91,6 +89,9 @@ public class StatefulPowerControlWidgetHandler
                     case READY:
                         views.setTextViewText(R.id.device_label, getDevice().getName());
                         views.setImageViewResource(R.id.button, getFeature().isOn() ? R.drawable.stateful_power_on : R.drawable.stateful_power_off);
+                        // listen for button presses
+                        views.setOnClickPendingIntent(R.id.button, getWidgetService().makePendingIntent(this,
+                                getFeature() != null && !getFeature().isOn() ? StatefulPowerControl.ON_COMMAND : StatefulPowerControl.OFF_COMMAND));
                         break;
                 }
                 break;

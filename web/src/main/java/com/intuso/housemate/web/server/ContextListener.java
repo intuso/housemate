@@ -83,9 +83,7 @@ public class ContextListener extends GuiceServletContextListener {
                 if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
                     needsRegistering = true;
                     router.connect();
-                } else if(serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily)
-                    needsRegistering = false;
-                else if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer && needsRegistering) {
+                } else if((serverConnectionStatus == ServerConnectionStatus.ConnectedToServer || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily) && needsRegistering) {
                     needsRegistering = false;
                     router.register(APPLICATION_DETAILS);
                 }

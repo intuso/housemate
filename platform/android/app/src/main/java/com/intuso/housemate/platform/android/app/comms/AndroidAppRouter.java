@@ -9,12 +9,13 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
 import com.google.inject.Inject;
+import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
+import com.intuso.housemate.platform.android.common.JsonMessage;
 import com.intuso.housemate.platform.android.common.MessageCodes;
-import com.intuso.housemate.platform.android.common.ParcelableMessage;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -73,7 +74,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
             try {
                 android.os.Message msg = android.os.Message.obtain(null, MessageCodes.SEND_MESSAGE);
                 msg.getData().putString("id", id);
-                msg.getData().putParcelable("message", new ParcelableMessage(message));
+                msg.getData().putParcelable("message", new JsonMessage(message));
                 sender.send(msg);
             } catch (RemoteException e) {
                 throw new HousemateRuntimeException("Failed to send message to Housemate service");
@@ -83,7 +84,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName className, IBinder binder) {
         getLog().d("Service connected");
-        connectThread.interrupt();
+        if(connectThread != null)
+            connectThread.interrupt();
         connectThread = null;
         sender = new Messenger(binder);
         try {
@@ -110,7 +112,11 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
             switch (msg.what) {
                 case MessageCodes.SEND_MESSAGE:
                     msg.getData().setClassLoader(Message.class.getClassLoader());
-                    messageReceived(((ParcelableMessage) msg.getData().getParcelable("message")).getMessage());
+                    try {
+                        messageReceived(((JsonMessage) msg.getData().getParcelable("message")).getMessage());
+                    } catch (HousemateException e) {
+                        getLog().e("Failed to receive message", e);
+                    }
                     break;
                 case MessageCodes.REGISTERED:
                     getLog().d("Registration created");

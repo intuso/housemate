@@ -66,21 +66,28 @@ public class RemoteClientImpl implements RemoteClient {
             throw new HousemateException("Remote client is not allowed access");
         else if(route == null)
             messageQueue.add(new Message<Message.Payload>(path, type, payload));
-        else
-            comms.sendMessageToClient(path, type, payload, this);
-    }
-
-    @Override
-    public boolean isCurrentlyConnected() {
-        return route != null;
+        else {
+            try {
+                comms.sendMessageToClient(path, type, payload, this);
+            } catch(HousemateException e) {
+                messageQueue.add(new Message<Message.Payload>(path, type, payload));
+            }
+        }
     }
 
     public void setStatus(ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
         this.applicationInstanceAllowed = applicationInstanceStatus == ApplicationInstanceStatus.Allowed;
         for(RemoteClientListener listener : listeners)
             listener.statusChanged(applicationStatus, applicationInstanceStatus);
-        for(Message<?> queuedMessage : messageQueue)
-            comms.sendMessageToClient(queuedMessage.getPath(), queuedMessage.getType(), queuedMessage.getPayload(), this);
+        while(messageQueue.size() > 0) {
+            try {
+                Message message = messageQueue.get(0);
+                comms.sendMessageToClient(message.getPath(), message.getType(), message.getPayload(), this);
+                messageQueue.remove(0);
+            } catch(HousemateException e) {
+                break;
+            }
+        }
     }
 
     @Override

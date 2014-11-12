@@ -20,12 +20,6 @@ public interface RemoteClient {
     void sendMessage(String[] path, String type, Message.Payload payload) throws HousemateException;
 
     /**
-     * Gets if the client is currently connected
-     * @return true if the client is connected, otherwise false
-     */
-    boolean isCurrentlyConnected();
-
-    /**
      * Adds a listener for updates about the remote client's connection status
      * @param listener the listener to add
      * @return listener registration

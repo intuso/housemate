@@ -93,7 +93,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
         super.unregister();
     }
 
-    private synchronized void _ensureConnected() {
+    public synchronized void _ensureConnected() {
         if(connectThread != null || socket != null)
             return;
         if(activityMonitor == null) {
@@ -120,14 +120,14 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
         _disconnect();
     }
 
-    private void _disconnect() {
+    public void _disconnect() {
         _disconnect(true);
     }
 
     /**
      * Shutdown the comms connection
      */
-    private synchronized void _disconnect(boolean reconnect) {
+    public synchronized void _disconnect(boolean reconnect) {
 
         if(connectThread == null && socket == null)
             return;
@@ -235,16 +235,16 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     checkResponse();
                     serialiser = serialiserFactory.create(socket.getOutputStream(), socket.getInputStream());
 
-                    setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
                     messageSender = new MessageSender();
                     streamReader = new StreamReader();
 
-
                     if(applicationDetails != null) {
                         getLog().d("Re-registering");
+                        setServerConnectionStatus(ServerConnectionStatus.ConnectedToServer);
                         serialiser.write(new Message<ApplicationRegistration>(ConnectionManager.ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
                                 new ApplicationRegistration(applicationDetails, properties.get(ConnectionManager.APPLICATION_INSTANCE_ID), ClientType.Router)));
-                    }
+                    } else
+                        setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
 
                     // start the threads
                     streamReader.start();

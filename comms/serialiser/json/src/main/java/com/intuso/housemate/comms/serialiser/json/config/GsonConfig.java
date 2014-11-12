@@ -25,25 +25,32 @@ public class GsonConfig {
     private final static TypeToken AS_TYPE = new TypeToken<ApplicationStatus>() {};
     private final static TypeToken AIS_TYPE = new TypeToken<ApplicationInstanceStatus>() {};
 
-    public static Gson createGson() throws NoSuchFieldException {
+    public static Gson createGson() {
 
-        // there is a problem serialising ListData.class, because it is generic. Gson only finds the DATA parameter
-        // of the Data class, which doesn't extend from HousemateData so doesn't get any type info in the json for
-        // the child data, causing deserialisation problems
-        Type untypedListType = $Gson$Types.resolve(new TypeToken<ListData>() {}.getType(), ListData.class, ListData.class.getGenericSuperclass());
-        TypeToken untypedChildDataType = TypeToken.get($Gson$Types.resolve(untypedListType, ListData.class, Data.class.getDeclaredField("childData").getGenericType()));
-        TypeToken typedChildDataType = new TypeToken<Map<String, HousemateData<HousemateData<?>>>>() {};
-
-        return new GsonBuilder()
+        GsonBuilder builder = new GsonBuilder()
                 // register main sub-class type adapters
                 .registerTypeAdapterFactory(new DataAdapter())
-                .registerTypeAdapterFactory(new PayloadAdapter())
-                // generic type fixes
-                .registerTypeAdapterFactory(new TypeOverrideAdapterFactory(untypedChildDataType, typedChildDataType))
-                // add fixes for enums
-                .registerTypeAdapter(SCS_TYPE.getType(), new EnumTypeAdapter<ServerConnectionStatus>(PayloadAdapter.TYPE_FIELD_NAME, "serverConnectionStatus", PayloadAdapter.ENUM_VALUE_FIELD_NAME))
+                .registerTypeAdapterFactory(new PayloadAdapter());
+
+        // add fixes for enums
+        builder.registerTypeAdapter(SCS_TYPE.getType(), new EnumTypeAdapter<ServerConnectionStatus>(PayloadAdapter.TYPE_FIELD_NAME, "serverConnectionStatus", PayloadAdapter.ENUM_VALUE_FIELD_NAME))
                 .registerTypeAdapter(AS_TYPE.getType(), new EnumTypeAdapter<ApplicationStatus>(PayloadAdapter.TYPE_FIELD_NAME, "applicationStatus", PayloadAdapter.ENUM_VALUE_FIELD_NAME))
-                .registerTypeAdapter(AIS_TYPE.getType(), new EnumTypeAdapter<ApplicationInstanceStatus>(PayloadAdapter.TYPE_FIELD_NAME, "applicationInstanceStatus", PayloadAdapter.ENUM_VALUE_FIELD_NAME))
-                .create();
+                .registerTypeAdapter(AIS_TYPE.getType(), new EnumTypeAdapter<ApplicationInstanceStatus>(PayloadAdapter.TYPE_FIELD_NAME, "applicationInstanceStatus", PayloadAdapter.ENUM_VALUE_FIELD_NAME));
+
+        try {
+            // there is a problem serialising ListData.class, because it is generic. Gson only finds the DATA parameter
+            // of the Data class, which doesn't extend from HousemateData so doesn't get any type info in the json for
+            // the child data, causing deserialisation problems
+            Type untypedListType = $Gson$Types.resolve(new TypeToken<ListData>() {}.getType(), ListData.class, ListData.class.getGenericSuperclass());
+            TypeToken untypedChildDataType = TypeToken.get($Gson$Types.resolve(untypedListType, ListData.class, Data.class.getDeclaredField("childData").getGenericType()));
+            TypeToken typedChildDataType = new TypeToken<Map<String, HousemateData<HousemateData<?>>>>() {};
+
+            // generic type fixes
+            builder.registerTypeAdapterFactory(new TypeOverrideAdapterFactory(untypedChildDataType, typedChildDataType));
+        } catch(NoSuchFieldException e) {
+            // todo log that this happened, failure to register this fix will mean class type is not always added to data objects, breaking deserialisation
+        }
+
+        return builder.create();
     }
 }

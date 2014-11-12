@@ -13,6 +13,7 @@ import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
+import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.condition.ConditionData;
@@ -50,6 +51,7 @@ public class PayloadAdapter extends RuntimeTypeAdapterFactory<Message.Payload> {
         registerSubtype(NoChildrenData.class, "noChildren");
         registerSubtype(ApplicationData.class, "application");
         registerSubtype(ApplicationInstanceData.class, "applicationInstance");
+        registerSubtype(AutomationData.class, "automation");
         registerSubtype(CommandData.class, "command");
         registerSubtype(Command.PerformPayload.class, "commandPerform");
         registerSubtype(Command.PerformingPayload.class, "commandPerforming");
@@ -61,9 +63,6 @@ public class PayloadAdapter extends RuntimeTypeAdapterFactory<Message.Payload> {
         registerSubtype(ParameterData.class, "parameter");
         registerSubtype(PropertyData.class, "property");
         registerSubtype(RootData.class, "root");
-        registerSubtype(ServerConnectionStatus.class, "serverConnectionStatus");
-        registerSubtype(ApplicationStatus.class, "applicationStatus");
-        registerSubtype(ApplicationInstanceStatus.class, "applicationInstanceStatus");
         registerSubtype(SubTypeData.class, "subType");
         registerSubtype(TaskData.class, "task");
         registerSubtype(ChoiceTypeData.class, "choiceType");
@@ -76,5 +75,8 @@ public class PayloadAdapter extends RuntimeTypeAdapterFactory<Message.Payload> {
         registerSubtype(TypeInstances.class, "typeInstances");
         registerSubtype(UserData.class, "user");
         registerSubtype(ValueData.class, "value");
+        registerSubtype(ServerConnectionStatus.class, "serverConnectionStatus");
+        registerSubtype(ApplicationStatus.class, "applicationStatus");
+        registerSubtype(ApplicationInstanceStatus.class, "applicationInstanceStatus");
     }
 }

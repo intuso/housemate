@@ -28,8 +28,8 @@ public class NFCService extends HousemateService {
     }
 
     @Override
-    public void onStart(Intent intent, final int startId) {
-        super.onStart(intent, startId);
+    public int onStartCommand(Intent intent, int flags, final int startId) {
+        int result = super.onStartCommand(intent, flags, startId);
         if(NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
             final String objectPath = intent.getData().getPath();
             final ProxyClientHelper<AndroidProxyRoot> clientHelper = ProxyClientHelper.newClientHelper(getLog(),
@@ -77,6 +77,7 @@ public class NFCService extends HousemateService {
                     })
                     .start();
         }
+        return result;
     }
 
     protected void message(String message, boolean isShort) {

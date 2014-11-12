@@ -4,13 +4,26 @@
     <PreferenceCategory
             android:title="@string/pref_title_server">
         <EditTextPreference
-                android:key="socket.server.host"
+                android:key="client.socket.host"
                 android:title="@string/pref_title_server_host"
                 android:defaultValue="" />
         <EditTextPreference
-                android:key="socket.server.port"
+                android:key="client.socket.port"
                 android:title="@string/pref_title_server_port"
                 android:inputType="number"
                 android:defaultValue="46873" />
+    </PreferenceCategory>
+    <PreferenceCategory
+            android:title="@string/pref_title_inactivity">
+        <EditTextPreference
+                android:key="client.socket.checkIn"
+                android:title="@string/pref_title_inactivity_checkin"
+                android:inputType="number"
+                android:defaultValue="10000" />
+        <EditTextPreference
+                android:key="client.socket.keepOpen"
+                android:title="@string/pref_title_inactivity_keepopen"
+                android:inputType="number"
+                android:defaultValue="10000" />
     </PreferenceCategory>
 </PreferenceScreen>

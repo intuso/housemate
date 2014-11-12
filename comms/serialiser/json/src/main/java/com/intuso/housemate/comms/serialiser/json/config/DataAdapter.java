@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
+import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.DeviceData;
@@ -29,6 +30,7 @@ public class DataAdapter extends RuntimeTypeAdapterFactory<HousemateData> {
         registerSubtype(NoChildrenData.class, "noChildren");
         registerSubtype(ApplicationData.class, "application");
         registerSubtype(ApplicationInstanceData.class, "applicationInstance");
+        registerSubtype(AutomationData.class, "automation");
         registerSubtype(CommandData.class, "command");
         registerSubtype(ConditionData.class, "condition");
         registerSubtype(DeviceData.class, "device");

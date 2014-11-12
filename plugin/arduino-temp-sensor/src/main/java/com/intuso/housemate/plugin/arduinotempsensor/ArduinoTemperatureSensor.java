@@ -13,13 +13,8 @@ import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
-import jssc.SerialPortException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.*;
 
 /**
  */
@@ -29,7 +24,7 @@ public class ArduinoTemperatureSensor extends RealDevice {
 
     public final RealValue<Double> temperature = DoubleType.createValue(getLog(), getListenersFactory(), "temperature", "Temperature", "The current temperature", 0.0);
     
-    private final SerialPort serialPort;
+    private final SerialPortWrapper serialPort;
     private final SerialPortEventListener eventListener = new EventListener();
     private PipedInputStream input;
     private PipedOutputStream output;
@@ -40,7 +35,7 @@ public class ArduinoTemperatureSensor extends RealDevice {
     protected ArduinoTemperatureSensor(Log log,
                                        ListenersFactory listenersFactory,
                                        @Assisted DeviceData data,
-                                       SerialPort serialPort) {
+                                       SerialPortWrapper serialPort) {
         super(log, listenersFactory, data);
         getCustomValueIds().add(temperature.getId());
         getValues().add(temperature);
@@ -50,15 +45,12 @@ public class ArduinoTemperatureSensor extends RealDevice {
     @Override
     protected void start() throws HousemateException {
         try {
-            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT);
             serialPort.addEventListener(eventListener, SerialPort.MASK_RXCHAR);
             input = new PipedInputStream();
             output = new PipedOutputStream(input);
             in = new BufferedReader(new InputStreamReader(input));
-        } catch(SerialPortException e) {
-            throw new HousemateException("Failed to add listener for Arduino data", e);
         } catch(IOException e) {
-            throw new HousemateException("Failed to set up read of Arduino connection data", e);
+            throw new HousemateException("Failed to set up Arduino connection for reading data", e);
         }
         lineReader = new LineReader();
         lineReader.start();
@@ -68,7 +60,7 @@ public class ArduinoTemperatureSensor extends RealDevice {
     protected void stop() {
         try {
             serialPort.removeEventListener();
-        } catch(SerialPortException e) {
+        } catch(IOException e) {
             getLog().e("Failed to remove serial port event listener", e);
         }
         if(lineReader != null) {
@@ -90,8 +82,6 @@ public class ArduinoTemperatureSensor extends RealDevice {
                 while((available = serialPort.getInputBufferBytesCount()) > 0)
                     output.write(serialPort.readBytes(available));
             } catch(IOException e) {
-                getLog().e("Failed to read data from Arduino", e);
-            } catch(SerialPortException e) {
                 getLog().e("Failed to read data from Arduino", e);
             }
         }

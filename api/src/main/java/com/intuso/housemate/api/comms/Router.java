@@ -165,28 +165,24 @@ public abstract class Router implements Sender, Receiver {
     }
 
     @Override
-    public void messageReceived(Message message) {
-        try {
-            // get the key
-            String key = message.getNextClientKey();
+    public void messageReceived(Message message) throws HousemateException {
+        // get the key
+        String key = message.getNextClientKey();
 
-            // if no key then it's intended for this router's root object
-            if(key == null) {
-                root.distributeMessage(message);
-            } else {
-                Receiver receiver = receivers.get(key);
-                if(receiver == null)
-                    root.unknownClient(key);
-                else {
-                    try {
-                        receiver.messageReceived(message);
-                    } catch(Throwable t) {
-                        log.e("Receiver failed to process message", t);
-                    }
+        // if no key then it's intended for this router's root object
+        if(key == null) {
+            root.distributeMessage(message);
+        } else {
+            Receiver receiver = receivers.get(key);
+            if(receiver == null)
+                root.unknownClient(key);
+            else {
+                try {
+                    receiver.messageReceived(message);
+                } catch(Throwable t) {
+                    log.e("Receiver failed to process message", t);
                 }
             }
-        } catch(Throwable t) {
-            log.e("Error processing received message", t);
         }
     }
 

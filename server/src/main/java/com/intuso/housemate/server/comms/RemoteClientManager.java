@@ -54,7 +54,7 @@ public class RemoteClientManager {
         if(client != null) {
 
             // if we think it's still connected somewhere else, then remove the current one
-            if(client.isCurrentlyConnected())
+            if(client.getRoute() != null)
                 client.remove();
 
             // set the new client route

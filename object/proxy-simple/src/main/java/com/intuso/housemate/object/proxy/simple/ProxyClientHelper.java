@@ -128,9 +128,7 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
             if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
                 needsRegistering = true;
                 router.connect();
-            } else if(serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily)
-                needsRegistering = false;
-            else if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer && needsRegistering) {
+            } else if((serverConnectionStatus == ServerConnectionStatus.ConnectedToServer || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily) && needsRegistering) {
                 needsRegistering = false;
                 router.register(applicationDetails);
             }
@@ -166,9 +164,7 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
             log.d("Root serverConnectionStatus = " + serverConnectionStatus);
             if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently)
                 needsRegistering = true;
-            else if(serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily)
-                needsRegistering = false;
-            else if(serverConnectionStatus == ServerConnectionStatus.ConnectedToServer && needsRegistering) {
+            else if((serverConnectionStatus == ServerConnectionStatus.ConnectedToServer || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily) && needsRegistering) {
                 needsRegistering = false;
                 proxyRoot.register(applicationDetails);
             }

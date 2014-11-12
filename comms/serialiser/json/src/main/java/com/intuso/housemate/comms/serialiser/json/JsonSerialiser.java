@@ -22,6 +22,7 @@ import java.io.*;
 public class JsonSerialiser implements Serialiser {
 
     public final static String TYPE = "application/json";
+    public final static java.lang.reflect.Type MESSAGE_TYPE = new TypeToken<Message<Message.Payload>>() {}.getType();
 
     public static class Factory implements StreamSerialiserFactory {
 
@@ -35,8 +36,6 @@ public class JsonSerialiser implements Serialiser {
             return new JsonSerialiser(outputStream, inputStream);
         }
     }
-
-    private final java.lang.reflect.Type messageType = new TypeToken<Message<Message.Payload>>() {}.getType();
 
     private final Gson gson;
     private final JsonWriter jsonWriter;
@@ -60,13 +59,13 @@ public class JsonSerialiser implements Serialiser {
     public void write(Message<?> message) throws IOException {
         if(message != null)
             message.ensureSerialisable();
-        gson.toJson(message, messageType, jsonWriter);
+        gson.toJson(message, MESSAGE_TYPE, jsonWriter);
         jsonWriter.flush();
     }
 
     @Override
     public Message<?> read() throws InterruptedException, IOException {
-        Message<?> message = gson.fromJson(jsonReader, messageType);
+        Message<?> message = gson.fromJson(jsonReader, MESSAGE_TYPE);
         if(message != null)
             message.ensureSerialisable();
         return message;
