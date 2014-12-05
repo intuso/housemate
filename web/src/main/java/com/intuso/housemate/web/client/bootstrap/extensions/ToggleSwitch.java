@@ -131,7 +131,7 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
         })
     }-*/;
 
-    public void setOnLabel(String label) {
+    public void setTrueLabel(String label) {
         divElem.setAttribute(ATTR_ON_LABEL, label);
     }
 
@@ -139,7 +139,7 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
         divElem.setAttribute(ATTR_ON_LABEL, "<i class='" + icon.get() + "'/>");
     }
 
-    public void setOffLabel(String label) {
+    public void setFalseLabel(String label) {
         divElem.setAttribute(ATTR_OFF_LABEL, label);
     }
 
