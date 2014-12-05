@@ -87,7 +87,7 @@ public class ConnectionManager {
                 if(applicationInstanceStatus != ApplicationInstanceStatus.Unregistered)
                     throw new HousemateRuntimeException("Registration already in progress or done");
                 else if(applicationDetails != null) {
-                    setApplicationInstanceStatus(ApplicationInstanceStatus.Pending);
+                    setApplicationInstanceStatus(ApplicationInstanceStatus.Registering);
                     sender.sendMessage(new Message<ApplicationRegistration>(ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
                             new ApplicationRegistration(applicationDetails, properties.get(APPLICATION_INSTANCE_ID), clientType)));
                 } else

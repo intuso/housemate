@@ -54,7 +54,7 @@ public class ApplicationInstanceListWatcher implements ListListener<ApplicationI
         try {
             TypeInstances instances = persistence.getTypeInstances(applicationInstance.getStatusValue().getPath());
             if(instances.getFirstValue() != null) {
-                ApplicationInstanceStatus applicationStatus = ApplicationInstanceStatus.Allowed.valueOf(instances.getFirstValue());
+                ApplicationInstanceStatus applicationStatus = ApplicationInstanceStatus.valueOf(instances.getFirstValue());
                 if(applicationStatus == ApplicationInstanceStatus.Allowed)
                     applicationInstance.getAllowCommand().perform(new TypeInstanceMap(),
                             new CommandPerformListener(log, "Allow application instance \"" + applicationInstance.getId() + "\""));

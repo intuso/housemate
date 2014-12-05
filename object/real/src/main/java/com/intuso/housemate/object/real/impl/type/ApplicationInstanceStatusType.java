@@ -17,6 +17,6 @@ public class ApplicationInstanceStatusType extends EnumChoiceType<ApplicationIns
     @Inject
     protected ApplicationInstanceStatusType(Log log, ListenersFactory listenersFactory) {
         super(log, listenersFactory, "application-instance-status", "Application Instance Status", "Application Instance Status", 1, 1,
-                ApplicationInstanceStatus.class, new ApplicationInstanceStatus[] {ApplicationInstanceStatus.Allowed, ApplicationInstanceStatus.Unregistered, ApplicationInstanceStatus.Pending, ApplicationInstanceStatus.Rejected});
+                ApplicationInstanceStatus.class, new ApplicationInstanceStatus[] {ApplicationInstanceStatus.Allowed, ApplicationInstanceStatus.Rejected});
     }
 }

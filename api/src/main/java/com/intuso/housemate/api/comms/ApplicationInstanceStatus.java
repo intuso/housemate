@@ -6,6 +6,7 @@ package com.intuso.housemate.api.comms;
 */
 public enum ApplicationInstanceStatus implements Message.Payload {
     Unregistered,
+    Registering,
     Allowed,
     Pending,
     Rejected,

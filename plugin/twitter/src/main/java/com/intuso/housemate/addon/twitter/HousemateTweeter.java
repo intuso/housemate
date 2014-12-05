@@ -128,6 +128,10 @@ public class HousemateTweeter {
                         log.d("Application not registered with the server");
                         tweet("Application not registered with the server");
                         break;
+                    case Registering:
+                        log.d("Application registering with the server");
+                        tweet("Application registering with the server");
+                        break;
                     case Rejected:
                         log.d("Access to the server rejected");
                         tweet("Access to the server rejected");
