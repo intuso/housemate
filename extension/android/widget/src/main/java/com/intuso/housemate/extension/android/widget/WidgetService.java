@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 import com.google.common.collect.HashBiMap;
+import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
 import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
@@ -138,9 +139,14 @@ public class WidgetService extends HousemateService {
         Status oldStatus = status;
         if(!networkAvailable)
             status = Status.NO_NETWORK;
-        else if(!(getRouter().getServerConnectionStatus() == ServerConnectionStatus.ConnectedToServer || getRouter().getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily))
+        else if(!(getRouter().getServerConnectionStatus() == ServerConnectionStatus.ConnectedToServer || getRouter().getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily)) {
+            try {
+                throw new HousemateException("Dummy");
+            } catch(HousemateException e) {
+                getLog().e("Widget service no longer connected", e);
+            }
             status = Status.NOT_CONNECTED;
-        else if(getRoot().getApplicationInstanceStatus() != ApplicationInstanceStatus.Allowed)
+        } else if(getRoot().getApplicationInstanceStatus() != ApplicationInstanceStatus.Allowed)
             status = Status.NOT_ALLOWED;
         else if(getRoot().getDevices() == null)
             status = Status.NOT_LOADED;

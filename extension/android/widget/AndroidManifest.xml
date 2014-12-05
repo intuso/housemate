@@ -27,10 +27,15 @@
             <meta-data android:name="android.appwidget.provider"
                        android:resource="@xml/widget_info" />
         </receiver>
+        <receiver android:name=".NetworkStateReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".UpgradeRestarter" >
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
-                <data android:scheme="package" android:path="com.intuso.housemate.android.widget" />
+                <data android:scheme="package" android:path="com.intuso.housemate.extension.android.widget" />
             </intent-filter>
         </receiver>
     </application>
