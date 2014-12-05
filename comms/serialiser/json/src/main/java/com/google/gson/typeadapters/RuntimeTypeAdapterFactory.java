@@ -208,7 +208,7 @@ public class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
                 }
                 String label = labelJsonElement.getAsString();
                 Class<?> clazz = labelToSubtype.get(label);
-                if(Enum.class.isAssignableFrom(clazz)) {
+                if(clazz != null && Enum.class.isAssignableFrom(clazz)) {
                     JsonElement valueJsonElement = jsonElement.getAsJsonObject().remove(enumValueFieldName);
                     if (valueJsonElement == null) {
                         throw new JsonParseException("cannot deserialize " + baseType
