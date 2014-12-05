@@ -142,6 +142,8 @@ public class AppService extends Service implements ServiceConnection {
                 clientReceivers.get(id).unregister();
             } catch(RemoteException e) {
                 log.e("Failed to send message to client", e);
+            } catch(Throwable t) {
+                log.e("Problem sending message to client", t);
             }
         }
     }

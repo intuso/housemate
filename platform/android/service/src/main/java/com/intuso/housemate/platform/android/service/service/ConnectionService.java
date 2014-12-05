@@ -126,10 +126,7 @@ public class ConnectionService extends Service {
         if(intent != null && NETWORK_AVAILABLE_ACTION.equals(intent.getAction())) {
             if(intent.getExtras().containsKey(NETWORK_AVAILABLE)) {
                 log.d("Received network available update: " + intent.getBooleanExtra(NETWORK_AVAILABLE, true));
-                if(intent.getBooleanExtra(NETWORK_AVAILABLE, true))
-                    router._ensureConnected();
-                else
-                    router._disconnect(false);
+                router.networkAvailable(intent.getBooleanExtra(NETWORK_AVAILABLE, true));
             }
         }
         return START_STICKY;

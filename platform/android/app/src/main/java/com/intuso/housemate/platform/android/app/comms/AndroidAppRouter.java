@@ -32,7 +32,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     private final static Intent SERVER_INTENT = new Intent("com.intuso.housemate.service");
 
     private final Context context;
-    private ConnectThread connectThread;
+    private BindThread bindThread;
+    private RegisterThread registerThread;
     private Messenger sender;
     private String id;
     private final Messenger receiver = new Messenger(new MessageHandler());
@@ -47,13 +48,21 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     public void connect() {
         getLog().d("Connecting service");
         setServerConnectionStatus(ServerConnectionStatus.Connecting);
-        connectThread = new ConnectThread();
-        connectThread.start();
+        bindThread = new BindThread();
+        bindThread.start();
     }
 
     @Override
     public void disconnect() {
         getLog().d("Disconnecting service");
+        if(bindThread != null) {
+            bindThread.interrupt();
+            bindThread = null;
+        }
+        if(registerThread != null) {
+            registerThread.interrupt();
+            registerThread = null;
+        }
         if(sender != null) {
             try {
                 getLog().d("Removing server registration");
@@ -84,25 +93,20 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName className, IBinder binder) {
         getLog().d("Service connected");
-        if(connectThread != null)
-            connectThread.interrupt();
-        connectThread = null;
-        sender = new Messenger(binder);
-        try {
-            getLog().d("Creating server registration");
-            android.os.Message msg = android.os.Message.obtain(null, MessageCodes.REGISTER);
-            msg.replyTo = receiver;
-            sender.send(msg);
-        } catch (RemoteException e) {
-            getLog().e("Failed to connect to service", e);
+        if(bindThread != null) {
+            bindThread.interrupt();
+            bindThread = null;
         }
+        sender = new Messenger(binder);
+        registerThread = new RegisterThread();
+        registerThread.start();
     }
 
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
-        setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
         getLog().d("Service connection lost unexpectedly, trying to re-establish connection");
-        sender = null;
+        setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
+        disconnect();
         connect();
     }
 
@@ -120,6 +124,10 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                     break;
                 case MessageCodes.REGISTERED:
                     getLog().d("Registration created");
+                    if(registerThread != null) {
+                        registerThread.interrupt();
+                        registerThread = null;
+                    }
                     setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
                     id = msg.getData().getString("id");
                     break;
@@ -129,14 +137,35 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
         }
     }
 
-    private class ConnectThread extends Thread {
+    private class BindThread extends Thread {
         @Override
         public void run() {
             while(!isInterrupted() && sender == null) {
                 context.startService(SERVER_INTENT);
                 context.bindService(SERVER_INTENT, AndroidAppRouter.this, Context.BIND_AUTO_CREATE);
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }
+    }
+
+    private class RegisterThread extends Thread {
+        @Override
+        public void run() {
+            while(!isInterrupted() && getServerConnectionStatus() == ServerConnectionStatus.Connecting) {
+                try {
+                    getLog().d("Creating server registration");
+                    android.os.Message msg = android.os.Message.obtain(null, MessageCodes.REGISTER);
+                    msg.replyTo = receiver;
+                    sender.send(msg);
+                } catch (RemoteException e) {
+                    getLog().e("Failed to connect to service", e);
+                }
+                try {
+                    Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     break;
                 }
