@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -52,6 +53,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
     private final List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
     private ApplicationDetails applicationDetails = null;
+    private boolean networkAvailable = true;
 
     /**
      * Create a new client comms
@@ -120,14 +122,14 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
         _disconnect();
     }
 
-    public void _disconnect() {
+    private final void _disconnect() {
         _disconnect(true);
     }
 
     /**
      * Shutdown the comms connection
      */
-    public synchronized void _disconnect(boolean reconnect) {
+    private synchronized final void _disconnect(boolean reconnect) {
 
         if(connectThread == null && socket == null)
             return;
@@ -207,6 +209,13 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
         }
     }
 
+    public void networkAvailable(boolean networkAvailable) {
+        this.networkAvailable = networkAvailable;
+        // check if we should disconnect, activity monitor will take care of reconnecting
+        if(!networkAvailable)
+            _disconnect(false);
+    }
+
     private class ConnectThread extends Thread {
         @Override
         public void run() {
@@ -234,6 +243,9 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     writeDetails();
                     checkResponse();
                     serialiser = serialiserFactory.create(socket.getOutputStream(), socket.getInputStream());
+
+                    if(activityMonitor != null)
+                        activityMonitor.somethingHappened();
 
                     messageSender = new MessageSender();
                     streamReader = new StreamReader();
@@ -328,7 +340,9 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
             try {
                 while(!isInterrupted()) {
                     Message message = this.readMessage();
-                    if(!(message.getPath().length == 0 && message.getType().equals("heartbeat"))) {
+                    if(message == null)
+                        return;
+                    else if(!(message.getPath().length == 0 && message.getType().equals("heartbeat"))) {
                         getLog().d("Message received " + message);
                         if(activityMonitor != null)
                             activityMonitor.somethingHappened();
@@ -354,6 +368,10 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     return serialiser.read();
                 } catch(HousemateException e) {
                     getLog().e("Problem reading message, retrying", e);
+                } catch(SocketException e) {
+                    if(e.getMessage().equals("Socket closed"))
+                        return null;
+                    throw new HousemateException("Could not read message", e);
                 } catch(IOException e) {
                     throw new HousemateException("Could not read message", e);
                 } catch (InterruptedException e) {
@@ -430,20 +448,22 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
         @Override
         public void run() {
             while(!isInterrupted()) {
-                // if not connected and check in timeout reached
-                if(getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && getServerConnectionStatus() != ServerConnectionStatus.ConnectedToRouter) {
-                    long disconnectedFor = (System.currentTimeMillis() - inactiveAt);
-                    if (disconnectedFor > checkInTimeout) {
-                        getLog().d("Check in timeout reached, ensuring connected");
-                        _ensureConnected();
-                    }
-                // else if connecting/ed and inactivity timeout reached, then disconnect
-                } else {
-                    long inactiveFor = (System.currentTimeMillis() - lastActivity);
-                    if(inactiveFor > inactivityTimeout) {
-                        getLog().d("Inactivity timeout reached. Disconnecting");
-                        _disconnect(false);
-                        inactiveAt = System.currentTimeMillis();
+                if(networkAvailable) {
+                    // if not connected and check in timeout reached
+                    if (getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && getServerConnectionStatus() != ServerConnectionStatus.ConnectedToRouter) {
+                        long disconnectedFor = (System.currentTimeMillis() - inactiveAt);
+                        if (disconnectedFor > checkInTimeout) {
+                            getLog().d("Check in timeout reached, ensuring connected");
+                            _ensureConnected();
+                        }
+                        // else if connecting/ed and inactivity timeout reached, then disconnect
+                    } else {
+                        long inactiveFor = (System.currentTimeMillis() - lastActivity);
+                        if (inactiveFor > inactivityTimeout) {
+                            getLog().d("Inactivity timeout reached. Disconnecting");
+                            _disconnect(false);
+                            inactiveAt = System.currentTimeMillis();
+                        }
                     }
                 }
                 try {
