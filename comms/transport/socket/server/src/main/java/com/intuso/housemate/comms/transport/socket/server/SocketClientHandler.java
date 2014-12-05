@@ -278,8 +278,14 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
 		
 		@Override
 		public void run() {
-            while(!isInterrupted())
+            while(!isInterrupted()) {
                 _sendMessage(heartbeat);
+                try {
+                    Thread.sleep(30000);
+                } catch(InterruptedException e) {
+                    break;
+                }
+            }
 		}
 	}
 }
