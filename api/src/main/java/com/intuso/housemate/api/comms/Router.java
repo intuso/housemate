@@ -62,7 +62,7 @@ public abstract class Router implements Sender, Receiver {
                     Router.this.fullyConnected = fullyConnected;
                     Message<ServerConnectionStatus> message = new Message<ServerConnectionStatus>(new String[]{""},
                             Root.SERVER_CONNECTION_STATUS_TYPE,
-                            fullyConnected ? ServerConnectionStatus.ConnectedToServer : ServerConnectionStatus.ConnectedToRouter);
+                            fullyConnected ? root.getServerConnectionStatus() : ServerConnectionStatus.ConnectedToRouter);
                     for (Receiver receiver : receivers.values()) {
                         try {
                             receiver.messageReceived(message);
