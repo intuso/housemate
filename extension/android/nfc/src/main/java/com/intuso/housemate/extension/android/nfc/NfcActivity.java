@@ -1,9 +1,7 @@
 package com.intuso.housemate.extension.android.nfc;
 
+import android.app.Activity;
 import android.content.Intent;
-import com.intuso.housemate.object.proxy.simple.ProxyClientHelper;
-import com.intuso.housemate.platform.android.app.HousemateActivity;
-import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,9 +10,7 @@ import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
  * Time: 13:37
  * To change this template use File | Settings | File Templates.
  */
-public class NfcActivity extends HousemateActivity {
-
-    private ProxyClientHelper<AndroidProxyRoot> clientHelper;
+public class NfcActivity extends Activity {
 
     @Override
     public void onStart() {
