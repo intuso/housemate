@@ -1,6 +1,7 @@
 package com.intuso.housemate.web.server;
 
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.intuso.housemate.api.comms.*;
@@ -33,36 +34,38 @@ public class ContextListener extends GuiceServletContextListener {
 
     public static Injector INJECTOR;
 
+    public ContextListener() {
+        this(createInjector());
+    }
+
+    @Inject
+    public ContextListener(Injector injector) {
+        INJECTOR = injector;
+    }
+
+    private static Injector createInjector() {
+        ListenersFactory listenersFactory = new ListenersFactory() {
+            @Override
+            public <LISTENER extends Listener> Listeners<LISTENER> create() {
+                return new Listeners<LISTENER>(new CopyOnWriteArrayList<LISTENER>());
+            }
+        };
+        WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
+        PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, new String[]{"-log.stdout.level", "DEBUG"});
+        return Guice.createInjector(
+                new PCClientModule(defaultProperties, properties, "web-server.log"),
+                new JsonSerialiserClientModule(),
+                new SocketClientModule(defaultProperties),
+                new FlatFilePersistenceModule(defaultProperties));
+    }
+
     @Override
     protected Injector getInjector() {
         return INJECTOR;
     }
 
-    private void setINJECTOR(ServletContextEvent servletContextEvent) {
-        Object injector = servletContextEvent.getServletContext().getAttribute(Injector.class.getName());
-        if(injector != null && injector instanceof Injector)
-            INJECTOR = (Injector)injector;
-        else {
-            ListenersFactory listenersFactory = new ListenersFactory() {
-                @Override
-                public <LISTENER extends Listener> Listeners<LISTENER> create() {
-                    return new Listeners<LISTENER>(new CopyOnWriteArrayList<LISTENER>());
-                }
-            };
-            WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
-            PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, new String[]{"-log.stdout.level", "DEBUG"});
-            INJECTOR = Guice.createInjector(
-                    new PCClientModule(defaultProperties, properties, "web-server.log"),
-                    new JsonSerialiserClientModule(),
-                    new SocketClientModule(defaultProperties),
-                    new FlatFilePersistenceModule(defaultProperties));
-        }
-    }
-
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-
-        setINJECTOR(servletContextEvent);
 
         super.contextInitialized(servletContextEvent);
 
@@ -109,7 +112,8 @@ public class ContextListener extends GuiceServletContextListener {
                 log.d("Server instance changed");
             }
         });
-        router.connect();
+        if(router.getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && router.getServerConnectionStatus() != ServerConnectionStatus.DisconnectedTemporarily)
+            router.connect();
     }
 
     @Override

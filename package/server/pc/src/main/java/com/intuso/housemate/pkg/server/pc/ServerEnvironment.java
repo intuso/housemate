@@ -8,6 +8,8 @@ import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.storage.ServerObjectLoader;
+import com.intuso.housemate.web.server.ContextListener;
+import com.intuso.housemate.web.server.service.CommsServiceImpl;
 import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -16,12 +18,14 @@ import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import jssc.SerialPortList;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.resource.FileResource;
-import org.eclipse.jetty.util.resource.JarResource;
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.util.resource.URLResource;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -201,27 +205,7 @@ public class ServerEnvironment {
                 log.d("Not starting webapp");
                 return;
             }
-            File webappDirectory = new File(properties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + WEBAPP_FOLDER);
-            if (!webappDirectory.exists())
-                webappDirectory.mkdir();
-            File webappFile = new File(webappDirectory, WEBAPP_NAME + ".war");
-            if (webappFile.isDirectory())
-                webappFile.delete();
-            if (!webappFile.exists()) {
-                URL url = getClass().getResource("/" + webappFile.getName());
-                if (url == null) {
-                    log.e("Could not find existing webapp and could not find it in jar. Cannot start web interface");
-                    return;
-                }
-                copyWebapp(url, webappFile, log);
-            }
-            File webappDir = new File(webappDirectory, WEBAPP_NAME);
-            if (webappDir.isFile())
-                webappDir.delete();
-            if (!webappDir.exists()) {
-                webappDir.mkdir();
-                unpackWar(webappFile, webappDir);
-            }
+
             int port = 46874;
             try {
                 if (properties.keySet().contains(WEBAPP_PORT))
@@ -229,69 +213,39 @@ public class ServerEnvironment {
             } catch (Throwable t) {
                 log.w("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
             }
-            startJetty(injector, properties, port, webappDir);
+
+            startJetty(injector, properties, port);
         } catch(Throwable t) {
             log.e("Failed to start web server", t);
         }
     }
 
-    private void copyWebapp(URL fromUrl, File toFile, Log log) throws HousemateException {
-        InputStream is = null;
-        OutputStream os = null;
-        try {
-            try {
-                is = fromUrl.openStream();
-            } catch(IOException e) {
-                throw new HousemateException("Failed to open stream to copy webapp from");
-            }
-            try {
-                os = new FileOutputStream(toFile);
-            } catch(IOException e) {
-                throw new HousemateException("Failed to open stream to write webapp to");
-            }
-            byte[] buffer = new byte[1024];
-            int read;
-            try {
-                while((read = is.read(buffer)) > 0)
-                    os.write(buffer, 0, read);
-            } catch (IOException e) {
-                throw new HousemateException("Failed to copy webapp", e);
-            }
-        } finally {
-            try {
-                if(is != null)
-                    is.close();
-            } catch(IOException e) {
-                log.e("Failed to close input stream when copying webapp", e);
-            }
-            try {
-                if(os != null)
-                    os.close();
-            } catch(IOException e) {
-                log.e("Failed to close input stream when copying webapp", e);
-            }
-        }
-    }
-
-    private void unpackWar(File webappFile, File webappDir) throws HousemateException {
-        try {
-            Resource jarWebApp = JarResource.newJarResource(FileResource.newResource(webappFile));
-            jarWebApp.copyTo(webappDir);
-        } catch(IOException e) {
-            throw new HousemateException("Error unpacking webapp", e);
-        }
-    }
-
-    private void startJetty(Injector injector, PropertyRepository properties, int port, File warFile)
+    private void startJetty(Injector injector, PropertyRepository properties, int port)
             throws HousemateException {
-        Server server = new Server(port);
 
-        // Configure webapp provided as external WAR
-        WebAppContext webapp = new WebAppContext();
-        webapp.getServletContext().setAttribute(Injector.class.getName(), injector);
-        webapp.setContextPath(properties.get(WEBAPP_PATH) != null ? properties.get(WEBAPP_PATH) : DEFAULT_WEBAPP_PATH);
-        webapp.setWar(warFile.getAbsolutePath());
-        server.setHandler(webapp);
+        ServletHandler servletHandler = new ServletHandler();
+        servletHandler.addServletWithMapping(CommsServiceImpl.class, "/Housemate/comms");
+        servletHandler.addServletWithMapping(StaticFilesServlet.class, "/*");
+
+        ServletContextHandler handler = new ServletContextHandler(null, "/housemate");
+        handler.setServletHandler(servletHandler);
+        handler.setSessionHandler(new SessionHandler());
+        try {
+            // cannot simply use getResource("/") as this returns the url for the main class loader. Need to instead
+            // find the url for index.html and get the directory it's contained in
+            URL url = CommsServiceImpl.class.getClassLoader().getResource("index.html");
+            if(url != null)
+                handler.setBaseResource(URLResource.newResource(new URL(url, ".")));
+            else
+                throw new IOException("Could not find index.html location");
+        } catch (IOException e) {
+            throw new HousemateException("Failed to register housemate static web resources", e);
+        }
+        handler.addEventListener(injector.getInstance(ContextListener.class));
+
+        Server server = new Server(port);
+        server.setHandler(handler);
+        server.setStopAtShutdown(true);
 
         // Start the server
         try {

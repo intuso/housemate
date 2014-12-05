@@ -8,7 +8,6 @@
     </parent>
 
     <artifactId>web</artifactId>
-    <packaging>war</packaging>
     <name>Housemate Web</name>
     <description>Housemate Web interface</description>
 
@@ -30,7 +29,6 @@
         <gwt.version.main>2.5</gwt.version.main>
         <gwt.version>${gwt.version.main}.1</gwt.version>
         <bootstrap.version>2.2.1.0</bootstrap.version>
-        <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
     </properties>
 
     <dependencies>
@@ -116,12 +114,12 @@
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
             <version>${gwt.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
             <version>${gwt.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <!-- Bootstrap -->
@@ -134,8 +132,6 @@
     </dependencies>
 
     <build>
-        <!-- Generate compiled stuff in the folder used for developing mode -->
-        <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
 
         <plugins>
 
@@ -208,6 +204,38 @@
                                     </includes>
                                 </fileset>
                             </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Copy GWT generated stuff into normal area -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/${project.build.finalName}</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>index.html</include>
+                                        <include>js/**</include>
+                                        <include>css/**</include>
+                                        <include>img/**</include>
+                                        <include>Housemate/**</include>
+                                    </includes>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
