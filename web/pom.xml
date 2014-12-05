@@ -188,7 +188,7 @@
                     </execution>
                     <execution>
                         <id>remove-gwt-user-jar</id>
-                        <phase>package</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>clean</goal>
                         </goals>
@@ -217,7 +217,7 @@
                     <execution>
                         <id>copy-resources</id>
                         <!-- here the phase you need -->
-                        <phase>package</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
