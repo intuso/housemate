@@ -96,7 +96,6 @@ public class CommandBridge
                     @Override
                     public void commandFailed(CommandBridge command, String error) {
                         try {
-
                             for(CommandListener<? super CommandBridge> listener : getObjectListeners())
                                 listener.commandFailed(getThis(), error);
                             sendMessage(FAILED_TYPE, new FailedPayload(message.getPayload().getOriginal().getOpId(), error), message.getPayload().getClient());

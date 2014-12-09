@@ -1,11 +1,13 @@
 package com.intuso.housemate.server.storage;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
+import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.condition.ConditionData;
@@ -30,6 +32,7 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -79,8 +82,10 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
                 ServerRealApplication application = new ServerRealApplication(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
                         details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(),
                         injector.getInstance(ApplicationStatusType.class));
+                List<String> path = Lists.newArrayList(realApplications.getPath());
+                path.add(application.getId());
+                loadApplicationInstances(path, application.getApplicationInstances(), application.getStatus());
                 realApplications.add(application);
-                loadApplicationInstances(application.getApplicationInstances(), application.getStatus());
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved users " + Arrays.toString(realApplications.getPath()));
@@ -89,10 +94,10 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         }
     }
 
-    private void loadApplicationInstances(ServerRealList<ApplicationInstanceData, ServerRealApplicationInstance> realApplicationInstances, ApplicationStatus applicationStatus) {
+    private void loadApplicationInstances(List<String> path, ServerRealList<ApplicationInstanceData, ServerRealApplicationInstance> realApplicationInstances, ApplicationStatus applicationStatus) {
         try {
-            for(String key : persistence.getValuesKeys(realApplicationInstances.getPath())) {
-                TypeInstanceMap details = persistence.getValues(realApplicationInstances.getPath(), key);
+            for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
+                TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]), key);
                 ServerRealApplicationInstance applicationInstance = new ServerRealApplicationInstance(log, listenersFactory,
                         details.getChildren().get("id").getFirstValue(), injector.getInstance(ApplicationInstanceStatusType.class),
                         applicationStatus);
@@ -159,10 +164,19 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
                     ServerRealAutomation automation = new ServerRealAutomation(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
                             details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(), this,
                             lifecycleHandler);
-                    automation.init(realAutomations);
-                    loadConditions(automation.getConditions(), automation);
-                    loadTasks(automation.getSatisfiedTasks(), automation.getSatisfiedTaskOwner());
-                    loadTasks(automation.getUnsatisfiedTasks(), automation.getUnsatisfiedTaskOwner());
+                    // automation is not yet initialised so we cannot use it's path to load conditions etc. Instead,
+                    // we can manually build the path using the list's path as a base.
+                    List<String> path = Lists.newArrayList(realAutomations.getPath());
+                    path.add(automation.getId());
+                    path.add(Automation.CONDITIONS_ID);
+                    loadConditions(path, automation.getConditions(), automation);
+                    path.remove(path.size() - 1);
+                    path.add(Automation.SATISFIED_TASKS_ID);
+                    loadTasks(path, automation.getSatisfiedTasks(), automation.getSatisfiedTaskOwner());
+                    path.remove(path.size() - 1);
+                    path.add(Automation.UNSATISFIED_TASKS_ID);
+                    loadTasks(path, automation.getUnsatisfiedTasks(), automation.getUnsatisfiedTaskOwner());
+                    path.remove(path.size() - 1);
                     realAutomations.add(automation);
                 } catch(HousemateException e) {
                     log.e("Failed to load automation", e);
@@ -175,14 +189,16 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         }
     }
 
-    private void loadConditions(ServerRealList<ConditionData, ServerRealCondition> conditions, ServerRealConditionOwner owner) {
+    private void loadConditions(List<String> path, ServerRealList<ConditionData, ServerRealCondition> conditions, ServerRealConditionOwner owner) {
         try {
-            for(String conditionName : persistence.getValuesKeys(conditions.getPath())) {
+            for(String conditionName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
-                    TypeInstanceMap details = persistence.getValues(conditions.getPath(), conditionName);
+                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]), conditionName);
                     ServerRealCondition condition = conditionFactory.createCondition(details, owner);
+                    path.add(condition.getId());
+                    loadConditions(path, condition.getConditions(), condition);
+                    path.remove(path.size() - 1);
                     conditions.add(condition);
-                    loadConditions(condition.getConditions(), condition);
                 } catch(HousemateException e) {
                     log.e("Failed to load condition", e);
                 }
@@ -194,11 +210,11 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         }
     }
 
-    private void loadTasks(ServerRealList<TaskData, ServerRealTask> tasks, ServerRealTaskOwner owner) {
+    private void loadTasks(List<String> path, ServerRealList<TaskData, ServerRealTask> tasks, ServerRealTaskOwner owner) {
         try {
-            for(String taskName : persistence.getValuesKeys(tasks.getPath())) {
+            for(String taskName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
-                    TypeInstanceMap details = persistence.getValues(tasks.getPath(), taskName);
+                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]), taskName);
                     tasks.add(taskFactory.createTask(details, owner));
                 } catch(HousemateException e) {
                     log.e("Failed to load task", e);
