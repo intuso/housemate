@@ -47,11 +47,6 @@ public class ServerEnvironment {
     public final static String PLUGINS_DIR_NAME= "plugins";
     public final static String RUN_WEBAPP = "webapp.run";
     public final static String WEBAPP_PORT = "webapp.port";
-    private final static String WEBAPP_PATH = "webapp.path";
-
-    private final static String WEBAPP_FOLDER = "webapp";
-    private final static String WEBAPP_NAME = "housemate";
-    private final static String DEFAULT_WEBAPP_PATH = "/housemate";
 
 	/**
 	 * Create a environment instance
