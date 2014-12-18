@@ -140,6 +140,7 @@ public class ServerRealAutomation
             ServerRealCondition condition = conditions.iterator().next();
             condition.start();
             conditionListenerRegistration = condition.addObjectListener(this);
+            conditionSatisfied(condition, condition.isSatisfied());
         }
     }
 
