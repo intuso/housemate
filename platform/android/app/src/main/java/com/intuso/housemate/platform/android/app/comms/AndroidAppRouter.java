@@ -10,6 +10,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
@@ -42,6 +43,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     private final Messenger receiver;
     private final LinkedBlockingQueue<Message> outputQueue;
     private boolean shouldBeConnected = false;
+    private boolean registered = false;
     private ServerConnectionStatus lastStatus = ServerConnectionStatus.DisconnectedPermanently;
 
     @Inject
@@ -57,13 +59,16 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
         if (shouldBeConnected)
             return;
         shouldBeConnected = true;
-        getLog().d("Connecting service");
+
         _ensureConnected();
     }
 
     private void _ensureConnected() {
-        if(bindThread != null || registerThread != null)
+        if(registered)
             return;
+
+        getLog().d("Connecting to app service");
+
         bindThread = new BindThread();
         bindThread.start();
     }
@@ -75,19 +80,25 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
             return;
         shouldBeConnected = false;
 
-        _disconnect();
-    }
+        try {
+            if(sender != null) {
+                getLog().d("Removing server registration");
+                android.os.Message msg = android.os.Message.obtain(null, MessageCodes.UNREGISTER);
+                registered = false;
+                msg.getData().putString("id", id);
+                sender.send(msg);
+            }
+            id = null;
+        } catch (RemoteException e) {
+            throw new HousemateRuntimeException("Failed to send disconnect message from service", e);
+        }
 
-    private void _disconnect() {
-        _disconnect(true);
+        _disconnect(false);
     }
 
     private synchronized void _disconnect(boolean reconnect) {
 
-        if(bindThread == null && registerThread == null)
-            return;
-
-        getLog().d("Disconnecting service");
+        getLog().d("Disconnecting from service");
 
         if(bindThread != null) {
             bindThread.interrupt();
@@ -102,17 +113,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
             messageSender = null;
         }
         if(sender != null) {
-            try {
-                getLog().d("Removing server registration");
-                android.os.Message msg = android.os.Message.obtain(null, MessageCodes.UNREGISTER);
-                msg.getData().putString("id", id);
-                sender.send(msg);
-                if(!reconnect)
-                    id = null;
-            } catch (RemoteException e) {
-                getLog().e("Failed to send disconnect message to service", e);
-            }
             context.unbindService(this);
+            registered = false;
             sender = null;
         }
 
@@ -162,8 +164,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
         getLog().d("Service connection lost unexpectedly, trying to re-establish connection");
-        disconnect();
-        connect();
+        sender = null;
+        _disconnect(true);
     }
 
     private class MessageHandler extends Handler {
@@ -180,6 +182,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                     break;
                 case MessageCodes.REGISTERED:
                     getLog().d("Registration created");
+                    registered = true;
                     if(registerThread != null) {
                         registerThread.interrupt();
                         registerThread = null;
@@ -187,6 +190,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                     messageSender = new MessageSender();
                     if(getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily)
                         setServerConnectionStatus(lastStatus);
+                    else
+                        setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
                     // start the sender thread
                     messageSender.start();
                     id = msg.getData().getString("id");
@@ -220,10 +225,16 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
             while(!isInterrupted() && getServerConnectionStatus() == ServerConnectionStatus.Connecting) {
                 try {
                     getLog().d("Creating server registration");
-                    android.os.Message msg = android.os.Message.obtain(null, MessageCodes.REGISTER);
-                    msg.getData().putString("id", id);
-                    msg.replyTo = receiver;
-                    sender.send(msg);
+                    if(id == null) {
+                        android.os.Message msg = android.os.Message.obtain(null, MessageCodes.CREATE_REGISTRATION);
+                        msg.replyTo = receiver;
+                        sender.send(msg);
+                    } else {
+                        android.os.Message msg = android.os.Message.obtain(null, MessageCodes.RE_REGISTER);
+                        msg.getData().putString("id", id);
+                        msg.replyTo = receiver;
+                        sender.send(msg);
+                    }
                 } catch (RemoteException e) {
                     getLog().e("Failed to connect to service", e);
                 }
@@ -261,7 +272,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                     break;
                 } catch(IOException e) {
                     getLog().e("Error sending message to client", e);
-                    _disconnect();
+                    _disconnect(true);
                     break;
                 }
             }

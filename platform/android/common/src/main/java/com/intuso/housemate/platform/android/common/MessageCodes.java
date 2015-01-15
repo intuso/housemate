@@ -10,9 +10,10 @@ package com.intuso.housemate.platform.android.common;
 public class MessageCodes {
 
     // connection-based messages
-    public final static int REGISTER = 1;
-    public final static int UNREGISTER = 2;
-    public final static int REGISTERED = 3;
+    public final static int CREATE_REGISTRATION = 1;
+    public final static int RE_REGISTER = 2;
+    public final static int UNREGISTER = 3;
+    public final static int REGISTERED = 4;
 
     // comms based messages
     public final static int SEND_MESSAGE = 10;

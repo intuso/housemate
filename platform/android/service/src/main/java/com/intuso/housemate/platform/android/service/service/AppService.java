@@ -76,12 +76,23 @@ public class AppService extends Service implements ServiceConnection {
             Router.Registration registration;
             String id;
             switch (msg.what) {
-                case MessageCodes.REGISTER:
-                    id = msg.getData().getString("id");
-                    if(id == null)
-                        id = UUID.randomUUID().toString();
+                case MessageCodes.CREATE_REGISTRATION:
+                    id = UUID.randomUUID().toString();
                     while(clientReceivers.containsKey(id))
                         id = UUID.randomUUID().toString();
+                    log.d("Registering new client " + id);
+                    try {
+                        android.os.Message reply = android.os.Message.obtain();
+                        reply.what = MessageCodes.REGISTERED;
+                        reply.getData().putString("id", id);
+                        msg.replyTo.send(reply);
+                    } catch (RemoteException e) {
+                        log.e("Failed to send message to client", e);
+                    }
+                    clientReceivers.put(id, router.registerReceiver(new ClientReceiver(id, msg.replyTo)));
+                    break;
+                case MessageCodes.RE_REGISTER:
+                    id = msg.getData().getString("id");
                     log.d("Registering client " + id);
                     try {
                         android.os.Message reply = android.os.Message.obtain();
