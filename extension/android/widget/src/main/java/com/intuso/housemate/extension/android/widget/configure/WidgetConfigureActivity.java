@@ -121,7 +121,7 @@ public class WidgetConfigureActivity
     public void onServiceConnected(ComponentName name, IBinder service) {
         bound = true;
         int widgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-        ((WidgetService.Binder)service).addWidget(widgetId, chosenDeviceId, StatefulPowerControl.ID);
+        ((WidgetService.Binder)service).addWidget(widgetId, chosenDeviceId, featureId);
         Intent result = new Intent();
         result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
         setResult(RESULT_OK, result);

@@ -132,6 +132,8 @@ public class ConnectionManager {
     public void setServerConnectionStatus(ServerConnectionStatus serverConnectionStatus) {
         if(this.serverConnectionStatus != serverConnectionStatus) {
             this.serverConnectionStatus = serverConnectionStatus;
+            if(serverConnectionStatus != ServerConnectionStatus.ConnectedToServer && serverConnectionStatus != ServerConnectionStatus.DisconnectedTemporarily)
+                setApplicationInstanceStatus(ApplicationInstanceStatus.Unregistered);
             for (ConnectionListener listener : listeners)
                 listener.serverConnectionStatusChanged(serverConnectionStatus);
         }

@@ -32,7 +32,6 @@ public class AppService extends Service implements ServiceConnection {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // todo block this until we're bound to the connection service?
         return messenger.getBinder();
     }
 
@@ -78,7 +77,11 @@ public class AppService extends Service implements ServiceConnection {
             String id;
             switch (msg.what) {
                 case MessageCodes.REGISTER:
-                    id = UUID.randomUUID().toString();
+                    id = msg.getData().getString("id");
+                    if(id == null)
+                        id = UUID.randomUUID().toString();
+                    while(clientReceivers.containsKey(id))
+                        id = UUID.randomUUID().toString();
                     log.d("Registering client " + id);
                     try {
                         android.os.Message reply = android.os.Message.obtain();

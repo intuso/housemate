@@ -139,7 +139,7 @@ public class WidgetService extends HousemateService {
         Status oldStatus = status;
         if(!networkAvailable)
             status = Status.NO_NETWORK;
-        else if(!(getRouter().getServerConnectionStatus() == ServerConnectionStatus.ConnectedToServer || getRouter().getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily)) {
+        else if(getRouter().getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && getRouter().getServerConnectionStatus() != ServerConnectionStatus.DisconnectedTemporarily) {
             try {
                 throw new HousemateException("Dummy");
             } catch(HousemateException e) {
@@ -195,6 +195,7 @@ public class WidgetService extends HousemateService {
             if(intent.getExtras().containsKey(NETWORK_AVAILABLE)) {
                 getLog().d("Received network available update: " + intent.getBooleanExtra(NETWORK_AVAILABLE, true));
                 networkAvailable = intent.getBooleanExtra(NETWORK_AVAILABLE, true);
+                updateStatus();
             }
         }
         return result;

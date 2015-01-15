@@ -22,6 +22,7 @@
         android:icon="@drawable/icon"
         android:label="@string/application_name"
         android:theme="@style/AppTheme">
+        <!-- Main activity to control general Housemate stuff -->
         <activity android:name=".activity.HousemateActivity"
                 android:label="@string/activity_name" >
             <intent-filter>
@@ -30,18 +31,21 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.SettingsActivity" />
+
+        <!-- Internal service that connects to the server -->
         <service android:name=".service.ConnectionService"
                  android:exported="false"
                  android:label="@string/service_name_connection">
-            <intent-filter>
-                <action android:name="com.intuso.housemate.service.connection" />
-            </intent-filter>
         </service>
+
+        <!-- Receiver for when a network is (not) available -->
         <receiver android:name=".service.NetworkStateReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+
+        <!-- Service that third party apps can bind to -->
         <service android:name=".service.AppService"
                  android:permission="com.intuso.housemate.android.permission.ACCESS"
                  android:exported="true"

@@ -126,7 +126,7 @@ public class RemoteClientManager {
     private void connectionLost(RemoteClientImpl client) {
         client.connectionLost();
         // create iterator over other list to prevent ConcurrentModificationExceptions
-        for(RemoteClientImpl child : Lists.newArrayList(client.getChildren()))
+        for(RemoteClientImpl child : client.getChildren())
             connectionLost(child);
     }
 

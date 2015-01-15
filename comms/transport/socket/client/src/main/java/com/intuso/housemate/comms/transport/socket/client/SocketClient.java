@@ -413,7 +413,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                 } catch(InterruptedException e) {
                     if(socket == null || socket.isClosed())
                         break;
-                    getLog().d("Interrupted waiting for message to send. Trying again");
+                    getLog().d("Interrupted waiting for message to send");
                 } catch(IOException e) {
                     getLog().e("Error sending message to client", e);
                     _disconnect();

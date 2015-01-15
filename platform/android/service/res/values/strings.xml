@@ -8,7 +8,7 @@
 
     <!-- Permission -->
     <string name="permission_name_access">Housemate</string>
-    <string name="permission_description_access">Access Housemate Server</string>
+    <string name="permission_description_access">Connect to Housemate Server</string>
 
     <!-- Action bar -->
     <string name="action_settings">Settings</string>
