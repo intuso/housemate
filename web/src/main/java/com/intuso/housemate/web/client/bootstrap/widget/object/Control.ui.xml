@@ -4,6 +4,9 @@
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
         <b:Label>Control</b:Label>
+        <h:WidgetRow ui:field="renameRow" title="Rename" visible="false">
+            <h:renameable.RenameableWidget ui:field="renameableWidget"/>
+        </h:WidgetRow>
         <h:WidgetRow ui:field="runnableRow" title="Run" visible="false">
             <h:runnable.RunnableWidget ui:field="runnableWidget"/>
         </h:WidgetRow>

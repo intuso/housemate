@@ -31,11 +31,18 @@ public class Command extends Composite implements CommandPerformListener<GWTProx
     Button performButton;
 
     private GWTProxyCommand command;
+    private CommandPerformListener<GWTProxyCommand> listener;
     private TypeInstances values;
 
     public Command(GWTProxyCommand command) {
+        this(command, null);
+    }
+
+    public Command(GWTProxyCommand command, CommandPerformListener<GWTProxyCommand> listener) {
 
         this.command = command;
+        this.listener = listener;
+
         values = new TypeInstances();
         parameterList = new ParameterInputList(command.getParameters(), values);
 
@@ -56,11 +63,14 @@ public class Command extends Composite implements CommandPerformListener<GWTProx
     @Override
     public void commandStarted(GWTProxyCommand command) {
         errorAlert.setVisible(false);
+        if(listener != null)
+            listener.commandStarted(command);
     }
 
     @Override
     public void commandFinished(GWTProxyCommand command) {
-        // do nothing
+        if(listener != null)
+            listener.commandFinished(command);
     }
 
     @Override
@@ -68,5 +78,7 @@ public class Command extends Composite implements CommandPerformListener<GWTProx
         errorAlert.setText(error);
         errorAlert.setVisible(true);
         performButton.setEnabled(true);
+        if(listener != null)
+            listener.commandFailed(command, error);
     }
 }

@@ -6,10 +6,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.api.object.Removeable;
+import com.intuso.housemate.api.object.Renameable;
 import com.intuso.housemate.api.object.Runnable;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.bootstrap.widget.WidgetRow;
 import com.intuso.housemate.web.client.bootstrap.widget.removeable.RemoveableWidget;
+import com.intuso.housemate.web.client.bootstrap.widget.renameable.RenameableWidget;
 import com.intuso.housemate.web.client.bootstrap.widget.runnable.RunnableWidget;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
@@ -28,6 +30,10 @@ public class Control extends Composite {
     private static ControlUiBinder ourUiBinder = GWT.create(ControlUiBinder.class);
 
     @UiField
+    WidgetRow renameRow;
+    @UiField
+    RenameableWidget renameableWidget;
+    @UiField
     WidgetRow runnableRow;
     @UiField
     RunnableWidget runnableWidget;
@@ -38,6 +44,11 @@ public class Control extends Composite {
 
     public Control(ProxyObject object) {
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        if(object instanceof Renameable) {
+            renameRow.setVisible(true);
+            renameableWidget.setObject((Renameable<GWTProxyCommand>) object);
+        }
 
         if(object instanceof Runnable) {
             runnableRow.setVisible(true);
