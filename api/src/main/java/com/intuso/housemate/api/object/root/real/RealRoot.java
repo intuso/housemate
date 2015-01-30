@@ -17,7 +17,7 @@ import com.intuso.housemate.api.object.type.Type;
 public interface RealRoot<
             TYPE extends Type,
             TYPES extends List<TYPE>,
-            DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
+            DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
             DEVICES extends List<DEVICE>,
             ROOT extends RealRoot<TYPE, TYPES, DEVICE, DEVICES, ROOT>>
         extends Root<ROOT>, HasTypes<TYPES>, HasDevices<DEVICES> {

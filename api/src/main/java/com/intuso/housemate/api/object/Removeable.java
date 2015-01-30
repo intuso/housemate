@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.command.Command;
  * Classes implementing this can be removed
  * @param <REMOVE_COMMAND> the command type
  */
-public interface RemoveableObject<REMOVE_COMMAND extends Command<?, ?, ?>> {
+public interface Removeable<REMOVE_COMMAND extends Command<?, ?, ?>> {
 
     public final static String REMOVE_ID = "remove";
 

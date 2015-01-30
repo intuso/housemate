@@ -8,7 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.RemoveableObject;
+import com.intuso.housemate.api.object.Removeable;
 import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 
@@ -18,7 +18,7 @@ public class RemoveableWidget extends Composite {
 
     private static RemoveableWidgetUiBinder ourUiBinder = GWT.create(RemoveableWidgetUiBinder.class);
 
-    private RemoveableObject<GWTProxyCommand> object;
+    private Removeable<GWTProxyCommand> object;
 
     @UiField
     public Button button;
@@ -27,7 +27,7 @@ public class RemoveableWidget extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    public void setObject(RemoveableObject<GWTProxyCommand> object) {
+    public void setObject(Removeable<GWTProxyCommand> object) {
         this.object = object;
     }
 

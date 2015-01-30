@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.list.List;
  *
  * Interface to show that the implementing object has a list of devices
  */
-public interface HasDevices<L extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
+public interface HasDevices<L extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
 
     /**
      * Gets the devices list

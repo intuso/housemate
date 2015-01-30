@@ -19,10 +19,11 @@ import java.util.List;
  */
 public class RealDevice
         extends RealPrimaryObject<
-        DeviceData,
+            DeviceData,
             RealDevice,
             DeviceListener<? super RealDevice>>
         implements Device<
+            RealCommand,
             RealCommand,
             RealCommand,
             RealCommand,

@@ -1,7 +1,7 @@
 package com.intuso.housemate.api.object.task;
 
 import com.intuso.housemate.api.object.BaseHousemateObject;
-import com.intuso.housemate.api.object.RemoveableObject;
+import com.intuso.housemate.api.object.Removeable;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.property.HasProperties;
@@ -22,7 +22,7 @@ public interface Task<
             TASK extends Task<REMOVE_COMMAND, EXECUTING_VALUE, ERROR_VALUE, PROPERTIES, TASK>>
         extends BaseHousemateObject<TaskListener<? super TASK>>,
             HasProperties<PROPERTIES>,
-            RemoveableObject<REMOVE_COMMAND> {
+        Removeable<REMOVE_COMMAND> {
 
     public final static String EXECUTING_ID = "executing";
     public final static String ERROR_ID = "error";

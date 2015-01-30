@@ -1,20 +1,20 @@
 package com.intuso.housemate.web.client.bootstrap.widget.runnable;
 
-import com.intuso.housemate.api.object.RunnableObject;
+import com.intuso.housemate.api.object.Runnable;
 import com.intuso.housemate.web.client.bootstrap.extensions.CommandToggleSwitch;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
 
 public class RunnableWidget extends CommandToggleSwitch {
 
-    private RunnableObject<GWTProxyCommand, GWTProxyValue> object;
+    private Runnable<GWTProxyCommand, GWTProxyValue> object;
 
     public RunnableWidget() {
         setTrueLabel("Running");
         setFalseLabel("Stopped");
     }
 
-    public void setObject(RunnableObject<GWTProxyCommand, GWTProxyValue> object) {
+    public void setObject(Runnable<GWTProxyCommand, GWTProxyValue> object) {
 
         this.object = object;
 

@@ -28,11 +28,11 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?, ?,
+public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?, ?, ?,
         ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
         ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> {
 
-    private final Multimap<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
+    private final Multimap<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
     private final Persistence persistence;
@@ -51,7 +51,7 @@ public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?
     }
 
     @Override
-    public void elementAdded(Automation<?, ?, ?, ?, ?,
+    public void elementAdded(Automation<?, ?, ?, ?, ?, ?,
             ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
             ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
         listeners.put(automation, automation.getRunningValue().addObjectListener(valueWatcher));
@@ -71,7 +71,7 @@ public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?
     }
 
     @Override
-    public void elementRemoved(Automation<?, ?, ?, ?, ?,
+    public void elementRemoved(Automation<?, ?, ?, ?, ?, ?,
             ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
             ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(automation);

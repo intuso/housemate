@@ -21,8 +21,9 @@ public abstract class RealPrimaryObject<
             PRIMARY_OBJECT extends RealPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
         extends RealObject<DATA, HousemateData<?>, RealObject<?, ?, ?, ?>, LISTENER>
-        implements PrimaryObject<RealCommand, RealCommand, RealValue<Boolean>, RealValue<String>, PRIMARY_OBJECT, LISTENER> {
+        implements PrimaryObject<RealCommand, RealCommand, RealCommand, RealValue<Boolean>, RealValue<String>, PRIMARY_OBJECT, LISTENER> {
 
+    private final RealCommand rename;
     private final RealCommand remove;
     private final RealValue<Boolean> running;
     private final RealCommand start;
@@ -37,6 +38,12 @@ public abstract class RealPrimaryObject<
      */
     public RealPrimaryObject(Log log, ListenersFactory listenersFactory, DATA data, final String objectType) {
         super(log, listenersFactory, data);
+        this.rename = new RealCommand(log, listenersFactory, RENAME_ID, RENAME_ID, "Rename the " + objectType, Lists.<RealParameter<?>>newArrayList(StringType.createParameter(log, listenersFactory, NAME_ID, NAME_ID, "The new name"))) {
+            @Override
+            public void perform(TypeInstanceMap values) throws HousemateException {
+                // todo, change the name, and notify of the change
+            }
+        };
         this.remove = new RealCommand(log, listenersFactory, REMOVE_ID, REMOVE_ID, "Remove the " + objectType, Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -65,11 +72,17 @@ public abstract class RealPrimaryObject<
             }
         };
         this.error = StringType.createValue(log, listenersFactory, ERROR_ID, ERROR_ID, "Current error for the " + objectType, null);
+        addChild(this.rename);
         addChild(this.remove);
         addChild(this.running);
         addChild(this.start);
         addChild(this.stop);
         addChild(this.error);
+    }
+
+    @Override
+    public RealCommand getRenameCommand() {
+        return rename;
     }
 
     @Override

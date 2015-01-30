@@ -11,7 +11,8 @@ import com.intuso.housemate.api.object.value.HasValues;
 import com.intuso.housemate.api.object.value.Value;
 
 /**
- * @param <REMOVE_COMMAND> the type of the command for removing the automation
+ * @param <RENAME_COMMAND> the type of the command for renaming the device
+ * @param <REMOVE_COMMAND> the type of the command for removing the device
  * @param <START_STOP_COMMAND> the type of the command for stopping or starting
  * @param <CONNECTED_VALUE> the type of the connected value
  * @param <RUNNING_VALUE> the type of the running value
@@ -25,6 +26,7 @@ import com.intuso.housemate.api.object.value.Value;
  * @param <DEVICE> the type of the device
  */
 public interface Device<
+            RENAME_COMMAND extends Command<?, ?, ?>,
             REMOVE_COMMAND extends Command<?, ?, ?>,
             START_STOP_COMMAND extends Command<?, ?, ?>,
             COMMAND extends Command<?, ?, ?>,
@@ -36,9 +38,9 @@ public interface Device<
             VALUES extends List<? extends VALUE>,
             PROPERTY extends Property<?, ?, ?>,
             PROPERTIES extends List<? extends PROPERTY>,
-            DEVICE extends Device<REMOVE_COMMAND, START_STOP_COMMAND, COMMAND, COMMANDS, CONNECTED_VALUE, RUNNING_VALUE, ERROR_VALUE, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE>>
+            DEVICE extends Device<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, COMMAND, COMMANDS, CONNECTED_VALUE, RUNNING_VALUE, ERROR_VALUE, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE>>
         extends
-            PrimaryObject<REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, DEVICE, DeviceListener<? super DEVICE>>, HasCommands<COMMANDS>, HasValues<VALUES>, HasProperties<PROPERTIES>,
+            PrimaryObject<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, DEVICE, DeviceListener<? super DEVICE>>, HasCommands<COMMANDS>, HasValues<VALUES>, HasProperties<PROPERTIES>,
             RemoteObject<CONNECTED_VALUE> {
 
     public final static String COMMANDS_ID = "commands";

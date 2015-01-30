@@ -17,7 +17,7 @@ import com.intuso.utilities.log.Log;
  */
 public class AutomationBridge
         extends PrimaryObjectBridge<AutomationData, AutomationBridge, AutomationListener<? super AutomationBridge>>
-        implements Automation<CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge,
+        implements Automation<CommandBridge, CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge,
             ConditionBridge,ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>, TaskBridge,
             ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>, AutomationBridge> {
 
@@ -29,7 +29,7 @@ public class AutomationBridge
     private CommandBridge addUnsatisfiedTask;
     
     public AutomationBridge(Log log, ListenersFactory listenersFactory,
-                            Automation<?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?, ?>, ?, ?> automation,
+                            Automation<?, ?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?, ?>, ?, ?> automation,
                             ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
         super(log, listenersFactory, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()), automation, types);
         conditionList = new SingleListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(log, listenersFactory,
@@ -79,7 +79,7 @@ public class AutomationBridge
         return conditionList;
     }
 
-    public final static class Converter implements Function<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> {
+    public final static class Converter implements Function<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> {
 
         private final Log log;
         private final ListenersFactory listenersFactory;
@@ -92,7 +92,7 @@ public class AutomationBridge
         }
 
         @Override
-        public AutomationBridge apply(Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
+        public AutomationBridge apply(Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
             return new AutomationBridge(log, listenersFactory, automation, types);
         }
     }

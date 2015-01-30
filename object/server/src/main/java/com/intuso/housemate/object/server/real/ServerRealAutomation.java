@@ -14,15 +14,15 @@ import com.intuso.utilities.log.Log;
 
 public class ServerRealAutomation
         extends ServerRealPrimaryObject<
-                    AutomationData,
-        ServerRealAutomation,
-                    AutomationListener<? super ServerRealAutomation>>
+            AutomationData,
+            ServerRealAutomation,
+            AutomationListener<? super ServerRealAutomation>>
         implements Automation<
-        ServerRealCommand, ServerRealCommand, ServerRealCommand,
-        ServerRealValue<Boolean>, ServerRealValue<String>, ServerRealCondition, ServerRealList<ConditionData, ServerRealCondition>,
-        ServerRealTask, ServerRealList<TaskData, ServerRealTask>, ServerRealAutomation>,
+            ServerRealCommand, ServerRealCommand, ServerRealCommand, ServerRealCommand,
+            ServerRealValue<Boolean>, ServerRealValue<String>, ServerRealCondition, ServerRealList<ConditionData, ServerRealCondition>,
+            ServerRealTask, ServerRealList<TaskData, ServerRealTask>, ServerRealAutomation>,
             ConditionListener<ServerRealCondition>,
-        ServerRealConditionOwner {
+            ServerRealConditionOwner {
 
     private final ServerRealList<ConditionData, ServerRealCondition> conditions;
     private final ServerRealList<TaskData, ServerRealTask> satisfiedTasks;

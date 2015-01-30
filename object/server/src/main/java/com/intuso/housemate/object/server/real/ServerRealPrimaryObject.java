@@ -21,9 +21,10 @@ public abstract class ServerRealPrimaryObject<
             PRIMARY_OBJECT extends ServerRealPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
         extends ServerRealObject<DATA, HousemateData<?>, ServerRealObject<?, ?, ?, ?>, LISTENER>
-        implements PrimaryObject<ServerRealCommand, ServerRealCommand,
-        ServerRealValue<Boolean>, ServerRealValue<String>, PRIMARY_OBJECT, LISTENER> {
+        implements PrimaryObject<ServerRealCommand, ServerRealCommand, ServerRealCommand,
+            ServerRealValue<Boolean>, ServerRealValue<String>, PRIMARY_OBJECT, LISTENER> {
 
+    private final ServerRealCommand rename;
     private final ServerRealCommand remove;
     private final ServerRealValue<Boolean> connected;
     private final ServerRealValue<Boolean> running;
@@ -38,6 +39,14 @@ public abstract class ServerRealPrimaryObject<
      */
     public ServerRealPrimaryObject(Log log, ListenersFactory listenersFactory, DATA data, final String objectType) {
         super(log, listenersFactory, data);
+        this.rename = new ServerRealCommand(log, listenersFactory, RENAME_ID, RENAME_ID, "Rename the " + objectType, Lists.<ServerRealParameter<?>>newArrayList(new ServerRealParameter<String>(log, listenersFactory, NAME_ID, NAME_ID, "The new name", new StringType(log, listenersFactory)))) {
+            @Override
+            public void perform(TypeInstanceMap values) throws HousemateException {
+                if(isRunning())
+                    throw new HousemateException("Cannot remove " + objectType + " while it is still running");
+                remove();
+            }
+        };
         this.remove = new ServerRealCommand(log, listenersFactory, REMOVE_ID, REMOVE_ID, "Remove the " + objectType, Lists.<ServerRealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -72,6 +81,11 @@ public abstract class ServerRealPrimaryObject<
         addChild(this.start);
         addChild(this.stop);
         addChild(this.error);
+    }
+
+    @Override
+    public ServerRealCommand getRenameCommand() {
+        return rename;
     }
 
     @Override

@@ -26,6 +26,7 @@ public class ServerProxyDevice
             ServerProxyCommand,
             ServerProxyCommand,
             ServerProxyCommand,
+            ServerProxyCommand,
             ServerProxyList<CommandData, ServerProxyCommand>,
             ServerRealValue<Boolean>,
             ServerProxyValue,

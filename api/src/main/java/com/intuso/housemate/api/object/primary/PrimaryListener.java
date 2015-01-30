@@ -8,7 +8,7 @@ import com.intuso.housemate.api.object.ObjectListener;
  *
  * @param <PO>
  */
-public interface PrimaryListener<PO extends PrimaryObject<?, ?, ?, ?, ?, ?>> extends ObjectListener {
+public interface PrimaryListener<PO extends PrimaryObject<?, ?, ?, ?, ?, ?, ?>> extends ObjectListener {
 
 	/**
 	 * Notifies that the primary object's error has changed

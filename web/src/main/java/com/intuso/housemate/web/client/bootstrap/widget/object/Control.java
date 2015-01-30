@@ -5,8 +5,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.RemoveableObject;
-import com.intuso.housemate.api.object.RunnableObject;
+import com.intuso.housemate.api.object.Removeable;
+import com.intuso.housemate.api.object.Runnable;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.bootstrap.widget.WidgetRow;
 import com.intuso.housemate.web.client.bootstrap.widget.removeable.RemoveableWidget;
@@ -39,14 +39,14 @@ public class Control extends Composite {
     public Control(ProxyObject object) {
         initWidget(ourUiBinder.createAndBindUi(this));
 
-        if(object instanceof RunnableObject) {
+        if(object instanceof Runnable) {
             runnableRow.setVisible(true);
-            runnableWidget.setObject((RunnableObject<GWTProxyCommand, GWTProxyValue>) object);
+            runnableWidget.setObject((Runnable<GWTProxyCommand, GWTProxyValue>) object);
         }
 
-        if(object instanceof RemoveableObject) {
+        if(object instanceof Removeable) {
             removeableRow.setVisible(true);
-            removeableWidget.setObject((RemoveableObject<GWTProxyCommand>) object);
+            removeableWidget.setObject((Removeable<GWTProxyCommand>) object);
         }
     }
 }

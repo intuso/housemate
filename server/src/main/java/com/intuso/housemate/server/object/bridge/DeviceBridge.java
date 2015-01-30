@@ -30,6 +30,7 @@ public class DeviceBridge
             CommandBridge,
             CommandBridge,
             CommandBridge,
+            CommandBridge,
             ListBridge<CommandData, Command<?, ?, ?>, CommandBridge>,
             ValueBridge,
             ValueBridge,
@@ -46,7 +47,7 @@ public class DeviceBridge
     private ValueBridge connectedValue;
 
     public DeviceBridge(Log log, ListenersFactory listenersFactory,
-                        Device<?, ?, ? extends Command<?, ?, ?>, ?, ?, ?, ?, ? extends Value<?, ?>, ?, ? extends Property<?, ?, ?>, ?, ?> device,
+                        Device<?, ?, ?, ? extends Command<?, ?, ?>, ?, ?, ?, ?, ? extends Value<?, ?>, ?, ? extends Property<?, ?, ?>, ?, ?> device,
                         ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
         super(log, listenersFactory,
                 new DeviceData(device.getId(), device.getName(), device.getDescription(), device.getFeatureIds(),
@@ -108,7 +109,7 @@ public class DeviceBridge
         return getData().getCustomPropertyIds();
     }
 
-    public final static class Converter implements Function<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> {
+    public final static class Converter implements Function<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> {
 
         private final Log log;
         private final ListenersFactory listenersFactory;
@@ -121,7 +122,7 @@ public class DeviceBridge
         }
 
         @Override
-        public DeviceBridge apply(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
+        public DeviceBridge apply(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
             return new DeviceBridge(log, listenersFactory, device, types);
         }
     }

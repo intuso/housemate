@@ -9,7 +9,7 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
- * @param <ADD_COMMAND> the type of the add command
+ * @param <COMMAND> the type of the add command
  * @param <VALUE> the type of the value
  * @param <CONDITION> the type of the conditions
  * @param <CONDITIONS> the type of the conditions list
@@ -18,15 +18,15 @@ import com.intuso.utilities.log.Log;
  * @param <AUTOMATION> the type of the automation
  */
 public abstract class ProxyAutomation<
-            ADD_COMMAND extends ProxyCommand<?, ?, ?, ADD_COMMAND>,
+            COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
             VALUE extends ProxyValue<?, VALUE>,
             CONDITION extends ProxyCondition<?, ?, ?, CONDITION, CONDITIONS>,
             CONDITIONS extends ProxyList<ConditionData, CONDITION, CONDITIONS>,
             TASK extends ProxyTask<?, ?, ?, TASK>,
             TASKS extends ProxyList<TaskData, TASK, TASKS>,
-            AUTOMATION extends ProxyAutomation<ADD_COMMAND, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION>>
-        extends ProxyPrimaryObject<AutomationData, ADD_COMMAND, VALUE, AUTOMATION, AutomationListener<? super AUTOMATION>>
-        implements Automation<ADD_COMMAND, ADD_COMMAND, ADD_COMMAND, VALUE, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION> {
+            AUTOMATION extends ProxyAutomation<COMMAND, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION>>
+        extends ProxyPrimaryObject<AutomationData, COMMAND, VALUE, AUTOMATION, AutomationListener<? super AUTOMATION>>
+        implements Automation<COMMAND, COMMAND, COMMAND, COMMAND, VALUE, VALUE, CONDITION, CONDITIONS, TASK, TASKS, AUTOMATION> {
 
     /**
      * @param log {@inheritDoc}
@@ -52,17 +52,17 @@ public abstract class ProxyAutomation<
     }
 
     @Override
-    public ADD_COMMAND getAddConditionCommand() {
-        return (ADD_COMMAND) getChild(ADD_CONDITION_ID);
+    public COMMAND getAddConditionCommand() {
+        return (COMMAND) getChild(ADD_CONDITION_ID);
     }
 
     @Override
-    public ADD_COMMAND getAddSatisifedTaskCommand() {
-        return (ADD_COMMAND) getChild(ADD_SATISFIED_TASK_ID);
+    public COMMAND getAddSatisifedTaskCommand() {
+        return (COMMAND) getChild(ADD_SATISFIED_TASK_ID);
     }
 
     @Override
-    public ADD_COMMAND getAddUnsatisifedTaskCommand() {
-        return (ADD_COMMAND) getChild(ADD_UNSATISFIED_TASK_ID);
+    public COMMAND getAddUnsatisifedTaskCommand() {
+        return (COMMAND) getChild(ADD_UNSATISFIED_TASK_ID);
     }
 }

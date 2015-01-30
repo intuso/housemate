@@ -24,9 +24,10 @@ public abstract class ServerProxyPrimaryObject<
             PRIMARY_OBJECT extends ServerProxyPrimaryObject<DATA, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
         extends ServerProxyObject<DATA, HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
-        implements PrimaryObject<ServerProxyCommand, ServerProxyCommand, ServerProxyValue,
+        implements PrimaryObject<ServerProxyCommand, ServerProxyCommand, ServerProxyCommand, ServerProxyValue,
         ServerProxyValue, PRIMARY_OBJECT, LISTENER> {
 
+    private ServerProxyCommand rename;
     private ServerProxyCommand remove;
     private ServerProxyValue running;
     private ServerProxyCommand start;
@@ -44,11 +45,17 @@ public abstract class ServerProxyPrimaryObject<
 
     @Override
     protected void getChildObjects() {
+        rename = (ServerProxyCommand) getChild(RENAME_ID);
         remove = (ServerProxyCommand) getChild(REMOVE_ID);
         running = (ServerProxyValue) getChild(RUNNING_ID);
         start = (ServerProxyCommand) getChild(START_ID);
         stop = (ServerProxyCommand) getChild(STOP_ID);
         error = (ServerProxyValue) getChild(ERROR_ID);
+    }
+
+    @Override
+    public ServerProxyCommand getRenameCommand() {
+        return rename;
     }
 
     @Override

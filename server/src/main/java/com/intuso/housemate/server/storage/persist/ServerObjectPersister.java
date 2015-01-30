@@ -36,11 +36,11 @@ public class ServerObjectPersister {
         applications.addObjectListener(applicationListWatcher, true);
     }
 
-    public void watchDevices(List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> devices) {
+    public void watchDevices(List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> devices) {
         devices.addObjectListener(deviceListWatcher, true);
     }
 
-    public void watchAutomations(List<? extends Automation<?, ?, ?, ?, ?,
+    public void watchAutomations(List<? extends Automation<?, ?, ?, ?, ?, ?,
             ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
             ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> automations) {
         automations.addObjectListener(automationListWatcher, true);

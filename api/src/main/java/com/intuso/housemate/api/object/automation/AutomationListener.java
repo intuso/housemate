@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.primary.PrimaryListener;
  *
  * Listener interface for automations
  */
-public interface AutomationListener<A extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>
+public interface AutomationListener<A extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>
         extends PrimaryListener<A> {
 
     /**

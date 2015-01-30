@@ -24,7 +24,7 @@ public abstract class ProxyPrimaryObject<
             PRIMARY_OBJECT extends ProxyPrimaryObject<DATA, COMMAND, VALUE, PRIMARY_OBJECT, LISTENER>,
             LISTENER extends PrimaryListener<? super PRIMARY_OBJECT>>
         extends ProxyObject<DATA, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, PRIMARY_OBJECT, LISTENER>
-        implements PrimaryObject<COMMAND, COMMAND, VALUE, VALUE, PRIMARY_OBJECT, LISTENER> {
+        implements PrimaryObject<COMMAND, COMMAND, COMMAND, VALUE, VALUE, PRIMARY_OBJECT, LISTENER> {
 
     /**
      * @param log {@inheritDoc}
@@ -33,6 +33,11 @@ public abstract class ProxyPrimaryObject<
      */
     protected ProxyPrimaryObject(Log log, ListenersFactory listenersFactory, DATA data) {
         super(log, listenersFactory, data);
+    }
+
+    @Override
+    public COMMAND getRenameCommand() {
+        return (COMMAND) getChild(RENAME_ID);
     }
 
     @Override

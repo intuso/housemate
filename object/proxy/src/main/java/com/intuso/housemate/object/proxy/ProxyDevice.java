@@ -33,7 +33,7 @@ public abstract class ProxyDevice<
             FEATURE extends ProxyFeature<?, DEVICE>,
             DEVICE extends ProxyDevice<COMMAND, COMMANDS, VALUE, VALUES, PROPERTY, PROPERTIES, FEATURE, DEVICE>>
         extends ProxyPrimaryObject<DeviceData, COMMAND, VALUE, DEVICE, DeviceListener<? super DEVICE>>
-        implements Device<COMMAND, COMMAND, COMMAND, COMMANDS, VALUE, VALUE, VALUE, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE> {
+        implements Device<COMMAND, COMMAND, COMMAND, COMMAND, COMMANDS, VALUE, VALUE, VALUE, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE> {
 
     /**
      * @param log {@inheritDoc}

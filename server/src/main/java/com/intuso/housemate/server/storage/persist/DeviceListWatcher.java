@@ -25,9 +25,9 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class DeviceListWatcher implements ListListener<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> {
+public class DeviceListWatcher implements ListListener<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?>> {
 
-    private final Multimap<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
+    private final Multimap<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
     private final Persistence persistence;
@@ -43,7 +43,7 @@ public class DeviceListWatcher implements ListListener<Device<?, ?, ?, ?, ?, ?, 
     }
 
     @Override
-    public void elementAdded(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+    public void elementAdded(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
         listeners.put(device, device.getRunningValue().addObjectListener(valueWatcher));
         listeners.put(device, device.getProperties().addObjectListener(propertyListWatcher, true));
         try {
@@ -59,7 +59,7 @@ public class DeviceListWatcher implements ListListener<Device<?, ?, ?, ?, ?, ?, 
     }
 
     @Override
-    public void elementRemoved(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+    public void elementRemoved(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(device);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

@@ -8,7 +8,7 @@ import com.intuso.housemate.api.object.device.feature.Feature;
  * @param <DEVICE> the device type
  * @param <FEATURE> the feature type
  */
-public interface FeatureLoadedListener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, FEATURE extends Feature> {
+public interface FeatureLoadedListener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, FEATURE extends Feature> {
 
     /**
      * Callback method for when the feature has finished loading

@@ -18,27 +18,35 @@ import java.util.List;
 public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateData<?>>,
             PO extends PrimaryObjectBridge<WBL, PO, L>, L extends PrimaryListener<? super PO>>
         extends BridgeObject<WBL, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, PO, L>
-        implements PrimaryObject<CommandBridge, CommandBridge, ValueBridge, ValueBridge, PO, L> {
+        implements PrimaryObject<CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge, PO, L> {
 
+    private CommandBridge renameCommand;
     private CommandBridge removeCommand;
     private ValueBridge runningValue;
     private CommandBridge startCommand;
     private CommandBridge stopCommand;
     private ValueBridge errorValue;
 
-    protected PrimaryObjectBridge(Log log, ListenersFactory listenersFactory, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?> proxyObject,
+    protected PrimaryObjectBridge(Log log, ListenersFactory listenersFactory, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?, ?> proxyObject,
                                   ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
         super(log, listenersFactory, data);
+        renameCommand = new CommandBridge(log, listenersFactory, proxyObject.getRenameCommand(), types);
         removeCommand = new CommandBridge(log, listenersFactory, proxyObject.getRemoveCommand(), types);
         runningValue = new ValueBridge(log, listenersFactory, proxyObject.getRunningValue(), types);
         startCommand = new CommandBridge(log, listenersFactory, proxyObject.getStartCommand(), types);
         stopCommand = new CommandBridge(log, listenersFactory, proxyObject.getStopCommand(), types);
         errorValue = new ValueBridge(log, listenersFactory, proxyObject.getErrorValue(), types);
+        addChild(renameCommand);
         addChild(removeCommand);
         addChild(runningValue);
         addChild(startCommand);
         addChild(stopCommand);
         addChild(errorValue);
+    }
+
+    @Override
+    public CommandBridge getRenameCommand() {
+        return renameCommand;
     }
 
     @Override
