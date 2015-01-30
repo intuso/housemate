@@ -1,13 +1,15 @@
 package com.intuso.housemate.server.object.bridge;
 
+import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -20,6 +22,7 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateDat
         extends BridgeObject<WBL, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, PO, L>
         implements PrimaryObject<CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge, PO, L> {
 
+    private final PrimaryObject proxyObject;
     private CommandBridge renameCommand;
     private CommandBridge removeCommand;
     private ValueBridge runningValue;
@@ -30,6 +33,7 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateDat
     protected PrimaryObjectBridge(Log log, ListenersFactory listenersFactory, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?, ?> proxyObject,
                                   ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
         super(log, listenersFactory, data);
+        this.proxyObject = proxyObject;
         renameCommand = new CommandBridge(log, listenersFactory, proxyObject.getRenameCommand(), types);
         removeCommand = new CommandBridge(log, listenersFactory, proxyObject.getRemoveCommand(), types);
         runningValue = new ValueBridge(log, listenersFactory, proxyObject.getRunningValue(), types);
@@ -42,6 +46,28 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateDat
         addChild(startCommand);
         addChild(stopCommand);
         addChild(errorValue);
+    }
+
+    @Override
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
+        result.add(proxyObject.addObjectListener(new PrimaryListener<PrimaryObject<?, ?, ?, ?, ?, ?, ?>>() {
+                @Override
+                public void renamed(PrimaryObject<?, ?, ?, ?, ?, ?, ?> primaryObject, String oldName, String newName) {
+                    broadcastMessage(NEW_NAME, new StringPayload(newName));
+                }
+
+                @Override
+                public void error(PrimaryObject<?, ?, ?, ?, ?, ?, ?> primaryObject, String error) {
+
+                }
+
+                @Override
+                public void running(PrimaryObject<?, ?, ?, ?, ?, ?, ?> primaryObject, boolean running) {
+
+                }
+            }));
+        return result;
     }
 
     @Override

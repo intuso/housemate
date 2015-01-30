@@ -1,10 +1,14 @@
 package com.intuso.housemate.object.proxy.simple;
 
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.Renameable;
 import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceListener;
 import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.proxy.simple.comms.TestEnvironment;
 import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
@@ -92,6 +96,7 @@ public class PrimaryTest {
     @Test
     public void testListener() throws HousemateException {
         final AtomicBoolean connectedUpdated = new AtomicBoolean(false);
+        final AtomicBoolean nameUpdated = new AtomicBoolean(false);
         final AtomicBoolean runningUpdated = new AtomicBoolean(false);
         final AtomicBoolean errorUpdated = new AtomicBoolean(false);
         proxyPrimary.addObjectListener(new DeviceListener<SimpleProxyDevice>() {
@@ -99,6 +104,11 @@ public class PrimaryTest {
             @Override
             public void deviceConnected(SimpleProxyDevice device, boolean connected) {
                 connectedUpdated.set(true);
+            }
+
+            @Override
+            public void renamed(SimpleProxyDevice primaryObject, String oldName, String newName) {
+                nameUpdated.set(true);
             }
 
             @Override
@@ -111,10 +121,15 @@ public class PrimaryTest {
                 errorUpdated.set(true);
             }
         });
+        TypeInstanceMap values = new TypeInstanceMap();
+        values.getChildren().put(Renameable.NAME_ID, new TypeInstances(new TypeInstance("newName")));
+        proxyPrimary.getRenameCommand().perform(values, EMPTY_LISTENER);
         proxyPrimary.getStartCommand().perform(EMPTY_LISTENER);
         proxyPrimary.getStopCommand().perform(EMPTY_LISTENER);
         realPrimary.getErrorValue().setTypedValues("error");
         proxyPrimary.getRemoveCommand().perform(EMPTY_LISTENER);
+//        assertTrue(connectedUpdated.get());
+        assertTrue(nameUpdated.get());
         assertTrue(errorUpdated.get());
         assertTrue(runningUpdated.get());
     }

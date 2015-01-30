@@ -289,6 +289,11 @@ public class HousemateTweeter {
         }
 
         @Override
+        public void renamed(SimpleProxyDevice device, String oldName, String newName) {
+            tweet("\"" + oldName + "\" was renamed to \"" + newName + "\"");
+        }
+
+        @Override
         public void error(SimpleProxyDevice device, String description) {
             tweet("\"" + device.getName() + "\" device " + (description == null ? "not " : "") + "in error" + (description == null ? "" : ": " + description));
         }

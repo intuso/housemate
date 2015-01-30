@@ -42,9 +42,15 @@ public abstract class ServerRealPrimaryObject<
         this.rename = new ServerRealCommand(log, listenersFactory, RENAME_ID, RENAME_ID, "Rename the " + objectType, Lists.<ServerRealParameter<?>>newArrayList(new ServerRealParameter<String>(log, listenersFactory, NAME_ID, NAME_ID, "The new name", new StringType(log, listenersFactory)))) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                if(isRunning())
-                    throw new HousemateException("Cannot remove " + objectType + " while it is still running");
-                remove();
+                if(values != null && values.getChildren().containsKey(NAME_ID)) {
+                    String oldName = ServerRealPrimaryObject.this.getData().getName();
+                    String newName = values.getChildren().get(NAME_ID).getFirstValue();
+                    if (newName != null && !newName.equals(oldName)) {
+                        ServerRealPrimaryObject.this.getData().setName(newName);
+                        for(PrimaryListener<? super PRIMARY_OBJECT> listener : ServerRealPrimaryObject.this.getObjectListeners())
+                            listener.renamed((PRIMARY_OBJECT) ServerRealPrimaryObject.this, oldName, newName);
+                    }
+                }
             }
         };
         this.remove = new ServerRealCommand(log, listenersFactory, REMOVE_ID, REMOVE_ID, "Remove the " + objectType, Lists.<ServerRealParameter<?>>newArrayList()) {

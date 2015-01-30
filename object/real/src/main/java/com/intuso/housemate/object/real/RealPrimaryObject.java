@@ -2,6 +2,7 @@ package com.intuso.housemate.object.real;
 
 import com.google.common.collect.Lists;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
@@ -41,7 +42,13 @@ public abstract class RealPrimaryObject<
         this.rename = new RealCommand(log, listenersFactory, RENAME_ID, RENAME_ID, "Rename the " + objectType, Lists.<RealParameter<?>>newArrayList(StringType.createParameter(log, listenersFactory, NAME_ID, NAME_ID, "The new name"))) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
-                // todo, change the name, and notify of the change
+                if(values != null && values.getChildren().containsKey(NAME_ID)) {
+                    String newName = values.getChildren().get(NAME_ID).getFirstValue();
+                    if (newName != null && !RealPrimaryObject.this.getData().getName().equals(newName)) {
+                        RealPrimaryObject.this.getData().setName(newName);
+                        RealPrimaryObject.this.sendMessage(NEW_NAME, new StringPayload(newName));
+                    }
+                }
             }
         };
         this.remove = new RealCommand(log, listenersFactory, REMOVE_ID, REMOVE_ID, "Remove the " + objectType, Lists.<RealParameter<?>>newArrayList()) {

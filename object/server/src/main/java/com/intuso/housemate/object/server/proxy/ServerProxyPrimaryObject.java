@@ -1,6 +1,10 @@
 package com.intuso.housemate.object.server.proxy;
 
 import com.google.inject.Injector;
+import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
@@ -98,6 +102,16 @@ public abstract class ServerProxyPrimaryObject<
     @Override
     public List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
+        result.add(addMessageListener(NEW_NAME, new Receiver<StringPayload>() {
+            @Override
+            public void messageReceived(Message<StringPayload> message) throws HousemateException {
+                String oldName = getData().getName();
+                String newName = message.getPayload().getValue();
+                getData().setName(newName);
+                for(PrimaryListener<? super PRIMARY_OBJECT> listener : getObjectListeners())
+                    listener.renamed(getThis(), oldName, newName);
+            }
+        }));
         if(running != null) {
             result.add(running.addObjectListener(new ValueListener<ServerProxyValue>() {
 
