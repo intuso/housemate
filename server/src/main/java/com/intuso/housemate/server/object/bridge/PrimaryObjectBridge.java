@@ -54,6 +54,7 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateDat
         result.add(proxyObject.addObjectListener(new PrimaryListener<PrimaryObject<?, ?, ?, ?, ?, ?, ?>>() {
                 @Override
                 public void renamed(PrimaryObject<?, ?, ?, ?, ?, ?, ?> primaryObject, String oldName, String newName) {
+                    getData().setName(newName);
                     broadcastMessage(NEW_NAME, new StringPayload(newName));
                 }
 

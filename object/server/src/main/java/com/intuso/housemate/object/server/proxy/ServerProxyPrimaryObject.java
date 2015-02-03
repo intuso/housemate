@@ -12,6 +12,7 @@ import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -102,11 +103,11 @@ public abstract class ServerProxyPrimaryObject<
     @Override
     public List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(NEW_NAME, new Receiver<StringPayload>() {
+        result.add(addMessageListener(NEW_NAME, new Receiver<ClientPayload<StringPayload>>() {
             @Override
-            public void messageReceived(Message<StringPayload> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<StringPayload>> message) throws HousemateException {
                 String oldName = getData().getName();
-                String newName = message.getPayload().getValue();
+                String newName = message.getPayload().getOriginal().getValue();
                 getData().setName(newName);
                 for(PrimaryListener<? super PRIMARY_OBJECT> listener : getObjectListeners())
                     listener.renamed(getThis(), oldName, newName);
