@@ -95,9 +95,9 @@ public class FlatFilePersistence implements Persistence {
     }
 
     @Override
-    public TypeInstanceMap getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
+    public TypeInstanceMap getValues(String[] path) throws DetailsNotFoundException, HousemateException {
         try {
-            return readDetailsFile(path, detailsKey);
+            return readDetailsFile(path);
         } catch(FileNotFoundException e) {
             throw new DetailsNotFoundException(e);
         } catch(IOException e) {
@@ -118,21 +118,12 @@ public class FlatFilePersistence implements Persistence {
     }
 
     @Override
-    public void saveValues(String[] path, String detailsKey, TypeInstanceMap details) throws HousemateException {
-        try {
-            saveDetails(getFile(true, path, detailsKey + PROPERTIES_EXTENSION), details);
-        } catch(IOException e) {
-            throw new HousemateException("Could not save details", e);
-        }
-    }
-
-    @Override
     public void removeValues(String[] path) throws HousemateException {
         deleteFile(getFile(false, path));
-        String[] propertiesPath = new String[path.length];
-        System.arraycopy(path, 0, propertiesPath, 0, path.length - 1);
-        propertiesPath[path.length - 1] = path[path.length - 1] + PROPERTIES_EXTENSION;
-        deleteFile(getFile(false, propertiesPath));
+        String[] newPath = new String[path.length];
+        System.arraycopy(path, 0, newPath, 0, path.length - 1);
+        newPath[path.length - 1] = path[path.length - 1] + PROPERTIES_EXTENSION;
+        deleteFile(getFile(false, newPath));
     }
 
     private void deleteFile(File file) {
@@ -144,8 +135,11 @@ public class FlatFilePersistence implements Persistence {
         file.delete();
     }
 
-    private TypeInstanceMap readDetailsFile(String[] path, String detailsKey) throws IOException {
-        return getDetails(getFile(false, path, detailsKey + PROPERTIES_EXTENSION));
+    private TypeInstanceMap readDetailsFile(String[] path) throws IOException {
+        String[] newPath = new String[path.length];
+        System.arraycopy(path, 0, newPath, 0, path.length - 1);
+        newPath[path.length - 1] = path[path.length - 1] + PROPERTIES_EXTENSION;
+        return getDetails(getFile(false, newPath));
     }
 
     private TypeInstanceMap getDetails(File file) throws IOException {

@@ -33,17 +33,20 @@ public class DeviceListWatcher implements ListListener<Device<?, ?, ?, ?, ?, ?, 
     private final Persistence persistence;
     private final ValueWatcher valueWatcher;
     private final PropertyListWatcher propertyListWatcher;
+    private final DeviceListener deviceListener;
 
     @Inject
-    public DeviceListWatcher(Log log, Persistence persistence, ValueWatcher valueWatcher, PropertyListWatcher propertyListWatcher) {
+    public DeviceListWatcher(Log log, Persistence persistence, ValueWatcher valueWatcher, PropertyListWatcher propertyListWatcher, DeviceListener deviceListener) {
         this.log = log;
         this.persistence = persistence;
         this.valueWatcher = valueWatcher;
         this.propertyListWatcher = propertyListWatcher;
+        this.deviceListener = deviceListener;
     }
 
     @Override
     public void elementAdded(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+        listeners.put(device, device.addObjectListener(deviceListener));
         listeners.put(device, device.getRunningValue().addObjectListener(valueWatcher));
         listeners.put(device, device.getProperties().addObjectListener(propertyListWatcher, true));
         try {

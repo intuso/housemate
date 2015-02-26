@@ -76,7 +76,10 @@ public final class TaskFactory implements PluginListener {
                 ServerRealTask task = createTask(values, owner);
                 // todo process annotations
                 list.add(task);
-                persistence.saveValues(list.getPath(), task.getId(), values);
+                String[] path = new String[list.getPath().length + 1];
+                System.arraycopy(list.getPath(), 0, path, 0, list.getPath().length);
+                path[path.length - 1] = task.getId();
+                persistence.saveValues(path, values);
             }
         };
     }

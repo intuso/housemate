@@ -5,11 +5,7 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.automation.Automation;
-import com.intuso.housemate.api.object.condition.Condition;
-import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.api.object.task.Task;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
@@ -28,9 +24,7 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?, ?, ?,
-        ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-        ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?>> {
+public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?>> {
 
     private final Multimap<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
 
@@ -39,21 +33,22 @@ public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?
     private final ValueWatcher valueWatcher;
     private final ConditionListWatcher conditionListWatcher;
     private final TaskListWatcher taskListWatcher;
+    private final AutomationListener automationListener;
 
     @Inject
     public AutomationListWatcher(Log log, Persistence persistence, ValueWatcher valueWatcher,
-                                 ConditionListWatcher conditionListWatcher, TaskListWatcher taskListWatcher) {
+                                 ConditionListWatcher conditionListWatcher, TaskListWatcher taskListWatcher, AutomationListener automationListener) {
         this.log = log;
         this.persistence = persistence;
         this.valueWatcher = valueWatcher;
         this.conditionListWatcher = conditionListWatcher;
         this.taskListWatcher = taskListWatcher;
+        this.automationListener = automationListener;
     }
 
     @Override
-    public void elementAdded(Automation<?, ?, ?, ?, ?, ?,
-            ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-            ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
+    public void elementAdded(Automation<?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?> automation) {
+        listeners.put(automation, automation.addObjectListener(automationListener));
         listeners.put(automation, automation.getRunningValue().addObjectListener(valueWatcher));
         listeners.put(automation, automation.getConditions().addObjectListener(conditionListWatcher, true));
         listeners.put(automation, automation.getSatisfiedTasks().addObjectListener(taskListWatcher, true));
@@ -71,9 +66,7 @@ public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?
     }
 
     @Override
-    public void elementRemoved(Automation<?, ?, ?, ?, ?, ?,
-            ? extends Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>, ?,
-            ? extends Task<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?>, ?, ?> automation) {
+    public void elementRemoved(Automation<?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?> automation) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(automation);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

@@ -1,5 +1,6 @@
 package com.intuso.housemate.server.storage;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -71,24 +72,25 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
     public void loadObjects() {
         loadApplications(root.getApplications());
         loadUsers(root.getUsers());
-        loadDevices(new String[]{"", Root.DEVICES_ID}, lifecycleHandler.createAddDeviceCommand(devices));
+        loadDevices(Lists.newArrayList("", Root.DEVICES_ID), lifecycleHandler.createAddDeviceCommand(devices));
         loadAutomations(root.getAutomations());
     }
 
-    private void loadApplications(ServerRealList<ApplicationData, ServerRealApplication> realApplications) {
+    private void loadApplications(ServerRealList<ApplicationData, ServerRealApplication> list) {
         try {
-            for(String key : persistence.getValuesKeys(realApplications.getPath())) {
-                TypeInstanceMap details = persistence.getValues(realApplications.getPath(), key);
+            for(String key : persistence.getValuesKeys(list.getPath())) {
+                String[] path = new String[list.getPath().length + 1];
+                System.arraycopy(list.getPath(), 0, path, 0, list.getPath().length);
+                path[path.length - 1] = key;
+                TypeInstanceMap details = persistence.getValues(path);
                 ServerRealApplication application = new ServerRealApplication(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
                         details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(),
                         injector.getInstance(ApplicationStatusType.class));
-                List<String> path = Lists.newArrayList(realApplications.getPath());
-                path.add(application.getId());
-                loadApplicationInstances(path, application.getApplicationInstances(), application.getStatus());
-                realApplications.add(application);
+                loadApplicationInstances(Lists.newArrayList(path), application.getApplicationInstances(), application.getStatus());
+                list.add(application);
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved users " + Arrays.toString(realApplications.getPath()));
+            log.w("No details found for saved users " + Arrays.toString(list.getPath()));
         } catch(HousemateException e) {
             log.e("Failed to get names of existing users", e);
         }
@@ -97,11 +99,13 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
     private void loadApplicationInstances(List<String> path, ServerRealList<ApplicationInstanceData, ServerRealApplicationInstance> realApplicationInstances, ApplicationStatus applicationStatus) {
         try {
             for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
-                TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]), key);
+                path.add(key);
+                TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
                 ServerRealApplicationInstance applicationInstance = new ServerRealApplicationInstance(log, listenersFactory,
                         details.getChildren().get("id").getFirstValue(), injector.getInstance(ApplicationInstanceStatusType.class),
                         applicationStatus);
                 realApplicationInstances.add(applicationInstance);
+                path.remove(path.size() - 1);
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved users " + Arrays.toString(realApplicationInstances.getPath()));
@@ -110,20 +114,23 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         }
     }
 
-    private void loadUsers(ServerRealList<UserData, ServerRealUser> realUsers) {
+    private void loadUsers(ServerRealList<UserData, ServerRealUser> list) {
         try {
-            for(String key : persistence.getValuesKeys(realUsers.getPath())) {
-                TypeInstanceMap details = persistence.getValues(realUsers.getPath(), key);
+            for(String key : persistence.getValuesKeys(list.getPath())) {
+                String[] path = new String[list.getPath().length + 1];
+                System.arraycopy(list.getPath(), 0, path, 0, list.getPath().length);
+                path[path.length - 1] = key;
+                TypeInstanceMap details = persistence.getValues(path);
                 ServerRealUser user = new ServerRealUser(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
                         details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(), this);
-                realUsers.add(user);
+                list.add(user);
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved users " + Arrays.toString(realUsers.getPath()));
+            log.w("No details found for saved users " + Arrays.toString(list.getPath()));
         } catch(HousemateException e) {
             log.e("Failed to get names of existing users", e);
         }
-        if(realUsers.getChildren().size() == 0) {
+        if(list.getChildren().size() == 0) {
             TypeInstanceMap toSave = new TypeInstanceMap();
             toSave.getChildren().put("id", new TypeInstances(new TypeInstance("admin")));
             toSave.getChildren().put("name", new TypeInstances(new TypeInstance("admin")));
@@ -131,59 +138,67 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
 
             ServerRealUser user = new ServerRealUser(log, listenersFactory, "admin", "admin", "Default admin user", this);
             try {
-                persistence.saveValues(realUsers.getPath(), user.getId(), toSave);
+                String[] path = new String[list.getPath().length + 1];
+                System.arraycopy(list.getPath(), 0, path, 0, list.getPath().length);
+                path[path.length - 1] = user.getId();
+                persistence.saveValues(path, toSave);
             } catch(HousemateException e) {
                 log.e("Failed to save details for admin user, no one will be able to gain access");
             }
-            realUsers.add(user);
+            list.add(user);
         }
     }
 
-    private void loadDevices(String[] path, Command<?, ?, ?> addDeviceCommand) {
+    private void loadDevices(List<String> path, Command<?, ?, ?> addDeviceCommand) {
         try {
-            for(String key : persistence.getValuesKeys(path)) {
+            for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
-                    addDeviceCommand.perform(persistence.getValues(path, key),
+                    path.add(key);
+                    addDeviceCommand.perform(persistence.getValues(path.toArray(new String[path.size()])),
                             new CommandPerformListener("Load device \"" + key + "\""));
+                    path.remove(path.size() - 1);
                 } catch(HousemateException e) {
                     log.e("Failed to load device", e);
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved devices " + Arrays.toString(path));
+            log.w("No details found for saved devices at " + Joiner.on("/").join(path));
         } catch(HousemateException e) {
             log.e("Failed to get names of existing devices", e);
         }
     }
 
-    private void loadAutomations(ServerRealList<AutomationData, ServerRealAutomation> realAutomations) {
+    private void loadAutomations(ServerRealList<AutomationData, ServerRealAutomation> list) {
         try {
-            for(String id : persistence.getValuesKeys(realAutomations.getPath())) {
+            for(String key : persistence.getValuesKeys(list.getPath())) {
                 try {
-                    TypeInstanceMap details = persistence.getValues(realAutomations.getPath(), id);
+                    String[] path = new String[list.getPath().length + 1];
+                    System.arraycopy(list.getPath(), 0, path, 0, list.getPath().length);
+                    path[path.length - 1] = key;
+                    TypeInstanceMap details = persistence.getValues(path);
                     ServerRealAutomation automation = new ServerRealAutomation(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
                             details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(), this,
                             lifecycleHandler);
                     // automation is not yet initialised so we cannot use it's path to load conditions etc. Instead,
                     // we can manually build the path using the list's path as a base.
-                    List<String> path = Lists.newArrayList(realAutomations.getPath());
-                    path.add(automation.getId());
-                    path.add(Automation.CONDITIONS_ID);
-                    loadConditions(path, automation.getConditions(), automation);
-                    path.remove(path.size() - 1);
-                    path.add(Automation.SATISFIED_TASKS_ID);
-                    loadTasks(path, automation.getSatisfiedTasks(), automation.getSatisfiedTaskOwner());
-                    path.remove(path.size() - 1);
-                    path.add(Automation.UNSATISFIED_TASKS_ID);
-                    loadTasks(path, automation.getUnsatisfiedTasks(), automation.getUnsatisfiedTaskOwner());
-                    path.remove(path.size() - 1);
-                    realAutomations.add(automation);
+                    List<String> pathList = Lists.newArrayList(list.getPath());
+                    pathList.add(automation.getId());
+                    pathList.add(Automation.CONDITIONS_ID);
+                    loadConditions(pathList, automation.getConditions(), automation);
+                    pathList.remove(pathList.size() - 1);
+                    pathList.add(Automation.SATISFIED_TASKS_ID);
+                    loadTasks(pathList, automation.getSatisfiedTasks(), automation.getSatisfiedTaskOwner());
+                    pathList.remove(pathList.size() - 1);
+                    pathList.add(Automation.UNSATISFIED_TASKS_ID);
+                    loadTasks(pathList, automation.getUnsatisfiedTasks(), automation.getUnsatisfiedTaskOwner());
+                    pathList.remove(pathList.size() - 1);
+                    list.add(automation);
                 } catch(HousemateException e) {
                     log.e("Failed to load automation", e);
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved automations " + Arrays.toString(realAutomations.getPath()));
+            log.w("No details found for saved automations " + Arrays.toString(list.getPath()));
         } catch(HousemateException e) {
             log.e("Failed to get names of existing automations", e);
         }
@@ -193,12 +208,12 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         try {
             for(String conditionName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
-                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]), conditionName);
+                    path.add(conditionName);
+                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
                     ServerRealCondition condition = conditionFactory.createCondition(details, owner);
-                    path.add(condition.getId());
                     loadConditions(path, condition.getConditions(), condition);
-                    path.remove(path.size() - 1);
                     conditions.add(condition);
+                    path.remove(path.size() - 1);
                 } catch(HousemateException e) {
                     log.e("Failed to load condition", e);
                 }
@@ -214,8 +229,10 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         try {
             for(String taskName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
-                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]), taskName);
+                    path.add(taskName);
+                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
                     tasks.add(taskFactory.createTask(details, owner));
+                    path.remove(path.size() - 1);
                 } catch(HousemateException e) {
                     log.e("Failed to load task", e);
                 }

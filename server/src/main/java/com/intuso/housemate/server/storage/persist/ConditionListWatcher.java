@@ -4,9 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.object.condition.Condition;
-import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.property.Property;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.Collection;
@@ -18,7 +16,7 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class ConditionListWatcher implements ListListener<Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?>> {
+public class ConditionListWatcher implements ListListener<Condition<?, ?, ?, ?, ?, ?, ?>> {
 
     private final Multimap<Condition<?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
 
@@ -31,7 +29,7 @@ public class ConditionListWatcher implements ListListener<Condition<?, ?, ?, ? e
     }
 
     @Override
-    public void elementAdded(Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?> condition) {
+    public void elementAdded(Condition<?, ?, ?, ?, ?, ?, ?> condition) {
         listeners.put(condition, condition.getProperties().addObjectListener(propertyListWatcher, true));
         if(conditionListWatcher == null)
             conditionListWatcher = new ConditionListWatcher(propertyListWatcher);
@@ -39,7 +37,7 @@ public class ConditionListWatcher implements ListListener<Condition<?, ?, ?, ? e
     }
 
     @Override
-    public void elementRemoved(Condition<?, ?, ?, ? extends List<? extends Property<?, ?, ?>>, ?, ?, ?> condition) {
+    public void elementRemoved(Condition<?, ?, ?, ?, ?, ?, ?> condition) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(condition);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

@@ -111,7 +111,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     }
 
     @Override
-    public ServerRealCommand createAddAutomationCommand(final ServerRealList<AutomationData, ServerRealAutomation> automations) {
+    public ServerRealCommand createAddAutomationCommand(final ServerRealList<AutomationData, ServerRealAutomation> list) {
         return new ServerRealCommand(log, listenersFactory, Root.ADD_AUTOMATION_ID, Root.ADD_AUTOMATION_ID, "Add a new automation", Arrays.<ServerRealParameter<?>>asList(
                 new ServerRealParameter<String>(log, listenersFactory, "name", "Name", "The name for the new automation", new StringType(log, listenersFactory)),
                 new ServerRealParameter<String>(log, listenersFactory, "description", "Description", "The description for the new automation", new StringType(log, listenersFactory))
@@ -124,7 +124,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                         new ServerRealAutomationOwner() {
                             @Override
                             public void remove(ServerRealAutomation automation) {
-                                automations.remove(automation.getId());
+                                list.remove(automation.getId());
                                 try {
                                     persistence.removeValues(automation.getPath());
                                 } catch(HousemateException e) {
@@ -132,8 +132,11 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                                 }
                             }
                         }, LifecycleHandlerImpl.this);
-                automations.add(automation);
-                persistence.saveValues(automations.getPath(), automation.getId(), values);
+                list.add(automation);
+                String[] path = new String[list.getPath().length + 1];
+                System.arraycopy(list.getPath(), 0, path, 0, list.getPath().length);
+                path[path.length - 1] = automation.getId();
+                persistence.saveValues(path, values);
                 automation.getRunningValue().addObjectListener(runningListener);
             }
         };

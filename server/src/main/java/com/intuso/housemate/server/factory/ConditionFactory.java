@@ -76,7 +76,10 @@ public final class ConditionFactory implements PluginListener {
                 ServerRealCondition condition = createCondition(values, owner);
                 // todo process annotations
                 list.add(condition);
-                persistence.saveValues(list.getPath(), condition.getId(), values);
+                String[] path = new String[list.getPath().length + 1];
+                System.arraycopy(list.getPath(), 0, path, 0, list.getPath().length);
+                path[path.length - 1] = condition.getId();
+                persistence.saveValues(path, values);
             }
         };
     }

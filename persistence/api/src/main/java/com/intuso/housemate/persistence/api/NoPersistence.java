@@ -31,22 +31,17 @@ public class NoPersistence implements Persistence {
     }
 
     @Override
-    public TypeInstanceMap getValues(String[] path, String detailsKey) throws DetailsNotFoundException, HousemateException {
+    public TypeInstanceMap getValues(String[] path) throws DetailsNotFoundException, HousemateException {
         throw new DetailsNotFoundException();
     }
 
     @Override
-    public void saveValues(String[] path, String detailsKey, TypeInstanceMap details) throws HousemateException {
+    public void saveValues(String[] path, TypeInstanceMap details) throws HousemateException {
         // do nothing
     }
 
     @Override
     public void removeValues(String[] path) throws HousemateException {
-        // do nothing
-    }
-
-    @Override
-    public void saveValues(String[] path, TypeInstanceMap details) throws HousemateException {
         // do nothing
     }
 }

@@ -68,7 +68,7 @@ public final class DeviceFactory implements PluginListener {
 
     public RealCommand createAddDeviceCommand(String commandId, String commandName, String commandDescription,
                                               final RealList<TypeData<?>, RealType<?, ?, ?>> types,
-                                              final RealList<DeviceData, RealDevice> devices) {
+                                              final RealList<DeviceData, RealDevice> list) {
         return new RealCommand(log, listenersFactory, commandId, commandName, commandDescription, Arrays.asList(
                 new RealParameter<String>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, new StringType(log, listenersFactory)),
                 new RealParameter<String>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, new StringType(log, listenersFactory)),
@@ -91,8 +91,11 @@ public final class DeviceFactory implements PluginListener {
                 RealDevice device = deviceFactoryEntry.getInjector().getInstance(deviceFactoryEntry.getFactoryKey())
                         .create(new DeviceData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()));
                 annotationProcessor.process(types, device);
-                devices.add(device);
-                persistence.saveValues(devices.getPath(), device.getId(), values);
+                list.add(device);
+                String[] path = new String[list.getPath().length + 1];
+                System.arraycopy(list.getPath(), 0, path, 0, list.getPath().length);
+                path[path.length - 1] = device.getId();
+                persistence.saveValues(path, values);
             }
         };
     }
