@@ -75,6 +75,13 @@ public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends P
             remove(accordionGroup);
     }
 
+    public void childRenamed(String id, String newName) {
+        AccordionGroup accordionGroup = accordionGroups.get(id);
+        if(accordionGroup != null) {
+            accordionGroup.setHeading(newName);
+        }
+    }
+
     private void addEntry(final ChildOverview childOverview) {
         if(childOverview != null) {
             final AccordionGroup accordionGroup = new AccordionGroup();

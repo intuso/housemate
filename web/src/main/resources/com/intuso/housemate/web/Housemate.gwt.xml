@@ -10,6 +10,7 @@
 
     <!-- GWT bootstrap lib                                          -->
     <inherits name='com.github.gwtbootstrap.Bootstrap'/>
+    <!--<inherits name='org.gwtbootstrap3.GwtBootstrap3'/>-->
     <set-property name="bootstrap.responsiveDesign" value="true"/>
 
     <!-- Gin -->

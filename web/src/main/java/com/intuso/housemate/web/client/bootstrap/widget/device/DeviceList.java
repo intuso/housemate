@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.web.client.Housemate;
-import com.intuso.housemate.web.client.bootstrap.widget.list.ObjectList;
+import com.intuso.housemate.web.client.bootstrap.widget.object.primary.PrimaryObjectList;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  * Time: 00:39
  * To change this template use File | Settings | File Templates.
  */
-public class DeviceList extends ObjectList<DeviceData, GWTProxyDevice> {
+public class DeviceList extends PrimaryObjectList<DeviceData, GWTProxyDevice> {
 
     public DeviceList(String title, List<String> filteredIds, boolean includeFiltered) {
         super(Housemate.INJECTOR.getProxyRoot().getDevices(), title, filteredIds, includeFiltered);
