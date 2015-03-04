@@ -1,6 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.widget.command;
 
-import com.github.gwtbootstrap.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.Modal;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;

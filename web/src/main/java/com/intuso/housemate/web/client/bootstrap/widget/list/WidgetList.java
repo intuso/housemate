@@ -1,6 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.widget.list;
 
-import com.github.gwtbootstrap.client.ui.Label;
+import org.gwtbootstrap3.client.ui.Label;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;

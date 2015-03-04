@@ -1,6 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.widget.application;
 
-import com.github.gwtbootstrap.client.ui.Label;
+import org.gwtbootstrap3.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.api.object.HousemateObject;

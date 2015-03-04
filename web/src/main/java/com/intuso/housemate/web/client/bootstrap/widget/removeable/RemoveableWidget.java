@@ -1,6 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.widget.removeable;
 
-import com.github.gwtbootstrap.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Button;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;

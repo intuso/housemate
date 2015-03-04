@@ -1,6 +1,5 @@
 package com.intuso.housemate.web.client.bootstrap.extensions;
 
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -10,6 +9,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ButtonBase;
 import com.google.gwt.user.client.ui.HasValue;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -136,7 +136,7 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
     }
 
     public void setOnLabelIcon(IconType icon) {
-        divElem.setAttribute(ATTR_ON_LABEL, "<i class='" + icon.get() + "'/>");
+        divElem.setAttribute(ATTR_ON_LABEL, "<i class='" + icon.getCssName() + "'/>");
     }
 
     public void setFalseLabel(String label) {
@@ -144,7 +144,7 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
     }
 
     public void setOffLabelIcon(IconType icon) {
-        divElem.setAttribute(ATTR_OFF_LABEL, "<i class='" + icon.get() + "'/>");
+        divElem.setAttribute(ATTR_OFF_LABEL, "<i class='" + icon.getCssName() + "'/>");
     }
 
     public void setLabel(String label) {
@@ -152,7 +152,7 @@ public class ToggleSwitch extends ButtonBase implements HasValue<Boolean> {
     }
 
     public void setLabelIcon(IconType icon) {
-        divElem.setAttribute(ATTR_LABEL_ICON, icon.get());
+        divElem.setAttribute(ATTR_LABEL_ICON, icon.getCssName());
     }
 
     @Override

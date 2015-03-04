@@ -1,13 +1,5 @@
 package com.intuso.housemate.web.client.bootstrap.widget.list;
 
-import com.github.gwtbootstrap.client.ui.Accordion;
-import com.github.gwtbootstrap.client.ui.AccordionGroup;
-import com.github.gwtbootstrap.client.ui.Heading;
-import com.github.gwtbootstrap.client.ui.constants.Constants;
-import com.github.gwtbootstrap.client.ui.event.HideEvent;
-import com.github.gwtbootstrap.client.ui.event.HideHandler;
-import com.github.gwtbootstrap.client.ui.event.ShowEvent;
-import com.github.gwtbootstrap.client.ui.event.ShowHandler;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -20,6 +12,13 @@ import com.intuso.housemate.web.client.event.SelectedIdsChangedEvent;
 import com.intuso.housemate.web.client.handler.HasSelectedIdsChangedHandlers;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
+import org.gwtbootstrap3.client.shared.event.HideEvent;
+import org.gwtbootstrap3.client.shared.event.HideHandler;
+import org.gwtbootstrap3.client.shared.event.ShowEvent;
+import org.gwtbootstrap3.client.shared.event.ShowHandler;
+import org.gwtbootstrap3.client.ui.Heading;
+import org.gwtbootstrap3.client.ui.PanelGroup;
+import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 
 import java.util.List;
 import java.util.Map;
@@ -33,14 +32,14 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<DATA, ?, ?, ?, ?>>
-        extends Accordion implements AvailableChildrenListener<GWTProxyList<DATA, OBJECT>>, HasSelectedIdsChangedHandlers {
+        extends PanelGroup implements AvailableChildrenListener<GWTProxyList<DATA, OBJECT>>, HasSelectedIdsChangedHandlers {
 
     private final GWTProxyList<DATA, OBJECT> list;
     private final List<String> filteredIds;
     private final boolean includeFiltered;
 
-    private final Map<String, AccordionGroup> accordionGroups = Maps.newHashMap();
-    private final Map<AccordionGroup, ShowHandler> showHandlers = Maps.newHashMap();
+    private final Map<String, WidgetPanel> widgetPanels = Maps.newHashMap();
+    private final Map<WidgetPanel, ShowHandler> showHandlers = Maps.newHashMap();
     private final Set<String> selectedIds = Sets.newHashSet();
 
     public ObjectList(GWTProxyList<DATA, OBJECT> list, String title, List<String> filteredIds, boolean includeFiltered) {
@@ -55,7 +54,7 @@ public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends P
         // add the widget style name
         addStyleName("object-list");
 
-        add(new Heading(4, title));
+        add(new Heading(HeadingSize.H4, title));
 
         this.list.addAvailableChildrenListener(this, true);
     }
@@ -70,9 +69,16 @@ public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends P
 
     @Override
     public void childRemoved(GWTProxyList<DATA, OBJECT> list, ChildOverview childOverview) {
-        AccordionGroup accordionGroup = accordionGroups.get(childOverview.getId());
-        if(accordionGroup != null)
-            remove(accordionGroup);
+        WidgetPanel widgetPanel = widgetPanels.get(childOverview.getId());
+        if(widgetPanel != null)
+            remove(widgetPanel);
+    }
+
+    public void childRenamed(String id, String newName) {
+        WidgetPanel widgetPanel = widgetPanels.get(id);
+        if(widgetPanel != null) {
+            widgetPanel.setHeading(newName);
+        }
     }
 
     public void childRenamed(String id, String newName) {
@@ -84,28 +90,28 @@ public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends P
 
     private void addEntry(final ChildOverview childOverview) {
         if(childOverview != null) {
-            final AccordionGroup accordionGroup = new AccordionGroup();
-            accordionGroup.setHeading(childOverview.getName());
+            final WidgetPanel widgetPanel = new WidgetPanel();
+            widgetPanel.setHeading(childOverview.getName());
             // lazy load the widget
-            ShowHandler showHandler = new ShowObjectHandler(accordionGroup, childOverview.getId());
-            showHandlers.put(accordionGroup, showHandler);
-            accordionGroup.addShowHandler(showHandler);
-            accordionGroup.addShowHandler(new ShowHandler() {
+            ShowHandler showHandler = new ShowObjectHandler(widgetPanel, childOverview.getId());
+            showHandlers.put(widgetPanel, showHandler);
+            widgetPanel.addShowHandler(showHandler);
+            widgetPanel.addShowHandler(new ShowHandler() {
                 @Override
                 public void onShow(ShowEvent showEvent) {
                     if (selectedIds.add(childOverview.getId()))
                         ObjectList.this.fireEvent(new SelectedIdsChangedEvent(selectedIds));
                 }
             });
-            accordionGroup.addHideHandler(new HideHandler() {
+            widgetPanel.addHideHandler(new HideHandler() {
                 @Override
                 public void onHide(HideEvent hideEvent) {
                     if (selectedIds.remove(childOverview.getId()))
                         ObjectList.this.fireEvent(new SelectedIdsChangedEvent(selectedIds));
                 }
             });
-            accordionGroups.put(childOverview.getId(), accordionGroup);
-            add(accordionGroup);
+            widgetPanels.put(childOverview.getId(), widgetPanel);
+            add(widgetPanel);
         }
     }
 
@@ -115,30 +121,24 @@ public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends P
     }
 
     public void setSelected(Set<String> ids) {
-        // TODO fix this, AccordionGroup.hide() makes the collapse never expand, even when clicked!
-        // TODO The Collapse class has a hide(bool autoHidden) function but is not accessible to us :-(
         if(ids == null)
             ids = Sets.newHashSet();
-        for(Map.Entry<String, AccordionGroup> entry : accordionGroups.entrySet())
+        for(Map.Entry<String, WidgetPanel> entry : widgetPanels.entrySet())
             setVisible(entry.getValue(), ids.contains(entry.getKey()));
     }
 
-    private void setVisible(AccordionGroup accordionGroup, boolean visible) {
+    private void setVisible(WidgetPanel widgetPanel, boolean visible) {
         if(visible)
-            showHandlers.get(accordionGroup).onShow(null);
-        Widget bodyWidget = accordionGroup.getWidget(1);
-        if(visible)
-            bodyWidget.addStyleName(Constants.IN);
-        else
-            bodyWidget.removeStyleName(Constants.IN);
+            showHandlers.get(widgetPanel).onShow(null);
+        widgetPanel.setIn(visible);
     }
 
     public void setSelected(String id, boolean selected) {
-        if(accordionGroups.get(id) != null) {
+        if(widgetPanels.get(id) != null) {
             if(selected)
-                accordionGroups.get(id).show();
+                widgetPanels.get(id).setIn(true);
             else
-                accordionGroups.get(id).hide();
+                widgetPanels.get(id).setIn(false);
         }
     }
 
@@ -146,19 +146,19 @@ public abstract class ObjectList<DATA extends HousemateData<?>, OBJECT extends P
 
     private class ShowObjectHandler implements ShowHandler {
 
-        private final AccordionGroup accordionGroup;
+        private final WidgetPanel widgetPanel;
         private final String id;
         private boolean shown = false;
 
-        private ShowObjectHandler(AccordionGroup accordionGroup, String id) {
-            this.accordionGroup = accordionGroup;
+        private ShowObjectHandler(WidgetPanel widgetPanel, String id) {
+            this.widgetPanel = widgetPanel;
             this.id = id;
         }
 
         @Override
         public void onShow(ShowEvent showEvent) {
             if(!shown) {
-                accordionGroup.add(getWidget(id, list.get(id)));
+                widgetPanel.addToBody(getWidget(id, list.get(id)));
                 shown = true;
             }
         }

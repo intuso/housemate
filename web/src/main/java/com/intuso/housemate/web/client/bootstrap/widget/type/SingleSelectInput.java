@@ -1,6 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.ListBox;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gwt.core.client.GWT;

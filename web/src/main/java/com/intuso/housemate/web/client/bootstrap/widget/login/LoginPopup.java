@@ -1,6 +1,5 @@
 package com.intuso.housemate.web.client.bootstrap.widget.login;
 
-import com.github.gwtbootstrap.client.ui.*;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -8,14 +7,17 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.event.CredentialsSubmittedEvent;
 import com.intuso.housemate.web.client.ui.view.LoginView;
+import org.gwtbootstrap3.client.ui.Alert;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Input;
+import org.gwtbootstrap3.client.ui.Modal;
 
 import static com.google.gwt.user.client.DOM.getElementById;
 
@@ -23,17 +25,16 @@ import static com.google.gwt.user.client.DOM.getElementById;
  */
 public class LoginPopup extends Composite implements LoginView {
 
-    interface LoginPopupUiBinder extends UiBinder<Widget, LoginPopup> {
-    }
+    interface LoginPopupUiBinder extends UiBinder<SimplePanel, LoginPopup> {}
 
     private static LoginPopupUiBinder ourUiBinder = GWT.create(LoginPopupUiBinder.class);
 
     @UiField
     Modal modal;
     @UiField
-    TextBox username;
+    Input username;
     @UiField
-    PasswordTextBox password;
+    Input password;
     @UiField
     Alert message;
     @UiField
@@ -46,11 +47,6 @@ public class LoginPopup extends Composite implements LoginView {
             username.setText(getElementById("username").getPropertyString("value"));
         if(getElementById("password") != null)
             password.setText(getElementById("password").getPropertyString("value"));
-    }
-
-    @UiFactory
-    protected LoginPopup createDialog() {
-        return this;
     }
 
     @UiHandler(value = {"username", "password"})

@@ -9,9 +9,7 @@
     <inherits name='com.google.gwt.user.theme.chrome.Chrome'/>
 
     <!-- GWT bootstrap lib                                          -->
-    <inherits name='com.github.gwtbootstrap.Bootstrap'/>
-    <!--<inherits name='org.gwtbootstrap3.GwtBootstrap3'/>-->
-    <set-property name="bootstrap.responsiveDesign" value="true"/>
+    <inherits name='org.gwtbootstrap3.GwtBootstrap3'/>
 
     <!-- Gin -->
     <inherits name="com.google.gwt.inject.Inject"/>
@@ -26,15 +24,10 @@
     <entry-point class='com.intuso.housemate.web.client.Housemate'/>
 
     <!-- Bootstrap customisation -->
-    <source path='resources'/>
-    <replace-with class="com.intuso.housemate.web.resources.BootstrapConfigurator">
-        <when-type-is class="com.github.gwtbootstrap.client.ui.config.Configurator"/>
-    </replace-with>
-    <!--<replace-with class="com.intuso.housemate.web.resources.BootstrapMinConfigurator">
-        <when-type-is class="com.github.gwtbootstrap.client.ui.config.Configurator"/>
-    </replace-with>-->
     <public path="resources">
-        <exclude name="**/*.java"/>
-        <exclude name="**/*.class"/>
+        <include name="css/*.css"/>
+        <include name="js/*.js"/>
     </public>
+
+    <stylesheet src="css/bootstrap.min.css"/>
 </module>
