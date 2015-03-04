@@ -1,6 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
-import com.github.gwtbootstrap.client.ui.CheckBox;
+import org.gwtbootstrap3.client.ui.CheckBox;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.intuso.housemate.api.object.type.TypeInstance;

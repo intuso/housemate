@@ -1,6 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
-import com.github.gwtbootstrap.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.ListBox;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.intuso.housemate.api.object.option.OptionData;

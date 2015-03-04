@@ -1,8 +1,5 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.github.gwtbootstrap.client.ui.resources.ButtonSize;
 import com.google.common.collect.Lists;
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.user.client.History;
@@ -14,6 +11,9 @@ import com.intuso.housemate.web.client.handler.MultiListSelectedIdsChangedHandle
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
 import com.intuso.housemate.web.client.place.AutomationsPlace;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.ButtonSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 import java.util.List;
 import java.util.Set;

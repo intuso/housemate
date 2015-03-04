@@ -1,0 +1,11 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
+    <b:Panel addStyleNames="widget-panel">
+        <b:PanelHeader ui:field="panelHeader" dataToggle="COLLAPSE" dataTarget="#changeme">
+            <b:Heading ui:field="heading" size="H4"/>
+        </b:PanelHeader>
+        <b:PanelCollapse ui:field="panelCollapse" b:id="changeme" in="true">
+            <b:PanelBody ui:field="panelBody"/>
+        </b:PanelCollapse>
+    </b:Panel>
+</ui:UiBinder>

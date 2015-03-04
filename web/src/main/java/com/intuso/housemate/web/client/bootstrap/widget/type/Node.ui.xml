@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b='urn:import:com.github.gwtbootstrap.client.ui'>
+             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
     <ui:style type='com.intuso.housemate.web.client.bootstrap.widget.type.Node.Style'>
 
         .currentSelection {

@@ -1,7 +1,5 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
-import com.github.gwtbootstrap.client.ui.Brand;
-import com.github.gwtbootstrap.client.ui.NavLink;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.EventBus;
@@ -17,6 +15,7 @@ import com.intuso.housemate.web.client.place.ApplicationsPlace;
 import com.intuso.housemate.web.client.place.AutomationsPlace;
 import com.intuso.housemate.web.client.place.DevicesPlace;
 import com.intuso.housemate.web.client.place.UsersPlace;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,19 +32,17 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
     private static BootstrapPageUiBinder ourUiBinder = GWT.create(BootstrapPageUiBinder.class);
 
     @UiField
-    Brand brand;
-    @UiField
     SimplePanel container;
     @UiField
-    NavLink devicesButton;
+    AnchorListItem devicesButton;
     @UiField
-    NavLink automationsButton;
+    AnchorListItem automationsButton;
     @UiField
-    NavLink applicationsButton;
+    AnchorListItem applicationsButton;
     @UiField
-    NavLink usersButton;
+    AnchorListItem usersButton;
 
-    private NavLink activeButton = null;
+    private AnchorListItem activeButton = null;
 
     private final PlaceController placeController;
     private final LoginManager loginManager;
@@ -55,11 +52,6 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
         this.placeController = placeController;
         this.loginManager = loginManager;
         initWidget(ourUiBinder.createAndBindUi(this));
-        this.brand.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        final Image logo = new Image("img/nav-brand.png");
-        final String html = "<center>" + logo.toString() + "</center>";//"<br>Ø®Ù…Ø³ Ø¯Ù‚Ø§ÙŠÙ‚ Ø£Ø®Ø¨Ø§Ø±</center>";
-        this.brand.setHTML(html);
-        this.brand.setDirectionEstimator(true);
         eventBus.addHandler(PlaceChangeEvent.TYPE, this);
     }
 

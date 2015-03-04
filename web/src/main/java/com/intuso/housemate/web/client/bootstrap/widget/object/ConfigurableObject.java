@@ -1,7 +1,5 @@
 package com.intuso.housemate.web.client.bootstrap.widget.object;
 
-import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.Collapse;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -11,6 +9,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.Collapse;
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,7 +48,6 @@ public abstract class ConfigurableObject extends Composite {
 
         public Settings() {
             initWidget(ourUiBinder.createAndBindUi(this));
-            settingsCollapse.setDefaultOpen(false);
             settingsButton.addClickHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
@@ -58,10 +57,10 @@ public abstract class ConfigurableObject extends Composite {
                     if(settingsWidget == null) {
                         settingsWidget = createSettingsWidget();
                         settingsPanel.add(settingsWidget);
-                    }
-
-                    // toggle settings visibility
-                    settingsCollapse.toggle();
+                        settingsCollapse.show();
+                    } else
+                        // toggle settings visibility
+                        settingsCollapse.toggle();
                 }
             });
         }
