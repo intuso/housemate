@@ -137,13 +137,18 @@ public class WidgetService extends HousemateService {
 
     private void updateStatus() {
         Status oldStatus = status;
-        if(!networkAvailable)
-            status = Status.NO_NETWORK;
-        else if(getRouter().getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && getRouter().getServerConnectionStatus() != ServerConnectionStatus.DisconnectedTemporarily) {
+        if(!networkAvailable) {
             try {
-                throw new HousemateException("Dummy");
+                throw new HousemateException("No network");
             } catch(HousemateException e) {
-                getLog().e("Widget service no longer connected", e);
+                getLog().e("Widget service no network", e);
+            }
+            status = Status.NO_NETWORK;
+        } else if(getRouter().getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && getRouter().getServerConnectionStatus() != ServerConnectionStatus.DisconnectedTemporarily) {
+            try {
+                throw new HousemateException("No connection");
+            } catch(HousemateException e) {
+                getLog().e("Widget service no network", e);
             }
             status = Status.NOT_CONNECTED;
         } else if(getRoot().getApplicationInstanceStatus() != ApplicationInstanceStatus.Allowed)
