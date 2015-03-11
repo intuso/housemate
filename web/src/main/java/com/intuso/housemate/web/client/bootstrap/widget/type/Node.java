@@ -1,13 +1,10 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
-import org.gwtbootstrap3.client.ui.Icon;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
@@ -18,11 +15,11 @@ import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.object.proxy.AvailableChildrenListener;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.ProxyObject;
-import com.intuso.housemate.web.client.event.ObjectSelectedEvent;
 import com.intuso.housemate.web.client.handler.HasObjectSelectedHandlers;
-import com.intuso.housemate.web.client.handler.ObjectSelectedHandler;
 import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectListener;
+import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 import java.util.Map;
 
@@ -33,25 +30,14 @@ import java.util.Map;
 * Time: 22:16
 * To change this template use File | Settings | File Templates.
 */
-public class Node extends Composite
-        implements HasObjectSelectedHandlers,
-            ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?>>,
-            ObjectListener<ProxyObject<?, ?, ?, ?, ?>>,
-            AvailableChildrenListener<ProxyObject<?, ?, ?, ?, ?>> {
+public class Node extends Composite implements HasObjectSelectedHandlers,
+        ObjectSelectedHandler<ProxyObject<?, ?, ?, ?, ?>>,
+        ObjectListener<ProxyObject<?, ?, ?, ?, ?>>,
+        AvailableChildrenListener<ProxyObject<?, ?, ?, ?, ?>> {
 
-    interface ObjectNodeUiBinder extends UiBinder<FlowPanel, Node> {
-    }
+    interface ObjectNodeUiBinder extends UiBinder<FlowPanel, Node> {}
 
     private static ObjectNodeUiBinder ourUiBinder = GWT.create(ObjectNodeUiBinder.class);
-
-    interface Style extends CssResource {
-        String currentSelection();
-        String newSelection();
-        String heading();
-    }
-
-    @UiField
-    Style style;
 
     @UiField
     protected Icon icon;
@@ -60,7 +46,6 @@ public class Node extends Composite
     @UiField
     protected FlowPanel children;
 
-    private final Node root;
     private ProxyObject<?, ?, ?, ?, ?> object;
     private ProxyObject<?, ?, ?, ?, ?> parent;
     private ChildOverview childOverview;
@@ -71,23 +56,13 @@ public class Node extends Composite
     private boolean expanded = false;
 
     public Node(ProxyObject<?, ?, ?, ?, ?> object) {
-        this(null, object);
-    }
-
-    private Node(Node root, ProxyObject<?, ?, ?, ?, ?> object) {
-
-        this.root = root != null ? root : this;
         this.object = object;
-
         initView();
     }
 
-    private Node(Node root, final ProxyObject<?, ?, ?, ?, ?> parent, final ChildOverview childOverview) {
-
-        this.root = root != null ? root : this;
+    private Node(final ProxyObject<?, ?, ?, ?, ?> parent, final ChildOverview childOverview) {
         this.parent = parent;
         this.childOverview = childOverview;
-
         initView();
     }
 
@@ -103,8 +78,7 @@ public class Node extends Composite
         heading.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                fireEvent(new ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?>>(object));
-                Node.this.root.showObject(object, style.newSelection());
+                Node.this.fireEvent(new ObjectSelectedEvent<ProxyObject<?, ?, ?, ?, ?>>(object));
             }
         });
 
@@ -149,29 +123,30 @@ public class Node extends Composite
         icon.setType(expanded ? IconType.CHEVRON_DOWN : IconType.CHEVRON_RIGHT);
     }
 
-    public void showObject(ProxyObject<?, ?, ?, ?, ?> object) {
-        root.showObject(object, style.currentSelection());
+    public void selectObject(ProxyObject<?, ?, ?, ?, ?> object) {
+        selectObject(object.getPath(), 0);
     }
 
-    private void showObject(ProxyObject<?, ?, ?, ?, ?> object, String style) {
-        unhighlightAll(style);
-        showObject(object.getPath(), 0, style);
-    }
-
-    private void unhighlightAll(String style) {
-        heading.removeStyleName(style);
-        for(Node child : childNodes.values())
-            child.unhighlightAll(style);
-    }
-
-    private void showObject(String[] path, int depth, String style) {
-        heading.addStyleName(style);
-        if(depth >= path.length - 1)
+    private void selectObject(String[] path, int depth) {
+        if(depth >= path.length - 1) {
+            unselectAll(); // unselect all children
+            addStyleName("selected");
             return;
+        }
+        addStyleName("selected");
         show(true);
-        Node node = childNodes.get(path[depth + 1]);
-        if(node != null)
-            node.showObject(path, depth + 1, style);
+        for(Map.Entry<String, Node> entry : childNodes.entrySet()) {
+            if(entry.getKey().equals(path[depth + 1]))
+                entry.getValue().selectObject(path, depth + 1);
+            else
+                entry.getValue().unselectAll();
+        }
+    }
+
+    private void unselectAll() {
+        removeStyleName("selected");
+        for(Node child : childNodes.values())
+            child.unselectAll();
     }
 
     @Override
@@ -187,7 +162,7 @@ public class Node extends Composite
     @Override
     public void childObjectAdded(String childId, ProxyObject<?, ?, ?, ?, ?> child) {
         if(!childNodes.containsKey(child.getId())) {
-            Node childNode = new Node(root, child);
+            Node childNode = new Node(child);
             childNodes.put(child.getId(), childNode);
             children.add(childNode);
             childListeners.put(childNode, childNode.addObjectSelectedHandler(this));
@@ -216,7 +191,7 @@ public class Node extends Composite
     @Override
     public void childAdded(ProxyObject<?, ?, ?, ?, ?> object, ChildOverview childOverview) {
         if(!childNodes.containsKey(childOverview.getId())) {
-            Node childNode = new Node(root, object, childOverview);
+            Node childNode = new Node(object, childOverview);
             childNodes.put(childOverview.getId(), childNode);
             children.add(childNode);
             childListeners.put(childNode, childNode.addObjectSelectedHandler(this));

@@ -1,7 +1,0 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
-    <g:SimplePanel>
-        <b:Icon type="THUMBS_UP" ui:field="icon"/>
-    </g:SimplePanel>
-</ui:UiBinder>

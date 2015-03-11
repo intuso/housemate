@@ -1,0 +1,9 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
+    <g:FlowPanel>
+        <h:NestedTable ui:field="featuresTable"/>
+        <h:command.CommandList ui:field="commandsList" showIfEmpty="false"/>
+        <h:value.ValueList ui:field="valuesList" showIfEmpty="false"/>
+    </g:FlowPanel>
+</ui:UiBinder>

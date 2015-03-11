@@ -5,7 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
+import com.intuso.housemate.web.client.bootstrap.widget.list.AddButton;
 import com.intuso.housemate.web.client.bootstrap.widget.object.Control;
 import com.intuso.housemate.web.client.bootstrap.widget.property.PropertyList;
 import com.intuso.housemate.web.client.object.GWTProxyCondition;
@@ -20,15 +20,20 @@ public class ConditionSettings extends Composite {
 
     @UiField(provided = true)
     Control control;
-    @UiField(provided = true)
+    @UiField
+    ConditionList childConditions;
+    @UiField
     PropertyList propertyList;
-    @UiField(provided = true)
-    PerformButton addChildCondition;
 
     public ConditionSettings(GWTProxyCondition condition) {
         control = new Control(condition);
-        propertyList = new PropertyList(condition.getProperties(), "properties", null, true);
-        addChildCondition = new PerformButton(condition.getAddConditionCommand());
         initWidget(ourUiBinder.createAndBindUi(this));
+        if(condition.getConditions() != null) {
+            childConditions.setList(condition.getConditions());
+            if(condition.getAddConditionCommand() != null)
+                childConditions.setHeaderWidget(new AddButton(condition.getAddConditionCommand()));
+        } else
+            childConditions.setVisible(false);
+        propertyList.setList(condition.getProperties());
     }
 }

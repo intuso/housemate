@@ -3,7 +3,7 @@ package com.intuso.housemate.web.client.bootstrap;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import com.intuso.housemate.web.client.bootstrap.view.*;
-import com.intuso.housemate.web.client.bootstrap.widget.login.LoginPopup;
+import com.intuso.housemate.web.client.bootstrap.widget.login.LoginModal;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFactory;
 import com.intuso.housemate.web.client.ui.view.LoginView;
 
@@ -23,7 +23,7 @@ public class BootstrapUiModule extends AbstractGinModule {
         bind(GWTProxyFeatureFactory.class).to(BootstrapFeatureFactory.class).in(Singleton.class);
     
         // ui
-        bind(LoginView.class).to(LoginPopup.class).in(Singleton.class);
+        bind(LoginView.class).to(LoginModal.class).in(Singleton.class);
         bind(com.intuso.housemate.web.client.ui.view.Page.class).to(Page.class).in(Singleton.class);
         bind(com.intuso.housemate.web.client.ui.view.DevicesView.class).to(DevicesView.class).in(Singleton.class);
         bind(com.intuso.housemate.web.client.ui.view.AutomationsView.class).to(AutomationsView.class).in(Singleton.class);

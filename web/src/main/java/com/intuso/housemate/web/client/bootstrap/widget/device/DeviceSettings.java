@@ -19,14 +19,12 @@ public class DeviceSettings extends Composite {
 
     @UiField(provided = true)
     Control control;
-    @UiField(provided = true)
+    @UiField
     PropertyList propertiesList;
 
     public DeviceSettings(final GWTProxyDevice device) {
-
         control = new Control(device);
-        propertiesList = new PropertyList(device.getProperties(), "Properties", device.getCustomPropertyIds(), false);
-
         initWidget(ourUiBinder.createAndBindUi(this));
+        propertiesList.setList(device.getProperties());
     }
 }

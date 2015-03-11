@@ -1,11 +1,11 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
-import org.gwtbootstrap3.client.ui.ListBox;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -13,14 +13,17 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.web.client.event.UserInputEvent;
+import com.intuso.housemate.web.client.handler.UserInputHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyOption;
 import com.intuso.housemate.web.client.object.GWTProxySubType;
 import com.intuso.housemate.web.client.object.GWTProxyType;
+import org.gwtbootstrap3.client.ui.ListBox;
 
 /**
  */
-public class SingleSelectInput extends Composite implements TypeInput {
+public class SingleSelectInput extends Composite implements TypeInput, UserInputHandler, ChangeHandler {
 
     public final static String OPTIONS = "options";
 
@@ -29,23 +32,26 @@ public class SingleSelectInput extends Composite implements TypeInput {
 
     private static SingleSelectInputUiBinder ourUiBinder = GWT.create(SingleSelectInputUiBinder.class);
 
-    @UiField(provided = true)
+    @UiField
     protected ListBox listBox;
     @UiField
     protected FlowPanel subTypesPanel;
 
+    private final TypeInstances typeInstances;
     private final GWTProxyList<OptionData, GWTProxyOption> options;
     private final BiMap<GWTProxyOption, Integer> optionMap = HashBiMap.create();
 
     public SingleSelectInput(GWTProxyType type, final TypeInstances typeInstances) {
+
+        this.typeInstances = typeInstances;
 
         if(typeInstances.getElements().size() == 0)
             typeInstances.getElements().add(new TypeInstance());
 
         options = (GWTProxyList<OptionData, GWTProxyOption>) type.getChild(OPTIONS);
 
-        listBox = new ListBox(false);
         initWidget(ourUiBinder.createAndBindUi(this));
+        listBox.setMultipleSelect(false);
 
         // add to the list for each option
         int i = 0;
@@ -70,14 +76,7 @@ public class SingleSelectInput extends Composite implements TypeInput {
             showOptions(optionId, typeInstances);
         }
 
-        listBox.addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                String optionId = optionMap.inverse().get(listBox.getSelectedIndex()).getId();
-                typeInstances.getElements().get(0).setValue(optionId);
-                showOptions(optionId, typeInstances);
-            }
-        });
+        listBox.addChangeHandler(this);
     }
 
     private void showOptions(String optionId, TypeInstances typeInstances) {
@@ -91,9 +90,32 @@ public class SingleSelectInput extends Composite implements TypeInput {
                     typeInstances.getElements().add(0, new TypeInstance());
                 if(typeInstances.getElements().get(0).getChildValues().getChildren().get(subType.getId()) == null)
                     typeInstances.getElements().get(0).getChildValues().getChildren().put(subType.getId(), new TypeInstances());
-                TypeInput input = TypeInputList.getInput(subType.getType(), typeInstances.getElements().get(0).getChildValues().getChildren().get(subType.getId()));
+                TypeInput input = TypeInput.FACTORY.create(subType.getType(), typeInstances.getElements().get(0).getChildValues().getChildren().get(subType.getId()), this);
                 subTypesPanel.add(input);
             }
         }
+    }
+
+    @Override
+    public void onChange(ChangeEvent event) {
+        String optionId = optionMap.inverse().get(listBox.getSelectedIndex()).getId();
+        typeInstances.getElements().get(0).setValue(optionId);
+        showOptions(optionId, typeInstances);
+        fireEvent(new UserInputEvent());
+    }
+
+    @Override
+    public TypeInstances getTypeInstances() {
+        return typeInstances;
+    }
+
+    @Override
+    public HandlerRegistration addUserInputHandler(UserInputHandler handler) {
+        return addHandler(handler, UserInputEvent.TYPE);
+    }
+
+    @Override
+    public void onUserInput(UserInputEvent event) {
+        fireEvent(new UserInputEvent());
     }
 }

@@ -1,16 +1,26 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
-import org.gwtbootstrap3.client.ui.TextBox;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
 import com.intuso.housemate.api.object.type.*;
+import com.intuso.housemate.web.client.event.UserInputEvent;
+import com.intuso.housemate.web.client.handler.UserInputHandler;
+import org.gwtbootstrap3.client.ui.TextBox;
 
 /**
  */
-public class TextInput extends TextBox implements TypeInput {
+public class TextInput extends TextBox implements TypeInput, ChangeHandler {
+
+    private final TypeInstances typeInstances;
+    private final Validator validator;
 
     public TextInput(TypeData typeData, final TypeInstances typeInstances) {
+
+        setWidth("100%");
+
+        this.typeInstances = typeInstances;
 
         if(typeInstances.getElements().size() == 0)
             typeInstances.getElements().add(new TypeInstance());
@@ -25,17 +35,28 @@ public class TextInput extends TextBox implements TypeInput {
         else
             setText(typeInstances.getFirstValue());
 
-        final Validator validator = getValidator(typeData);
-        addChangeHandler(new ChangeHandler() {
-            @Override
-            public void onChange(ChangeEvent event) {
-                if(validator.isValid(getText())) {
-                    typeInstances.getElements().get(0).setValue(getText());
-                } else {
-                    // TODO show invalid input
-                }
-            }
-        });
+        validator = getValidator(typeData);
+        addChangeHandler(this);
+    }
+
+    @Override
+    public void onChange(ChangeEvent event) {
+        if(validator.isValid(getText())) {
+            typeInstances.getElements().get(0).setValue(getText());
+        } else {
+            // TODO show invalid input
+        }
+        fireEvent(new UserInputEvent());
+    }
+
+    @Override
+    public TypeInstances getTypeInstances() {
+        return typeInstances;
+    }
+
+    @Override
+    public HandlerRegistration addUserInputHandler(UserInputHandler handler) {
+        return addHandler(handler, UserInputEvent.TYPE);
     }
 
     private Validator getValidator(TypeData typeData) {

@@ -297,7 +297,7 @@ a {
 }
 a:hover,
 a:focus {
-  color: #ffffff;
+  color: #900090;
   text-decoration: underline;
 }
 a:focus {
@@ -2104,7 +2104,7 @@ fieldset[disabled] .btn-link {
 }
 .btn-link:hover,
 .btn-link:focus {
-  color: #ffffff;
+  color: #900090;
   text-decoration: underline;
   background-color: transparent;
 }
@@ -3478,8 +3478,8 @@ textarea.input-group-sm > .input-group-btn > .btn {
   border-bottom-color: #900090;
 }
 .nav a:hover .caret {
-  border-top-color: #ffffff;
-  border-bottom-color: #ffffff;
+  border-top-color: #900090;
+  border-bottom-color: #900090;
 }
 .nav-tabs .dropdown-menu {
   margin-top: -1px;
@@ -4905,7 +4905,7 @@ body.modal-open,
   bottom: 0;
   left: 0;
   z-index: 1030;
-  background-color: #900090;
+  background-color: #999999;
 }
 .modal-backdrop.fade {
   opacity: 0;
@@ -5919,6 +5919,9 @@ td.visible-print {
     display: none !important;
   }
 }
+.navbar .nav {
+  font-weight: bold;
+}
 .navbar,
 .jumbotron,
 .input-group-addon,
@@ -5932,47 +5935,46 @@ td.visible-print {
 body {
   padding-top: 70px;
 }
+body.modal-open,
+.modal-open .navbar-fixed-top,
+.modal-open .navbar-fixed-bottom {
+  margin-right: 0px;
+}
 .modal-dialog {
   left: auto;
 }
-.object-list {
-  margin-bottom: 5px;
-  margin-top: 30px;
-}
-.object-list > .widget-panel {
-  margin-bottom: 15px;
-}
-.object-list > .widget-panel > .panel-heading {
-  text-decoration: none;
+.main .panel-title {
   font-weight: bold;
 }
-.widget-list > .widget-panel,
-.widget-list > .widget-panel > .panel-heading {
+table.nested td {
+  padding-bottom: 10px;
+}
+table.nested tr .settings,
+div.panel-heading .settings,
+table.nested tr .add {
+  display: none;
+  background-color: inherit;
+  padding: 0px 3px;
+  margin: 0px 3px;
   border: none;
 }
-.widget-list > .widget-panel > .panel-heading {
-  padding: 5px 0 0 0;
-  color: #900090;
-  background-color: #ffffff;
-  text-decoration: none;
-}
-.widget-list > .widget-panel > .panel {
-  min-width: 200px;
-  padding: 0 0 0 5px;
-  margin-left: 5px;
-  border-left: 1px solid #900090;
-  border-top: none;
-  border-bottom: none;
-  border-right: none;
-}
-.property,
-.widget-row {
-  margin: 5px 0;
-}
-.property input[type=text] {
-  margin-bottom: 0;
-}
-.widget-row > .title {
-  margin: auto 0;
+table.nested tr:hover .settings,
+table.nested tr:focus .settings,
+div.panel-heading:hover .settings,
+div.panel-heading:focus .settings,
+table.nested tr:hover .add,
+table.nested tr:focus .add {
   display: inline;
+}
+div.panel-heading .settings,
+div.panel-heading .add {
+  color: #ffffff;
+}
+.boolean-value {
+  margin: 0px 3px;
+}
+.object-browser .selected > a {
+  background-color: #900090;
+  color: #ffffff;
+  border-radius: 3px;
 }

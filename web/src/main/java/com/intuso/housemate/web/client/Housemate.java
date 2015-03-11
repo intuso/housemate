@@ -79,7 +79,7 @@ public class Housemate implements EntryPoint {
                 INJECTOR.getProxyRoot().clearLoadedObjects();
                 INJECTOR.getProxyRoot().loadChildOverviews();
                 List<HousemateObject.TreeLoadInfo> loadInfos = Lists.newArrayList();
-                loadInfos.add(new HousemateObject.TreeLoadInfo(Root.TYPES_ID));
+                loadInfos.add(new HousemateObject.TreeLoadInfo(Root.TYPES_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
                 INJECTOR.getProxyRoot().load(new LoadManager(new LoadManager.Callback() {
                     @Override
                     public void failed(HousemateObject.TreeLoadInfo tl) {

@@ -1,28 +1,33 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.type.*;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.proxy.ProxyObject;
-import com.intuso.housemate.web.client.bootstrap.widget.list.WidgetList;
-import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.bootstrap.widget.list.NestedList;
+import com.intuso.housemate.web.client.event.UserInputEvent;
+import com.intuso.housemate.web.client.handler.UserInputHandler;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  */
 public abstract class TypeInputList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<DATA, ?, ?, ?, ?>>
-        extends WidgetList<DATA, OBJECT> {
+        extends NestedList<DATA, OBJECT>
+        implements TypeInput, UserInputHandler {
 
-    private final TypeInstanceMap typeInstanceMap;
+    private TypeInstances typeInstances;
+    private TypeInstanceMap typeInstanceMap;
 
-    public TypeInputList(GWTProxyList<DATA, OBJECT> list, TypeInstances typeInstances) {
-        super(list, null, null, true);
+    public void setTypeInstances(TypeInstances typeInstances) {
+        this.typeInstances = typeInstances;
         while(typeInstances.getElements().size() > 0 && typeInstances.getElements().get(0) == null)
             typeInstances.getElements().remove(0);
         if(typeInstances.getElements().size() == 0)
             typeInstances.getElements().add(new TypeInstance());
         typeInstanceMap = typeInstances.getElements().get(0).getChildValues();
-        loadRows();
     }
 
     protected IsWidget getWidget(GWTProxyType type, String key) {
@@ -31,33 +36,21 @@ public abstract class TypeInputList<DATA extends HousemateData<?>, OBJECT extend
             typeInstances = new TypeInstances();
             typeInstanceMap.getChildren().put(key, typeInstances);
         }
-        return getWidget(type, typeInstances);
+        return TypeInput.FACTORY.create(type, typeInstances, this);
     }
 
-    protected IsWidget getWidget(GWTProxyType type, TypeInstances typeInstances) {
-        return getInput(type, typeInstances);
+    @Override
+    public HandlerRegistration addUserInputHandler(UserInputHandler handler) {
+        return addHandler(handler, UserInputEvent.TYPE);
     }
 
-    public static TypeInput getInput(GWTProxyType type, TypeInstances typeInstances) {
-        if(type == null)
-            return null;
-        TypeData typeData = type.getData();
-        if(typeData instanceof SimpleTypeData) {
-            if(((SimpleTypeData)typeData).getType() == SimpleTypeData.Type.Boolean)
-                return new CheckBoxInput(typeInstances);
-            else
-                return new TextInput(typeData, typeInstances);
-        } else if(typeData instanceof ChoiceTypeData) {
-            if(typeData.getMinValues() == 1 && typeData.getMaxValues() == 1)
-                return new SingleSelectInput(type, typeInstances);
-            else
-                return new MultiSelectInput(type, typeInstances);
-        } else if(typeData instanceof RegexTypeData)
-            return new TextInput(typeData, typeInstances);
-        else if(typeData instanceof ObjectTypeData)
-            return new ObjectBrowserInput((ObjectTypeData) typeData, typeInstances);
-        else if(typeData instanceof CompoundTypeData)
-            return new CompoundInput((CompoundTypeData) typeData, type, typeInstances);
-        return null;
+    @Override
+    public TypeInstances getTypeInstances() {
+        return typeInstances;
+    }
+
+    @Override
+    public void onUserInput(UserInputEvent event) {
+        fireEvent(new UserInputEvent());
     }
 }

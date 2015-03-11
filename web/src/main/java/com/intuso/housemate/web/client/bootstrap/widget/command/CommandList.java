@@ -1,12 +1,10 @@
 package com.intuso.housemate.web.client.bootstrap.widget.command;
 
 import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.command.CommandData;
-import com.intuso.housemate.web.client.bootstrap.widget.list.ComplexWidgetList;
+import com.intuso.housemate.web.client.bootstrap.widget.list.NestedList;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
-import com.intuso.housemate.web.client.object.GWTProxyList;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,15 +13,9 @@ import java.util.List;
  * Time: 21:16
  * To change this template use File | Settings | File Templates.
  */
-public class CommandList extends ComplexWidgetList<CommandData, GWTProxyCommand> {
-
-    public CommandList(GWTProxyList<CommandData, GWTProxyCommand> list, String title,
-                       List<String> filteredIds, boolean showOnEmpty) {
-        super(list, title, filteredIds, showOnEmpty);
-    }
-
+public class CommandList extends NestedList<CommandData, GWTProxyCommand> {
     @Override
-    protected Widget getWidget(GWTProxyCommand command) {
+    protected Widget getWidget(ChildOverview childOverview, GWTProxyCommand command) {
         return new Command(command);
     }
 }

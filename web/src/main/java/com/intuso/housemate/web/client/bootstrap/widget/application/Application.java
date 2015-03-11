@@ -1,37 +1,46 @@
 package com.intuso.housemate.web.client.bootstrap.widget.application;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.web.client.bootstrap.widget.application.instance.ApplicationInstanceList;
-import com.intuso.housemate.web.client.bootstrap.widget.object.ConfigurableObject;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.intuso.housemate.api.object.ChildOverview;
+import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyApplication;
+import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 /**
+ * Created by tomc on 05/03/15.
  */
-public class Application extends ConfigurableObject {
+public class Application extends ObjectWidget<GWTProxyApplication> {
 
-    interface ApplicationUiBinder extends UiBinder<Widget, Application> {}
+    public Application(final ChildOverview childOverview) {
+        setName(childOverview.getName());
+        Housemate.INJECTOR.getProxyRoot().getApplications().load(new LoadManager(new LoadManager.Callback() {
+            @Override
+            public void failed(HousemateObject.TreeLoadInfo path) {
+                setMessage(AlertType.WARNING, "Failed to load application");
+            }
 
-    private static ApplicationUiBinder ourUiBinder = GWT.create(ApplicationUiBinder.class);
+            @Override
+            public void allLoaded() {
+                setObject(Housemate.INJECTOR.getProxyRoot().getApplications().get(childOverview.getId()));
+            }
+        }, "loadApplication-" + childOverview.getId(),
+                new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+    }
 
-    @UiField(provided = true)
-    ApplicationInstanceList instanceList;
-
-    private final GWTProxyApplication application;
-
-    public Application(final GWTProxyApplication application) {
-
-        this.application = application;
-
-        instanceList = new ApplicationInstanceList(application.getApplicationInstances(), "instances", null, true);
-
-        initWidget(ourUiBinder.createAndBindUi(this));
+    public Application(GWTProxyApplication application) {
+        setObject(application);
+    }
+    
+    @Override
+    protected IsWidget getBodyWidget(GWTProxyApplication object) {
+        return new ApplicationBody(object);
     }
 
     @Override
-    protected Widget createSettingsWidget() {
-        return new ApplicationSettings(application);
+    protected IsWidget getSettingsWidget(GWTProxyApplication object) {
+        return new ApplicationSettings(object);
     }
 }

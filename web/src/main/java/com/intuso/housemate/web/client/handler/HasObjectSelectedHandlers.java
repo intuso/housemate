@@ -1,6 +1,7 @@
 package com.intuso.housemate.web.client.handler;
 
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.intuso.housemate.web.client.bootstrap.widget.type.ObjectSelectedHandler;
 
 /**
  *

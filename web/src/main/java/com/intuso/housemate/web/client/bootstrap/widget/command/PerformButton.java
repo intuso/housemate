@@ -1,13 +1,13 @@
 package com.intuso.housemate.web.client.bootstrap.widget.command;
 
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 
 /**
  */
@@ -90,7 +90,7 @@ public class PerformButton extends Button implements ClickHandler {
     public void onClick(ClickEvent clickEvent) {
         if(command != null) {
             if(values == null && command.getParameters() != null && command.getParameters().size() > 0) {
-                new CommandPopup(command);
+                new CommandModal(command);
             } else
                 Housemate.INJECTOR.getEventBus().fireEvent(
                         new PerformCommandEvent(command, values != null ? values : new TypeInstanceMap()));

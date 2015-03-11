@@ -1,18 +1,10 @@
 package com.intuso.housemate.web.client.bootstrap.widget.object;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.api.object.Removeable;
 import com.intuso.housemate.api.object.Renameable;
 import com.intuso.housemate.api.object.Runnable;
 import com.intuso.housemate.object.proxy.ProxyObject;
-import com.intuso.housemate.web.client.bootstrap.widget.WidgetRow;
-import com.intuso.housemate.web.client.bootstrap.widget.removeable.RemoveableWidget;
-import com.intuso.housemate.web.client.bootstrap.widget.renameable.RenameableWidget;
-import com.intuso.housemate.web.client.bootstrap.widget.runnable.RunnableWidget;
+import com.intuso.housemate.web.client.bootstrap.widget.NestedTable;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
 
@@ -23,41 +15,14 @@ import com.intuso.housemate.web.client.object.GWTProxyValue;
  * Time: 09:10
  * To change this template use File | Settings | File Templates.
  */
-public class Control extends Composite {
+public class Control extends NestedTable {
 
-    interface ControlUiBinder extends UiBinder<Widget, Control> {}
-
-    private static ControlUiBinder ourUiBinder = GWT.create(ControlUiBinder.class);
-
-    @UiField
-    WidgetRow renameRow;
-    @UiField
-    RenameableWidget renameableWidget;
-    @UiField
-    WidgetRow runnableRow;
-    @UiField
-    RunnableWidget runnableWidget;
-    @UiField
-    WidgetRow removeableRow;
-    @UiField
-    RemoveableWidget removeableWidget;
-
-    public Control(ProxyObject object) {
-        initWidget(ourUiBinder.createAndBindUi(this));
-
-        if(object instanceof Renameable) {
-            renameRow.setVisible(true);
-            renameableWidget.setObject((Renameable<GWTProxyCommand>) object);
-        }
-
-        if(object instanceof Runnable) {
-            runnableRow.setVisible(true);
-            runnableWidget.setObject((Runnable<GWTProxyCommand, GWTProxyValue>) object);
-        }
-
-        if(object instanceof Removeable) {
-            removeableRow.setVisible(true);
-            removeableWidget.setObject((Removeable<GWTProxyCommand>) object);
-        }
+    public Control(ProxyObject<?, ?, ?, ?, ?> object) {
+        if(object instanceof Renameable)
+            addRow("Rename", new RenameableWidget((Renameable<GWTProxyCommand>) object));
+        if(object instanceof Renameable)
+            addRow("Running", new RunnableWidget((Runnable<GWTProxyCommand, GWTProxyValue>) object));
+        if(object instanceof Renameable)
+            addRow("Remove", new RemoveableWidget((Removeable<GWTProxyCommand>) object));
     }
 }

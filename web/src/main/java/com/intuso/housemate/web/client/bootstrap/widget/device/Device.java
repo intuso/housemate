@@ -1,53 +1,46 @@
 package com.intuso.housemate.web.client.bootstrap.widget.device;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.web.client.bootstrap.widget.WidgetRow;
-import com.intuso.housemate.web.client.bootstrap.widget.command.CommandList;
-import com.intuso.housemate.web.client.bootstrap.widget.object.ConfigurableObject;
-import com.intuso.housemate.web.client.bootstrap.widget.value.ValueList;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.intuso.housemate.api.object.ChildOverview;
+import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
-import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeature;
+import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 /**
+ * Created by tomc on 05/03/15.
  */
-public class Device extends ConfigurableObject {
+public class Device extends ObjectWidget<GWTProxyDevice> {
 
-    interface DeviceUiBinder extends UiBinder<Widget, Device> {}
+    public Device(final ChildOverview childOverview) {
+        setName(childOverview.getName());
+        Housemate.INJECTOR.getProxyRoot().getDevices().load(new LoadManager(new LoadManager.Callback() {
+            @Override
+            public void failed(HousemateObject.TreeLoadInfo path) {
+                setMessage(AlertType.WARNING, "Failed to load device");
+            }
 
-    private static DeviceUiBinder ourUiBinder = GWT.create(DeviceUiBinder.class);
+            @Override
+            public void allLoaded() {
+                setObject(Housemate.INJECTOR.getProxyRoot().getDevices().get(childOverview.getId()));
+            }
+        }, "loadDevice-" + childOverview.getId(),
+                new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+    }
 
-    @UiField
-    FlowPanel featureWidgets;
-
-    @UiField(provided = true)
-    CommandList commandsList;
-    @UiField(provided = true)
-    ValueList valuesList;
-
-    final GWTProxyDevice device;
-
-    public Device(final GWTProxyDevice device) {
-
-        this.device = device;
-
-        commandsList = new CommandList(device.getCommands(), "Commands", device.getCustomCommandIds(), false);
-        valuesList = new ValueList(device.getValues(), "Values", device.getCustomValueIds(), false);
-
-        initWidget(ourUiBinder.createAndBindUi(this));
-
-        for(String featureId : device.getFeatureIds()) {
-            GWTProxyFeature feature = device.getFeature(featureId);
-            if(feature != null)
-                featureWidgets.add(new WidgetRow(feature.getTitle(), feature.getWidget()));
-        }
+    public Device(GWTProxyDevice device) {
+        setObject(device);
     }
 
     @Override
-    protected Widget createSettingsWidget() {
-        return new DeviceSettings(device);
+    protected IsWidget getBodyWidget(GWTProxyDevice object) {
+        return new DeviceBody(object);
+    }
+
+    @Override
+    protected IsWidget getSettingsWidget(GWTProxyDevice object) {
+        return new DeviceSettings(object);
     }
 }

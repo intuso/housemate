@@ -5,15 +5,12 @@ import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.inject.Inject;
-import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.bootstrap.widget.device.DeviceList;
+import com.intuso.housemate.web.client.bootstrap.widget.list.AddButton;
 import com.intuso.housemate.web.client.handler.MultiListSelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
 import com.intuso.housemate.web.client.place.DevicesPlace;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.IconType;
 
 import java.util.List;
 import java.util.Set;
@@ -48,9 +45,7 @@ public class DevicesView extends FlowPanel
 
         add(favouritesList);
         add(allList);
-        Button addButton = new PerformButton(root.getAddDeviceCommand(), IconType.PLUS);
-        addButton.setSize(ButtonSize.SMALL);
-        add(addButton);
+        add(new AddButton(root.getAddDeviceCommand()));
     }
 
     @Override

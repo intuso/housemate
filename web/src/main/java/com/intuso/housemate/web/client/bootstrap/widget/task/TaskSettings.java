@@ -19,12 +19,12 @@ public class TaskSettings extends Composite {
 
     @UiField(provided = true)
     Control control;
-    @UiField(provided = true)
+    @UiField
     PropertyList propertyList;
 
     public TaskSettings(GWTProxyTask task) {
         control = new Control(task);
-        propertyList = new PropertyList(task.getProperties(), "properties", null, true);
         initWidget(ourUiBinder.createAndBindUi(this));
+        propertyList.setList(task.getProperties());
     }
 }
