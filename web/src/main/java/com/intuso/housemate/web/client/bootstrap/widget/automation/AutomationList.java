@@ -1,9 +1,9 @@
 package com.intuso.housemate.web.client.bootstrap.widget.automation;
 
-import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
 
@@ -23,10 +23,7 @@ public class AutomationList extends MainList<AutomationData, GWTProxyAutomation>
     }
 
     @Override
-    protected Widget getWidget(ChildOverview childOverview, GWTProxyAutomation object) {
-        if(object != null)
-            return new Automation(object);
-        else
-            return new Automation(childOverview);
+    protected void getWidget(ChildOverview childOverview, LazyLoadedWidgetCallback callback) {
+        callback.widgetReady(new Automation(childOverview));
     }
 }

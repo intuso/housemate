@@ -1,9 +1,9 @@
 package com.intuso.housemate.web.client.bootstrap.widget.device;
 
-import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
 
@@ -23,10 +23,7 @@ public class DeviceList extends MainList<DeviceData, GWTProxyDevice> {
     }
 
     @Override
-    protected Widget getWidget(ChildOverview childOverview, GWTProxyDevice device) {
-        if(device != null)
-            return new Device(device);
-        else
-            return new Device(childOverview);
+    protected void getWidget(ChildOverview childOverview, LazyLoadedWidgetCallback callback) {
+        callback.widgetReady(new Device(childOverview));
     }
 }

@@ -41,6 +41,7 @@ public class TypeInstanceMap implements Message.Payload {
             children = Maps.newHashMap(children);
         if(children != null)
             for(TypeInstances child : children.values())
-                child.ensureSerialisable();
+                if(child != null)
+                    child.ensureSerialisable();
     }
 }

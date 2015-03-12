@@ -8,6 +8,7 @@ import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.object.proxy.AvailableChildrenListener;
 import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.event.SelectedIdsChangedEvent;
 import com.intuso.housemate.web.client.handler.HasSelectedIdsChangedHandlers;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
@@ -70,11 +71,13 @@ public abstract class MainList<DATA extends HousemateData<?>, OBJECT extends Pro
     }
 
     private void addEntry(final ChildOverview childOverview) {
-        if(childOverview != null) {
-            final IsWidget widget = getWidget(childOverview, list.get(childOverview.getId()));
-            widgets.put(childOverview.getId(), widget);
-            row.add(widget);
-        }
+        getWidget(childOverview, new LazyLoadedWidgetCallback() {
+            @Override
+            public void widgetReady(IsWidget widget) {
+                widgets.put(childOverview.getId(), widget);
+                row.add(widget);
+            }
+        });
     }
 
     @Override
@@ -89,5 +92,6 @@ public abstract class MainList<DATA extends HousemateData<?>, OBJECT extends Pro
 //            setVisible(entry.getValue(), ids.contains(entry.getKey()));
     }
 
-    protected abstract IsWidget getWidget(ChildOverview childOverview, OBJECT object);
+    protected abstract void getWidget(ChildOverview childOverview, LazyLoadedWidgetCallback callback);
+
 }

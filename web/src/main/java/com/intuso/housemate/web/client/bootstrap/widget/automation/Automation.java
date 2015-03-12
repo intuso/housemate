@@ -15,23 +15,27 @@ import org.gwtbootstrap3.client.ui.constants.AlertType;
 public class Automation extends ObjectWidget<GWTProxyAutomation> {
 
     public Automation(final ChildOverview childOverview) {
-        setName(childOverview.getName());
-        Housemate.INJECTOR.getProxyRoot().getAutomations().load(new LoadManager(new LoadManager.Callback() {
-            @Override
-            public void failed(HousemateObject.TreeLoadInfo path) {
-                setMessage(AlertType.WARNING, "Failed to load automation");
-            }
+        GWTProxyAutomation user = Housemate.INJECTOR.getProxyRoot().getAutomations().get(childOverview.getId());
+        if(user != null)
+            setObject(user);
+        else {
+            setName(childOverview.getName());
+            loading(true);
+            Housemate.INJECTOR.getProxyRoot().getAutomations().load(new LoadManager(new LoadManager.Callback() {
+                @Override
+                public void failed(HousemateObject.TreeLoadInfo path) {
+                    loading(false);
+                    setMessage(AlertType.WARNING, "Failed to load automation");
+                }
 
-            @Override
-            public void allLoaded() {
-                setObject(Housemate.INJECTOR.getProxyRoot().getAutomations().get(childOverview.getId()));
-            }
-        }, "loadAutomation-" + childOverview.getId(),
-                new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
-    }
-
-    public Automation(GWTProxyAutomation automation) {
-        setObject(automation);
+                @Override
+                public void allLoaded() {
+                    loading(false);
+                    setObject(Housemate.INJECTOR.getProxyRoot().getAutomations().get(childOverview.getId()));
+                }
+            }, "loadAutomation-" + childOverview.getId(),
+                    new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+        }
     }
 
     @Override

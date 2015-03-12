@@ -14,23 +14,27 @@ import org.gwtbootstrap3.client.ui.constants.AlertType;
 public class User extends ObjectWidget<GWTProxyUser> {
 
     public User(final ChildOverview childOverview) {
-        setName(childOverview.getName());
-        Housemate.INJECTOR.getProxyRoot().getUsers().load(new LoadManager(new LoadManager.Callback() {
-            @Override
-            public void failed(HousemateObject.TreeLoadInfo path) {
-                setMessage(AlertType.WARNING, "Failed to load user");
-            }
+        GWTProxyUser user = Housemate.INJECTOR.getProxyRoot().getUsers().get(childOverview.getId());
+        if(user != null)
+            setObject(user);
+        else {
+            setName(childOverview.getName());
+            loading(true);
+            Housemate.INJECTOR.getProxyRoot().getUsers().load(new LoadManager(new LoadManager.Callback() {
+                @Override
+                public void failed(HousemateObject.TreeLoadInfo path) {
+                    loading(false);
+                    setMessage(AlertType.WARNING, "Failed to load user");
+                }
 
-            @Override
-            public void allLoaded() {
-                setObject(Housemate.INJECTOR.getProxyRoot().getUsers().get(childOverview.getId()));
-            }
-        }, "loadUser-" + childOverview.getId(),
-                new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
-    }
-
-    public User(final GWTProxyUser user) {
-        setObject(user);
+                @Override
+                public void allLoaded() {
+                    loading(false);
+                    setObject(Housemate.INJECTOR.getProxyRoot().getUsers().get(childOverview.getId()));
+                }
+            }, "loadUser-" + childOverview.getId(),
+                    new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+        }
     }
 
     @Override

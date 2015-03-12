@@ -15,23 +15,27 @@ import org.gwtbootstrap3.client.ui.constants.AlertType;
 public class Device extends ObjectWidget<GWTProxyDevice> {
 
     public Device(final ChildOverview childOverview) {
-        setName(childOverview.getName());
-        Housemate.INJECTOR.getProxyRoot().getDevices().load(new LoadManager(new LoadManager.Callback() {
-            @Override
-            public void failed(HousemateObject.TreeLoadInfo path) {
-                setMessage(AlertType.WARNING, "Failed to load device");
-            }
+        GWTProxyDevice user = Housemate.INJECTOR.getProxyRoot().getDevices().get(childOverview.getId());
+        if(user != null)
+            setObject(user);
+        else {
+            setName(childOverview.getName());
+            loading(true);
+            Housemate.INJECTOR.getProxyRoot().getDevices().load(new LoadManager(new LoadManager.Callback() {
+                @Override
+                public void failed(HousemateObject.TreeLoadInfo path) {
+                    loading(false);
+                    setMessage(AlertType.WARNING, "Failed to load device");
+                }
 
-            @Override
-            public void allLoaded() {
-                setObject(Housemate.INJECTOR.getProxyRoot().getDevices().get(childOverview.getId()));
-            }
-        }, "loadDevice-" + childOverview.getId(),
-                new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
-    }
-
-    public Device(GWTProxyDevice device) {
-        setObject(device);
+                @Override
+                public void allLoaded() {
+                    loading(false);
+                    setObject(Housemate.INJECTOR.getProxyRoot().getDevices().get(childOverview.getId()));
+                }
+            }, "loadDevice-" + childOverview.getId(),
+                    new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+        }
     }
 
     @Override

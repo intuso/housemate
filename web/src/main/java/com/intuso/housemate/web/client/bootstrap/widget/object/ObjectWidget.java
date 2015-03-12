@@ -7,13 +7,14 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.object.proxy.ProxyPrimaryObject;
+import com.intuso.housemate.web.client.bootstrap.widget.LoadingWidget;
 import org.gwtbootstrap3.client.ui.Alert;
 import org.gwtbootstrap3.client.ui.Heading;
-import org.gwtbootstrap3.client.ui.PanelBody;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 /**
@@ -27,9 +28,10 @@ public abstract class ObjectWidget<OBJECT extends ProxyObject<?, ?, ?, ?, ?>> ex
 
     @UiField
     Heading heading;
-
     @UiField
-    PanelBody panelBody;
+    LoadingWidget loadingWidget;
+    @UiField
+    SimplePanel bodyContent;
 
     private OBJECT object;
 
@@ -38,7 +40,7 @@ public abstract class ObjectWidget<OBJECT extends ProxyObject<?, ?, ?, ?, ?>> ex
     }
 
     protected void setName(String name) {
-        if(object != null)
+        if(object == null)
             heading.setText(name);
     }
 
@@ -47,13 +49,11 @@ public abstract class ObjectWidget<OBJECT extends ProxyObject<?, ?, ?, ?, ?>> ex
                 ((ProxyPrimaryObject) object).addObjectListener(this);
         this.object = object;
         heading.setText(object.getName());
-        panelBody.clear();
-        panelBody.add(getBodyWidget(object));
+        bodyContent.setWidget(getBodyWidget(object));
     }
 
     protected void setMessage(AlertType type, String message) {
-        panelBody.clear();
-        panelBody.add(new Alert(message, type));
+        bodyContent.setWidget(new Alert(message, type));
     }
 
     @Override
@@ -74,6 +74,10 @@ public abstract class ObjectWidget<OBJECT extends ProxyObject<?, ?, ?, ?, ?>> ex
     @UiHandler("settings")
     public void onEdit(ClickEvent event) {
         new SettingsModal(object.getName(), getSettingsWidget(object));
+    }
+
+    protected void loading(boolean loading) {
+        loadingWidget.setVisible(loading);
     }
 
     protected abstract IsWidget getBodyWidget(OBJECT object);
