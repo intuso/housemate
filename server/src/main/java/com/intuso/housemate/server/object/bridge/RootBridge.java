@@ -16,6 +16,7 @@ import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
@@ -25,6 +26,7 @@ import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.housemate.object.server.proxy.ServerProxyDevice;
+import com.intuso.housemate.object.server.proxy.ServerProxyHardware;
 import com.intuso.housemate.object.server.proxy.ServerProxyRoot;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.housemate.object.server.real.ServerRealApplication;
@@ -52,6 +54,7 @@ public class RootBridge
 
     private final ListBridge<ApplicationData, ServerRealApplication, ApplicationBridge> applications;
     private final ListBridge<UserData, ServerRealUser, UserBridge> users;
+    private final MultiListBridge<HardwareData, ServerProxyHardware, HardwareBridge> hardwares;
     private final MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
     private final MultiListBridge<DeviceData, ServerProxyDevice, DeviceBridge> devices;
     private final ListBridge<AutomationData, ServerRealAutomation, AutomationBridge> automations;
@@ -71,6 +74,9 @@ public class RootBridge
                 log, listenersFactory, realRoot.getApplications(), new ApplicationBridge.Converter(log, listenersFactory, types));
         users = new SingleListBridge<UserData, ServerRealUser, UserBridge>(log, listenersFactory,
                 realRoot.getUsers(), new UserBridge.Converter(log, listenersFactory, types));
+        hardwares = new MultiListBridge<HardwareData, ServerProxyHardware, HardwareBridge>(log, listenersFactory,
+                new ListData<HardwareData>(Root.HARDWARES_ID, "Hardwares", "Connected hardware"),
+                new HardwareBridge.Converter(log, listenersFactory, types));
         this.types = types;
         devices = new MultiListBridge<DeviceData, ServerProxyDevice, DeviceBridge>(log, listenersFactory,
                 new ListData<DeviceData>(Root.DEVICES_ID, "Devices", "Devices"),
@@ -82,6 +88,7 @@ public class RootBridge
         addAutomation = new CommandBridge(log, listenersFactory, realRoot.getAddAutomationCommand(), types);
         addChild(applications);
         addChild(users);
+        addChild(hardwares);
         addChild(types);
         addChild(devices);
         addChild(automations);
@@ -139,6 +146,10 @@ public class RootBridge
 
     public ListBridge<UserData, ServerRealUser, UserBridge> getUsers() {
         return users;
+    }
+
+    public MultiListBridge<HardwareData, ServerProxyHardware, HardwareBridge> getHardwares() {
+        return hardwares;
     }
 
     public MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> getTypes() {
