@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
@@ -55,6 +56,8 @@ public class AndroidProxyFactory implements HousemateObjectFactory<HousemateData
             return createApplicationInstance((ApplicationInstanceData) data);
         else if(data instanceof UserData)
             return createUser((UserData) data);
+        else if(data instanceof HardwareData)
+            return createHardware((HardwareData) data);
         else if(data instanceof TaskData)
             return createTask((TaskData) data);
         else if(data instanceof DeviceData)
@@ -99,6 +102,10 @@ public class AndroidProxyFactory implements HousemateObjectFactory<HousemateData
 
     public AndroidProxyUser createUser(UserData data) {
         return new AndroidProxyUser(log, listenersFactory, data, this);
+    }
+
+    public AndroidProxyHardware createHardware(HardwareData data) {
+        return new AndroidProxyHardware(log, listenersFactory, data, this);
     }
 
     public AndroidProxyTask createTask(TaskData data) {

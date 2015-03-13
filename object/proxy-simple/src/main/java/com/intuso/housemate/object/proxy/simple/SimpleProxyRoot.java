@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.proxy.ProxyObject;
@@ -27,6 +28,7 @@ import com.intuso.utilities.properties.api.PropertyRepository;
 public final class SimpleProxyRoot extends ProxyRoot<
         SimpleProxyApplication, SimpleProxyList<ApplicationData, SimpleProxyApplication>,
         SimpleProxyUser, SimpleProxyList<UserData, SimpleProxyUser>,
+        SimpleProxyHardware, SimpleProxyList<HardwareData, SimpleProxyHardware>,
         SimpleProxyType, SimpleProxyList<TypeData<?>, SimpleProxyType>,
         SimpleProxyDevice, SimpleProxyList<DeviceData, SimpleProxyDevice>,
         SimpleProxyAutomation, SimpleProxyList<AutomationData, SimpleProxyAutomation>,

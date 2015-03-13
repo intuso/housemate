@@ -16,7 +16,7 @@ public abstract class RealObject<
             LISTENER extends ObjectListener>
         extends HousemateObject<DATA, CHILD_DATA, CHILD, LISTENER> {
 
-    private RealRoot<?, ?, ?, ?, ?> realRoot;
+    private RealRoot<?, ?, ?, ?, ?, ?, ?> realRoot;
 
     /**
      * @param log {@inheritDoc}
@@ -42,7 +42,7 @@ public abstract class RealObject<
      * Gets the root object for this object
      * @return the root object for this object
      */
-    protected RealRoot<?, ?, ?, ?, ?> getRealRoot() {
+    protected RealRoot<?, ?, ?, ?, ?, ?, ?> getRealRoot() {
         return realRoot;
     }
 

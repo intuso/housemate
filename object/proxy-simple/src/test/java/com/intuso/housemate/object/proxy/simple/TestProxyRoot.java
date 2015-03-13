@@ -13,6 +13,7 @@ import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -31,6 +32,7 @@ import org.junit.Ignore;
 public class TestProxyRoot extends ProxyRoot<
         SimpleProxyApplication, SimpleProxyList<ApplicationData, SimpleProxyApplication>,
         SimpleProxyUser, SimpleProxyList<UserData, SimpleProxyUser>,
+        SimpleProxyHardware, SimpleProxyList<HardwareData, SimpleProxyHardware>,
         SimpleProxyType, SimpleProxyList<TypeData<?>, SimpleProxyType>,
         SimpleProxyDevice, SimpleProxyList<DeviceData, SimpleProxyDevice>,
         SimpleProxyAutomation, SimpleProxyList<AutomationData, SimpleProxyAutomation>,

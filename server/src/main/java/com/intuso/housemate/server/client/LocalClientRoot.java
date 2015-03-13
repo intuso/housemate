@@ -6,6 +6,7 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.*;
 import com.intuso.housemate.object.server.LifecycleHandler;
@@ -23,9 +24,9 @@ public class LocalClientRoot extends RealRoot {
 
     @Inject
     public LocalClientRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
-                           RealList<TypeData<?>, RealType<?, ?, ?>> types,
+                           RealList<HardwareData, RealHardware> hardwares, RealList<TypeData<?>, RealType<?, ?, ?>> types,
                            RealList<DeviceData, RealDevice> devices, LifecycleHandler lifecycleHandler) {
-        super(log, listenersFactory, Server.createApplicationInstanceProperties(listenersFactory, properties), router, types, devices);
+        super(log, listenersFactory, Server.createApplicationInstanceProperties(listenersFactory, properties), router, hardwares, types, devices);
         addDeviceCommand = lifecycleHandler.createAddDeviceCommand(getDevices());
         addChild(addDeviceCommand);
     }

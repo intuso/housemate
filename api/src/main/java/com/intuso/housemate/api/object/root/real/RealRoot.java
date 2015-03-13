@@ -2,6 +2,8 @@ package com.intuso.housemate.api.object.root.real;
 
 import com.intuso.housemate.api.object.device.Device;
 import com.intuso.housemate.api.object.device.HasDevices;
+import com.intuso.housemate.api.object.hardware.Hardware;
+import com.intuso.housemate.api.object.hardware.HasHardwares;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.HasTypes;
@@ -15,12 +17,14 @@ import com.intuso.housemate.api.object.type.Type;
  * @param <ROOT> the type of the root
  */
 public interface RealRoot<
+            HARDWARE extends Hardware<?, ?>,
+            HARDWARES extends List<HARDWARE>,
             TYPE extends Type,
             TYPES extends List<TYPE>,
             DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
             DEVICES extends List<DEVICE>,
-            ROOT extends RealRoot<TYPE, TYPES, DEVICE, DEVICES, ROOT>>
-        extends Root<ROOT>, HasTypes<TYPES>, HasDevices<DEVICES> {
+            ROOT extends RealRoot<HARDWARE, HARDWARES, TYPE, TYPES, DEVICE, DEVICES, ROOT>>
+        extends Root<ROOT>, HasTypes<TYPES>, HasDevices<DEVICES>, HasHardwares<HARDWARES> {
 
     /**
      * Adds a new type

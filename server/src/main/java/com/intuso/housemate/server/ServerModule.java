@@ -3,13 +3,11 @@ package com.intuso.housemate.server;
 import com.google.inject.*;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.*;
 import com.intuso.housemate.object.real.impl.type.*;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
@@ -78,6 +76,12 @@ public class ServerModule extends AbstractModule {
         bind(new TypeLiteral<Root<?>>() {}).to(RootBridge.class);
         bind(new TypeLiteral<ListBridge<TypeData<?>, ServerProxyType, TypeBridge>>() {})
                 .to(new TypeLiteral<MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge>>() {});
+    }
+
+    @Provides
+    @Singleton
+    public RealList<HardwareData, RealHardware> getRealHardware(Log log, ListenersFactory listenersFactory) {
+        return new RealList<HardwareData, RealHardware>(log, listenersFactory, Root.HARDWARES_ID, "Hardwares", "Connected hardware");
     }
 
     @Provides

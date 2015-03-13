@@ -39,7 +39,7 @@ public abstract class ProxyObject<
         extends HousemateObject<DATA, CHILD_DATA, CHILD, LISTENER>
         implements ObjectListener<CHILD> {
 
-    private ProxyRoot<?, ?, ?, ?, ?, ?, ?> proxyRoot;
+    private ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?> proxyRoot;
     private final Map<String, LoadManager> pendingLoads = Maps.newHashMap();
     private final Map<String, ChildOverview> childOverviews = Maps.newHashMap();
     private final Listeners<AvailableChildrenListener<? super OBJECT>> availableChildrenListeners;
@@ -171,7 +171,7 @@ public abstract class ProxyObject<
      * Gets the root object
      * @return the root object
      */
-    protected ProxyRoot<?, ?, ?, ?, ?, ?, ?> getProxyRoot() {
+    protected ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?> getProxyRoot() {
         return proxyRoot;
     }
 

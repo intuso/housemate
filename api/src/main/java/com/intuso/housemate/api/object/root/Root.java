@@ -24,6 +24,7 @@ public interface Root<ROOT extends Root<?>>
 
     public final static String APPLICATIONS_ID = "applications";
     public final static String USERS_ID = "users";
+    public final static String HARDWARES_ID = "hardwares";
     public final static String TYPES_ID = "types";
     public final static String DEVICES_ID = "devices";
     public final static String AUTOMATIONS_ID = "automations";
