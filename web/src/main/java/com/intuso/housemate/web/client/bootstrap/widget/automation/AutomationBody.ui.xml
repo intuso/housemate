@@ -4,6 +4,6 @@
     <g:FlowPanel>
         <h:condition.ConditionList ui:field="conditions" header="Conditions"/>
         <h:task.TaskList ui:field="satisfiedTasks" header="Satisfied tasks"/>
-        <h:task.TaskList ui:field="unsatisfiedTasks" showIfEmpty="false" header="Unsatisfied Tasks"/>
+        <h:task.TaskList ui:field="unsatisfiedTasks" header="Unsatisfied Tasks"/>
     </g:FlowPanel>
 </ui:UiBinder>
