@@ -13,6 +13,7 @@
                         <b:AnchorListItem ui:field="devicesButton">devices</b:AnchorListItem>
                         <b:AnchorListItem ui:field="automationsButton">automations</b:AnchorListItem>
                         <b:AnchorListItem ui:field="applicationsButton">applications</b:AnchorListItem>
+                        <b:AnchorListItem ui:field="hardwaresButton">hardware</b:AnchorListItem>
                         <b:AnchorListItem ui:field="usersButton">users</b:AnchorListItem>
                         <b:AnchorListItem ui:field="logoutButton">logout</b:AnchorListItem>
                     </b:NavbarNav>

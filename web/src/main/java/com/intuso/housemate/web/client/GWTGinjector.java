@@ -49,5 +49,6 @@ public interface GWTGinjector extends Ginjector {
     DevicesView getDevicesView();
     AutomationsView getAutomationsView();
     UsersView getUsersView();
+    HardwaresView getHardwaresView();
     ApplicationsView getApplicationsView();
 }
