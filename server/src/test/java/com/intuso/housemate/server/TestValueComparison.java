@@ -44,6 +44,7 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -89,6 +90,7 @@ public class TestValueComparison {
     }
 
     @Test
+    @Ignore
     public void testTwoConstantsEqualsTrue() throws HousemateException {
         RealType<?, ?, ?> integerType = new IntegerType(log, listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
