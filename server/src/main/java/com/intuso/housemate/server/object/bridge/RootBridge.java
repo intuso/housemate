@@ -99,6 +99,7 @@ public class RootBridge
         addChild(addDevice);
         addChild(addAutomation);
         storage.watchApplications(applications);
+        storage.watchHardwares(hardwares);
         storage.watchDevices(devices);
         storage.watchAutomations(automations);
         storage.watchUsers(users);
@@ -182,6 +183,7 @@ public class RootBridge
     }
 
     public void addProxyRoot(ServerProxyRoot root) {
+        hardwares.addList(root.getHardwares());
         devices.addList(root.getDevices());
         types.addList(root.getTypes());
     }
