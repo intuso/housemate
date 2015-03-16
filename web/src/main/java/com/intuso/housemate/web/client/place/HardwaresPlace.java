@@ -71,7 +71,8 @@ public class HardwaresPlace extends HousematePlace {
         if(hardwareIds != null)
             for(String hardwareId : hardwareIds)
                 listInfo.getChildren().put(hardwareId, new HousemateObject.TreeLoadInfo(hardwareId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
-        return Lists.newArrayList(listInfo);
+        HousemateObject.TreeLoadInfo addInfo = new HousemateObject.TreeLoadInfo(Root.ADD_HARDWARE_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE));
+        return Lists.newArrayList(listInfo, addInfo);
     }
 
     @Override

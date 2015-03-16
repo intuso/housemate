@@ -6,6 +6,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.inject.Inject;
 import com.intuso.housemate.web.client.bootstrap.widget.hardware.HardwareList;
+import com.intuso.housemate.web.client.bootstrap.widget.list.AddButton;
 import com.intuso.housemate.web.client.handler.MultiListSelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
@@ -44,6 +45,7 @@ public class HardwaresView extends FlowPanel
 
         add(favouritesList);
         add(allList);
+        add(new AddButton(root.getAddHardwareCommand()));
     }
 
     @Override

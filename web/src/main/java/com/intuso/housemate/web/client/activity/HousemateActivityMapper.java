@@ -3,10 +3,7 @@ package com.intuso.housemate.web.client.activity;
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.place.shared.Place;
-import com.intuso.housemate.web.client.place.ApplicationsPlace;
-import com.intuso.housemate.web.client.place.AutomationsPlace;
-import com.intuso.housemate.web.client.place.DevicesPlace;
-import com.intuso.housemate.web.client.place.UsersPlace;
+import com.intuso.housemate.web.client.place.*;
 
 /**
  */
@@ -19,6 +16,8 @@ public class HousemateActivityMapper implements ActivityMapper {
             return new AutomationsActivity((AutomationsPlace)place);
         else if(place instanceof UsersPlace)
             return new UsersActivity((UsersPlace)place);
+        else if(place instanceof HardwaresPlace)
+            return new HardwaresActivity((HardwaresPlace)place);
         else if(place instanceof ApplicationsPlace)
             return new ApplicationsActivity((ApplicationsPlace)place);
         return null;
