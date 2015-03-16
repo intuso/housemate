@@ -20,6 +20,7 @@ import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
@@ -69,6 +70,7 @@ public class MainModule extends AbstractGinModule {
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<CommandData, GWTProxyCommand>>() {}));
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<ConditionData, GWTProxyCondition>>() {}));
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<DeviceData, GWTProxyDevice>>() {}));
+        install(new GinFactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<HardwareData, GWTProxyHardware>>() {}));
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>>>() {}));
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<OptionData, GWTProxyOption>>() {}));
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<ParameterData, GWTProxyParameter>>() {}));

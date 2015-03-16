@@ -1,37 +1,24 @@
 package com.intuso.housemate.web.client.object;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
 import com.intuso.housemate.api.object.automation.AutomationData;
-import com.intuso.housemate.api.object.automation.AutomationFactory;
 import com.intuso.housemate.api.object.command.CommandData;
-import com.intuso.housemate.api.object.command.CommandFactory;
 import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.condition.ConditionFactory;
 import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.device.DeviceFactory;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.list.ListFactory;
 import com.intuso.housemate.api.object.option.OptionData;
-import com.intuso.housemate.api.object.option.OptionFactory;
 import com.intuso.housemate.api.object.parameter.ParameterData;
-import com.intuso.housemate.api.object.parameter.ParameterFactory;
 import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.api.object.property.PropertyFactory;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
-import com.intuso.housemate.api.object.subtype.SubTypeFactory;
 import com.intuso.housemate.api.object.task.TaskData;
-import com.intuso.housemate.api.object.task.TaskFactory;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.type.TypeFactory;
 import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.api.object.user.UserFactory;
 import com.intuso.housemate.api.object.value.ValueData;
-import com.intuso.housemate.api.object.value.ValueFactory;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.utilities.log.Log;
 
@@ -51,6 +38,7 @@ public class GWTProxyFactory implements HousemateObjectFactory<HousemateData<?>,
     private final HousemateObjectFactory<CommandData, GWTProxyCommand> commandFactory;
     private final HousemateObjectFactory<ConditionData, GWTProxyCondition> conditionFactory;
     private final HousemateObjectFactory<DeviceData, GWTProxyDevice> deviceFactory;
+    private final HousemateObjectFactory<HardwareData, GWTProxyHardware> hardwareFactory;
     private final HousemateObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory;
     private final HousemateObjectFactory<OptionData, GWTProxyOption> optionFactory;
     private final HousemateObjectFactory<ParameterData, GWTProxyParameter> parameterFactory;
@@ -69,6 +57,7 @@ public class GWTProxyFactory implements HousemateObjectFactory<HousemateData<?>,
                            HousemateObjectFactory<CommandData, GWTProxyCommand> commandFactory,
                            HousemateObjectFactory<ConditionData, GWTProxyCondition> conditionFactory,
                            HousemateObjectFactory<DeviceData, GWTProxyDevice> deviceFactory,
+                           HousemateObjectFactory<HardwareData, GWTProxyHardware> hardwareFactory,
                            HousemateObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory,
                            HousemateObjectFactory<OptionData, GWTProxyOption> optionFactory,
                            HousemateObjectFactory<ParameterData, GWTProxyParameter> parameterFactory,
@@ -85,6 +74,7 @@ public class GWTProxyFactory implements HousemateObjectFactory<HousemateData<?>,
         this.commandFactory = commandFactory;
         this.conditionFactory = conditionFactory;
         this.deviceFactory = deviceFactory;
+        this.hardwareFactory = hardwareFactory;
         this.listFactory = listFactory;
         this.optionFactory = optionFactory;
         this.parameterFactory = parameterFactory;
@@ -114,6 +104,8 @@ public class GWTProxyFactory implements HousemateObjectFactory<HousemateData<?>,
             return taskFactory.create((TaskData) data);
         else if(data instanceof DeviceData)
             return deviceFactory.create((DeviceData) data);
+        else if(data instanceof HardwareData)
+            return hardwareFactory.create((HardwareData) data);
         else if(data instanceof ListData)
             return listFactory.create((ListData<HousemateData<?>>) data);
         else if(data instanceof OptionData)
