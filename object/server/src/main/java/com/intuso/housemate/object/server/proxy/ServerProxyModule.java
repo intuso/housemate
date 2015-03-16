@@ -7,6 +7,7 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.command.CommandFactory;
 import com.intuso.housemate.api.object.device.DeviceFactory;
+import com.intuso.housemate.api.object.hardware.HardwareFactory;
 import com.intuso.housemate.api.object.list.ListFactory;
 import com.intuso.housemate.api.object.option.OptionFactory;
 import com.intuso.housemate.api.object.parameter.ParameterFactory;
@@ -22,11 +23,12 @@ import com.intuso.housemate.api.object.value.ValueFactory;
  * Time: 00:23
  * To change this template use File | Settings | File Templates.
  */
-public class ServerProxyObjectModule extends AbstractModule {
+public class ServerProxyModule extends AbstractModule {
     @Override
     protected void configure() {
         install(new FactoryModuleBuilder().build(new TypeLiteral<CommandFactory<ServerProxyCommand>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<DeviceFactory<ServerProxyDevice>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<HardwareFactory<ServerProxyHardware>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ListFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>, ServerProxyList<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<OptionFactory<ServerProxyOption>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ParameterFactory<ServerProxyParameter>>() {}));

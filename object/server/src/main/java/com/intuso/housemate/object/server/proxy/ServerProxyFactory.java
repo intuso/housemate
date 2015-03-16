@@ -7,6 +7,8 @@ import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandFactory;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceFactory;
+import com.intuso.housemate.api.object.hardware.HardwareData;
+import com.intuso.housemate.api.object.hardware.HardwareFactory;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.list.ListFactory;
 import com.intuso.housemate.api.object.option.OptionData;
@@ -32,6 +34,7 @@ public class ServerProxyFactory {
 
         private final Log log;
         private final CommandFactory<ServerProxyCommand> commandFactory;
+        private final HardwareFactory<ServerProxyHardware> hardwareFactory;
         private final DeviceFactory<ServerProxyDevice> deviceFactory;
         private final ListFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>, ServerProxyList<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>> listFactory;
         private final OptionFactory<ServerProxyOption> optionFactory;
@@ -42,9 +45,10 @@ public class ServerProxyFactory {
         private final ValueFactory<ServerProxyValue> valueFactory;
 
         @Inject
-        public All(Log log, CommandFactory<ServerProxyCommand> commandFactory, DeviceFactory<ServerProxyDevice> deviceFactory, ListFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>, ServerProxyList<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>> listFactory, OptionFactory<ServerProxyOption> optionFactory, ParameterFactory<ServerProxyParameter> parameterFactory, PropertyFactory<ServerProxyProperty> propertyFactory, SubTypeFactory<ServerProxySubType> subTypeFactory, TypeFactory<ServerProxyType> typeFactory, ValueFactory<ServerProxyValue> valueFactory) {
+        public All(Log log, CommandFactory<ServerProxyCommand> commandFactory, HardwareFactory<ServerProxyHardware> hardwareFactory, DeviceFactory<ServerProxyDevice> deviceFactory, ListFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>, ServerProxyList<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>> listFactory, OptionFactory<ServerProxyOption> optionFactory, ParameterFactory<ServerProxyParameter> parameterFactory, PropertyFactory<ServerProxyProperty> propertyFactory, SubTypeFactory<ServerProxySubType> subTypeFactory, TypeFactory<ServerProxyType> typeFactory, ValueFactory<ServerProxyValue> valueFactory) {
             this.log = log;
             this.commandFactory = commandFactory;
+            this.hardwareFactory = hardwareFactory;
             this.deviceFactory = deviceFactory;
             this.listFactory = listFactory;
             this.optionFactory = optionFactory;
@@ -63,6 +67,8 @@ public class ServerProxyFactory {
                 return commandFactory.create((CommandData) data);
             else if(data instanceof DeviceData)
                 return deviceFactory.create((DeviceData) data);
+            else if(data instanceof HardwareData)
+                return hardwareFactory.create((HardwareData) data);
             else if(data instanceof ListData)
                 return listFactory.create((ListData<HousemateData<?>>) data);
             else if(data instanceof OptionData)

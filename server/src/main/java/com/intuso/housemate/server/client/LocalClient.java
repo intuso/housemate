@@ -13,6 +13,7 @@ import com.intuso.housemate.object.real.RealRoot;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.DeviceFactory;
+import com.intuso.housemate.server.factory.HardwareFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.housemate.server.plugin.PluginListener;
 import com.intuso.housemate.server.plugin.PluginManager;
@@ -31,7 +32,7 @@ public class LocalClient implements PluginListener {
     private boolean typesAdded = false;
 
     @Inject
-    public LocalClient(final Log log, final LocalClientRoot root,
+    public LocalClient(final Log log, final LocalClientRoot root, final HardwareFactory hardwareFactory,
                        final DeviceFactory deviceFactory, final ConditionFactory conditionFactory,
                        final TaskFactory taskFactory, final PluginManager pluginManager) throws HousemateException {
         this.log = log;
@@ -52,6 +53,7 @@ public class LocalClient implements PluginListener {
             public void applicationInstanceStatusChanged(RealRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
                 if (!typesAdded && applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
                     typesAdded = true;
+                    root.addType(hardwareFactory.getType());
                     root.addType(deviceFactory.getType());
                     root.addType(conditionFactory.getType());
                     root.addType(taskFactory.getType());

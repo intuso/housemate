@@ -9,6 +9,7 @@ import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
@@ -37,6 +38,7 @@ public class SimpleProxyFactory implements HousemateObjectFactory<HousemateData<
     private final HousemateObjectFactory<CommandData, SimpleProxyCommand> commandFactory;
     private final HousemateObjectFactory<ConditionData, SimpleProxyCondition> conditionFactory;
     private final HousemateObjectFactory<DeviceData, SimpleProxyDevice> deviceFactory;
+    private final HousemateObjectFactory<HardwareData, SimpleProxyHardware> hardwareFactory;
     private final HousemateObjectFactory<ListData<HousemateData<?>>, SimpleProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory;
     private final HousemateObjectFactory<OptionData, SimpleProxyOption> optionFactory;
     private final HousemateObjectFactory<ParameterData, SimpleProxyParameter> parameterFactory;
@@ -55,6 +57,7 @@ public class SimpleProxyFactory implements HousemateObjectFactory<HousemateData<
                               HousemateObjectFactory<CommandData, SimpleProxyCommand> commandFactory,
                               HousemateObjectFactory<ConditionData, SimpleProxyCondition> conditionFactory,
                               HousemateObjectFactory<DeviceData, SimpleProxyDevice> deviceFactory,
+                              HousemateObjectFactory<HardwareData, SimpleProxyHardware> hardwareFactory,
                               HousemateObjectFactory<ListData<HousemateData<?>>, SimpleProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory,
                               HousemateObjectFactory<OptionData, SimpleProxyOption> optionFactory,
                               HousemateObjectFactory<ParameterData, SimpleProxyParameter> parameterFactory,
@@ -71,6 +74,7 @@ public class SimpleProxyFactory implements HousemateObjectFactory<HousemateData<
         this.commandFactory = commandFactory;
         this.conditionFactory = conditionFactory;
         this.deviceFactory = deviceFactory;
+        this.hardwareFactory = hardwareFactory;
         this.listFactory = listFactory;
         this.optionFactory = optionFactory;
         this.parameterFactory = parameterFactory;
@@ -100,6 +104,8 @@ public class SimpleProxyFactory implements HousemateObjectFactory<HousemateData<
             return taskFactory.create((TaskData) data);
         else if(data instanceof DeviceData)
             return deviceFactory.create((DeviceData) data);
+        else if(data instanceof HardwareData)
+            return hardwareFactory.create((HardwareData) data);
         else if(data instanceof ListData)
             return listFactory.create((ListData<HousemateData<?>>) data);
         else if(data instanceof OptionData)

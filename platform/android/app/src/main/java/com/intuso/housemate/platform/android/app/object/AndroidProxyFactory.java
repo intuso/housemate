@@ -56,12 +56,12 @@ public class AndroidProxyFactory implements HousemateObjectFactory<HousemateData
             return createApplicationInstance((ApplicationInstanceData) data);
         else if(data instanceof UserData)
             return createUser((UserData) data);
-        else if(data instanceof HardwareData)
-            return createHardware((HardwareData) data);
         else if(data instanceof TaskData)
             return createTask((TaskData) data);
         else if(data instanceof DeviceData)
             return createDevice((DeviceData) data);
+        else if(data instanceof HardwareData)
+            return createHardware((HardwareData) data);
         else if(data instanceof ListData)
             return this.<HousemateData<?>, ProxyObject<HousemateData<?>, ?, ?, ?, ?>>createList((ListData<HousemateData<?>>) data);
         else if(data instanceof OptionData)
