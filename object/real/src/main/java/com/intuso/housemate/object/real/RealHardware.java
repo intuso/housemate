@@ -24,19 +24,17 @@ public class RealHardware
 
     private RealList<PropertyData, RealProperty<?>> properties;
 
-    public RealHardware(Log log, ListenersFactory listenersFactory, String id, String name, String description, RealProperty<?> ... properties) {
-        this(log, listenersFactory, id, name, description, Lists.newArrayList(properties));
+    public RealHardware(Log log, ListenersFactory listenersFactory, HardwareData data, RealProperty<?> ... properties) {
+        this(log, listenersFactory, data, Lists.newArrayList(properties));
     }
 
     /**
      * @param log {@inheritDoc}
      * @param listenersFactory
-     * @param id the hardware's id
-     * @param name the hardware's name
-     * @param description the hardware's description
+     * @param data the hardware's data
      */
-    public RealHardware(Log log, ListenersFactory listenersFactory, String id, String name, String description, List<RealProperty<?>> properties) {
-        super(log, listenersFactory, new HardwareData(id, name, description));
+    public RealHardware(Log log, ListenersFactory listenersFactory, HardwareData data, List<RealProperty<?>> properties) {
+        super(log, listenersFactory, data);
         this.properties = new RealList<PropertyData, RealProperty<?>>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION, properties);
         addChild(this.properties);
     }
