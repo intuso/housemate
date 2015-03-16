@@ -1,7 +1,4 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
-    <g:FlowPanel>
-        <h:property.PropertyList ui:field="properties" header="Properties"/>
-    </g:FlowPanel>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <g:FlowPanel/>
 </ui:UiBinder>
