@@ -221,6 +221,11 @@ public abstract class ProxyRoot<
     }
 
     @Override
+    public COMMAND getAddHardwareCommand() {
+        return (COMMAND) getChild(ADD_HARDWARE_ID);
+    }
+
+    @Override
     public COMMAND getAddDeviceCommand() {
         return (COMMAND) getChild(ADD_DEVICE_ID);
     }

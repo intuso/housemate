@@ -20,6 +20,7 @@ import com.intuso.utilities.properties.api.PropertyRepository;
  */
 public class LocalClientRoot extends RealRoot {
 
+    private final RealCommand addHardwareCommand;
     private final RealCommand addDeviceCommand;
 
     @Inject
@@ -27,8 +28,18 @@ public class LocalClientRoot extends RealRoot {
                            RealList<HardwareData, RealHardware> hardwares, RealList<TypeData<?>, RealType<?, ?, ?>> types,
                            RealList<DeviceData, RealDevice> devices, LifecycleHandler lifecycleHandler) {
         super(log, listenersFactory, Server.createApplicationInstanceProperties(listenersFactory, properties), router, hardwares, types, devices);
+        addHardwareCommand = lifecycleHandler.createAddHardwareCommand(getHardwares());
         addDeviceCommand = lifecycleHandler.createAddDeviceCommand(getDevices());
+        addChild(addHardwareCommand);
         addChild(addDeviceCommand);
+    }
+
+    /**
+     * Get the add hardware command for this client
+     * @return
+     */
+    public RealCommand getAddHardwareCommand() {
+        return addHardwareCommand;
     }
 
     /**

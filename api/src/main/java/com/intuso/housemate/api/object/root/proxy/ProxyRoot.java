@@ -49,6 +49,12 @@ public interface ProxyRoot<
      * Gets the add device command
      * @return the add device command
      */
+    public ADD_COMMAND getAddHardwareCommand();
+
+    /**
+     * Gets the add device command
+     * @return the add device command
+     */
     public ADD_COMMAND getAddDeviceCommand();
 
     /**

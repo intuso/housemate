@@ -6,6 +6,7 @@ import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -13,10 +14,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.real.RealCommand;
-import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.*;
 import com.intuso.housemate.object.real.impl.type.Email;
 import com.intuso.housemate.object.real.impl.type.EmailType;
 import com.intuso.housemate.object.real.impl.type.StringType;
@@ -25,6 +23,7 @@ import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.DeviceFactory;
+import com.intuso.housemate.server.factory.HardwareFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -37,6 +36,7 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     private final ListenersFactory listenersFactory;
     private final Persistence persistence;
 
+    private final HardwareFactory hardwareFactory;
     private final DeviceFactory deviceFactory;
     private final ConditionFactory conditionFactory;
     private final TaskFactory taskFactory;
@@ -61,12 +61,14 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     };
 
     @Inject
-    public LifecycleHandlerImpl(Log log, ListenersFactory listenersFactory,
-                                Persistence persistence, DeviceFactory deviceFactory, ConditionFactory conditionFactory,
-                                TaskFactory taskFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+    public LifecycleHandlerImpl(Log log, ListenersFactory listenersFactory, Persistence persistence,
+                                HardwareFactory hardwareFactory, DeviceFactory deviceFactory,
+                                ConditionFactory conditionFactory, TaskFactory taskFactory,
+                                RealList<TypeData<?>, RealType<?, ?, ?>> types) {
         this.log = log;
         this.listenersFactory = listenersFactory;
         this.persistence = persistence;
+        this.hardwareFactory = hardwareFactory;
         this.deviceFactory = deviceFactory;
         this.conditionFactory = conditionFactory;
         this.taskFactory = taskFactory;
@@ -102,6 +104,12 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                 user.getEmailProperty().setTypedValue(email);
             }
         };
+    }
+
+    @Override
+    public RealCommand createAddHardwareCommand(final RealList<HardwareData, RealHardware> hardwares) {
+        return hardwareFactory.createAddHardwareCommand(Root.ADD_HARDWARE_ID, Root.ADD_HARDWARE_ID, "Add new hardware",
+                types, hardwares);
     }
 
     @Override

@@ -59,6 +59,7 @@ public class RootBridge
     private final MultiListBridge<DeviceData, ServerProxyDevice, DeviceBridge> devices;
     private final ListBridge<AutomationData, ServerRealAutomation, AutomationBridge> automations;
     private final CommandBridge addUser;
+    private final CommandBridge addHardware;
     private final CommandBridge addDevice;
     private final CommandBridge addAutomation;
 
@@ -84,6 +85,7 @@ public class RootBridge
         automations = new SingleListBridge<AutomationData, ServerRealAutomation, AutomationBridge>(log, listenersFactory,
                 realRoot.getAutomations(), new AutomationBridge.Converter(log, listenersFactory, types));
         addUser = new CommandBridge(log, listenersFactory, realRoot.getAddUserCommand(), types);
+        addHardware = new CommandBridge(log, listenersFactory, client.getAddHardwareCommand(), types);
         addDevice = new CommandBridge(log, listenersFactory, client.getAddDeviceCommand(), types);
         addAutomation = new CommandBridge(log, listenersFactory, realRoot.getAddAutomationCommand(), types);
         addChild(applications);
@@ -93,6 +95,7 @@ public class RootBridge
         addChild(devices);
         addChild(automations);
         addChild(addUser);
+        addChild(addHardware);
         addChild(addDevice);
         addChild(addAutomation);
         storage.watchApplications(applications);

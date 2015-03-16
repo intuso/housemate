@@ -18,6 +18,7 @@ import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.comms.RemoteClientManager;
 import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.DeviceFactory;
+import com.intuso.housemate.server.factory.HardwareFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.housemate.server.object.LifecycleHandlerImpl;
 import com.intuso.housemate.server.object.bridge.ListBridge;
@@ -60,6 +61,7 @@ public class ServerModule extends AbstractModule {
         bind(TimeUnitType.class).in(Scopes.SINGLETON);
         // factories
         bind(ConditionFactory.class).in(Scopes.SINGLETON);
+        bind(HardwareFactory.class).in(Scopes.SINGLETON);
         bind(DeviceFactory.class).in(Scopes.SINGLETON);
         bind(TaskFactory.class).in(Scopes.SINGLETON);
         // other things

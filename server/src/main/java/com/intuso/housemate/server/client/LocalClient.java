@@ -72,6 +72,14 @@ public class LocalClient implements PluginListener {
     }
 
     /**
+     * Get the command for adding hardware
+     * @return the command for adding hardware
+     */
+    public RealCommand getAddHardwareCommand() {
+        return root.getAddHardwareCommand();
+    }
+
+    /**
      * Get the command for adding devices
      * @return the command for adding devices
      */

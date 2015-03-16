@@ -29,6 +29,7 @@ public interface Root<ROOT extends Root<?>>
     public final static String DEVICES_ID = "devices";
     public final static String AUTOMATIONS_ID = "automations";
     public final static String ADD_USER_ID = "add-user";
+    public final static String ADD_HARDWARE_ID = "add-hardware";
     public final static String ADD_DEVICE_ID = "add-device";
     public final static String ADD_AUTOMATION_ID = "add-automation";
 
