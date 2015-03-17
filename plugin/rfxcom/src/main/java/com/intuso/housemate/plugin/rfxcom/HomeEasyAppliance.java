@@ -12,8 +12,6 @@ import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.homeeasy.Appliance;
-import com.rfxcom.rfxtrx.homeeasy.HomeEasy;
-import com.rfxcom.rfxtrx.homeeasy.House;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,8 +22,6 @@ import java.util.Arrays;
  */
 @TypeInfo(id = "home-easy", name = "Home Easy", description = "Remote Home Easy switch")
 public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueListener<RealProperty<?>> {
-
-    private HomeEasy homeEasy;
 
 	/**
 	 * The unit to control
@@ -40,32 +36,30 @@ public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueLis
     /**
      * The number of the relay this device "controls"
      */
-    public final RealProperty<Integer> unitId = IntegerType.createProperty(getLog(), getListenersFactory(), "unit-id", "Unit ID", "HomeEasy unit ID", Arrays.asList(1));
+    public final RealProperty<Integer> unitCode = IntegerType.createProperty(getLog(), getListenersFactory(), "unit-id", "Unit ID", "HomeEasy unit ID", Arrays.asList(1));
 
     @Inject
 	public HomeEasyAppliance(Log log,
                              ListenersFactory listenersFactory,
-                             @Assisted DeviceData data,
-                             HomeEasy homeEasy) {
+                             @Assisted DeviceData data) {
 		super(log, listenersFactory, data);
         getCustomPropertyIds().add(houseId.getId());
         getProperties().add(houseId);
-        getCustomPropertyIds().add(unitId.getId());
-        getProperties().add(unitId);
-        this.homeEasy = homeEasy;
+        getCustomPropertyIds().add(unitCode.getId());
+        getProperties().add(unitCode);
         houseId.addObjectListener(this);
-        unitId.addObjectListener(this);
+        unitCode.addObjectListener(this);
 	}
 	
 	/**
 	 * Start the USB relay
-	 * @param id
-     * @param unitcode
+	 * @param houseId
+     * @param unitCode
 	 * @throws HousemateException 
 	 */
-	private void createAppliance(int id, int unitcode) {
+	private void createAppliance(int houseId, int unitCode) {
 		
-        appliance = new Appliance(new House(homeEasy, id), (byte) unitcode);
+        appliance = RFXtrx433Hardware.INSTANCE.makeAppliance(houseId, (byte) unitCode);
         appliance.addCallback(new Appliance.Callback() {
 
             @Override
@@ -97,9 +91,9 @@ public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueLis
             return;
         }
 
-        Integer unitId = this.unitId.getTypedValue();
-        if(unitId == null) {
-            getErrorValue().setTypedValues(this.unitId.getName() + " has not been set");
+        Integer unitCode = this.unitCode.getTypedValue();
+        if(unitCode == null) {
+            getErrorValue().setTypedValues(this.unitCode.getName() + " has not been set");
             return;
         }
 		
@@ -110,13 +104,13 @@ public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueLis
         }
 			
 		// check the relay value is a number between 1 and 8
-		if(unitId < 1 || unitId > 16) {
+		if(unitCode < 1 || unitCode > 16) {
             getErrorValue().setTypedValues("Unitcode must be between 1 and 16 (inclusive)");
             return;
         }
 
         getErrorValue().setTypedValues((String)null);
-        createAppliance(houseId, unitId);
+        createAppliance(houseId, unitCode);
 	}
 	
 	@Override

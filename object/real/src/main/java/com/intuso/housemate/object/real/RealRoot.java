@@ -9,6 +9,7 @@ import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -22,12 +23,15 @@ import java.util.List;
 public class RealRoot
         extends RealObject<RootData, HousemateData<?>, RealObject<?, ? extends HousemateData<?>, ?, ?>, RootListener<? super RealRoot>>
         implements com.intuso.housemate.api.object.root.real.RealRoot<
+                RealHardware,
+                RealList<HardwareData, RealHardware>,
                 RealType<?, ?, ?>,
                 RealList<TypeData<?>, RealType<?, ?, ?>>,
                 RealDevice,
                 RealList<DeviceData, RealDevice>,
                 RealRoot> {
 
+    private final RealList<HardwareData, RealHardware> hardwares;
     private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
     private final RealList<DeviceData, RealDevice> devices;
     private final Router.Registration routerRegistration;
@@ -42,15 +46,18 @@ public class RealRoot
     public RealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router) {
         this(log, listenersFactory, properties,
                 router,
+                new RealList<HardwareData, RealHardware>(log, listenersFactory, HARDWARES_ID, HARDWARES_ID, "Connected hardware"),
                 new RealList<TypeData<?>, RealType<?, ?, ?>>(log, listenersFactory, TYPES_ID, TYPES_ID, "Defined types"),
                 new RealList<DeviceData, RealDevice>(log, listenersFactory, DEVICES_ID, DEVICES_ID, "Defined devices"));
     }
 
     @Inject
     public RealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
-                    RealList<TypeData<?>, RealType<?, ?, ?>> types, RealList<DeviceData, RealDevice> devices) {
+                    RealList<HardwareData, RealHardware> hardwares, RealList<TypeData<?>, RealType<?, ?, ?>> types,
+                    RealList<DeviceData, RealDevice> devices) {
         super(log, listenersFactory, new RootData());
 
+        this.hardwares = hardwares;
         this.types = types;
         this.devices = devices;
         this.connectionManager = new ConnectionManager(listenersFactory, properties, ClientType.Real, this);
@@ -60,6 +67,8 @@ public class RealRoot
         // need to do this once the connection manager is created and once the object is init'ed so the path is not null
         this.routerRegistration = router.registerReceiver(this);
 
+        addChild(hardwares);
+        hardwares.init(this);
         addChild(types);
         types.init(this);
         addChild(devices);
@@ -175,6 +184,11 @@ public class RealRoot
             }
         }));
         return result;
+    }
+
+    @Override
+    public RealList<HardwareData, RealHardware> getHardwares() {
+        return hardwares;
     }
 
     @Override

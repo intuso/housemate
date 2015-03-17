@@ -11,6 +11,7 @@ import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
@@ -25,6 +26,7 @@ public class ServerProxyRoot
             ServerProxyRoot, RootListener<? super ServerProxyRoot>>
         implements Root<ServerProxyRoot> {
 
+    private ServerProxyList<HardwareData, ServerProxyHardware> hardwares;
     private ServerProxyList<TypeData<?>, ServerProxyType> types;
     private ServerProxyList<DeviceData, ServerProxyDevice> devices;
 
@@ -36,9 +38,11 @@ public class ServerProxyRoot
     public ServerProxyRoot(Log log, ListenersFactory listenersFactory, Injector injector, ServerProxyList<TypeData<?>, ServerProxyType> types) {
         super(log, listenersFactory, injector, new RootData());
 
+        hardwares = new ServerProxyList<HardwareData, ServerProxyHardware>(log, listenersFactory, injector, new ListData<HardwareData>(HARDWARES_ID, HARDWARES_ID, "Connected hardware"));
         this.types = types;
         devices = new ServerProxyList<DeviceData, ServerProxyDevice>(log, listenersFactory, injector, new ListData<DeviceData>(DEVICES_ID, DEVICES_ID, "Proxied devices"));
 
+        addChild(hardwares);
         addChild(types);
         addChild(devices);
 
@@ -78,6 +82,10 @@ public class ServerProxyRoot
     @Override
     public void sendMessage(Message<?> message) {
         throw new HousemateRuntimeException("Whatever");
+    }
+
+    public ServerProxyList<HardwareData, ServerProxyHardware> getHardwares() {
+        return hardwares;
     }
 
     /**

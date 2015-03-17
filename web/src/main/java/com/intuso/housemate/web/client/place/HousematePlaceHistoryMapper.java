@@ -9,5 +9,6 @@ import com.google.gwt.place.shared.WithTokenizers;
         DevicesPlace.Tokeniser.class,
         AutomationsPlace.Tokeniser.class,
         UsersPlace.Tokeniser.class,
+        HardwaresPlace.Tokeniser.class,
         ApplicationsPlace.Tokeniser.class})
 public interface HousematePlaceHistoryMapper extends PlaceHistoryMapper {}

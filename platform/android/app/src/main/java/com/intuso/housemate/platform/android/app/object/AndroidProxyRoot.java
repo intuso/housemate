@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.proxy.ProxyObject;
@@ -23,6 +24,7 @@ import com.intuso.utilities.properties.api.PropertyRepository;
 public class AndroidProxyRoot extends ProxyRoot<
         AndroidProxyApplication, AndroidProxyList<ApplicationData, AndroidProxyApplication>,
         AndroidProxyUser, AndroidProxyList<UserData, AndroidProxyUser>,
+        AndroidProxyHardware, AndroidProxyList<HardwareData, AndroidProxyHardware>,
         AndroidProxyType, AndroidProxyList<TypeData<HousemateData<?>>, AndroidProxyType>,
         AndroidProxyDevice, AndroidProxyList<DeviceData, AndroidProxyDevice>,
         AndroidProxyAutomation, AndroidProxyList<AutomationData, AndroidProxyAutomation>,

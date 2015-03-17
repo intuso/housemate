@@ -8,7 +8,6 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.server.proxy.ServerProxyList;
-import com.intuso.housemate.object.server.proxy.ServerProxyObjectModule;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -20,7 +19,7 @@ public class ServerProxyModule extends AbstractModule {
     @Override
     protected void configure() {
         // install all required modules
-        install(new ServerProxyObjectModule());
+        install(new com.intuso.housemate.object.server.proxy.ServerProxyModule());
     }
 
     @Provides

@@ -18,6 +18,7 @@ import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
@@ -58,6 +59,7 @@ public class PayloadAdapter extends RuntimeTypeAdapterFactory<Message.Payload> {
         registerSubtype(Command.FailedPayload.class, "commandFailed");
         registerSubtype(ConditionData.class, "condition");
         registerSubtype(DeviceData.class, "device");
+        registerSubtype(HardwareData.class, "hardware");
         registerSubtype(ListData.class, "list");
         registerSubtype(OptionData.class, "option");
         registerSubtype(ParameterData.class, "parameter");

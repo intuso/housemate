@@ -7,7 +7,9 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.api.object.device.DeviceFactory;
+import com.intuso.housemate.api.object.hardware.HardwareFactory;
 import com.intuso.housemate.object.real.RealDevice;
+import com.intuso.housemate.object.real.RealHardware;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.server.real.ServerRealCondition;
 import com.intuso.housemate.object.server.real.ServerRealTask;
@@ -38,6 +40,7 @@ public abstract class PluginModule extends AbstractModule {
         configureComparators(Multibinder.newSetBinder(binder(), new TypeLiteral<Comparator<?>>() {}));
         configureOperators(Multibinder.newSetBinder(binder(), new TypeLiteral<Operator<?, ?>>() {}));
         configureTransformers(Multibinder.newSetBinder(binder(), new TypeLiteral<Transformer<?, ?>>() {}));
+        configureHardwareFactories(Multibinder.newSetBinder(binder(), new TypeLiteral<HardwareFactory<? extends RealHardware>>() {}));
         configureDeviceFactories(Multibinder.newSetBinder(binder(), new TypeLiteral<DeviceFactory<? extends RealDevice>>() {}));
         configureConditionFactories(Multibinder.newSetBinder(binder(), new TypeLiteral<ServerConditionFactory<?>>() {}));
         configureTaskFactories(Multibinder.newSetBinder(binder(), new TypeLiteral<ServerTaskFactory<?>>() {}));
@@ -75,6 +78,20 @@ public abstract class PluginModule extends AbstractModule {
         if(transformers != null)
             for(Class<? extends Transformer<?, ?>> transformerClass : transformers.value())
                 transformerBindings.addBinding().to(transformerClass);
+    }
+
+    public void configureHardwareFactories(Multibinder<HardwareFactory<? extends RealHardware>> hardwareFactoryBindings) {
+        Hardwares hardwares = getClass().getAnnotation(Hardwares.class);
+        if(hardwares != null) {
+            for(Class<? extends RealHardware> hardwareClass : hardwares.value()) {
+                // add the factory to the multibinding
+                Type type = com.google.inject.util.Types.newParameterizedType(HardwareFactory.class, hardwareClass);
+                TypeLiteral<HardwareFactory<? extends RealHardware>> typeLiteral = (TypeLiteral<HardwareFactory<? extends RealHardware>>) TypeLiteral.get(type);
+                hardwareFactoryBindings.addBinding().to(typeLiteral);
+                // provide a factory impl using assisted inject
+                install(new FactoryModuleBuilder().build(typeLiteral));
+            }
+        }
     }
 
     public void configureDeviceFactories(Multibinder<DeviceFactory<? extends RealDevice>> deviceFactoryBindings) {

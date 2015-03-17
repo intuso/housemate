@@ -35,4 +35,10 @@ public @interface Property {
      * @return the property's type
      */
     String typeId();
+
+    /**
+     * The initial value of the property
+     * @return the initial value of the property
+     */
+    String initialValue() default "";
 }

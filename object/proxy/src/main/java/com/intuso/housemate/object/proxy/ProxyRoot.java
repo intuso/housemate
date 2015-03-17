@@ -42,6 +42,8 @@ public abstract class ProxyRoot<
             APPLICATIONS extends ProxyList<?, APPLICATION, APPLICATIONS>,
             USER extends ProxyUser<?, ?, USER>,
             USERS extends ProxyList<?, USER, USERS>,
+            HARDWARE extends ProxyHardware<?, ?>,
+            HARDWARES extends ProxyList<?, HARDWARE, HARDWARES>,
             TYPE extends ProxyType<?, ?, ?, ?>,
             TYPES extends ProxyList<?, TYPE, TYPES>,
             DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?>,
@@ -49,9 +51,9 @@ public abstract class ProxyRoot<
             AUTOMATION extends ProxyAutomation<?, ?, ?, ?, ?, ?, ?>,
             AUTOMATIONS extends ProxyList<?, AUTOMATION, AUTOMATIONS>,
             COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
-            ROOT extends ProxyRoot<APPLICATION, APPLICATIONS, USER, USERS, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
+            ROOT extends ProxyRoot<APPLICATION, APPLICATIONS, USER, USERS, HARDWARE, HARDWARES, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
         extends ProxyObject<RootData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, ROOT, RootListener<? super ROOT>>
-        implements com.intuso.housemate.api.object.root.proxy.ProxyRoot<APPLICATIONS, USERS, TYPES, DEVICES, AUTOMATIONS, COMMAND, ROOT>,
+        implements com.intuso.housemate.api.object.root.proxy.ProxyRoot<APPLICATIONS, USERS, HARDWARES, TYPES, DEVICES, AUTOMATIONS, COMMAND, ROOT>,
             ObjectListener<ProxyObject<?, ?, ?, ?, ?>> {
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
@@ -194,6 +196,11 @@ public abstract class ProxyRoot<
     }
 
     @Override
+    public HARDWARES getHardwares() {
+        return (HARDWARES) getChild(HARDWARES_ID);
+    }
+
+    @Override
     public TYPES getTypes() {
         return (TYPES) getChild(TYPES_ID);
     }
@@ -211,6 +218,11 @@ public abstract class ProxyRoot<
     @Override
     public COMMAND getAddUserCommand() {
         return (COMMAND) getChild(ADD_USER_ID);
+    }
+
+    @Override
+    public COMMAND getAddHardwareCommand() {
+        return (COMMAND) getChild(ADD_HARDWARE_ID);
     }
 
     @Override

@@ -3,13 +3,14 @@ package com.intuso.housemate.object.real.annotations;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.object.device.feature.FeatureId;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.HasCommands;
+import com.intuso.housemate.api.object.device.feature.FeatureId;
 import com.intuso.housemate.api.object.property.HasProperties;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.value.HasValues;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.real.*;
@@ -83,10 +84,37 @@ public class AnnotationProcessor {
             }
             if(types.get(propertyField.getValue().typeId()) == null)
                 throw new HousemateException(propertyField.getValue().typeId() + " type does not exist");
-            properties.add(new PropertyImpl(object.getLog(), listenersFactory,
-                    propertyField.getValue().id(), propertyField.getValue().name(),
-                    propertyField.getValue().description(), (RealType<?, ?, Object>) types.get(propertyField.getValue().typeId()),
-                    value, propertyField.getKey(), object));
+            RealType<?, ?, Object> type = (RealType<?, ?, Object>) types.get(propertyField.getValue().typeId());
+            if(value == null && propertyField.getValue().initialValue().length() > 0)
+                value = type.deserialise(new TypeInstance(propertyField.getValue().initialValue()));
+            properties.add(new FieldPropertyImpl(object.getLog(),
+                    listenersFactory,
+                    propertyField.getValue().id(),
+                    propertyField.getValue().name(),
+                    propertyField.getValue().description(),
+                    type,
+                    value,
+                    propertyField.getKey(),
+                    object));
+        }
+        for(Map.Entry<Method, Property> propertyMethod : getAnnotatedMethods(object.getClass(), Property.class).entrySet()) {
+            if(propertyMethod.getKey().getParameterTypes().length != 1)
+                throw new HousemateException(propertyMethod.getKey().getName() + " must take a single argument");
+            if(types.get(propertyMethod.getValue().typeId()) == null)
+                throw new HousemateException(propertyMethod.getValue().typeId() + " type does not exist");
+            RealType<?, ?, Object> type = (RealType<?, ?, Object>) types.get(propertyMethod.getValue().typeId());
+            Object value = null;
+            if(propertyMethod.getValue().initialValue().length() > 0)
+                value = type.deserialise(new TypeInstance(propertyMethod.getValue().initialValue()));
+            properties.add(new MethodPropertyImpl(object.getLog(),
+                    listenersFactory,
+                    propertyMethod.getValue().id(),
+                    propertyMethod.getValue().name(),
+                    propertyMethod.getValue().description(),
+                    type,
+                    value,
+                    propertyMethod.getKey(),
+                    object));
         }
     }
 

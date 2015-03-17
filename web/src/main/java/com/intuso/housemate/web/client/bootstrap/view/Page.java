@@ -8,13 +8,13 @@ import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.AcceptsOneWidget;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import com.intuso.housemate.web.client.comms.LoginManager;
-import com.intuso.housemate.web.client.place.ApplicationsPlace;
-import com.intuso.housemate.web.client.place.AutomationsPlace;
-import com.intuso.housemate.web.client.place.DevicesPlace;
-import com.intuso.housemate.web.client.place.UsersPlace;
+import com.intuso.housemate.web.client.place.*;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 
 /**
@@ -39,6 +39,8 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
     AnchorListItem automationsButton;
     @UiField
     AnchorListItem applicationsButton;
+    @UiField
+    AnchorListItem hardwaresButton;
     @UiField
     AnchorListItem usersButton;
 
@@ -69,6 +71,8 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
             activeButton = applicationsButton;
         else if(event.getNewPlace() instanceof UsersPlace)
             activeButton = usersButton;
+        else if(event.getNewPlace() instanceof HardwaresPlace)
+            activeButton = hardwaresButton;
         if(activeButton != null)
             activeButton.setActive(true);
     }
@@ -96,6 +100,11 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
     @UiHandler("usersButton")
     public void usersButtonClicked(ClickEvent e) {
         placeController.goTo(new UsersPlace());
+    }
+
+    @UiHandler("hardwaresButton")
+    public void hardwaresButtonClicked(ClickEvent e) {
+        placeController.goTo(new HardwaresPlace());
     }
 
     @UiHandler("logoutButton")

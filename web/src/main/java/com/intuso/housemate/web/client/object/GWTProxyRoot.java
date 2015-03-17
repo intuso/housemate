@@ -6,6 +6,7 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.proxy.ProxyObject;
@@ -20,6 +21,7 @@ import com.intuso.utilities.properties.api.PropertyRepository;
 public class GWTProxyRoot extends ProxyRoot<
             GWTProxyApplication, GWTProxyList<ApplicationData, GWTProxyApplication>,
             GWTProxyUser, GWTProxyList<UserData, GWTProxyUser>,
+            GWTProxyHardware, GWTProxyList<HardwareData, GWTProxyHardware>,
             GWTProxyType, GWTProxyList<TypeData<?>, GWTProxyType>,
             GWTProxyDevice, GWTProxyList<DeviceData, GWTProxyDevice>,
             GWTProxyAutomation, GWTProxyList<AutomationData, GWTProxyAutomation>,
