@@ -4,99 +4,38 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.real.RealProperty;
+import com.intuso.housemate.object.real.annotations.Property;
 import com.intuso.housemate.object.real.impl.device.StatefulPoweredDevice;
-import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.homeeasy.Appliance;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Housemate device that controls a USB relay
  *
  */
 @TypeInfo(id = "home-easy", name = "Home Easy", description = "Remote Home Easy switch")
-public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueListener<RealProperty<?>> {
+public class HomeEasyAppliance extends StatefulPoweredDevice {
 
-	/**
-	 * The unit to control
-	 */
 	private Appliance appliance;
-
-    /**
-     * The number of the relay this device "controls"
-     */
-    public final RealProperty<Integer> houseId = IntegerType.createProperty(getLog(), getListenersFactory(), "house-id", "House ID", "HomeEasy house ID (in decimal)", Arrays.asList(0));
-
-    /**
-     * The number of the relay this device "controls"
-     */
-    public final RealProperty<Integer> unitCode = IntegerType.createProperty(getLog(), getListenersFactory(), "unit-id", "Unit ID", "HomeEasy unit ID", Arrays.asList(1));
+    private ListenerRegistration listenerRegistration;
+    private int houseId = 0;
+    private int unitCode = 1;
 
     @Inject
 	public HomeEasyAppliance(Log log,
                              ListenersFactory listenersFactory,
                              @Assisted DeviceData data) {
 		super(log, listenersFactory, data);
-        getCustomPropertyIds().add(houseId.getId());
-        getProperties().add(houseId);
-        getCustomPropertyIds().add(unitCode.getId());
-        getProperties().add(unitCode);
-        houseId.addObjectListener(this);
-        unitCode.addObjectListener(this);
-	}
-	
-	/**
-	 * Start the USB relay
-	 * @param houseId
-     * @param unitCode
-	 * @throws HousemateException 
-	 */
-	private void createAppliance(int houseId, int unitCode) {
-		
-        appliance = RFXtrx433Hardware.INSTANCE.makeAppliance(houseId, (byte) unitCode);
-        appliance.addCallback(new Appliance.Callback() {
-
-            @Override
-            public void turnedOn(Appliance a) {
-                setOn();
-            }
-
-            @Override
-            public void turnedOff(Appliance a) {
-                setOff();
-            }
-        });
+        getCustomPropertyIds().add("house-id");
+        getCustomPropertyIds().add("unit-id");
 	}
 
-    @Override
-    public void valueChanging(RealProperty<?> value) {
-        // do nothing
-    }
-
-    /**
-	 * Check if all the current property values are valid and if so, start the USB relay client
-	 * @throws HousemateException
-	 */
-    @Override
-    public void valueChanged(RealProperty<?> property) {
-        Integer houseId = this.houseId.getTypedValue();
-        if(houseId == null) {
-            getErrorValue().setTypedValues(this.houseId.getName() + " has not been set");
-            return;
-        }
-
-        Integer unitCode = this.unitCode.getTypedValue();
-        if(unitCode == null) {
-            getErrorValue().setTypedValues(this.unitCode.getName() + " has not been set");
-            return;
-        }
-		
+    public void propertyChanged() {
         // check the port value is a positive number
         if(houseId < 0 || houseId > 0x03FFFFFF) {
             getErrorValue().setTypedValues("House id must be between 0 and " + 0x03FFFFFF);
@@ -110,10 +49,47 @@ public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueLis
         }
 
         getErrorValue().setTypedValues((String)null);
-        createAppliance(houseId, unitCode);
+
+        if(listenerRegistration != null) {
+            listenerRegistration.removeListener();
+            listenerRegistration = null;
+        }
+        appliance = RFXtrx433Hardware.INSTANCE.makeAppliance(houseId, (byte) unitCode);
+        listenerRegistration = appliance.addCallback(new Appliance.Callback() {
+
+            @Override
+            public void turnedOn(Appliance a) {
+                setOn();
+            }
+
+            @Override
+            public void turnedOff(Appliance a) {
+                setOff();
+            }
+        });
 	}
-	
-	@Override
+
+    public int getHouseId() {
+        return houseId;
+    }
+
+    @Property(id = "house-id", name = "House ID", description = "HomeEasy house ID (in decimal)", typeId = "integer")
+    public void setHouseId(int houseId) {
+        this.houseId = houseId;
+        propertyChanged();
+    }
+
+    public int getUnitCode() {
+        return unitCode;
+    }
+
+    @Property(id = "unit-id", name = "Unit ID", description = "HomeEasy unit ID", typeId = "integer")
+    public void setUnitCode(int unitCode) {
+        this.unitCode = unitCode;
+        propertyChanged();
+    }
+
+    @Override
     public void turnOn() throws HousemateException {
         if(appliance == null)
             throw new HousemateException("Not connected to HomeEasy device. Ensure properties are set");
@@ -139,7 +115,7 @@ public class HomeEasyAppliance extends StatefulPoweredDevice implements ValueLis
 	
 	@Override
 	protected void start() {
-		valueChanged(null);
+		propertyChanged();
 	}
 
 	@Override
