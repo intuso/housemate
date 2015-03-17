@@ -6,13 +6,9 @@ import com.google.common.collect.SetMultimap;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.device.DeviceFactory;
 import com.intuso.housemate.api.object.hardware.HardwareData;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.housemate.object.real.RealHardware;
 import com.intuso.housemate.object.real.RealRoot;
 import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
@@ -44,6 +40,9 @@ public class RFXtrx433Hardware extends RealHardware implements HomeEasy.Callback
     private final DeviceFactory<HomeEasyAppliance> homeEasyApplianceFactory;
     private final AnnotationProcessor annotationProcessor;
 
+    private String pattern;
+    private boolean create;
+
     @Inject
     public RFXtrx433Hardware(Log log, ListenersFactory listenersFactory, @Assisted HardwareData data, DeviceFactory<HomeEasyAppliance> homeEasyApplianceFactory, AnnotationProcessor annotationProcessor) {
         super(log, listenersFactory, data);
@@ -54,17 +53,27 @@ public class RFXtrx433Hardware extends RealHardware implements HomeEasy.Callback
 
     @Property(id = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names", typeId = "string", initialValue = ".*ttyUSB.*")
     public void setPattern(String pattern) {
+        this.pattern = pattern;
         rfxtrx.setPatterns(Lists.newArrayList(Pattern.compile(pattern)));
+    }
+
+    public String getPattern() {
+        return pattern;
     }
 
     @Property(id = "create", name = "Create devices", description = "Create a new device when a command is received for it", typeId = "boolean", initialValue = "true")
     public void setCreate(boolean create) {
+        this.create = create;
         if(messageListener != null) {
             messageListener.removeListener();
             messageListener = null;
         }
         if(create)
             messageListener = homeEasy.addCallback(this);
+    }
+
+    public boolean isCreate() {
+        return create;
     }
 
     @Override
@@ -102,31 +111,21 @@ public class RFXtrx433Hardware extends RealHardware implements HomeEasy.Callback
         return new Appliance(new House(homeEasy, houseId), unitCode);
     }
 
-    public void ensureAppliance(int houseId, byte unitcode, boolean on) {
-        if(!knownAppliances.containsEntry(houseId, unitcode)) {
+    public void ensureAppliance(int houseId, byte unitCode, boolean on) {
+        if(!knownAppliances.containsEntry(houseId, unitCode)) {
             try {
-                String name = houseId + "/" + (int)unitcode;
+                String name = houseId + "/" + (int)unitCode;
                 HomeEasyAppliance appliance = homeEasyApplianceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name));
+                appliance.setHouseId(houseId);
+                appliance.setUnitCode(unitCode);
                 annotationProcessor.process(((RealRoot)getRealRoot()).getTypes(), appliance);
-                CommandPerformListener<RealCommand> dummmyListener = new CommandPerformListener<RealCommand>() {
-                    @Override
-                    public void commandStarted(RealCommand command) {}
-
-                    @Override
-                    public void commandFinished(RealCommand command) {}
-
-                    @Override
-                    public void commandFailed(RealCommand command, String error) {}
-                };
-                appliance.houseId.set(new TypeInstances(new TypeInstance("" + houseId)), dummmyListener);
-                appliance.unitCode.set(new TypeInstances(new TypeInstance("" + (int) unitcode)), dummmyListener);
                 if(on)
                     appliance.setOn();
                 else
                     appliance.setOff();
                 ((RealRoot)getRealRoot()).addDevice(appliance);
             } catch (HousemateException e) {
-                getLog().e("Failed to auto-create device " + houseId + "/" + (int)unitcode);
+                getLog().e("Failed to auto-create device " + houseId + "/" + (int)unitCode);
             }
         }
     }
