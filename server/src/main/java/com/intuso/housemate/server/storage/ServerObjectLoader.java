@@ -13,6 +13,7 @@ import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeInstance;
@@ -20,6 +21,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.real.RealDevice;
+import com.intuso.housemate.object.real.RealHardware;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.object.real.impl.type.ApplicationStatusType;
@@ -51,13 +53,15 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
     private final Persistence persistence;
     private final ConditionFactory conditionFactory;
     private final TaskFactory taskFactory;
+    private final RealList<HardwareData, RealHardware> hardwares;
     private final RealList<DeviceData, RealDevice> devices;
     private final LifecycleHandler lifecycleHandler;
 
     @Inject
     public ServerObjectLoader(Log log, ListenersFactory listenersFactory, Injector injector, ServerRealRoot root,
                               Persistence persistence, ConditionFactory conditionFactory, TaskFactory taskFactory,
-                              RealList<DeviceData, RealDevice> devices, LifecycleHandler lifecycleHandler) {
+                              RealList<HardwareData, RealHardware> hardwares, RealList<DeviceData, RealDevice> devices,
+                              LifecycleHandler lifecycleHandler) {
         this.log = log;
         this.listenersFactory = listenersFactory;
         this.injector = injector;
@@ -65,6 +69,7 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         this.persistence = persistence;
         this.conditionFactory = conditionFactory;
         this.taskFactory = taskFactory;
+        this.hardwares = hardwares;
         this.devices = devices;
         this.lifecycleHandler = lifecycleHandler;
     }
@@ -72,6 +77,7 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
     public void loadObjects() {
         loadApplications(root.getApplications());
         loadUsers(root.getUsers());
+        loadHardwares(Lists.newArrayList("", Root.HARDWARES_ID), lifecycleHandler.createAddHardwareCommand(hardwares));
         loadDevices(Lists.newArrayList("", Root.DEVICES_ID), lifecycleHandler.createAddDeviceCommand(devices));
         loadAutomations(root.getAutomations());
     }
@@ -146,6 +152,25 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
                 log.e("Failed to save details for admin user, no one will be able to gain access");
             }
             list.add(user);
+        }
+    }
+
+    private void loadHardwares(List<String> path, Command<?, ?, ?> addHardwareCommand) {
+        try {
+            for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
+                try {
+                    path.add(key);
+                    addHardwareCommand.perform(persistence.getValues(path.toArray(new String[path.size()])),
+                            new CommandPerformListener("Load hardware \"" + key + "\""));
+                    path.remove(path.size() - 1);
+                } catch(HousemateException e) {
+                    log.e("Failed to load hardware", e);
+                }
+            }
+        } catch(DetailsNotFoundException e) {
+            log.w("No details found for saved hardwares at " + Joiner.on("/").join(path));
+        } catch(HousemateException e) {
+            log.e("Failed to get names of existing hardwares", e);
         }
     }
 
