@@ -16,16 +16,12 @@ import android.net.NetworkInfo;
 public class NetworkStateReceiver extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
-        boolean networkAvailable = false;
-        if(intent.getExtras() != null) {
-            // otherwise, check if the current network is connected
-            NetworkInfo ni = (NetworkInfo) intent.getExtras().get(ConnectivityManager.EXTRA_NETWORK_INFO);
-            if(ni != null && ni.getState() == NetworkInfo.State.CONNECTED)
-                networkAvailable = true;
+        if(intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+            NetworkInfo ni = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+            Intent serviceIntent = new Intent(context, ConnectionService.class);
+            serviceIntent.setAction(ConnectionService.NETWORK_AVAILABLE_ACTION);
+            serviceIntent.putExtra(ConnectionService.NETWORK_AVAILABLE, ni.isConnected());
+            context.startService(serviceIntent);
         }
-        Intent serviceIntent = new Intent(context, ConnectionService.class);
-        serviceIntent.setAction(ConnectionService.NETWORK_AVAILABLE_ACTION);
-        serviceIntent.putExtra(ConnectionService.NETWORK_AVAILABLE, networkAvailable);
-        context.startService(serviceIntent);
     }
 }
