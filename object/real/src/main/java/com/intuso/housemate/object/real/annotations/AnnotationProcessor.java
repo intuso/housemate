@@ -19,10 +19,7 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.List;
 import java.util.Map;
 
@@ -103,9 +100,7 @@ public class AnnotationProcessor {
             if(types.get(propertyMethod.getValue().typeId()) == null)
                 throw new HousemateException(propertyMethod.getValue().typeId() + " type does not exist");
             RealType<?, ?, Object> type = (RealType<?, ?, Object>) types.get(propertyMethod.getValue().typeId());
-            Object value = null;
-            if(propertyMethod.getValue().initialValue().length() > 0)
-                value = type.deserialise(new TypeInstance(propertyMethod.getValue().initialValue()));
+            Object value = getInitialValue(object, propertyMethod.getValue(), type, propertyMethod.getKey().getName());
             properties.add(new MethodPropertyImpl(object.getLog(),
                     listenersFactory,
                     propertyMethod.getValue().id(),
@@ -116,6 +111,32 @@ public class AnnotationProcessor {
                     propertyMethod.getKey(),
                     object));
         }
+    }
+
+    private Object getInitialValue(Object object, Property property, RealType<?, ?, Object> type, String methodName) {
+        if(property.initialValue().length() > 0)
+            return type.deserialise(new TypeInstance(property.initialValue()));
+        else if(methodName.startsWith("set")) {
+            String fieldName = methodName.substring(3);
+            String getterName = "get" + fieldName;
+            try {
+                Method getter = object.getClass().getMethod(getterName);
+                return getter.invoke(object);
+            } catch(NoSuchMethodException e) { // do nothing
+            } catch(InvocationTargetException|IllegalAccessException e) {
+                log.e("Problem getting proeprty initial value using getter " + getterName + " of " + object.getClass().getName());
+            }
+            String isGetterName = "is" + fieldName;
+            try {
+                Method isGetter = object.getClass().getMethod(isGetterName);
+                return isGetter.invoke(object);
+            } catch(NoSuchMethodException e) { // do nothing
+            } catch(InvocationTargetException|IllegalAccessException e) {
+                log.e("Problem getting proeprty initial value using isGetter " + isGetterName + " of " + object.getClass().getName());
+            }
+        }
+        log.w("No initial value or getter found for " + Property.class.getSimpleName() + " method " + methodName + " of " + object.getClass().getName());
+        return null;
     }
 
     private void parseFeatures(RealDevice device, Class<? extends RealDevice> deviceClass) throws HousemateException {
