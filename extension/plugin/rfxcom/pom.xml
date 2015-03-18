@@ -3,20 +3,25 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>plugins</artifactId>
+        <artifactId>extension-plugin</artifactId>
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>plugin-run-program</artifactId>
+	<artifactId>extension-plugin-rfxcom</artifactId>
     <packaging>jar</packaging>
-    <name>Housemate Plugin Run Program</name>
-    <description>Housemate plugin for a device that runs a program</description>
+	<name>Housemate Extension Plugin RFXCom</name>
+    <description>Housemate extension plugin for devices using RFXCom</description>
 
 	<dependencies>
-		<dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
-			<artifactId>plugin-api</artifactId>
-			<version>${project.version}</version>
+            <artifactId>plugin-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+		<dependency>
+			<groupId>com.rfxcom</groupId>
+			<artifactId>rfxtrx</artifactId>
+			<version>1.1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -30,9 +35,9 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-						</manifest>
+                        <manifestEntries>
+                            <Housemate-Plugin>com.intuso.housemate.plugin.rfxcom.RFXComPluginModule</Housemate-Plugin>
+                        </manifestEntries>
 					</archive>
 				</configuration>
 				<executions>

@@ -1,8 +1,8 @@
 package com.intuso.housemate.plugin.tvremote;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.housemate.plugin.api.Devices;
+import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.log.Log;
 

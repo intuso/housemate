@@ -8,18 +8,14 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>plugins</artifactId>
+    <artifactId>plugin</artifactId>
     <packaging>pom</packaging>
-    <name>Housemate Plugins</name>
-    <description>Plugins for the Housemate framework</description>
+    <name>Housemate Plugin</name>
+    <description>Plugin for the Housemate framework</description>
 
     <modules>
         <module>api</module>
-        <module>arduino-temp-sensor</module>
-        <module>rfxcom</module>
-        <module>run-program</module>
-        <module>tv-remote</module>
-        <module>twitter</module>
+        <module>host</module>
     </modules>
 
 </project>

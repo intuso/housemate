@@ -4,19 +4,20 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>housemate</artifactId>
+        <artifactId>extension</artifactId>
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>extension</artifactId>
+    <artifactId>extension-plugin</artifactId>
     <packaging>pom</packaging>
-    <name>Housemate Extension</name>
-    <description>Extensions for the Housemate framework</description>
+    <name>Housemate Extension Plugins</name>
+    <description>Extension plugins for the Housemate framework</description>
 
     <modules>
-        <module>android</module>
-        <module>plugin</module>
-        <module>twitter</module>
+        <module>arduino-temp-sensor</module>
+        <module>rfxcom</module>
+        <module>run-program</module>
+        <module>tv-remote</module>
     </modules>
 
 </project>

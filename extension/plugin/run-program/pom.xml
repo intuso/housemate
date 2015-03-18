@@ -3,14 +3,14 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>plugins</artifactId>
+        <artifactId>extension-plugin</artifactId>
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-	<artifactId>plugin-arduino-temp-sensor</artifactId>
+    <artifactId>extension-plugin-run-program</artifactId>
     <packaging>jar</packaging>
-	<name>Housemate Plugin Arduino Temp Sensor</name>
-    <description>Housemate plugin for detecting temperature using an Arduino</description>
+    <name>Housemate Extension Plugin Run Program</name>
+    <description>Housemate extension plugin for a device that runs a program</description>
 
 	<dependencies>
 		<dependency>
@@ -18,11 +18,6 @@
 			<artifactId>plugin-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>org.scream3r</groupId>
-            <artifactId>jssc</artifactId>
-            <version>2.8.0</version>
-        </dependency>
 	</dependencies>
 
 	<build>
@@ -35,9 +30,9 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<archive>
-                        <manifestEntries>
-                            <Housemate-Plugin>com.intuso.housemate.plugin.arduinotempsensor.ArduinoTemperatureSensorPluginModule</Housemate-Plugin>
-                        </manifestEntries>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
 					</archive>
 				</configuration>
 				<executions>

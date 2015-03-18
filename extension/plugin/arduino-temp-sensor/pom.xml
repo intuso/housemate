@@ -3,14 +3,14 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>plugins</artifactId>
+        <artifactId>extension-plugin</artifactId>
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-	<artifactId>plugin-tv-remote</artifactId>
+	<artifactId>extension-plugin-arduino-temp-sensor</artifactId>
     <packaging>jar</packaging>
-	<name>Housemate Plugin TV Remote</name>
-    <description>Housemate plugin for sending infra-red commands to a TV</description>
+	<name>Housemate Extension Plugin Arduino Temp Sensor</name>
+    <description>Housemate extension plugin for detecting temperature using an Arduino</description>
 
 	<dependencies>
 		<dependency>
@@ -19,9 +19,9 @@
 			<version>${project.version}</version>
 		</dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>plugin-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.scream3r</groupId>
+            <artifactId>jssc</artifactId>
+            <version>2.8.0</version>
         </dependency>
 	</dependencies>
 
@@ -36,7 +36,7 @@
 					</descriptorRefs>
 					<archive>
                         <manifestEntries>
-                            <Housemate-Plugin>com.intuso.housemate.plugin.tvremote.TVRemotePluginModule</Housemate-Plugin>
+                            <Housemate-Plugin>com.intuso.housemate.plugin.arduinotempsensor.ArduinoTemperatureSensorPluginModule</Housemate-Plugin>
                         </manifestEntries>
 					</archive>
 				</configuration>
