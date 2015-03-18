@@ -7,7 +7,7 @@ import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.object.proxy.ProxyCommand;
 import com.intuso.housemate.object.proxy.ProxyObject;
-import com.intuso.housemate.web.client.GWTGinjector;
+import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

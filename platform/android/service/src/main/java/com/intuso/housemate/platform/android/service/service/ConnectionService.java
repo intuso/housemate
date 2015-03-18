@@ -8,7 +8,7 @@ import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.comms.serialiser.javabin.JavabinSerialiser;
 import com.intuso.housemate.comms.transport.socket.client.SocketClient;
-import com.intuso.housemate.comms.transport.socket.client.SocketClientModule;
+import com.intuso.housemate.comms.transport.socket.client.ioc.SocketClientModule;
 import com.intuso.housemate.platform.android.common.AndroidLogWriter;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.listener.Listener;

@@ -7,7 +7,7 @@ import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.comms.transport.rest.json.GsonJsonProvider;
 import com.intuso.housemate.comms.transport.rest.resources.ContextualResource;
 import com.intuso.housemate.comms.transport.rest.resources.GenericResource;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyModule;
+import com.intuso.housemate.object.proxy.simple.ioc.SimpleProxyModule;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;

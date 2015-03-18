@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.object.proxy.ProxyType;
-import com.intuso.housemate.web.client.GWTGinjector;
+import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

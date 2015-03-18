@@ -36,7 +36,7 @@
 					</descriptorRefs>
 					<archive>
                         <manifestEntries>
-                            <Housemate-Plugin>com.intuso.housemate.plugin.arduinotempsensor.ArduinoTemperatureSensorPluginModule</Housemate-Plugin>
+                            <Housemate-Plugin>com.intuso.housemate.plugin.arduinotempsensor.ioc.ArduinoTemperatureSensorPluginModule</Housemate-Plugin>
                         </manifestEntries>
 					</archive>
 				</configuration>

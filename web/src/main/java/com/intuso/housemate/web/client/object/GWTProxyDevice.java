@@ -9,7 +9,7 @@ import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.object.proxy.ProxyDevice;
 import com.intuso.housemate.object.proxy.ProxyObject;
-import com.intuso.housemate.web.client.GWTGinjector;
+import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeature;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;

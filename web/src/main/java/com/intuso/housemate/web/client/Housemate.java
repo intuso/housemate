@@ -17,6 +17,7 @@ import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.handler.PerformCommandHandler;
+import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
 import com.intuso.housemate.web.client.place.DevicesPlace;
 

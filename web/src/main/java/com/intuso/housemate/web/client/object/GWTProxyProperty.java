@@ -5,7 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.object.proxy.ProxyProperty;
-import com.intuso.housemate.web.client.GWTGinjector;
+import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

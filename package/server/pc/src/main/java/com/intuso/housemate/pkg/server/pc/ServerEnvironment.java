@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.pkg.server.pc.ioc.PCServerModule;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.housemate.plugin.host.PluginManager;

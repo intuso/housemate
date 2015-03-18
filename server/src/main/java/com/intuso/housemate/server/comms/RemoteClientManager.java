@@ -13,7 +13,7 @@ import com.intuso.housemate.object.server.ClientInstance;
 import com.intuso.housemate.object.server.RemoteClient;
 import com.intuso.housemate.object.server.proxy.ServerProxyRoot;
 import com.intuso.housemate.server.Server;
-import com.intuso.housemate.server.ServerProxyModule;
+import com.intuso.housemate.server.ioc.ServerProxyModule;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.utilities.log.Log;

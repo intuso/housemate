@@ -6,7 +6,7 @@ import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.object.bridge.RootBridge;
-import com.intuso.housemate.server.plugin.main.MainPluginModule;
+import com.intuso.housemate.server.plugin.main.ioc.MainPluginModule;
 
 import java.util.UUID;
 
