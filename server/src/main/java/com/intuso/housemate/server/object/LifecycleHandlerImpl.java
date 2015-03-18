@@ -20,8 +20,6 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.persistence.api.Persistence;
-import com.intuso.housemate.realclient.factory.DeviceFactory;
-import com.intuso.housemate.realclient.factory.HardwareFactory;
 import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -35,8 +33,6 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
     private final ListenersFactory listenersFactory;
     private final Persistence persistence;
 
-    private final HardwareFactory hardwareFactory;
-    private final DeviceFactory deviceFactory;
     private final ConditionFactory conditionFactory;
     private final TaskFactory taskFactory;
 
@@ -61,14 +57,11 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
 
     @Inject
     public LifecycleHandlerImpl(Log log, ListenersFactory listenersFactory, Persistence persistence,
-                                HardwareFactory hardwareFactory, DeviceFactory deviceFactory,
                                 ConditionFactory conditionFactory, TaskFactory taskFactory,
                                 RealList<TypeData<?>, RealType<?, ?, ?>> types) {
         this.log = log;
         this.listenersFactory = listenersFactory;
         this.persistence = persistence;
-        this.hardwareFactory = hardwareFactory;
-        this.deviceFactory = deviceFactory;
         this.conditionFactory = conditionFactory;
         this.taskFactory = taskFactory;
         this.types = types;

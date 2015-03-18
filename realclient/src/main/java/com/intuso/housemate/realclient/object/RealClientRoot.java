@@ -15,6 +15,8 @@ import com.intuso.housemate.plugin.host.PluginListener;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.housemate.realclient.factory.DeviceFactory;
 import com.intuso.housemate.realclient.factory.HardwareFactory;
+import com.intuso.housemate.realclient.storage.persist.DeviceListWatcher;
+import com.intuso.housemate.realclient.storage.persist.HardwareListWatcher;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -35,7 +37,8 @@ public class RealClientRoot extends RealRoot implements PluginListener {
     @Inject
     public RealClientRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
                           final HardwareFactory hardwareFactory, final DeviceFactory deviceFactory,
-                          final PluginManager pluginManager) {
+                          final PluginManager pluginManager, HardwareListWatcher hardwareListWatcher,
+                          DeviceListWatcher deviceListWatcher) {
         super(log, listenersFactory, WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, properties), router);
         addHardwareCommand = hardwareFactory.createAddHardwareCommand(Root.ADD_HARDWARE_ID, Root.ADD_HARDWARE_ID, "Add new hardware", getTypes(), getHardwares());
         addDeviceCommand = deviceFactory.createAddDeviceCommand(Root.ADD_DEVICE_ID, Root.ADD_DEVICE_ID, "Add a new device", getTypes(), getDevices());
@@ -73,6 +76,8 @@ public class RealClientRoot extends RealRoot implements PluginListener {
                 // do nothing
             }
         });
+        getHardwares().addObjectListener(hardwareListWatcher, true);
+        getDevices().addObjectListener(deviceListWatcher, true);
     }
 
     /**
