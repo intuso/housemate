@@ -8,6 +8,7 @@ import com.intuso.housemate.pkg.server.pc.ioc.PCServerModule;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.housemate.plugin.host.PluginManager;
+import com.intuso.housemate.realclient.storage.ClientObjectLoader;
 import com.intuso.housemate.server.storage.ServerObjectLoader;
 import com.intuso.housemate.web.server.ContextListener;
 import com.intuso.housemate.web.server.service.CommsServiceImpl;
@@ -80,6 +81,7 @@ public class ServerEnvironment {
         log.d("Loaded plugins");
 
         log.d("Loading objects");
+        injector.getInstance(ClientObjectLoader.class).loadObjects();
         injector.getInstance(ServerObjectLoader.class).loadObjects();
         log.d("Loaded objects");
 

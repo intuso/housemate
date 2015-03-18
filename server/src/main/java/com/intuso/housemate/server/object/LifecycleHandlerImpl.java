@@ -5,8 +5,6 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -14,17 +12,18 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.real.*;
+import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.Email;
 import com.intuso.housemate.object.real.impl.type.EmailType;
 import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.persistence.api.Persistence;
-import com.intuso.housemate.realclient.factory.ConditionFactory;
 import com.intuso.housemate.realclient.factory.DeviceFactory;
 import com.intuso.housemate.realclient.factory.HardwareFactory;
-import com.intuso.housemate.realclient.factory.TaskFactory;
+import com.intuso.housemate.server.factory.ConditionFactory;
+import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -104,18 +103,6 @@ public class LifecycleHandlerImpl implements LifecycleHandler {
                 user.getEmailProperty().setTypedValue(email);
             }
         };
-    }
-
-    @Override
-    public RealCommand createAddHardwareCommand(final RealList<HardwareData, RealHardware> hardwares) {
-        return hardwareFactory.createAddHardwareCommand(Root.ADD_HARDWARE_ID, Root.ADD_HARDWARE_ID, "Add new hardware",
-                types, hardwares);
-    }
-
-    @Override
-    public RealCommand createAddDeviceCommand(final RealList<DeviceData, RealDevice> devices) {
-        return deviceFactory.createAddDeviceCommand(Root.ADD_DEVICE_ID, Root.ADD_DEVICE_ID, "Add a new device",
-                types, devices);
     }
 
     @Override

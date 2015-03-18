@@ -2,9 +2,17 @@ package com.intuso.housemate.server;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
+import com.intuso.housemate.api.comms.ApplicationStatus;
+import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
+import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.object.server.real.ServerRealRoot;
 import com.intuso.housemate.plugin.host.PluginManager;
+import com.intuso.housemate.realclient.object.RealClientRoot;
 import com.intuso.housemate.server.comms.MainRouter;
+import com.intuso.housemate.server.factory.ConditionFactory;
+import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.plugin.main.ioc.MainPluginModule;
 
@@ -41,6 +49,44 @@ public class Server {
 
         // add the default plugin
         injector.getInstance(PluginManager.class).addPlugin(MainPluginModule.class);
+
+        final ServerRealRoot serverRealRoot = injector.getInstance(ServerRealRoot.class);
+        final RealClientRoot realClientRoot = injector.getInstance(RealClientRoot.class);
+        final ConditionFactory conditionFactory = injector.getInstance(ConditionFactory.class);
+        final TaskFactory taskFactory = injector.getInstance(TaskFactory.class);
+        serverRealRoot.addObjectListener(new RootListener<ServerRealRoot>() {
+
+            boolean typesAdded = false;
+
+            @Override
+            public void serverConnectionStatusChanged(ServerRealRoot root, ServerConnectionStatus serverConnectionStatus) {
+
+            }
+
+            @Override
+            public void applicationStatusChanged(ServerRealRoot root, ApplicationStatus applicationStatus) {
+
+            }
+
+            @Override
+            public void applicationInstanceStatusChanged(ServerRealRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
+                if (!typesAdded && applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
+                    typesAdded = true;
+                    realClientRoot.addType(conditionFactory.getType());
+                    realClientRoot.addType(taskFactory.getType());
+                }
+            }
+
+            @Override
+            public void newApplicationInstance(ServerRealRoot root, String instanceId) {
+
+            }
+
+            @Override
+            public void newServerInstance(ServerRealRoot root, String serverId) {
+
+            }
+        });
     }
 
     public final void acceptClients() {

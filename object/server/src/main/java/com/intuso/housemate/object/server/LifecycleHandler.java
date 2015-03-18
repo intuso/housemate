@@ -2,14 +2,8 @@ package com.intuso.housemate.object.server;
 
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.object.real.RealCommand;
-import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealHardware;
-import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.server.real.*;
 
 public interface LifecycleHandler {
@@ -20,20 +14,6 @@ public interface LifecycleHandler {
      * @return a command that when performed (correctly) will add a user to the given list
      */
     ServerRealCommand createAddUserCommand(ServerRealList<UserData, ServerRealUser> users);
-
-    /**
-     * Creates a command for adding hardware
-     * @param hardwares the list to add the hardware to
-     * @return a command that when performed (correctly) will add a hardware to the given list
-     */
-    RealCommand createAddHardwareCommand(RealList<HardwareData, RealHardware> hardwares);
-
-    /**
-     * Creates a command for adding devices
-     * @param devices the list to add the devices to
-     * @return a command that when performed (correctly) will add a device to the given list
-     */
-    RealCommand createAddDeviceCommand(RealList<DeviceData, RealDevice> devices);
 
     /**
      * Creates a command for adding automations

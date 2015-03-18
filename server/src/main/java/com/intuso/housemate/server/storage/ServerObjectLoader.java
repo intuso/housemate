@@ -12,25 +12,19 @@ import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
-import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealHardware;
-import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.object.real.impl.type.ApplicationStatusType;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
-import com.intuso.housemate.realclient.factory.ConditionFactory;
-import com.intuso.housemate.realclient.factory.TaskFactory;
+import com.intuso.housemate.server.factory.ConditionFactory;
+import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -53,14 +47,11 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
     private final Persistence persistence;
     private final ConditionFactory conditionFactory;
     private final TaskFactory taskFactory;
-    private final RealList<HardwareData, RealHardware> hardwares;
-    private final RealList<DeviceData, RealDevice> devices;
     private final LifecycleHandler lifecycleHandler;
 
     @Inject
     public ServerObjectLoader(Log log, ListenersFactory listenersFactory, Injector injector, ServerRealRoot root,
                               Persistence persistence, ConditionFactory conditionFactory, TaskFactory taskFactory,
-                              RealList<HardwareData, RealHardware> hardwares, RealList<DeviceData, RealDevice> devices,
                               LifecycleHandler lifecycleHandler) {
         this.log = log;
         this.listenersFactory = listenersFactory;
@@ -69,16 +60,12 @@ public class ServerObjectLoader implements ServerRealAutomationOwner, ServerReal
         this.persistence = persistence;
         this.conditionFactory = conditionFactory;
         this.taskFactory = taskFactory;
-        this.hardwares = hardwares;
-        this.devices = devices;
         this.lifecycleHandler = lifecycleHandler;
     }
 
     public void loadObjects() {
         loadApplications(root.getApplications());
         loadUsers(root.getUsers());
-        loadHardwares(Lists.newArrayList("", Root.HARDWARES_ID), lifecycleHandler.createAddHardwareCommand(hardwares));
-        loadDevices(Lists.newArrayList("", Root.DEVICES_ID), lifecycleHandler.createAddDeviceCommand(devices));
         loadAutomations(root.getAutomations());
     }
 

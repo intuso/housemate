@@ -11,7 +11,7 @@ import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
-import com.intuso.housemate.realclient.RealClientRoot;
+import com.intuso.housemate.realclient.object.RealClientRoot;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.utilities.listener.ListenersFactory;

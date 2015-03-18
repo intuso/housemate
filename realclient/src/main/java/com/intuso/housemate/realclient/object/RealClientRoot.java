@@ -1,4 +1,4 @@
-package com.intuso.housemate.realclient;
+package com.intuso.housemate.realclient.object;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -6,18 +6,15 @@ import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.real.*;
-import com.intuso.housemate.object.server.LifecycleHandler;
+import com.intuso.housemate.object.real.RealCommand;
+import com.intuso.housemate.object.real.RealRoot;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.host.PluginListener;
 import com.intuso.housemate.plugin.host.PluginManager;
-import com.intuso.housemate.realclient.factory.ConditionFactory;
 import com.intuso.housemate.realclient.factory.DeviceFactory;
 import com.intuso.housemate.realclient.factory.HardwareFactory;
-import com.intuso.housemate.realclient.factory.TaskFactory;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -37,14 +34,11 @@ public class RealClientRoot extends RealRoot implements PluginListener {
 
     @Inject
     public RealClientRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
-                          RealList<HardwareData, RealHardware> hardwares, RealList<TypeData<?>, RealType<?, ?, ?>> types,
-                          RealList<DeviceData, RealDevice> devices, LifecycleHandler lifecycleHandler,
                           final HardwareFactory hardwareFactory, final DeviceFactory deviceFactory,
-                          final ConditionFactory conditionFactory, final TaskFactory taskFactory,
                           final PluginManager pluginManager) {
-        super(log, listenersFactory, WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, properties), router, hardwares, types, devices);
-        addHardwareCommand = lifecycleHandler.createAddHardwareCommand(getHardwares());
-        addDeviceCommand = lifecycleHandler.createAddDeviceCommand(getDevices());
+        super(log, listenersFactory, WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, properties), router);
+        addHardwareCommand = hardwareFactory.createAddHardwareCommand(Root.ADD_HARDWARE_ID, Root.ADD_HARDWARE_ID, "Add new hardware", getTypes(), getHardwares());
+        addDeviceCommand = deviceFactory.createAddDeviceCommand(Root.ADD_DEVICE_ID, Root.ADD_DEVICE_ID, "Add a new device", getTypes(), getDevices());
         addChild(addHardwareCommand);
         addChild(addDeviceCommand);
         addObjectListener(new RootListener<RealRoot>() {
@@ -65,8 +59,6 @@ public class RealClientRoot extends RealRoot implements PluginListener {
                     typesAdded = true;
                     addType(hardwareFactory.getType());
                     addType(deviceFactory.getType());
-                    addType(conditionFactory.getType());
-                    addType(taskFactory.getType());
                     pluginManager.addPluginListener(RealClientRoot.this, true);
                 }
             }
