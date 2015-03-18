@@ -35,6 +35,7 @@
         <module>persistence</module>
         <module>platform</module>
         <module>plugin</module>
+        <module>realclient</module>
         <module>sample</module>
         <module>server</module>
         <module>web</module>

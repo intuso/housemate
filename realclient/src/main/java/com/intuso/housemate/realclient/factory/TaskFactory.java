@@ -1,4 +1,4 @@
-package com.intuso.housemate.server.factory;
+package com.intuso.housemate.realclient.factory;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -16,8 +16,8 @@ import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.plugin.api.ServerTaskFactory;
 import com.intuso.housemate.plugin.api.TypeInfo;
-import com.intuso.housemate.server.plugin.PluginListener;
-import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.housemate.plugin.host.PluginListener;
+import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

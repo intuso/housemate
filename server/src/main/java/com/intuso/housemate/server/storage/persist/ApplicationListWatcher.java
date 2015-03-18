@@ -11,6 +11,8 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.housemate.realclient.storage.persist.CommandPerformListener;
+import com.intuso.housemate.realclient.storage.persist.ValueWatcher;
 import com.intuso.housemate.server.Server;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;

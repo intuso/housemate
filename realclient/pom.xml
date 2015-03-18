@@ -7,14 +7,10 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-	<artifactId>server</artifactId>
+	<artifactId>realclient</artifactId>
     <packaging>jar</packaging>
-    <name>Housemate Server</name>
-	<description>Server for the Housemate framework</description>
-
-    <properties>
-        <jetty.version>8.1.7.v20120910</jetty.version>
-    </properties>
+    <name>Housemate Real Client</name>
+	<description>Real client for hosting remote objects</description>
 
     <dependencies>
 
@@ -41,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>realclient</artifactId>
+            <artifactId>plugin-host</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

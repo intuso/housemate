@@ -1,4 +1,4 @@
-package com.intuso.housemate.server.storage.persist;
+package com.intuso.housemate.realclient.storage.persist;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;

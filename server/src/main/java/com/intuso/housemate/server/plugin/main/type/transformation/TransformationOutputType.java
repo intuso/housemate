@@ -11,8 +11,8 @@ import com.intuso.housemate.object.real.RealOption;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.plugin.api.Transformer;
-import com.intuso.housemate.server.plugin.PluginListener;
-import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.housemate.plugin.host.PluginListener;
+import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

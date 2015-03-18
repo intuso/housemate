@@ -21,10 +21,10 @@ import com.intuso.housemate.object.real.impl.type.StringType;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.persistence.api.Persistence;
-import com.intuso.housemate.server.factory.ConditionFactory;
-import com.intuso.housemate.server.factory.DeviceFactory;
-import com.intuso.housemate.server.factory.HardwareFactory;
-import com.intuso.housemate.server.factory.TaskFactory;
+import com.intuso.housemate.realclient.factory.ConditionFactory;
+import com.intuso.housemate.realclient.factory.DeviceFactory;
+import com.intuso.housemate.realclient.factory.HardwareFactory;
+import com.intuso.housemate.realclient.factory.TaskFactory;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

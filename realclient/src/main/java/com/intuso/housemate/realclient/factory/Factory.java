@@ -1,4 +1,4 @@
-package com.intuso.housemate.server.factory;
+package com.intuso.housemate.realclient.factory;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Binding;

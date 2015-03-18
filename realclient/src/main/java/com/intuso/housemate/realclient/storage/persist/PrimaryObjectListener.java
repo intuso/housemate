@@ -1,4 +1,4 @@
-package com.intuso.housemate.server.storage.persist;
+package com.intuso.housemate.realclient.storage.persist;
 
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;

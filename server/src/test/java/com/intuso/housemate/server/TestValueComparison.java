@@ -21,12 +21,12 @@ import com.intuso.housemate.object.server.real.ServerRealCondition;
 import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
 import com.intuso.housemate.object.server.real.ServerRealProperty;
 import com.intuso.housemate.plugin.api.*;
-import com.intuso.housemate.server.client.LocalClient;
+import com.intuso.housemate.plugin.host.PluginManager;
+import com.intuso.housemate.realclient.RealClientRoot;
+import com.intuso.housemate.realclient.factory.ConditionFactory;
 import com.intuso.housemate.server.comms.MainRouter;
-import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.object.bridge.ValueBridge;
-import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.housemate.server.plugin.main.MainPluginModule;
 import com.intuso.housemate.server.plugin.main.comparator.DoubleComparators;
 import com.intuso.housemate.server.plugin.main.comparator.IntegerComparators;
@@ -158,7 +158,7 @@ public class TestValueComparison {
         injector.getInstance(AnnotationProcessor.class).process(
                 injector.getInstance(new Key<RealList<TypeData<?>, RealType<?, ?, ?>>>() {}),
                 device);
-        injector.getInstance(LocalClient.class).getRoot().addDevice(device);
+        injector.getInstance(RealClientRoot.class).addDevice(device);
         synchronized (lock) {
             lock.wait();
         }

@@ -6,7 +6,7 @@ import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.api.PluginModule;
-import com.intuso.housemate.server.plugin.PluginManager;
+import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.housemate.server.storage.ServerObjectLoader;
 import com.intuso.housemate.web.server.ContextListener;
 import com.intuso.housemate.web.server.service.CommsServiceImpl;

@@ -11,12 +11,13 @@ import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.object.server.ClientPayload;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
+import com.intuso.housemate.realclient.RealClientRoot;
 import com.intuso.housemate.server.Server;
-import com.intuso.housemate.server.client.LocalClientRoot;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -34,7 +35,7 @@ public final class MainRouter extends Router {
 
     @Inject
     public MainRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector) {
-        super(log, listenersFactory, Server.createApplicationInstanceProperties(listenersFactory, properties));
+        super(log, listenersFactory, WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, properties));
         this.injector = injector;
         setServerConnectionStatus(ServerConnectionStatus.ConnectedToServer);
     }
@@ -52,7 +53,7 @@ public final class MainRouter extends Router {
         messageProcessor.start();
 
         // register the local client
-        injector.getInstance(LocalClientRoot.class).register(Server.INTERNAL_APPLICATION);
+        injector.getInstance(RealClientRoot.class).register(Server.INTERNAL_APPLICATION);
     }
 
     public final void startExternalRouters() {

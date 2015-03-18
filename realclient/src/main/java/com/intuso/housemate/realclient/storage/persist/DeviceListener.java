@@ -1,4 +1,4 @@
-package com.intuso.housemate.server.storage.persist;
+package com.intuso.housemate.realclient.storage.persist;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.api.object.device.Device;

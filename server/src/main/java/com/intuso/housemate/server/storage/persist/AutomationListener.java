@@ -3,6 +3,7 @@ package com.intuso.housemate.server.storage.persist;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.housemate.realclient.storage.persist.PrimaryObjectListener;
 import com.intuso.utilities.log.Log;
 
 /**

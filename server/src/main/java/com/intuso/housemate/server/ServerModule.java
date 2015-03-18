@@ -12,21 +12,20 @@ import com.intuso.housemate.object.real.impl.type.*;
 import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.housemate.object.server.real.ServerRealRoot;
-import com.intuso.housemate.server.client.LocalClient;
-import com.intuso.housemate.server.client.LocalClientRoot;
+import com.intuso.housemate.plugin.host.PluginManager;
+import com.intuso.housemate.realclient.RealClientRoot;
+import com.intuso.housemate.realclient.factory.ConditionFactory;
+import com.intuso.housemate.realclient.factory.DeviceFactory;
+import com.intuso.housemate.realclient.factory.HardwareFactory;
+import com.intuso.housemate.realclient.factory.TaskFactory;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.comms.RemoteClientManager;
-import com.intuso.housemate.server.factory.ConditionFactory;
-import com.intuso.housemate.server.factory.DeviceFactory;
-import com.intuso.housemate.server.factory.HardwareFactory;
-import com.intuso.housemate.server.factory.TaskFactory;
 import com.intuso.housemate.server.object.LifecycleHandlerImpl;
 import com.intuso.housemate.server.object.bridge.ListBridge;
 import com.intuso.housemate.server.object.bridge.MultiListBridge;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.object.bridge.TypeBridge;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
-import com.intuso.housemate.server.plugin.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
@@ -48,7 +47,7 @@ public class ServerModule extends AbstractModule {
         bind(ServerGeneralRoot.class).in(Scopes.SINGLETON);
         bind(RootBridge.class).in(Scopes.SINGLETON);
         bind(RealRoot.class).in(Scopes.SINGLETON);
-        bind(LocalClientRoot.class).in(Scopes.SINGLETON);
+        bind(RealClientRoot.class).in(Scopes.SINGLETON);
         // common types
         bind(BooleanType.class).in(Scopes.SINGLETON);
         bind(DaysType.class).in(Scopes.SINGLETON);
@@ -66,7 +65,7 @@ public class ServerModule extends AbstractModule {
         bind(TaskFactory.class).in(Scopes.SINGLETON);
         // other things
         bind(Server.class).in(Scopes.SINGLETON);
-        bind(LocalClient.class).in(Scopes.SINGLETON);
+        bind(RealClientRoot.class).in(Scopes.SINGLETON);
         bind(RemoteClientManager.class).in(Scopes.SINGLETON);
         bind(PluginManager.class).in(Scopes.SINGLETON);
         bind(MainRouter.class).in(Scopes.SINGLETON);

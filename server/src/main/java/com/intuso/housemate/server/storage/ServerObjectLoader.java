@@ -29,8 +29,8 @@ import com.intuso.housemate.object.server.LifecycleHandler;
 import com.intuso.housemate.object.server.real.*;
 import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
-import com.intuso.housemate.server.factory.ConditionFactory;
-import com.intuso.housemate.server.factory.TaskFactory;
+import com.intuso.housemate.realclient.factory.ConditionFactory;
+import com.intuso.housemate.realclient.factory.TaskFactory;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

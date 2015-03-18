@@ -10,6 +10,7 @@ import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.housemate.realclient.storage.persist.ValueWatcher;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 

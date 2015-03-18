@@ -1,4 +1,4 @@
-package com.intuso.housemate.server.plugin;
+package com.intuso.housemate.plugin.host;
 
 import com.google.inject.Injector;
 import com.intuso.utilities.listener.Listener;

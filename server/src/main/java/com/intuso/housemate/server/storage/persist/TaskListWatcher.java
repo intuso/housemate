@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.task.Task;
+import com.intuso.housemate.realclient.storage.persist.PropertyListWatcher;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.Collection;
