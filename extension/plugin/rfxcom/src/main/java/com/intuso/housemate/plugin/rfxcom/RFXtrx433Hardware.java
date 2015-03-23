@@ -28,24 +28,35 @@ import java.util.regex.Pattern;
  * Created by tomc on 16/03/15.
  */
 @TypeInfo(id = "rfxtrx433", name = "RFXtr433", description = "RFXCom 433MHz Transceiver")
-public class RFXtrx433Hardware extends RealHardware implements HomeEasy.Callback {
+public class RFXtrx433Hardware extends RealHardware {
 
     public static RFXtrx433Hardware INSTANCE;
 
     private final RFXtrx rfxtrx = new RFXtrx(getLog(), Lists.<Pattern>newArrayList());
-    private final HomeEasy homeEasy = HomeEasy.forUK(rfxtrx);
-    private ListenerRegistration messageListener;
-    private final SetMultimap<Integer, Byte> knownAppliances = HashMultimap.create();
-    private final RealDeviceFactory<HomeEasyAppliance> homeEasyApplianceFactory;
+    private final HomeEasy homeEasyUK = HomeEasy.forUK(rfxtrx);
+    private final HomeEasy homeEasyEU = HomeEasy.forEU(rfxtrx);
+    private ListenerRegistration messageListenerUK;
+    private ListenerRegistration messageListenerEU;
+    private final SetMultimap<Integer, Byte> knownAppliancesUK = HashMultimap.create();
+    private final SetMultimap<Integer, Byte> knownAppliancesEU = HashMultimap.create();
+    private final RealDeviceFactory<HomeEasyUKAppliance> homeEasyUKApplianceFactory;
+    private final RealDeviceFactory<HomeEasyEUAppliance> homeEasyEUApplianceFactory;
     private final AnnotationProcessor annotationProcessor;
+
+    private final CallbackUK callbackUK = new CallbackUK();
+    private final CallbackEU callbackEU = new CallbackEU();
 
     private String pattern;
     private boolean create;
 
     @Inject
-    public RFXtrx433Hardware(Log log, ListenersFactory listenersFactory, @Assisted HardwareData data, RealDeviceFactory<HomeEasyAppliance> homeEasyApplianceFactory, AnnotationProcessor annotationProcessor) {
+    public RFXtrx433Hardware(Log log, ListenersFactory listenersFactory, @Assisted HardwareData data,
+                             RealDeviceFactory<HomeEasyUKAppliance> homeEasyUKApplianceFactory,
+                             RealDeviceFactory<HomeEasyEUAppliance> homeEasyEUApplianceFactory,
+                             AnnotationProcessor annotationProcessor) {
         super(log, listenersFactory, data);
-        this.homeEasyApplianceFactory = homeEasyApplianceFactory;
+        this.homeEasyUKApplianceFactory = homeEasyUKApplianceFactory;
+        this.homeEasyEUApplianceFactory = homeEasyEUApplianceFactory;
         this.annotationProcessor = annotationProcessor;
         INSTANCE = this;
     }
@@ -63,58 +74,39 @@ public class RFXtrx433Hardware extends RealHardware implements HomeEasy.Callback
     @Property(id = "create", name = "Create devices", description = "Create a new device when a command is received for it", typeId = "boolean", initialValue = "true")
     public void setCreate(boolean create) {
         this.create = create;
-        if(messageListener != null) {
-            messageListener.removeListener();
-            messageListener = null;
+        if(messageListenerUK != null) {
+            messageListenerUK.removeListener();
+            messageListenerUK = null;
         }
-        if(create)
-            messageListener = homeEasy.addCallback(this);
+        if(messageListenerEU != null) {
+            messageListenerEU.removeListener();
+            messageListenerEU = null;
+        }
+        if(create) {
+            messageListenerUK = homeEasyUK.addCallback(callbackUK);
+            messageListenerEU = homeEasyUK.addCallback(callbackEU);
+        }
     }
 
     public boolean isCreate() {
         return create;
     }
 
-    @Override
-    public void turnedOn(int houseId, byte unitCode) {
-        ensureAppliance(houseId, unitCode, true);
+    public Appliance makeApplianceUK(int houseId, byte unitCode) {
+        knownAppliancesUK.put(houseId, unitCode);
+        return new Appliance(new House(homeEasyUK, houseId), unitCode);
     }
 
-    @Override
-    public void turnedOnAll(int houseId) {
-
+    public Appliance makeApplianceEU(int houseId, byte unitCode) {
+        knownAppliancesEU.put(houseId, unitCode);
+        return new Appliance(new House(homeEasyEU, houseId), unitCode);
     }
 
-    @Override
-    public void turnedOff(int houseId, byte unitCode) {
-        ensureAppliance(houseId, unitCode, false);
-    }
-
-    @Override
-    public void turnedOffAll(int houseId) {
-
-    }
-
-    @Override
-    public void setLevel(int houseId, byte unitCode, byte level) {
-        ensureAppliance(houseId, unitCode, level != 0);
-    }
-
-    @Override
-    public void setLevelAll(int houseId, byte level) {
-
-    }
-
-    public Appliance makeAppliance(int houseId, byte unitCode) {
-        knownAppliances.put(houseId, unitCode);
-        return new Appliance(new House(homeEasy, houseId), unitCode);
-    }
-
-    public void ensureAppliance(int houseId, byte unitCode, boolean on) {
-        if(!knownAppliances.containsEntry(houseId, unitCode)) {
+    public void ensureApplianceUK(int houseId, byte unitCode, boolean on) {
+        if(!knownAppliancesUK.containsEntry(houseId, unitCode)) {
             try {
                 String name = houseId + "/" + (int)unitCode;
-                HomeEasyAppliance appliance = homeEasyApplianceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
+                HomeEasyUKAppliance appliance = homeEasyUKApplianceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 appliance.setHouseId(houseId);
                 appliance.setUnitCode(unitCode);
                 annotationProcessor.process(getRealRoot().getTypes(), appliance);
@@ -124,8 +116,93 @@ public class RFXtrx433Hardware extends RealHardware implements HomeEasy.Callback
                     appliance.setOff();
                 getRealRoot().addDevice(appliance);
             } catch (HousemateException e) {
-                getLog().e("Failed to auto-create device " + houseId + "/" + (int)unitCode);
+                getLog().e("Failed to auto-create HomeEasy UK device " + houseId + "/" + (int)unitCode);
             }
+        }
+    }
+
+    public void ensureApplianceEU(int houseId, byte unitCode, boolean on) {
+        if(!knownAppliancesEU.containsEntry(houseId, unitCode)) {
+            try {
+                String name = houseId + "/" + (int)unitCode;
+                HomeEasyEUAppliance appliance = homeEasyEUApplianceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
+                appliance.setHouseId(houseId);
+                appliance.setUnitCode(unitCode);
+                annotationProcessor.process(getRealRoot().getTypes(), appliance);
+                if(on)
+                    appliance.setOn();
+                else
+                    appliance.setOff();
+                getRealRoot().addDevice(appliance);
+            } catch (HousemateException e) {
+                getLog().e("Failed to auto-create HomeEasy EU device " + houseId + "/" + (int)unitCode);
+            }
+        }
+    }
+
+    private class CallbackUK implements HomeEasy.Callback {
+
+        @Override
+        public void turnedOn(int houseId, byte unitCode) {
+            ensureApplianceUK(houseId, unitCode, true);
+        }
+
+        @Override
+        public void turnedOnAll(int houseId) {
+
+        }
+
+        @Override
+        public void turnedOff(int houseId, byte unitCode) {
+            ensureApplianceUK(houseId, unitCode, false);
+        }
+
+        @Override
+        public void turnedOffAll(int houseId) {
+
+        }
+
+        @Override
+        public void setLevel(int houseId, byte unitCode, byte level) {
+            ensureApplianceUK(houseId, unitCode, level != 0);
+        }
+
+        @Override
+        public void setLevelAll(int houseId, byte level) {
+
+        }
+    }
+
+    private class CallbackEU implements HomeEasy.Callback {
+
+        @Override
+        public void turnedOn(int houseId, byte unitCode) {
+            ensureApplianceEU(houseId, unitCode, true);
+        }
+
+        @Override
+        public void turnedOnAll(int houseId) {
+
+        }
+
+        @Override
+        public void turnedOff(int houseId, byte unitCode) {
+            ensureApplianceEU(houseId, unitCode, false);
+        }
+
+        @Override
+        public void turnedOffAll(int houseId) {
+
+        }
+
+        @Override
+        public void setLevel(int houseId, byte unitCode, byte level) {
+            ensureApplianceEU(houseId, unitCode, level != 0);
+        }
+
+        @Override
+        public void setLevelAll(int houseId, byte level) {
+
         }
     }
 }

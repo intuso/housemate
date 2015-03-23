@@ -18,8 +18,8 @@ import java.io.IOException;
  * Housemate device that controls a USB relay
  *
  */
-@TypeInfo(id = "home-easy", name = "Home Easy", description = "Remote Home Easy switch")
-public class HomeEasyAppliance extends StatefulPoweredDevice {
+@TypeInfo(id = "home-easy-uk", name = "HomeEasy UK", description = "HomeEasy UK appliance")
+public class HomeEasyUKAppliance extends StatefulPoweredDevice {
 
 	private Appliance appliance;
     private ListenerRegistration listenerRegistration;
@@ -27,9 +27,9 @@ public class HomeEasyAppliance extends StatefulPoweredDevice {
     private int unitCode = 1;
 
     @Inject
-	public HomeEasyAppliance(Log log,
-                             ListenersFactory listenersFactory,
-                             @Assisted DeviceData data) {
+	public HomeEasyUKAppliance(Log log,
+                               ListenersFactory listenersFactory,
+                               @Assisted DeviceData data) {
 		super(log, listenersFactory, data);
         getCustomPropertyIds().add("house-id");
         getCustomPropertyIds().add("unit-id");
@@ -54,7 +54,7 @@ public class HomeEasyAppliance extends StatefulPoweredDevice {
             listenerRegistration.removeListener();
             listenerRegistration = null;
         }
-        appliance = RFXtrx433Hardware.INSTANCE.makeAppliance(houseId, (byte) unitCode);
+        appliance = RFXtrx433Hardware.INSTANCE.makeApplianceUK(houseId, (byte) unitCode);
         listenerRegistration = appliance.addCallback(new Appliance.Callback() {
 
             @Override
