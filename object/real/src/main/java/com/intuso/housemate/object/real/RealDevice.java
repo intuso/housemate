@@ -107,7 +107,7 @@ public class RealDevice
 
     @Override
     protected final void remove() {
-        getRealRoot().removeDevice(getId());
+        getRealRoot().removeDevice(this);
     }
 
     @Override

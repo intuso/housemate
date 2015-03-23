@@ -1,6 +1,6 @@
 package com.intuso.housemate.plugin.api;
 
-import com.intuso.housemate.object.server.real.ServerRealCondition;
+import com.intuso.housemate.object.real.RealCondition;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,5 +18,5 @@ public @interface Conditions {
      * The list of the condition factories the plugin provides
      * @return the list of the condition factories the plugin provides
      */
-    Class<? extends ServerRealCondition>[] value();
+    Class<? extends RealCondition>[] value();
 }

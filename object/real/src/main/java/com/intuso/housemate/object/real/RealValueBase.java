@@ -3,8 +3,8 @@ package com.intuso.housemate.object.real;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueBaseData;
+import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -40,6 +40,7 @@ public abstract class RealValueBase<
     public RealValueBase(Log log, ListenersFactory listenersFactory, DATA data, RealType<?, ?, O> type) {
         super(log,listenersFactory , data);
         this.type = type;
+        this.typedValues = RealType.deserialiseAll(type, data.getTypeInstances());
     }
 
     @Override

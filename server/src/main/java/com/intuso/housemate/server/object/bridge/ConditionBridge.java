@@ -8,10 +8,10 @@ import com.intuso.housemate.api.object.condition.ConditionListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.server.proxy.ServerProxyType;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -44,7 +44,7 @@ public class ConditionBridge
                 new PropertyBridge.Converter(log, listenersFactory, types));
         conditionList = new SingleListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(log, listenersFactory,
                 condition.getConditions(), new Converter(log, listenersFactory, types));
-        addConditionCommand = new CommandBridge(log, listenersFactory, condition.getAddConditionCommand(), types);
+        addConditionCommand = condition.getAddConditionCommand() == null ? null : new CommandBridge(log, listenersFactory, condition.getAddConditionCommand(), types);
         addChild(removeCommand);
         addChild(satisfiedValue);
         addChild(errorValue);

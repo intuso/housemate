@@ -15,13 +15,12 @@ import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.object.server.ClientInstance;
-import com.intuso.housemate.object.server.ClientPayload;
-import com.intuso.housemate.object.server.RemoteClient;
+import com.intuso.housemate.object.server.client.ClientInstance;
+import com.intuso.housemate.object.server.client.ClientPayload;
+import com.intuso.housemate.object.server.client.RemoteClient;
 import com.intuso.housemate.server.comms.AccessManager;
 import com.intuso.housemate.server.comms.RemoteClientManager;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -66,11 +65,6 @@ public class ServerGeneralRoot
     @Override
     public void unregister() {
         throw new HousemateRuntimeException("Cannot disconnect this type of root object");
-    }
-
-    @Override
-    public ListenerRegistration addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener) {
-        throw new HousemateRuntimeException("This root object is not intended to have listeners on its child objects");
     }
 
     @Override

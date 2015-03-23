@@ -1,12 +1,15 @@
 package com.intuso.housemate.server.plugin.main.type.valuesource;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.type.*;
 import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.object.real.*;
+import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealOption;
+import com.intuso.housemate.object.real.RealSubType;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
+import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.plugin.main.type.constant.ConstantInstance;
 import com.intuso.housemate.server.plugin.main.type.constant.ConstantType;
 import com.intuso.housemate.server.plugin.main.type.operation.Operation;
@@ -85,14 +88,14 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
         private final TypeSerialiser<RealObjectType.Reference<?>> realObjectTypeSerialiser;
         private final TypeSerialiser<Operation> operationSerialiser;
         private final TypeSerialiser<Transformation> transformationSerialiser;
-        private final Root<?> root;
+        private final RootBridge root;
         private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
 
         @Inject
         public Serialiser(Log log, ListenersFactory listenersFactory,
                           TypeSerialiser<RealObjectType.Reference<?>> realObjectTypeSerialiser,
                           TypeSerialiser<Operation> operationSerialiser, TypeSerialiser<Transformation> transformationSerialiser,
-                          Root<?> root, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+                          RootBridge root, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
             this.log = log;
             this.listenersFactory = listenersFactory;
             this.realObjectTypeSerialiser = realObjectTypeSerialiser;

@@ -1,6 +1,6 @@
 package com.intuso.housemate.plugin.api;
 
-import com.intuso.housemate.object.server.real.ServerRealTask;
+import com.intuso.housemate.object.real.RealTask;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,5 +18,5 @@ public @interface Tasks {
      * The list of the task factories the plugin provides
      * @return the list of the task factories the plugin provides
      */
-    Class<? extends ServerRealTask>[] value();
+    Class<? extends RealTask>[] value();
 }

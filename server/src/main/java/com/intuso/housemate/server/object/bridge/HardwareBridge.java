@@ -8,7 +8,7 @@ import com.intuso.housemate.api.object.hardware.HardwareListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

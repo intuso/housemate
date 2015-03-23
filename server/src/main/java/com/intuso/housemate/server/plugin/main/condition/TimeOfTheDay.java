@@ -4,12 +4,11 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.condition.ConditionData;
+import com.intuso.housemate.object.real.RealCondition;
+import com.intuso.housemate.object.real.RealProperty;
+import com.intuso.housemate.object.real.factory.condition.RealConditionOwner;
 import com.intuso.housemate.object.real.impl.type.Time;
 import com.intuso.housemate.object.real.impl.type.TimeType;
-import com.intuso.housemate.object.server.LifecycleHandler;
-import com.intuso.housemate.object.server.real.ServerRealCondition;
-import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealProperty;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -21,7 +20,7 @@ import java.util.Calendar;
  *
  */
 @TypeInfo(id = "time-of-the-day", name = "Time of the Day", description = "Condition that is true for certain parts of the day")
-public class TimeOfTheDay extends ServerRealCondition {
+public class TimeOfTheDay extends RealCondition {
 
     public final static String BEFORE_FIELD = "before";
     public final static String AFTER_FIELD = "after";
@@ -44,12 +43,12 @@ public class TimeOfTheDay extends ServerRealCondition {
     /**
      * String version of the time that, once passed, makes the condition unsatisfied. Default is the start of the day
      */
-    private final ServerRealProperty<Time> before;
+    private final RealProperty<Time> before;
 
     /**
      * String version of the time that, until reached, makes the condition unsatisfied
      */
-    private final ServerRealProperty<Time> after;
+    private final RealProperty<Time> after;
 
 	/**
 	 * thread that runs to tell listener when condition is (un)satisfied
@@ -60,13 +59,13 @@ public class TimeOfTheDay extends ServerRealCondition {
 	public TimeOfTheDay(Log log,
                         ListenersFactory listenersFactory,
                         @Assisted ConditionData data,
-                        @Assisted ServerRealConditionOwner owner,
-                        LifecycleHandler lifecycleHandler, TimeType timeType)
+                        @Assisted RealConditionOwner owner,
+                        TimeType timeType)
             throws HousemateException {
-		super(log, listenersFactory, data, owner, lifecycleHandler);
-        before = new ServerRealProperty<Time>(log, listenersFactory, BEFORE_FIELD, BEFORE_FIELD, "The condition is satisfied when the current time is before this time",
+		super(log, listenersFactory, data, owner);
+        before = new RealProperty<Time>(log, listenersFactory, BEFORE_FIELD, BEFORE_FIELD, "The condition is satisfied when the current time is before this time",
                 timeType, DAY_END);
-        after = new ServerRealProperty<Time>(log, listenersFactory, AFTER_FIELD, AFTER_FIELD, "The condition is satisfied when the current time is after this time",
+        after = new RealProperty<Time>(log, listenersFactory, AFTER_FIELD, AFTER_FIELD, "The condition is satisfied when the current time is after this time",
                 timeType, DAY_END);
         getProperties().add(before);
         getProperties().add(after);

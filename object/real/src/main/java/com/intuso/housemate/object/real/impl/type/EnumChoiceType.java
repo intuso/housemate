@@ -129,7 +129,7 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
      * Serialiser for enum values
      * @param <E> the enum type
      */
-    private static class EnumInstanceSerialiser<E extends Enum<E>> implements TypeSerialiser<E> {
+    public static class EnumInstanceSerialiser<E extends Enum<E>> implements TypeSerialiser<E> {
 
         private final Class<E> enumClass;
 

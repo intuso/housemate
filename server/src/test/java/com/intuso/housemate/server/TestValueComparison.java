@@ -5,26 +5,24 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
+import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.type.*;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.*;
 import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
+import com.intuso.housemate.object.real.factory.condition.AddConditionCommand;
+import com.intuso.housemate.object.real.factory.condition.RealConditionOwner;
 import com.intuso.housemate.object.real.impl.type.DoubleType;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
-import com.intuso.housemate.object.server.real.ServerRealCondition;
-import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealProperty;
 import com.intuso.housemate.plugin.api.*;
 import com.intuso.housemate.plugin.host.PluginManager;
-import com.intuso.housemate.realclient.object.RealClientRoot;
 import com.intuso.housemate.server.comms.MainRouter;
-import com.intuso.housemate.server.factory.ConditionFactory;
 import com.intuso.housemate.server.ioc.ServerModule;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.object.bridge.ValueBridge;
@@ -159,7 +157,7 @@ public class TestValueComparison {
         injector.getInstance(AnnotationProcessor.class).process(
                 injector.getInstance(new Key<RealList<TypeData<?>, RealType<?, ?, ?>>>() {}),
                 device);
-        injector.getInstance(RealClientRoot.class).addDevice(device);
+        injector.getInstance(RealRoot.class).addDevice(device);
         synchronized (lock) {
             lock.wait();
         }
@@ -200,19 +198,30 @@ public class TestValueComparison {
 
     private ValueComparison makeValueComparison(ComparisonType operator, ValueSource sourceOne, ValueSource sourceTwo) throws HousemateException {
         TypeInstanceMap values = new TypeInstanceMap();
-        values.getChildren().put(ConditionFactory.TYPE_PARAMETER_ID, new TypeInstances(new TypeInstance("value-comparison")));
-        values.getChildren().put(ConditionFactory.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance("Test")));
-        values.getChildren().put(ConditionFactory.DESCRIPTION_PARAMETER_ID, new TypeInstances(new TypeInstance("Test VC")));
-        ValueComparison valueComparison = (ValueComparison) injector.getInstance(ConditionFactory.class).createCondition(values,
-                new ServerRealConditionOwner() {
-                    @Override
-                    public void remove(ServerRealCondition condition) {
-                        // do nothing
-                    }
-                });
-        ServerRealProperty<Comparison> comparisonProperty = (ServerRealProperty<Comparison>) valueComparison.getProperties().get(ValueComparison.COMPARISON_ID);
+        values.getChildren().put(RealRoot.TYPE_PARAMETER_ID, new TypeInstances(new TypeInstance("value-comparison")));
+        values.getChildren().put(RealRoot.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance("Test")));
+        values.getChildren().put(RealRoot.DESCRIPTION_PARAMETER_ID, new TypeInstances(new TypeInstance("Test VC")));
+        final RealList<ConditionData, RealCondition> list = new RealList<ConditionData, RealCondition>(log, listenersFactory, "test", "test", "test");
+        injector.getInstance(AddConditionCommand.Factory.class).create(new RealConditionOwner() {
+            @Override
+            public ChildOverview getAddConditionCommandDetails() {
+                return new ChildOverview("test", "test", "test");
+            }
+
+            @Override
+            public void addCondition(RealCondition condition) {
+                list.add(condition);
+            }
+
+            @Override
+            public void removeCondition(RealCondition condition) {
+                list.remove(condition.getId());
+            }
+        }).perform(values);
+        ValueComparison valueComparison = (ValueComparison) list.get("value-comparison");
+        RealProperty<Comparison> comparisonProperty = (RealProperty<Comparison>) valueComparison.getProperties().get(ValueComparison.COMPARISON_ID);
         Comparison comparison = new Comparison(operator, COMPARISONS_BY_TYPE.get(operator), sourceOne, sourceTwo);
-        comparisonProperty.setTypedValue(comparison);
+        comparisonProperty.setTypedValues(comparison);
         valueComparison.start();
         return valueComparison;
     }

@@ -10,6 +10,7 @@ import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
+import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -53,7 +54,7 @@ public abstract class ProxyRoot<
             COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
             ROOT extends ProxyRoot<APPLICATION, APPLICATIONS, USER, USERS, HARDWARE, HARDWARES, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
         extends ProxyObject<RootData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, ROOT, RootListener<? super ROOT>>
-        implements com.intuso.housemate.api.object.root.proxy.ProxyRoot<APPLICATIONS, USERS, HARDWARES, TYPES, DEVICES, AUTOMATIONS, COMMAND, ROOT>,
+        implements ObjectRoot<TYPES, HARDWARES, DEVICES, AUTOMATIONS, APPLICATIONS, USERS, COMMAND, ROOT>,
             ObjectListener<ProxyObject<?, ?, ?, ?, ?>> {
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();

@@ -5,7 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.ui.view.HousemateView;
 
@@ -67,7 +67,7 @@ public class ApplicationsPlace extends HousematePlace {
 
     @Override
     public List<HousemateObject.TreeLoadInfo> createTreeLoadInfos() {
-        HousemateObject.TreeLoadInfo treeLoadInfo = new HousemateObject.TreeLoadInfo(Root.APPLICATIONS_ID);
+        HousemateObject.TreeLoadInfo treeLoadInfo = new HousemateObject.TreeLoadInfo(ObjectRoot.APPLICATIONS_ID);
         if(applicationIds != null)
             for(String applicationId : applicationIds)
                 treeLoadInfo.getChildren().put(applicationId, new HousemateObject.TreeLoadInfo(applicationId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));

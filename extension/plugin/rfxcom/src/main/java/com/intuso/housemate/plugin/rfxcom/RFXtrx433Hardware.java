@@ -7,12 +7,11 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.device.DeviceFactory;
 import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.object.real.RealHardware;
-import com.intuso.housemate.object.real.RealRoot;
 import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
 import com.intuso.housemate.object.real.annotations.Property;
+import com.intuso.housemate.object.real.factory.device.RealDeviceFactory;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -37,14 +36,14 @@ public class RFXtrx433Hardware extends RealHardware implements HomeEasy.Callback
     private final HomeEasy homeEasy = HomeEasy.forUK(rfxtrx);
     private ListenerRegistration messageListener;
     private final SetMultimap<Integer, Byte> knownAppliances = HashMultimap.create();
-    private final DeviceFactory<HomeEasyAppliance> homeEasyApplianceFactory;
+    private final RealDeviceFactory<HomeEasyAppliance> homeEasyApplianceFactory;
     private final AnnotationProcessor annotationProcessor;
 
     private String pattern;
     private boolean create;
 
     @Inject
-    public RFXtrx433Hardware(Log log, ListenersFactory listenersFactory, @Assisted HardwareData data, DeviceFactory<HomeEasyAppliance> homeEasyApplianceFactory, AnnotationProcessor annotationProcessor) {
+    public RFXtrx433Hardware(Log log, ListenersFactory listenersFactory, @Assisted HardwareData data, RealDeviceFactory<HomeEasyAppliance> homeEasyApplianceFactory, AnnotationProcessor annotationProcessor) {
         super(log, listenersFactory, data);
         this.homeEasyApplianceFactory = homeEasyApplianceFactory;
         this.annotationProcessor = annotationProcessor;
@@ -115,15 +114,15 @@ public class RFXtrx433Hardware extends RealHardware implements HomeEasy.Callback
         if(!knownAppliances.containsEntry(houseId, unitCode)) {
             try {
                 String name = houseId + "/" + (int)unitCode;
-                HomeEasyAppliance appliance = homeEasyApplianceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name));
+                HomeEasyAppliance appliance = homeEasyApplianceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 appliance.setHouseId(houseId);
                 appliance.setUnitCode(unitCode);
-                annotationProcessor.process(((RealRoot)getRealRoot()).getTypes(), appliance);
+                annotationProcessor.process(getRealRoot().getTypes(), appliance);
                 if(on)
                     appliance.setOn();
                 else
                     appliance.setOff();
-                ((RealRoot)getRealRoot()).addDevice(appliance);
+                getRealRoot().addDevice(appliance);
             } catch (HousemateException e) {
                 getLog().e("Failed to auto-create device " + houseId + "/" + (int)unitCode);
             }

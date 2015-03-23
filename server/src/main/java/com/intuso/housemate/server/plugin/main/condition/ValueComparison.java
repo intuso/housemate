@@ -7,12 +7,11 @@ import com.intuso.housemate.api.object.condition.ConditionData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.real.RealCondition;
 import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.server.LifecycleHandler;
-import com.intuso.housemate.object.server.real.ServerRealCondition;
-import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
-import com.intuso.housemate.object.server.real.ServerRealProperty;
+import com.intuso.housemate.object.real.factory.condition.RealConditionOwner;
 import com.intuso.housemate.plugin.api.Comparator;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.housemate.server.plugin.main.type.comparison.Comparison;
@@ -31,7 +30,7 @@ import java.util.List;
  *
  */
 @TypeInfo(id = "value-comparison", name = "Value Comparison", description = "Condition that compares values")
-public class ValueComparison extends ServerRealCondition {
+public class ValueComparison extends RealCondition {
 
     public final static String COMPARISON_ID = "comparison";
     public final static String COMPARISON_NAME = "Comparison";
@@ -39,7 +38,7 @@ public class ValueComparison extends ServerRealCondition {
 
     private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
 
-    private final ServerRealProperty<Comparison> comparisonProperty;
+    private final RealProperty<Comparison> comparisonProperty;
     private final PropertyListener propertyListener;
     private ListenerRegistration propertyListenerRegistration;
     private Value<?, ?> firstValue = null;
@@ -49,13 +48,12 @@ public class ValueComparison extends ServerRealCondition {
 	public ValueComparison(Log log,
                            ListenersFactory listenersFactory,
                            @Assisted ConditionData data,
-                           @Assisted ServerRealConditionOwner owner,
-                           LifecycleHandler lifecycleHandler,
+                           @Assisted RealConditionOwner owner,
                            RealList<TypeData<?>, RealType<?, ?, ?>> types,
                            ComparisonType comparisonType) {
-        super(log, listenersFactory, data, owner, lifecycleHandler);
+        super(log, listenersFactory, data, owner);
         this.types = types;
-        comparisonProperty = new ServerRealProperty<Comparison>(log, listenersFactory, COMPARISON_ID, COMPARISON_NAME,
+        comparisonProperty = new RealProperty<Comparison>(log, listenersFactory, COMPARISON_ID, COMPARISON_NAME,
                 COMPARISON_DESCRIPTION, comparisonType, (List)null);
         getProperties().add(comparisonProperty);
         propertyListener = new PropertyListener();
@@ -128,7 +126,7 @@ public class ValueComparison extends ServerRealCondition {
         }
     }
 
-    private class PropertyListener implements ValueListener<ServerRealProperty<Comparison>> {
+    private class PropertyListener implements ValueListener<RealProperty<Comparison>> {
 
         private final ValueSourceListener firstValueSourceListener = new ValueSourceListener(0);
         private final ValueSourceListener secondValueSourceListener = new ValueSourceListener(1);
@@ -151,12 +149,12 @@ public class ValueComparison extends ServerRealCondition {
         }
 
         @Override
-        public void valueChanging(ServerRealProperty<Comparison> value) {
+        public void valueChanging(RealProperty<Comparison> value) {
             removeListeners();
         }
 
         @Override
-        public void valueChanged(ServerRealProperty<Comparison> value) {
+        public void valueChanged(RealProperty<Comparison> value) {
             if(value.getTypedValue() != null)
                 addListeners(value.getTypedValue());
         }

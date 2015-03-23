@@ -4,9 +4,9 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.api.object.value.ValueBaseData;
-import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -44,7 +44,7 @@ public abstract class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
 
     @Override
     public TypeInstances getTypeInstances() {
-        return getData().getTypeInstances();
+        return proxyValue.getTypeInstances();
     }
 
     @Override

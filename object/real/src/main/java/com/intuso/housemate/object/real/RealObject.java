@@ -4,10 +4,8 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectListener;
-import com.intuso.housemate.api.object.root.real.RealRoot;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-
 
 public abstract class RealObject<
             DATA extends HousemateData<CHILD_DATA>,
@@ -16,7 +14,7 @@ public abstract class RealObject<
             LISTENER extends ObjectListener>
         extends HousemateObject<DATA, CHILD_DATA, CHILD, LISTENER> {
 
-    private RealRoot<?, ?, ?, ?, ?, ?, ?> realRoot;
+    private RealRoot realRoot;
 
     /**
      * @param log {@inheritDoc}
@@ -42,7 +40,7 @@ public abstract class RealObject<
      * Gets the root object for this object
      * @return the root object for this object
      */
-    protected RealRoot<?, ?, ?, ?, ?, ?, ?> getRealRoot() {
+    protected RealRoot getRealRoot() {
         return realRoot;
     }
 

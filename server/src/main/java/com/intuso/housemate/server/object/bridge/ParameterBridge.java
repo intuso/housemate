@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.parameter.ParameterListener;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

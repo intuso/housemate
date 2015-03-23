@@ -4,12 +4,12 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.task.TaskData;
+import com.intuso.housemate.object.real.RealProperty;
+import com.intuso.housemate.object.real.RealTask;
+import com.intuso.housemate.object.real.factory.task.RealTaskOwner;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.TimeUnit;
 import com.intuso.housemate.object.real.impl.type.TimeUnitType;
-import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.object.server.real.ServerRealTask;
-import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -19,17 +19,17 @@ import com.intuso.utilities.log.Log;
  *
  */
 @TypeInfo(id = "delay", name = "Delay", description = "Delays for a set amount of time")
-public class Delay extends ServerRealTask {
+public class Delay extends RealTask {
 
     /**
 	 * The time unit that the quantity is specified in
 	 */
-	private final ServerRealProperty<TimeUnit> unit;
+	private final RealProperty<TimeUnit> unit;
 	
 	/**
 	 * The quantity of time to wait which, combined with the unit, gives the time to wait
 	 */
-	private final ServerRealProperty<Integer> amount;
+	private final RealProperty<Integer> amount;
 
 	/**
 	 * Create a new delay task
@@ -40,11 +40,11 @@ public class Delay extends ServerRealTask {
 	public Delay(Log log,
                  ListenersFactory listenersFactory,
                  @Assisted TaskData data,
-                 @Assisted ServerRealTaskOwner owner,
+                 @Assisted RealTaskOwner owner,
                  TimeUnitType timeUnitType, IntegerType integerType) {
 		super(log, listenersFactory, data, owner);
-        unit = new ServerRealProperty<TimeUnit>(log, listenersFactory, "unit", "Unit", "the unit of time to wait for", timeUnitType, TimeUnit.MINUTES);
-        amount = new ServerRealProperty<Integer>(log, listenersFactory, "amount", "Amount", "the amount of time to wait", integerType, 1);
+        unit = new RealProperty<TimeUnit>(log, listenersFactory, "unit", "Unit", "the unit of time to wait for", timeUnitType, TimeUnit.MINUTES);
+        amount = new RealProperty<Integer>(log, listenersFactory, "amount", "Amount", "the amount of time to wait", integerType, 1);
         getProperties().add(unit);
         getProperties().add(amount);
 	}

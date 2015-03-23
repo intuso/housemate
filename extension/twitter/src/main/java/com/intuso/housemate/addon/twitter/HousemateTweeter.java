@@ -10,7 +10,7 @@ import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.simple.*;
@@ -158,7 +158,7 @@ public class HousemateTweeter {
                                 root.getDevices().addObjectListener(deviceListListener, true);
                             }
                         }, "twitterClientInitialLoad",
-                                new HousemateObject.TreeLoadInfo(Root.DEVICES_ID),
+                                new HousemateObject.TreeLoadInfo(ObjectRoot.DEVICES_ID),
                                 new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
                         break;
                 }

@@ -9,9 +9,9 @@ import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.object.server.ClientPayload;
+import com.intuso.housemate.object.real.RealRoot;
+import com.intuso.housemate.object.server.client.ClientPayload;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
-import com.intuso.housemate.realclient.object.RealClientRoot;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -50,10 +50,11 @@ public final class MainRouter extends Router {
         // before we create the external client routers so do this before starting the normal thread
         register(Server.INTERNAL_APPLICATION);
         processMessage(incomingMessages.poll());
+        // start processing all the messages
         messageProcessor.start();
 
         // register the local client
-        injector.getInstance(RealClientRoot.class).register(Server.INTERNAL_APPLICATION);
+        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION);
     }
 
     public final void startExternalRouters() {

@@ -1,12 +1,10 @@
 package com.intuso.housemate.api.comms;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
@@ -107,11 +105,6 @@ public class RouterRoot
     @Override
     public void unregister() {
         connectionManager.unregister();
-    }
-
-    @Override
-    public ListenerRegistration addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener) {
-        throw new HousemateRuntimeException("This root object is not intended to have listeners on its child objects");
     }
 
     @Override

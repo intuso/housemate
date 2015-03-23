@@ -4,13 +4,12 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.real.RealDevice;
 import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealRoot;
 import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.annotations.ioc.RealAnnotationsModule;
+import com.intuso.housemate.object.real.factory.ioc.RealFactoryModule;
 import com.intuso.housemate.object.real.impl.type.*;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -22,10 +21,11 @@ public class RealObjectModule extends AbstractModule {
     @Override
     protected void configure() {
 
+        // install other required modules
+        install(new RealFactoryModule());
+        install(new RealAnnotationsModule());
+
         // bind everything as singletons that should be
-        // root objects
-        bind(RealRoot.class).in(Scopes.SINGLETON);;
-        // common types
         bind(ApplicationStatusType.class).in(Scopes.SINGLETON);
         bind(ApplicationInstanceStatusType.class).in(Scopes.SINGLETON);
         bind(BooleanType.class).in(Scopes.SINGLETON);
@@ -40,13 +40,7 @@ public class RealObjectModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public RealList<TypeData<?>, RealType<?, ?, ?>> getRealTypes(Log log, ListenersFactory listenersFactory) {
-        return new RealList<TypeData<?>, RealType<?, ?, ?>>(log, listenersFactory, Root.TYPES_ID, "Types", "Types");
-    }
-
-    @Provides
-    @Singleton
-    public RealList<DeviceData, RealDevice> getRealDevices(Log log, ListenersFactory listenersFactory) {
-        return new RealList<DeviceData, RealDevice>(log, listenersFactory, Root.DEVICES_ID, "Devices", "Devices");
+    public RealList<TypeData<?>, RealType<?, ?, ?>> getTypeList(Log log, ListenersFactory listenersFactory) {
+        return new RealList<>(log, listenersFactory, ObjectRoot.TYPES_ID, ObjectRoot.TYPES_ID, "Types");
     }
 }

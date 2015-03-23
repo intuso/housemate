@@ -33,6 +33,7 @@ public interface Condition<
     public final static String ERROR_ID = "error";
     public final static String PROPERTIES_ID = "properties";
     public final static String CONDITIONS_ID = "conditions";
+    public final static String ADD_CONDITION_ID = "add-condition";
 
     /**
      * Gets the add condition command

@@ -1,16 +1,19 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstance;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceListener;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
+import com.intuso.housemate.object.real.impl.type.EnumChoiceType;
+import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+
+import java.util.List;
 
 /**
  */
@@ -29,7 +32,7 @@ public class ApplicationInstanceBridge
     private final CommandBridge rejectCommand;
     private final ValueBridge statusValue;
 
-    public ApplicationInstanceBridge(Log log, ListenersFactory listenersFactory, ApplicationInstance applicationInstance,
+    public ApplicationInstanceBridge(Log log, ListenersFactory listenersFactory, ApplicationInstance<?, ?, ?> applicationInstance,
                                      ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
         super(log, listenersFactory,
                 new ApplicationInstanceData(applicationInstance.getId(), applicationInstance.getName(), applicationInstance.getDescription()));
@@ -53,7 +56,8 @@ public class ApplicationInstanceBridge
 
     @Override
     public ApplicationInstanceStatus getStatus() {
-        throw new HousemateRuntimeException("This should not be called on this type of object");
+        List<ApplicationInstanceStatus> statuses = ApplicationInstanceStatusType.deserialiseAll(new EnumChoiceType.EnumInstanceSerialiser<>(ApplicationInstanceStatus.class), statusValue.getTypeInstances());
+        return statuses != null && statuses.size() > 0 ? statuses.get(0) : null;
     }
 
     @Override

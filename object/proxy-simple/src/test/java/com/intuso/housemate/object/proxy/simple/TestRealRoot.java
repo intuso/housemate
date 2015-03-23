@@ -2,14 +2,17 @@ package com.intuso.housemate.object.proxy.simple;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.ServerConnectionStatus;
+import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.object.proxy.simple.comms.RealRouterImpl;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealObject;
 import com.intuso.housemate.object.real.RealRoot;
+import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.object.real.factory.automation.AddAutomationCommand;
+import com.intuso.housemate.object.real.factory.device.AddDeviceCommand;
+import com.intuso.housemate.object.real.factory.hardware.AddHardwareCommand;
+import com.intuso.housemate.object.real.factory.user.AddUserCommand;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
 import com.intuso.housemate.object.real.impl.type.StringType;
@@ -24,8 +27,10 @@ import org.junit.Ignore;
 public class TestRealRoot extends RealRoot {
 
     @Inject
-    public TestRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, RealRouterImpl router) {
-        super(log, listenersFactory, properties, router);
+    public TestRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
+                        RealList<TypeData<?>, RealType<?, ?, ?>> types,
+                        AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory, AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory) {
+        super(log, listenersFactory, properties, router, types, addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory);
         try {
             distributeMessage(new Message<ServerConnectionStatus>(new String[] {""}, Root.SERVER_CONNECTION_STATUS_TYPE, ServerConnectionStatus.ConnectedToServer));
             distributeMessage(new Message<ApplicationStatus>(new String[] {""}, Root.APPLICATION_STATUS_TYPE, ApplicationStatus.AllowInstances));

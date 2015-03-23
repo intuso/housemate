@@ -14,10 +14,10 @@
     <description>Objects for the Housemate framework</description>
 
     <modules>
-        <module>server</module>
-        <module>real</module>
         <module>proxy</module>
         <module>proxy-simple</module>
+        <module>real</module>
+        <module>server-proxy</module>
     </modules>
 
 </project>

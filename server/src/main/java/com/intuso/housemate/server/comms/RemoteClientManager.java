@@ -9,9 +9,9 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.ClientType;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.object.server.ClientInstance;
-import com.intuso.housemate.object.server.RemoteClient;
-import com.intuso.housemate.object.server.proxy.ServerProxyRoot;
+import com.intuso.housemate.object.server.ServerProxyRoot;
+import com.intuso.housemate.object.server.client.ClientInstance;
+import com.intuso.housemate.object.server.client.RemoteClient;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.ioc.ServerProxyModule;
 import com.intuso.housemate.server.object.bridge.RootBridge;
@@ -41,7 +41,7 @@ public class RemoteClientManager {
         this.injector = injector;
         this.generalRoot = generalRoot;
         this.bridgeRoot = bridgeRoot;
-        rootClient = new RemoteClientImpl(
+        rootClient = new RemoteClientImpl(log,
                 new ClientInstance(Server.INTERNAL_APPLICATION, UUID.randomUUID().toString(), ClientType.Router),
                 generalRoot, mainRouter);
         rootClient.setBaseRoute(Lists.<String>newArrayList());

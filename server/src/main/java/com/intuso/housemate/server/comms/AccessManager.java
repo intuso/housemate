@@ -9,13 +9,13 @@ import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.access.ApplicationRegistration;
 import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.object.real.RealApplication;
+import com.intuso.housemate.object.real.RealApplicationInstance;
+import com.intuso.housemate.object.real.RealRoot;
 import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.object.real.impl.type.ApplicationStatusType;
-import com.intuso.housemate.object.server.ClientInstance;
-import com.intuso.housemate.object.server.RemoteClient;
-import com.intuso.housemate.object.server.real.ServerRealApplication;
-import com.intuso.housemate.object.server.real.ServerRealApplicationInstance;
-import com.intuso.housemate.object.server.real.ServerRealRoot;
+import com.intuso.housemate.object.server.client.ClientInstance;
+import com.intuso.housemate.object.server.client.RemoteClient;
 import com.intuso.housemate.server.Server;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -35,10 +35,10 @@ public class AccessManager {
     private final Log log;
     private final ListenersFactory listenersFactory;
     private final Injector injector;
-    private final ServerRealRoot realRoot;
+    private final RealRoot realRoot;
 
     @Inject
-    public AccessManager(Log log, ListenersFactory listenersFactory, Injector injector, ServerRealRoot realRoot) {
+    public AccessManager(Log log, ListenersFactory listenersFactory, Injector injector, RealRoot realRoot) {
         this.log = log;
         this.listenersFactory = listenersFactory;
         this.injector = injector;
@@ -49,9 +49,9 @@ public class AccessManager {
 
         // get the application
         String appId = request.getApplicationDetails().getApplicationId();
-        ServerRealApplication application = realRoot.getApplications().get(appId);
+        RealApplication application = realRoot.getApplications().get(appId);
         if(application == null) {
-            application = new ServerRealApplication(log, listenersFactory, request.getApplicationDetails(),
+            application = new RealApplication(log, listenersFactory, request.getApplicationDetails(),
                     injector.getInstance(ApplicationStatusType.class));
             realRoot.getApplications().add(application);
             application.setStatus(getInitialStatus(appId));
@@ -63,12 +63,12 @@ public class AccessManager {
         // and a new instance for the id
         if(instanceId == null || application.getApplicationInstances().get(instanceId) == null) {
             instanceId = UUID.randomUUID().toString();
-            ServerRealApplicationInstance applicationInstance =
-                    new ServerRealApplicationInstance(log, listenersFactory, instanceId,
+            RealApplicationInstance applicationInstance =
+                    new RealApplicationInstance(log, listenersFactory, instanceId,
                             injector.getInstance(ApplicationInstanceStatusType.class),
                             application.getStatus());
             application.getApplicationInstances().add(applicationInstance);
-            applicationInstance.setStatus(getInitialStatus(application));
+            applicationInstance.getStatusValue().setTypedValues(getInitialStatus(application));
         }
 
         return new ClientInstance(request.getApplicationDetails(), instanceId, request.getType());
@@ -76,8 +76,8 @@ public class AccessManager {
 
     public void sendAccessStatusToClient(RemoteClient client) {
 
-        ServerRealApplication application = realRoot.getApplications().get(client.getClientInstance().getApplicationDetails().getApplicationId());
-        ServerRealApplicationInstance applicationInstance = application.getApplicationInstances().get(client.getClientInstance().getApplicationInstanceId());
+        RealApplication application = realRoot.getApplications().get(client.getClientInstance().getApplicationDetails().getApplicationId());
+        RealApplicationInstance applicationInstance = application.getApplicationInstances().get(client.getClientInstance().getApplicationInstanceId());
 
         // tell the client what access etc it has
         try {
@@ -90,7 +90,7 @@ public class AccessManager {
         }
 
         // ensure the client belongs to the application instance
-        applicationInstance.addClient(client);
+        client.setApplicationAndInstance(application, applicationInstance);
     }
 
     private final static Set<String> allowedAllApps = Sets.newHashSet(
@@ -101,7 +101,7 @@ public class AccessManager {
         return allowedAllApps.contains(appId) ? ApplicationStatus.AllowInstances : ApplicationStatus.SomeInstances;
     }
 
-    private ApplicationInstanceStatus getInitialStatus(ServerRealApplication application) {
+    private ApplicationInstanceStatus getInitialStatus(RealApplication application) {
         switch (application.getStatus()) {
             case AllowInstances:
                 return ApplicationInstanceStatus.Allowed;

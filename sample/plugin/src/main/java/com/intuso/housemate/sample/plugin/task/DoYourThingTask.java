@@ -4,20 +4,20 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.task.TaskData;
-import com.intuso.housemate.object.server.real.ServerRealTask;
-import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
+import com.intuso.housemate.object.real.RealTask;
+import com.intuso.housemate.object.real.factory.task.RealTaskOwner;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 @TypeInfo(id = "do-your-thing", name = "Do Your Thing", description = "Special task that does your thing")
-public class DoYourThingTask extends ServerRealTask {
+public class DoYourThingTask extends RealTask {
 
     @Inject
     public DoYourThingTask(Log log,
                            ListenersFactory listenersFactory,
                            @Assisted TaskData data,
-                           @Assisted ServerRealTaskOwner owner) {
+                           @Assisted RealTaskOwner owner) {
         super(log, listenersFactory, data, owner);
     }
 

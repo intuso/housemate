@@ -4,10 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.object.server.LifecycleHandler;
-import com.intuso.housemate.object.server.real.ServerNonLeafCondition;
-import com.intuso.housemate.object.server.real.ServerRealCondition;
-import com.intuso.housemate.object.server.real.ServerRealConditionOwner;
+import com.intuso.housemate.object.real.RealCondition;
+import com.intuso.housemate.object.real.RealConditionNonLeaf;
+import com.intuso.housemate.object.real.factory.condition.AddConditionCommand;
+import com.intuso.housemate.object.real.factory.condition.RealConditionOwner;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -20,15 +20,15 @@ import java.util.Map;
  *
  */
 @TypeInfo(id = "and", name = "And", description = "True only when all child conditions are true")
-public class And extends ServerNonLeafCondition {
+public class And extends RealConditionNonLeaf {
 
     @Inject
 	public And(Log log,
                ListenersFactory listenersFactory,
+               AddConditionCommand.Factory addConditionCommandFactory,
                @Assisted ConditionData data,
-               @Assisted ServerRealConditionOwner owner,
-               LifecycleHandler lifecycleHandler) throws HousemateException {
-		super(log, listenersFactory, data, owner, lifecycleHandler);
+               @Assisted RealConditionOwner owner) throws HousemateException {
+		super(log, listenersFactory, addConditionCommandFactory, data, owner);
     }
 	
 	/**
@@ -36,7 +36,7 @@ public class And extends ServerNonLeafCondition {
 	 * @return true iff all of the sub-conditions are satisfied
 	 */
     @Override
-	protected final boolean checkIfSatisfied(Map<ServerRealCondition, Boolean> satisfiedMap) {
+	protected final boolean checkIfSatisfied(Map<RealCondition, Boolean> satisfiedMap) {
 		// get all the satisfied values
 		Collection<Boolean> satisfied = satisfiedMap.values();
 		

@@ -9,14 +9,13 @@ import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.command.Command;
 import com.intuso.housemate.api.object.command.CommandPerformListener;
-import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.real.RealProperty;
+import com.intuso.housemate.object.real.RealTask;
+import com.intuso.housemate.object.real.factory.task.RealTaskOwner;
 import com.intuso.housemate.object.real.impl.type.RealObjectType;
-import com.intuso.housemate.object.server.real.ServerRealProperty;
-import com.intuso.housemate.object.server.real.ServerRealTask;
-import com.intuso.housemate.object.server.real.ServerRealTaskOwner;
 import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -28,9 +27,9 @@ import java.util.List;
 /**
  */
 @TypeInfo(id = "perform-command", name = "Perform Command", description = "Perform a command in the system")
-public class PerformCommand extends ServerRealTask implements ObjectLifecycleListener {
+public class PerformCommand extends RealTask implements ObjectLifecycleListener {
 
-    private final ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> commandPath;
+    private final RealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> commandPath;
     private Command<?, ?, ?> command;
     private ListenerRegistration commandLifecycleListenerRegistration = null;
 
@@ -55,26 +54,26 @@ public class PerformCommand extends ServerRealTask implements ObjectLifecycleLis
     public PerformCommand(Log log,
                           ListenersFactory listenersFactory,
                           @Assisted TaskData data,
-                          @Assisted ServerRealTaskOwner owner,
+                          @Assisted RealTaskOwner owner,
                           RootBridge root, RealObjectType<BaseHousemateObject<?>> realObjectType) {
         super(log, listenersFactory, data, owner);
-        commandPath = new ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>>(log, listenersFactory,
+        commandPath = new RealProperty<RealObjectType.Reference<BaseHousemateObject<?>>>(log, listenersFactory,
                 "command-path", "Command Path", "The path to the command to perform", realObjectType, (List)null);
         getProperties().add(commandPath);
         addPropertyListener(root);
     }
 
-    private void addPropertyListener(final Root<?> root) {
-        commandPath.addObjectListener(new ValueListener<ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>>>() {
+    private void addPropertyListener(final RootBridge root) {
+        commandPath.addObjectListener(new ValueListener<RealProperty<RealObjectType.Reference<BaseHousemateObject<?>>>>() {
 
             @Override
-            public void valueChanging(ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> value) {
+            public void valueChanging(RealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> value) {
                 if(commandLifecycleListenerRegistration != null)
                     commandLifecycleListenerRegistration.removeListener();
             }
 
             @Override
-            public void valueChanged(ServerRealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> property) {
+            public void valueChanged(RealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> property) {
                 String[] path = property.getTypedValue().getPath();
                 commandLifecycleListenerRegistration = root.addObjectLifecycleListener(path, PerformCommand.this);
                 HousemateObject<?, ?, ?, ?> object = HousemateObject.getChild((HousemateObject<?,?,?,?>) root, path, 1);

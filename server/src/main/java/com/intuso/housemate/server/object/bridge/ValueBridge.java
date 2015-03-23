@@ -5,7 +5,7 @@ import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueData;
-import com.intuso.housemate.object.server.proxy.ServerProxyType;
+import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -18,6 +18,7 @@ import com.intuso.utilities.log.Log;
 */
 public class ValueBridge extends ValueBridgeBase<ValueData, NoChildrenData,
                 NoChildrenBridgeObject, ValueBridge> {
+
     public ValueBridge(Log log, ListenersFactory listenersFactory, Value<?, ?> proxyValue,
                        ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
         super(log, listenersFactory,
