@@ -24,7 +24,7 @@ public final class PowerByCommandDevice extends StatefulPoweredDevice {
 
     @Inject
 	public PowerByCommandDevice(Log log, ListenersFactory listenersFactory, @Assisted DeviceData data) {
-		super(log, listenersFactory, data);
+		super(log, listenersFactory, "power-by-command", data);
         onCommandProperty = StringType.createProperty(getLog(), listenersFactory, "on-command", "On Command", "The command to turn the device on", null);
         offCommandProperty = StringType.createProperty(getLog(), listenersFactory, "off-command", "Off Command", "The command to turn the device off", null);
         getCustomPropertyIds().add(onCommandProperty.getId());

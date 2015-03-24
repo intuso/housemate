@@ -5,6 +5,9 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.list.ListListener;
+import com.intuso.housemate.api.object.type.TypeInstance;
+import com.intuso.housemate.api.object.type.TypeInstanceMap;
+import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealHardware;
 import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -36,6 +39,18 @@ public class HardwareListWatcher implements ListListener<RealHardware> {
 
     @Override
     public void elementAdded(RealHardware hardware) {
+
+        TypeInstanceMap toSave = new TypeInstanceMap();
+        toSave.getChildren().put("id", new TypeInstances(new TypeInstance(hardware.getId())));
+        toSave.getChildren().put("name", new TypeInstances(new TypeInstance(hardware.getName())));
+        toSave.getChildren().put("description", new TypeInstances(new TypeInstance(hardware.getDescription())));
+        toSave.getChildren().put("type", new TypeInstances(new TypeInstance(hardware.getType())));
+        try {
+            persistence.saveValues(hardware.getPath(), toSave);
+        } catch (HousemateException e) {
+            log.e("Failed to save new hardware values", e);
+        }
+
         listeners.put(hardware, hardware.getProperties().addObjectListener(propertyListWatcher, true));
     }
 

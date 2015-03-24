@@ -22,10 +22,12 @@ public class RealHardware
 
     private final static String PROPERTIES_DESCRIPTION = "The hardware's properties";
 
+    private final String type;
+
     private RealList<PropertyData, RealProperty<?>> properties;
 
-    public RealHardware(Log log, ListenersFactory listenersFactory, HardwareData data, RealProperty<?> ... properties) {
-        this(log, listenersFactory, data, Lists.newArrayList(properties));
+    public RealHardware(Log log, ListenersFactory listenersFactory, String type, HardwareData data, RealProperty<?> ... properties) {
+        this(log, listenersFactory, type, data, Lists.newArrayList(properties));
     }
 
     /**
@@ -33,10 +35,15 @@ public class RealHardware
      * @param listenersFactory
      * @param data the hardware's data
      */
-    public RealHardware(Log log, ListenersFactory listenersFactory, HardwareData data, List<RealProperty<?>> properties) {
+    public RealHardware(Log log, ListenersFactory listenersFactory, String type, HardwareData data, List<RealProperty<?>> properties) {
         super(log, listenersFactory, data);
+        this.type = type;
         this.properties = new RealList<PropertyData, RealProperty<?>>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION, properties);
         addChild(this.properties);
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override

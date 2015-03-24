@@ -51,10 +51,11 @@ public class DeviceListWatcher implements ListListener<RealDevice> {
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(device.getId())));
         toSave.getChildren().put("name", new TypeInstances(new TypeInstance(device.getName())));
         toSave.getChildren().put("description", new TypeInstances(new TypeInstance(device.getDescription())));
+        toSave.getChildren().put("type", new TypeInstances(new TypeInstance(device.getType())));
         try {
             persistence.saveValues(device.getPath(), toSave);
         } catch (HousemateException e) {
-            log.e("Failed to save new application values", e);
+            log.e("Failed to save new device values", e);
         }
 
         listeners.put(device, device.addObjectListener(deviceListener));

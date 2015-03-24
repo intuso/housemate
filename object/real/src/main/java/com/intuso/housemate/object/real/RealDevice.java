@@ -43,6 +43,8 @@ public class RealDevice
 
     public final static String OBJECT_TYPE = "device";
 
+    private final String type;
+
     private RealList<CommandData, RealCommand> commands;
     private RealList<ValueData, RealValue<?>> values;
     private RealList<PropertyData, RealProperty<?>> properties;
@@ -53,8 +55,8 @@ public class RealDevice
      * @param data the device's data
      * @param featureIds the ids of the features the device has
      */
-    public RealDevice(Log log, ListenersFactory listenersFactory, DeviceData data, String... featureIds) {
-        this(log, listenersFactory, data, Lists.newArrayList(featureIds),
+    public RealDevice(Log log, ListenersFactory listenersFactory, String type, DeviceData data, String... featureIds) {
+        this(log, listenersFactory, type, data, Lists.newArrayList(featureIds),
                 Lists.<String>newArrayList(), Lists.<String>newArrayList(), Lists.<String>newArrayList());
     }
 
@@ -67,17 +69,22 @@ public class RealDevice
      * @param customValueIds the ids of the device's values that do not belong to a feature
      * @param customPropertyIds the ids of the device's properties that do not belong to a feature
      */
-    public RealDevice(Log log, ListenersFactory listenersFactory, DeviceData data, List<String> featureIds,
+    public RealDevice(Log log, ListenersFactory listenersFactory, String type, DeviceData data, List<String> featureIds,
                       List<String> customCommandIds, List<String> customValueIds, List<String> customPropertyIds) {
         super(log, listenersFactory,
                 new DeviceData(data.getId(), data.getName(), data.getDescription(), featureIds, customCommandIds, customValueIds, customPropertyIds),
                 OBJECT_TYPE);
+        this.type = type;
         this.commands = new RealList<CommandData, RealCommand>(log, listenersFactory, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION);
         this.values = new RealList<ValueData, RealValue<?>>(log, listenersFactory, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION);
         this.properties = new RealList<PropertyData, RealProperty<?>>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION);
         addChild(this.commands);
         addChild(this.values);
         addChild(this.properties);
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override

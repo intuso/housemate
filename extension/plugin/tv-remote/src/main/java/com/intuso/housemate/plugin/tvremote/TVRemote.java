@@ -24,7 +24,7 @@ public class TVRemote extends PoweredDevice implements RealPlaybackControl, Real
     public TVRemote(Log log,
                     ListenersFactory listenersFactory,
                     @Assisted DeviceData data) {
-        super(log, listenersFactory, data);
+        super(log, listenersFactory, "tv-remote", data);
         getCustomPropertyIds().add("remote-name");
     }
 

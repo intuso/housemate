@@ -79,7 +79,7 @@ public class RunProgramDevice extends RealDevice {
 	public RunProgramDevice(Log log,
                             ListenersFactory listenersFactory,
                             @Assisted DeviceData data) {
-		super(log, listenersFactory, data);
+		super(log, listenersFactory, "run-program", data);
         getProperties().add(command);
         getCustomCommandIds().add(start.getId());
         getCommands().add(start);

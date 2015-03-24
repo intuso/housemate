@@ -36,7 +36,7 @@ public class ArduinoTemperatureSensor extends RealDevice {
                                        ListenersFactory listenersFactory,
                                        @Assisted DeviceData data,
                                        SerialPortWrapper serialPort) {
-        super(log, listenersFactory, data);
+        super(log, listenersFactory, "arduino-temp-sensor", data);
         getCustomValueIds().add(temperature.getId());
         getValues().add(temperature);
         this.serialPort = serialPort;

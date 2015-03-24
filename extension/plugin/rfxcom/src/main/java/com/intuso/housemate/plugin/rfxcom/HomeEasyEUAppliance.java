@@ -30,7 +30,7 @@ public class HomeEasyEUAppliance extends StatefulPoweredDevice {
 	public HomeEasyEUAppliance(Log log,
                                ListenersFactory listenersFactory,
                                @Assisted DeviceData data) {
-		super(log, listenersFactory, data);
+		super(log, listenersFactory, "home-easy-eu", data);
         getCustomPropertyIds().add("house-id");
         getCustomPropertyIds().add("unit-id");
 	}

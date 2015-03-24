@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.list.ListListener;
+import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealAutomation;
@@ -48,6 +49,17 @@ public class AutomationListWatcher implements ListListener<RealAutomation> {
 
     @Override
     public void elementAdded(RealAutomation automation) {
+
+        TypeInstanceMap toSave = new TypeInstanceMap();
+        toSave.getChildren().put("id", new TypeInstances(new TypeInstance(automation.getId())));
+        toSave.getChildren().put("name", new TypeInstances(new TypeInstance(automation.getName())));
+        toSave.getChildren().put("description", new TypeInstances(new TypeInstance(automation.getDescription())));
+        try {
+            persistence.saveValues(automation.getPath(), toSave);
+        } catch (HousemateException e) {
+            log.e("Failed to save new automation values", e);
+        }
+
         listeners.put(automation, automation.addObjectListener(automationListener));
         listeners.put(automation, automation.getRunningValue().addObjectListener(valueWatcher));
         listeners.put(automation, automation.getConditions().addObjectListener(conditionListWatcher, true));

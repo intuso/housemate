@@ -17,8 +17,8 @@ public abstract class StatefulPoweredDevice
     @com.intuso.housemate.object.real.annotations.Values
     public Values values;
 
-	public StatefulPoweredDevice(Log log, ListenersFactory listenersFactory, DeviceData data) {
-		super(log, listenersFactory, data);
+	public StatefulPoweredDevice(Log log, ListenersFactory listenersFactory, String type, DeviceData data) {
+		super(log, listenersFactory, type, data);
 	}
 
     /**

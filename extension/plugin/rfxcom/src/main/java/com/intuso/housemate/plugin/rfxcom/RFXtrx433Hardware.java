@@ -54,7 +54,7 @@ public class RFXtrx433Hardware extends RealHardware {
                              RealDeviceFactory<HomeEasyUKAppliance> homeEasyUKApplianceFactory,
                              RealDeviceFactory<HomeEasyEUAppliance> homeEasyEUApplianceFactory,
                              AnnotationProcessor annotationProcessor) {
-        super(log, listenersFactory, data);
+        super(log, listenersFactory, "rfxtrx433", data);
         this.homeEasyUKApplianceFactory = homeEasyUKApplianceFactory;
         this.homeEasyEUApplianceFactory = homeEasyEUApplianceFactory;
         this.annotationProcessor = annotationProcessor;

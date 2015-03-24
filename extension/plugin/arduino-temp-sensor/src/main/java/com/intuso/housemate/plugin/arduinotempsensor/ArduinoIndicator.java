@@ -29,7 +29,7 @@ public class ArduinoIndicator extends StatefulPoweredDevice {
                                ListenersFactory listenersFactory,
                                @Assisted DeviceData data,
                                SerialPortWrapper serialPort) {
-        super(log, listenersFactory, data);
+        super(log, listenersFactory, "arduino-indicator", data);
         this.serialPort = serialPort;
         getCustomPropertyIds().add("colour");
         getCustomPropertyIds().add("intensity");

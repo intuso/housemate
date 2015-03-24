@@ -14,7 +14,7 @@ public abstract class PoweredDevice
         extends RealDevice
         implements RealPowerControl {
 
-	public PoweredDevice(Log log, ListenersFactory listenersFactory, DeviceData data) {
-		super(log, listenersFactory, data);
+	public PoweredDevice(Log log, ListenersFactory listenersFactory, String type, DeviceData data) {
+		super(log, listenersFactory, type, data);
 	}
 }

@@ -23,7 +23,7 @@ public class CustomDevice extends RealDevice {
     public CustomDevice(Log log,
                         ListenersFactory listenersFactory,
                         @Assisted DeviceData data) {
-        super(log, listenersFactory, data);
+        super(log, listenersFactory, "custom-device", data);
         getCustomPropertyIds().add("my-property");
     }
 

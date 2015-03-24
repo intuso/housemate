@@ -61,6 +61,7 @@ public class PrimaryTest {
         TestEnvironment.TEST_INSTANCE.getRealRoot().addWrapper(realList);
         realPrimary = new RealDevice(TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
                 TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
+                "test",
                 new DeviceData("my-primary", "My Primary", "description"));
         realList.add(realPrimary);
         proxyPrimary = proxyList.get("my-primary");
