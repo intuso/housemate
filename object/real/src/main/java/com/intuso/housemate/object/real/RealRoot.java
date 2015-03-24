@@ -248,8 +248,8 @@ public class RealRoot
     }
 
     @Override
-    public final void removeHardware(RealHardware hardware) {
-        hardwares.remove(hardware.getId());
+    public final void removeHardware(RealHardware realHardware) {
+        hardwares.remove(realHardware.getId());
     }
 
     @Override
@@ -274,7 +274,7 @@ public class RealRoot
 
     @Override
     public final void removeDevice(RealDevice realDevice) {
-        devices.remove(devices.getId());
+        devices.remove(realDevice.getId());
     }
 
     @Override
@@ -299,7 +299,7 @@ public class RealRoot
 
     @Override
     public final void removeAutomation(RealAutomation realAutomation) {
-        automations.remove(automations.getId());
+        automations.remove(realAutomation.getId());
     }
 
     @Override
@@ -329,7 +329,7 @@ public class RealRoot
 
     @Override
     public final void removeUser(RealUser realUser) {
-        users.remove(users.getId());
+        users.remove(realUser.getId());
     }
 
     public final static String NAME_PARAMETER_ID = "name";
