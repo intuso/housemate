@@ -3,18 +3,15 @@ package com.intuso.housemate.realclient.persist;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.object.real.RealApplicationInstance;
-import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -50,23 +47,8 @@ public class ApplicationInstanceListWatcher implements ListListener<RealApplicat
         } catch (HousemateException e) {
             log.e("Failed to save new application values", e);
         }
+        valueWatcher.setInitialValue(applicationInstance.getStatusValue());
         listeners.put(applicationInstance, applicationInstance.getStatusValue().addObjectListener(valueWatcher));
-        try {
-            TypeInstances instances = persistence.getTypeInstances(applicationInstance.getStatusValue().getPath());
-            if(instances.getFirstValue() != null) {
-                ApplicationInstanceStatus applicationStatus = ApplicationInstanceStatus.valueOf(instances.getFirstValue());
-                if(applicationStatus == ApplicationInstanceStatus.Allowed)
-                    applicationInstance.getAllowCommand().perform(new TypeInstanceMap(),
-                            new CommandPerformListener(log, "Allow application instance \"" + applicationInstance.getId() + "\""));
-                else if(applicationStatus == ApplicationInstanceStatus.Rejected)
-                    applicationInstance.getRejectCommand().perform(new TypeInstanceMap(),
-                            new CommandPerformListener(log, "Reject application instance \"" + applicationInstance.getId() + "\""));
-            }
-        } catch(DetailsNotFoundException e) {
-            log.w("No details found for whether the application was previously accepted" + Arrays.toString(applicationInstance.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to check value for whether the application was previously accepted", e);
-        }
     }
 
     @Override

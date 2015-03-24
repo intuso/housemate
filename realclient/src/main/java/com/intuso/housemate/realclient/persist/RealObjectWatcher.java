@@ -89,27 +89,27 @@ public class RealObjectWatcher {
 
     private void watchApplications() {
         loadApplications();
-        root.getApplications().addObjectListener(applicationListWatcher);
+        root.getApplications().addObjectListener(applicationListWatcher, true);
     }
 
     private void watchAutomations() {
         loadAutomations();
-        root.getAutomations().addObjectListener(automationListWatcher);
+        root.getAutomations().addObjectListener(automationListWatcher, true);
     }
 
     private void watchDevices() {
         loadDevices();
-        root.getDevices().addObjectListener(deviceListWatcher);
+        root.getDevices().addObjectListener(deviceListWatcher, true);
     }
 
     private void watchHardwares() {
         loadHardwares();
-        root.getHardwares().addObjectListener(hardwareListWatcher);
+        root.getHardwares().addObjectListener(hardwareListWatcher, true);
     }
 
     private void watchUsers() {
         loadUsers();
-        root.getUsers().addObjectListener(userListWatcher);
+        root.getUsers().addObjectListener(userListWatcher, true);
     }
 
     private void loadApplications() {
@@ -154,105 +154,6 @@ public class RealObjectWatcher {
             log.w("No details found for saved users " + Arrays.toString(realApplicationInstances.getPath()));
         } catch(HousemateException e) {
             log.e("Failed to get names of existing users", e);
-        }
-    }
-
-    private void loadUsers() {
-        RealList<UserData, RealUser> users = root.getUsers();
-        List<String> path = Lists.newArrayList(users.getPath());
-        try {
-            for(String key : persistence.getValuesKeys(users.getPath())) {
-                try {
-                    path.add(key);
-                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    RealUser user = realUserFactory.create(
-                            new UserData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
-                            root);
-                    users.add(user);
-                } finally {
-                    path.remove(path.size() - 1);
-                }
-            }
-        } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved users " + Arrays.toString(users.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get names of existing users", e);
-        }
-        if(users.getChildren().size() == 0)
-            users.add(realUserFactory.create(new UserData("admin", "admin", "Default admin user"), root));
-    }
-
-    private void loadHardwares() {
-        RealList<HardwareData, RealHardware> hardwares = root.getHardwares();
-        List<String> path = Lists.newArrayList(hardwares.getPath());
-        try {
-            for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
-                try {
-                    path.add(key);
-                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    if(!details.getChildren().containsKey("type"))
-                        log.e("No type found for persisted hardware " + key);
-                    else if(details.getChildren().get("type").getElements().size() != 1)
-                        log.e("Type for persisted hardware " + key + " does not have a single value");
-                    else {
-                        TypeInstance type = details.getChildren().get("type").getElements().get(0);
-                        RealHardwareFactory realHardwareFactory = hardwareFactoryType.deserialise(type);
-                        if(realHardwareFactory == null) {
-                            log.e("Could not find factory for hardware type " + type.getValue());
-                        } else {
-                            RealHardware hardware = realHardwareFactory.create(
-                                    new HardwareData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
-                                    root);
-                            hardwares.add(hardware);
-                        }
-                    }
-                } catch(HousemateException e) {
-                    log.e("Failed to load hardware", e);
-                } finally {
-                    path.remove(path.size() - 1);
-                }
-            }
-        } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved hardwares at " + Joiner.on("/").join(hardwares.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get names of existing hardwares", e);
-        }
-    }
-
-    private void loadDevices() {
-        RealList<DeviceData, RealDevice> devices = root.getDevices();
-        List<String> path = Lists.newArrayList(devices.getPath());
-        try {
-            for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
-                try {
-                    path.add(key);
-                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    if(!details.getChildren().containsKey("type"))
-                        log.e("No type found for persisted device " + key);
-                    else if(details.getChildren().get("type").getElements().size() != 1)
-                        log.e("Type for persisted device " + key + " does not have a single value");
-                    else {
-                        TypeInstance type = details.getChildren().get("type").getElements().get(0);
-                        RealDeviceFactory realDeviceFactory = deviceFactoryType.deserialise(type);
-                        if(realDeviceFactory == null) {
-                            log.e("Could not find factory for device type " + type.getValue());
-                        } else {
-                            RealDevice device = realDeviceFactory.create(
-                                    new DeviceData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
-                                    root);
-                            devices.add(device);
-                        }
-                    }
-                } catch(HousemateException e) {
-                    log.e("Failed to load device", e);
-                } finally {
-                    path.remove(path.size() - 1);
-                }
-            }
-        } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved devices at " + Joiner.on("/").join(devices.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get names of existing devices", e);
         }
     }
 
@@ -321,6 +222,80 @@ public class RealObjectWatcher {
         }
     }
 
+    private void loadDevices() {
+        RealList<DeviceData, RealDevice> devices = root.getDevices();
+        List<String> path = Lists.newArrayList(devices.getPath());
+        try {
+            for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
+                try {
+                    path.add(key);
+                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
+                    if(!details.getChildren().containsKey("type"))
+                        log.e("No type found for persisted device " + key);
+                    else if(details.getChildren().get("type").getElements().size() != 1)
+                        log.e("Type for persisted device " + key + " does not have a single value");
+                    else {
+                        TypeInstance type = details.getChildren().get("type").getElements().get(0);
+                        RealDeviceFactory realDeviceFactory = deviceFactoryType.deserialise(type);
+                        if(realDeviceFactory == null) {
+                            log.e("Could not find factory for device type " + type.getValue());
+                        } else {
+                            RealDevice device = realDeviceFactory.create(
+                                    new DeviceData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
+                                    root);
+                            devices.add(device);
+                        }
+                    }
+                } catch(HousemateException e) {
+                    log.e("Failed to load device", e);
+                } finally {
+                    path.remove(path.size() - 1);
+                }
+            }
+        } catch(DetailsNotFoundException e) {
+            log.w("No details found for saved devices at " + Joiner.on("/").join(devices.getPath()));
+        } catch(HousemateException e) {
+            log.e("Failed to get names of existing devices", e);
+        }
+    }
+
+    private void loadHardwares() {
+        RealList<HardwareData, RealHardware> hardwares = root.getHardwares();
+        List<String> path = Lists.newArrayList(hardwares.getPath());
+        try {
+            for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
+                try {
+                    path.add(key);
+                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
+                    if(!details.getChildren().containsKey("type"))
+                        log.e("No type found for persisted hardware " + key);
+                    else if(details.getChildren().get("type").getElements().size() != 1)
+                        log.e("Type for persisted hardware " + key + " does not have a single value");
+                    else {
+                        TypeInstance type = details.getChildren().get("type").getElements().get(0);
+                        RealHardwareFactory realHardwareFactory = hardwareFactoryType.deserialise(type);
+                        if(realHardwareFactory == null) {
+                            log.e("Could not find factory for hardware type " + type.getValue());
+                        } else {
+                            RealHardware hardware = realHardwareFactory.create(
+                                    new HardwareData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
+                                    root);
+                            hardwares.add(hardware);
+                        }
+                    }
+                } catch(HousemateException e) {
+                    log.e("Failed to load hardware", e);
+                } finally {
+                    path.remove(path.size() - 1);
+                }
+            }
+        } catch(DetailsNotFoundException e) {
+            log.w("No details found for saved hardwares at " + Joiner.on("/").join(hardwares.getPath()));
+        } catch(HousemateException e) {
+            log.e("Failed to get names of existing hardwares", e);
+        }
+    }
+
     private void loadTasks(java.util.List<String> path, RealList<TaskData, RealTask> tasks, RealCommand command) {
         try {
             for(String taskName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
@@ -339,6 +314,31 @@ public class RealObjectWatcher {
         } catch(HousemateException e) {
             log.e("Failed to get device names of existing tasks", e);
         }
+    }
+
+    private void loadUsers() {
+        RealList<UserData, RealUser> users = root.getUsers();
+        List<String> path = Lists.newArrayList(users.getPath());
+        try {
+            for(String key : persistence.getValuesKeys(users.getPath())) {
+                try {
+                    path.add(key);
+                    TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
+                    RealUser user = realUserFactory.create(
+                            new UserData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
+                            root);
+                    users.add(user);
+                } finally {
+                    path.remove(path.size() - 1);
+                }
+            }
+        } catch(DetailsNotFoundException e) {
+            log.w("No details found for saved users " + Arrays.toString(users.getPath()));
+        } catch(HousemateException e) {
+            log.e("Failed to get names of existing users", e);
+        }
+        if(users.getChildren().size() == 0)
+            users.add(realUserFactory.create(new UserData("admin", "admin", "Default admin user"), root));
     }
 
     private class CommandPerformListener implements com.intuso.housemate.api.object.command.CommandPerformListener<Command<?, ?, ?>> {

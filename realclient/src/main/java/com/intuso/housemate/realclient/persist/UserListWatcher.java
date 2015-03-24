@@ -39,7 +39,6 @@ public class UserListWatcher implements ListListener<RealUser> {
 
     @Override
     public void elementAdded(RealUser user) {
-        //listeners.put(application, application.getStatusValue().addObjectListener(valueWatcher));
         TypeInstanceMap toSave = new TypeInstanceMap();
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(user.getId())));
         toSave.getChildren().put("name", new TypeInstances(new TypeInstance(user.getName())));
@@ -49,6 +48,7 @@ public class UserListWatcher implements ListListener<RealUser> {
         } catch (HousemateException e) {
             log.e("Failed to save new user values", e);
         }
+        valueWatcher.setInitialValue(user.getEmailProperty());
         listeners.put(user, user.getEmailProperty().addObjectListener(valueWatcher));
     }
 

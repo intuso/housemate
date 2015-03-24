@@ -6,6 +6,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.comms.access.ApplicationRegistration;
+import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.RealList;
@@ -77,6 +78,8 @@ public class ServerRealRoot extends RealRoot {
 
     @Override
     public void sendMessage(Message<?> message) {
+        if(message.getPayload() instanceof HousemateData)
+            ((Message)message).setPayload(((HousemateData<?>) message.getPayload()).deepClone());
         if(isRegistered || message.getPayload() instanceof ApplicationRegistration)
             super.sendMessage(message);
         else

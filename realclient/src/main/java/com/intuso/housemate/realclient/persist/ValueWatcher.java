@@ -3,9 +3,13 @@ package com.intuso.housemate.realclient.persist;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.RealValueBase;
+import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.log.Log;
+
+import java.util.List;
 
 /**
 * Created with IntelliJ IDEA.
@@ -36,6 +40,16 @@ public class ValueWatcher implements ValueListener<RealValueBase<?, ?, ?, ?, ?>>
             persistence.saveTypeInstances(value.getPath(), value.getTypeInstances());
         } catch(HousemateException e) {
             log.e("Failed to save property value", e);
+        }
+    }
+
+    public void setInitialValue(RealValueBase<?, ?, ?, ?, ?> value) {
+        try {
+            value.setTypedValues((List)RealType.deserialiseAll(value.getType(), persistence.getTypeInstances(value.getPath())));
+        } catch(DetailsNotFoundException e) {
+            // no problem
+        } catch(HousemateException e) {
+            log.e("Failed to load initial property value");
         }
     }
 }

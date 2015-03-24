@@ -3,15 +3,10 @@ package com.intuso.housemate.realclient.persist;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.object.real.RealProperty;
-import com.intuso.housemate.persistence.api.DetailsNotFoundException;
-import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -21,37 +16,25 @@ import java.util.Collection;
 * Time: 19:25
 * To change this template use File | Settings | File Templates.
 */
-public class PropertyListWatcher implements ListListener<RealProperty> {
+public class PropertyListWatcher implements ListListener<RealProperty<?>> {
 
     private final Multimap<RealProperty, ListenerRegistration> listeners = HashMultimap.create();
 
-    private final Log log;
-    private final Persistence persistence;
     private final ValueWatcher valueWatcher;
 
     @Inject
-    public PropertyListWatcher(Log log, Persistence persistence, ValueWatcher valueWatcher) {
-        this.log = log;
-        this.persistence = persistence;
+    public PropertyListWatcher(ValueWatcher valueWatcher) {
         this.valueWatcher = valueWatcher;
     }
 
     @Override
-    public void elementAdded(RealProperty property) {
-        try {
-            property.set(persistence.getTypeInstances(property.getPath()),
-                    new CommandPerformListener(log, "Set property value " + Arrays.toString(property.getPath())));
-        } catch(DetailsNotFoundException e) {
-            log.w("No details found for property value " + Arrays.toString(property.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to set property value " + Arrays.toString(property.getPath()), e);
-        }
+    public void elementAdded(RealProperty<?> property) {
+        valueWatcher.setInitialValue(property);
         listeners.put(property, property.addObjectListener(valueWatcher));
-        valueWatcher.valueChanged(property);
     }
 
     @Override
-    public void elementRemoved(RealProperty property) {
+    public void elementRemoved(RealProperty<?> property) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(property);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)
