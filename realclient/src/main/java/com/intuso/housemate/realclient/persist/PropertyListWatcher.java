@@ -1,11 +1,11 @@
-package com.intuso.housemate.realclient.storage.persist;
+package com.intuso.housemate.realclient.persist;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.property.Property;
+import com.intuso.housemate.object.real.RealProperty;
 import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -21,9 +21,9 @@ import java.util.Collection;
 * Time: 19:25
 * To change this template use File | Settings | File Templates.
 */
-public class PropertyListWatcher implements ListListener<Property<?, ?, ?>> {
+public class PropertyListWatcher implements ListListener<RealProperty> {
 
-    private final Multimap<Property<?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
+    private final Multimap<RealProperty, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
     private final Persistence persistence;
@@ -37,7 +37,7 @@ public class PropertyListWatcher implements ListListener<Property<?, ?, ?>> {
     }
 
     @Override
-    public void elementAdded(Property<?, ?, ?> property) {
+    public void elementAdded(RealProperty property) {
         try {
             property.set(persistence.getTypeInstances(property.getPath()),
                     new CommandPerformListener(log, "Set property value " + Arrays.toString(property.getPath())));
@@ -51,7 +51,7 @@ public class PropertyListWatcher implements ListListener<Property<?, ?, ?>> {
     }
 
     @Override
-    public void elementRemoved(Property<?, ?, ?> property) {
+    public void elementRemoved(RealProperty property) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(property);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

@@ -1,9 +1,9 @@
-package com.intuso.housemate.realclient.storage.persist;
+package com.intuso.housemate.realclient.persist;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.value.Value;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.real.RealValueBase;
 import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.log.Log;
 
@@ -14,7 +14,7 @@ import com.intuso.utilities.log.Log;
 * Time: 19:25
 * To change this template use File | Settings | File Templates.
 */
-public class ValueWatcher implements ValueListener<Value<?, ?>> {
+public class ValueWatcher implements ValueListener<RealValueBase<?, ?, ?, ?, ?>> {
 
     private final Log log;
     private final Persistence persistence;
@@ -25,14 +25,13 @@ public class ValueWatcher implements ValueListener<Value<?, ?>> {
         this.persistence = persistence;
     }
 
-
     @Override
-    public void valueChanging(Value<?, ?> value) {
+    public void valueChanging(RealValueBase<?, ?, ?, ?, ?> value) {
         // do nothing
     }
 
     @Override
-    public void valueChanged(Value<?, ?> value) {
+    public void valueChanged(RealValueBase<?, ?, ?, ?, ?> value) {
         try {
             persistence.saveTypeInstances(value.getPath(), value.getTypeInstances());
         } catch(HousemateException e) {

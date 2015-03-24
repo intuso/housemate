@@ -9,7 +9,7 @@ import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.housemate.realclient.factory.FactoryPluginListener;
-import com.intuso.housemate.server.storage.ServerObjectLoader;
+import com.intuso.housemate.realclient.persist.RealObjectWatcher;
 import com.intuso.housemate.web.server.ContextListener;
 import com.intuso.housemate.web.server.service.CommsServiceImpl;
 import com.intuso.utilities.listener.Listener;
@@ -83,8 +83,8 @@ public class ServerEnvironment {
         loadPlugins(injector, properties);
         log.d("Loaded plugins");
 
-        log.d("Loading objects");
-        injector.getInstance(ServerObjectLoader.class).loadObjects();
+        log.d("Loading/watching objects");
+        injector.getInstance(RealObjectWatcher.class).start();
         log.d("Loaded objects");
 
         log.d("Starting webapp");

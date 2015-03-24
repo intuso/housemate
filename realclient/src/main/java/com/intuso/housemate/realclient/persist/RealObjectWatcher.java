@@ -1,4 +1,4 @@
-package com.intuso.housemate.server.storage;
+package com.intuso.housemate.realclient.persist;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -30,7 +30,6 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,37 +38,71 @@ import java.util.List;
  * Time: 09:05
  * To change this template use File | Settings | File Templates.
  */
-public class ServerObjectLoader {
+public class RealObjectWatcher {
 
     private final Log log;
     private final ListenersFactory listenersFactory;
     private final Injector injector;
     private final RealRoot root;
     private final Persistence persistence;
+    private final HardwareListWatcher hardwareListWatcher;
+    private final DeviceListWatcher deviceListWatcher;
     private final RealAutomationFactory realAutomationFactory;
+    private final AutomationListWatcher automationListWatcher;
+    private final ApplicationListWatcher applicationListWatcher;
     private final RealUserFactory realUserFactory;
+    private final UserListWatcher userListWatcher;
 
     @Inject
-    public ServerObjectLoader(Log log, ListenersFactory listenersFactory, Injector injector, RealRoot root,
-                              Persistence persistence, RealAutomationFactory realAutomationFactory, RealUserFactory realUserFactory) {
+    public RealObjectWatcher(Log log, ListenersFactory listenersFactory, Injector injector, RealRoot root, Persistence persistence, HardwareListWatcher hardwareListWatcher, DeviceListWatcher deviceListWatcher, RealAutomationFactory realAutomationFactory, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, RealUserFactory realUserFactory, UserListWatcher userListWatcher) {
         this.log = log;
         this.listenersFactory = listenersFactory;
         this.injector = injector;
         this.root = root;
         this.persistence = persistence;
+        this.hardwareListWatcher = hardwareListWatcher;
+        this.deviceListWatcher = deviceListWatcher;
         this.realAutomationFactory = realAutomationFactory;
+        this.automationListWatcher = automationListWatcher;
+        this.applicationListWatcher = applicationListWatcher;
         this.realUserFactory = realUserFactory;
+        this.userListWatcher = userListWatcher;
     }
 
-    public void loadObjects() {
-        loadHardwares(Lists.newArrayList(root.getHardwares().getPath()), root.getHardwares(), root.getAddHardwareCommand());
-        loadDevices(Lists.newArrayList(root.getDevices().getPath()), root.getDevices(), root.getAddDeviceCommand());
+    public void start() {
+        watchApplications();
+        watchAutomations();
+        watchDevices();
+        watchHardwares();
+        watchUsers();
+    }
+
+    private void watchApplications() {
         loadApplications(Lists.newArrayList(root.getApplications().getPath()), root.getApplications());
-        loadUsers(Lists.newArrayList(root.getUsers().getPath()), root.getUsers());
-        loadAutomations(Lists.newArrayList(root.getAutomations().getPath()), root.getAutomations());
+        root.getApplications().addObjectListener(applicationListWatcher);
     }
 
-    private void loadApplications(List<String> path, RealList<ApplicationData, RealApplication> list) {
+    private void watchAutomations() {
+        loadAutomations(Lists.newArrayList(root.getAutomations().getPath()), root.getAutomations());
+        root.getAutomations().addObjectListener(automationListWatcher);
+    }
+
+    private void watchDevices() {
+        loadDevices(Lists.newArrayList(root.getDevices().getPath()), root.getDevices(), root.getAddDeviceCommand());
+        root.getDevices().addObjectListener(deviceListWatcher);
+    }
+
+    private void watchHardwares() {
+        loadHardwares(Lists.newArrayList(root.getHardwares().getPath()), root.getHardwares(), root.getAddHardwareCommand());
+        root.getHardwares().addObjectListener(hardwareListWatcher);
+    }
+
+    private void watchUsers() {
+        loadUsers(Lists.newArrayList(root.getUsers().getPath()), root.getUsers());
+        root.getUsers().addObjectListener(userListWatcher);
+    }
+
+    private void loadApplications(java.util.List<String> path, RealList<ApplicationData, RealApplication> list) {
         try {
             for(String key : persistence.getValuesKeys(list.getPath())) {
                 try {
@@ -91,7 +124,7 @@ public class ServerObjectLoader {
         }
     }
 
-    private void loadApplicationInstances(List<String> path, RealList<ApplicationInstanceData, RealApplicationInstance> realApplicationInstances, ApplicationStatus applicationStatus) {
+    private void loadApplicationInstances(java.util.List<String> path, RealList<ApplicationInstanceData, RealApplicationInstance> realApplicationInstances, ApplicationStatus applicationStatus) {
         try {
             for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
@@ -112,7 +145,7 @@ public class ServerObjectLoader {
         }
     }
 
-    private void loadUsers(List<String> path, RealList<UserData, RealUser> list) {
+    private void loadUsers(java.util.List<String> path, RealList<UserData, RealUser> list) {
         try {
             for(String key : persistence.getValuesKeys(list.getPath())) {
                 try {
@@ -150,7 +183,7 @@ public class ServerObjectLoader {
         }
     }
 
-    private void loadHardwares(List<String> path, RealList<HardwareData, RealHardware> hardwares, Command<?, ?, ?> addHardwareCommand) {
+    private void loadHardwares(java.util.List<String> path, RealList<HardwareData, RealHardware> hardwares, Command<?, ?, ?> addHardwareCommand) {
         try {
             for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
@@ -169,7 +202,7 @@ public class ServerObjectLoader {
         }
     }
 
-    private void loadDevices(List<String> path, RealList<DeviceData, RealDevice> devices, Command<?, ?, ?> addDeviceCommand) {
+    private void loadDevices(java.util.List<String> path, RealList<DeviceData, RealDevice> devices, Command<?, ?, ?> addDeviceCommand) {
         try {
             for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
@@ -188,7 +221,7 @@ public class ServerObjectLoader {
         }
     }
 
-    private void loadAutomations(List<String> path, RealList<AutomationData, RealAutomation> list) {
+    private void loadAutomations(java.util.List<String> path, RealList<AutomationData, RealAutomation> list) {
         try {
             for(String key : persistence.getValuesKeys(list.getPath())) {
                 try {
@@ -231,7 +264,7 @@ public class ServerObjectLoader {
         }
     }
 
-    private void loadConditions(List<String> path, RealList<ConditionData, RealCondition> conditions, RealCommand command) {
+    private void loadConditions(java.util.List<String> path, RealList<ConditionData, RealCondition> conditions, RealCommand command) {
         try {
             for(String conditionName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
@@ -251,7 +284,7 @@ public class ServerObjectLoader {
         }
     }
 
-    private void loadTasks(List<String> path, RealList<TaskData, RealTask> tasks, RealCommand command) {
+    private void loadTasks(java.util.List<String> path, RealList<TaskData, RealTask> tasks, RealCommand command) {
         try {
             for(String taskName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {

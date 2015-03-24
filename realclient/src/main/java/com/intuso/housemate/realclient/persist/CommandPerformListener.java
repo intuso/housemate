@@ -1,7 +1,7 @@
-package com.intuso.housemate.realclient.storage.persist;
+package com.intuso.housemate.realclient.persist;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.api.object.command.Command;
+import com.intuso.housemate.object.real.RealCommand;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -11,7 +11,7 @@ import com.intuso.utilities.log.Log;
 * Time: 19:27
 * To change this template use File | Settings | File Templates.
 */
-public class CommandPerformListener implements com.intuso.housemate.api.object.command.CommandPerformListener<Command<?, ?, ?>> {
+public class CommandPerformListener implements com.intuso.housemate.api.object.command.CommandPerformListener<RealCommand> {
 
     private final Log log;
     private final String description;
@@ -23,17 +23,17 @@ public class CommandPerformListener implements com.intuso.housemate.api.object.c
     }
 
     @Override
-    public void commandStarted(Command<?, ?, ?> command) {
+    public void commandStarted(RealCommand command) {
         log.d("Doing " + description);
     }
 
     @Override
-    public void commandFinished(Command<?, ?, ?> command) {
+    public void commandFinished(RealCommand command) {
         log.d("Done " + description);
     }
 
     @Override
-    public void commandFailed(Command<?, ?, ?> command, String error) {
+    public void commandFailed(RealCommand command, String error) {
         log.d(description + " failed: " + error);
     }
 }

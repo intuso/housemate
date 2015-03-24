@@ -1,11 +1,11 @@
-package com.intuso.housemate.realclient.storage.persist;
+package com.intuso.housemate.realclient.persist;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.hardware.Hardware;
 import com.intuso.housemate.api.object.list.ListListener;
+import com.intuso.housemate.object.real.RealHardware;
 import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
@@ -19,9 +19,9 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class HardwareListWatcher implements ListListener<Hardware<?, ?>> {
+public class HardwareListWatcher implements ListListener<RealHardware> {
 
-    private final Multimap<Hardware<?, ?>, ListenerRegistration> listeners = HashMultimap.create();
+    private final Multimap<RealHardware, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
     private final Persistence persistence;
@@ -35,12 +35,12 @@ public class HardwareListWatcher implements ListListener<Hardware<?, ?>> {
     }
 
     @Override
-    public void elementAdded(Hardware<?, ?> hardware) {
+    public void elementAdded(RealHardware hardware) {
         listeners.put(hardware, hardware.getProperties().addObjectListener(propertyListWatcher, true));
     }
 
     @Override
-    public void elementRemoved(Hardware<?, ?> hardware) {
+    public void elementRemoved(RealHardware hardware) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(hardware);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

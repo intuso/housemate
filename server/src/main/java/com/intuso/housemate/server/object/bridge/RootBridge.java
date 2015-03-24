@@ -33,7 +33,6 @@ import com.intuso.housemate.object.server.ServerProxyHardware;
 import com.intuso.housemate.object.server.ServerProxyRoot;
 import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.housemate.object.server.client.ClientPayload;
-import com.intuso.housemate.server.storage.persist.ServerObjectPersister;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -66,8 +65,7 @@ public class RootBridge
 
     @Inject
     public RootBridge(Log log, ListenersFactory listenersFactory, RealRoot realRoot,
-                      MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> types,
-                      ServerObjectPersister serverObjectPersister) {
+                      MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
         super(log, listenersFactory, new RootData());
         this.listenersFactory = listenersFactory;
         applications = new SingleListBridge<ApplicationData, RealApplication, ApplicationBridge>(
@@ -97,11 +95,6 @@ public class RootBridge
         addChild(addHardware);
         addChild(addDevice);
         addChild(addAutomation);
-        serverObjectPersister.watchApplications(applications);
-        serverObjectPersister.watchAutomations(automations);
-        serverObjectPersister.watchDevices(devices);
-        serverObjectPersister.watchHardwares(hardwares);
-        serverObjectPersister.watchUsers(users);
         init(null);
     }
 

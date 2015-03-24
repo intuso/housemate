@@ -1,4 +1,4 @@
-package com.intuso.housemate.server.storage.persist;
+package com.intuso.housemate.realclient.persist;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -8,9 +8,8 @@ import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.user.User;
+import com.intuso.housemate.object.real.RealUser;
 import com.intuso.housemate.persistence.api.Persistence;
-import com.intuso.housemate.realclient.storage.persist.ValueWatcher;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -23,9 +22,9 @@ import java.util.Collection;
  * Time: 19:41
  * To change this template use File | Settings | File Templates.
  */
-public class UserListWatcher implements ListListener<User<?, ?>> {
+public class UserListWatcher implements ListListener<RealUser> {
 
-    private final Multimap<User<?, ?>, ListenerRegistration> listeners = HashMultimap.create();
+    private final Multimap<RealUser, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
     private final Persistence persistence;
@@ -39,7 +38,7 @@ public class UserListWatcher implements ListListener<User<?, ?>> {
     }
 
     @Override
-    public void elementAdded(User<?, ?> user) {
+    public void elementAdded(RealUser user) {
         //listeners.put(application, application.getStatusValue().addObjectListener(valueWatcher));
         TypeInstanceMap toSave = new TypeInstanceMap();
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(user.getId())));
@@ -54,7 +53,7 @@ public class UserListWatcher implements ListListener<User<?, ?>> {
     }
 
     @Override
-    public void elementRemoved(User<?, ?> user) {
+    public void elementRemoved(RealUser user) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(user);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

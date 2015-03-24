@@ -1,18 +1,16 @@
-package com.intuso.housemate.server.storage.persist;
+package com.intuso.housemate.realclient.persist;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.automation.Automation;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.object.real.RealAutomation;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
-import com.intuso.housemate.realclient.storage.persist.CommandPerformListener;
-import com.intuso.housemate.realclient.storage.persist.ValueWatcher;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -26,9 +24,9 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?>> {
+public class AutomationListWatcher implements ListListener<RealAutomation> {
 
-    private final Multimap<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ListenerRegistration> listeners = HashMultimap.create();
+    private final Multimap<RealAutomation, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
     private final Persistence persistence;
@@ -49,7 +47,7 @@ public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?
     }
 
     @Override
-    public void elementAdded(Automation<?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?> automation) {
+    public void elementAdded(RealAutomation automation) {
         listeners.put(automation, automation.addObjectListener(automationListener));
         listeners.put(automation, automation.getRunningValue().addObjectListener(valueWatcher));
         listeners.put(automation, automation.getConditions().addObjectListener(conditionListWatcher, true));
@@ -68,7 +66,7 @@ public class AutomationListWatcher implements ListListener<Automation<?, ?, ?, ?
     }
 
     @Override
-    public void elementRemoved(Automation<?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?> automation) {
+    public void elementRemoved(RealAutomation automation) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(automation);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

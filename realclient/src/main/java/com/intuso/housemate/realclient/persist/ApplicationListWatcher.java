@@ -1,19 +1,16 @@
-package com.intuso.housemate.server.storage.persist;
+package com.intuso.housemate.realclient.persist;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.object.application.Application;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.object.real.RealApplication;
 import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
-import com.intuso.housemate.realclient.storage.persist.CommandPerformListener;
-import com.intuso.housemate.realclient.storage.persist.ValueWatcher;
-import com.intuso.housemate.server.Server;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -27,9 +24,9 @@ import java.util.Map;
  * Time: 19:41
  * To change this template use File | Settings | File Templates.
  */
-public class ApplicationListWatcher implements ListListener<Application<?, ?, ?, ?, ?>> {
+public class ApplicationListWatcher implements ListListener<RealApplication> {
 
-    private final Map<Application<?, ?, ?, ?, ?>, ListenerRegistration> listeners = Maps.newHashMap();
+    private final Map<RealApplication, ListenerRegistration> listeners = Maps.newHashMap();
 
     private final Log log;
     private final Persistence persistence;
@@ -45,11 +42,12 @@ public class ApplicationListWatcher implements ListListener<Application<?, ?, ?,
     }
 
     @Override
-    public void elementAdded(Application<?, ?, ?, ?, ?> application) {
+    public void elementAdded(RealApplication application) {
 
         // don't save the internal server application
-        if(application.getId().equals(Server.INTERNAL_APPLICATION.getApplicationId()))
-            return;
+        // todo
+//        if(application.getId().equals(Server.INTERNAL_APPLICATION.getApplicationId()))
+//            return;
 
         TypeInstanceMap toSave = new TypeInstanceMap();
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(application.getId())));
@@ -84,7 +82,7 @@ public class ApplicationListWatcher implements ListListener<Application<?, ?, ?,
     }
 
     @Override
-    public void elementRemoved(Application<?, ?, ?, ?, ?> application) {
+    public void elementRemoved(RealApplication application) {
         ListenerRegistration registration = listeners.remove(application);
         if(registration != null)
             registration.removeListener();

@@ -1,17 +1,17 @@
-package com.intuso.housemate.realclient.storage.persist;
+package com.intuso.housemate.realclient.persist;
 
 import com.intuso.housemate.api.object.primary.PrimaryListener;
-import com.intuso.housemate.api.object.primary.PrimaryObject;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.object.real.RealPrimaryObject;
 import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.utilities.log.Log;
 
 /**
  * Created by tomc on 03/02/15.
  */
-public abstract class PrimaryObjectListener<PO extends PrimaryObject<?, ?, ?, ?, ?, ?, ?>> implements PrimaryListener<PO> {
+public abstract class PrimaryObjectListener<PO extends RealPrimaryObject<?, ?, ?>> implements PrimaryListener<PO> {
 
     public final String NAME_PARAMETER_ID = "name";
 

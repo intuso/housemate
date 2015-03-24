@@ -1,18 +1,16 @@
-package com.intuso.housemate.server.storage.persist;
+package com.intuso.housemate.realclient.persist;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.api.object.application.instance.ApplicationInstance;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.object.real.RealApplicationInstance;
 import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
-import com.intuso.housemate.realclient.storage.persist.CommandPerformListener;
-import com.intuso.housemate.realclient.storage.persist.ValueWatcher;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -26,9 +24,9 @@ import java.util.Map;
  * Time: 19:51
  * To change this template use File | Settings | File Templates.
  */
-public class ApplicationInstanceListWatcher implements ListListener<ApplicationInstance<?, ?, ?>> {
+public class ApplicationInstanceListWatcher implements ListListener<RealApplicationInstance> {
 
-    private final Map<ApplicationInstance<?, ?, ?>, ListenerRegistration> listeners = Maps.newHashMap();
+    private final Map<RealApplicationInstance, ListenerRegistration> listeners = Maps.newHashMap();
 
     private final Log log;
     private final Persistence persistence;
@@ -42,7 +40,7 @@ public class ApplicationInstanceListWatcher implements ListListener<ApplicationI
     }
 
     @Override
-    public void elementAdded(ApplicationInstance<?, ?, ?> applicationInstance) {
+    public void elementAdded(RealApplicationInstance applicationInstance) {
         TypeInstanceMap toSave = new TypeInstanceMap();
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(applicationInstance.getId())));
         toSave.getChildren().put("name", new TypeInstances(new TypeInstance(applicationInstance.getName())));
@@ -72,7 +70,7 @@ public class ApplicationInstanceListWatcher implements ListListener<ApplicationI
     }
 
     @Override
-    public void elementRemoved(ApplicationInstance<?, ?, ?> applicationInstance) {
+    public void elementRemoved(RealApplicationInstance applicationInstance) {
         ListenerRegistration registration = listeners.remove(applicationInstance);
         if(registration != null)
             registration.removeListener();
