@@ -84,11 +84,11 @@ public class RealObjectWatcher {
     }
 
     public void start() {
-        watchApplications();
-        watchAutomations();
-        watchDevices();
         watchHardwares();
+        watchDevices();
+        watchApplications();
         watchUsers();
+        watchAutomations();
     }
 
     private void watchApplications() {
