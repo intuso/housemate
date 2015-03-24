@@ -32,9 +32,9 @@ public class RFXtrx433Hardware extends RealHardware {
 
     public static RFXtrx433Hardware INSTANCE;
 
-    private final RFXtrx rfxtrx = new RFXtrx(getLog(), Lists.<Pattern>newArrayList());
-    private final HomeEasy homeEasyUK = HomeEasy.forUK(rfxtrx);
-    private final HomeEasy homeEasyEU = HomeEasy.forEU(rfxtrx);
+    private final RFXtrx rfxtrx;
+    private final HomeEasy homeEasyUK;
+    private final HomeEasy homeEasyEU;
     private ListenerRegistration messageListenerUK;
     private ListenerRegistration messageListenerEU;
     private final SetMultimap<Integer, Byte> knownAppliancesUK = HashMultimap.create();
@@ -59,6 +59,11 @@ public class RFXtrx433Hardware extends RealHardware {
         this.homeEasyEUApplianceFactory = homeEasyEUApplianceFactory;
         this.annotationProcessor = annotationProcessor;
         INSTANCE = this;
+
+        rfxtrx = new RFXtrx(getLog(), Lists.<Pattern>newArrayList());
+        homeEasyUK = HomeEasy.forUK(rfxtrx);
+        homeEasyEU = HomeEasy.forEU(rfxtrx);
+        rfxtrx.openPortSafe();
     }
 
     @Property(id = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names", typeId = "string", initialValue = ".*ttyUSB.*")
