@@ -19,6 +19,7 @@ import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.real.*;
+import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
 import com.intuso.housemate.object.real.factory.automation.RealAutomationFactory;
 import com.intuso.housemate.object.real.factory.device.DeviceFactoryType;
 import com.intuso.housemate.object.real.factory.device.RealDeviceFactory;
@@ -61,8 +62,10 @@ public class RealObjectWatcher {
     private final HardwareFactoryType hardwareFactoryType;
     private final RealUserFactory realUserFactory;
 
+    private final AnnotationProcessor annotationProcessor;
+
     @Inject
-    public RealObjectWatcher(Log log, ListenersFactory listenersFactory, Injector injector, RealRoot root, Persistence persistence, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, DeviceListWatcher deviceListWatcher, HardwareListWatcher hardwareListWatcher, UserListWatcher userListWatcher, RealAutomationFactory realAutomationFactory, DeviceFactoryType deviceFactoryType, HardwareFactoryType hardwareFactoryType, RealUserFactory realUserFactory) {
+    public RealObjectWatcher(Log log, ListenersFactory listenersFactory, Injector injector, RealRoot root, Persistence persistence, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, DeviceListWatcher deviceListWatcher, HardwareListWatcher hardwareListWatcher, UserListWatcher userListWatcher, RealAutomationFactory realAutomationFactory, DeviceFactoryType deviceFactoryType, HardwareFactoryType hardwareFactoryType, RealUserFactory realUserFactory, AnnotationProcessor annotationProcessor) {
         this.log = log;
         this.listenersFactory = listenersFactory;
         this.injector = injector;
@@ -77,6 +80,7 @@ public class RealObjectWatcher {
         this.deviceFactoryType = deviceFactoryType;
         this.hardwareFactoryType = hardwareFactoryType;
         this.realUserFactory = realUserFactory;
+        this.annotationProcessor = annotationProcessor;
     }
 
     public void start() {
@@ -243,6 +247,7 @@ public class RealObjectWatcher {
                             RealDevice device = realDeviceFactory.create(
                                     new DeviceData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
                                     root);
+                            annotationProcessor.process(root.getTypes(), device);
                             devices.add(device);
                         }
                     }
@@ -280,6 +285,7 @@ public class RealObjectWatcher {
                             RealHardware hardware = realHardwareFactory.create(
                                     new HardwareData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
                                     root);
+                            annotationProcessor.process(root.getTypes(), hardware);
                             hardwares.add(hardware);
                         }
                     }
