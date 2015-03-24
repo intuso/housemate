@@ -93,7 +93,7 @@ public class RFXtrx433Hardware extends RealHardware {
         }
         if(create) {
             messageListenerUK = homeEasyUK.addCallback(callbackUK);
-            messageListenerEU = homeEasyUK.addCallback(callbackEU);
+            messageListenerEU = homeEasyEU.addCallback(callbackEU);
         }
     }
 
