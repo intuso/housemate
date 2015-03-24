@@ -63,6 +63,10 @@ public class RFXtrx433Hardware extends RealHardware {
         rfxtrx = new RFXtrx(getLog(), Lists.<Pattern>newArrayList());
         homeEasyUK = HomeEasy.forUK(rfxtrx);
         homeEasyEU = HomeEasy.forEU(rfxtrx);
+
+        setPattern(".*ttyUSB.*");
+        setCreate(true);
+
         rfxtrx.openPortSafe();
     }
 
@@ -110,7 +114,7 @@ public class RFXtrx433Hardware extends RealHardware {
     public void ensureApplianceUK(int houseId, byte unitCode, boolean on) {
         if(!knownAppliancesUK.containsEntry(houseId, unitCode)) {
             try {
-                String name = houseId + "/" + (int)unitCode;
+                String name = "HomeEasy UK " + houseId + "/" + (int)unitCode;
                 HomeEasyUKAppliance appliance = homeEasyUKApplianceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 appliance.setHouseId(houseId);
                 appliance.setUnitCode(unitCode);
@@ -129,7 +133,7 @@ public class RFXtrx433Hardware extends RealHardware {
     public void ensureApplianceEU(int houseId, byte unitCode, boolean on) {
         if(!knownAppliancesEU.containsEntry(houseId, unitCode)) {
             try {
-                String name = houseId + "/" + (int)unitCode;
+                String name = "HomeEasy EU " + houseId + "/" + (int)unitCode;
                 HomeEasyEUAppliance appliance = homeEasyEUApplianceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 appliance.setHouseId(houseId);
                 appliance.setUnitCode(unitCode);
