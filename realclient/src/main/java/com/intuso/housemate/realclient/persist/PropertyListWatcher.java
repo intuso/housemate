@@ -29,8 +29,7 @@ public class PropertyListWatcher implements ListListener<RealProperty<?>> {
 
     @Override
     public void elementAdded(RealProperty<?> property) {
-        valueWatcher.setInitialValue(property);
-        listeners.put(property, property.addObjectListener(valueWatcher));
+        listeners.put(property, valueWatcher.watch(property));
     }
 
     @Override

@@ -61,8 +61,7 @@ public class AutomationListWatcher implements ListListener<RealAutomation> {
         }
 
         listeners.put(automation, automation.addObjectListener(automationListener));
-        valueWatcher.setInitialValue(automation.getRunningValue());
-        listeners.put(automation, automation.getRunningValue().addObjectListener(valueWatcher));
+        listeners.put(automation, valueWatcher.watch(automation.getRunningValue()));
         listeners.put(automation, automation.getConditions().addObjectListener(conditionListWatcher, true));
         listeners.put(automation, automation.getSatisfiedTasks().addObjectListener(taskListWatcher, true));
         listeners.put(automation, automation.getUnsatisfiedTasks().addObjectListener(taskListWatcher, true));

@@ -48,8 +48,7 @@ public class UserListWatcher implements ListListener<RealUser> {
         } catch (HousemateException e) {
             log.e("Failed to save new user values", e);
         }
-        valueWatcher.setInitialValue(user.getEmailProperty());
-        listeners.put(user, user.getEmailProperty().addObjectListener(valueWatcher));
+        listeners.put(user, valueWatcher.watch(user.getEmailProperty()));
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.RealValueBase;
 import com.intuso.housemate.persistence.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -18,10 +19,11 @@ import java.util.List;
 * Time: 19:25
 * To change this template use File | Settings | File Templates.
 */
-public class ValueWatcher implements ValueListener<RealValueBase<?, ?, ?, ?, ?>> {
+public class ValueWatcher  {
 
     private final Log log;
     private final Persistence persistence;
+    private final Listener listener = new Listener();
 
     @Inject
     public ValueWatcher(Log log, Persistence persistence) {
@@ -29,27 +31,33 @@ public class ValueWatcher implements ValueListener<RealValueBase<?, ?, ?, ?, ?>>
         this.persistence = persistence;
     }
 
-    @Override
-    public void valueChanging(RealValueBase<?, ?, ?, ?, ?> value) {
-        // do nothing
-    }
-
-    @Override
-    public void valueChanged(RealValueBase<?, ?, ?, ?, ?> value) {
-        try {
-            persistence.saveTypeInstances(value.getPath(), value.getTypeInstances());
-        } catch(HousemateException e) {
-            log.e("Failed to save property value", e);
-        }
-    }
-
-    public void setInitialValue(RealValueBase<?, ?, ?, ?, ?> value) {
+    public ListenerRegistration watch(RealValueBase<?, ?, ?, ?, ?> value) {
         try {
             value.setTypedValues((List)RealType.deserialiseAll(value.getType(), persistence.getTypeInstances(value.getPath())));
         } catch(DetailsNotFoundException e) {
-            // no problem
+            // nothing to load, so we should persist the current value to make sure that what is persisted is always in
+            // sync with what the current value is
+            listener.valueChanged(value);
         } catch(HousemateException e) {
             log.e("Failed to load initial property value");
+        }
+        return value.addObjectListener(listener);
+    }
+
+    private class Listener implements ValueListener<RealValueBase<?, ?, ?, ?, ?>> {
+
+        @Override
+        public void valueChanging(RealValueBase<?, ?, ?, ?, ?> value) {
+            // do nothing
+        }
+
+        @Override
+        public void valueChanged(RealValueBase<?, ?, ?, ?, ?> value) {
+            try {
+                persistence.saveTypeInstances(value.getPath(), value.getTypeInstances());
+            } catch(HousemateException e) {
+                log.e("Failed to save property value", e);
+            }
         }
     }
 }

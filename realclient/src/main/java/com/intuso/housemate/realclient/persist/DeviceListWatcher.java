@@ -59,8 +59,7 @@ public class DeviceListWatcher implements ListListener<RealDevice> {
         }
 
         listeners.put(device, device.addObjectListener(deviceListener));
-        valueWatcher.setInitialValue(device.getRunningValue());
-        listeners.put(device, device.getRunningValue().addObjectListener(valueWatcher));
+        listeners.put(device, valueWatcher.watch(device.getRunningValue()));
         listeners.put(device, device.getProperties().addObjectListener(propertyListWatcher, true));
         try {
             TypeInstances instances = persistence.getTypeInstances(device.getRunningValue().getPath());

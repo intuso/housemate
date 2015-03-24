@@ -55,8 +55,7 @@ public class ApplicationListWatcher implements ListListener<RealApplication> {
         } catch (HousemateException e) {
             log.e("Failed to save new application values", e);
         }
-        valueWatcher.setInitialValue(application.getStatusValue());
-        listeners.put(application, application.getStatusValue().addObjectListener(valueWatcher));
+        listeners.put(application, valueWatcher.watch(application.getStatusValue()));
         listeners.put(application, application.getApplicationInstances().addObjectListener(instanceListWatcher, true));
     }
 
