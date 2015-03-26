@@ -14,16 +14,20 @@ import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
 import com.intuso.housemate.object.real.annotations.Property;
 import com.intuso.housemate.object.real.factory.device.RealDeviceFactory;
 import com.intuso.housemate.plugin.api.TypeInfo;
-import com.intuso.housemate.plugin.rfxcom.homeeasy.HomeEasyEUAppliance;
-import com.intuso.housemate.plugin.rfxcom.homeeasy.HomeEasyUKAppliance;
+import com.intuso.housemate.plugin.rfxcom.lighting1.Lighting1ARCAppliance;
+import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2ACAppliance;
+import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2HomeEasyEUAppliance;
 import com.intuso.housemate.plugin.rfxcom.temperaturesensor.*;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.RFXtrx;
-import com.rfxcom.rfxtrx.util.lighting2.Appliance;
-import com.rfxcom.rfxtrx.util.lighting2.House;
+import com.rfxcom.rfxtrx.util.lighting1.Lighting1;
+import com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance;
+import com.rfxcom.rfxtrx.util.lighting1.Lighting1House;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2;
+import com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance;
+import com.rfxcom.rfxtrx.util.lighting2.Lighting2House;
 import com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensor;
 import com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensors;
 
@@ -41,19 +45,26 @@ public class RFXtrx433Hardware extends RealHardware {
 
     private final RFXtrx rfxtrx;
 
-    // home easy uk stuff
-    private final Lighting2 lighting2UK;
-    private ListenerRegistration messageListenerHomeEasyUK;
-    private final SetMultimap<Integer, Byte> knownHomeEasyUK = HashMultimap.create();
-    private final RealDeviceFactory<HomeEasyUKAppliance> homeEasyUKFactory;
-    private final CallbackHomeEasyUK callbackHomeEasyUK = new CallbackHomeEasyUK();
+    // lighting1 arc stuff
+    private final Lighting1 lighting1ARC;
+    private ListenerRegistration messageListenerLighting1ARC;
+    private final SetMultimap<Byte, Byte> knownLighting1ARC = HashMultimap.create();
+    private final RealDeviceFactory<Lighting1ARCAppliance> lighting1ARCFactory;
+    private final CallbackLighting1ARC callbackLighting1ARC = new CallbackLighting1ARC();
 
-    // home easy eu stuff
-    private final Lighting2 lighting2EU;
-    private ListenerRegistration messageListenerHomeEasyEU;
-    private final SetMultimap<Integer, Byte> knownHomeEasyEU = HashMultimap.create();
-    private final RealDeviceFactory<HomeEasyEUAppliance> homeEasyEUFactory;
-    private final CallbackHomeEasyEU callbackHomeEasyEU = new CallbackHomeEasyEU();
+    // lighting2 ac stuff
+    private final Lighting2 lighting2UK;
+    private ListenerRegistration messageListenerLighting2AC;
+    private final SetMultimap<Integer, Byte> knownLighting2AC = HashMultimap.create();
+    private final RealDeviceFactory<Lighting2ACAppliance> lighting2ACFactory;
+    private final CallbackLighting2AC callbackLighting2AC = new CallbackLighting2AC();
+
+    // lighting2 home easy eu stuff
+    private final Lighting2 lighting2HomeEasyEU;
+    private ListenerRegistration messageListenerLighting2HomeEasyEU;
+    private final SetMultimap<Integer, Byte> knownLighting2HomeEasyEU = HashMultimap.create();
+    private final RealDeviceFactory<Lighting2HomeEasyEUAppliance> lighting2HomeEasyEUFactory;
+    private final CallbackLighting2HomeEasyEU callbackLighting2HomeEasyEU = new CallbackLighting2HomeEasyEU();
 
     // temperature sensor 1 stuff
     private final TemperatureSensors temperature1;
@@ -97,8 +108,9 @@ public class RFXtrx433Hardware extends RealHardware {
 
     @Inject
     public RFXtrx433Hardware(Log log, ListenersFactory listenersFactory, @Assisted HardwareData data,
-                             RealDeviceFactory<HomeEasyUKAppliance> homeEasyUKFactory,
-                             RealDeviceFactory<HomeEasyEUAppliance> homeEasyEUFactory,
+                             RealDeviceFactory<Lighting1ARCAppliance> lighting1ARCFactory,
+                             RealDeviceFactory<Lighting2ACAppliance> lighting2ACFactory,
+                             RealDeviceFactory<Lighting2HomeEasyEUAppliance> lighting2HomeEasyEUFactory,
                              RealDeviceFactory<Temperature1Sensor> temperature1Factory,
                              RealDeviceFactory<Temperature2Sensor> temperature2Factory,
                              RealDeviceFactory<Temperature3Sensor> temperature3Factory,
@@ -111,8 +123,9 @@ public class RFXtrx433Hardware extends RealHardware {
         this.annotationProcessor = annotationProcessor;
 
         // injected factories
-        this.homeEasyUKFactory = homeEasyUKFactory;
-        this.homeEasyEUFactory = homeEasyEUFactory;
+        this.lighting1ARCFactory = lighting1ARCFactory;
+        this.lighting2ACFactory = lighting2ACFactory;
+        this.lighting2HomeEasyEUFactory = lighting2HomeEasyEUFactory;
         this.temperature1Factory = temperature1Factory;
         this.temperature2Factory = temperature2Factory;
         this.temperature3Factory = temperature3Factory;
@@ -123,8 +136,9 @@ public class RFXtrx433Hardware extends RealHardware {
         rfxtrx = new RFXtrx(getLog(), Lists.<Pattern>newArrayList());
 
         // create the wrappers
+        lighting1ARC = Lighting1.forARC(rfxtrx);
         lighting2UK = Lighting2.forAC(rfxtrx);
-        lighting2EU = Lighting2.forHomeEasyEU(rfxtrx);
+        lighting2HomeEasyEU = Lighting2.forHomeEasyEU(rfxtrx);
         temperature1 = TemperatureSensors.forTemp1(rfxtrx);
         temperature2 = TemperatureSensors.forTemp2(rfxtrx);
         temperature3 = TemperatureSensors.forTemp3(rfxtrx);
@@ -150,13 +164,17 @@ public class RFXtrx433Hardware extends RealHardware {
     @Property(id = "create", name = "Create devices", description = "Create a new device when a command is received for it", typeId = "boolean", initialValue = "true")
     public void setCreate(boolean create) {
         this.create = create;
-        if(messageListenerHomeEasyUK != null) {
-            messageListenerHomeEasyUK.removeListener();
-            messageListenerHomeEasyUK = null;
+        if(messageListenerLighting1ARC != null) {
+            messageListenerLighting1ARC.removeListener();
+            messageListenerLighting1ARC = null;
         }
-        if(messageListenerHomeEasyEU != null) {
-            messageListenerHomeEasyEU.removeListener();
-            messageListenerHomeEasyEU = null;
+        if(messageListenerLighting2AC != null) {
+            messageListenerLighting2AC.removeListener();
+            messageListenerLighting2AC = null;
+        }
+        if(messageListenerLighting2HomeEasyEU != null) {
+            messageListenerLighting2HomeEasyEU.removeListener();
+            messageListenerLighting2HomeEasyEU = null;
         }
         if(messageListenerTemperature1 != null) {
             messageListenerTemperature1.removeListener();
@@ -179,8 +197,9 @@ public class RFXtrx433Hardware extends RealHardware {
             messageListenerTemperature5 = null;
         }
         if(create) {
-            messageListenerHomeEasyUK = lighting2UK.addCallback(callbackHomeEasyUK);
-            messageListenerHomeEasyEU = lighting2EU.addCallback(callbackHomeEasyEU);
+            messageListenerLighting1ARC = lighting1ARC.addCallback(callbackLighting1ARC);
+            messageListenerLighting2AC = lighting2UK.addCallback(callbackLighting2AC);
+            messageListenerLighting2HomeEasyEU = lighting2HomeEasyEU.addCallback(callbackLighting2HomeEasyEU);
             messageListenerTemperature1 = temperature1.addCallback(callbackTemperature1);
             messageListenerTemperature2 = temperature2.addCallback(callbackTemperature2);
             messageListenerTemperature3 = temperature3.addCallback(callbackTemperature3);
@@ -193,16 +212,16 @@ public class RFXtrx433Hardware extends RealHardware {
         return create;
     }
 
-    public Appliance makeHomeEasyApplianceUK(int houseId, byte unitCode) {
-        knownHomeEasyUK.put(houseId, unitCode);
-        return new Appliance(new House(lighting2UK, houseId), unitCode);
+    public Lighting1Appliance makeLighting1ARC(byte houseId, byte unitCode) {
+        knownLighting1ARC.put(houseId, unitCode);
+        return new Lighting1Appliance(new Lighting1House(lighting1ARC, houseId), unitCode);
     }
 
-    public void ensureHomeEasyApplianceUK(int houseId, byte unitCode, boolean on) {
-        if(!knownHomeEasyUK.containsEntry(houseId, unitCode)) {
+    public void ensureLighting1ARC(byte houseId, byte unitCode, boolean on) {
+        if(!knownLighting1ARC.containsEntry(houseId, unitCode)) {
             try {
-                String name = "HomeEasy UK " + houseId + "/" + (int)unitCode;
-                HomeEasyUKAppliance appliance = homeEasyUKFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
+                String name = "Lighting1 ARC " + houseId + "/" + (int)unitCode;
+                Lighting1ARCAppliance appliance = lighting1ARCFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 appliance.setHouseId(houseId);
                 appliance.setUnitCode(unitCode);
                 annotationProcessor.process(getRealRoot().getTypes(), appliance);
@@ -212,21 +231,21 @@ public class RFXtrx433Hardware extends RealHardware {
                     appliance.setOff();
                 getRealRoot().addDevice(appliance);
             } catch (HousemateException e) {
-                getLog().e("Failed to auto-create HomeEasy UK device " + houseId + "/" + (int)unitCode);
+                getLog().e("Failed to auto-create Lighting1 ARC device " + houseId + "/" + (int)unitCode);
             }
         }
     }
 
-    public Appliance makeHomeEasyApplianceEU(int houseId, byte unitCode) {
-        knownHomeEasyEU.put(houseId, unitCode);
-        return new Appliance(new House(lighting2EU, houseId), unitCode);
+    public Lighting2Appliance makeLighting2AC(int houseId, byte unitCode) {
+        knownLighting2AC.put(houseId, unitCode);
+        return new Lighting2Appliance(new Lighting2House(lighting2UK, houseId), unitCode);
     }
 
-    public void ensureHomeEasyApplianceEU(int houseId, byte unitCode, boolean on) {
-        if(!knownHomeEasyEU.containsEntry(houseId, unitCode)) {
+    public void ensureLighting2AC(int houseId, byte unitCode, boolean on) {
+        if(!knownLighting2AC.containsEntry(houseId, unitCode)) {
             try {
-                String name = "HomeEasy EU " + houseId + "/" + (int)unitCode;
-                HomeEasyEUAppliance appliance = homeEasyEUFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
+                String name = "Lighting2 AC " + houseId + "/" + (int)unitCode;
+                Lighting2ACAppliance appliance = lighting2ACFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 appliance.setHouseId(houseId);
                 appliance.setUnitCode(unitCode);
                 annotationProcessor.process(getRealRoot().getTypes(), appliance);
@@ -236,7 +255,31 @@ public class RFXtrx433Hardware extends RealHardware {
                     appliance.setOff();
                 getRealRoot().addDevice(appliance);
             } catch (HousemateException e) {
-                getLog().e("Failed to auto-create HomeEasy EU device " + houseId + "/" + (int)unitCode);
+                getLog().e("Failed to auto-create Lighting2 AC device " + houseId + "/" + (int)unitCode);
+            }
+        }
+    }
+
+    public Lighting2Appliance makeHomeEasyApplianceEU(int houseId, byte unitCode) {
+        knownLighting2HomeEasyEU.put(houseId, unitCode);
+        return new Lighting2Appliance(new Lighting2House(lighting2HomeEasyEU, houseId), unitCode);
+    }
+
+    public void ensureHomeEasyApplianceEU(int houseId, byte unitCode, boolean on) {
+        if(!knownLighting2HomeEasyEU.containsEntry(houseId, unitCode)) {
+            try {
+                String name = "Lighting2 HomeEasy EU " + houseId + "/" + (int)unitCode;
+                Lighting2HomeEasyEUAppliance appliance = lighting2HomeEasyEUFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
+                appliance.setHouseId(houseId);
+                appliance.setUnitCode(unitCode);
+                annotationProcessor.process(getRealRoot().getTypes(), appliance);
+                if(on)
+                    appliance.setOn();
+                else
+                    appliance.setOff();
+                getRealRoot().addDevice(appliance);
+            } catch (HousemateException e) {
+                getLog().e("Failed to auto-create Lighting2 HomeEasy EU device " + houseId + "/" + (int)unitCode);
             }
         }
     }
@@ -341,11 +384,11 @@ public class RFXtrx433Hardware extends RealHardware {
         }
     }
 
-    private class CallbackHomeEasyUK implements Lighting2.Callback {
+    private class CallbackLighting1ARC implements Lighting1.Callback {
 
         @Override
         public void turnedOn(int houseId, byte unitCode) {
-            ensureHomeEasyApplianceUK(houseId, unitCode, true);
+            ensureLighting2AC(houseId, unitCode, true);
         }
 
         @Override
@@ -355,7 +398,45 @@ public class RFXtrx433Hardware extends RealHardware {
 
         @Override
         public void turnedOff(int houseId, byte unitCode) {
-            ensureHomeEasyApplianceUK(houseId, unitCode, false);
+            ensureLighting2AC(houseId, unitCode, false);
+        }
+
+        @Override
+        public void turnedOffAll(int houseId) {
+
+        }
+
+        @Override
+        public void dim(int houseId, byte unitCode) {
+            // dimmable devices not supported yet
+        }
+
+        @Override
+        public void bright(int houseId, byte level) {
+            // dimmable devices not supported yet
+        }
+
+        @Override
+        public void chime(int houseId) {
+            // chime devices not supported yet
+        }
+    }
+
+    private class CallbackLighting2AC implements Lighting2.Callback {
+
+        @Override
+        public void turnedOn(int houseId, byte unitCode) {
+            ensureLighting2AC(houseId, unitCode, true);
+        }
+
+        @Override
+        public void turnedOnAll(int houseId) {
+
+        }
+
+        @Override
+        public void turnedOff(int houseId, byte unitCode) {
+            ensureLighting2AC(houseId, unitCode, false);
         }
 
         @Override
@@ -365,7 +446,7 @@ public class RFXtrx433Hardware extends RealHardware {
 
         @Override
         public void setLevel(int houseId, byte unitCode, byte level) {
-            ensureHomeEasyApplianceUK(houseId, unitCode, level != 0 && level != 0x0F);
+            ensureLighting2AC(houseId, unitCode, level != 0 && level != 0x0F);
         }
 
         @Override
@@ -374,7 +455,7 @@ public class RFXtrx433Hardware extends RealHardware {
         }
     }
 
-    private class CallbackHomeEasyEU implements Lighting2.Callback {
+    private class CallbackLighting2HomeEasyEU implements Lighting2.Callback {
 
         @Override
         public void turnedOn(int houseId, byte unitCode) {

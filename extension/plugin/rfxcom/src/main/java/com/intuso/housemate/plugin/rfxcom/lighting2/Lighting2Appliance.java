@@ -1,4 +1,4 @@
-package com.intuso.housemate.plugin.rfxcom.homeeasy;
+package com.intuso.housemate.plugin.rfxcom.lighting2;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.DeviceData;
@@ -7,7 +7,6 @@ import com.intuso.housemate.object.real.impl.device.StatefulPoweredDevice;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.rfxcom.rfxtrx.util.lighting2.Appliance;
 
 import java.io.IOException;
 
@@ -15,17 +14,17 @@ import java.io.IOException;
  * Housemate device that controls a HomeEasy Appliance
  *
  */
-public abstract class HomeEasyAppliance extends StatefulPoweredDevice {
+public abstract class Lighting2Appliance extends StatefulPoweredDevice {
 
-	private Appliance appliance;
+	private com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance lighting2Appliance;
     private ListenerRegistration listenerRegistration;
     private int houseId = 0;
     private int unitCode = 1;
 
-	public HomeEasyAppliance(Log log,
-                             ListenersFactory listenersFactory,
-                             String type,
-                             DeviceData data) {
+	public Lighting2Appliance(Log log,
+                              ListenersFactory listenersFactory,
+                              String type,
+                              DeviceData data) {
 		super(log, listenersFactory, type, data);
         getCustomPropertyIds().add("house-id");
         getCustomPropertyIds().add("unit-id");
@@ -50,28 +49,28 @@ public abstract class HomeEasyAppliance extends StatefulPoweredDevice {
             listenerRegistration.removeListener();
             listenerRegistration = null;
         }
-        appliance = createAppliance(houseId, (byte) unitCode);
-        listenerRegistration = appliance.addCallback(new Appliance.Callback() {
+        lighting2Appliance = createAppliance(houseId, (byte) unitCode);
+        listenerRegistration = lighting2Appliance.addCallback(new com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance.Callback() {
 
             @Override
-            public void turnedOn(Appliance a) {
+            public void turnedOn(com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance a) {
                 setOn();
             }
 
             @Override
-            public void turnedOff(Appliance a) {
+            public void turnedOff(com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance a) {
                 setOff();
             }
         });
 	}
 
-    public abstract Appliance createAppliance(int houseId, byte unitCode);
+    public abstract com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance createAppliance(int houseId, byte unitCode);
 
     public int getHouseId() {
         return houseId;
     }
 
-    @Property(id = "house-id", name = "House ID", description = "HomeEasy house ID (in decimal)", typeId = "integer")
+    @Property(id = "house-id", name = "House ID", description = "House ID (in decimal)", typeId = "integer")
     public void setHouseId(int houseId) {
         this.houseId = houseId;
         propertyChanged();
@@ -81,7 +80,7 @@ public abstract class HomeEasyAppliance extends StatefulPoweredDevice {
         return unitCode;
     }
 
-    @Property(id = "unit-id", name = "Unit ID", description = "HomeEasy unit ID", typeId = "integer")
+    @Property(id = "unit-id", name = "Unit ID", description = "Unit ID", typeId = "integer")
     public void setUnitCode(int unitCode) {
         this.unitCode = unitCode;
         propertyChanged();
@@ -89,10 +88,10 @@ public abstract class HomeEasyAppliance extends StatefulPoweredDevice {
 
     @Override
     public void turnOn() throws HousemateException {
-        if(appliance == null)
-            throw new HousemateException("Not connected to HomeEasy device. Ensure properties are set");
+        if(lighting2Appliance == null)
+            throw new HousemateException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
-			appliance.turnOn();
+			lighting2Appliance.turnOn();
             setOn();
 		} catch (IOException e) {
 			throw new HousemateException("Could not turn appliance on", e);
@@ -101,10 +100,10 @@ public abstract class HomeEasyAppliance extends StatefulPoweredDevice {
 	
 	@Override
     public void turnOff() throws HousemateException {
-        if(appliance == null)
-            throw new HousemateException("Not connected to HomeEasy device. Ensure properties are set");
+        if(lighting2Appliance == null)
+            throw new HousemateException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
-			appliance.turnOff();
+			lighting2Appliance.turnOff();
             setOff();
 		} catch (IOException e) {
 			throw new HousemateException("Could not turn appliance off", e);
@@ -118,6 +117,6 @@ public abstract class HomeEasyAppliance extends StatefulPoweredDevice {
 
 	@Override
 	protected void stop() {
-		appliance = null;
+		lighting2Appliance = null;
 	}
 }
