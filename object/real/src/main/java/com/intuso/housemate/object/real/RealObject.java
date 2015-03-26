@@ -48,8 +48,9 @@ public abstract class RealObject<
     protected void initPreRecurseHook(HousemateObject<?, ?, ?, ?> parent) {
 
         // get the server for this object
-        if(this instanceof RealRoot)
-            realRoot = (RealRoot)this;
+        // unnecessary RealObject cast is to prevent IntelliJ showing this as an error.
+        if((RealObject)this instanceof RealRoot)
+            realRoot = (RealRoot)(RealObject)this;
         else if(parent != null && parent instanceof RealObject)
             realRoot = ((RealObject)parent).realRoot;
     }
