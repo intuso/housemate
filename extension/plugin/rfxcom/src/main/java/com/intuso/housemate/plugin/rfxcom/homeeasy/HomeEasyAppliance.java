@@ -1,36 +1,32 @@
-package com.intuso.housemate.plugin.rfxcom;
+package com.intuso.housemate.plugin.rfxcom.homeeasy;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.object.real.annotations.Property;
 import com.intuso.housemate.object.real.impl.device.StatefulPoweredDevice;
-import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.rfxcom.rfxtrx.homeeasy.Appliance;
+import com.rfxcom.rfxtrx.util.homeeasy.Appliance;
 
 import java.io.IOException;
 
 /**
- * Housemate device that controls a USB relay
+ * Housemate device that controls a HomeEasy Appliance
  *
  */
-@TypeInfo(id = "home-easy-eu", name = "HomeEasy EU", description = "HomeEasy EU appliance")
-public class HomeEasyEUAppliance extends StatefulPoweredDevice {
+public abstract class HomeEasyAppliance extends StatefulPoweredDevice {
 
 	private Appliance appliance;
     private ListenerRegistration listenerRegistration;
     private int houseId = 0;
     private int unitCode = 1;
 
-    @Inject
-	public HomeEasyEUAppliance(Log log,
-                               ListenersFactory listenersFactory,
-                               @Assisted DeviceData data) {
-		super(log, listenersFactory, "home-easy-eu", data);
+	public HomeEasyAppliance(Log log,
+                             ListenersFactory listenersFactory,
+                             String type,
+                             DeviceData data) {
+		super(log, listenersFactory, type, data);
         getCustomPropertyIds().add("house-id");
         getCustomPropertyIds().add("unit-id");
 	}
@@ -54,7 +50,7 @@ public class HomeEasyEUAppliance extends StatefulPoweredDevice {
             listenerRegistration.removeListener();
             listenerRegistration = null;
         }
-        appliance = RFXtrx433Hardware.INSTANCE.makeApplianceEU(houseId, (byte) unitCode);
+        appliance = createAppliance(houseId, (byte) unitCode);
         listenerRegistration = appliance.addCallback(new Appliance.Callback() {
 
             @Override
@@ -68,6 +64,8 @@ public class HomeEasyEUAppliance extends StatefulPoweredDevice {
             }
         });
 	}
+
+    public abstract Appliance createAppliance(int houseId, byte unitCode);
 
     public int getHouseId() {
         return houseId;
