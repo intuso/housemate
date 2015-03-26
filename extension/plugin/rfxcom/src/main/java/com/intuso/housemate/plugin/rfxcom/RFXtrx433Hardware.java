@@ -21,9 +21,9 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.RFXtrx;
-import com.rfxcom.rfxtrx.util.homeeasy.Appliance;
-import com.rfxcom.rfxtrx.util.homeeasy.HomeEasy;
-import com.rfxcom.rfxtrx.util.homeeasy.House;
+import com.rfxcom.rfxtrx.util.lighting2.Appliance;
+import com.rfxcom.rfxtrx.util.lighting2.House;
+import com.rfxcom.rfxtrx.util.lighting2.Lighting2;
 import com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensor;
 import com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensors;
 
@@ -42,14 +42,14 @@ public class RFXtrx433Hardware extends RealHardware {
     private final RFXtrx rfxtrx;
 
     // home easy uk stuff
-    private final HomeEasy homeEasyUK;
+    private final Lighting2 lighting2UK;
     private ListenerRegistration messageListenerHomeEasyUK;
     private final SetMultimap<Integer, Byte> knownHomeEasyUK = HashMultimap.create();
     private final RealDeviceFactory<HomeEasyUKAppliance> homeEasyUKFactory;
     private final CallbackHomeEasyUK callbackHomeEasyUK = new CallbackHomeEasyUK();
 
     // home easy eu stuff
-    private final HomeEasy homeEasyEU;
+    private final Lighting2 lighting2EU;
     private ListenerRegistration messageListenerHomeEasyEU;
     private final SetMultimap<Integer, Byte> knownHomeEasyEU = HashMultimap.create();
     private final RealDeviceFactory<HomeEasyEUAppliance> homeEasyEUFactory;
@@ -123,8 +123,8 @@ public class RFXtrx433Hardware extends RealHardware {
         rfxtrx = new RFXtrx(getLog(), Lists.<Pattern>newArrayList());
 
         // create the wrappers
-        homeEasyUK = HomeEasy.forUK(rfxtrx);
-        homeEasyEU = HomeEasy.forEU(rfxtrx);
+        lighting2UK = Lighting2.forAC(rfxtrx);
+        lighting2EU = Lighting2.forHomeEasyEU(rfxtrx);
         temperature1 = TemperatureSensors.forTemp1(rfxtrx);
         temperature2 = TemperatureSensors.forTemp2(rfxtrx);
         temperature3 = TemperatureSensors.forTemp3(rfxtrx);
@@ -179,8 +179,8 @@ public class RFXtrx433Hardware extends RealHardware {
             messageListenerTemperature5 = null;
         }
         if(create) {
-            messageListenerHomeEasyUK = homeEasyUK.addCallback(callbackHomeEasyUK);
-            messageListenerHomeEasyEU = homeEasyEU.addCallback(callbackHomeEasyEU);
+            messageListenerHomeEasyUK = lighting2UK.addCallback(callbackHomeEasyUK);
+            messageListenerHomeEasyEU = lighting2EU.addCallback(callbackHomeEasyEU);
             messageListenerTemperature1 = temperature1.addCallback(callbackTemperature1);
             messageListenerTemperature2 = temperature2.addCallback(callbackTemperature2);
             messageListenerTemperature3 = temperature3.addCallback(callbackTemperature3);
@@ -195,7 +195,7 @@ public class RFXtrx433Hardware extends RealHardware {
 
     public Appliance makeHomeEasyApplianceUK(int houseId, byte unitCode) {
         knownHomeEasyUK.put(houseId, unitCode);
-        return new Appliance(new House(homeEasyUK, houseId), unitCode);
+        return new Appliance(new House(lighting2UK, houseId), unitCode);
     }
 
     public void ensureHomeEasyApplianceUK(int houseId, byte unitCode, boolean on) {
@@ -219,7 +219,7 @@ public class RFXtrx433Hardware extends RealHardware {
 
     public Appliance makeHomeEasyApplianceEU(int houseId, byte unitCode) {
         knownHomeEasyEU.put(houseId, unitCode);
-        return new Appliance(new House(homeEasyEU, houseId), unitCode);
+        return new Appliance(new House(lighting2EU, houseId), unitCode);
     }
 
     public void ensureHomeEasyApplianceEU(int houseId, byte unitCode, boolean on) {
@@ -341,7 +341,7 @@ public class RFXtrx433Hardware extends RealHardware {
         }
     }
 
-    private class CallbackHomeEasyUK implements HomeEasy.Callback {
+    private class CallbackHomeEasyUK implements Lighting2.Callback {
 
         @Override
         public void turnedOn(int houseId, byte unitCode) {
@@ -374,7 +374,7 @@ public class RFXtrx433Hardware extends RealHardware {
         }
     }
 
-    private class CallbackHomeEasyEU implements HomeEasy.Callback {
+    private class CallbackHomeEasyEU implements Lighting2.Callback {
 
         @Override
         public void turnedOn(int houseId, byte unitCode) {

@@ -7,7 +7,7 @@ import com.intuso.housemate.plugin.api.TypeInfo;
 import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.rfxcom.rfxtrx.util.homeeasy.Appliance;
+import com.rfxcom.rfxtrx.util.lighting2.Appliance;
 
 /**
  * Housemate device that controls a USB relay

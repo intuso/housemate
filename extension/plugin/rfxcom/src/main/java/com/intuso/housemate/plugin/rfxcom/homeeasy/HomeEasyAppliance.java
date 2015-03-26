@@ -7,7 +7,7 @@ import com.intuso.housemate.object.real.impl.device.StatefulPoweredDevice;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.rfxcom.rfxtrx.util.homeeasy.Appliance;
+import com.rfxcom.rfxtrx.util.lighting2.Appliance;
 
 import java.io.IOException;
 
