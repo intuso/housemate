@@ -34,8 +34,8 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
     public final static String HOST = "client.socket.host";
     public final static String PORT = "client.socket.port";
-    public final static String KEEP_OPEN = "client.socket.keepOpen";
-    public final static String CHECK_IN = "client.socket.checkIn";
+    public final static String ACTIVITY_DELAY = "client.socket.activity-delay";
+    public final static String MAX_INACTIVE_TIME = "client.socket.max-inactive-time";
 
     private final PropertyRepository properties;
     private final StreamSerialiserFactory serialiserFactory;
@@ -50,14 +50,14 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
     private MessageSender messageSender;
 
     private boolean shouldBeConnected = false;
+    private boolean networkAvailable = true;
+    private boolean active = true;
 
     private final List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
     private ApplicationDetails applicationDetails = null;
-    private boolean networkAvailable = true;
 
     /**
      * Create a new client comms
-     * @throws HousemateException
      */
     @Inject
     public SocketClient(Log log, ListenersFactory listenersFactory, PropertyRepository properties, StreamSerialiserFactory serialiserFactory) {
@@ -65,11 +65,13 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
         this.properties = properties;
         this.serialiserFactory = serialiserFactory;
         // create the queues and threads
-        outputQueue = new LinkedBlockingQueue<Message>();
+        outputQueue = new LinkedBlockingQueue<>();
     }
 
     @Override
     public synchronized final void connect() {
+
+        getLog().d("Socket Client: connect()");
 
         if (shouldBeConnected)
             return;
@@ -77,39 +79,21 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
         listenerRegistrations.add(properties.addListener(HOST, this));
         listenerRegistrations.add(properties.addListener(PORT, this));
-        listenerRegistrations.add(properties.addListener(KEEP_OPEN, this));
-        listenerRegistrations.add(properties.addListener(CHECK_IN, this));
+        listenerRegistrations.add(properties.addListener(ACTIVITY_DELAY, this));
+        listenerRegistrations.add(properties.addListener(MAX_INACTIVE_TIME, this));
 
-        _ensureConnected();
-    }
+        activityMonitor = new ActivityMonitor();
+        propertyValueChanged(ACTIVITY_DELAY, null, properties.get(ACTIVITY_DELAY));
+        propertyValueChanged(MAX_INACTIVE_TIME, null, properties.get(MAX_INACTIVE_TIME));
+        activityMonitor.start();
 
-    @Override
-    public void register(ApplicationDetails applicationDetails) {
-        this.applicationDetails = applicationDetails;
-        super.register(applicationDetails);
-    }
-
-    @Override
-    public void unregister() {
-        this.applicationDetails = null;
-        super.unregister();
-    }
-
-    public synchronized void _ensureConnected() {
-        if(connectThread != null || socket != null)
-            return;
-        if(activityMonitor == null) {
-            activityMonitor = new ActivityMonitor();
-            propertyValueChanged(KEEP_OPEN, null, properties.get(KEEP_OPEN));
-            propertyValueChanged(CHECK_IN, null, properties.get(CHECK_IN));
-            activityMonitor.start();
-        }
-        connectThread = new ConnectThread();
-        connectThread.start();
+        checkConnection();
     }
 
     @Override
     public synchronized final void disconnect() {
+
+        getLog().d("Socket Client: disconnect()");
 
         if(!shouldBeConnected)
             return;
@@ -119,22 +103,98 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
             listenerRegistration.removeListener();
         listenerRegistrations.clear();
 
-        _disconnect();
+        if(activityMonitor != null) {
+            activityMonitor.interrupt();
+            activityMonitor = null;
+        }
+
+        checkConnection();
     }
 
-    private final void _disconnect() {
-        _disconnect(true);
+    @Override
+    public void register(ApplicationDetails applicationDetails) {
+
+        getLog().d("Socket Client: register()");
+
+        this.applicationDetails = applicationDetails;
+        super.register(applicationDetails);
+    }
+
+    @Override
+    public void unregister() {
+
+        getLog().d("Socket Client: unregister()");
+
+        this.applicationDetails = null;
+        super.unregister();
+    }
+
+    @Override
+    public void sendMessage(Message message) {
+        active = true;
+        activityMonitor.somethingHappened();
+        checkConnection();
+        outputQueue.add(message);
+    }
+
+    @Override
+    public void propertyValueChanged(String key, String oldValue, String newValue) {
+        if(key.equals(HOST) || key.equals(PORT)) {
+            getLog().d("Socket Client: host/port changed");
+            _disconnect();
+            checkConnection();
+        } else if(activityMonitor != null) {
+            if(key.equals(MAX_INACTIVE_TIME) && newValue != null) {
+                try {
+                    Long newMaxInactiveTime = Long.parseLong(properties.get(SocketClient.MAX_INACTIVE_TIME));
+                    getLog().d("Socket Client: " + MAX_INACTIVE_TIME + " changed to " + newMaxInactiveTime);
+                    activityMonitor.setMaxInactiveTime(newMaxInactiveTime);
+                } catch (NumberFormatException e) {
+                    getLog().e("Socket Client: Failed to parse " + MAX_INACTIVE_TIME + " new value " + properties.get(MAX_INACTIVE_TIME));
+                }
+            } else if(key.equals(ACTIVITY_DELAY) && newValue != null) {
+                try {
+                    Long newActivityDelay = Long.parseLong(properties.get(SocketClient.ACTIVITY_DELAY));
+                    getLog().d("Socket Client: " + ACTIVITY_DELAY + " changed to " + newActivityDelay);
+                    activityMonitor.setActivityDelay(newActivityDelay);
+                } catch (NumberFormatException e) {
+                    getLog().e("Socket Client: Failed to parse " + ACTIVITY_DELAY + " new value " + properties.get(ACTIVITY_DELAY));
+                }
+            }
+        }
+    }
+
+    public void networkAvailable(boolean networkAvailable) {
+        getLog().d("Socket Client: networkAvailable(" + networkAvailable + ")");
+        this.networkAvailable = networkAvailable;
+        checkConnection();
+    }
+
+    public synchronized void checkConnection() {
+        if(shouldBeConnected && networkAvailable && active)
+            _ensureConnected();
+        else
+            _disconnect();
+    }
+
+    public synchronized void _ensureConnected() {
+
+        if(connectThread != null || socket != null)
+            return;
+
+        connectThread = new ConnectThread();
+        connectThread.start();
     }
 
     /**
      * Shutdown the comms connection
      */
-    private synchronized final void _disconnect(boolean reconnect) {
+    private synchronized void _disconnect() {
 
         if(connectThread == null && socket == null)
             return;
 
-        getLog().d("Disconnecting from the server");
+        getLog().d("Socket Client: Disconnecting from the server");
 
         if(connectThread != null) {
             connectThread.interrupt();
@@ -146,12 +206,12 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                 socket.close();
             } catch(IOException e) {
                 if(!socket.isClosed())
-                    getLog().e("Error closing client connection to server");
+                    getLog().e("Socket Client: Error closing client connection to server", e);
             }
             socket = null;
         }
 
-        getLog().d("Interrupting all reader/writer threads");
+        getLog().d("Socket Client: Interrupting all reader/writer threads");
         if(streamReader != null) {
             streamReader.interrupt();
             streamReader = null;
@@ -163,57 +223,8 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
         getLog().d("Disconnected");
 
-        // set the connection status, and check if we should reconnect
-        if(shouldBeConnected) {
-            setServerConnectionStatus(ServerConnectionStatus.DisconnectedTemporarily);
-            if(reconnect)
-                _ensureConnected();
-        } else {
-            setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
-            getLog().d("Should not be connected, leaving disconnected");
-            if(activityMonitor != null)
-                activityMonitor.interrupt();
-        }
-    }
-
-    @Override
-    public void sendMessage(Message message) {
-        _ensureConnected();
-        outputQueue.add(message);
-    }
-
-    @Override
-    public void propertyValueChanged(String key, String oldValue, String newValue) {
-        if(key.equals(HOST) || key.equals(PORT)) {
-            // in a new thread so it doesn't block the caller
-            new Thread() {
-                @Override
-                public void run() {
-                    _disconnect();
-                }
-            }.start();
-        } else if(activityMonitor != null) {
-            if(key.equals(CHECK_IN) && newValue != null) {
-                try {
-                    activityMonitor.setCheckInTimeout(Long.parseLong(properties.get(SocketClient.CHECK_IN)));
-                } catch (NumberFormatException e) {
-                    getLog().e("Failed to parse check in timeout " + properties.get(CHECK_IN));
-                }
-            } else if(key.equals(KEEP_OPEN) && newValue != null) {
-                try {
-                    activityMonitor.setInactivityTimeout(Long.parseLong(properties.get(SocketClient.KEEP_OPEN)));
-                } catch (NumberFormatException e) {
-                    getLog().e("Failed to parse check in timeout " + properties.get(KEEP_OPEN));
-                }
-            }
-        }
-    }
-
-    public void networkAvailable(boolean networkAvailable) {
-        this.networkAvailable = networkAvailable;
-        // check if we should disconnect, activity monitor will take care of reconnecting
-        if(!networkAvailable)
-            _disconnect(false);
+        // set the connection status
+        setServerConnectionStatus(shouldBeConnected ? ServerConnectionStatus.DisconnectedTemporarily : ServerConnectionStatus.DisconnectedPermanently);
     }
 
     private class ConnectThread extends Thread {
@@ -225,12 +236,12 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
             int port = Integer.parseInt(properties.get(PORT));
 
             // log for debug info
-            getLog().d("Server host is \"" + host + "\"");
-            getLog().d("Server port is \"" + port + "\"");
+            getLog().d("Socket Client: Server host:port is " + host + ":" + port);
+
             int delay = 1;
             while(!isInterrupted() && (socket == null || !socket.isConnected())) {
                 try {
-                    getLog().d("Attempting to connect");
+                    getLog().d("Socket Client: Attempting to connect");
 
                     // create the socket and the streams. Create then connect, so that socket is assigned before
                     // the connection is attempted.
@@ -239,7 +250,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     socket.setKeepAlive(true);
                     socket.setSoTimeout(60000);
 
-                    getLog().d("Connected to server, writing details and creating reader/writer threads");
+                    getLog().d("Socket Client: Connected to server, writing details and creating reader/writer threads");
                     writeDetails();
                     checkResponse();
                     serialiser = serialiserFactory.create(socket.getOutputStream(), socket.getInputStream());
@@ -251,10 +262,10 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     streamReader = new StreamReader();
 
                     if(applicationDetails != null) {
-                        getLog().d("Re-registering");
-                        setServerConnectionStatus(ServerConnectionStatus.ConnectedToServer);
-                        serialiser.write(new Message<ApplicationRegistration>(ConnectionManager.ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
+                        getLog().d("Socket Client: Re-registering");
+                        serialiser.write(new Message<>(ConnectionManager.ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
                                 new ApplicationRegistration(applicationDetails, properties.get(ConnectionManager.APPLICATION_INSTANCE_ID), ClientType.Router)));
+                        setServerConnectionStatus(ServerConnectionStatus.ConnectedToServer);
                     } else
                         setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
 
@@ -262,24 +273,24 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     streamReader.start();
                     messageSender.start();
 
-                    getLog().d("Connected to server");
+                    getLog().d("Socket Client: Connected to server");
 
                     // return from the method
                     return;
 
                 } catch (UnknownHostException e) {
-                    getLog().e("Server host \"" + host + ":" + port + "\" is unknown, cannot connect");
+                    getLog().e("Socket Client: Server host \"" + host + ":" + port + "\" is unknown, cannot connect");
                 } catch (IOException e) {
-                    getLog().e("Error connecting to server: " + e.getMessage(), e);
+                    getLog().e("Socket Client: Error connecting to server: " + e.getMessage(), e);
                 } catch(HousemateException e) {
-                    getLog().e("Error initiating connection to router", e);
+                    getLog().e("Socket Client: Error initiating connection to router", e);
                 }
 
-                getLog().e("Failed to connect to server. Retrying in " + delay + " seconds");
+                getLog().e("Socket Client: Failed to connect to server. Retrying in " + delay + " seconds");
                 try {
                     Thread.sleep(delay * 1000);
                 } catch(InterruptedException e) {
-                    getLog().e("Interrupted waiting to retry connection. Aborting trying to connect");
+                    getLog().e("Socket Client: Interrupted waiting to retry connection. Aborting trying to connect");
                     _disconnect();
                     return;
                 }
@@ -293,7 +304,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                 socket.getOutputStream().write("\n".getBytes()); // blank line indicates details are finished
                 socket.getOutputStream().flush();
             } catch (IOException e) {
-                throw new HousemateException("Failed to write client details", e);
+                throw new HousemateException("Socket Client: Failed to write client details", e);
             }
         }
 
@@ -313,12 +324,10 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                             data.append((char)i);
                     }
                 }
-                getLog().d("Read handshake response from server: " + data);
+                getLog().d("Socket Client: Read handshake response from server: " + data);
                 if(!data.toString().equals("Success"))
                     throw new HousemateException("Bad handshake response from server: " + data);
-            } catch(InterruptedException e) {
-                throw new HousemateException("Error reading handshake response from server", e);
-            } catch(IOException e) {
+            } catch(IOException|InterruptedException e) {
                 throw new HousemateException("Error reading handshake response from server", e);
             }
         }
@@ -334,7 +343,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
         @Override
         public void run() {
 
-            getLog().d("Starting stream reader");
+            getLog().d("Socket Client: Starting stream reader");
 
             // read continuously from it
             try {
@@ -343,18 +352,19 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     if(message == null)
                         return;
                     else if(!(message.getPath().length == 0 && message.getType().equals("heartbeat"))) {
-                        getLog().d("Message received " + message);
+                        getLog().d("Socket Client: Message received " + message);
                         if(activityMonitor != null)
                             activityMonitor.somethingHappened();
                         messageReceived(message);
                     }
                 }
             } catch (HousemateException e) {
-                getLog().e("Error reading from server socket connection", e);
+                getLog().e("Socket Client: Error reading from server socket connection", e);
                 _disconnect();
+                checkConnection();
             }
 
-            getLog().d("Stopped stream reader");
+            getLog().d("Socket Client: Stopped stream reader");
         }
 
         /**
@@ -367,7 +377,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                 try {
                     return serialiser.read();
                 } catch(HousemateException e) {
-                    getLog().e("Problem reading message, retrying", e);
+                    getLog().e("Socket Client: Problem reading message, retrying", e);
                 } catch(SocketException e) {
                     if(e.getMessage().equals("Socket closed"))
                         return null;
@@ -391,12 +401,12 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
         /**
          * heartbeat messgae
          */
-        private Message heartbeat = new Message<NoPayload>(new String[] {}, "heartbeat", NoPayload.INSTANCE);
+        private Message heartbeat = new Message<>(new String[] {}, "heartbeat", NoPayload.INSTANCE);
 
         @Override
         public void run() {
 
-            getLog().d("Starting the message sender");
+            getLog().d("Socket Client: Starting the message sender");
 
             while(!isInterrupted()) {
 
@@ -408,37 +418,38 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     if(message == null) {
                         message = heartbeat;
                     } else
-                        getLog().d("Sending message " + message.toString());
+                        getLog().d("Socket Client: Sending message " + message.toString());
                     serialiser.write(message);
                 } catch(InterruptedException e) {
                     if(socket == null || socket.isClosed())
                         break;
-                    getLog().d("Interrupted waiting for message to send");
+                    getLog().d("Socket Client: Interrupted waiting for message to send");
                 } catch(IOException e) {
-                    getLog().e("Error sending message to client", e);
+                    getLog().e("Socket Client: Error sending message to client", e);
                     _disconnect();
+                    checkConnection();
                     break;
                 }
             }
 
-            getLog().d("Stopped message sender");
+            getLog().d("Socket Client: Stopped message sender");
         }
     }
 
     private class ActivityMonitor extends Thread {
 
-        private long checkInTimeout = 0L;
-        private long inactivityTimeout = Long.MAX_VALUE;
+        private long maxInactiveTime = 0L; // by default, don't have any inactive time -> reconnects immediately
+        private long activityDelay = Long.MAX_VALUE; // by default, wait forever after something happened -> never gets inactive
 
         private long lastActivity = System.currentTimeMillis();
-        private long inactiveAt = Long.MAX_VALUE;
+        private long inactiveAt = 0L;
 
-        public void setCheckInTimeout(long checkInTimeout) {
-            this.checkInTimeout = checkInTimeout;
+        public void setMaxInactiveTime(long maxInactiveTime) {
+            this.maxInactiveTime = maxInactiveTime;
         }
 
-        public void setInactivityTimeout(long inactivityTimeout) {
-            this.inactivityTimeout = inactivityTimeout;
+        public void setActivityDelay(long activityDelay) {
+            this.activityDelay = activityDelay;
         }
 
         public void somethingHappened() {
@@ -448,21 +459,32 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
         @Override
         public void run() {
             while(!isInterrupted()) {
-                if(networkAvailable) {
-                    // if not connected and check in timeout reached
-                    if (getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && getServerConnectionStatus() != ServerConnectionStatus.ConnectedToRouter) {
-                        long disconnectedFor = (System.currentTimeMillis() - inactiveAt);
-                        if (disconnectedFor > checkInTimeout) {
-                            getLog().d("Check in timeout reached, ensuring connected");
-                            _ensureConnected();
-                        }
-                        // else if connecting/ed and inactivity timeout reached, then disconnect
-                    } else {
+
+                // don't do the work unless it's worth it
+                if(shouldBeConnected && networkAvailable) {
+
+                    // if currently active
+                    if (active) {
+
+                        // see if the activity delay has been reached
                         long inactiveFor = (System.currentTimeMillis() - lastActivity);
-                        if (inactiveFor > inactivityTimeout) {
-                            getLog().d("Inactivity timeout reached. Disconnecting");
-                            _disconnect(false);
+                        if (inactiveFor > activityDelay) {
+                            getLog().d("Socket Client: Activity delay reached. Setting active to false");
                             inactiveAt = System.currentTimeMillis();
+                            active = false;
+                            checkConnection();
+                        }
+
+                    // else currently inactive
+                    } else {
+
+                        // see if the check in timeout has been reached
+                        long disconnectedFor = (System.currentTimeMillis() - inactiveAt);
+                        if (disconnectedFor > maxInactiveTime) {
+                            getLog().d("Socket Client: Max inactive time reached. Setting active to true");
+                            lastActivity = System.currentTimeMillis();
+                            active = true;
+                            checkConnection();
                         }
                     }
                 }
