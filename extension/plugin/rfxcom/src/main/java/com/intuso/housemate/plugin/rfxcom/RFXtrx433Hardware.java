@@ -387,37 +387,37 @@ public class RFXtrx433Hardware extends RealHardware {
     private class CallbackLighting1ARC implements Lighting1.Callback {
 
         @Override
-        public void turnedOn(int houseId, byte unitCode) {
-            ensureLighting2AC(houseId, unitCode, true);
+        public void turnedOn(byte houseId, byte unitCode) {
+            ensureLighting1ARC(houseId, unitCode, true);
         }
 
         @Override
-        public void turnedOnAll(int houseId) {
-
-        }
-
-        @Override
-        public void turnedOff(int houseId, byte unitCode) {
-            ensureLighting2AC(houseId, unitCode, false);
-        }
-
-        @Override
-        public void turnedOffAll(int houseId) {
+        public void turnedOnAll(byte houseId) {
 
         }
 
         @Override
-        public void dim(int houseId, byte unitCode) {
+        public void turnedOff(byte houseId, byte unitCode) {
+            ensureLighting1ARC(houseId, unitCode, false);
+        }
+
+        @Override
+        public void turnedOffAll(byte houseId) {
+
+        }
+
+        @Override
+        public void dim(byte houseId, byte unitCode) {
             // dimmable devices not supported yet
         }
 
         @Override
-        public void bright(int houseId, byte level) {
+        public void bright(byte houseId, byte level) {
             // dimmable devices not supported yet
         }
 
         @Override
-        public void chime(int houseId) {
+        public void chime(byte houseId) {
             // chime devices not supported yet
         }
     }
