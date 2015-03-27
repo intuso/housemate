@@ -16,14 +16,14 @@
     <PreferenceCategory
             android:title="@string/pref_title_inactivity">
         <EditTextPreference
-                android:key="client.socket.checkIn"
-                android:title="@string/pref_title_inactivity_checkin"
+                android:key="client.socket.max-inactive-time"
+                android:title="@string/pref_title_inactive_time"
                 android:inputType="number"
-                android:defaultValue="10000" />
+                android:defaultValue="0" />
         <EditTextPreference
-                android:key="client.socket.keepOpen"
-                android:title="@string/pref_title_inactivity_keepopen"
+                android:key="client.socket.activity-delay"
+                android:title="@string/pref_title_activity_delay"
                 android:inputType="number"
-                android:defaultValue="10000" />
+                android:defaultValue="999999999" />
     </PreferenceCategory>
 </PreferenceScreen>

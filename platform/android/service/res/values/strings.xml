@@ -22,8 +22,8 @@
     <string name="pref_title_server_port">Port</string>
 
     <string name="pref_title_inactivity">Inactivity timeouts</string>
-    <string name="pref_title_inactivity_checkin">Check In</string>
-    <string name="pref_title_inactivity_keepopen">Keep Open</string>
+    <string name="pref_title_inactive_time">Max inactive time</string>
+    <string name="pref_title_activity_delay">Activity delay</string>
 
     <!-- Service -->
     <string name="service_name_connection">Housemate Connection Service</string>
