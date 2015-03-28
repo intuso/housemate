@@ -274,7 +274,7 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
         /**
          * heartbeat message
          */
-        private Message heartbeat = new Message<NoPayload>(new String[] {}, "heartbeat", NoPayload.INSTANCE);
+        private Message heartbeat = new Message<>(new String[] {}, "heartbeat", NoPayload.INSTANCE);
 		
 		@Override
 		public void run() {

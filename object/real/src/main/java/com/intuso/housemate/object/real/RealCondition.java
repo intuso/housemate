@@ -56,10 +56,10 @@ public abstract class RealCondition
                 owner.removeCondition(RealCondition.this);
             }
         };
-        errorValue = new RealValue<String>(log, listenersFactory, ERROR_ID, ERROR_ID, "The current error", new StringType(log, listenersFactory), (List)null);
-        satisfiedValue = new RealValue<Boolean>(log, listenersFactory, SATISFIED_ID, SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(log, listenersFactory), false);
-        propertyList = new RealList<PropertyData, RealProperty<?>>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
-        conditions = new RealList<ConditionData, RealCondition>(log, listenersFactory, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
+        errorValue = new RealValue<>(log, listenersFactory, ERROR_ID, ERROR_ID, "The current error", new StringType(log, listenersFactory), (List)null);
+        satisfiedValue = new RealValue<>(log, listenersFactory, SATISFIED_ID, SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(log, listenersFactory), false);
+        propertyList = new RealList<>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, "The condition's properties", properties);
+        conditions = new RealList<>(log, listenersFactory, CONDITIONS_ID, CONDITIONS_ID, "The condition's sub-conditions");
         // add a command to add automations to the automation list
         addChild(removeCommand);
         addChild(errorValue);

@@ -77,7 +77,7 @@ public class FlatFilePersistence implements Persistence {
         if(!file.exists())
             throw new DetailsNotFoundException();
         if(file.isDirectory()) {
-            return new HashSet<String>(Lists.transform(Arrays.asList(
+            return new HashSet<>(Lists.transform(Arrays.asList(
                     file.listFiles(new FileFilter() {
                         @Override
                         public boolean accept(File file) {
@@ -91,7 +91,7 @@ public class FlatFilePersistence implements Persistence {
                 }
             }));
         } else
-            return new HashSet<String>();
+            return new HashSet<>();
     }
 
     @Override

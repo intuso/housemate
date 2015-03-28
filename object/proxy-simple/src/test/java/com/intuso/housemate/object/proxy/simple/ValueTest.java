@@ -1,12 +1,12 @@
 package com.intuso.housemate.object.proxy.simple;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.proxy.simple.comms.TestEnvironment;
 import com.intuso.housemate.api.object.NoChildrenData;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.value.ValueBaseData;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.proxy.simple.comms.TestEnvironment;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealValue;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
@@ -28,12 +28,12 @@ public class ValueTest {
     public final static String VALUES = "values";
 
     private SimpleProxyList<ValueData, SimpleProxyValue> proxyList
-            = new SimpleProxyList<ValueData, SimpleProxyValue>(
+            = new SimpleProxyList<>(
                 TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
                 TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
                 TestEnvironment.TEST_INSTANCE.getInjector(),
             new ListData(VALUES, VALUES, VALUES));
-    private RealList<ValueBaseData<NoChildrenData>, RealValue<?>> realList = new RealList<ValueBaseData<NoChildrenData>, RealValue<?>>(
+    private RealList<ValueBaseData<NoChildrenData>, RealValue<?>> realList = new RealList<>(
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
             VALUES, VALUES, VALUES, new ArrayList<RealValue<?>>());

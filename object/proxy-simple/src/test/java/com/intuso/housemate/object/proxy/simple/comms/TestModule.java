@@ -60,7 +60,7 @@ public class TestModule extends AbstractModule {
         bind(ListenersFactory.class).toInstance(new ListenersFactory() {
             @Override
             public <LISTENER extends Listener> Listeners<LISTENER> create() {
-                return new Listeners<LISTENER>(Lists.<LISTENER>newArrayList());
+                return new Listeners<>(Lists.<LISTENER>newArrayList());
             }
         });
     }

@@ -88,7 +88,7 @@ public class ConnectionManager {
                     throw new HousemateRuntimeException("Registration already in progress or done");
                 else if(applicationDetails != null) {
                     setApplicationInstanceStatus(ApplicationInstanceStatus.Registering);
-                    sender.sendMessage(new Message<ApplicationRegistration>(ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
+                    sender.sendMessage(new Message<>(ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
                             new ApplicationRegistration(applicationDetails, properties.get(APPLICATION_INSTANCE_ID), clientType)));
                 } else
                     throw new HousemateRuntimeException("Null application or instance details");
@@ -99,7 +99,7 @@ public class ConnectionManager {
      * Logs out of the server
      */
     public void unregister() {
-        sender.sendMessage(new Message<NoPayload>(ROOT_PATH, Root.APPLICATION_UNREGISTRATION_TYPE, NoPayload.INSTANCE));
+        sender.sendMessage(new Message<>(ROOT_PATH, Root.APPLICATION_UNREGISTRATION_TYPE, NoPayload.INSTANCE));
         properties.remove(APPLICATION_INSTANCE_ID);
         setApplicationStatus(ApplicationStatus.Unregistered);
         setApplicationInstanceStatus(ApplicationInstanceStatus.Unregistered);

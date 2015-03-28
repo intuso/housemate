@@ -57,7 +57,7 @@ public abstract class ProxyRoot<
         implements ObjectRoot<TYPES, HARDWARES, DEVICES, AUTOMATIONS, APPLICATIONS, USERS, COMMAND, ROOT>,
             ObjectListener<ProxyObject<?, ?, ?, ?, ?>> {
 
-    private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
+    private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<>();
 
     private final Router.Registration routerRegistration;
     private final ConnectionManager connectionManager;

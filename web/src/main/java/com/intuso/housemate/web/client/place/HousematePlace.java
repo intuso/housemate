@@ -35,7 +35,7 @@ public abstract class HousematePlace extends Place {
 
     protected static Map<String, String> getFields(String token) {
         String[] fields = token.split(FIELD_SEPARATOR);
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         for(String field : fields) {
             if(field.length() == 0)
                 continue;

@@ -32,7 +32,7 @@ public abstract class RealObject<
      * @param <MV> the type of the message's payload
      */
     protected final <MV extends Message.Payload> void sendMessage(String type, MV payload) {
-        getRealRoot().sendMessage(new Message<MV>(
+        getRealRoot().sendMessage(new Message<>(
                 getPath(), type, payload));
     }
 

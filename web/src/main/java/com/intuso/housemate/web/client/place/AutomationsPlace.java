@@ -58,7 +58,7 @@ public class AutomationsPlace extends HousematePlace {
 
         @Override
         public String getToken(AutomationsPlace automationPlace) {
-            Map<TokenisableField, String> fields = new HashMap<TokenisableField, String>();
+            Map<TokenisableField, String> fields = new HashMap<>();
             if(automationPlace.getAutomationIds() != null && automationPlace.getAutomationIds().size() > 0)
                 fields.put(Field.Selected, namesToString(automationPlace.getAutomationIds()));
             return HousematePlace.getToken(fields);

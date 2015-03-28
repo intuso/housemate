@@ -53,7 +53,7 @@ public class ValueComparison extends RealCondition {
                            ComparisonType comparisonType) {
         super(log, listenersFactory, data, owner);
         this.types = types;
-        comparisonProperty = new RealProperty<Comparison>(log, listenersFactory, COMPARISON_ID, COMPARISON_NAME,
+        comparisonProperty = new RealProperty<>(log, listenersFactory, COMPARISON_ID, COMPARISON_NAME,
                 COMPARISON_DESCRIPTION, comparisonType, (List)null);
         getProperties().add(comparisonProperty);
         propertyListener = new PropertyListener();

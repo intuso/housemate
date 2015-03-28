@@ -39,7 +39,7 @@ public class RealObjectType<O extends BaseHousemateObject<?>>
     @Inject
     public RealObjectType(Log log, ListenersFactory listenersFactory, Root<?> root) {
         super(log, listenersFactory, new ObjectTypeData(ID, NAME, "Path to an object", 1, 1));
-        serialiser = new Serialiser<O>(root);
+        serialiser = new Serialiser<>(root);
     }
 
     @Override

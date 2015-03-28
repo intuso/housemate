@@ -58,7 +58,7 @@ public class DayOfTheWeek extends RealCondition {
                         @Assisted RealConditionOwner owner,
                         DaysType daysType) throws HousemateException {
 		super(log, listenersFactory, data, owner);
-        days = new RealProperty<Day>(log, listenersFactory, DAYS_FIELD, DAYS_FIELD, "The days that satisfy the condition",
+        days = new RealProperty<>(log, listenersFactory, DAYS_FIELD, DAYS_FIELD, "The days that satisfy the condition",
                 daysType, Lists.<Day>newArrayList());
         getProperties().add(days);
     }

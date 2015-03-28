@@ -79,7 +79,7 @@ public abstract class ServerProxyValueBase<
     protected final void copyValues(HousemateData<?> data) {
         if(data instanceof ValueBaseData) {
             try {
-                distributeMessage(new Message<ClientPayload>(getPath(), VALUE_ID, new ClientPayload(null, ((ValueBaseData)data).getTypeInstances())));
+                distributeMessage(new Message<>(getPath(), VALUE_ID, new ClientPayload(null, ((ValueBaseData)data).getTypeInstances())));
             } catch (HousemateException e) {
                 getLog().e("Failed to update server proxy value based on new value from client");
             }

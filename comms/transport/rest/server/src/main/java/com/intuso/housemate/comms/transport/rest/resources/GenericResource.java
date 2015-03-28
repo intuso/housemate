@@ -61,7 +61,7 @@ public class GenericResource {
 
     private class MessageCache implements Receiver<Message.Payload> {
 
-        private LinkedBlockingQueue<Message<Message.Payload>> cache = new LinkedBlockingQueue<Message<Message.Payload>>();
+        private LinkedBlockingQueue<Message<Message.Payload>> cache = new LinkedBlockingQueue<>();
 
         @Override
         public synchronized void messageReceived(Message<Message.Payload> message) throws HousemateException {

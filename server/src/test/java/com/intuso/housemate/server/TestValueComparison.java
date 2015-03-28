@@ -69,7 +69,7 @@ public class TestValueComparison {
     private final ListenersFactory listenersFactory = new ListenersFactory() {
         @Override
         public <LISTENER extends Listener> Listeners<LISTENER> create() {
-            return new Listeners<LISTENER>(new CopyOnWriteArrayList<LISTENER>());
+            return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
         }
     };
 
@@ -201,7 +201,7 @@ public class TestValueComparison {
         values.getChildren().put(RealRoot.TYPE_PARAMETER_ID, new TypeInstances(new TypeInstance("value-comparison")));
         values.getChildren().put(RealRoot.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance("Test")));
         values.getChildren().put(RealRoot.DESCRIPTION_PARAMETER_ID, new TypeInstances(new TypeInstance("Test VC")));
-        final RealList<ConditionData, RealCondition> list = new RealList<ConditionData, RealCondition>(log, listenersFactory, "test", "test", "test");
+        final RealList<ConditionData, RealCondition> list = new RealList<>(log, listenersFactory, "test", "test", "test");
         injector.getInstance(AddConditionCommand.Factory.class).create(new RealConditionOwner() {
             @Override
             public ChildOverview getAddConditionCommandDetails() {

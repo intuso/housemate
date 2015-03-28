@@ -44,7 +44,7 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
 
     public static <ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> ProxyClientHelper<ROOT>
                 newClientHelper(Log log, ROOT proxyRoot, Router router) {
-        return new ProxyClientHelper<ROOT>(log, proxyRoot, router);
+        return new ProxyClientHelper<>(log, proxyRoot, router);
     }
 
     public static <ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> ProxyClientHelper<ROOT>

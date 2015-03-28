@@ -118,7 +118,7 @@ public class AndroidProxyFactory implements HousemateObjectFactory<HousemateData
 
     public <CHILD_DATA extends HousemateData<?>, CHILD extends ProxyObject<CHILD_DATA, ?, ?, ?, ?>>
                 AndroidProxyList<CHILD_DATA, CHILD> createList(ListData<CHILD_DATA> data) {
-        return new AndroidProxyList<CHILD_DATA, CHILD>(log, listenersFactory, data, this);
+        return new AndroidProxyList<>(log, listenersFactory, data, this);
     }
 
     public AndroidProxyOption createOption(OptionData data) {

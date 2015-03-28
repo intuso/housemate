@@ -159,7 +159,7 @@ public class RouterRoot
      * @param payload the message payload
      */
     private void sendMessage(String type, Message.Payload payload) {
-        sendMessage(new Message<Message.Payload>(getPath(), type, payload));
+        sendMessage(new Message<>(getPath(), type, payload));
     }
 
     /**

@@ -7,7 +7,7 @@ import com.intuso.housemate.web.client.handler.CredentialsSubmittedHandler;
  */
 public class CredentialsSubmittedEvent extends GwtEvent<CredentialsSubmittedHandler> {
 
-    public static Type<CredentialsSubmittedHandler> TYPE = new Type<CredentialsSubmittedHandler>();
+    public static Type<CredentialsSubmittedHandler> TYPE = new Type<>();
 
     private final String username;
     private final String password;

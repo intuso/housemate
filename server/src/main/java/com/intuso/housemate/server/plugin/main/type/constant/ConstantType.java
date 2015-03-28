@@ -5,7 +5,10 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.object.real.*;
+import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealOption;
+import com.intuso.housemate.object.real.RealSubType;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.RealChoiceType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -51,7 +54,7 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
             getLog().w("Cannot deserialise constant, no type for id " + typeId);
             return null;
         }
-        return new ConstantInstance<Object>(listenersFactory, (RealType<?,?,Object>) type, value.getChildValues().getChildren().get(SUB_TYPE_ID));
+        return new ConstantInstance<>(listenersFactory, (RealType<?,?,Object>) type, value.getChildValues().getChildren().get(SUB_TYPE_ID));
     }
 
     @Override
@@ -59,7 +62,7 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
         // don't add self
         if(type.getId().equals(getId()))
             return;
-        RealSubType<Object> subType = new RealSubType<Object>(getLog(), listenersFactory, SUB_TYPE_ID, SUB_TYPE_NAME, SUB_TYPE_DESCRIPTION, type.getId(), types);
+        RealSubType<Object> subType = new RealSubType<>(getLog(), listenersFactory, SUB_TYPE_ID, SUB_TYPE_NAME, SUB_TYPE_DESCRIPTION, type.getId(), types);
         RealOption option = new RealOption(getLog(), listenersFactory, type.getId(), type.getName(), type.getDescription(), subType);
         getOptions().add(option);
     }

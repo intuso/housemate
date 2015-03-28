@@ -75,7 +75,7 @@ public class HousemateTweeter {
         this.applicationDetails = new ApplicationDetails(HousemateTweeter.class.getName(), "Housemate Tweeter", "Housemate Tweeter");
         this.applicationInstanceId = properties.get(INSTANCE_ID);
 
-        listeners = new HashMap<SimpleProxyDevice, java.util.List<ListenerRegistration>>();
+        listeners = new HashMap<>();
 
 		dateFormat = new SimpleDateFormat("h:mm a");
         DateFormatSymbols dateFormatSymbols = dateFormat.getDateFormatSymbols();
@@ -263,7 +263,7 @@ public class HousemateTweeter {
     private class DeviceListListener implements ListListener<SimpleProxyDevice> {
         @Override
         public void elementAdded(SimpleProxyDevice device) {
-            java.util.List<ListenerRegistration> registrations = new ArrayList<ListenerRegistration>();
+            java.util.List<ListenerRegistration> registrations = new ArrayList<>();
             listeners.put(device, registrations);
             registrations.add(device.getCommands().addObjectListener(new CommandListListener(device, registrations), true));
             registrations.add(device.getValues().addObjectListener(new ValueListListener(device, registrations), true));

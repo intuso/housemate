@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class GWTClientEndpoint implements Receiver, Sender {
     
-    private final LinkedBlockingQueue<Message> q = new LinkedBlockingQueue<Message>();
+    private final LinkedBlockingQueue<Message> q = new LinkedBlockingQueue<>();
     private long timeout;
     private long lastRequest = Long.MAX_VALUE;
     private final Router.Registration registration;
@@ -47,7 +47,7 @@ public class GWTClientEndpoint implements Receiver, Sender {
         lastRequest = System.currentTimeMillis();
 
         // get all the messages
-        List<Message> result = new ArrayList<Message>();
+        List<Message> result = new ArrayList<>();
         q.drainTo(result, max);
         
         // if there aren't any, wait for one

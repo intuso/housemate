@@ -52,7 +52,7 @@ public abstract class RealChoiceType<O>
     protected RealChoiceType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
                              int maxValues, List<RealOption> options) {
         super(log, listenersFactory, new ChoiceTypeData(id, name, description, minValues, maxValues));
-        this.options = new RealList<OptionData, RealOption>(log, listenersFactory, OPTIONS, OPTIONS, "The options for the choice", options);
+        this.options = new RealList<>(log, listenersFactory, OPTIONS, OPTIONS, "The options for the choice", options);
         addChild(this.options);
     }
 

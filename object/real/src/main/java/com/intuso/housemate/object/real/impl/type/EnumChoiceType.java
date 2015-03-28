@@ -36,7 +36,7 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
                              int maxValues, Class<E> enumClass, E... values) {
         this(log, listenersFactory, id, name, description, minValues,
                 maxValues,
-                new EnumMap<E, List<RealSubType<?>>>(enumClass), new EnumInstanceSerialiser<E>(enumClass), values);
+                new EnumMap<E, List<RealSubType<?>>>(enumClass), new EnumInstanceSerialiser<>(enumClass), values);
     }
 
     /**
@@ -55,7 +55,7 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
                              int maxValues, Class<E> enumClass,
                              EnumMap<E, List<RealSubType<?>>> optionSubTypes, E... values) {
         this(log, listenersFactory, id, name, description, minValues, maxValues,
-                optionSubTypes, new EnumInstanceSerialiser<E>(enumClass), values);
+                optionSubTypes, new EnumInstanceSerialiser<>(enumClass), values);
     }
     /**
      * @param log {@inheritDoc}

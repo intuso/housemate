@@ -45,7 +45,7 @@ public class RealApplicationInstance
                 statusValue.setTypedValues(ApplicationInstanceStatus.Rejected);
             }
         };
-        statusValue = new RealValue<ApplicationInstanceStatus>(log, listenersFactory, STATUS_VALUE_ID, STATUS_VALUE_ID,
+        statusValue = new RealValue<>(log, listenersFactory, STATUS_VALUE_ID, STATUS_VALUE_ID,
                 "The status of the application instance", applicationInstanceStatusType, (List)null);
         addChild(allowCommand);
         addChild(rejectCommand);

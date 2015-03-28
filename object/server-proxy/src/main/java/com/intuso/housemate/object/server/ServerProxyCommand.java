@@ -43,7 +43,7 @@ public class ServerProxyCommand
     @Inject
     protected ServerProxyCommand(Log log, ListenersFactory listenersFactory, Injector injector, @Assisted CommandData data) {
         super(log, listenersFactory, injector, data);
-        enabledValue = new RealValue<Boolean>(log, listenersFactory, ENABLED_ID, ENABLED_ID, ENABLED_DESCRIPTION, injector.getInstance(BooleanType.class), true);
+        enabledValue = new RealValue<>(log, listenersFactory, ENABLED_ID, ENABLED_ID, ENABLED_DESCRIPTION, injector.getInstance(BooleanType.class), true);
     }
 
     @Override

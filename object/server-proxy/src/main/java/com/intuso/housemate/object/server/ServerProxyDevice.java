@@ -50,7 +50,7 @@ public class ServerProxyDevice
     @Inject
     public ServerProxyDevice(Log log, ListenersFactory listenersFactory, Injector injector, BooleanType booleanType, @Assisted DeviceData data) {
         super(log, listenersFactory, injector, data);
-        connected = new RealValue<Boolean>(log, listenersFactory, CONNECTED_ID, CONNECTED_ID,
+        connected = new RealValue<>(log, listenersFactory, CONNECTED_ID, CONNECTED_ID,
                             "Whether the server has a connection open to control the object", booleanType, true);
     }
 

@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public class SelectedIdsChangedEvent extends GwtEvent<SelectedIdsChangedHandler> {
 
-    public final static Type<SelectedIdsChangedHandler> TYPE = new Type<SelectedIdsChangedHandler>();
+    public final static Type<SelectedIdsChangedHandler> TYPE = new Type<>();
 
     private final Set<String> ids;
 

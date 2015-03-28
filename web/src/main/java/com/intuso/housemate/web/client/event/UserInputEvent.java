@@ -7,7 +7,7 @@ import com.intuso.housemate.web.client.handler.UserInputHandler;
  */
 public class UserInputEvent extends GwtEvent<UserInputHandler> {
 
-    public final static Type<UserInputHandler> TYPE = new Type<UserInputHandler>();
+    public final static Type<UserInputHandler> TYPE = new Type<>();
 
     public UserInputEvent() {}
 

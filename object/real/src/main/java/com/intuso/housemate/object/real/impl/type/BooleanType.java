@@ -49,7 +49,7 @@ public class BooleanType extends RealSimpleType<Boolean> {
      */
     public static RealValue<Boolean> createValue(Log log, ListenersFactory listenersFactory,
                                                  String id, String name, String description, Boolean value) {
-        return new RealValue<Boolean>(log, listenersFactory, id, name, description, new BooleanType(log, listenersFactory), value);
+        return new RealValue<>(log, listenersFactory, id, name, description, new BooleanType(log, listenersFactory), value);
     }
 
     /**
@@ -63,7 +63,7 @@ public class BooleanType extends RealSimpleType<Boolean> {
      */
     public static RealProperty<Boolean> createProperty(Log log, ListenersFactory listenersFactory,
                                                        String id, String name, String description, List<Boolean> values) {
-        return new RealProperty<Boolean>(log, listenersFactory, id, name, description, new BooleanType(log, listenersFactory), values);
+        return new RealProperty<>(log, listenersFactory, id, name, description, new BooleanType(log, listenersFactory), values);
     }
 
     /**
@@ -76,6 +76,6 @@ public class BooleanType extends RealSimpleType<Boolean> {
      */
     public static RealParameter<Boolean> createParameter(Log log, ListenersFactory listenersFactory,
                                                          String id, String name, String description) {
-        return new RealParameter<Boolean>(log, listenersFactory, id, name, description, new BooleanType(log, listenersFactory));
+        return new RealParameter<>(log, listenersFactory, id, name, description, new BooleanType(log, listenersFactory));
     }
 }

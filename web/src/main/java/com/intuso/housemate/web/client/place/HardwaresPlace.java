@@ -58,7 +58,7 @@ public class HardwaresPlace extends HousematePlace {
 
         @Override
         public String getToken(HardwaresPlace hardwaresPlace) {
-            Map<TokenisableField, String> fields = new HashMap<TokenisableField, String>();
+            Map<TokenisableField, String> fields = new HashMap<>();
             if(hardwaresPlace.getHardwareIds() != null && hardwaresPlace.getHardwareIds().size() > 0)
                 fields.put(Field.Selected, namesToString(hardwaresPlace.getHardwareIds()));
             return HousematePlace.getToken(fields);

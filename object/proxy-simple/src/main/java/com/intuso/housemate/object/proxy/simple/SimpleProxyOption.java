@@ -35,6 +35,6 @@ public final class SimpleProxyOption extends ProxyOption<
 
     @Override
     protected SimpleProxyList<SubTypeData, SimpleProxySubType> createChildInstance(ListData<SubTypeData> data) {
-        return new SimpleProxyList<SubTypeData, SimpleProxySubType>(getLog(), getListenersFactory(), injector, data);
+        return new SimpleProxyList<>(getLog(), getListenersFactory(), injector, data);
     }
 }

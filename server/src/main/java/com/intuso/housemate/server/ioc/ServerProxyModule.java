@@ -25,6 +25,6 @@ public class ServerProxyModule extends AbstractModule {
     @Provides
     @Singleton
     public ServerProxyList<TypeData<?>, ServerProxyType> getProxyTypes(Log log, ListenersFactory listenersFactory, Injector injector) {
-        return new ServerProxyList<TypeData<?>, ServerProxyType>(log, listenersFactory, injector, new ListData<TypeData<?>>(ObjectRoot.TYPES_ID, ObjectRoot.TYPES_ID, "Proxied types"));
+        return new ServerProxyList<>(log, listenersFactory, injector, new ListData<TypeData<?>>(ObjectRoot.TYPES_ID, ObjectRoot.TYPES_ID, "Proxied types"));
     }
 }

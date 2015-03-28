@@ -48,7 +48,7 @@ public class StringType extends RealSimpleType<String> {
      */
     public static RealValue<String> createValue(Log log, ListenersFactory listenersFactory,
                                                 String id, String name, String description, String value) {
-        return new RealValue<String>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory), value);
+        return new RealValue<>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory), value);
     }
 
     /**
@@ -62,7 +62,7 @@ public class StringType extends RealSimpleType<String> {
      */
     public static RealProperty<String> createProperty(Log log, ListenersFactory listenersFactory,
                                                       String id, String name, String description, List<String> values) {
-        return new RealProperty<String>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory), values);
+        return new RealProperty<>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory), values);
     }
 
     /**
@@ -75,6 +75,6 @@ public class StringType extends RealSimpleType<String> {
      */
     public static RealParameter<String> createParameter(Log log, ListenersFactory listenersFactory,
                                                         String id, String name, String description) {
-        return new RealParameter<String>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory));
+        return new RealParameter<>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory));
     }
 }

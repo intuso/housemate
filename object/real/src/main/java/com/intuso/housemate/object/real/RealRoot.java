@@ -30,6 +30,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 import java.util.List;
 
@@ -68,6 +69,8 @@ public class RealRoot
                     AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory,
                     AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory) {
         super(log, listenersFactory, new RootData());
+
+        properties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, properties);
 
         this.types = types;
         this.hardwares = new RealList<>(log, listenersFactory, HARDWARES_ID, HARDWARES_ID, "Connected hardware");

@@ -51,8 +51,8 @@ public abstract class RealCommand
      */
     protected RealCommand(Log log, ListenersFactory listenersFactory, String id, String name, String description, List<RealParameter<?>> parameters) {
         super(log, listenersFactory, new CommandData(id, name, description));
-        enabledValue = new RealValue<Boolean>(log, listenersFactory, ENABLED_ID, ENABLED_ID, ENABLED_DESCRIPTION, new BooleanType(log, listenersFactory), true);
-        this.parameters = new RealList<ParameterData, RealParameter<?>>(log, listenersFactory, PARAMETERS_ID, PARAMETERS_ID, "The parameters required by the command", parameters);
+        enabledValue = new RealValue<>(log, listenersFactory, ENABLED_ID, ENABLED_ID, ENABLED_DESCRIPTION, new BooleanType(log, listenersFactory), true);
+        this.parameters = new RealList<>(log, listenersFactory, PARAMETERS_ID, PARAMETERS_ID, "The parameters required by the command", parameters);
         addChild(enabledValue);
         addChild(this.parameters);
     }

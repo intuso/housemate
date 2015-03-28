@@ -35,10 +35,10 @@ public class RemoteClientImpl implements RemoteClient {
     private final Root<?> root;
     private final MainRouter comms;
     private final BiMap<String, RemoteClientImpl> children = HashBiMap.create();
-    private final Listeners<RemoteClientListener> listeners = new Listeners<RemoteClientListener>(new CopyOnWriteArrayList<RemoteClientListener>());
+    private final Listeners<RemoteClientListener> listeners = new Listeners<>(new CopyOnWriteArrayList<RemoteClientListener>());
     private RemoteClientImpl parent;
     private List<String> route = null;
-    private List<Message<?>> messageQueue = new CopyOnWriteArrayList<Message<?>>();
+    private List<Message<?>> messageQueue = new CopyOnWriteArrayList<>();
     private boolean applicationInstanceAllowed = false;
 
     private final StatusListener statusListener = new StatusListener();
@@ -76,12 +76,12 @@ public class RemoteClientImpl implements RemoteClient {
                         || type.equals(Root.APPLICATION_INSTANCE_ID_TYPE))))
             throw new HousemateException("Remote client is not allowed access");
         else if(route == null)
-            messageQueue.add(new Message<Message.Payload>(path, type, payload));
+            messageQueue.add(new Message<>(path, type, payload));
         else {
             try {
                 comms.sendMessageToClient(path, type, payload, this);
             } catch(HousemateException e) {
-                messageQueue.add(new Message<Message.Payload>(path, type, payload));
+                messageQueue.add(new Message<>(path, type, payload));
             }
         }
     }

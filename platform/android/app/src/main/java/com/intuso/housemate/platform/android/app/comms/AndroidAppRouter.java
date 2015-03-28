@@ -51,7 +51,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
         super(log, listenersFactory, properties);
         this.context = context;
         this.receiver = new Messenger(new MessageHandler());
-        this.outputQueue = new LinkedBlockingQueue<Message>();
+        this.outputQueue = new LinkedBlockingQueue<>();
     }
 
     @Override

@@ -42,12 +42,12 @@ public class CommandTest {
     };
 
     private SimpleProxyList<CommandData, SimpleProxyCommand> proxyList
-            = new SimpleProxyList<CommandData, SimpleProxyCommand>(
+            = new SimpleProxyList<>(
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
             TestEnvironment.TEST_INSTANCE.getInjector(),
             new ListData(COMMANDS, COMMANDS, COMMANDS));
-    private RealList<CommandData, RealCommand> realList = new RealList<CommandData, RealCommand>(
+    private RealList<CommandData, RealCommand> realList = new RealList<>(
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
             COMMANDS, COMMANDS, COMMANDS, new ArrayList<RealCommand>());
