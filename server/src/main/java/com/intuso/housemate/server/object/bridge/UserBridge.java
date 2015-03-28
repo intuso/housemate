@@ -2,11 +2,9 @@ package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.api.object.user.UserListener;
-import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -19,11 +17,10 @@ public class UserBridge
     private final CommandBridge removeCommand;
     private final PropertyBridge emailProperty;
 
-    public UserBridge(Log log, ListenersFactory listenersFactory, User user,
-                      ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    public UserBridge(Log log, ListenersFactory listenersFactory, User user) {
         super(log, listenersFactory, new UserData(user.getId(), user.getName(), user.getDescription()));
-        removeCommand = new CommandBridge(log, listenersFactory, user.getRemoveCommand(), types);
-        emailProperty = new PropertyBridge(log, listenersFactory, user.getEmailProperty(), types);
+        removeCommand = new CommandBridge(log, listenersFactory, user.getRemoveCommand());
+        emailProperty = new PropertyBridge(log, listenersFactory, user.getEmailProperty());
         addChild(removeCommand);
         addChild(emailProperty);
     }
@@ -42,17 +39,15 @@ public class UserBridge
 
         private final Log log;
         private final ListenersFactory listenersFactory;
-        private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory) {
             this.log = log;
             this.listenersFactory = listenersFactory;
-            this.types = types;
         }
 
         @Override
         public UserBridge apply(User<?, ?> user) {
-            return new UserBridge(log, listenersFactory, user, types);
+            return new UserBridge(log, listenersFactory, user);
         }
     }
 }

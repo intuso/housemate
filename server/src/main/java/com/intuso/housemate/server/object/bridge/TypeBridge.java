@@ -11,7 +11,6 @@ import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeListener;
-import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -25,16 +24,15 @@ public class TypeBridge
     private final static String OPTIONS = "options";
     private final static String SUB_TYPES = "sub-types";
 
-    public TypeBridge(Log log, ListenersFactory listenersFactory, Type type,
-                      final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    public TypeBridge(Log log, ListenersFactory listenersFactory, Type type) {
         super(log, listenersFactory, cloneData(log, type));
         if(type instanceof HousemateObject && ((HousemateObject)type).getChild(OPTIONS) != null) {
             addChild(new SingleListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(log, listenersFactory, (List) ((HousemateObject) (type)).getChild(OPTIONS),
-                    new OptionBridge.Converter(log, listenersFactory, types)));
+                    new OptionBridge.Converter(log, listenersFactory)));
         }
         if(type instanceof HousemateObject && ((HousemateObject)type).getChild(SUB_TYPES) != null) {
             addChild(new SingleListBridge<SubTypeData, SubType<?>, SubTypeBridge>(log, listenersFactory, (List) ((HousemateObject) (type)).getChild(SUB_TYPES),
-                    new SubTypeBridge.Converter(log, listenersFactory, types)));
+                    new SubTypeBridge.Converter(log, listenersFactory)));
         }
     }
 
@@ -51,17 +49,15 @@ public class TypeBridge
 
         private final Log log;
         private final ListenersFactory listenersFactory;
-        private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory) {
             this.log = log;
             this.listenersFactory = listenersFactory;
-            this.types = types;
         }
 
         @Override
         public TypeBridge apply(Type type) {
-            return new TypeBridge(log, listenersFactory, type, types);
+            return new TypeBridge(log, listenersFactory, type);
         }
     }
 }

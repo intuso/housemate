@@ -24,14 +24,8 @@ import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.object.real.RealApplication;
-import com.intuso.housemate.object.real.RealAutomation;
 import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.real.RealUser;
-import com.intuso.housemate.object.server.ServerProxyDevice;
-import com.intuso.housemate.object.server.ServerProxyHardware;
-import com.intuso.housemate.object.server.ServerProxyRoot;
-import com.intuso.housemate.object.server.ServerProxyType;
+import com.intuso.housemate.object.server.*;
 import com.intuso.housemate.object.server.client.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -50,41 +44,47 @@ public class RootBridge
 
     private final ListenersFactory listenersFactory;
 
-    private final ListBridge<ApplicationData, RealApplication, ApplicationBridge> applications;
-    private final ListBridge<UserData, RealUser, UserBridge> users;
+    private final MultiListBridge<ApplicationData, ServerProxyApplication, ApplicationBridge> applications;
+    private final MultiListBridge<UserData, ServerProxyUser, UserBridge> users;
     private final MultiListBridge<HardwareData, ServerProxyHardware, HardwareBridge> hardwares;
     private final MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
     private final MultiListBridge<DeviceData, ServerProxyDevice, DeviceBridge> devices;
-    private final ListBridge<AutomationData, RealAutomation, AutomationBridge> automations;
+    private final MultiListBridge<AutomationData, ServerProxyAutomation, AutomationBridge> automations;
     private final CommandBridge addUser;
     private final CommandBridge addHardware;
     private final CommandBridge addDevice;
     private final CommandBridge addAutomation;
 
-    private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
+    private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<>();
 
     @Inject
-    public RootBridge(Log log, ListenersFactory listenersFactory, RealRoot realRoot,
-                      MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    public RootBridge(Log log, ListenersFactory listenersFactory, RealRoot realRoot) {
         super(log, listenersFactory, new RootData());
         this.listenersFactory = listenersFactory;
-        applications = new SingleListBridge<ApplicationData, RealApplication, ApplicationBridge>(
-                log, listenersFactory, realRoot.getApplications(), new ApplicationBridge.Converter(log, listenersFactory, types));
-        users = new SingleListBridge<UserData, RealUser, UserBridge>(log, listenersFactory,
-                realRoot.getUsers(), new UserBridge.Converter(log, listenersFactory, types));
-        hardwares = new MultiListBridge<HardwareData, ServerProxyHardware, HardwareBridge>(log, listenersFactory,
-                new ListData<HardwareData>(ObjectRoot.HARDWARES_ID, "Hardwares", "Connected hardware"),
-                new HardwareBridge.Converter(log, listenersFactory, types));
-        this.types = types;
-        devices = new MultiListBridge<DeviceData, ServerProxyDevice, DeviceBridge>(log, listenersFactory,
+        applications = new MultiListBridge<>(log, listenersFactory,
+                new ListData<ApplicationData>(ObjectRoot.APPLICATIONS_ID, "Applications", "Applications"),
+                new ApplicationBridge.Converter(log, listenersFactory));
+        automations = new MultiListBridge<>(log, listenersFactory,
+                new ListData<AutomationData>(ObjectRoot.AUTOMATIONS_ID, "Automations", "Automations"),
+                new AutomationBridge.Converter(log, listenersFactory));
+        devices = new MultiListBridge<>(log, listenersFactory,
                 new ListData<DeviceData>(ObjectRoot.DEVICES_ID, "Devices", "Devices"),
-                new DeviceBridge.Converter(log, listenersFactory, types));
-        automations = new SingleListBridge<AutomationData, RealAutomation, AutomationBridge>(log, listenersFactory,
-                realRoot.getAutomations(), new AutomationBridge.Converter(log, listenersFactory, types));
-        addUser = new CommandBridge(log, listenersFactory, realRoot.getAddUserCommand(), types);
-        addHardware = new CommandBridge(log, listenersFactory, realRoot.getAddHardwareCommand(), types);
-        addDevice = new CommandBridge(log, listenersFactory, realRoot.getAddDeviceCommand(), types);
-        addAutomation = new CommandBridge(log, listenersFactory, realRoot.getAddAutomationCommand(), types);
+                new DeviceBridge.Converter(log, listenersFactory));
+        hardwares = new MultiListBridge<>(log, listenersFactory,
+                new ListData<HardwareData>(ObjectRoot.HARDWARES_ID, "Hardware", "Hardware"),
+                new HardwareBridge.Converter(log, listenersFactory));
+        types = new MultiListBridge<>(log, listenersFactory,
+                new ListData<TypeData<?>>(ObjectRoot.TYPES_ID, "Types", "Types"),
+                new TypeBridge.Converter(log, listenersFactory));
+        users = new MultiListBridge<>(log, listenersFactory,
+                new ListData<UserData>(ObjectRoot.USERS_ID, "Users", "Users"),
+                new UserBridge.Converter(log, listenersFactory));
+
+        addUser = new CommandBridge(log, listenersFactory, realRoot.getAddUserCommand());
+        addHardware = new CommandBridge(log, listenersFactory, realRoot.getAddHardwareCommand());
+        addDevice = new CommandBridge(log, listenersFactory, realRoot.getAddDeviceCommand());
+        addAutomation = new CommandBridge(log, listenersFactory, realRoot.getAddAutomationCommand());
+
         addChild(applications);
         addChild(users);
         addChild(hardwares);
@@ -140,7 +140,7 @@ public class RootBridge
         throw new HousemateRuntimeException("Whatever");
     }
 
-    public ListBridge<UserData, RealUser, UserBridge> getUsers() {
+    public ListBridge<UserData, ServerProxyUser, UserBridge> getUsers() {
         return users;
     }
 
@@ -156,7 +156,7 @@ public class RootBridge
         return devices;
     }
 
-    public ListBridge<AutomationData, RealAutomation, AutomationBridge> getAutomations() {
+    public ListBridge<AutomationData, ServerProxyAutomation, AutomationBridge> getAutomations() {
         return automations;
     }
 

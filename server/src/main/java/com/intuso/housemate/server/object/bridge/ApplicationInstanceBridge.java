@@ -6,10 +6,8 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstance;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceListener;
-import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.object.real.impl.type.EnumChoiceType;
-import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -32,13 +30,12 @@ public class ApplicationInstanceBridge
     private final CommandBridge rejectCommand;
     private final ValueBridge statusValue;
 
-    public ApplicationInstanceBridge(Log log, ListenersFactory listenersFactory, ApplicationInstance<?, ?, ?> applicationInstance,
-                                     ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    public ApplicationInstanceBridge(Log log, ListenersFactory listenersFactory, ApplicationInstance<?, ?, ?> applicationInstance) {
         super(log, listenersFactory,
                 new ApplicationInstanceData(applicationInstance.getId(), applicationInstance.getName(), applicationInstance.getDescription()));
-        allowCommand = new CommandBridge(log, listenersFactory, applicationInstance.getAllowCommand(), types);
-        rejectCommand = new CommandBridge(log, listenersFactory, applicationInstance.getRejectCommand(), types);
-        statusValue = new ValueBridge(log, listenersFactory, applicationInstance.getStatusValue(), types);
+        allowCommand = new CommandBridge(log, listenersFactory, applicationInstance.getAllowCommand());
+        rejectCommand = new CommandBridge(log, listenersFactory, applicationInstance.getRejectCommand());
+        statusValue = new ValueBridge(log, listenersFactory, applicationInstance.getStatusValue());
         addChild(allowCommand);
         addChild(rejectCommand);
         addChild(statusValue);
@@ -69,17 +66,15 @@ public class ApplicationInstanceBridge
 
         private final Log log;
         private final ListenersFactory listenersFactory;
-        private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory) {
             this.log = log;
             this.listenersFactory = listenersFactory;
-            this.types = types;
         }
 
         @Override
         public ApplicationInstanceBridge apply(ApplicationInstance<?, ?, ?> applicationInstance) {
-            return new ApplicationInstanceBridge(log, listenersFactory, applicationInstance, types);
+            return new ApplicationInstanceBridge(log, listenersFactory, applicationInstance);
         }
     }
 }

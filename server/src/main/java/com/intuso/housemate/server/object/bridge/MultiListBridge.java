@@ -11,7 +11,6 @@ import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,7 +27,6 @@ public class MultiListBridge<
         extends ListBridge<WBL, OWR, WR> {
 
     private Function<? super OWR, ? extends WR> converter;
-    private Map<String, List<OWR>> childSourceList;
 
     public MultiListBridge(Log log, ListenersFactory listenersFactory, ListData<WBL> data) {
         super(log, listenersFactory, data);

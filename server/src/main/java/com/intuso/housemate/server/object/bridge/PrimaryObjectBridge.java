@@ -4,11 +4,9 @@ import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.primary.PrimaryObject;
-import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
-import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -30,16 +28,15 @@ public abstract class PrimaryObjectBridge<WBL extends HousemateData<HousemateDat
     private CommandBridge stopCommand;
     private ValueBridge errorValue;
 
-    protected PrimaryObjectBridge(Log log, ListenersFactory listenersFactory, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?, ?> proxyObject,
-                                  ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    protected PrimaryObjectBridge(Log log, ListenersFactory listenersFactory, WBL data, PrimaryObject<?, ?, ?, ?, ?, ?, ?> proxyObject) {
         super(log, listenersFactory, data);
         this.proxyObject = proxyObject;
-        renameCommand = new CommandBridge(log, listenersFactory, proxyObject.getRenameCommand(), types);
-        removeCommand = new CommandBridge(log, listenersFactory, proxyObject.getRemoveCommand(), types);
-        runningValue = new ValueBridge(log, listenersFactory, proxyObject.getRunningValue(), types);
-        startCommand = new CommandBridge(log, listenersFactory, proxyObject.getStartCommand(), types);
-        stopCommand = new CommandBridge(log, listenersFactory, proxyObject.getStopCommand(), types);
-        errorValue = new ValueBridge(log, listenersFactory, proxyObject.getErrorValue(), types);
+        renameCommand = new CommandBridge(log, listenersFactory, proxyObject.getRenameCommand());
+        removeCommand = new CommandBridge(log, listenersFactory, proxyObject.getRemoveCommand());
+        runningValue = new ValueBridge(log, listenersFactory, proxyObject.getRunningValue());
+        startCommand = new CommandBridge(log, listenersFactory, proxyObject.getStartCommand());
+        stopCommand = new CommandBridge(log, listenersFactory, proxyObject.getStopCommand());
+        errorValue = new ValueBridge(log, listenersFactory, proxyObject.getErrorValue());
         addChild(renameCommand);
         addChild(removeCommand);
         addChild(runningValue);

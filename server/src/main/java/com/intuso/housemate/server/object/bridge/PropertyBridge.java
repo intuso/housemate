@@ -5,10 +5,8 @@ import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.property.Property;
 import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -20,12 +18,11 @@ public class PropertyBridge
 
     private CommandBridge setCommand;
 
-    public PropertyBridge(Log log, ListenersFactory listenersFactory, Property<?, ?, ?> property,
-                          ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    public PropertyBridge(Log log, ListenersFactory listenersFactory, Property<?, ?, ?> property) {
         super(log, listenersFactory,
             new PropertyData(property.getId(), property.getName(), property.getDescription(), property.getTypeId(), property.getTypeInstances()),
-            property, types);
-        setCommand = new CommandBridge(log, listenersFactory, property.getSetCommand(), types);
+            property);
+        setCommand = new CommandBridge(log, listenersFactory, property.getSetCommand());
         addChild(setCommand);
     }
 
@@ -45,17 +42,15 @@ public class PropertyBridge
 
         private final Log log;
         private final ListenersFactory listenersFactory;
-        private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory) {
             this.log = log;
             this.listenersFactory = listenersFactory;
-            this.types = types;
         }
 
         @Override
         public PropertyBridge apply(Property<?, ?, ?> property) {
-            return new PropertyBridge(log, listenersFactory, property, types);
+            return new PropertyBridge(log, listenersFactory, property);
         }
     }
 }
