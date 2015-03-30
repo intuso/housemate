@@ -91,7 +91,7 @@ public class WidgetService extends HousemateService {
                 new AndroidProxyRoot(getLog(), getListenersFactory(), getProperties(), getRouter()),
                 getRouter())
                 .applicationDetails(APPLICATION_DETAILS)
-                .load(ProxyRoot.DEVICES_ID)
+                .load(ProxyRoot.REAL_CLIENTS_ID)
                 .callback(new LoadManager.Callback() {
                               @Override
                               public void failed(HousemateObject.TreeLoadInfo path) {
@@ -153,7 +153,7 @@ public class WidgetService extends HousemateService {
             status = Status.NOT_CONNECTED;
         } else if(getRoot().getApplicationInstanceStatus() != ApplicationInstanceStatus.Allowed)
             status = Status.NOT_ALLOWED;
-        else if(getRoot().getDevices() == null)
+        else if(getRoot().getRealClients() == null)
             status = Status.NOT_LOADED;
         else
             status = Status.LOADED;
@@ -221,19 +221,19 @@ public class WidgetService extends HousemateService {
     }
 
     private String encodePropertyValue(WidgetHandler<?> widgetHandler) {
-        return widgetHandler.getDeviceId() + PROPERTY_VALUE_DELIMITER + widgetHandler.getFeatureId();
+        return widgetHandler.getClientId() + PROPERTY_VALUE_DELIMITER + widgetHandler.getDeviceId() + PROPERTY_VALUE_DELIMITER + widgetHandler.getFeatureId();
     }
 
     private WidgetHandler<?> decodePropertyValue(String value) {
         String[] parts = value.split(PROPERTY_VALUE_DELIMITER);
-        if(parts.length != 2)
+        if(parts.length != 3)
             return null;
-        return WidgetHandler.createFeatureWidget(this, parts[0], parts[1]);
+        return WidgetHandler.createFeatureWidget(this, parts[0], parts[1], parts[2]);
     }
 
     public class Binder extends android.os.Binder {
-        public void addWidget(int widgetId, String deviceId, String featureId) {
-            addNewWidgetHandler(widgetId, WidgetHandler.createFeatureWidget(WidgetService.this, deviceId, featureId));
+        public void addWidget(int widgetId, String clientId, String deviceId, String featureId) {
+            addNewWidgetHandler(widgetId, WidgetHandler.createFeatureWidget(WidgetService.this, clientId, deviceId, featureId));
         }
     }
 }

@@ -32,6 +32,6 @@ public abstract class ProxyParameter<
 
     @Override
     public final TYPE getType() {
-        return (TYPE) getProxyRoot().getTypes().get(getData().getType());
+        return null;// todo (TYPE) getProxyRoot().getTypes().get(getData().getType());
     }
 }

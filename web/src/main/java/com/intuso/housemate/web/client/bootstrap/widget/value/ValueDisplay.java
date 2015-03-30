@@ -2,13 +2,10 @@ package com.intuso.housemate.web.client.bootstrap.widget.value;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.type.SimpleTypeData;
 import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
@@ -32,7 +29,8 @@ public interface ValueDisplay extends IsWidget, ValueListener<com.intuso.housema
                 return create(value, (GWTProxyType) type);
             else {
                 final SimplePanel panel = new SimplePanel();
-                Housemate.INJECTOR.getProxyRoot().getTypes().load(new LoadManager(new LoadManager.Callback() {
+                // todo
+                /*Housemate.INJECTOR.getProxyRoot().getTypes().load(new LoadManager(new LoadManager.Callback() {
                     @Override
                     public void failed(HousemateObject.TreeLoadInfo path) {
                         // todo show error
@@ -44,7 +42,7 @@ public interface ValueDisplay extends IsWidget, ValueListener<com.intuso.housema
                         if (loadedType != null)
                             panel.setWidget(create(value, (GWTProxyType) loadedType));
                     }
-                }, "loadValueType" + value.getId(), new HousemateObject.TreeLoadInfo(value.getTypeId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+                }, "loadValueType" + value.getId(), new HousemateObject.TreeLoadInfo(value.getTypeId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));*/
                 return panel;
             }
         }

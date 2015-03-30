@@ -3,10 +3,11 @@ package com.intuso.housemate.web.client.bootstrap.widget.automation;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
+import com.intuso.housemate.web.client.object.GWTProxyList;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 /**
@@ -14,14 +15,14 @@ import org.gwtbootstrap3.client.ui.constants.AlertType;
  */
 public class Automation extends ObjectWidget<GWTProxyAutomation> {
 
-    public Automation(final ChildOverview childOverview) {
-        GWTProxyAutomation user = Housemate.INJECTOR.getProxyRoot().getAutomations().get(childOverview.getId());
+    public Automation(final GWTProxyList<AutomationData, GWTProxyAutomation> automations, final ChildOverview childOverview) {
+        GWTProxyAutomation user = automations.get(childOverview.getId());
         if(user != null)
             setObject(user);
         else {
             setName(childOverview.getName());
             loading(true);
-            Housemate.INJECTOR.getProxyRoot().getAutomations().load(new LoadManager(new LoadManager.Callback() {
+            automations.load(new LoadManager(new LoadManager.Callback() {
                 @Override
                 public void failed(HousemateObject.TreeLoadInfo path) {
                     loading(false);
@@ -31,7 +32,7 @@ public class Automation extends ObjectWidget<GWTProxyAutomation> {
                 @Override
                 public void allLoaded() {
                     loading(false);
-                    setObject(Housemate.INJECTOR.getProxyRoot().getAutomations().get(childOverview.getId()));
+                    setObject(automations.get(childOverview.getId()));
                 }
             }, "loadAutomation-" + childOverview.getId(),
                     new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));

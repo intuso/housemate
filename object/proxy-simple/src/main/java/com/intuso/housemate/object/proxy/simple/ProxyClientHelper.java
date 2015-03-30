@@ -22,7 +22,7 @@ import java.util.List;
  * Time: 19:08
  * To change this template use File | Settings | File Templates.
  */
-public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> {
+public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?>> {
 
     private final Log log;
     private final ROOT proxyRoot;
@@ -42,12 +42,12 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
         this.router = router;
     }
 
-    public static <ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> ProxyClientHelper<ROOT>
+    public static <ROOT extends ProxyRoot<?, ?, ?>> ProxyClientHelper<ROOT>
                 newClientHelper(Log log, ROOT proxyRoot, Router router) {
         return new ProxyClientHelper<>(log, proxyRoot, router);
     }
 
-    public static <ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> ProxyClientHelper<ROOT>
+    public static <ROOT extends ProxyRoot<?, ?, ?>> ProxyClientHelper<ROOT>
                 newClientHelper(Injector injector) {
         return new ProxyClientHelper(
                 injector.getInstance(Log.class),
@@ -55,7 +55,7 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
                 injector.getInstance(Router.class));
     }
 
-    public static <ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> ProxyClientHelper<ROOT>
+    public static <ROOT extends ProxyRoot<?, ?, ?>> ProxyClientHelper<ROOT>
                 newClientHelper(Module... modules) {
         return ProxyClientHelper.newClientHelper(Guice.createInjector(modules));
     }
@@ -155,12 +155,12 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
         }
     }
 
-    private class ProxyRootListener implements RootListener<ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> {
+    private class ProxyRootListener implements RootListener<ProxyRoot<?, ?, ?>> {
 
         private boolean needsRegistering = true;
 
         @Override
-        public void serverConnectionStatusChanged(ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> root, ServerConnectionStatus serverConnectionStatus) {
+        public void serverConnectionStatusChanged(ProxyRoot<?, ?, ?> root, ServerConnectionStatus serverConnectionStatus) {
             log.d("Root serverConnectionStatus = " + serverConnectionStatus);
             if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently)
                 needsRegistering = true;
@@ -171,12 +171,12 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
         }
 
         @Override
-        public void applicationStatusChanged(ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> root, ApplicationStatus applicationStatus) {
+        public void applicationStatusChanged(ProxyRoot<?, ?, ?> root, ApplicationStatus applicationStatus) {
             log.d("Root applicationStatus = " + applicationStatus);
         }
 
         @Override
-        public void applicationInstanceStatusChanged(ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> root, ApplicationInstanceStatus applicationInstanceStatus) {
+        public void applicationInstanceStatusChanged(ProxyRoot<?, ?, ?> root, ApplicationInstanceStatus applicationInstanceStatus) {
             log.d("Root applicationInstanceStatus = " + applicationInstanceStatus);
             if(applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
                 if(!rootCleared)
@@ -189,12 +189,12 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?,
         }
 
         @Override
-        public void newApplicationInstance(ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> root, String instanceId) {
+        public void newApplicationInstance(ProxyRoot<?, ?, ?> root, String instanceId) {
             // do nothing, saved in router listener
         }
 
         @Override
-        public void newServerInstance(ProxyRoot<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> root, String serverId) {
+        public void newServerInstance(ProxyRoot<?, ?, ?> root, String serverId) {
             // nothing to do here
         }
     }

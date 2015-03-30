@@ -17,6 +17,7 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -46,6 +47,7 @@ public class SimpleProxyModule extends AbstractModule {
         install(new FactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<OptionData, SimpleProxyOption>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<ParameterData, SimpleProxyParameter>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<PropertyData, SimpleProxyProperty>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<RealClientData, SimpleProxyRealClient>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<SubTypeData, SimpleProxySubType>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<TaskData, SimpleProxyTask>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<HousemateObjectFactory<TypeData<HousemateData<?>>, SimpleProxyType>>() {}));

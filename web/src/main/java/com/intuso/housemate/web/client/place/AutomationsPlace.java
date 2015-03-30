@@ -1,16 +1,12 @@
 package com.intuso.housemate.web.client.place;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.place.shared.PlaceTokenizer;
 import com.google.gwt.place.shared.Prefix;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.object.proxy.ProxyRoot;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.ui.view.HousemateView;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,17 +62,7 @@ public class AutomationsPlace extends HousematePlace {
     }
 
     @Override
-    public List<HousemateObject.TreeLoadInfo> createTreeLoadInfos() {
-        HousemateObject.TreeLoadInfo listInfo = new HousemateObject.TreeLoadInfo(ProxyRoot.AUTOMATIONS_ID);
-        if(automationIds != null)
-            for(String automationId : automationIds)
-                listInfo.getChildren().put(automationId, new HousemateObject.TreeLoadInfo(automationId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
-        HousemateObject.TreeLoadInfo addInfo = new HousemateObject.TreeLoadInfo(ProxyRoot.ADD_AUTOMATION_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE));
-        return Lists.newArrayList(listInfo, addInfo);
-    }
-
-    @Override
-    protected HousemateView getView() {
+    public HousemateView getView() {
         return Housemate.INJECTOR.getAutomationsView();
     }
 }

@@ -24,8 +24,8 @@ public class StatefulPowerControlWidgetHandler
 
     private ListenerRegistration listenerRegistration;
 
-    public StatefulPowerControlWidgetHandler(WidgetService widgetService, String deviceId) {
-        super(widgetService, deviceId);
+    public StatefulPowerControlWidgetHandler(WidgetService widgetService, String clientId, String deviceId) {
+        super(widgetService, clientId, deviceId);
     }
 
     @Override
@@ -76,6 +76,9 @@ public class StatefulPowerControlWidgetHandler
                 switch (getStatus()) {
                     case DEVICE_NOT_LOADED:
                         views.setTextViewText(R.id.device_label, "Loading device");
+                        break;
+                    case NO_CLIENT:
+                        views.setTextViewText(R.id.device_label, "Unknown client");
                         break;
                     case NO_DEVICE:
                         views.setTextViewText(R.id.device_label, "Unknown device");

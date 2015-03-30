@@ -61,6 +61,7 @@ public class HousemateTweeter {
     private final String applicationInstanceId;
 
     private final Map<SimpleProxyDevice, java.util.List<ListenerRegistration>> listeners;
+    private RealClientListListener realClientListListener = new RealClientListListener();
     private DeviceListListener deviceListListener = new DeviceListListener();
     private DeviceListener deviceListener = new DeviceListener();
 
@@ -155,10 +156,10 @@ public class HousemateTweeter {
 
                             @Override
                             public void allLoaded() {
-                                root.getDevices().addObjectListener(deviceListListener, true);
+                                root.getRealClients().addObjectListener(realClientListListener, true);
                             }
                         }, "twitterClientInitialLoad",
-                                new HousemateObject.TreeLoadInfo(ProxyRoot.DEVICES_ID),
+                                new HousemateObject.TreeLoadInfo(ProxyRoot.REAL_CLIENTS_ID),
                                 new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
                         break;
                 }
@@ -259,6 +260,18 @@ public class HousemateTweeter {
 			e.printStackTrace();
 		}
 	}
+
+    private class RealClientListListener implements ListListener<SimpleProxyRealClient> {
+        @Override
+        public void elementAdded(SimpleProxyRealClient realClient) {
+            realClient.getDevices().addObjectListener(deviceListListener, true);
+        }
+
+        @Override
+        public void elementRemoved(SimpleProxyRealClient realClient) {
+            // remove the old listener
+        }
+    };
 
     private class DeviceListListener implements ListListener<SimpleProxyDevice> {
         @Override

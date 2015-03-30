@@ -2,12 +2,10 @@ package com.intuso.housemate.web.client.bootstrap.widget.device;
 
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
-
-import java.util.List;
+import com.intuso.housemate.web.client.object.GWTProxyList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,12 +16,15 @@ import java.util.List;
  */
 public class DeviceList extends MainList<DeviceData, GWTProxyDevice> {
 
-    public DeviceList(String title, List<String> filteredIds, boolean includeFiltered) {
-        super(Housemate.INJECTOR.getProxyRoot().getDevices(), title, filteredIds, includeFiltered);
+    private final GWTProxyList<DeviceData, GWTProxyDevice> devices;
+
+    public DeviceList(GWTProxyList<DeviceData, GWTProxyDevice> devices, String name) {
+        super(devices, name, null, true);
+        this.devices = devices;
     }
 
     @Override
     protected void getWidget(ChildOverview childOverview, LazyLoadedWidgetCallback callback) {
-        callback.widgetReady(new Device(childOverview));
+        callback.widgetReady(new Device(devices, childOverview));
     }
 }

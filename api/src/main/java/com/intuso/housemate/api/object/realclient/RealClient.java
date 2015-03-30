@@ -35,6 +35,17 @@ public interface RealClient<
             HasApplications<APPLICATIONS>,
             HasUsers<USERS> {
 
+    public final static String APPLICATIONS_ID = "applications";
+    public final static String AUTOMATIONS_ID = "automations";
+    public final static String DEVICES_ID = "devices";
+    public final static String HARDWARES_ID = "hardwares";
+    public final static String TYPES_ID = "types";
+    public final static String USERS_ID = "users";
+    public final static String ADD_AUTOMATION_ID = "add-automation";
+    public final static String ADD_DEVICE_ID = "add-device";
+    public final static String ADD_HARDWARE_ID = "add-hardware";
+    public final static String ADD_USER_ID = "add-user";
+
     public COMMAND getAddAutomationCommand();
     public COMMAND getAddDeviceCommand();
     public COMMAND getAddHardwareCommand();

@@ -2,10 +2,8 @@ package com.intuso.housemate.web.client.bootstrap.widget.property;
 
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.type.TypeInput;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
@@ -36,7 +34,8 @@ public class Property extends SimplePanel implements UserInputHandler {
         if(type != null)
             setWidget(TypeInput.FACTORY.create(type, values.getChildren().get(com.intuso.housemate.api.object.property.Property.VALUE_PARAM), this));
         else {
-            Housemate.INJECTOR.getProxyRoot().getTypes().load(new LoadManager(new LoadManager.Callback() {
+            // todo
+            /*Housemate.INJECTOR.getProxyRoot().getTypes().load(new LoadManager(new LoadManager.Callback() {
                 @Override
                 public void failed(HousemateObject.TreeLoadInfo path) {
                     // todo show error
@@ -48,7 +47,7 @@ public class Property extends SimplePanel implements UserInputHandler {
                     if(loadedType != null)
                         setWidget(TypeInput.FACTORY.create(loadedType, values.getChildren().get(com.intuso.housemate.api.object.property.Property.VALUE_PARAM), Property.this));
                 }
-            }, "loadPropertyType-" + property.getId(), new HousemateObject.TreeLoadInfo(property.getTypeId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+            }, "loadPropertyType-" + property.getId(), new HousemateObject.TreeLoadInfo(property.getTypeId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));*/
         }
     }
 
