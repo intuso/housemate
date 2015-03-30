@@ -15,24 +15,24 @@ import com.intuso.utilities.log.Log;
 public class OptionBridge
         extends BridgeObject<OptionData,
         ListData<SubTypeData>,
-            ListBridge<SubTypeData, SubType<?>, SubTypeBridge>,
+        ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge>,
             OptionBridge,
             OptionListener>
-        implements Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>> {
+        implements Option<ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge>> {
 
-    private ListBridge<SubTypeData, SubType<?>, SubTypeBridge> subTypes;
+    private ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge> subTypes;
 
     public OptionBridge(Log log, ListenersFactory listenersFactory, Option<?> option) {
         super(log, listenersFactory, new OptionData(option.getId(), option.getName(), option.getDescription()));
         if(option.getSubTypes() != null) {
-            subTypes = new SingleListBridge<>(log, listenersFactory, option.getSubTypes(),
+            subTypes = new ConvertingListBridge<>(log, listenersFactory, option.getSubTypes(),
                     new SubTypeBridge.Converter(log, listenersFactory));
             addChild(subTypes);
         }
     }
 
     @Override
-    public ListBridge<SubTypeData, SubType<?>, SubTypeBridge> getSubTypes() {
+    public ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge> getSubTypes() {
         return subTypes;
     }
 

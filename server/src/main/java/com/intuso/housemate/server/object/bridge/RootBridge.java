@@ -13,18 +13,13 @@ import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.application.ApplicationData;
-import com.intuso.housemate.api.object.automation.AutomationData;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
+import com.intuso.housemate.api.object.realclient.HasRealClients;
+import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.server.*;
+import com.intuso.housemate.object.server.ServerProxyRoot;
 import com.intuso.housemate.object.server.client.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -38,62 +33,22 @@ import java.util.Map;
 
 public class RootBridge
         extends BridgeObject<RootData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>,
-        RootBridge, RootListener<? super RootBridge>>
-        implements Root<RootBridge> {
+            RootBridge, RootListener<? super RootBridge>>
+        implements Root<RootBridge>,
+            HasRealClients<ListBridge<RealClientData, RealClientBridge>> {
+
+    public final static String REAL_CLIENTS_ID = "real-clients";
 
     private final ListenersFactory listenersFactory;
-
-    private final MultiListBridge<ApplicationData, ServerProxyApplication, ApplicationBridge> applications;
-    private final MultiListBridge<UserData, ServerProxyUser, UserBridge> users;
-    private final MultiListBridge<HardwareData, ServerProxyHardware, HardwareBridge> hardwares;
-    private final MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
-    private final MultiListBridge<DeviceData, ServerProxyDevice, DeviceBridge> devices;
-    private final MultiListBridge<AutomationData, ServerProxyAutomation, AutomationBridge> automations;
-    private final CommandBridge addUser;
-    private final CommandBridge addHardware;
-    private final CommandBridge addDevice;
-    private final CommandBridge addAutomation;
-
+    private final ListBridge<RealClientData, RealClientBridge> realClients;
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<>();
 
     @Inject
-    public RootBridge(Log log, ListenersFactory listenersFactory, RealRoot realRoot) {
+    public RootBridge(Log log, ListenersFactory listenersFactory) {
         super(log, listenersFactory, new RootData());
         this.listenersFactory = listenersFactory;
-        applications = new MultiListBridge<>(log, listenersFactory,
-                new ListData<ApplicationData>(RealRoot.APPLICATIONS_ID, "Applications", "Applications"),
-                new ApplicationBridge.Converter(log, listenersFactory));
-        automations = new MultiListBridge<>(log, listenersFactory,
-                new ListData<AutomationData>(RealRoot.AUTOMATIONS_ID, "Automations", "Automations"),
-                new AutomationBridge.Converter(log, listenersFactory));
-        devices = new MultiListBridge<>(log, listenersFactory,
-                new ListData<DeviceData>(RealRoot.DEVICES_ID, "Devices", "Devices"),
-                new DeviceBridge.Converter(log, listenersFactory));
-        hardwares = new MultiListBridge<>(log, listenersFactory,
-                new ListData<HardwareData>(RealRoot.HARDWARES_ID, "Hardware", "Hardware"),
-                new HardwareBridge.Converter(log, listenersFactory));
-        types = new MultiListBridge<>(log, listenersFactory,
-                new ListData<TypeData<?>>(RealRoot.TYPES_ID, "Types", "Types"),
-                new TypeBridge.Converter(log, listenersFactory));
-        users = new MultiListBridge<>(log, listenersFactory,
-                new ListData<UserData>(RealRoot.USERS_ID, "Users", "Users"),
-                new UserBridge.Converter(log, listenersFactory));
-
-        addUser = new CommandBridge(log, listenersFactory, realRoot.getAddUserCommand());
-        addHardware = new CommandBridge(log, listenersFactory, realRoot.getAddHardwareCommand());
-        addDevice = new CommandBridge(log, listenersFactory, realRoot.getAddDeviceCommand());
-        addAutomation = new CommandBridge(log, listenersFactory, realRoot.getAddAutomationCommand());
-
-        addChild(applications);
-        addChild(users);
-        addChild(hardwares);
-        addChild(types);
-        addChild(devices);
-        addChild(automations);
-        addChild(addUser);
-        addChild(addHardware);
-        addChild(addDevice);
-        addChild(addAutomation);
+        realClients = new ListBridge<>(log, listenersFactory, new ListData<RealClientData>(REAL_CLIENTS_ID, "Clients", "Clients"));
+        addChild(realClients);
         init(null);
     }
 
@@ -136,27 +91,7 @@ public class RootBridge
 
     @Override
     public void sendMessage(Message<?> message) {
-        throw new HousemateRuntimeException("Whatever");
-    }
-
-    public ListBridge<UserData, ServerProxyUser, UserBridge> getUsers() {
-        return users;
-    }
-
-    public MultiListBridge<HardwareData, ServerProxyHardware, HardwareBridge> getHardwares() {
-        return hardwares;
-    }
-
-    public MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> getTypes() {
-        return types;
-    }
-
-    public MultiListBridge<DeviceData, ServerProxyDevice, DeviceBridge> getDevices() {
-        return devices;
-    }
-
-    public ListBridge<AutomationData, ServerProxyAutomation, AutomationBridge> getAutomations() {
-        return automations;
+        throw new HousemateRuntimeException("Watcha playing at, fool?");
     }
 
     @Override
@@ -173,10 +108,13 @@ public class RootBridge
             objectRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?>) ancestor);
     }
 
+    @Override
+    public ListBridge<RealClientData, RealClientBridge> getRealClients() {
+        return realClients;
+    }
+
     public void addProxyRoot(ServerProxyRoot root) {
-        hardwares.addList(root.getHardwares());
-        devices.addList(root.getDevices());
-        types.addList(root.getTypes());
+        realClients.add(new RealClientBridge(getLog(), getListenersFactory(), root));
     }
 
     private void objectAdded(String path, HousemateObject<?, ?, ?, ?> object) {

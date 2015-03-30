@@ -27,10 +27,10 @@ public class ApplicationBridge
             ValueBridge,
             CommandBridge,
             ApplicationInstanceBridge,
-            ListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge>,
+        ConvertingListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge>,
             ApplicationBridge> {
 
-    private final ListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge> applicationInstances;
+    private final ConvertingListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge> applicationInstances;
     private final CommandBridge allowCommand;
     private final CommandBridge someCommand;
     private final CommandBridge rejectCommand;
@@ -39,7 +39,7 @@ public class ApplicationBridge
     public ApplicationBridge(Log log, ListenersFactory listenersFactory, Application application) {
         super(log, listenersFactory,
                 new ApplicationData(application.getId(), application.getName(), application.getDescription()));
-        applicationInstances = new SingleListBridge<>(
+        applicationInstances = new ConvertingListBridge<>(
                 log, listenersFactory, application.getApplicationInstances(), new ApplicationInstanceBridge.Converter(log, listenersFactory));
         allowCommand = new CommandBridge(log, listenersFactory, application.getAllowCommand());
         someCommand = new CommandBridge(log, listenersFactory, application.getSomeCommand());
@@ -52,7 +52,7 @@ public class ApplicationBridge
     }
 
     @Override
-    public ListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge> getApplicationInstances() {
+    public ConvertingListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge> getApplicationInstances() {
         return applicationInstances;
     }
 

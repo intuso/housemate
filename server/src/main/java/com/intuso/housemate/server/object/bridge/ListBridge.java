@@ -1,6 +1,5 @@
 package com.intuso.housemate.server.object.bridge;
 
-import com.intuso.housemate.api.object.BaseHousemateObject;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.list.ListData;
@@ -14,11 +13,10 @@ import java.util.Iterator;
 
 /**
  */
-public abstract class ListBridge<
+public class ListBridge<
             WBL extends HousemateData<?>,
-            OWR extends BaseHousemateObject<?>,
             WR extends BridgeObject<? extends WBL, ?, ?, ?, ?>>
-        extends BridgeObject<ListData<WBL>, WBL, WR, ListBridge<WBL, OWR, WR>, ListListener<? super WR>>
+        extends BridgeObject<ListData<WBL>, WBL, WR, ListBridge<WBL, WR>, ListListener<? super WR>>
         implements List<WR> {
 
     public ListBridge(Log log, ListenersFactory listenersFactory, ListData<WBL> data) {
@@ -76,5 +74,9 @@ public abstract class ListBridge<
     @Override
     public Iterator<WR> iterator() {
         return getChildren().iterator();
+    }
+
+    public void add(WR child) {
+        super.addChild(child);
     }
 }

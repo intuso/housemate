@@ -29,19 +29,19 @@ public class DeviceBridge
             CommandBridge,
             CommandBridge,
             CommandBridge,
-            ListBridge<CommandData, Command<?, ?, ?>, CommandBridge>,
+        ConvertingListBridge<CommandData, Command<?, ?, ?>, CommandBridge>,
             ValueBridge,
             ValueBridge,
             ValueBridge,
             ValueBridge,
-            ListBridge<ValueData, Value<?, ?>, ValueBridge>,
+        ConvertingListBridge<ValueData, Value<?, ?>, ValueBridge>,
             PropertyBridge,
-            ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
+        ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
             DeviceBridge> {
 
-    private ListBridge<CommandData, Command<?, ?, ?>, CommandBridge> commandList;
-    private ListBridge<ValueData, Value<?, ?>, ValueBridge> valueList;
-    private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
+    private ConvertingListBridge<CommandData, Command<?, ?, ?>, CommandBridge> commandList;
+    private ConvertingListBridge<ValueData, Value<?, ?>, ValueBridge> valueList;
+    private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
     private ValueBridge connectedValue;
 
     public DeviceBridge(Log log, ListenersFactory listenersFactory,
@@ -50,9 +50,9 @@ public class DeviceBridge
                 new DeviceData(device.getId(), device.getName(), device.getDescription(), device.getFeatureIds(),
                         device.getCustomCommandIds(), device.getCustomValueIds(), device.getCustomPropertyIds()),
                 device);
-        commandList = new SingleListBridge<>(log, listenersFactory, device.getCommands(), new CommandBridge.Converter(log, listenersFactory));
-        valueList = new SingleListBridge<>(log, listenersFactory, device.getValues(), new ValueBridge.Converter(log, listenersFactory));
-        propertyList = new SingleListBridge<>(log, listenersFactory, device.getProperties(), new PropertyBridge.Converter(log, listenersFactory));
+        commandList = new ConvertingListBridge<>(log, listenersFactory, device.getCommands(), new CommandBridge.Converter(log, listenersFactory));
+        valueList = new ConvertingListBridge<>(log, listenersFactory, device.getValues(), new ValueBridge.Converter(log, listenersFactory));
+        propertyList = new ConvertingListBridge<>(log, listenersFactory, device.getProperties(), new PropertyBridge.Converter(log, listenersFactory));
         connectedValue = new ValueBridge(log, listenersFactory, device.getConnectedValue());
         addChild(commandList);
         addChild(valueList);
@@ -61,17 +61,17 @@ public class DeviceBridge
     }
 
     @Override
-    public ListBridge<CommandData, Command<?, ?, ?>, CommandBridge> getCommands() {
+    public ConvertingListBridge<CommandData, Command<?, ?, ?>, CommandBridge> getCommands() {
         return commandList;
     }
 
     @Override
-    public ListBridge<ValueData, Value<?, ?>, ValueBridge> getValues() {
+    public ConvertingListBridge<ValueData, Value<?, ?>, ValueBridge> getValues() {
         return valueList;
     }
 
     @Override
-    public ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
+    public ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
     }
 

@@ -20,19 +20,19 @@ public class HardwareBridge
             HardwareBridge,
             HardwareListener<? super HardwareBridge>>
         implements Hardware<
-            ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
+        ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
             HardwareBridge> {
-private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
+private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
     public HardwareBridge(Log log, ListenersFactory listenersFactory, Hardware<?, ?> hardware) {
         super(log, listenersFactory, new HardwareData(hardware.getId(), hardware.getName(), hardware.getDescription()));
-        propertyList = new SingleListBridge<>(log, listenersFactory, hardware.getProperties(),
+        propertyList = new ConvertingListBridge<>(log, listenersFactory, hardware.getProperties(),
                 new PropertyBridge.Converter(log, listenersFactory));
         addChild(propertyList);
     }
 
     @Override
-    public ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
+    public ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
     }
 

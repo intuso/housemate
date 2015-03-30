@@ -26,18 +26,18 @@ public class CommandBridge
         extends BridgeObject<CommandData, HousemateData<?>,
             BridgeObject<?, ?, ?, ?, ?>, CommandBridge,
             CommandListener<? super CommandBridge>>
-        implements Command<ValueBridge, ListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge> {
+        implements Command<ValueBridge, ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge> {
 
     private Command<?, ?, ?> proxyCommand;
     private ValueBridge enabledValue;
-    private ListBridge<ParameterData, Parameter<?>, ParameterBridge> parameters;
+    private ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge> parameters;
 
     public CommandBridge(Log log, ListenersFactory listenersFactory, Command<?, ? extends List<? extends Parameter<?>>, ?> proxyCommand) {
         super(log, listenersFactory,
                 new CommandData(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
         this.proxyCommand = proxyCommand;
         enabledValue = new ValueBridge(log, listenersFactory, proxyCommand.getEnabledValue());
-        parameters = new SingleListBridge<>(log, listenersFactory, proxyCommand.getParameters(), new ParameterBridge.Converter(log, listenersFactory));
+        parameters = new ConvertingListBridge<>(log, listenersFactory, proxyCommand.getParameters(), new ParameterBridge.Converter(log, listenersFactory));
         addChild(enabledValue);
         addChild(parameters);
     }
@@ -54,7 +54,7 @@ public class CommandBridge
     }
 
     @Override
-    public ListBridge<ParameterData, Parameter<?>, ParameterBridge> getParameters() {
+    public ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge> getParameters() {
         return parameters;
     }
 

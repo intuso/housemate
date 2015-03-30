@@ -16,12 +16,12 @@ import com.intuso.utilities.log.Log;
 public class AutomationBridge
         extends PrimaryObjectBridge<AutomationData, AutomationBridge, AutomationListener<? super AutomationBridge>>
         implements Automation<CommandBridge, CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge,
-            ConditionBridge,ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>, TaskBridge,
-            ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>, AutomationBridge> {
+            ConditionBridge,ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>, TaskBridge,
+        ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>, AutomationBridge> {
 
-    private ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
-    private ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> satisfiedTaskList;
-    private ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> unsatisfiedTaskList;
+    private ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
+    private ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> satisfiedTaskList;
+    private ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> unsatisfiedTaskList;
     private CommandBridge addCondition;
     private CommandBridge addSatisfiedTask;
     private CommandBridge addUnsatisfiedTask;
@@ -29,11 +29,11 @@ public class AutomationBridge
     public AutomationBridge(Log log, ListenersFactory listenersFactory,
                             Automation<?, ?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?, ?>, ?, ?> automation) {
         super(log, listenersFactory, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()), automation);
-        conditionList = new SingleListBridge<>(log, listenersFactory,
+        conditionList = new ConvertingListBridge<>(log, listenersFactory,
                 automation.getConditions(), new ConditionBridge.Converter(log, listenersFactory));
-        satisfiedTaskList = new SingleListBridge<>(log, listenersFactory,
+        satisfiedTaskList = new ConvertingListBridge<>(log, listenersFactory,
                 automation.getSatisfiedTasks(), new TaskBridge.Converter(log, listenersFactory));
-        unsatisfiedTaskList = new SingleListBridge<>(log, listenersFactory,
+        unsatisfiedTaskList = new ConvertingListBridge<>(log, listenersFactory,
                 automation.getUnsatisfiedTasks(), new TaskBridge.Converter(log, listenersFactory));
         addCondition = new CommandBridge(log, listenersFactory, automation.getAddConditionCommand());
         addSatisfiedTask = new CommandBridge(log, listenersFactory, automation.getAddSatisifedTaskCommand());
@@ -62,17 +62,17 @@ public class AutomationBridge
     }
 
     @Override
-    public ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> getUnsatisfiedTasks() {
+    public ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> getUnsatisfiedTasks() {
         return unsatisfiedTaskList;
     }
 
     @Override
-    public ListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> getSatisfiedTasks() {
+    public ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> getSatisfiedTasks() {
         return satisfiedTaskList;
     }
 
     @Override
-    public ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
+    public ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
         return conditionList;
     }
 

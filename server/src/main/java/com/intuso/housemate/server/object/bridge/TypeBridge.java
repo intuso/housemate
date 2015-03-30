@@ -27,11 +27,11 @@ public class TypeBridge
     public TypeBridge(Log log, ListenersFactory listenersFactory, Type type) {
         super(log, listenersFactory, cloneData(log, type));
         if(type instanceof HousemateObject && ((HousemateObject)type).getChild(OPTIONS) != null) {
-            addChild(new SingleListBridge<OptionData, Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(log, listenersFactory, (List) ((HousemateObject) (type)).getChild(OPTIONS),
+            addChild(new ConvertingListBridge<OptionData, Option<ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge>>, OptionBridge>(log, listenersFactory, (List) ((HousemateObject) (type)).getChild(OPTIONS),
                     new OptionBridge.Converter(log, listenersFactory)));
         }
         if(type instanceof HousemateObject && ((HousemateObject)type).getChild(SUB_TYPES) != null) {
-            addChild(new SingleListBridge<SubTypeData, SubType<?>, SubTypeBridge>(log, listenersFactory, (List) ((HousemateObject) (type)).getChild(SUB_TYPES),
+            addChild(new ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge>(log, listenersFactory, (List) ((HousemateObject) (type)).getChild(SUB_TYPES),
                     new SubTypeBridge.Converter(log, listenersFactory)));
         }
     }

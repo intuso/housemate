@@ -28,20 +28,20 @@ public class TaskBridge
             CommandBridge,
             ValueBridge,
             ValueBridge,
-            ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
+        ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
             TaskBridge> {
 
     private CommandBridge removeCommand;
     private ValueBridge executingValue;
     private ValueBridge errorValue;
-    private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
+    private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
     public TaskBridge(Log log, ListenersFactory listenersFactory, Task<?, ?, ?, ?, ?> task) {
         super(log, listenersFactory, new TaskData(task.getId(), task.getName(), task.getDescription()));
         removeCommand = new CommandBridge(log, listenersFactory, task.getRemoveCommand());
         executingValue = new ValueBridge(log, listenersFactory, task.getExecutingValue());
         errorValue = new ValueBridge(log, listenersFactory, task.getErrorValue());
-        propertyList = new SingleListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(log, listenersFactory, task.getProperties(),
+        propertyList = new ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(log, listenersFactory, task.getProperties(),
                 new PropertyBridge.Converter(log, listenersFactory));
         addChild(removeCommand);
         addChild(executingValue);
@@ -77,7 +77,7 @@ public class TaskBridge
     }
 
     @Override
-    public ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
+    public ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
     }
 

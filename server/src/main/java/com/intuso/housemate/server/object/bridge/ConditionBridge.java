@@ -20,14 +20,14 @@ import java.util.List;
 public class ConditionBridge
         extends BridgeObject<ConditionData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, ConditionBridge, ConditionListener<? super ConditionBridge>>
         implements Condition<CommandBridge, ValueBridge, ValueBridge,
-                    ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>, CommandBridge, ConditionBridge,
-                    ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>> {
+        ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>, CommandBridge, ConditionBridge,
+        ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>> {
 
     private CommandBridge removeCommand;
     private ValueBridge satisfiedValue;
     private ValueBridge errorValue;
-    private SingleListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
-    private SingleListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
+    private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
+    private ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
     private CommandBridge addConditionCommand;
 
     public ConditionBridge(Log log, ListenersFactory listenersFactory,
@@ -37,8 +37,8 @@ public class ConditionBridge
         removeCommand = new CommandBridge(log, listenersFactory, condition.getRemoveCommand());
         satisfiedValue = new ValueBridge(log, listenersFactory, condition.getSatisfiedValue());
         errorValue = new ValueBridge(log, listenersFactory, condition.getErrorValue());
-        propertyList = new SingleListBridge<>(log, listenersFactory, condition.getProperties(), new PropertyBridge.Converter(log, listenersFactory));
-        conditionList = new SingleListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(log, listenersFactory, condition.getConditions(), new Converter(log, listenersFactory));
+        propertyList = new ConvertingListBridge<>(log, listenersFactory, condition.getProperties(), new PropertyBridge.Converter(log, listenersFactory));
+        conditionList = new ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(log, listenersFactory, condition.getConditions(), new Converter(log, listenersFactory));
         addConditionCommand = condition.getAddConditionCommand() == null ? null : new CommandBridge(log, listenersFactory, condition.getAddConditionCommand());
         addChild(removeCommand);
         addChild(satisfiedValue);
@@ -54,12 +54,12 @@ public class ConditionBridge
     }
 
     @Override
-    public ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
+    public ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
     }
 
     @Override
-    public ListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
+    public ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
         return conditionList;
     }
 
