@@ -12,15 +12,10 @@ import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.application.HasApplications;
-import com.intuso.housemate.api.object.automation.HasAutomations;
-import com.intuso.housemate.api.object.device.HasDevices;
-import com.intuso.housemate.api.object.hardware.HasHardwares;
+import com.intuso.housemate.api.object.realclient.HasRealClients;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.type.HasTypes;
-import com.intuso.housemate.api.object.user.HasUsers;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -34,46 +29,17 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @param <USER> the type of the users
- * @param <USERS> the type of the users list
- * @param <TYPE> the type of the types
- * @param <TYPES> the type of the types list
- * @param <DEVICE> the type of the devices
- * @param <DEVICES> the type of the devices list
- * @param <AUTOMATION> the type of the automations
- * @param <AUTOMATIONS> the type of the automations list
- * @param <COMMAND> the type of the command
  * @param <ROOT> the type of the root
  */
 public abstract class ProxyRoot<
-            APPLICATION extends ProxyApplication<?, ?, ?, ?, APPLICATION>,
-            APPLICATIONS extends ProxyList<?, APPLICATION, APPLICATIONS>,
-            USER extends ProxyUser<?, ?, USER>,
-            USERS extends ProxyList<?, USER, USERS>,
-            HARDWARE extends ProxyHardware<?, ?>,
-            HARDWARES extends ProxyList<?, HARDWARE, HARDWARES>,
-            TYPE extends ProxyType<?, ?, ?, ?>,
-            TYPES extends ProxyList<?, TYPE, TYPES>,
-            DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?>,
-            DEVICES extends ProxyList<?, DEVICE, DEVICES>,
-            AUTOMATION extends ProxyAutomation<?, ?, ?, ?, ?, ?, ?>,
-            AUTOMATIONS extends ProxyList<?, AUTOMATION, AUTOMATIONS>,
-            COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
-            ROOT extends ProxyRoot<APPLICATION, APPLICATIONS, USER, USERS, HARDWARE, HARDWARES, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
+            REAL_CLIENT extends ProxyRealClient<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
+            REAL_CLIENTS extends ProxyList<?, REAL_CLIENT, REAL_CLIENTS>,
+            ROOT extends ProxyRoot<REAL_CLIENT, REAL_CLIENTS, ROOT>>
         extends ProxyObject<RootData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, ROOT, RootListener<? super ROOT>>
-        implements Root<ROOT>, HasTypes<TYPES>, HasHardwares<HARDWARES>, HasDevices<DEVICES>, HasAutomations<AUTOMATIONS>, HasApplications<APPLICATIONS>, HasUsers<USERS>,
+        implements Root<ROOT>, HasRealClients<REAL_CLIENTS>,
             ObjectListener<ProxyObject<?, ?, ?, ?, ?>> {
 
-    public final static String APPLICATIONS_ID = "applications";
-    public final static String USERS_ID = "users";
-    public final static String HARDWARES_ID = "hardwares";
-    public final static String TYPES_ID = "types";
-    public final static String DEVICES_ID = "devices";
-    public final static String AUTOMATIONS_ID = "automations";
-    public final static String ADD_USER_ID = "add-user";
-    public final static String ADD_HARDWARE_ID = "add-hardware";
-    public final static String ADD_DEVICE_ID = "add-device";
-    public final static String ADD_AUTOMATION_ID = "add-automation";
+    public final static String REAL_CLIENTS_ID = "real-clients";
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = Maps.newHashMap();
 
@@ -205,49 +171,8 @@ public abstract class ProxyRoot<
     }
 
     @Override
-    public APPLICATIONS getApplications() {
-        return (APPLICATIONS) getChild(APPLICATIONS_ID);
-    }
-
-    @Override
-    public USERS getUsers() {
-        return (USERS) getChild(USERS_ID);
-    }
-
-    @Override
-    public HARDWARES getHardwares() {
-        return (HARDWARES) getChild(HARDWARES_ID);
-    }
-
-    @Override
-    public TYPES getTypes() {
-        return (TYPES) getChild(TYPES_ID);
-    }
-
-    @Override
-    public DEVICES getDevices() {
-        return (DEVICES) getChild(DEVICES_ID);
-    }
-
-    @Override
-    public AUTOMATIONS getAutomations() {
-        return (AUTOMATIONS) getChild(AUTOMATIONS_ID);
-    }
-
-    public COMMAND getAddUserCommand() {
-        return (COMMAND) getChild(ADD_USER_ID);
-    }
-
-    public COMMAND getAddHardwareCommand() {
-        return (COMMAND) getChild(ADD_HARDWARE_ID);
-    }
-
-    public COMMAND getAddDeviceCommand() {
-        return (COMMAND) getChild(ADD_DEVICE_ID);
-    }
-
-    public COMMAND getAddAutomationCommand() {
-        return (COMMAND) getChild(ADD_AUTOMATION_ID);
+    public REAL_CLIENTS getRealClients() {
+        return (REAL_CLIENTS) getChild(REAL_CLIENTS_ID);
     }
 
     @Override
