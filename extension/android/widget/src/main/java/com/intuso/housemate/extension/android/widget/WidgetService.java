@@ -14,10 +14,10 @@ import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.extension.android.widget.handler.WidgetHandler;
 import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.object.proxy.ProxyRoot;
 import com.intuso.housemate.object.proxy.simple.ProxyClientHelper;
 import com.intuso.housemate.platform.android.app.HousemateService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
@@ -91,7 +91,7 @@ public class WidgetService extends HousemateService {
                 new AndroidProxyRoot(getLog(), getListenersFactory(), getProperties(), getRouter()),
                 getRouter())
                 .applicationDetails(APPLICATION_DETAILS)
-                .load(ObjectRoot.DEVICES_ID)
+                .load(ProxyRoot.DEVICES_ID)
                 .callback(new LoadManager.Callback() {
                               @Override
                               public void failed(HousemateObject.TreeLoadInfo path) {

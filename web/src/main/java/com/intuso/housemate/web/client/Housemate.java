@@ -12,9 +12,9 @@ import com.intuso.housemate.api.comms.RouterRoot;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.object.proxy.ProxyRoot;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.handler.PerformCommandHandler;
 import com.intuso.housemate.web.client.ioc.GWTGinjector;
@@ -80,7 +80,7 @@ public class Housemate implements EntryPoint {
                 INJECTOR.getProxyRoot().clearLoadedObjects();
                 INJECTOR.getProxyRoot().loadChildOverviews();
                 List<HousemateObject.TreeLoadInfo> loadInfos = Lists.newArrayList();
-                loadInfos.add(new HousemateObject.TreeLoadInfo(ObjectRoot.TYPES_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                loadInfos.add(new HousemateObject.TreeLoadInfo(ProxyRoot.TYPES_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
                 INJECTOR.getProxyRoot().load(new LoadManager(new LoadManager.Callback() {
                     @Override
                     public void failed(HousemateObject.TreeLoadInfo tl) {

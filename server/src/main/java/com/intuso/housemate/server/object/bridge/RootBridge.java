@@ -9,7 +9,7 @@ import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
-import com.intuso.housemate.api.comms.message.StringPayload;
+import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
@@ -18,7 +18,6 @@ import com.intuso.housemate.api.object.automation.AutomationData;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
@@ -62,22 +61,22 @@ public class RootBridge
         super(log, listenersFactory, new RootData());
         this.listenersFactory = listenersFactory;
         applications = new MultiListBridge<>(log, listenersFactory,
-                new ListData<ApplicationData>(ObjectRoot.APPLICATIONS_ID, "Applications", "Applications"),
+                new ListData<ApplicationData>(RealRoot.APPLICATIONS_ID, "Applications", "Applications"),
                 new ApplicationBridge.Converter(log, listenersFactory));
         automations = new MultiListBridge<>(log, listenersFactory,
-                new ListData<AutomationData>(ObjectRoot.AUTOMATIONS_ID, "Automations", "Automations"),
+                new ListData<AutomationData>(RealRoot.AUTOMATIONS_ID, "Automations", "Automations"),
                 new AutomationBridge.Converter(log, listenersFactory));
         devices = new MultiListBridge<>(log, listenersFactory,
-                new ListData<DeviceData>(ObjectRoot.DEVICES_ID, "Devices", "Devices"),
+                new ListData<DeviceData>(RealRoot.DEVICES_ID, "Devices", "Devices"),
                 new DeviceBridge.Converter(log, listenersFactory));
         hardwares = new MultiListBridge<>(log, listenersFactory,
-                new ListData<HardwareData>(ObjectRoot.HARDWARES_ID, "Hardware", "Hardware"),
+                new ListData<HardwareData>(RealRoot.HARDWARES_ID, "Hardware", "Hardware"),
                 new HardwareBridge.Converter(log, listenersFactory));
         types = new MultiListBridge<>(log, listenersFactory,
-                new ListData<TypeData<?>>(ObjectRoot.TYPES_ID, "Types", "Types"),
+                new ListData<TypeData<?>>(RealRoot.TYPES_ID, "Types", "Types"),
                 new TypeBridge.Converter(log, listenersFactory));
         users = new MultiListBridge<>(log, listenersFactory,
-                new ListData<UserData>(ObjectRoot.USERS_ID, "Users", "Users"),
+                new ListData<UserData>(RealRoot.USERS_ID, "Users", "Users"),
                 new UserBridge.Converter(log, listenersFactory));
 
         addUser = new CommandBridge(log, listenersFactory, realRoot.getAddUserCommand());
@@ -101,9 +100,9 @@ public class RootBridge
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(ObjectRoot.CLEAR_LOADED, new Receiver<ClientPayload<StringPayload>>() {
+        result.add(addMessageListener("clear-loaded", new Receiver<ClientPayload<NoPayload>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<StringPayload>> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<NoPayload>> message) throws HousemateException {
                 clearClientInfo(message.getPayload().getClient());
             }
         }));

@@ -1,18 +1,26 @@
 package com.intuso.housemate.object.proxy;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
+import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.root.ObjectRoot;
+import com.intuso.housemate.api.object.application.HasApplications;
+import com.intuso.housemate.api.object.automation.HasAutomations;
+import com.intuso.housemate.api.object.device.HasDevices;
+import com.intuso.housemate.api.object.hardware.HasHardwares;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.api.object.type.HasTypes;
+import com.intuso.housemate.api.object.user.HasUsers;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -21,7 +29,6 @@ import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectListener;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,10 +61,21 @@ public abstract class ProxyRoot<
             COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
             ROOT extends ProxyRoot<APPLICATION, APPLICATIONS, USER, USERS, HARDWARE, HARDWARES, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
         extends ProxyObject<RootData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, ROOT, RootListener<? super ROOT>>
-        implements ObjectRoot<TYPES, HARDWARES, DEVICES, AUTOMATIONS, APPLICATIONS, USERS, COMMAND, ROOT>,
+        implements Root<ROOT>, HasTypes<TYPES>, HasHardwares<HARDWARES>, HasDevices<DEVICES>, HasAutomations<AUTOMATIONS>, HasApplications<APPLICATIONS>, HasUsers<USERS>,
             ObjectListener<ProxyObject<?, ?, ?, ?, ?>> {
 
-    private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<>();
+    public final static String APPLICATIONS_ID = "applications";
+    public final static String USERS_ID = "users";
+    public final static String HARDWARES_ID = "hardwares";
+    public final static String TYPES_ID = "types";
+    public final static String DEVICES_ID = "devices";
+    public final static String AUTOMATIONS_ID = "automations";
+    public final static String ADD_USER_ID = "add-user";
+    public final static String ADD_HARDWARE_ID = "add-hardware";
+    public final static String ADD_DEVICE_ID = "add-device";
+    public final static String ADD_AUTOMATION_ID = "add-automation";
+
+    private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = Maps.newHashMap();
 
     private final Router.Registration routerRegistration;
     private final ConnectionManager connectionManager;
@@ -216,22 +234,18 @@ public abstract class ProxyRoot<
         return (AUTOMATIONS) getChild(AUTOMATIONS_ID);
     }
 
-    @Override
     public COMMAND getAddUserCommand() {
         return (COMMAND) getChild(ADD_USER_ID);
     }
 
-    @Override
     public COMMAND getAddHardwareCommand() {
         return (COMMAND) getChild(ADD_HARDWARE_ID);
     }
 
-    @Override
     public COMMAND getAddDeviceCommand() {
         return (COMMAND) getChild(ADD_DEVICE_ID);
     }
 
-    @Override
     public COMMAND getAddAutomationCommand() {
         return (COMMAND) getChild(ADD_AUTOMATION_ID);
     }
@@ -288,7 +302,6 @@ public abstract class ProxyRoot<
             objectRemoved(path + PATH_SEPARATOR + child.getId(), child);
     }
 
-    @Override
     public final ListenerRegistration addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener) {
         String path = Joiner.on(PATH_SEPARATOR).join(ancestorPath);
         Listeners<ObjectLifecycleListener> listeners = objectLifecycleListeners.get(path);
@@ -300,7 +313,7 @@ public abstract class ProxyRoot<
     }
 
     public void clearLoadedObjects() {
-        sendMessage(CLEAR_LOADED, new StringPayload(""));
+        sendMessage("clear-loaded", NoPayload.INSTANCE);
         // clone the set so we can edit it while we iterate it
         for(String childName : Sets.newHashSet(getChildNames()))
             removeChild(childName);

@@ -9,34 +9,47 @@ import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.application.ApplicationData;
+import com.intuso.housemate.api.object.application.HasApplications;
 import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.automation.HasAutomations;
 import com.intuso.housemate.api.object.command.CommandData;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.device.HasDevices;
 import com.intuso.housemate.api.object.hardware.HardwareData;
+import com.intuso.housemate.api.object.hardware.HasHardwares;
 import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.root.ObjectRoot;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.api.object.type.HasTypes;
 import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.api.object.user.HasUsers;
 import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 public class ServerProxyRoot
         extends ServerProxyObject<RootData, HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>,
             ServerProxyRoot, RootListener<? super ServerProxyRoot>>
-        implements ObjectRoot<
-            ServerProxyList<TypeData<?>, ServerProxyType>,
-            ServerProxyList<HardwareData, ServerProxyHardware>,
-            ServerProxyList<DeviceData, ServerProxyDevice>,
-            ServerProxyList<AutomationData, ServerProxyAutomation>,
-            ServerProxyList<ApplicationData, ServerProxyApplication>,
-            ServerProxyList<UserData, ServerProxyUser>,
-            ServerProxyCommand,
-            ServerProxyRoot> {
+        implements Root<ServerProxyRoot>,
+                HasTypes<ServerProxyList<TypeData<?>, ServerProxyType>>,
+                HasHardwares<ServerProxyList<HardwareData, ServerProxyHardware>>,
+                HasDevices<ServerProxyList<DeviceData, ServerProxyDevice>>,
+                HasAutomations<ServerProxyList<AutomationData, ServerProxyAutomation>>,
+                HasApplications<ServerProxyList<ApplicationData, ServerProxyApplication>>,
+                HasUsers<ServerProxyList<UserData, ServerProxyUser>> {
+
+    public final static String APPLICATIONS_ID = "applications";
+    public final static String USERS_ID = "users";
+    public final static String HARDWARES_ID = "hardwares";
+    public final static String TYPES_ID = "types";
+    public final static String DEVICES_ID = "devices";
+    public final static String AUTOMATIONS_ID = "automations";
+    public final static String ADD_USER_ID = "add-user";
+    public final static String ADD_HARDWARE_ID = "add-hardware";
+    public final static String ADD_DEVICE_ID = "add-device";
+    public final static String ADD_AUTOMATION_ID = "add-automation";
 
     private ServerProxyList<TypeData<?>, ServerProxyType> types;
     private ServerProxyCommand addHardware;
@@ -103,11 +116,6 @@ public class ServerProxyRoot
     }
 
     @Override
-    public ListenerRegistration addObjectLifecycleListener(String[] path, ObjectLifecycleListener listener) {
-        throw new HousemateRuntimeException("This root object is not intended to have listeners on its child objects");
-    }
-
-    @Override
     public void messageReceived(Message<Message.Payload> message) throws HousemateException {
         distributeMessage(message);
     }
@@ -117,22 +125,18 @@ public class ServerProxyRoot
         throw new HousemateRuntimeException("What ARE you trying to do!?!?");
     }
 
-    @Override
     public ServerProxyCommand getAddHardwareCommand() {
         return addHardware;
     }
 
-    @Override
     public ServerProxyCommand getAddDeviceCommand() {
         return addDevice;
     }
 
-    @Override
     public ServerProxyCommand getAddAutomationCommand() {
         return addAutomation;
     }
 
-    @Override
     public ServerProxyCommand getAddUserCommand() {
         return addUser;
     }

@@ -8,10 +8,7 @@ import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.comms.access.ApplicationRegistration;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.factory.automation.AddAutomationCommand;
 import com.intuso.housemate.object.real.factory.device.AddDeviceCommand;
 import com.intuso.housemate.object.real.factory.hardware.AddHardwareCommand;
@@ -31,8 +28,8 @@ public class ServerRealRoot extends RealRoot {
     private final List<Message<?>> queue = Lists.newArrayList();
 
     @Inject
-    public ServerRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router, RealList<TypeData<?>, RealType<?, ?, ?>> types, AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory, AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory) {
-        super(log, listenersFactory, properties, router, types, addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory);
+    public ServerRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router, AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory, AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory) {
+        super(log, listenersFactory, properties, router, addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory);
         addObjectListener(new RootListener<RealRoot>() {
             @Override
             public void serverConnectionStatusChanged(RealRoot root, ServerConnectionStatus serverConnectionStatus) {

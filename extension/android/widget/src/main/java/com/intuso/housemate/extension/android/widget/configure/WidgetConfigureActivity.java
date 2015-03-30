@@ -17,10 +17,10 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.device.feature.StatefulPowerControl;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.WidgetService;
 import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.object.proxy.ProxyRoot;
 import com.intuso.housemate.object.proxy.simple.ProxyClientHelper;
 import com.intuso.housemate.platform.android.app.HousemateActivity;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
@@ -63,7 +63,7 @@ public class WidgetConfigureActivity
         clientHelper = ProxyClientHelper.newClientHelper(getLog(),
                 new AndroidProxyRoot(getLog(), getListenersFactory(), getProperties(), getRouter()), getRouter());
         clientHelper.applicationDetails(WidgetService.APPLICATION_DETAILS)
-                .load(ObjectRoot.DEVICES_ID, HousemateObject.EVERYTHING)
+                .load(ProxyRoot.DEVICES_ID, HousemateObject.EVERYTHING)
                 .callback(this)
                 .start();
     }
