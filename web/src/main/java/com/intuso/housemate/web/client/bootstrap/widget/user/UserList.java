@@ -19,8 +19,9 @@ public class UserList extends MainList<UserData, GWTProxyUser> {
     private final GWTProxyList<UserData, GWTProxyUser> users;
 
     public UserList(GWTProxyList<UserData, GWTProxyUser> users, String name) {
-        super(users, name, null, true);
+        super(name, null, true);
         this.users = users;
+        setList(users);
     }
 
     @Override

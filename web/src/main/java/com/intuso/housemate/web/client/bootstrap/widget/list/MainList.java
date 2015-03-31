@@ -33,15 +33,13 @@ public abstract class MainList<DATA extends HousemateData<?>, OBJECT extends Pro
         extends FlowPanel implements AvailableChildrenListener<GWTProxyList<DATA, OBJECT>>, HasSelectedIdsChangedHandlers {
 
     private final Row row = new Row();
-    private final GWTProxyList<DATA, OBJECT> list;
     private final List<String> filteredIds;
     private final boolean includeFiltered;
 
     private final Map<String, IsWidget> widgets = Maps.newHashMap();
 
-    public MainList(GWTProxyList<DATA, OBJECT> list, String title, List<String> filteredIds, boolean includeFiltered) {
+    public MainList(String title, List<String> filteredIds, boolean includeFiltered) {
 
-        this.list = list;
         this.filteredIds = filteredIds;
         this.includeFiltered = includeFiltered;
 
@@ -51,8 +49,10 @@ public abstract class MainList<DATA extends HousemateData<?>, OBJECT extends Pro
         addStyleName("main");
         add(new Heading(HeadingSize.H4, title));
         add(row);
+    }
 
-        this.list.addAvailableChildrenListener(this, true);
+    public void setList(GWTProxyList<DATA, OBJECT> list) {
+        list.addAvailableChildrenListener(this, true);
     }
 
     @Override

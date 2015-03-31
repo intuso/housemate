@@ -82,6 +82,7 @@ public class Housemate implements EntryPoint {
                 clientLoadInfo.getChildren().put(RealClient.APPLICATIONS_ID, new HousemateObject.TreeLoadInfo(RealClient.APPLICATIONS_ID));
                 clientLoadInfo.getChildren().put(RealClient.AUTOMATIONS_ID, new HousemateObject.TreeLoadInfo(RealClient.AUTOMATIONS_ID));
                 clientLoadInfo.getChildren().put(RealClient.DEVICES_ID, new HousemateObject.TreeLoadInfo(RealClient.DEVICES_ID));
+                clientLoadInfo.getChildren().put(RealClient.HARDWARES_ID, new HousemateObject.TreeLoadInfo(RealClient.HARDWARES_ID));
                 clientLoadInfo.getChildren().put(RealClient.TYPES_ID, new HousemateObject.TreeLoadInfo(RealClient.TYPES_ID));
                 clientLoadInfo.getChildren().put(RealClient.USERS_ID, new HousemateObject.TreeLoadInfo(RealClient.USERS_ID));
                 clientLoadInfo.getChildren().put(RealClient.ADD_AUTOMATION_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_AUTOMATION_ID));
@@ -92,6 +93,7 @@ public class Housemate implements EntryPoint {
                 INJECTOR.getProxyRoot().load(new LoadManager(new LoadManager.Callback() {
                     @Override
                     public void failed(HousemateObject.TreeLoadInfo tl) {
+                        INJECTOR.getProxyRoot().getLog().e("Failed to load clients");
                         // todo show error
                     }
 

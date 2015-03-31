@@ -19,8 +19,9 @@ public class DeviceList extends MainList<DeviceData, GWTProxyDevice> {
     private final GWTProxyList<DeviceData, GWTProxyDevice> devices;
 
     public DeviceList(GWTProxyList<DeviceData, GWTProxyDevice> devices, String name) {
-        super(devices, name, null, true);
+        super(name, null, true);
         this.devices = devices;
+        setList(devices);
     }
 
     @Override

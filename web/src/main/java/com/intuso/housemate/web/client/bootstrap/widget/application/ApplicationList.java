@@ -19,8 +19,9 @@ public class ApplicationList extends MainList<ApplicationData, GWTProxyApplicati
     private final GWTProxyList<ApplicationData, GWTProxyApplication> applications;
 
     public ApplicationList(GWTProxyList<ApplicationData, GWTProxyApplication> applications, String name) {
-        super(applications, name, null, true);
+        super(name, null, true);
         this.applications = applications;
+        setList(applications);
     }
 
     @Override

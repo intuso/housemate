@@ -19,8 +19,9 @@ public class AutomationList extends MainList<AutomationData, GWTProxyAutomation>
     private final GWTProxyList<AutomationData, GWTProxyAutomation> automations;
 
     public AutomationList(GWTProxyList<AutomationData, GWTProxyAutomation> automations, String name) {
-        super(automations, name, null, true);
+        super(name, null, true);
         this.automations = automations;
+        setList(automations);
     }
 
     @Override

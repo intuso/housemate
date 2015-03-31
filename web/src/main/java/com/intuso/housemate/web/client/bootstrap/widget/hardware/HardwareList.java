@@ -19,8 +19,9 @@ public class HardwareList extends MainList<HardwareData, GWTProxyHardware> {
     private final GWTProxyList<HardwareData, GWTProxyHardware> hardwares;
 
     public HardwareList(GWTProxyList<HardwareData, GWTProxyHardware> hardwares, String name) {
-        super(hardwares, name, null, true);
+        super(name, null, true);
         this.hardwares = hardwares;
+        setList(hardwares);
     }
 
     @Override
