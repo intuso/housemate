@@ -1,6 +1,5 @@
 package com.intuso.housemate.server.object.bridge;
 
-import com.google.inject.Inject;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.application.Application;
 import com.intuso.housemate.api.object.application.ApplicationData;
@@ -45,7 +44,6 @@ public class RealClientBridge
     private final CommandBridge addHardware;
     private final CommandBridge addUser;
 
-    @Inject
     public RealClientBridge(Log log, ListenersFactory listenersFactory,
                             ServerProxyRoot realClient) {
         super(log, listenersFactory,
@@ -69,22 +67,21 @@ public class RealClientBridge
                 log, listenersFactory, realClient.getUsers(),
                 new UserBridge.Converter(log, listenersFactory));
 
-        addUser = new CommandBridge(log, listenersFactory, realClient.getAddUserCommand());
-        addHardware = new CommandBridge(log, listenersFactory, realClient.getAddHardwareCommand());
-        addDevice = new CommandBridge(log, listenersFactory, realClient.getAddDeviceCommand());
         addAutomation = new CommandBridge(log, listenersFactory, realClient.getAddAutomationCommand());
+        addDevice = new CommandBridge(log, listenersFactory, realClient.getAddDeviceCommand());
+        addHardware = new CommandBridge(log, listenersFactory, realClient.getAddHardwareCommand());
+        addUser = new CommandBridge(log, listenersFactory, realClient.getAddUserCommand());
 
         addChild(applications);
-        addChild(users);
+        addChild(automations);
+        addChild(devices);
         addChild(hardwares);
         addChild(types);
-        addChild(devices);
-        addChild(automations);
-        addChild(addUser);
-        addChild(addHardware);
-        addChild(addDevice);
+        addChild(users);
         addChild(addAutomation);
-        init(null);
+        addChild(addDevice);
+        addChild(addHardware);
+        addChild(addUser);
     }
 
     @Override

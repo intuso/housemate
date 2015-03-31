@@ -50,5 +50,6 @@ public class ServerProxyModule extends AbstractModule {
         install(new FactoryModuleBuilder().build(new TypeLiteral<UserFactory<ServerProxyUser>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ValueFactory<ServerProxyValue>>() {}));
         bind(new TypeLiteral<HousemateObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>>() {}).to(ServerProxyFactory.All.class);
+        bind(ServerProxyRoot.class); // this binding makes the child injector create this, rather than delegating to the parent injector. Important as the injector that is injected into that class is the one that created it, and it needs to use the child injector.
     }
 }

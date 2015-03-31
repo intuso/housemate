@@ -33,7 +33,6 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
-import java.util.Map;
 
 public class ServerProxyRoot
         extends ServerProxyObject<RootData, HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>,
@@ -51,17 +50,6 @@ public class ServerProxyRoot
 
     private RemoteClient client;
     private ListenerRegistration clientListenerRegistration;
-
-    private ServerProxyList<TypeData<?>, ServerProxyType> types;
-    private ServerProxyCommand addHardware;
-    private ServerProxyList<HardwareData, ServerProxyHardware> hardwares;
-    private ServerProxyCommand addDevice;
-    private ServerProxyList<DeviceData, ServerProxyDevice> devices;
-    private ServerProxyCommand addAutomation;
-    private ServerProxyList<AutomationData, ServerProxyAutomation> automations;
-    private ServerProxyList<ApplicationData, ServerProxyApplication> applications;
-    private ServerProxyCommand addUser;
-    private ServerProxyList<UserData, ServerProxyUser> users;
 
     /**
      * @param log {@inheritDoc}
@@ -90,8 +78,8 @@ public class ServerProxyRoot
         result.add(addMessageListener(RealRoot.INITIAL_DATA, new Receiver<ClientPayload<RootData>>() {
             @Override
             public void messageReceived(Message<ClientPayload<RootData>> message) throws HousemateException {
-                for(Map.Entry<String, HousemateData<?>> entry : message.getPayload().getOriginal().getChildData().entrySet())
-                    getData().getChildData().put(entry.getKey(), entry.getValue());
+                for(HousemateData<?> childData : message.getPayload().getOriginal().getChildData().values())
+                    getData().addChildData(childData);
                 init(null);
                 rootBridge.addProxyRoot(ServerProxyRoot.this);
             }
@@ -114,50 +102,50 @@ public class ServerProxyRoot
         distributeMessage(message);
     }
 
-    public ServerProxyCommand getAddHardwareCommand() {
-        return addHardware;
+    public ServerProxyCommand getAddAutomationCommand() {
+        return (ServerProxyCommand) getChild(RealRoot.ADD_AUTOMATION_ID);
     }
 
     public ServerProxyCommand getAddDeviceCommand() {
-        return addDevice;
+        return (ServerProxyCommand) getChild(RealRoot.ADD_DEVICE_ID);
     }
 
-    public ServerProxyCommand getAddAutomationCommand() {
-        return addAutomation;
+    public ServerProxyCommand getAddHardwareCommand() {
+        return (ServerProxyCommand) getChild(RealRoot.ADD_HARDWARE_ID);
     }
 
     public ServerProxyCommand getAddUserCommand() {
-        return addUser;
+        return (ServerProxyCommand) getChild(RealRoot.ADD_USER_ID);
     }
 
     @Override
     public ServerProxyList<ApplicationData, ServerProxyApplication> getApplications() {
-        return applications;
+        return (ServerProxyList<ApplicationData, ServerProxyApplication>) getChild(RealRoot.APPLICATIONS_ID);
     }
 
     @Override
     public ServerProxyList<AutomationData, ServerProxyAutomation> getAutomations() {
-        return automations;
+        return (ServerProxyList<AutomationData, ServerProxyAutomation>) getChild(RealRoot.AUTOMATIONS_ID);
     }
 
     @Override
     public ServerProxyList<DeviceData, ServerProxyDevice> getDevices() {
-        return devices;
+        return (ServerProxyList<DeviceData, ServerProxyDevice>) getChild(RealRoot.DEVICES_ID);
     }
 
     @Override
     public ServerProxyList<HardwareData, ServerProxyHardware> getHardwares() {
-        return hardwares;
+        return (ServerProxyList<HardwareData, ServerProxyHardware>) getChild(RealRoot.HARDWARES_ID);
     }
 
     @Override
     public ServerProxyList<TypeData<?>, ServerProxyType> getTypes() {
-        return types;
+        return (ServerProxyList<TypeData<?>, ServerProxyType>) getChild(RealRoot.TYPES_ID);
     }
 
     @Override
     public ServerProxyList<UserData, ServerProxyUser> getUsers() {
-        return users;
+        return (ServerProxyList<UserData, ServerProxyUser>) getChild(RealRoot.USERS_ID);
     }
 
     @Override
@@ -179,13 +167,16 @@ public class ServerProxyRoot
             clientListenerRegistration.removeListener();
         this.client = client;
         clientListenerRegistration = client.addListener(this);
-        if(getData().getChildData().size() == 0)
-            sendMessage(RealRoot.SEND_INITIAL_DATA, NoPayload.INSTANCE);
     }
 
     @Override
     public void statusChanged(ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
-
+        try {
+            if (applicationInstanceStatus == ApplicationInstanceStatus.Allowed && getData().getChildData().size() == 0)
+                sendMessage(RealRoot.SEND_INITIAL_DATA, NoPayload.INSTANCE);
+        } catch(Throwable t) {
+            getLog().e("Failed to send message to load real client's initial data", t);
+        }
     }
 
     @Override

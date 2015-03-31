@@ -1,6 +1,5 @@
 package com.intuso.housemate.server.object.real;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.Message;
@@ -31,7 +30,6 @@ import java.util.List;
 public class ServerRealRoot extends RealRoot {
 
     private boolean initialDataSent = false;
-    private final List<Message<?>> queue = Lists.newArrayList();
 
     @Inject
     public ServerRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
@@ -47,9 +45,6 @@ public class ServerRealRoot extends RealRoot {
             @Override
             public void messageReceived(Message<NoPayload> message) throws HousemateException {
                 initialDataSent = true;
-                for(Message<?> toSend : queue)
-                    sendMessage(toSend);
-                queue.clear();
             }
         }));
         return result;
@@ -67,12 +62,11 @@ public class ServerRealRoot extends RealRoot {
 
     @Override
     public void sendMessage(Message<?> message) {
-        if(message.getPayload() instanceof HousemateData)
-            ((Message)message).setPayload(((HousemateData<?>) message.getPayload()).deepClone());
-        if(initialDataSent || message.getPayload() instanceof ApplicationRegistration)
+        if(initialDataSent || message.getPayload() instanceof ApplicationRegistration || message.getType().equals(INITIAL_DATA)) {
+            if(message.getPayload() instanceof HousemateData)
+                ((Message)message).setPayload(((HousemateData<?>) message.getPayload()).deepClone());
             super.sendMessage(message);
-        else
-            queue.add(message);
+        }
     }
 
     @Override

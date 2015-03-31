@@ -81,6 +81,8 @@ public class RemoteClientManager {
                         break;
                 }
                 client = addClient(root, clientInstance, route);
+                if(clientInstance.getClientType() == ClientType.Real)
+                    ((ServerProxyRoot) root).setClient(client);
                 clients.put(clientInstance, client);
                 client.setBaseRoute(route);
                 return client;
