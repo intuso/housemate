@@ -53,13 +53,6 @@ public final class RealList<
     }
 
     @Override
-    protected java.util.List<ListenerRegistration> registerListeners() {
-        java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(addChildListener(this));
-        return result;
-    }
-
-    @Override
     public void childObjectAdded(String childName, CHILD child) {
         super.childObjectAdded(childName, child);
         for(ListListener<? super CHILD> listener : getObjectListeners())
