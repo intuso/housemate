@@ -15,7 +15,7 @@ import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
-import com.intuso.housemate.object.server.client.ClientPayload;
+import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;

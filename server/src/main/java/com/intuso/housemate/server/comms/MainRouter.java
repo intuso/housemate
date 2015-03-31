@@ -10,7 +10,6 @@ import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.server.client.ClientPayload;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
@@ -104,7 +103,7 @@ public final class MainRouter extends Router {
         throw new HousemateRuntimeException("The main router cannot be disconnected");
     }
 
-    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClientImpl client) throws HousemateException {
+    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClient client) throws HousemateException {
         Message<?> message = new Message<>(path, type, payload, client.getRoute());
         getLog().d("Sending message " + message.toString());
         // to send a message we tell the outgoing root it is received. Any listeners on the outgoing root
@@ -116,7 +115,7 @@ public final class MainRouter extends Router {
     private void processMessage(Message<Message.Payload> message) {
         getLog().d("Message received " + message.toString());
         try {
-            RemoteClientImpl client = injector.getInstance(RemoteClientManager.class).getClient(message.getRoute());
+            RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(message.getRoute());
             Root<?> root = getRoot(client, message);
             // wrap payload in new payload in which we can put the client's id
             message = new Message<Message.Payload>(message.getPath(), message.getType(),
@@ -127,7 +126,7 @@ public final class MainRouter extends Router {
         }
     }
 
-    private Root<?> getRoot(RemoteClientImpl client, Message<?> message) throws HousemateException {
+    private Root<?> getRoot(RemoteClient client, Message<?> message) throws HousemateException {
         // intercept certain messages
         if(message.getPath().length == 1 &&
                 (message.getType().equals(Root.APPLICATION_REGISTRATION_TYPE)

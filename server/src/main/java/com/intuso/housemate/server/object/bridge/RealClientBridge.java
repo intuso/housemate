@@ -17,7 +17,7 @@ import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.object.server.ServerProxyRoot;
+import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

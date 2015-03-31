@@ -5,6 +5,7 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
+import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateData;
@@ -50,6 +51,9 @@ public class RealRoot
             HasUsers<RealList<UserData, RealUser>>,
             RealHardwareOwner, RealDeviceOwner, RealAutomationOwner, RealUserOwner {
 
+    public final static String SEND_INITIAL_DATA = "send-initial-data";
+    public final static String INITIAL_DATA = "initial-data";
+
     public final static String APPLICATIONS_ID = "applications";
     public final static String USERS_ID = "users";
     public final static String HARDWARES_ID = "hardwares";
@@ -75,10 +79,9 @@ public class RealRoot
     private final Router.Registration routerRegistration;
     private final ConnectionManager connectionManager;
 
-    private boolean resend = false;
-
     @Inject
     public RealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
+                    RealList<TypeData<?>, RealType<?, ?, ?>> types,
                     AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory,
                     AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory) {
         super(log, listenersFactory, new RootData());
@@ -89,7 +92,7 @@ public class RealRoot
         this.automations = new RealList<>(log, listenersFactory, AUTOMATIONS_ID, "Automations", "Automations");
         this.devices = new RealList<>(log, listenersFactory, DEVICES_ID, "Devices", "Devices");
         this.hardwares = new RealList<>(log, listenersFactory, HARDWARES_ID, "Hardware", "Hardware");
-        this.types = new RealList<>(log, listenersFactory, TYPES_ID, "Types", "Types");
+        this.types = types;
         this.users = new RealList<>(log, listenersFactory, USERS_ID, "Users", "Users");
 
         this.addAutomationCommand = addAutomationCommandFactory.create(this);
@@ -160,7 +163,7 @@ public class RealRoot
 
     @Override
     protected List<ListenerRegistration> registerListeners() {
-        List<ListenerRegistration> result = super.registerListeners();
+        final List<ListenerRegistration> result = super.registerListeners();
         result.add(connectionManager.addStatusChangeListener(new ConnectionListener() {
 
             @Override
@@ -189,7 +192,6 @@ public class RealRoot
 
             @Override
             public void newServerInstance(String serverId) {
-                resend = true; // set to true. when access allowed above method will resend objects
                 for (RootListener<? super RealRoot> listener : getObjectListeners())
                     listener.newServerInstance(RealRoot.this, serverId);
             }
@@ -222,6 +224,12 @@ public class RealRoot
             @Override
             public void messageReceived(Message<ApplicationInstanceStatus> message) throws HousemateException {
                 connectionManager.setApplicationInstanceStatus(message.getPayload());
+            }
+        }));
+        result.add(addMessageListener(SEND_INITIAL_DATA, new Receiver<NoPayload>() {
+            @Override
+            public void messageReceived(Message<NoPayload> message) throws HousemateException {
+                sendMessage(INITIAL_DATA, getData());
             }
         }));
         return result;

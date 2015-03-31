@@ -34,6 +34,8 @@ public abstract class HousemateObject<
     public final static String EVERYTHING = "*";
     public final static String EVERYTHING_RECURSIVE = "**";
 
+    public final static String ADD_TYPE = "add";
+    public final static String REMOVE_TYPE = "remove";
     public final static String LOAD_REQUEST = "load-request";
     public final static String LOAD_RESPONSE = "load-response";
     public final static String CHILD_OVERVIEWS_REQUEST = "child-overviews-request";

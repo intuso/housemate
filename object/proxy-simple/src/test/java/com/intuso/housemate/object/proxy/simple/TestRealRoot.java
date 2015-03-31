@@ -4,8 +4,11 @@ import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealObject;
 import com.intuso.housemate.object.real.RealRoot;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.factory.automation.AddAutomationCommand;
 import com.intuso.housemate.object.real.factory.device.AddDeviceCommand;
 import com.intuso.housemate.object.real.factory.hardware.AddHardwareCommand;
@@ -25,11 +28,12 @@ public class TestRealRoot extends RealRoot {
 
     @Inject
     public TestRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
+                        RealList<TypeData<?>, RealType<?, ?, ?>> types,
                         AddHardwareCommand.Factory addHardwareCommandFactory,
                         AddDeviceCommand.Factory addDeviceCommandFactory,
                         AddAutomationCommand.Factory addAutomationCommandFactory,
                         AddUserCommand.Factory addUserCommandFactory) {
-        super(log, listenersFactory, properties, router, addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory);
+        super(log, listenersFactory, properties, router, types, addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory);
         try {
             distributeMessage(new Message<>(new String[] {""}, Root.SERVER_CONNECTION_STATUS_TYPE, ServerConnectionStatus.ConnectedToServer));
             distributeMessage(new Message<>(new String[] {""}, Root.APPLICATION_STATUS_TYPE, ApplicationStatus.AllowInstances));

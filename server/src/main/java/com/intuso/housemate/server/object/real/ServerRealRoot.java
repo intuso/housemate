@@ -3,16 +3,22 @@ package com.intuso.housemate.server.object.real;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.*;
+import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.api.comms.Receiver;
+import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.comms.access.ApplicationRegistration;
+import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealRoot;
+import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.factory.automation.AddAutomationCommand;
 import com.intuso.housemate.object.real.factory.device.AddDeviceCommand;
 import com.intuso.housemate.object.real.factory.hardware.AddHardwareCommand;
 import com.intuso.housemate.object.real.factory.user.AddUserCommand;
+import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -24,43 +30,29 @@ import java.util.List;
  */
 public class ServerRealRoot extends RealRoot {
 
-    private boolean isRegistered = false;
+    private boolean initialDataSent = false;
     private final List<Message<?>> queue = Lists.newArrayList();
 
     @Inject
-    public ServerRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router, AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory, AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory) {
-        super(log, listenersFactory, properties, router, addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory);
-        addObjectListener(new RootListener<RealRoot>() {
+    public ServerRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
+                          RealList<TypeData<?>, RealType<?, ?, ?>> types,
+                          AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory, AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory) {
+        super(log, listenersFactory, properties, router, types, addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory);
+    }
+
+    @Override
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
+        result.add(addMessageListener(SEND_INITIAL_DATA, new Receiver<NoPayload>() {
             @Override
-            public void serverConnectionStatusChanged(RealRoot root, ServerConnectionStatus serverConnectionStatus) {
-
+            public void messageReceived(Message<NoPayload> message) throws HousemateException {
+                initialDataSent = true;
+                for(Message<?> toSend : queue)
+                    sendMessage(toSend);
+                queue.clear();
             }
-
-            @Override
-            public void applicationStatusChanged(RealRoot root, ApplicationStatus applicationStatus) {
-
-            }
-
-            @Override
-            public void applicationInstanceStatusChanged(RealRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
-                if(!isRegistered && applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
-                    isRegistered = true;
-                    for(Message<?> message : queue)
-                        sendMessage(message);
-                    queue.clear();
-                }
-            }
-
-            @Override
-            public void newApplicationInstance(RealRoot root, String instanceId) {
-
-            }
-
-            @Override
-            public void newServerInstance(RealRoot root, String serverId) {
-
-            }
-        });
+        }));
+        return result;
     }
 
     @Override
@@ -77,7 +69,7 @@ public class ServerRealRoot extends RealRoot {
     public void sendMessage(Message<?> message) {
         if(message.getPayload() instanceof HousemateData)
             ((Message)message).setPayload(((HousemateData<?>) message.getPayload()).deepClone());
-        if(isRegistered || message.getPayload() instanceof ApplicationRegistration)
+        if(initialDataSent || message.getPayload() instanceof ApplicationRegistration)
             super.sendMessage(message);
         else
             queue.add(message);
