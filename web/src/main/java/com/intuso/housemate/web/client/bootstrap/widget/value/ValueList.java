@@ -2,8 +2,11 @@ package com.intuso.housemate.web.client.bootstrap.widget.value;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.api.object.ChildOverview;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.ValueData;
 import com.intuso.housemate.web.client.bootstrap.widget.list.NestedList;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
 
 /**
@@ -15,8 +18,14 @@ import com.intuso.housemate.web.client.object.GWTProxyValue;
  */
 public class ValueList extends NestedList<ValueData, GWTProxyValue> {
 
+    private GWTProxyList<TypeData<?>, GWTProxyType> types;
+
+    public void setTypes(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+        this.types = types;
+    }
+
     @Override
     protected IsWidget getWidget(ChildOverview childOverview, GWTProxyValue value) {
-        return ValueDisplay.FACTORY.create(value);
+        return ValueDisplay.FACTORY.create(types, value);
     }
 }

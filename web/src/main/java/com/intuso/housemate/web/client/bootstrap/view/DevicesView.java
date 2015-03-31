@@ -45,7 +45,7 @@ public class DevicesView extends FlowPanel
 
     @Override
     public void elementAdded(GWTProxyRealClient client) {
-        add(new DeviceList(client.getDevices(), client.getName()));
+        add(new DeviceList(client.getTypes(), client.getDevices(), client.getName()));
     }
 
     @Override

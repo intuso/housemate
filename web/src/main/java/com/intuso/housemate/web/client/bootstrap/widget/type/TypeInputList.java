@@ -3,6 +3,7 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
@@ -10,6 +11,7 @@ import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.bootstrap.widget.list.NestedList;
 import com.intuso.housemate.web.client.event.UserInputEvent;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
+import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
@@ -18,8 +20,13 @@ public abstract class TypeInputList<DATA extends HousemateData<?>, OBJECT extend
         extends NestedList<DATA, OBJECT>
         implements TypeInput, UserInputHandler {
 
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private TypeInstances typeInstances;
     private TypeInstanceMap typeInstanceMap;
+
+    protected TypeInputList(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+        this.types = types;
+    }
 
     public void setTypeInstances(TypeInstances typeInstances) {
         this.typeInstances = typeInstances;
@@ -30,13 +37,13 @@ public abstract class TypeInputList<DATA extends HousemateData<?>, OBJECT extend
         typeInstanceMap = typeInstances.getElements().get(0).getChildValues();
     }
 
-    protected IsWidget getWidget(GWTProxyType type, String key) {
+    protected IsWidget getWidget(String typeId, String key) {
         TypeInstances typeInstances = typeInstanceMap.getChildren().get(key);
         if(typeInstances == null) {
             typeInstances = new TypeInstances();
             typeInstanceMap.getChildren().put(key, typeInstances);
         }
-        return TypeInput.FACTORY.create(type, typeInstances, this);
+        return TypeInput.FACTORY.create(types, typeId, typeInstances, this);
     }
 
     @Override

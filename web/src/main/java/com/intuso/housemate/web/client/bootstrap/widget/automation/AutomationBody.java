@@ -5,9 +5,12 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.condition.ConditionList;
 import com.intuso.housemate.web.client.bootstrap.widget.task.TaskList;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  */
@@ -24,13 +27,16 @@ public class AutomationBody extends Composite {
     @UiField
     TaskList unsatisfiedTasks;
 
-    public AutomationBody(final GWTProxyAutomation automation) {
+    public AutomationBody(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyAutomation automation) {
         initWidget(ourUiBinder.createAndBindUi(this));
         conditions.setList(automation.getConditions());
+        conditions.setTypes(types);
         conditions.setAddCommand(automation.getAddConditionCommand());
         satisfiedTasks.setList(automation.getSatisfiedTasks());
+        satisfiedTasks.setTypes(types);
         satisfiedTasks.setAddCommand(automation.getAddSatisifedTaskCommand());
         unsatisfiedTasks.setList(automation.getUnsatisfiedTasks());
+        unsatisfiedTasks.setTypes(types);
         unsatisfiedTasks.setAddCommand(automation.getAddUnsatisifedTaskCommand());
     }
 }

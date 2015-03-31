@@ -13,10 +13,4 @@ public interface Parameter<TYPE extends Type> extends BaseHousemateObject<Parame
      * @return the type id of the parameter
      */
     public String getTypeId();
-
-    /**
-     * Gets the type of the parameter
-     * @return the type of the parameter
-     */
-    public TYPE getType();
 }

@@ -32,11 +32,6 @@ public class ComputedValue implements Value<RealType<?, ?, ?>, ComputedValue> {
     }
 
     @Override
-    public RealType<?, ?, ?> getType() {
-        return type;
-    }
-
-    @Override
     public TypeInstances getTypeInstances() {
         return typeInstances;
     }

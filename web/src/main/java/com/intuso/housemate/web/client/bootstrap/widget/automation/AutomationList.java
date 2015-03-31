@@ -2,10 +2,12 @@ package com.intuso.housemate.web.client.bootstrap.widget.automation;
 
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
 import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,16 +18,18 @@ import com.intuso.housemate.web.client.object.GWTProxyList;
  */
 public class AutomationList extends MainList<AutomationData, GWTProxyAutomation> {
 
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final GWTProxyList<AutomationData, GWTProxyAutomation> automations;
 
-    public AutomationList(GWTProxyList<AutomationData, GWTProxyAutomation> automations, String name) {
+    public AutomationList(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<AutomationData, GWTProxyAutomation> automations, String name) {
         super(name, null, true);
+        this.types = types;
         this.automations = automations;
         setList(automations);
     }
 
     @Override
     protected void getWidget(ChildOverview childOverview, LazyLoadedWidgetCallback callback) {
-        callback.widgetReady(new Automation(automations, childOverview));
+        callback.widgetReady(new Automation(types, automations, childOverview));
     }
 }

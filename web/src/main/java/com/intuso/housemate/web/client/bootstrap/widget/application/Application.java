@@ -4,10 +4,12 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.application.ApplicationData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyApplication;
 import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 /**
@@ -15,7 +17,10 @@ import org.gwtbootstrap3.client.ui.constants.AlertType;
  */
 public class Application extends ObjectWidget<GWTProxyApplication> {
 
-    public Application(final GWTProxyList<ApplicationData, GWTProxyApplication> applications, final ChildOverview childOverview) {
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+
+    public Application(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyList<ApplicationData, GWTProxyApplication> applications, final ChildOverview childOverview) {
+        this.types = types;
         GWTProxyApplication user = applications.get(childOverview.getId());
         if(user != null)
             setObject(user);
@@ -46,6 +51,6 @@ public class Application extends ObjectWidget<GWTProxyApplication> {
 
     @Override
     protected IsWidget getSettingsWidget(GWTProxyApplication object) {
-        return new ApplicationSettings(object);
+        return new ApplicationSettings(types, object);
     }
 }

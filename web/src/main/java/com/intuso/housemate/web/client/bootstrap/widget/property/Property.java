@@ -2,6 +2,7 @@ package com.intuso.housemate.web.client.bootstrap.widget.property;
 
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.Housemate;
@@ -9,6 +10,7 @@ import com.intuso.housemate.web.client.bootstrap.widget.type.TypeInput;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.event.UserInputEvent;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
+import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyProperty;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
@@ -20,7 +22,7 @@ public class Property extends SimplePanel implements UserInputHandler {
 
     private final GWTProxyProperty property;
 
-    public Property(final GWTProxyProperty property) {
+    public Property(final GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyProperty property) {
 
         this.property = property;
 
@@ -30,25 +32,7 @@ public class Property extends SimplePanel implements UserInputHandler {
         else
             values.getChildren().put(com.intuso.housemate.api.object.property.Property.VALUE_PARAM, new TypeInstances());
 
-        final GWTProxyType type = property.getType();
-        if(type != null)
-            setWidget(TypeInput.FACTORY.create(type, values.getChildren().get(com.intuso.housemate.api.object.property.Property.VALUE_PARAM), this));
-        else {
-            // todo
-            /*Housemate.INJECTOR.getProxyRoot().getTypes().load(new LoadManager(new LoadManager.Callback() {
-                @Override
-                public void failed(HousemateObject.TreeLoadInfo path) {
-                    // todo show error
-                }
-
-                @Override
-                public void allLoaded() {
-                    GWTProxyType loadedType = property.getType();
-                    if(loadedType != null)
-                        setWidget(TypeInput.FACTORY.create(loadedType, values.getChildren().get(com.intuso.housemate.api.object.property.Property.VALUE_PARAM), Property.this));
-                }
-            }, "loadPropertyType-" + property.getId(), new HousemateObject.TreeLoadInfo(property.getTypeId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));*/
-        }
+        setWidget(TypeInput.FACTORY.create(types, property.getTypeId(), values.getChildren().get(com.intuso.housemate.api.object.property.Property.VALUE_PARAM), this));
     }
 
     @UiFactory

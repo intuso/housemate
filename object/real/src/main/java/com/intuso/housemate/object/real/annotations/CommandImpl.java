@@ -32,9 +32,7 @@ public class CommandImpl extends RealCommand {
     public void perform(TypeInstanceMap values) throws HousemateException {
         try {
             method.invoke(instance, parameterConverter.convert(values));
-        } catch(InvocationTargetException e) {
-            throw new HousemateException("Failed to perform command", e);
-        } catch(IllegalAccessException e) {
+        } catch(InvocationTargetException|IllegalAccessException e) {
             throw new HousemateException("Failed to perform command", e);
         }
     }

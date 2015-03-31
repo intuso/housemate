@@ -40,9 +40,4 @@ public class ServerProxyParameter
     public String getTypeId() {
         return getData().getType();
     }
-
-    @Override
-    public final ServerProxyType getType() {
-        throw new UnsupportedOperationException();
-    }
 }

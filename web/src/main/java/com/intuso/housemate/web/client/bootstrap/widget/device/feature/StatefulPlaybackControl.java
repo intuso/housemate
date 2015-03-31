@@ -6,11 +6,10 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
-import com.intuso.housemate.web.client.object.GWTProxyCommand;
-import com.intuso.housemate.web.client.object.GWTProxyDevice;
-import com.intuso.housemate.web.client.object.GWTProxyValue;
+import com.intuso.housemate.web.client.object.*;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeature;
 
 import java.util.Set;
@@ -83,8 +82,8 @@ public class StatefulPlaybackControl
     }
 
     @Override
-    public Widget getWidget() {
-        return new PlaybackWidget();
+    public Widget getWidget(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+        return new PlaybackWidget(types);
     }
 
     interface PlaybackWidgetUiBinder extends UiBinder<Widget, PlaybackWidget> {
@@ -105,14 +104,14 @@ public class StatefulPlaybackControl
         @UiField
         public PerformButton rewindButton;
 
-        private PlaybackWidget() {
+        private PlaybackWidget(GWTProxyList<TypeData<?>, GWTProxyType> types) {
             initWidget(ourUiBinder.createAndBindUi(this));
 
-            playButton.setCommand(getPlayCommand());
-            pauseButton.setCommand(getPauseCommand());
-            stopButton.setCommand(getStopCommand());
-            forwardButton.setCommand(getForwardCommand());
-            rewindButton.setCommand(getRewindCommand());
+            playButton.setCommand(types, getPlayCommand());
+            pauseButton.setCommand(types, getPauseCommand());
+            stopButton.setCommand(types, getStopCommand());
+            forwardButton.setCommand(types, getForwardCommand());
+            rewindButton.setCommand(types, getRewindCommand());
 
             if(getIsPlayingValue() != null)
                 getIsPlayingValue().addObjectListener(this);

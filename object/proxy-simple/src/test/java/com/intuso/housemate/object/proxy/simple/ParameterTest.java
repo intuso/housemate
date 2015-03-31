@@ -52,6 +52,6 @@ public class ParameterTest {
     @Test
     public void testCreateParameter() throws HousemateException {
         assertNotNull(proxyParameter);
-        assertNotNull(proxyParameter.getType());
+        assertNotNull(proxyParameter.getTypeId());
     }
 }

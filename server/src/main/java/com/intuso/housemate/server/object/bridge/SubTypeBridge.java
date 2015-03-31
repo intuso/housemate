@@ -23,11 +23,6 @@ public class SubTypeBridge
         return getData().getType();
     }
 
-    @Override
-    public TypeBridge getType() {
-        throw new UnsupportedOperationException();
-    }
-
     public final static class Converter implements Function<SubType<?>, SubTypeBridge> {
 
         private final Log log;

@@ -45,11 +45,6 @@ public abstract class ServerProxyValueBase<
     }
 
     @Override
-    public ServerProxyType getType() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public TypeInstances getTypeInstances() {
         return getData().getTypeInstances();
     }

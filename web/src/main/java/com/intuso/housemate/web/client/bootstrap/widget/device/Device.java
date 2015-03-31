@@ -4,10 +4,12 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
 import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 /**
@@ -15,7 +17,10 @@ import org.gwtbootstrap3.client.ui.constants.AlertType;
  */
 public class Device extends ObjectWidget<GWTProxyDevice> {
 
-    public Device(final GWTProxyList<DeviceData, GWTProxyDevice> devices, final ChildOverview childOverview) {
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+
+    public Device(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyList<DeviceData, GWTProxyDevice> devices, final ChildOverview childOverview) {
+        this.types = types;
         GWTProxyDevice user = devices.get(childOverview.getId());
         if(user != null)
             setObject(user);
@@ -41,11 +46,11 @@ public class Device extends ObjectWidget<GWTProxyDevice> {
 
     @Override
     protected IsWidget getBodyWidget(GWTProxyDevice object) {
-        return new DeviceBody(object);
+        return new DeviceBody(types, object);
     }
 
     @Override
     protected IsWidget getSettingsWidget(GWTProxyDevice object) {
-        return new DeviceSettings(object);
+        return new DeviceSettings(types, object);
     }
 }

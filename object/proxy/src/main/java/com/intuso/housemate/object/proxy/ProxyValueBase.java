@@ -59,11 +59,6 @@ public abstract class ProxyValueBase<
     }
 
     @Override
-    public TYPE getType() {
-        return null;// todo (TYPE) getProxyRoot().getTypes().get(getData().getType());
-    }
-
-    @Override
     public final TypeInstances getTypeInstances() {
         return getData().getTypeInstances();
     }

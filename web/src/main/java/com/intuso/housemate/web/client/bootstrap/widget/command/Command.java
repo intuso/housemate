@@ -9,9 +9,12 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.command.CommandPerformListener;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.bootstrap.widget.type.ParameterInputList;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.Alert;
 import org.gwtbootstrap3.client.ui.Button;
 
@@ -34,17 +37,17 @@ public class Command extends Composite implements CommandPerformListener<GWTProx
     private CommandPerformListener<GWTProxyCommand> listener;
     private TypeInstances values;
 
-    public Command(GWTProxyCommand command) {
-        this(command, null);
+    public Command(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command) {
+        this(types, command, null);
     }
 
-    public Command(GWTProxyCommand command, CommandPerformListener<GWTProxyCommand> listener) {
+    public Command(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command, CommandPerformListener<GWTProxyCommand> listener) {
 
         this.command = command;
         this.listener = listener;
 
         values = new TypeInstances();
-        parameterList = new ParameterInputList();
+        parameterList = new ParameterInputList(types);
         parameterList.setTypeInstances(values);
         parameterList.setList(command.getParameters());
 

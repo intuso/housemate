@@ -109,7 +109,7 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
         public TypeInstance serialise(ValueSource source) {
             if(source instanceof ConstantValue) {
                 TypeInstanceMap childValues = new TypeInstanceMap();
-                TypeInstance typeInstance = new TypeInstance(source.getValue().getType().getId());
+                TypeInstance typeInstance = new TypeInstance(source.getValue().getTypeId());
                 typeInstance.getChildValues().getChildren().put(ConstantType.SUB_TYPE_ID, source.getValue().getTypeInstances());
                 childValues.getChildren().put("type", new TypeInstances(typeInstance));
                 return new TypeInstance(CONSTANT_ID, childValues);

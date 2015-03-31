@@ -7,9 +7,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.object.SettingsModal;
 import com.intuso.housemate.web.client.bootstrap.widget.value.BooleanValueDisplay;
+import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyTask;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  */
@@ -22,9 +25,11 @@ public class Task extends Composite {
     @UiField
     BooleanValueDisplay value;
 
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final GWTProxyTask task;
 
-    public Task(GWTProxyTask task) {
+    public Task(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyTask task) {
+        this.types = types;
         this.task = task;
         initWidget(ourUiBinder.createAndBindUi(this));
         value.setValue(task.getExecutingValue());
@@ -32,6 +37,6 @@ public class Task extends Composite {
 
     @UiHandler("settings")
     public void onEdit(ClickEvent event) {
-        new SettingsModal(task.getName(), new TaskSettings(task));
+        new SettingsModal(task.getName(), new TaskSettings(types, task));
     }
 }

@@ -4,10 +4,12 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.automation.AutomationData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
 import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 /**
@@ -15,7 +17,10 @@ import org.gwtbootstrap3.client.ui.constants.AlertType;
  */
 public class Automation extends ObjectWidget<GWTProxyAutomation> {
 
-    public Automation(final GWTProxyList<AutomationData, GWTProxyAutomation> automations, final ChildOverview childOverview) {
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+
+    public Automation(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyList<AutomationData, GWTProxyAutomation> automations, final ChildOverview childOverview) {
+        this.types = types;
         GWTProxyAutomation user = automations.get(childOverview.getId());
         if(user != null)
             setObject(user);
@@ -41,11 +46,11 @@ public class Automation extends ObjectWidget<GWTProxyAutomation> {
 
     @Override
     protected IsWidget getBodyWidget(GWTProxyAutomation object) {
-        return new AutomationBody(object);
+        return new AutomationBody(types, object);
     }
 
     @Override
     protected IsWidget getSettingsWidget(GWTProxyAutomation object) {
-        return new AutomationSettings(object);
+        return new AutomationSettings(types, object);
     }
 }

@@ -23,11 +23,6 @@ public class ParameterBridge
         return getData().getType();
     }
 
-    @Override
-    public TypeBridge getType() {
-        throw new UnsupportedOperationException();
-    }
-
     public final static class Converter implements Function<Parameter<?>, ParameterBridge> {
 
         private final Log log;

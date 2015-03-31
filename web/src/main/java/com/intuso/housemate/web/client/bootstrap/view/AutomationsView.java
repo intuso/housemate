@@ -45,7 +45,7 @@ public class AutomationsView extends FlowPanel
 
     @Override
     public void elementAdded(GWTProxyRealClient client) {
-        add(new AutomationList(client.getAutomations(), client.getName()));
+        add(new AutomationList(client.getTypes(), client.getAutomations(), client.getName()));
     }
 
     @Override

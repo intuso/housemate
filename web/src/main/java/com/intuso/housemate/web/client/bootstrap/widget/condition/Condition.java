@@ -7,9 +7,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.object.SettingsModal;
 import com.intuso.housemate.web.client.bootstrap.widget.value.BooleanValueDisplay;
 import com.intuso.housemate.web.client.object.GWTProxyCondition;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  */
@@ -24,18 +27,21 @@ public class Condition extends Composite {
     @UiField
     ConditionList conditionList;
 
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final GWTProxyCondition condition;
 
-    public Condition(GWTProxyCondition condition) {
+    public Condition(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCondition condition) {
+        this.types = types;
         this.condition = condition;
         initWidget(ourUiBinder.createAndBindUi(this));
         value.setValue(condition.getSatisfiedValue());
         conditionList.setList(condition.getConditions());
+        conditionList.setTypes(types);
         conditionList.setAddCommand(condition.getAddConditionCommand());
     }
 
     @UiHandler("settings")
     public void onEdit(ClickEvent event) {
-        new SettingsModal(condition.getName(), new ConditionSettings(condition));
+        new SettingsModal(condition.getName(), new ConditionSettings(types, condition));
     }
 }

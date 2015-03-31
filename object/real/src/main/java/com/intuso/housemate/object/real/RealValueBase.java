@@ -48,7 +48,6 @@ public abstract class RealValueBase<
         return getData().getType();
     }
 
-    @Override
     public RealType<?, ?, O> getType() {
         return type;
     }

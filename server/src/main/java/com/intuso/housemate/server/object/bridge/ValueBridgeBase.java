@@ -33,11 +33,6 @@ public abstract class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
     }
 
     @Override
-    public TypeBridge getType() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public TypeInstances getTypeInstances() {
         return proxyValue.getTypeInstances();
     }

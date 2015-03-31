@@ -2,10 +2,12 @@ package com.intuso.housemate.web.client.bootstrap.widget.application;
 
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.application.ApplicationData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
 import com.intuso.housemate.web.client.object.GWTProxyApplication;
 import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,16 +18,18 @@ import com.intuso.housemate.web.client.object.GWTProxyList;
  */
 public class ApplicationList extends MainList<ApplicationData, GWTProxyApplication> {
 
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final GWTProxyList<ApplicationData, GWTProxyApplication> applications;
 
-    public ApplicationList(GWTProxyList<ApplicationData, GWTProxyApplication> applications, String name) {
+    public ApplicationList(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<ApplicationData, GWTProxyApplication> applications, String name) {
         super(name, null, true);
+        this.types = types;
         this.applications = applications;
         setList(applications);
     }
 
     @Override
     protected void getWidget(ChildOverview childOverview, LazyLoadedWidgetCallback callback) {
-        callback.widgetReady(new Application(applications, childOverview));
+        callback.widgetReady(new Application(types, applications, childOverview));
     }
 }

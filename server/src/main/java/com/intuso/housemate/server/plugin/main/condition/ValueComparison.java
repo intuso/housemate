@@ -91,22 +91,22 @@ public class ValueComparison extends RealCondition {
             setError("First value is not available");
         else if(secondValue == null)
             setError("Second value is not available");
-        else if(firstValue.getType() == null)
+        else if(firstValue.getTypeId() == null)
             setError("First value has no type");
-        else if(secondValue.getType() == null)
+        else if(secondValue.getTypeId() == null)
             setError("Second value has no type");
-        else if(!firstValue.getType().getId().equals(secondValue.getType().getId()))
-            setError("The two values have different types (" + firstValue.getType().getName() + "," + secondValue.getType().getName() + ")");
-        else if(comparison.getComparatorsByType().get(firstValue.getType().getId()) == null)
-            setError("No comparator for operator " + comparison.getComparisonType().getName() + " and value type " + firstValue.getType().getId());
+        else if(!firstValue.getTypeId().equals(secondValue.getTypeId()))
+            setError("The two values have different types (" + firstValue.getTypeId() + "," + secondValue.getTypeId() + ")");
+        else if(comparison.getComparatorsByType().get(firstValue.getTypeId()) == null)
+            setError("No comparator for operator " + comparison.getComparisonType().getName() + " and value type " + firstValue.getTypeId());
         else {
-            RealType<?, ?, ?> type = types.get(firstValue.getType().getId());
+            RealType<?, ?, ?> type = types.get(firstValue.getTypeId());
             if(type == null)
-                setError("No type found for id " + firstValue.getType().getId());
+                setError("No type found for id " + firstValue.getTypeId());
             else {
-                Comparator<Object> comparator = (Comparator<Object>) comparison.getComparatorsByType().get(firstValue.getType().getId());
+                Comparator<Object> comparator = (Comparator<Object>) comparison.getComparatorsByType().get(firstValue.getTypeId());
                 if(comparator == null)
-                    setError("No comparator found for type id " + firstValue.getType().getId());
+                    setError("No comparator found for type id " + firstValue.getTypeId());
                 else {
                     try {
                         Object first = firstValue.getTypeInstances() != null && firstValue.getTypeInstances().getElements().size() > 0

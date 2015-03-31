@@ -45,7 +45,7 @@ public class HardwaresView extends FlowPanel
 
     @Override
     public void elementAdded(GWTProxyRealClient client) {
-        add(new HardwareList(client.getHardwares(), client.getName()));
+        add(new HardwareList(client.getTypes(), client.getHardwares(), client.getName()));
     }
 
     @Override
