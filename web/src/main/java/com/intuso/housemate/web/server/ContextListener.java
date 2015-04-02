@@ -31,6 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ContextListener extends GuiceServletContextListener {
 
     private final static ApplicationDetails APPLICATION_DETAILS = new ApplicationDetails(ContextListener.class.getPackage().getName(), "Housemate Web Interface Server", "Housemate Web Interface Server");
+    private final static String COMPONENT = "UI-Server";
 
     public static Injector INJECTOR;
 
@@ -88,7 +89,7 @@ public class ContextListener extends GuiceServletContextListener {
                     router.connect();
                 } else if((serverConnectionStatus == ServerConnectionStatus.ConnectedToServer || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily) && needsRegistering) {
                     needsRegistering = false;
-                    router.register(APPLICATION_DETAILS);
+                    router.register(APPLICATION_DETAILS, COMPONENT);
                 }
             }
 

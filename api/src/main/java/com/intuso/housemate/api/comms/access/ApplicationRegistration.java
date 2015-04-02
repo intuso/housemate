@@ -12,6 +12,7 @@ public final class ApplicationRegistration implements Message.Payload {
 
     private ApplicationDetails applicationDetails;
     private String applicationInstanceId;
+    private String component;
     private ClientType type;
 
     public ApplicationRegistration() {}
@@ -21,9 +22,10 @@ public final class ApplicationRegistration implements Message.Payload {
      *             applications you should use {@link com.intuso.housemate.api.comms.ClientType#Proxy}
      */
     public ApplicationRegistration(ApplicationDetails applicationDetails, String applicationInstanceId,
-                                   ClientType type) {
+                                   String component, ClientType type) {
         this.applicationDetails = applicationDetails;
         this.applicationInstanceId = applicationInstanceId;
+        this.component = component;
         this.type = type;
     }
 
@@ -41,6 +43,14 @@ public final class ApplicationRegistration implements Message.Payload {
 
     public void setApplicationInstanceId(String applicationInstanceId) {
         this.applicationInstanceId = applicationInstanceId;
+    }
+
+    public String getComponent() {
+        return component;
+    }
+
+    public void setComponent(String component) {
+        this.component = component;
     }
 
     public ClientType getType() {

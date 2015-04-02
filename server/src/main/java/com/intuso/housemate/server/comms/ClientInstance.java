@@ -14,15 +14,17 @@ public class ClientInstance {
 
     private final ApplicationDetails applicationDetails;
     private final String applicationInstanceId;
+    private final String component;
     private final ClientType clientType;
     private final int hashCode;
 
-    public ClientInstance(ApplicationDetails applicationDetails, String applicationInstanceId,
+    public ClientInstance(ApplicationDetails applicationDetails, String applicationInstanceId, String component,
                           ClientType clientType) {
         this.applicationDetails = applicationDetails;
         this.applicationInstanceId = applicationInstanceId;
+        this.component = component;
         this.clientType = clientType;
-        hashCode = (applicationDetails.getApplicationId() + "/" + applicationInstanceId + "/" + clientType).hashCode();
+        hashCode = (applicationDetails.getApplicationId() + "/" + applicationInstanceId + "/" + component + "/" + clientType).hashCode();
     }
 
     public ApplicationDetails getApplicationDetails() {

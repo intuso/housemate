@@ -7,7 +7,6 @@ import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
-import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,7 +24,7 @@ public abstract class ExternalClientRouter extends Router {
      * @param log {@inheritDoc}
      */
     public ExternalClientRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router) {
-        super(log, listenersFactory, WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, properties));
+        super(log, listenersFactory, properties);
         this.router = router;
         setServerConnectionStatus(ServerConnectionStatus.ConnectedToServer);
     }

@@ -125,10 +125,10 @@ public abstract class Router implements Sender, Receiver {
     /**
      * Logs in to the server
      */
-    public void register(ApplicationDetails applicationDetails) {
+    public void register(ApplicationDetails applicationDetails, String component) {
         if(!(getServerConnectionStatus() == ServerConnectionStatus.ConnectedToServer || getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily))
             throw new HousemateRuntimeException("Cannot request access until the router is connected to the server");
-        root.register(applicationDetails);
+        root.register(applicationDetails, component);
     }
 
     /**

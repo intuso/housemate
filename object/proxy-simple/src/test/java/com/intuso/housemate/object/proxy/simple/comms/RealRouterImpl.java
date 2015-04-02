@@ -21,7 +21,7 @@ public class RealRouterImpl extends Router {
         super(log, listenersFactory, properties);
         connect();
         setServerConnectionStatus(ServerConnectionStatus.ConnectedToServer);
-        register(TestEnvironment.APP_DETAILS);
+        register(TestEnvironment.APP_DETAILS, "test");
     }
 
     public void setProxyRoot(TestProxyRoot proxyRoot) {

@@ -3,7 +3,6 @@ package com.intuso.housemate.extension.android.widget.handler;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.device.feature.Feature;
 import com.intuso.housemate.api.object.device.feature.StatefulPowerControl;
-import com.intuso.housemate.api.object.realclient.RealClient;
 import com.intuso.housemate.extension.android.widget.WidgetService;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.device.feature.FeatureLoadedListener;
@@ -96,17 +95,19 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
     }
 
     private void loadData() {
-        widgetService.getRoot().getRealClients().load(new LoadManager(new LoadManager.Callback() {
-            @Override
-            public void failed(HousemateObject.TreeLoadInfo path) {
-                status = Status.NO_DEVICE;
-                updateWidget();
-            }
+        final AndroidProxyRealClient client = widgetService.getRoot().getRealClients().get(clientId);
+        if(client == null)
+            status = Status.NO_CLIENT;
+        else {
+            client.getDevices().load(new LoadManager(new LoadManager.Callback() {
+                @Override
+                public void failed(HousemateObject.TreeLoadInfo path) {
+                    status = Status.NO_DEVICE;
+                    updateWidget();
+                }
 
-            @Override
-            public void allLoaded() {
-                AndroidProxyRealClient client = widgetService.getRoot().getRealClients().get(clientId);
-                if(client != null) {
+                @Override
+                public void allLoaded() {
                     device = client.getDevices().get(deviceId);
                     if (device != null) {
                         AndroidProxyFeature proxyFeature = device.getFeature(getFeatureId());
@@ -125,11 +126,10 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
                             status = Status.NO_FEATURE;
                     } else
                         status = Status.NO_DEVICE;
-                } else
-                    status = Status.NO_CLIENT;
-                updateWidget();
-            }
-        }, "androidWidgetLoad-" + LOAD_ID++, HousemateObject.TreeLoadInfo.create(clientId, RealClient.DEVICES_ID, deviceId)));
+                    updateWidget();
+                }
+            }, "androidWidgetLoad-" + LOAD_ID++, HousemateObject.TreeLoadInfo.create(deviceId)));
+        }
     }
 
     protected void init() {}

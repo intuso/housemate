@@ -29,6 +29,7 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?>> {
     private final Router router;
 
     private ApplicationDetails applicationDetails;
+    private String component;
     private List<HousemateObject.TreeLoadInfo> toLoad = Lists.newArrayList();
     private LoadManager.Callback callback;
 
@@ -66,6 +67,11 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?>> {
 
     public ProxyClientHelper<ROOT> applicationDetails(ApplicationDetails applicationDetails) {
         this.applicationDetails = applicationDetails;
+        return this;
+    }
+
+    public ProxyClientHelper<ROOT> component(String component) {
+        this.component = component;
         return this;
     }
 
@@ -130,7 +136,7 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?>> {
                 router.connect();
             } else if((serverConnectionStatus == ServerConnectionStatus.ConnectedToServer || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily) && needsRegistering) {
                 needsRegistering = false;
-                router.register(applicationDetails);
+                router.register(applicationDetails, component);
             }
         }
 
@@ -166,7 +172,7 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?>> {
                 needsRegistering = true;
             else if((serverConnectionStatus == ServerConnectionStatus.ConnectedToServer || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily) && needsRegistering) {
                 needsRegistering = false;
-                proxyRoot.register(applicationDetails);
+                proxyRoot.register(applicationDetails, component);
             }
         }
 

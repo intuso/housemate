@@ -174,11 +174,11 @@ public class HousemateTweeter {
             public void newServerInstance(SimpleProxyRoot root, String serverId) {
                 log.d("Server instance changed");
                 tweet("Server instance changed");
-                root.register(applicationDetails);
+                root.register(applicationDetails, HousemateTweeter.class.getName());
             }
         });
 
-        root.register(applicationDetails);
+        root.register(applicationDetails, HousemateTweeter.class.getName());
 	}
 
 	/**

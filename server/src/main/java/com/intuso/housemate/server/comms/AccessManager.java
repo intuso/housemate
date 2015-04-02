@@ -69,7 +69,7 @@ public class AccessManager {
             applicationInstance.getStatusValue().setTypedValues(getInitialStatus(application));
         }
 
-        return new ClientInstance(request.getApplicationDetails(), instanceId, request.getType());
+        return new ClientInstance(request.getApplicationDetails(), instanceId, request.getComponent(), request.getType());
     }
 
     public void sendAccessStatusToClient(RemoteClient client) {

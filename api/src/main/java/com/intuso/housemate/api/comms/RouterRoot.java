@@ -98,8 +98,8 @@ public class RouterRoot
     }
 
     @Override
-    public void register(ApplicationDetails applicationDetails) {
-        connectionManager.register(applicationDetails);
+    public void register(ApplicationDetails applicationDetails, String component) {
+        connectionManager.register(applicationDetails, component);
     }
 
     @Override

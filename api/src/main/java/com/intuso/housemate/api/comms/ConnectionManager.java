@@ -76,7 +76,7 @@ public class ConnectionManager {
     /**
      * Requests access to the server
      */
-    public void register(ApplicationDetails applicationDetails) {
+    public void register(ApplicationDetails applicationDetails, String component) {
         switch (serverConnectionStatus) {
             case DisconnectedPermanently:
             case Connecting:
@@ -89,7 +89,7 @@ public class ConnectionManager {
                 else if(applicationDetails != null) {
                     setApplicationInstanceStatus(ApplicationInstanceStatus.Registering);
                     sender.sendMessage(new Message<>(ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
-                            new ApplicationRegistration(applicationDetails, properties.get(APPLICATION_INSTANCE_ID), clientType)));
+                            new ApplicationRegistration(applicationDetails, properties.get(APPLICATION_INSTANCE_ID), component, clientType)));
                 } else
                     throw new HousemateRuntimeException("Null application or instance details");
         }

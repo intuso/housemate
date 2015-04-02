@@ -27,9 +27,10 @@ public interface Root<ROOT extends Root<ROOT>>
     /**
      * Logs in to the server
      * @param applicationDetails
+     * @param component
      *
      */
-    public void register(ApplicationDetails applicationDetails);
+    public void register(ApplicationDetails applicationDetails, String component);
 
     /**
      * Logs out of the server

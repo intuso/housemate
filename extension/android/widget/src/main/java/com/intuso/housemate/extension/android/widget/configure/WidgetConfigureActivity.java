@@ -68,6 +68,7 @@ public class WidgetConfigureActivity
         clientHelper = ProxyClientHelper.newClientHelper(getLog(),
                 new AndroidProxyRoot(getLog(), getListenersFactory(), getProperties(), getRouter()), getRouter());
         clientHelper.applicationDetails(WidgetService.APPLICATION_DETAILS)
+                .component(WidgetConfigureActivity.class.getName())
                 .load(ProxyRoot.REAL_CLIENTS_ID, HousemateObject.EVERYTHING, ProxyRealClient.DEVICES_ID, HousemateObject.EVERYTHING)
                 .callback(this)
                 .start();

@@ -16,7 +16,6 @@ import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
-import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -34,7 +33,7 @@ public final class MainRouter extends Router {
 
     @Inject
     public MainRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector) {
-        super(log, listenersFactory, WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, properties));
+        super(log, listenersFactory, properties);
         this.injector = injector;
         setServerConnectionStatus(ServerConnectionStatus.ConnectedToServer);
     }
@@ -47,13 +46,13 @@ public final class MainRouter extends Router {
         // register the main router. This will cause the connection manager to send a message (put a it on our queue)
         // so we then need to get it and process it to finish the registration. We need this to block so it happens
         // before we create the external client routers so do this before starting the normal thread
-        register(Server.INTERNAL_APPLICATION);
+        register(Server.INTERNAL_APPLICATION, MainRouter.class.getName());
         processMessage(incomingMessages.poll());
         // start processing all the messages
         messageProcessor.start();
 
         // register the local client
-        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION);
+        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION, RealRoot.class.getName());
     }
 
     public final void startExternalRouters() {
@@ -63,7 +62,7 @@ public final class MainRouter extends Router {
         for(ExternalClientRouter externalClientRouter : externalClientRouters) {
             try {
                 externalClientRouter.start();
-                externalClientRouter.register(Server.INTERNAL_APPLICATION);
+                externalClientRouter.register(Server.INTERNAL_APPLICATION, externalClientRouter.getClass().getName());
             } catch(HousemateException e) {
                 throw new HousemateRuntimeException("Could not start external client router", e);
             }

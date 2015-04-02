@@ -86,7 +86,7 @@ public class ConnectionService extends Service {
                     router.connect();
                 } else if((serverConnectionStatus == ServerConnectionStatus.ConnectedToServer || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily) && needsRegistering) {
                     needsRegistering = false;
-                    router.register(APPLICATION_DETAILS);
+                    router.register(APPLICATION_DETAILS, ConnectionService.class.getName());
                 }
             }
 

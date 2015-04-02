@@ -40,7 +40,7 @@ public class RemoteClientManager {
         this.generalRoot = generalRoot;
         this.bridgeRoot = bridgeRoot;
         rootClient = new RemoteClient(log,
-                new ClientInstance(Server.INTERNAL_APPLICATION, UUID.randomUUID().toString(), ClientType.Router),
+                new ClientInstance(Server.INTERNAL_APPLICATION, UUID.randomUUID().toString(), "root", ClientType.Router),
                 generalRoot, mainRouter);
         rootClient.setBaseRoute(Lists.<String>newArrayList());
     }

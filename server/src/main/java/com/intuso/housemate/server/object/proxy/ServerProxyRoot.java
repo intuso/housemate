@@ -88,7 +88,7 @@ public class ServerProxyRoot
     }
 
     @Override
-    public void register(ApplicationDetails applicationDetails) {
+    public void register(ApplicationDetails applicationDetails, String component) {
         throw new HousemateRuntimeException("Cannot connect this type of root object");
     }
 

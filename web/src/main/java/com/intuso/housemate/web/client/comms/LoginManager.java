@@ -62,7 +62,7 @@ public class LoginManager implements CredentialsSubmittedHandler, RootListener<R
     @Override
     public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
         if(applicationInstanceStatus == ApplicationInstanceStatus.Allowed)
-            proxyRoot.register(Housemate.APPLICATION_DETAILS);
+            proxyRoot.register(Housemate.APPLICATION_DETAILS, "UI");
     }
 
     @Override
@@ -77,7 +77,7 @@ public class LoginManager implements CredentialsSubmittedHandler, RootListener<R
 
     private void login() {
         if(properties.keySet().contains(INSTANCE_ID))
-            router.register(Housemate.APPLICATION_DETAILS);
+            router.register(Housemate.APPLICATION_DETAILS, "UI");
         else {
             loginView.setMessage(null);
             loginView.show();
@@ -106,7 +106,7 @@ public class LoginManager implements CredentialsSubmittedHandler, RootListener<R
             public void onSuccess(Boolean result) {
                 loginView.enable();
                 if(result) {
-                    router.register(Housemate.APPLICATION_DETAILS);
+                    router.register(Housemate.APPLICATION_DETAILS, "UI");
                     loginView.hide();
                 } else {
                     loginView.setMessage("Incorrect credentials");

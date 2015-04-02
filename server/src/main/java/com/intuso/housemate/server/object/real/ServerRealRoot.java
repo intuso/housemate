@@ -60,8 +60,8 @@ public class ServerRealRoot extends RealRoot {
     }
 
     @Override
-    public void register(ApplicationDetails applicationDetails) {
-        super.register(applicationDetails);
+    public void register(ApplicationDetails applicationDetails, String component) {
+        super.register(applicationDetails, component);
     }
 
     @Override

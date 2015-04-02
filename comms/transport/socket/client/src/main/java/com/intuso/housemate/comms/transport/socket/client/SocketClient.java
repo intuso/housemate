@@ -55,6 +55,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
     private final List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
     private ApplicationDetails applicationDetails = null;
+    private String component;
 
     /**
      * Create a new client comms
@@ -112,12 +113,13 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
     }
 
     @Override
-    public void register(ApplicationDetails applicationDetails) {
+    public void register(ApplicationDetails applicationDetails, String component) {
 
         getLog().d("Socket Client: register()");
 
         this.applicationDetails = applicationDetails;
-        super.register(applicationDetails);
+        this.component = component;
+        super.register(applicationDetails, component);
     }
 
     @Override
@@ -264,7 +266,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     if(applicationDetails != null) {
                         getLog().d("Socket Client: Re-registering");
                         serialiser.write(new Message<>(ConnectionManager.ROOT_PATH, Root.APPLICATION_REGISTRATION_TYPE,
-                                new ApplicationRegistration(applicationDetails, properties.get(ConnectionManager.APPLICATION_INSTANCE_ID), ClientType.Router)));
+                                new ApplicationRegistration(applicationDetails, properties.get(ConnectionManager.APPLICATION_INSTANCE_ID), component, ClientType.Router)));
                         setServerConnectionStatus(ServerConnectionStatus.ConnectedToServer);
                     } else
                         setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
