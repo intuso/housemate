@@ -14,6 +14,7 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.task.TaskData;
@@ -40,6 +41,7 @@ public class DataAdapter extends RuntimeTypeAdapterFactory<HousemateData> {
         registerSubtype(OptionData.class, "option");
         registerSubtype(ParameterData.class, "parameter");
         registerSubtype(PropertyData.class, "property");
+        registerSubtype(RealClientData.class, "realClient");
         registerSubtype(RootData.class, "root");
         registerSubtype(SubTypeData.class, "subType");
         registerSubtype(TaskData.class, "task");

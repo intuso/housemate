@@ -23,6 +23,7 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.task.TaskData;
@@ -70,6 +71,7 @@ public class PayloadAdapter extends RuntimeTypeAdapterFactory<Message.Payload> {
         registerSubtype(ChoiceTypeData.class, "choiceType");
         registerSubtype(CompoundTypeData.class, "compoundType");
         registerSubtype(ObjectTypeData.class, "objectType");
+        registerSubtype(RealClientData.class, "realClient");
         registerSubtype(RegexTypeData.class, "regexType");
         registerSubtype(SimpleTypeData.class, "simpleType");
         registerSubtype(TypeInstance.class, "typeInstance");
