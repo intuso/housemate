@@ -7,7 +7,7 @@ import com.intuso.housemate.object.proxy.ProxyObject;
  */
 public class ObjectSelectedEvent<O extends ProxyObject<?, ?, ?, ?, ?>> extends GwtEvent<ObjectSelectedHandler> {
 
-    public final static Type<ObjectSelectedHandler> TYPE = new Type<ObjectSelectedHandler>();
+    public final static Type<ObjectSelectedHandler> TYPE = new Type<>();
 
     private final O object;
 

@@ -56,7 +56,7 @@ public abstract class RealCompoundType<O>
     protected RealCompoundType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
                                int maxValues, List<RealSubType<?>> subTypes) {
         super(log, listenersFactory, new CompoundTypeData(id, name, description, minValues, maxValues));
-        this.subTypes = new RealList<SubTypeData, RealSubType<?>>(log, listenersFactory, SUB_TYPES_ID, SUB_TYPES_NAME, SUB_TYPES_DESCRIPTION);
+        this.subTypes = new RealList<>(log, listenersFactory, SUB_TYPES_ID, SUB_TYPES_NAME, SUB_TYPES_DESCRIPTION);
         addChild(this.subTypes);
         for(RealSubType<?> subType : subTypes)
             this.subTypes.add(subType);

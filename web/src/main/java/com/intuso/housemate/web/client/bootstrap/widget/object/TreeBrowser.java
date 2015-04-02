@@ -36,7 +36,7 @@ public class TreeBrowser extends CellTree {
 
             ObjectCell renderer = new ObjectCell();
 
-            ListDataProvider<ProxyObject<?, ?, ?, ?, ?>> dataProvider = new ListDataProvider<ProxyObject<?, ?, ?, ?, ?>>();
+            ListDataProvider<ProxyObject<?, ?, ?, ?, ?>> dataProvider = new ListDataProvider<>();
             List<ProxyObject<?, ?, ?, ?, ?>> children = Lists.newArrayList();
             for(ProxyObject<?, ?, ?, ?, ?> child : ((ProxyObject<?, ?, ?, ?, ?>)value).getChildren())
                 children.add(child);
@@ -49,7 +49,7 @@ public class TreeBrowser extends CellTree {
             dataProvider.setList(children);
 
             // Return a node info that pairs the data with a cell.
-            return new DefaultNodeInfo<ProxyObject<?, ?, ?, ?, ?>>(dataProvider, renderer, selectionModel, null);
+            return new DefaultNodeInfo<>(dataProvider, renderer, selectionModel, null);
         }
 
         @Override

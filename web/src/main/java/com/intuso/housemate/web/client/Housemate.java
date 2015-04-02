@@ -12,16 +12,15 @@ import com.intuso.housemate.api.comms.RouterRoot;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.root.ObjectRoot;
+import com.intuso.housemate.api.object.realclient.RealClient;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.object.proxy.ProxyRoot;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.handler.PerformCommandHandler;
 import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
 import com.intuso.housemate.web.client.place.DevicesPlace;
-
-import java.util.List;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -79,11 +78,22 @@ public class Housemate implements EntryPoint {
             if (applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
                 INJECTOR.getProxyRoot().clearLoadedObjects();
                 INJECTOR.getProxyRoot().loadChildOverviews();
-                List<HousemateObject.TreeLoadInfo> loadInfos = Lists.newArrayList();
-                loadInfos.add(new HousemateObject.TreeLoadInfo(ObjectRoot.TYPES_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                HousemateObject.TreeLoadInfo clientLoadInfo = new HousemateObject.TreeLoadInfo("*");
+                clientLoadInfo.getChildren().put(RealClient.APPLICATIONS_ID, new HousemateObject.TreeLoadInfo(RealClient.APPLICATIONS_ID));
+                clientLoadInfo.getChildren().put(RealClient.AUTOMATIONS_ID, new HousemateObject.TreeLoadInfo(RealClient.AUTOMATIONS_ID));
+                clientLoadInfo.getChildren().put(RealClient.DEVICES_ID, new HousemateObject.TreeLoadInfo(RealClient.DEVICES_ID));
+                clientLoadInfo.getChildren().put(RealClient.HARDWARES_ID, new HousemateObject.TreeLoadInfo(RealClient.HARDWARES_ID));
+                clientLoadInfo.getChildren().put(RealClient.TYPES_ID, new HousemateObject.TreeLoadInfo(RealClient.TYPES_ID));
+                clientLoadInfo.getChildren().put(RealClient.USERS_ID, new HousemateObject.TreeLoadInfo(RealClient.USERS_ID));
+                clientLoadInfo.getChildren().put(RealClient.ADD_AUTOMATION_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_AUTOMATION_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                clientLoadInfo.getChildren().put(RealClient.ADD_DEVICE_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_DEVICE_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                clientLoadInfo.getChildren().put(RealClient.ADD_HARDWARE_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_HARDWARE_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                clientLoadInfo.getChildren().put(RealClient.ADD_USER_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_USER_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                HousemateObject.TreeLoadInfo clientsLoadInfo = new HousemateObject.TreeLoadInfo(ProxyRoot.REAL_CLIENTS_ID, clientLoadInfo);
                 INJECTOR.getProxyRoot().load(new LoadManager(new LoadManager.Callback() {
                     @Override
                     public void failed(HousemateObject.TreeLoadInfo tl) {
+                        INJECTOR.getProxyRoot().getLog().e("Failed to load clients");
                         // todo show error
                     }
 
@@ -94,7 +104,7 @@ public class Housemate implements EntryPoint {
                         // force the page to reload by going to a "new" place
                         INJECTOR.getPlaceController().goTo(INJECTOR.getPlaceHistoryMapper().getPlace(History.getToken()));
                     }
-                }, "webInitialLoad", loadInfos));
+                }, "webInitialLoad", Lists.newArrayList(clientsLoadInfo)));
             }
         }
 

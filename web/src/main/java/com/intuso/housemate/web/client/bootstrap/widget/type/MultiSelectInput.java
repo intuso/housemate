@@ -25,10 +25,10 @@ public class MultiSelectInput extends ListBox implements TypeInput, ChangeHandle
     public final static String OPTIONS = "options";
 
     private final TypeInstances typeInstances;
-    private final Map<GWTProxyOption, Integer> optionIndices = new HashMap<GWTProxyOption, Integer>();
-    private final Set<String> selectedOptions = new HashSet<String>();
+    private final Map<GWTProxyOption, Integer> optionIndices = new HashMap<>();
+    private final Set<String> selectedOptions = new HashSet<>();
     private GWTProxyList<OptionData, GWTProxyOption> options;
-    private final Map<String, GWTProxyOption> optionsByName = new HashMap<String, GWTProxyOption>();
+    private final Map<String, GWTProxyOption> optionsByName = new HashMap<>();
 
     public MultiSelectInput(GWTProxyType type, final TypeInstances typeInstances) {
 

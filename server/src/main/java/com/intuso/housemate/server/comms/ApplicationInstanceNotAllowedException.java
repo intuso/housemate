@@ -2,7 +2,6 @@ package com.intuso.housemate.server.comms;
 
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.object.server.client.RemoteClient;
 
 /**
  * Created with IntelliJ IDEA.

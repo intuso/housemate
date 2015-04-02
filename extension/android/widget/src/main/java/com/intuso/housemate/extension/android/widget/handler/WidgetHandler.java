@@ -3,11 +3,13 @@ package com.intuso.housemate.extension.android.widget.handler;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.device.feature.Feature;
 import com.intuso.housemate.api.object.device.feature.StatefulPowerControl;
+import com.intuso.housemate.api.object.realclient.RealClient;
 import com.intuso.housemate.extension.android.widget.WidgetService;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.device.feature.FeatureLoadedListener;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
+import com.intuso.housemate.platform.android.app.object.AndroidProxyRealClient;
 
 /**
 * Created with IntelliJ IDEA.
@@ -23,6 +25,7 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
     public enum Status {
         SERVICE_NOT_READY,
         DEVICE_NOT_LOADED,
+        NO_CLIENT,
         NO_DEVICE,
         NO_FEATURE,
         FEATURE_NOT_LOADED,
@@ -30,6 +33,7 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
     }
 
     private final WidgetService widgetService;
+    private final String clientId;
     private final String deviceId;
 
     private WidgetService.Status serviceStatus;
@@ -37,19 +41,24 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
     private AndroidProxyDevice device;
     private FEATURE feature;
 
-    public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, String deviceId, String featureId) {
+    public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, String clientId, String deviceId, String featureId) {
         if(featureId.equals(StatefulPowerControl.ID))
-            return new StatefulPowerControlWidgetHandler(widgetService, deviceId);
+            return new StatefulPowerControlWidgetHandler(widgetService, clientId, deviceId);
         return null;
     }
 
-    WidgetHandler(WidgetService widgetService, String deviceId) {
+    WidgetHandler(WidgetService widgetService, String clientId, String deviceId) {
         this.widgetService = widgetService;
+        this.clientId = clientId;
         this.deviceId = deviceId;
     }
 
     protected WidgetService getWidgetService() {
         return widgetService;
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 
     public String getDeviceId() {
@@ -87,7 +96,7 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
     }
 
     private void loadData() {
-        widgetService.getRoot().getDevices().load(new LoadManager(new LoadManager.Callback() {
+        widgetService.getRoot().getRealClients().load(new LoadManager(new LoadManager.Callback() {
             @Override
             public void failed(HousemateObject.TreeLoadInfo path) {
                 status = Status.NO_DEVICE;
@@ -96,27 +105,31 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
 
             @Override
             public void allLoaded() {
-                device = widgetService.getRoot().getDevices().get(deviceId);
-                if(device != null) {
-                    AndroidProxyFeature proxyFeature = device.getFeature(getFeatureId());
-                    feature = (FEATURE) proxyFeature;
-                    if(proxyFeature != null) {
-                        status = Status.FEATURE_NOT_LOADED;
-                        proxyFeature.load(new FeatureLoadedListener<AndroidProxyDevice, AndroidProxyFeature>() {
-                            @Override
-                            public void featureLoaded(AndroidProxyDevice device, AndroidProxyFeature feature) {
-                                init();
-                                status = Status.READY;
-                                updateWidget();
-                            }
-                        });
+                AndroidProxyRealClient client = widgetService.getRoot().getRealClients().get(clientId);
+                if(client != null) {
+                    device = client.getDevices().get(deviceId);
+                    if (device != null) {
+                        AndroidProxyFeature proxyFeature = device.getFeature(getFeatureId());
+                        feature = (FEATURE) proxyFeature;
+                        if (proxyFeature != null) {
+                            status = Status.FEATURE_NOT_LOADED;
+                            proxyFeature.load(new FeatureLoadedListener<AndroidProxyDevice, AndroidProxyFeature>() {
+                                @Override
+                                public void featureLoaded(AndroidProxyDevice device, AndroidProxyFeature feature) {
+                                    init();
+                                    status = Status.READY;
+                                    updateWidget();
+                                }
+                            });
+                        } else
+                            status = Status.NO_FEATURE;
                     } else
-                        status = Status.NO_FEATURE;
+                        status = Status.NO_DEVICE;
                 } else
-                    status = Status.NO_DEVICE;
+                    status = Status.NO_CLIENT;
                 updateWidget();
             }
-        }, "androidWidgetLoad-" + LOAD_ID++, HousemateObject.TreeLoadInfo.create(deviceId)));
+        }, "androidWidgetLoad-" + LOAD_ID++, HousemateObject.TreeLoadInfo.create(clientId, RealClient.DEVICES_ID, deviceId)));
     }
 
     protected void init() {}

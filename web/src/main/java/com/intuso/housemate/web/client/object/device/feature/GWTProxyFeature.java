@@ -5,10 +5,13 @@ import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.device.Device;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.device.feature.FeatureLoadedListener;
 import com.intuso.housemate.object.proxy.device.feature.ProxyFeature;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 
 import java.util.List;
 import java.util.Map;
@@ -56,5 +59,5 @@ public abstract class GWTProxyFeature
     }
 
     public abstract String getTitle();
-    public abstract Widget getWidget();
+    public abstract Widget getWidget(GWTProxyList<TypeData<?>, GWTProxyType> types);
 }

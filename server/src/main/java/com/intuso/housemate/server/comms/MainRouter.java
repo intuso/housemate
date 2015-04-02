@@ -10,7 +10,6 @@ import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.server.client.ClientPayload;
 import com.intuso.housemate.plugin.api.ExternalClientRouter;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
@@ -30,7 +29,7 @@ public final class MainRouter extends Router {
     private final Injector injector;
     private Set<ExternalClientRouter> externalClientRouters;
 
-    private final LinkedBlockingQueue<Message<Message.Payload>> incomingMessages = new LinkedBlockingQueue<Message<Message.Payload>>();
+    private final LinkedBlockingQueue<Message<Message.Payload>> incomingMessages = new LinkedBlockingQueue<>();
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
     @Inject
@@ -104,8 +103,8 @@ public final class MainRouter extends Router {
         throw new HousemateRuntimeException("The main router cannot be disconnected");
     }
 
-    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClientImpl client) throws HousemateException {
-        Message<?> message = new Message<Message.Payload>(path, type, payload, client.getRoute());
+    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClient client) throws HousemateException {
+        Message<?> message = new Message<>(path, type, payload, client.getRoute());
         getLog().d("Sending message " + message.toString());
         // to send a message we tell the outgoing root it is received. Any listeners on the outgoing root
         // will get it. These listeners are all created from the clientHandle and just put messages
@@ -116,18 +115,18 @@ public final class MainRouter extends Router {
     private void processMessage(Message<Message.Payload> message) {
         getLog().d("Message received " + message.toString());
         try {
-            RemoteClientImpl client = injector.getInstance(RemoteClientManager.class).getClient(message.getRoute());
+            RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(message.getRoute());
             Root<?> root = getRoot(client, message);
             // wrap payload in new payload in which we can put the client's id
             message = new Message<Message.Payload>(message.getPath(), message.getType(),
-                    new ClientPayload<Message.Payload>(client, message.getPayload()), message.getRoute());
+                    new ClientPayload<>(client, message.getPayload()), message.getRoute());
             root.messageReceived(message);
         } catch(Throwable t) {
             getLog().e("Failed to distribute received message", t);
         }
     }
 
-    private Root<?> getRoot(RemoteClientImpl client, Message<?> message) throws HousemateException {
+    private Root<?> getRoot(RemoteClient client, Message<?> message) throws HousemateException {
         // intercept certain messages
         if(message.getPath().length == 1 &&
                 (message.getType().equals(Root.APPLICATION_REGISTRATION_TYPE)

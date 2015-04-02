@@ -29,12 +29,15 @@ public class TestRealRoot extends RealRoot {
     @Inject
     public TestRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
                         RealList<TypeData<?>, RealType<?, ?, ?>> types,
-                        AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory, AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory) {
+                        AddHardwareCommand.Factory addHardwareCommandFactory,
+                        AddDeviceCommand.Factory addDeviceCommandFactory,
+                        AddAutomationCommand.Factory addAutomationCommandFactory,
+                        AddUserCommand.Factory addUserCommandFactory) {
         super(log, listenersFactory, properties, router, types, addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory);
         try {
-            distributeMessage(new Message<ServerConnectionStatus>(new String[] {""}, Root.SERVER_CONNECTION_STATUS_TYPE, ServerConnectionStatus.ConnectedToServer));
-            distributeMessage(new Message<ApplicationStatus>(new String[] {""}, Root.APPLICATION_STATUS_TYPE, ApplicationStatus.AllowInstances));
-            distributeMessage(new Message<ApplicationInstanceStatus>(new String[] {""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, ApplicationInstanceStatus.Allowed));
+            distributeMessage(new Message<>(new String[] {""}, Root.SERVER_CONNECTION_STATUS_TYPE, ServerConnectionStatus.ConnectedToServer));
+            distributeMessage(new Message<>(new String[] {""}, Root.APPLICATION_STATUS_TYPE, ApplicationStatus.AllowInstances));
+            distributeMessage(new Message<>(new String[] {""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, ApplicationInstanceStatus.Allowed));
         } catch (HousemateException e) {
             e.printStackTrace();
         }

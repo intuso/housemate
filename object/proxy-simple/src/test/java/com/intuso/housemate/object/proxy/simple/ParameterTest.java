@@ -1,9 +1,9 @@
 package com.intuso.housemate.object.proxy.simple;
 
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.object.proxy.simple.comms.TestEnvironment;
 import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
+import com.intuso.housemate.object.proxy.simple.comms.TestEnvironment;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealParameter;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
@@ -23,12 +23,12 @@ public class ParameterTest {
     public final static String PARAMETER = "parameters";
 
     private SimpleProxyList<ParameterData, SimpleProxyParameter> proxyList
-            = new SimpleProxyList<ParameterData, SimpleProxyParameter>(
+            = new SimpleProxyList<>(
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
             TestEnvironment.TEST_INSTANCE.getInjector(),
             new ListData(PARAMETER, PARAMETER, PARAMETER));
-    private RealList<ParameterData, RealParameter<?>> realList = new RealList<ParameterData, RealParameter<?>>(
+    private RealList<ParameterData, RealParameter<?>> realList = new RealList<>(
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
             PARAMETER, PARAMETER, PARAMETER, new ArrayList<RealParameter<?>>());
@@ -52,6 +52,6 @@ public class ParameterTest {
     @Test
     public void testCreateParameter() throws HousemateException {
         assertNotNull(proxyParameter);
-        assertNotNull(proxyParameter.getType());
+        assertNotNull(proxyParameter.getTypeId());
     }
 }

@@ -60,7 +60,7 @@ public abstract class Router implements Sender, Receiver {
                         && root.getApplicationInstanceStatus() == ApplicationInstanceStatus.Allowed;
                 if(Router.this.fullyConnected != fullyConnected) {
                     Router.this.fullyConnected = fullyConnected;
-                    Message<ServerConnectionStatus> message = new Message<ServerConnectionStatus>(new String[]{""},
+                    Message<ServerConnectionStatus> message = new Message<>(new String[]{""},
                             Root.SERVER_CONNECTION_STATUS_TYPE,
                             fullyConnected ? root.getServerConnectionStatus() : ServerConnectionStatus.ConnectedToRouter);
                     for (Receiver receiver : receivers.values()) {
@@ -157,7 +157,7 @@ public abstract class Router implements Sender, Receiver {
         String clientId = "" + nextId.incrementAndGet();
         receivers.put(clientId, receiver);
         try {
-            receiver.messageReceived(new Message<ServerConnectionStatus>(new String[] {""}, Root.SERVER_CONNECTION_STATUS_TYPE, root.getServerConnectionStatus()));
+            receiver.messageReceived(new Message<>(new String[] {""}, Root.SERVER_CONNECTION_STATUS_TYPE, root.getServerConnectionStatus()));
         } catch(HousemateException e) {
             log.e("Failed to tell new client " + clientId + " the current router status");
         }
@@ -222,7 +222,7 @@ public abstract class Router implements Sender, Receiver {
             connected = false;
             if(clientId != null)
                 receivers.remove(clientId);
-            Router.this.sendMessage(new Message<StringPayload>(new String[] {""}, Root.CONNECTION_LOST_TYPE,
+            Router.this.sendMessage(new Message<>(new String[] {""}, Root.CONNECTION_LOST_TYPE,
                     new StringPayload(clientId)));
         }
     }

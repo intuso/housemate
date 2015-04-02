@@ -9,11 +9,13 @@ import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.device.DeviceData;
+import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyCommand;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyDevice;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyRealClient;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyRoot;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,30 +69,50 @@ public class ContextualResource implements RootListener<SimpleProxyRoot>, Comman
         ROOT = root;
     }
 
-    @Path("/devices")
+    @Path("clients")
     @GET
-    public java.util.List<DeviceData> getDevices(@Context HttpServletRequest request) {
+    public java.util.List<RealClientData> getClients(@Context HttpServletRequest request) {
+        java.util.List<RealClientData> result = Lists.newArrayList();
+        for(SimpleProxyRealClient client : getRoot(request).getRealClients())
+            result.add((RealClientData)client.getData().clone());
+        return result;
+    }
+
+    @Path("clients/{clientId}")
+    @GET
+    public RealClientData getClient(@Context HttpServletRequest request,
+                                @PathParam("clientId") String clientId) {
+        SimpleProxyRealClient client = getRoot(request).getRealClients().get(clientId);
+        return client != null ? client.getData() : null;
+    }
+
+    @Path("clients/{clientId}/devices")
+    @GET
+    public java.util.List<DeviceData> getDevices(@Context HttpServletRequest request,
+                                                 @PathParam("clientId") String clientId) {
         java.util.List<DeviceData> result = Lists.newArrayList();
-        for(SimpleProxyDevice device : getRoot(request).getDevices())
+        for(SimpleProxyDevice device : getRoot(request).getRealClients().get(clientId).getDevices())
             result.add((DeviceData)device.getData().clone());
         return result;
     }
 
-    @Path("/devices/{deviceId}")
+    @Path("clients/{clientId}/devices/{deviceId}")
     @GET
     public DeviceData getDevice(@Context HttpServletRequest request,
+                                @PathParam("clientId") String clientId,
                                 @PathParam("deviceId") String deviceId) {
-        SimpleProxyDevice device = getRoot(request).getDevices().get(deviceId);
+        SimpleProxyDevice device = getRoot(request).getRealClients().get(clientId).getDevices().get(deviceId);
         return device != null ? device.getData() : null;
     }
 
-    @Path("/devices/{deviceId}/commands/{commandId}")
+    @Path("clients/{clientId}/devices/{deviceId}/commands/{commandId}")
     @POST
     public void performDeviceCommand(@Context HttpServletRequest request,
+                                     @PathParam("clientId") String clientId,
                                      @PathParam("deviceId") String deviceId,
                                      @PathParam("commandId") String commandId,
                                      TypeInstanceMap typeInstanceMap) {
-        SimpleProxyDevice device = getRoot(request).getDevices().get(deviceId);
+        SimpleProxyDevice device = getRoot(request).getRealClients().get(clientId).getDevices().get(deviceId);
         if(device != null) {
             SimpleProxyCommand command = device.getCommands().get(commandId);
             if(command != null) {

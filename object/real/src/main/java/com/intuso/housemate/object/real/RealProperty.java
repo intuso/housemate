@@ -51,7 +51,7 @@ public class RealProperty<O>
                 RealType.serialiseAll(type, values)), type);
         setCommand = new RealCommand(log, listenersFactory, SET_COMMAND_ID, SET_COMMAND_ID,
                 "The function to change the property's value",
-                new RealParameter<O>(log, listenersFactory, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type)) {
+                new RealParameter<>(log, listenersFactory, VALUE_PARAM, VALUE_PARAM, "The new value for the property", type)) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
                 List<O> typedValues = RealType.deserialiseAll(getType(), values.getChildren().get(VALUE_PARAM));

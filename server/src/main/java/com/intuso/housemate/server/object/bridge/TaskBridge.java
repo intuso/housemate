@@ -7,11 +7,9 @@ import com.intuso.housemate.api.object.property.PropertyData;
 import com.intuso.housemate.api.object.task.Task;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.task.TaskListener;
-import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.StringType;
-import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -30,22 +28,21 @@ public class TaskBridge
             CommandBridge,
             ValueBridge,
             ValueBridge,
-            ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
+        ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
             TaskBridge> {
 
     private CommandBridge removeCommand;
     private ValueBridge executingValue;
     private ValueBridge errorValue;
-    private ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
+    private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
-    public TaskBridge(Log log, ListenersFactory listenersFactory, Task<?, ?, ?, ?, ?> task,
-                      ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    public TaskBridge(Log log, ListenersFactory listenersFactory, Task<?, ?, ?, ?, ?> task) {
         super(log, listenersFactory, new TaskData(task.getId(), task.getName(), task.getDescription()));
-        removeCommand = new CommandBridge(log, listenersFactory, task.getRemoveCommand(), types);
-        executingValue = new ValueBridge(log, listenersFactory, task.getExecutingValue(), types);
-        errorValue = new ValueBridge(log, listenersFactory, task.getErrorValue(), types);
-        propertyList = new SingleListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(log, listenersFactory, task.getProperties(),
-                new PropertyBridge.Converter(log, listenersFactory, types));
+        removeCommand = new CommandBridge(log, listenersFactory, task.getRemoveCommand());
+        executingValue = new ValueBridge(log, listenersFactory, task.getExecutingValue());
+        errorValue = new ValueBridge(log, listenersFactory, task.getErrorValue());
+        propertyList = new ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(log, listenersFactory, task.getProperties(),
+                new PropertyBridge.Converter(log, listenersFactory));
         addChild(removeCommand);
         addChild(executingValue);
         addChild(errorValue);
@@ -80,7 +77,7 @@ public class TaskBridge
     }
 
     @Override
-    public ListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
+    public ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
     }
 
@@ -88,17 +85,15 @@ public class TaskBridge
 
         private final Log log;
         private final ListenersFactory listenersFactory;
-        private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory) {
             this.log = log;
             this.listenersFactory = listenersFactory;
-            this.types = types;;
         }
 
         @Override
         public TaskBridge apply(Task<?, ?, ?, ?, ?> command) {
-            return new TaskBridge(log, listenersFactory, command, types);
+            return new TaskBridge(log, listenersFactory, command);
         }
     }
 }

@@ -14,6 +14,7 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -43,6 +44,7 @@ public class GWTProxyFactory implements HousemateObjectFactory<HousemateData<?>,
     private final HousemateObjectFactory<OptionData, GWTProxyOption> optionFactory;
     private final HousemateObjectFactory<ParameterData, GWTProxyParameter> parameterFactory;
     private final HousemateObjectFactory<PropertyData, GWTProxyProperty> propertyFactory;
+    private final HousemateObjectFactory<RealClientData, GWTProxyRealClient> realClientFactory;
     private final HousemateObjectFactory<SubTypeData, GWTProxySubType> subTypeFactory;
     private final HousemateObjectFactory<TaskData,GWTProxyTask> taskFactory;
     private final HousemateObjectFactory<TypeData<HousemateData<?>>, GWTProxyType> typeFactory;
@@ -62,6 +64,7 @@ public class GWTProxyFactory implements HousemateObjectFactory<HousemateData<?>,
                            HousemateObjectFactory<OptionData, GWTProxyOption> optionFactory,
                            HousemateObjectFactory<ParameterData, GWTProxyParameter> parameterFactory,
                            HousemateObjectFactory<PropertyData, GWTProxyProperty> propertyFactory,
+                           HousemateObjectFactory<RealClientData, GWTProxyRealClient> realClientFactory,
                            HousemateObjectFactory<SubTypeData, GWTProxySubType> subTypeFactory,
                            HousemateObjectFactory<TaskData,GWTProxyTask> taskFactory,
                            HousemateObjectFactory<TypeData<HousemateData<?>>, GWTProxyType> typeFactory,
@@ -79,6 +82,7 @@ public class GWTProxyFactory implements HousemateObjectFactory<HousemateData<?>,
         this.optionFactory = optionFactory;
         this.parameterFactory = parameterFactory;
         this.propertyFactory = propertyFactory;
+        this.realClientFactory = realClientFactory;
         this.subTypeFactory = subTypeFactory;
         this.taskFactory = taskFactory;
         this.typeFactory = typeFactory;
@@ -114,6 +118,8 @@ public class GWTProxyFactory implements HousemateObjectFactory<HousemateData<?>,
             return propertyFactory.create((PropertyData) data);
         else if(data instanceof AutomationData)
             return automationFactory.create((AutomationData) data);
+        else if(data instanceof RealClientData)
+            return realClientFactory.create((RealClientData) data);
         else if(data instanceof SubTypeData)
             return subTypeFactory.create((SubTypeData) data);
         else if(data instanceof TypeData)

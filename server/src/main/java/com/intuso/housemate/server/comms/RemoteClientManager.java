@@ -9,13 +9,11 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.ClientType;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.object.server.ServerProxyRoot;
-import com.intuso.housemate.object.server.client.ClientInstance;
-import com.intuso.housemate.object.server.client.RemoteClient;
 import com.intuso.housemate.server.Server;
-import com.intuso.housemate.server.ioc.ServerProxyModule;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
+import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
+import com.intuso.housemate.server.object.proxy.ioc.ServerProxyModule;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
@@ -31,8 +29,8 @@ public class RemoteClientManager {
     private final ServerGeneralRoot generalRoot;
     private final RootBridge bridgeRoot;
     
-    private final RemoteClientImpl rootClient;
-    private final Map<ClientInstance, RemoteClientImpl> clients = Maps.newHashMap();
+    private final RemoteClient rootClient;
+    private final Map<ClientInstance, RemoteClient> clients = Maps.newHashMap();
 
     @Inject
     public RemoteClientManager(Log log, Injector injector, ServerGeneralRoot generalRoot, RootBridge bridgeRoot,
@@ -41,7 +39,7 @@ public class RemoteClientManager {
         this.injector = injector;
         this.generalRoot = generalRoot;
         this.bridgeRoot = bridgeRoot;
-        rootClient = new RemoteClientImpl(log,
+        rootClient = new RemoteClient(log,
                 new ClientInstance(Server.INTERNAL_APPLICATION, UUID.randomUUID().toString(), ClientType.Router),
                 generalRoot, mainRouter);
         rootClient.setBaseRoute(Lists.<String>newArrayList());
@@ -50,7 +48,7 @@ public class RemoteClientManager {
     public RemoteClient getClient(ClientInstance clientInstance, List<String> route) {
 
         // see if the client was previously known
-        RemoteClientImpl client = clients.get(clientInstance);
+        RemoteClient client = clients.get(clientInstance);
         if(client != null) {
 
             // if we think it's still connected somewhere else, then remove the current one
@@ -74,7 +72,6 @@ public class RemoteClientManager {
                 switch(clientInstance.getClientType()) {
                     case Real: // the server proxy objects are for remote real objects
                         root = injector.createChildInjector(new ServerProxyModule()).getInstance(ServerProxyRoot.class);
-                        bridgeRoot.addProxyRoot((ServerProxyRoot) root);
                         break;
                     case Proxy: // the server bridge objects are for remote proxy objects
                         root = bridgeRoot;
@@ -84,6 +81,8 @@ public class RemoteClientManager {
                         break;
                 }
                 client = addClient(root, clientInstance, route);
+                if(clientInstance.getClientType() == ClientType.Real)
+                    ((ServerProxyRoot) root).setClient(client);
                 clients.put(clientInstance, client);
                 client.setBaseRoute(route);
                 return client;
@@ -95,42 +94,42 @@ public class RemoteClientManager {
         }
     }
 
-    private RemoteClientImpl addClient(Root<?> root, ClientInstance clientInstance, List<String> route)
+    private RemoteClient addClient(Root<?> root, ClientInstance clientInstance, List<String> route)
             throws HousemateException {
         return rootClient.addClient(route, root, clientInstance);
     }
 
     public void clientUnregistered(List<String> route) {
-        RemoteClientImpl client = rootClient.getClient(route);
+        RemoteClient client = rootClient.getClient(route);
         if(client != null) {
             client.remove();
             unregisterClient(client);
         }
     }
 
-    private void unregisterClient(RemoteClientImpl client) {
+    private void unregisterClient(RemoteClient client) {
         clients.remove(client.getClientInstance());
         client.unregister();
-        for(RemoteClientImpl child : client.getChildren())
+        for(RemoteClient child : client.getChildren())
             unregisterClient(child);
     }
 
     public void connectionLost(List<String> route) {
-        RemoteClientImpl client = rootClient.getClient(route);
+        RemoteClient client = rootClient.getClient(route);
         if(client != null) {
             client.remove();
             connectionLost(client);
         }
     }
 
-    private void connectionLost(RemoteClientImpl client) {
+    private void connectionLost(RemoteClient client) {
         client.connectionLost();
         // create iterator over other list to prevent ConcurrentModificationExceptions
-        for(RemoteClientImpl child : client.getChildren())
+        for(RemoteClient child : client.getChildren())
             connectionLost(child);
     }
 
-    public RemoteClientImpl getClient(List<String> route) {
+    public RemoteClient getClient(List<String> route) {
         return rootClient.getClient(route);
     }
 }

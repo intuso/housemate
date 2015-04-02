@@ -1,7 +1,10 @@
 package com.intuso.housemate.web.client.bootstrap.widget.list;
 
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 
@@ -16,8 +19,8 @@ public class AddButton extends PerformButton {
         setSize(ButtonSize.EXTRA_SMALL);
     }
 
-    public AddButton(GWTProxyCommand command) {
+    public AddButton(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command) {
         this();
-        setCommand(command);
+        setCommand(types, command);
     }
 }

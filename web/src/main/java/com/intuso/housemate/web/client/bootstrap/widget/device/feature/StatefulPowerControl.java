@@ -5,13 +5,12 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.api.object.command.CommandListener;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.extensions.ToggleSwitch;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
-import com.intuso.housemate.web.client.object.GWTProxyCommand;
-import com.intuso.housemate.web.client.object.GWTProxyDevice;
-import com.intuso.housemate.web.client.object.GWTProxyValue;
+import com.intuso.housemate.web.client.object.*;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeature;
 
 import java.util.Set;
@@ -69,7 +68,7 @@ public class StatefulPowerControl
     }
 
     @Override
-    public Widget getWidget() {
+    public Widget getWidget(GWTProxyList<TypeData<?>, GWTProxyType> types) {
         return new StatefulPowerControlWidget();
     }
 

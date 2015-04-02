@@ -3,10 +3,13 @@ package com.intuso.housemate.web.client.bootstrap.widget.application;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.api.object.application.ApplicationData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyApplication;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 /**
@@ -14,14 +17,17 @@ import org.gwtbootstrap3.client.ui.constants.AlertType;
  */
 public class Application extends ObjectWidget<GWTProxyApplication> {
 
-    public Application(final ChildOverview childOverview) {
-        GWTProxyApplication user = Housemate.INJECTOR.getProxyRoot().getApplications().get(childOverview.getId());
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+
+    public Application(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyList<ApplicationData, GWTProxyApplication> applications, final ChildOverview childOverview) {
+        this.types = types;
+        GWTProxyApplication user = applications.get(childOverview.getId());
         if(user != null)
             setObject(user);
         else {
             setName(childOverview.getName());
             loading(true);
-            Housemate.INJECTOR.getProxyRoot().getApplications().load(new LoadManager(new LoadManager.Callback() {
+            applications.load(new LoadManager(new LoadManager.Callback() {
                 @Override
                 public void failed(HousemateObject.TreeLoadInfo path) {
                     loading(false);
@@ -31,7 +37,7 @@ public class Application extends ObjectWidget<GWTProxyApplication> {
                 @Override
                 public void allLoaded() {
                     loading(false);
-                    setObject(Housemate.INJECTOR.getProxyRoot().getApplications().get(childOverview.getId()));
+                    setObject(applications.get(childOverview.getId()));
                 }
             }, "loadApplication-" + childOverview.getId(),
                     new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
@@ -45,6 +51,6 @@ public class Application extends ObjectWidget<GWTProxyApplication> {
 
     @Override
     protected IsWidget getSettingsWidget(GWTProxyApplication object) {
-        return new ApplicationSettings(object);
+        return new ApplicationSettings(types, object);
     }
 }

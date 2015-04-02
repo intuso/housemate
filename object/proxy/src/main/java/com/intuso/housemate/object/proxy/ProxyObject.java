@@ -163,7 +163,7 @@ public abstract class ProxyObject<
      * @param <MV> the type of the message payload
      */
     protected final <MV extends Message.Payload> void sendMessage(String type, MV payload) {
-        proxyRoot.sendMessage(new Message<MV>(getPath(), type, payload));
+        proxyRoot.sendMessage(new Message<>(getPath(), type, payload));
     }
 
     /**

@@ -2,12 +2,13 @@ package com.intuso.housemate.web.client.bootstrap.widget.hardware;
 
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.hardware.HardwareData;
-import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
+import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyHardware;
-
-import java.util.List;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,12 +19,18 @@ import java.util.List;
  */
 public class HardwareList extends MainList<HardwareData, GWTProxyHardware> {
 
-    public HardwareList(String title, List<String> filteredIds, boolean includeFiltered) {
-        super(Housemate.INJECTOR.getProxyRoot().getHardwares(), title, filteredIds, includeFiltered);
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+    private final GWTProxyList<HardwareData, GWTProxyHardware> hardwares;
+
+    public HardwareList(String title, GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<HardwareData, GWTProxyHardware> hardwares, GWTProxyCommand addCommand) {
+        super(title, types, addCommand);
+        this.types = types;
+        this.hardwares = hardwares;
+        setList(hardwares);
     }
 
     @Override
     protected void getWidget(ChildOverview childOverview, LazyLoadedWidgetCallback callback) {
-        callback.widgetReady(new Hardware(childOverview));
+        callback.widgetReady(new Hardware(types, hardwares, childOverview));
     }
 }

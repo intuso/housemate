@@ -48,7 +48,7 @@ public class DoubleType extends RealSimpleType<Double> {
      */
     public static RealValue<Double> createValue(Log log, ListenersFactory listenersFactory,
                                                 String id, String name, String description, Double value) {
-        return new RealValue<Double>(log, listenersFactory, id, name, description, new DoubleType(log, listenersFactory), value);
+        return new RealValue<>(log, listenersFactory, id, name, description, new DoubleType(log, listenersFactory), value);
     }
 
     /**
@@ -62,7 +62,7 @@ public class DoubleType extends RealSimpleType<Double> {
      */
     public static RealProperty<Double> createProperty(Log log, ListenersFactory listenersFactory,
                                                       String id, String name, String description, List<Double> values) {
-        return new RealProperty<Double>(log, listenersFactory, id, name, description, new DoubleType(log, listenersFactory), values);
+        return new RealProperty<>(log, listenersFactory, id, name, description, new DoubleType(log, listenersFactory), values);
     }
 
     /**
@@ -75,6 +75,6 @@ public class DoubleType extends RealSimpleType<Double> {
      */
     public static RealParameter<Double> createParameter(Log log, ListenersFactory listenersFactory,
                                                         String id, String name, String description) {
-        return new RealParameter<Double>(log,listenersFactory , id, name, description, new DoubleType(log, listenersFactory));
+        return new RealParameter<>(log,listenersFactory , id, name, description, new DoubleType(log, listenersFactory));
     }
 }

@@ -35,7 +35,7 @@ public abstract class HousemateService extends Service {
         listenersFactory = new ListenersFactory() {
             @Override
             public <LISTENER extends Listener> Listeners<LISTENER> create() {
-                return new Listeners<LISTENER>(new CopyOnWriteArrayList<LISTENER>());
+                return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
             }
         };
         properties = new SharedPreferencesPropertyRepository(listenersFactory, getApplicationContext());

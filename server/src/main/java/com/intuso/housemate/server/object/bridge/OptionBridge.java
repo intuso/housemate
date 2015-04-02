@@ -7,8 +7,6 @@ import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.option.OptionListener;
 import com.intuso.housemate.api.object.subtype.SubType;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -17,25 +15,24 @@ import com.intuso.utilities.log.Log;
 public class OptionBridge
         extends BridgeObject<OptionData,
         ListData<SubTypeData>,
-            ListBridge<SubTypeData, SubType<?>, SubTypeBridge>,
+        ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge>,
             OptionBridge,
             OptionListener>
-        implements Option<ListBridge<SubTypeData, SubType<?>, SubTypeBridge>> {
+        implements Option<ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge>> {
 
-    private ListBridge<SubTypeData, SubType<?>, SubTypeBridge> subTypes;
+    private ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge> subTypes;
 
-    public OptionBridge(Log log, ListenersFactory listenersFactory, Option<?> option,
-                        ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    public OptionBridge(Log log, ListenersFactory listenersFactory, Option<?> option) {
         super(log, listenersFactory, new OptionData(option.getId(), option.getName(), option.getDescription()));
         if(option.getSubTypes() != null) {
-            subTypes = new SingleListBridge<SubTypeData, SubType<?>, SubTypeBridge>(log, listenersFactory, option.getSubTypes(),
-                    new SubTypeBridge.Converter(log, listenersFactory, types));
+            subTypes = new ConvertingListBridge<>(log, listenersFactory, option.getSubTypes(),
+                    new SubTypeBridge.Converter(log, listenersFactory));
             addChild(subTypes);
         }
     }
 
     @Override
-    public ListBridge<SubTypeData, SubType<?>, SubTypeBridge> getSubTypes() {
+    public ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge> getSubTypes() {
         return subTypes;
     }
 
@@ -43,17 +40,15 @@ public class OptionBridge
 
         private final Log log;
         private final ListenersFactory listenersFactory;
-        private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory) {
             this.log = log;
             this.listenersFactory = listenersFactory;
-            this.types = types;
         }
 
         @Override
         public OptionBridge apply(Option<?> option) {
-            return new OptionBridge(log, listenersFactory, option, types);
+            return new OptionBridge(log, listenersFactory, option);
         }
     }
 }

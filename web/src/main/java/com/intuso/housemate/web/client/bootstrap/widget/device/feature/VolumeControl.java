@@ -6,9 +6,12 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeature;
 
 import java.util.Set;
@@ -57,8 +60,8 @@ public class VolumeControl
     }
 
     @Override
-    public Widget getWidget() {
-        return new VolumeWidget();
+    public Widget getWidget(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+        return new VolumeWidget(types);
     }
 
     interface VolumeWidgetUiBinder extends UiBinder<Widget, VolumeWidget> {
@@ -75,12 +78,12 @@ public class VolumeControl
         @UiField
         public PerformButton downButton;
 
-        private VolumeWidget() {
+        private VolumeWidget(GWTProxyList<TypeData<?>, GWTProxyType> types) {
             initWidget(ourUiBinder.createAndBindUi(this));
 
-            muteButton.setCommand(getMuteCommand());
-            upButton.setCommand(getVolumeUpCommand());
-            downButton.setCommand(getVolumeDownCommand());
+            muteButton.setCommand(types, getMuteCommand());
+            upButton.setCommand(types, getVolumeUpCommand());
+            downButton.setCommand(types, getVolumeDownCommand());
         }
     }
 }

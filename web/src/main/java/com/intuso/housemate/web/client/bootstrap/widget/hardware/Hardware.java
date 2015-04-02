@@ -3,10 +3,13 @@ package com.intuso.housemate.web.client.bootstrap.widget.hardware;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.api.object.hardware.HardwareData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyHardware;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 
 /**
@@ -14,14 +17,17 @@ import org.gwtbootstrap3.client.ui.constants.AlertType;
  */
 public class Hardware extends ObjectWidget<GWTProxyHardware> {
 
-    public Hardware(final ChildOverview childOverview) {
-        GWTProxyHardware hardware = Housemate.INJECTOR.getProxyRoot().getHardwares().get(childOverview.getId());
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+
+    public Hardware(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyList<HardwareData, GWTProxyHardware> hardwares, final ChildOverview childOverview) {
+        this.types = types;
+        final GWTProxyHardware hardware = hardwares.get(childOverview.getId());
         if(hardware != null)
             setObject(hardware);
         else {
             setName(childOverview.getName());
             loading(true);
-            Housemate.INJECTOR.getProxyRoot().getHardwares().load(new LoadManager(new LoadManager.Callback() {
+            hardwares.load(new LoadManager(new LoadManager.Callback() {
                 @Override
                 public void failed(HousemateObject.TreeLoadInfo path) {
                     loading(false);
@@ -31,7 +37,7 @@ public class Hardware extends ObjectWidget<GWTProxyHardware> {
                 @Override
                 public void allLoaded() {
                     loading(false);
-                    setObject(Housemate.INJECTOR.getProxyRoot().getHardwares().get(childOverview.getId()));
+                    setObject(hardwares.get(childOverview.getId()));
                 }
             }, "loadHardware-" + childOverview.getId(),
                     new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
@@ -45,6 +51,6 @@ public class Hardware extends ObjectWidget<GWTProxyHardware> {
 
     @Override
     protected IsWidget getSettingsWidget(GWTProxyHardware object) {
-        return new HardwareSettings(object);
+        return new HardwareSettings(types, object);
     }
 }

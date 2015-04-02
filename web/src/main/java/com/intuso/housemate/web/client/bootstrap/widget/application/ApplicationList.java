@@ -2,12 +2,13 @@ package com.intuso.housemate.web.client.bootstrap.widget.application;
 
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.application.ApplicationData;
-import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
 import com.intuso.housemate.web.client.object.GWTProxyApplication;
-
-import java.util.List;
+import com.intuso.housemate.web.client.object.GWTProxyCommand;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,12 +19,18 @@ import java.util.List;
  */
 public class ApplicationList extends MainList<ApplicationData, GWTProxyApplication> {
 
-    public ApplicationList(String title, List<String> filteredIds, boolean includeFiltered) {
-        super(Housemate.INJECTOR.getProxyRoot().getApplications(), title, filteredIds, includeFiltered);
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+    private final GWTProxyList<ApplicationData, GWTProxyApplication> applications;
+
+    public ApplicationList(String title, GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<ApplicationData, GWTProxyApplication> applications, GWTProxyCommand addCommand) {
+        super(title, types, addCommand);
+        this.types = types;
+        this.applications = applications;
+        setList(applications);
     }
 
     @Override
     protected void getWidget(ChildOverview childOverview, LazyLoadedWidgetCallback callback) {
-        callback.widgetReady(new Application(childOverview));
+        callback.widgetReady(new Application(types, applications, childOverview));
     }
 }

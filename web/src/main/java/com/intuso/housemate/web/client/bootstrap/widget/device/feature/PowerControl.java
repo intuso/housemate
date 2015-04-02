@@ -6,9 +6,12 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeature;
 
 import java.util.Set;
@@ -52,8 +55,8 @@ public class PowerControl
     }
 
     @Override
-    public Widget getWidget() {
-        return new PowerControlWidget();
+    public Widget getWidget(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+        return new PowerControlWidget(types);
     }
 
     interface PowerControlWidgetUiBinder extends UiBinder<Widget, PowerControlWidget> {}
@@ -69,12 +72,12 @@ public class PowerControl
         @UiField
         public PerformButton offButton;
 
-        private PowerControlWidget() {
+        private PowerControlWidget(GWTProxyList<TypeData<?>, GWTProxyType> types) {
 
             initWidget(ourUiBinder.createAndBindUi(this));
 
-            onButton.setCommand(getOnCommand());
-            offButton.setCommand(getOffCommand());
+            onButton.setCommand(types, getOnCommand());
+            offButton.setCommand(types, getOffCommand());
         }
     }
 }

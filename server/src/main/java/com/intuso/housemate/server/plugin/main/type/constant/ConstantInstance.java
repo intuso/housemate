@@ -58,11 +58,6 @@ public class ConstantInstance<O> implements Value<RealType<?, ?, O>, ConstantIns
     }
 
     @Override
-    public RealType<?, ?, O> getType() {
-        return type;
-    }
-
-    @Override
     public TypeInstances getTypeInstances() {
         return values;
     }

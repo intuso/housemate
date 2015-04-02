@@ -8,10 +8,8 @@ import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.application.ApplicationListener;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstance;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
-import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.impl.type.ApplicationStatusType;
 import com.intuso.housemate.object.real.impl.type.EnumChoiceType;
-import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -29,25 +27,24 @@ public class ApplicationBridge
             ValueBridge,
             CommandBridge,
             ApplicationInstanceBridge,
-            ListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge>,
+        ConvertingListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge>,
             ApplicationBridge> {
 
-    private final ListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge> applicationInstances;
+    private final ConvertingListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge> applicationInstances;
     private final CommandBridge allowCommand;
     private final CommandBridge someCommand;
     private final CommandBridge rejectCommand;
     private final ValueBridge statusValue;
 
-    public ApplicationBridge(Log log, ListenersFactory listenersFactory, Application application,
-                             ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    public ApplicationBridge(Log log, ListenersFactory listenersFactory, Application application) {
         super(log, listenersFactory,
                 new ApplicationData(application.getId(), application.getName(), application.getDescription()));
-        applicationInstances = new SingleListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge>(
-                log, listenersFactory, application.getApplicationInstances(), new ApplicationInstanceBridge.Converter(log, listenersFactory, types));
-        allowCommand = new CommandBridge(log, listenersFactory, application.getAllowCommand(), types);
-        someCommand = new CommandBridge(log, listenersFactory, application.getSomeCommand(), types);
-        rejectCommand = new CommandBridge(log, listenersFactory, application.getRejectCommand(), types);
-        statusValue = new ValueBridge(log, listenersFactory, application.getStatusValue(), types);
+        applicationInstances = new ConvertingListBridge<>(
+                log, listenersFactory, application.getApplicationInstances(), new ApplicationInstanceBridge.Converter(log, listenersFactory));
+        allowCommand = new CommandBridge(log, listenersFactory, application.getAllowCommand());
+        someCommand = new CommandBridge(log, listenersFactory, application.getSomeCommand());
+        rejectCommand = new CommandBridge(log, listenersFactory, application.getRejectCommand());
+        statusValue = new ValueBridge(log, listenersFactory, application.getStatusValue());
         addChild(applicationInstances);
         addChild(allowCommand);
         addChild(rejectCommand);
@@ -55,7 +52,7 @@ public class ApplicationBridge
     }
 
     @Override
-    public ListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge> getApplicationInstances() {
+    public ConvertingListBridge<ApplicationInstanceData, ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge> getApplicationInstances() {
         return applicationInstances;
     }
 
@@ -89,17 +86,15 @@ public class ApplicationBridge
 
         private final Log log;
         private final ListenersFactory listenersFactory;
-        private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory) {
             this.log = log;
             this.listenersFactory = listenersFactory;
-            this.types = types;
         }
 
         @Override
         public ApplicationBridge apply(Application<?, ?, ?, ?, ?> application) {
-            return new ApplicationBridge(log, listenersFactory, application, types);
+            return new ApplicationBridge(log, listenersFactory, application);
         }
     }
 }

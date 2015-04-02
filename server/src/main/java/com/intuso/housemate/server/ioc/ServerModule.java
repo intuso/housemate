@@ -1,26 +1,19 @@
 package com.intuso.housemate.server.ioc;
 
-import com.google.inject.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
+import com.google.inject.TypeLiteral;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.server.ServerProxyType;
 import com.intuso.housemate.plugin.host.ioc.PluginHostModule;
 import com.intuso.housemate.realclient.ioc.RealClientModule;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.comms.RemoteClientManager;
-import com.intuso.housemate.server.object.bridge.ListBridge;
-import com.intuso.housemate.server.object.bridge.MultiListBridge;
 import com.intuso.housemate.server.object.bridge.RootBridge;
-import com.intuso.housemate.server.object.bridge.TypeBridge;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.housemate.server.object.real.ServerRealRoot;
-import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**
@@ -53,16 +46,5 @@ public class ServerModule extends AbstractModule {
         // bind implementations
         bind(Router.class).to(MainRouter.class);
         bind(new TypeLiteral<Root<?>>() {}).to(RootBridge.class);
-        bind(new TypeLiteral<ListBridge<TypeData<?>, ServerProxyType, TypeBridge>>() {})
-                .to(new TypeLiteral<MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge>>() {});
-    }
-
-    @Provides
-    @Singleton
-    public MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> getBridgeTypes(Log log, ListenersFactory listenersFactory) {
-        MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> typeList = new MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge>(log, listenersFactory,
-                new ListData<TypeData<?>>(ObjectRoot.TYPES_ID, "Types", "Types"));
-        typeList.setConverter(new TypeBridge.Converter(log, listenersFactory, typeList));
-        return typeList;
     }
 }

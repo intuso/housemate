@@ -22,12 +22,6 @@ public interface Value<
     public String getTypeId();
 
     /**
-     * Gets the value's type
-     * @return the value's type
-     */
-    public TYPE getType();
-
-    /**
      * Gets the value's value
      * @return the value's value
      */

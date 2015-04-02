@@ -36,7 +36,6 @@ public class RealSubType<O>
         return getData().getType();
     }
 
-    @Override
     public final RealType<?, ?, O> getType() {
         return (RealType<?, ?, O>) types.get(getData().getType());
     }

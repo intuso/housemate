@@ -30,6 +30,6 @@ public class GWTProxyOption extends ProxyOption<
 
     @Override
     protected GWTProxyList<SubTypeData, GWTProxySubType> createChildInstance(ListData<SubTypeData> data) {
-        return new GWTProxyList<SubTypeData, GWTProxySubType>(getLog(), getListenersFactory(), injector, data);
+        return new GWTProxyList<>(getLog(), getListenersFactory(), injector, data);
     }
 }

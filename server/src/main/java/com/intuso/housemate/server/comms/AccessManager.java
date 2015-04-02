@@ -14,8 +14,6 @@ import com.intuso.housemate.object.real.RealApplicationInstance;
 import com.intuso.housemate.object.real.RealRoot;
 import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.object.real.impl.type.ApplicationStatusType;
-import com.intuso.housemate.object.server.client.ClientInstance;
-import com.intuso.housemate.object.server.client.RemoteClient;
 import com.intuso.housemate.server.Server;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;

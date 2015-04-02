@@ -9,30 +9,18 @@ import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
-import com.intuso.housemate.api.comms.message.StringPayload;
+import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.application.ApplicationData;
-import com.intuso.housemate.api.object.automation.AutomationData;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.root.ObjectRoot;
+import com.intuso.housemate.api.object.realclient.HasRealClients;
+import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.object.real.RealApplication;
-import com.intuso.housemate.object.real.RealAutomation;
-import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.real.RealUser;
-import com.intuso.housemate.object.server.ServerProxyDevice;
-import com.intuso.housemate.object.server.ServerProxyHardware;
-import com.intuso.housemate.object.server.ServerProxyRoot;
-import com.intuso.housemate.object.server.ServerProxyType;
-import com.intuso.housemate.object.server.client.ClientPayload;
+import com.intuso.housemate.server.comms.ClientPayload;
+import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -45,65 +33,31 @@ import java.util.Map;
 
 public class RootBridge
         extends BridgeObject<RootData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>,
-        RootBridge, RootListener<? super RootBridge>>
-        implements Root<RootBridge> {
+            RootBridge, RootListener<? super RootBridge>>
+        implements Root<RootBridge>,
+            HasRealClients<ListBridge<RealClientData, RealClientBridge>> {
+
+    public final static String REAL_CLIENTS_ID = "real-clients";
 
     private final ListenersFactory listenersFactory;
-
-    private final ListBridge<ApplicationData, RealApplication, ApplicationBridge> applications;
-    private final ListBridge<UserData, RealUser, UserBridge> users;
-    private final MultiListBridge<HardwareData, ServerProxyHardware, HardwareBridge> hardwares;
-    private final MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
-    private final MultiListBridge<DeviceData, ServerProxyDevice, DeviceBridge> devices;
-    private final ListBridge<AutomationData, RealAutomation, AutomationBridge> automations;
-    private final CommandBridge addUser;
-    private final CommandBridge addHardware;
-    private final CommandBridge addDevice;
-    private final CommandBridge addAutomation;
-
-    private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
+    private final ListBridge<RealClientData, RealClientBridge> realClients;
+    private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<>();
 
     @Inject
-    public RootBridge(Log log, ListenersFactory listenersFactory, RealRoot realRoot,
-                      MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    public RootBridge(Log log, ListenersFactory listenersFactory) {
         super(log, listenersFactory, new RootData());
         this.listenersFactory = listenersFactory;
-        applications = new SingleListBridge<ApplicationData, RealApplication, ApplicationBridge>(
-                log, listenersFactory, realRoot.getApplications(), new ApplicationBridge.Converter(log, listenersFactory, types));
-        users = new SingleListBridge<UserData, RealUser, UserBridge>(log, listenersFactory,
-                realRoot.getUsers(), new UserBridge.Converter(log, listenersFactory, types));
-        hardwares = new MultiListBridge<HardwareData, ServerProxyHardware, HardwareBridge>(log, listenersFactory,
-                new ListData<HardwareData>(ObjectRoot.HARDWARES_ID, "Hardwares", "Connected hardware"),
-                new HardwareBridge.Converter(log, listenersFactory, types));
-        this.types = types;
-        devices = new MultiListBridge<DeviceData, ServerProxyDevice, DeviceBridge>(log, listenersFactory,
-                new ListData<DeviceData>(ObjectRoot.DEVICES_ID, "Devices", "Devices"),
-                new DeviceBridge.Converter(log, listenersFactory, types));
-        automations = new SingleListBridge<AutomationData, RealAutomation, AutomationBridge>(log, listenersFactory,
-                realRoot.getAutomations(), new AutomationBridge.Converter(log, listenersFactory, types));
-        addUser = new CommandBridge(log, listenersFactory, realRoot.getAddUserCommand(), types);
-        addHardware = new CommandBridge(log, listenersFactory, realRoot.getAddHardwareCommand(), types);
-        addDevice = new CommandBridge(log, listenersFactory, realRoot.getAddDeviceCommand(), types);
-        addAutomation = new CommandBridge(log, listenersFactory, realRoot.getAddAutomationCommand(), types);
-        addChild(applications);
-        addChild(users);
-        addChild(hardwares);
-        addChild(types);
-        addChild(devices);
-        addChild(automations);
-        addChild(addUser);
-        addChild(addHardware);
-        addChild(addDevice);
-        addChild(addAutomation);
+        realClients = new ListBridge<>(log, listenersFactory, new ListData<RealClientData>(REAL_CLIENTS_ID, "Clients", "Clients"));
+        addChild(realClients);
         init(null);
     }
 
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(ObjectRoot.CLEAR_LOADED, new Receiver<ClientPayload<StringPayload>>() {
+        result.add(addMessageListener("clear-loaded", new Receiver<ClientPayload<NoPayload>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<StringPayload>> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<NoPayload>> message) throws HousemateException {
                 clearClientInfo(message.getPayload().getClient());
             }
         }));
@@ -137,27 +91,7 @@ public class RootBridge
 
     @Override
     public void sendMessage(Message<?> message) {
-        throw new HousemateRuntimeException("Whatever");
-    }
-
-    public ListBridge<UserData, RealUser, UserBridge> getUsers() {
-        return users;
-    }
-
-    public MultiListBridge<HardwareData, ServerProxyHardware, HardwareBridge> getHardwares() {
-        return hardwares;
-    }
-
-    public MultiListBridge<TypeData<?>, ServerProxyType, TypeBridge> getTypes() {
-        return types;
-    }
-
-    public MultiListBridge<DeviceData, ServerProxyDevice, DeviceBridge> getDevices() {
-        return devices;
-    }
-
-    public ListBridge<AutomationData, RealAutomation, AutomationBridge> getAutomations() {
-        return automations;
+        throw new HousemateRuntimeException("Watcha playing at, fool?");
     }
 
     @Override
@@ -174,10 +108,13 @@ public class RootBridge
             objectRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?>) ancestor);
     }
 
+    @Override
+    public ListBridge<RealClientData, RealClientBridge> getRealClients() {
+        return realClients;
+    }
+
     public void addProxyRoot(ServerProxyRoot root) {
-        hardwares.addList(root.getHardwares());
-        devices.addList(root.getDevices());
-        types.addList(root.getTypes());
+        realClients.add(new RealClientBridge(getLog(), getListenersFactory(), root));
     }
 
     private void objectAdded(String path, HousemateObject<?, ?, ?, ?> object) {

@@ -4,10 +4,10 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.server.plugin.main.type.transformation.Transformation;
 import com.intuso.housemate.object.real.RealList;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.plugin.api.Transformer;
+import com.intuso.housemate.server.plugin.main.type.transformation.Transformation;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -47,12 +47,12 @@ public class TransformationOutput extends ValueSource implements ValueAvailableL
             return;
         }
 
-        RealType<?, ?, Object> inputType = (RealType<?, ?, Object>) types.get(inputValue.getType().getId());
+        RealType<?, ?, Object> inputType = (RealType<?, ?, Object>) types.get(inputValue.getTypeId());
         Transformer<Object, Object> transformer = (Transformer<Object, Object>) transformation.getTransformersByType().get(inputType.getId());
         RealType<?, ?, Object> outputType = (RealType<?, ?, Object>) types.get(transformer.getOutputTypeId());
         try {
             Object result = transformer.apply(inputType.deserialise(inputValue.getTypeInstances().getElements().get(0)));
-            if(value != null && !value.getType().getId().equals(outputType.getId())) {
+            if(value != null && !value.getTypeId().equals(outputType.getId())) {
                 for(ValueAvailableListener listener : listeners)
                     listener.valueUnavailable(this);
                 value = null;

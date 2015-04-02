@@ -10,9 +10,9 @@ import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.object.proxy.ProxyRoot;
 import com.intuso.housemate.object.proxy.simple.*;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
@@ -61,6 +61,7 @@ public class HousemateTweeter {
     private final String applicationInstanceId;
 
     private final Map<SimpleProxyDevice, java.util.List<ListenerRegistration>> listeners;
+    private RealClientListListener realClientListListener = new RealClientListListener();
     private DeviceListListener deviceListListener = new DeviceListListener();
     private DeviceListener deviceListener = new DeviceListener();
 
@@ -75,7 +76,7 @@ public class HousemateTweeter {
         this.applicationDetails = new ApplicationDetails(HousemateTweeter.class.getName(), "Housemate Tweeter", "Housemate Tweeter");
         this.applicationInstanceId = properties.get(INSTANCE_ID);
 
-        listeners = new HashMap<SimpleProxyDevice, java.util.List<ListenerRegistration>>();
+        listeners = new HashMap<>();
 
 		dateFormat = new SimpleDateFormat("h:mm a");
         DateFormatSymbols dateFormatSymbols = dateFormat.getDateFormatSymbols();
@@ -155,10 +156,10 @@ public class HousemateTweeter {
 
                             @Override
                             public void allLoaded() {
-                                root.getDevices().addObjectListener(deviceListListener, true);
+                                root.getRealClients().addObjectListener(realClientListListener, true);
                             }
                         }, "twitterClientInitialLoad",
-                                new HousemateObject.TreeLoadInfo(ObjectRoot.DEVICES_ID),
+                                new HousemateObject.TreeLoadInfo(ProxyRoot.REAL_CLIENTS_ID),
                                 new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
                         break;
                 }
@@ -260,10 +261,22 @@ public class HousemateTweeter {
 		}
 	}
 
+    private class RealClientListListener implements ListListener<SimpleProxyRealClient> {
+        @Override
+        public void elementAdded(SimpleProxyRealClient realClient) {
+            realClient.getDevices().addObjectListener(deviceListListener, true);
+        }
+
+        @Override
+        public void elementRemoved(SimpleProxyRealClient realClient) {
+            // remove the old listener
+        }
+    };
+
     private class DeviceListListener implements ListListener<SimpleProxyDevice> {
         @Override
         public void elementAdded(SimpleProxyDevice device) {
-            java.util.List<ListenerRegistration> registrations = new ArrayList<ListenerRegistration>();
+            java.util.List<ListenerRegistration> registrations = new ArrayList<>();
             listeners.put(device, registrations);
             registrations.add(device.getCommands().addObjectListener(new CommandListListener(device, registrations), true));
             registrations.add(device.getValues().addObjectListener(new ValueListListener(device, registrations), true));

@@ -17,7 +17,7 @@ public abstract class HousemateActivity<P extends HousematePlace> extends Abstra
 
     @Override
     public void start(AcceptsOneWidget acceptsOneWidget, EventBus eventBus) {
-        acceptsOneWidget.setWidget(null);
-        place.loadData(acceptsOneWidget);
+        place.getView().newPlace(place);
+        acceptsOneWidget.setWidget(place.getView());
     }
 }

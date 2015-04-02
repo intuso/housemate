@@ -1,18 +1,16 @@
 package com.intuso.housemate.web.client.bootstrap.view;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.inject.Inject;
-import com.intuso.housemate.web.client.bootstrap.widget.list.AddButton;
+import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.web.client.bootstrap.widget.user.UserList;
-import com.intuso.housemate.web.client.handler.MultiListSelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
+import com.intuso.housemate.web.client.object.GWTProxyRealClient;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
 import com.intuso.housemate.web.client.place.UsersPlace;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -23,29 +21,16 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class UsersView extends FlowPanel
-        implements com.intuso.housemate.web.client.ui.view.UsersView, SelectedIdsChangedHandler {
+        implements com.intuso.housemate.web.client.ui.view.UsersView,
+            ListListener<GWTProxyRealClient>,
+            SelectedIdsChangedHandler {
 
     private final PlaceHistoryMapper placeHistoryMapper;
-    private final UserList favouritesList;
-    private final UserList allList;
-    private final MultiListSelectedIdsChangedHandler selectedIdsChangedHandler;
 
     @Inject
     public UsersView(PlaceHistoryMapper placeHistoryMapper, GWTProxyRoot root) {
-
         this.placeHistoryMapper = placeHistoryMapper;
-
-        selectedIdsChangedHandler = new MultiListSelectedIdsChangedHandler(this);
-
-        List<String> favourites = Lists.newArrayList();
-        favouritesList = new UserList("favourites", favourites, true);
-        favouritesList.addSelectedIdsChangedHandler(selectedIdsChangedHandler);
-        allList = new UserList(favourites.size() > 0 ? "all" : "", favourites, false);
-        allList.addSelectedIdsChangedHandler(selectedIdsChangedHandler);
-
-        add(favouritesList);
-        add(allList);
-        add(new AddButton(root.getAddUserCommand()));
+        root.getRealClients().addObjectListener(this, true);
     }
 
     @Override
@@ -55,7 +40,16 @@ public class UsersView extends FlowPanel
 
     @Override
     public void newPlace(UsersPlace place) {
-        favouritesList.setSelected(place.getUserIds());
-        allList.setSelected(place.getUserIds());
+
+    }
+
+    @Override
+    public void elementAdded(GWTProxyRealClient client) {
+        add(new UserList(client.getName(), client.getTypes(), client.getUsers(), client.getAddUserCommand()));
+    }
+
+    @Override
+    public void elementRemoved(GWTProxyRealClient client) {
+        // do nothing atm
     }
 }

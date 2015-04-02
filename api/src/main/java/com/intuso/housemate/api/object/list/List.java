@@ -8,9 +8,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
  */
 public interface List<T> extends BaseHousemateObject<ListListener<? super T>>, Iterable<T> {
 
-    public final static String ADD_TYPE = "add";
-    public final static String REMOVE_TYPE = "remove";
-
     /**
      * Get an element from the list by name
      * @param name the name of the element to get

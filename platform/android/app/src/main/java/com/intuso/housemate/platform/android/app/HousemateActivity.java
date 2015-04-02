@@ -1,7 +1,6 @@
 package com.intuso.housemate.platform.android.app;
 
 import android.app.Activity;
-import com.google.common.collect.Lists;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.platform.android.app.comms.AndroidAppRouter;
 import com.intuso.housemate.platform.android.common.AndroidLogWriter;
@@ -36,7 +35,7 @@ public abstract class HousemateActivity extends Activity {
         listenersFactory = new ListenersFactory() {
             @Override
             public <LISTENER extends Listener> Listeners<LISTENER> create() {
-                return new Listeners<LISTENER>(new CopyOnWriteArrayList<LISTENER>());
+                return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
             }
         };
         properties = new SharedPreferencesPropertyRepository(listenersFactory, getApplicationContext());

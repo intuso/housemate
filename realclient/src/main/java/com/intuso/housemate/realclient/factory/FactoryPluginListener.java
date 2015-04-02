@@ -157,7 +157,7 @@ public class FactoryPluginListener implements PluginListener {
                 }
                 TypeInfo typeInfo = typeClass.getAnnotation(TypeInfo.class);
                 if(typeInfo != null)
-                    result.add(new Entry<T>(injector, typeInfo, (Key<T>) entry.getKey()));
+                    result.add(new Entry<>(injector, typeInfo, (Key<T>) entry.getKey()));
                 else
                     log.e("Factory class " + typeClass.getName() + " has no " + TypeInfo.class.getName() + " annotation");
             }

@@ -34,7 +34,6 @@ public class RealParameter<O>
         return getData().getType();
     }
 
-    @Override
     public final RealType<?, ?, O> getType() {
         return type;
     }

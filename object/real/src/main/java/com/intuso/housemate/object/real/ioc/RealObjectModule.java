@@ -3,10 +3,9 @@ package com.intuso.housemate.object.real.ioc;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
-import com.google.inject.Singleton;
-import com.intuso.housemate.api.object.root.ObjectRoot;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.real.RealList;
+import com.intuso.housemate.object.real.RealRoot;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.annotations.ioc.RealAnnotationsModule;
 import com.intuso.housemate.object.real.factory.ioc.RealFactoryModule;
@@ -39,8 +38,7 @@ public class RealObjectModule extends AbstractModule {
     }
 
     @Provides
-    @Singleton
-    public RealList<TypeData<?>, RealType<?, ?, ?>> getTypeList(Log log, ListenersFactory listenersFactory) {
-        return new RealList<>(log, listenersFactory, ObjectRoot.TYPES_ID, ObjectRoot.TYPES_ID, "Types");
+    public RealList<TypeData<?>, RealType<?, ?, ?>> getTypes(Log log, ListenersFactory listenersFactory) {
+        return new RealList<>(log, listenersFactory, RealRoot.TYPES_ID, "Types", "Types");
     }
 }

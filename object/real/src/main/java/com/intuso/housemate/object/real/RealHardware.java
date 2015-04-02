@@ -38,7 +38,7 @@ public class RealHardware
     public RealHardware(Log log, ListenersFactory listenersFactory, String type, HardwareData data, List<RealProperty<?>> properties) {
         super(log, listenersFactory, data);
         this.type = type;
-        this.properties = new RealList<PropertyData, RealProperty<?>>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION, properties);
+        this.properties = new RealList<>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION, properties);
         addChild(this.properties);
     }
 

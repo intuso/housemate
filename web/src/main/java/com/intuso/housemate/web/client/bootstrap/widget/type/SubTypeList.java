@@ -12,6 +12,6 @@ public class SubTypeList extends TypeInputList<SubTypeData, GWTProxySubType> {
 
     @Override
     protected IsWidget getWidget(ChildOverview childOverview, GWTProxySubType subType) {
-        return getWidget(subType.getType(), subType.getId());
+        return getWidget(subType.getTypeId(), subType.getId());
     }
 }

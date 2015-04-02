@@ -16,7 +16,7 @@ import java.util.Map;
 public abstract class RealConditionNonLeaf extends RealCondition
         implements ConditionListener<RealCondition> {
 
-    private final Map<RealCondition, Boolean> satisfied = new HashMap<RealCondition, Boolean>();
+    private final Map<RealCondition, Boolean> satisfied = new HashMap<>();
     private final Map<RealCondition, ListenerRegistration> conditionListenerRegistrations = Maps.newHashMap();
     private RealCommand addConditionCommand;
 

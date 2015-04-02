@@ -4,11 +4,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.event.UserInputEvent;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxySubType;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 
@@ -17,10 +19,12 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
  */
 public class CompoundTypeInput extends Button implements TypeInput, ClickHandler, UserInputHandler {
 
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final GWTProxyList<SubTypeData, GWTProxySubType> list;
     private final TypeInstances typeInstances;
 
-    public CompoundTypeInput(GWTProxyList<SubTypeData, GWTProxySubType> list, TypeInstances typeInstances) {
+    public CompoundTypeInput(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<SubTypeData, GWTProxySubType> list, TypeInstances typeInstances) {
+        this.types = types;
         this.list = list;
         this.typeInstances = typeInstances;
         setIcon(IconType.EDIT);
@@ -39,7 +43,7 @@ public class CompoundTypeInput extends Button implements TypeInput, ClickHandler
 
     @Override
     public void onClick(ClickEvent clickEvent) {
-        new CompoundTypeInputModal(list, typeInstances).addUserInputHandler(this);
+        new CompoundTypeInputModal(types, list, typeInstances).addUserInputHandler(this);
     }
 
     @Override

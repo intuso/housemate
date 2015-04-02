@@ -75,9 +75,9 @@ public class RealDevice
                 new DeviceData(data.getId(), data.getName(), data.getDescription(), featureIds, customCommandIds, customValueIds, customPropertyIds),
                 OBJECT_TYPE);
         this.type = type;
-        this.commands = new RealList<CommandData, RealCommand>(log, listenersFactory, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION);
-        this.values = new RealList<ValueData, RealValue<?>>(log, listenersFactory, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION);
-        this.properties = new RealList<PropertyData, RealProperty<?>>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION);
+        this.commands = new RealList<>(log, listenersFactory, COMMANDS_ID, COMMANDS_ID, COMMANDS_DESCRIPTION);
+        this.values = new RealList<>(log, listenersFactory, VALUES_ID, VALUES_ID, VALUES_DESCRIPTION);
+        this.properties = new RealList<>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, PROPERTIES_DESCRIPTION);
         addChild(this.commands);
         addChild(this.values);
         addChild(this.properties);

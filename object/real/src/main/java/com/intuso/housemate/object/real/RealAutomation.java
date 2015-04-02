@@ -84,9 +84,9 @@ public class RealAutomation
                           @Assisted AutomationData data, @Assisted RealAutomationOwner owner) {
         super(log, listenersFactory, data, "automation");
         this.owner = owner;
-        this.conditions = new RealList<ConditionData, RealCondition>(log, listenersFactory, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
-        this.satisfiedTasks = new RealList<TaskData, RealTask>(log, listenersFactory, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
-        this.unsatisfiedTasks = new RealList<TaskData, RealTask>(log, listenersFactory, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.conditions = new RealList<>(log, listenersFactory, CONDITIONS_ID, CONDITIONS_ID, "The automation's conditions");
+        this.satisfiedTasks = new RealList<>(log, listenersFactory, SATISFIED_TASKS_ID, SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.unsatisfiedTasks = new RealList<>(log, listenersFactory, UNSATISFIED_TASKS_ID, UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         addConditionCommand = addConditionCommandFactory.create(this);
         addSatisfiedTaskCommand = addTaskCommandFactory.create(satisfiedTaskOwner);
         addUnsatisfiedTaskCommand = addTaskCommandFactory.create(unsatisfiedTaskOwner);

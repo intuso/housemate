@@ -12,12 +12,10 @@ import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.list.List;
 import com.intuso.housemate.api.object.parameter.Parameter;
 import com.intuso.housemate.api.object.parameter.ParameterData;
-import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
-import com.intuso.housemate.object.server.ServerProxyType;
-import com.intuso.housemate.object.server.client.ClientPayload;
+import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -28,19 +26,18 @@ public class CommandBridge
         extends BridgeObject<CommandData, HousemateData<?>,
             BridgeObject<?, ?, ?, ?, ?>, CommandBridge,
             CommandListener<? super CommandBridge>>
-        implements Command<ValueBridge, ListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge> {
+        implements Command<ValueBridge, ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge> {
 
     private Command<?, ?, ?> proxyCommand;
     private ValueBridge enabledValue;
-    private ListBridge<ParameterData, Parameter<?>, ParameterBridge> parameters;
+    private ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge> parameters;
 
-    public CommandBridge(Log log, ListenersFactory listenersFactory, Command<?, ? extends List<? extends Parameter<?>>, ?> proxyCommand,
-                         ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+    public CommandBridge(Log log, ListenersFactory listenersFactory, Command<?, ? extends List<? extends Parameter<?>>, ?> proxyCommand) {
         super(log, listenersFactory,
                 new CommandData(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
         this.proxyCommand = proxyCommand;
-        enabledValue = new ValueBridge(log, listenersFactory, proxyCommand.getEnabledValue(), types);
-        parameters = new SingleListBridge<>(log, listenersFactory, proxyCommand.getParameters(), new ParameterBridge.Converter(log, listenersFactory, types));
+        enabledValue = new ValueBridge(log, listenersFactory, proxyCommand.getEnabledValue());
+        parameters = new ConvertingListBridge<>(log, listenersFactory, proxyCommand.getParameters(), new ParameterBridge.Converter(log, listenersFactory));
         addChild(enabledValue);
         addChild(parameters);
     }
@@ -57,7 +54,7 @@ public class CommandBridge
     }
 
     @Override
-    public ListBridge<ParameterData, Parameter<?>, ParameterBridge> getParameters() {
+    public ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge> getParameters() {
         return parameters;
     }
 
@@ -133,17 +130,15 @@ public class CommandBridge
 
         private final Log log;
         private final ListenersFactory listenersFactory;
-        private final ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types;
 
-        public Converter(Log log, ListenersFactory listenersFactory, ListBridge<TypeData<?>, ServerProxyType, TypeBridge> types) {
+        public Converter(Log log, ListenersFactory listenersFactory) {
             this.log = log;
             this.listenersFactory = listenersFactory;
-            this.types = types;
         }
 
         @Override
         public CommandBridge apply(Command<?, ?, ?> command) {
-            return new CommandBridge(log, listenersFactory, command, types);
+            return new CommandBridge(log, listenersFactory, command);
         }
     }
 }

@@ -6,7 +6,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.intuso.housemate.api.object.command.CommandPerformListener;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.Modal;
 
 /**
@@ -29,13 +32,13 @@ public class CommandModal extends Composite implements CommandPerformListener<GW
 
     private final CommandPerformListener<GWTProxyCommand> listener;
 
-    public CommandModal(GWTProxyCommand command) {
-        this(command, null);
+    public CommandModal(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command) {
+        this(types, command, null);
     }
 
-    public CommandModal(GWTProxyCommand command, CommandPerformListener<GWTProxyCommand> listener) {
+    public CommandModal(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command, CommandPerformListener<GWTProxyCommand> listener) {
 
-        this.command = new Command(command, this);
+        this.command = new Command(types, command, this);
         this.listener = listener;
 
         initWidget(ourUiBinder.createAndBindUi(this));

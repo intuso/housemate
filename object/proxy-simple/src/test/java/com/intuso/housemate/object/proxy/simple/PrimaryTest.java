@@ -40,12 +40,12 @@ public class PrimaryTest {
     };
 
     private SimpleProxyList<DeviceData, SimpleProxyDevice> proxyList
-            = new SimpleProxyList<DeviceData, SimpleProxyDevice>(
+            = new SimpleProxyList<>(
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
             TestEnvironment.TEST_INSTANCE.getInjector(),
             new ListData(PRIMARIES, PRIMARIES, PRIMARIES));
-    private RealList<DeviceData, RealDevice> realList = new RealList<DeviceData, RealDevice>(
+    private RealList<DeviceData, RealDevice> realList = new RealList<>(
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
             PRIMARIES, PRIMARIES, PRIMARIES, new ArrayList<RealDevice>());

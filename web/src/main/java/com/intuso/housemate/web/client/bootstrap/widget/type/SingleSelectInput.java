@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.intuso.housemate.api.object.option.OptionData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.event.UserInputEvent;
@@ -37,12 +38,14 @@ public class SingleSelectInput extends Composite implements TypeInput, UserInput
     @UiField
     protected FlowPanel subTypesPanel;
 
+    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final TypeInstances typeInstances;
     private final GWTProxyList<OptionData, GWTProxyOption> options;
     private final BiMap<GWTProxyOption, Integer> optionMap = HashBiMap.create();
 
-    public SingleSelectInput(GWTProxyType type, final TypeInstances typeInstances) {
+    public SingleSelectInput(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyType type, final TypeInstances typeInstances) {
 
+        this.types = types;
         this.typeInstances = typeInstances;
 
         if(typeInstances.getElements().size() == 0)
@@ -90,7 +93,7 @@ public class SingleSelectInput extends Composite implements TypeInput, UserInput
                     typeInstances.getElements().add(0, new TypeInstance());
                 if(typeInstances.getElements().get(0).getChildValues().getChildren().get(subType.getId()) == null)
                     typeInstances.getElements().get(0).getChildValues().getChildren().put(subType.getId(), new TypeInstances());
-                TypeInput input = TypeInput.FACTORY.create(subType.getType(), typeInstances.getElements().get(0).getChildValues().getChildren().get(subType.getId()), this);
+                TypeInput input = TypeInput.FACTORY.create(types, subType.getTypeId(), typeInstances.getElements().get(0).getChildValues().getChildren().get(subType.getId()), this);
                 subTypesPanel.add(input);
             }
         }

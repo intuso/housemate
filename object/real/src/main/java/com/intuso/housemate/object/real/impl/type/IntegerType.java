@@ -48,7 +48,7 @@ public class IntegerType extends RealSimpleType<Integer> {
      */
     public static RealValue<Integer> createValue(Log log, ListenersFactory listenersFactory,
                                                  String id, String name, String description, Integer value) {
-        return new RealValue<Integer>(log, listenersFactory, id, name, description, new IntegerType(log, listenersFactory), value);
+        return new RealValue<>(log, listenersFactory, id, name, description, new IntegerType(log, listenersFactory), value);
     }
 
     /**
@@ -62,7 +62,7 @@ public class IntegerType extends RealSimpleType<Integer> {
      */
     public static RealProperty<Integer> createProperty(Log log, ListenersFactory listenersFactory,
                                                        String id, String name, String description, List<Integer> values) {
-        return new RealProperty<Integer>(log, listenersFactory, id, name, description, new IntegerType(log, listenersFactory), values);
+        return new RealProperty<>(log, listenersFactory, id, name, description, new IntegerType(log, listenersFactory), values);
     }
 
     /**
@@ -75,6 +75,6 @@ public class IntegerType extends RealSimpleType<Integer> {
      */
     public static RealParameter<Integer> createParameter(Log log, ListenersFactory listenersFactory,
                                                          String id, String name, String description) {
-        return new RealParameter<Integer>(log, listenersFactory, id, name, description, new IntegerType(log, listenersFactory));
+        return new RealParameter<>(log, listenersFactory, id, name, description, new IntegerType(log, listenersFactory));
     }
 }

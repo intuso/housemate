@@ -56,9 +56,9 @@ public abstract class RealTask
                 owner.removeTask(RealTask.this);
             }
         };
-        errorValue = new RealValue<String>(log, listenersFactory, ERROR_ID, ERROR_ID, "The current error", new StringType(log, listenersFactory), (List)null);
-        executingValue = new RealValue<Boolean>(log, listenersFactory, EXECUTING_ID, EXECUTING_ID, "Whether the task is executing", new BooleanType(log, listenersFactory), false);
-        propertyList = new RealList<PropertyData, RealProperty<?>>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, "The task's properties", properties);
+        errorValue = new RealValue<>(log, listenersFactory, ERROR_ID, ERROR_ID, "The current error", new StringType(log, listenersFactory), (List)null);
+        executingValue = new RealValue<>(log, listenersFactory, EXECUTING_ID, EXECUTING_ID, "Whether the task is executing", new BooleanType(log, listenersFactory), false);
+        propertyList = new RealList<>(log, listenersFactory, PROPERTIES_ID, PROPERTIES_ID, "The task's properties", properties);
         addChild(removeCommand);
         addChild(errorValue);
         addChild(executingValue);

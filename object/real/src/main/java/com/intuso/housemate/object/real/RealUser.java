@@ -36,7 +36,7 @@ public class RealUser
                 owner.removeUser(RealUser.this);
             }
         };
-        this.emailProperty = new RealProperty<Email>(log, listenersFactory, EMAIL_ID, EMAIL_ID, "The user's email address", new EmailType(log, listenersFactory), (Email)null);
+        this.emailProperty = new RealProperty<>(log, listenersFactory, EMAIL_ID, EMAIL_ID, "The user's email address", new EmailType(log, listenersFactory), (Email)null);
         addChild(remove);
         addChild(emailProperty);
     }

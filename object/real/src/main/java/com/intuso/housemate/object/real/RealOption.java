@@ -40,7 +40,7 @@ public class RealOption
      */
     public RealOption(Log log, ListenersFactory listenersFactory, String id, String name, String description, List<RealSubType<?>> subTypes) {
         super(log, listenersFactory, new OptionData(id, name,  description));
-        this.subTypes = new RealList<SubTypeData, RealSubType<?>>(log, listenersFactory, SUB_TYPES_ID,
+        this.subTypes = new RealList<>(log, listenersFactory, SUB_TYPES_ID,
                 "Sub Types", "The sub types of this option", subTypes);
         addChild(this.subTypes);
     }

@@ -182,7 +182,7 @@ public class AnnotationProcessor {
             for(Map.Entry<Method, Value> valueMethod : getAnnotatedMethods(valuesField.getKey().getType(), Value.class).entrySet()) {
                 if(types.get(valueMethod.getValue().typeId()) == null)
                     throw new HousemateException(valueMethod.getValue().typeId() + " type does not exist");
-                RealValue<Object> value = new RealValue<Object>(object.getLog(), listenersFactory,
+                RealValue<Object> value = new RealValue<>(object.getLog(), listenersFactory,
                         valueMethod.getValue().id(), valueMethod.getValue().name(),
                         valueMethod.getValue().description(), (RealType<?,?,Object>) types.get(valueMethod.getValue().typeId()), (List)null);
                 valuesFunctions.put(valueMethod.getKey(), value);

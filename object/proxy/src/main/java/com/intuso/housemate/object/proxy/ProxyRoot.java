@@ -1,16 +1,19 @@
 package com.intuso.housemate.object.proxy;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
+import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.root.ObjectRoot;
+import com.intuso.housemate.api.object.realclient.HasRealClients;
+import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -21,43 +24,24 @@ import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectListener;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * @param <USER> the type of the users
- * @param <USERS> the type of the users list
- * @param <TYPE> the type of the types
- * @param <TYPES> the type of the types list
- * @param <DEVICE> the type of the devices
- * @param <DEVICES> the type of the devices list
- * @param <AUTOMATION> the type of the automations
- * @param <AUTOMATIONS> the type of the automations list
- * @param <COMMAND> the type of the command
  * @param <ROOT> the type of the root
  */
 public abstract class ProxyRoot<
-            APPLICATION extends ProxyApplication<?, ?, ?, ?, APPLICATION>,
-            APPLICATIONS extends ProxyList<?, APPLICATION, APPLICATIONS>,
-            USER extends ProxyUser<?, ?, USER>,
-            USERS extends ProxyList<?, USER, USERS>,
-            HARDWARE extends ProxyHardware<?, ?>,
-            HARDWARES extends ProxyList<?, HARDWARE, HARDWARES>,
-            TYPE extends ProxyType<?, ?, ?, ?>,
-            TYPES extends ProxyList<?, TYPE, TYPES>,
-            DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?, ?, ?>,
-            DEVICES extends ProxyList<?, DEVICE, DEVICES>,
-            AUTOMATION extends ProxyAutomation<?, ?, ?, ?, ?, ?, ?>,
-            AUTOMATIONS extends ProxyList<?, AUTOMATION, AUTOMATIONS>,
-            COMMAND extends ProxyCommand<?, ?, ?, COMMAND>,
-            ROOT extends ProxyRoot<APPLICATION, APPLICATIONS, USER, USERS, HARDWARE, HARDWARES, TYPE, TYPES, DEVICE, DEVICES, AUTOMATION, AUTOMATIONS, COMMAND, ROOT>>
+            REAL_CLIENT extends ProxyRealClient<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
+            REAL_CLIENTS extends ProxyList<?, REAL_CLIENT, REAL_CLIENTS>,
+            ROOT extends ProxyRoot<REAL_CLIENT, REAL_CLIENTS, ROOT>>
         extends ProxyObject<RootData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, ROOT, RootListener<? super ROOT>>
-        implements ObjectRoot<TYPES, HARDWARES, DEVICES, AUTOMATIONS, APPLICATIONS, USERS, COMMAND, ROOT>,
+        implements Root<ROOT>, HasRealClients<REAL_CLIENTS>,
             ObjectListener<ProxyObject<?, ?, ?, ?, ?>> {
 
-    private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<String, Listeners<ObjectLifecycleListener>>();
+    public final static String REAL_CLIENTS_ID = "real-clients";
+
+    private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = Maps.newHashMap();
 
     private final Router.Registration routerRegistration;
     private final ConnectionManager connectionManager;
@@ -187,53 +171,8 @@ public abstract class ProxyRoot<
     }
 
     @Override
-    public APPLICATIONS getApplications() {
-        return (APPLICATIONS) getChild(APPLICATIONS_ID);
-    }
-
-    @Override
-    public USERS getUsers() {
-        return (USERS) getChild(USERS_ID);
-    }
-
-    @Override
-    public HARDWARES getHardwares() {
-        return (HARDWARES) getChild(HARDWARES_ID);
-    }
-
-    @Override
-    public TYPES getTypes() {
-        return (TYPES) getChild(TYPES_ID);
-    }
-
-    @Override
-    public DEVICES getDevices() {
-        return (DEVICES) getChild(DEVICES_ID);
-    }
-
-    @Override
-    public AUTOMATIONS getAutomations() {
-        return (AUTOMATIONS) getChild(AUTOMATIONS_ID);
-    }
-
-    @Override
-    public COMMAND getAddUserCommand() {
-        return (COMMAND) getChild(ADD_USER_ID);
-    }
-
-    @Override
-    public COMMAND getAddHardwareCommand() {
-        return (COMMAND) getChild(ADD_HARDWARE_ID);
-    }
-
-    @Override
-    public COMMAND getAddDeviceCommand() {
-        return (COMMAND) getChild(ADD_DEVICE_ID);
-    }
-
-    @Override
-    public COMMAND getAddAutomationCommand() {
-        return (COMMAND) getChild(ADD_AUTOMATION_ID);
+    public REAL_CLIENTS getRealClients() {
+        return (REAL_CLIENTS) getChild(REAL_CLIENTS_ID);
     }
 
     @Override
@@ -288,7 +227,6 @@ public abstract class ProxyRoot<
             objectRemoved(path + PATH_SEPARATOR + child.getId(), child);
     }
 
-    @Override
     public final ListenerRegistration addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener) {
         String path = Joiner.on(PATH_SEPARATOR).join(ancestorPath);
         Listeners<ObjectLifecycleListener> listeners = objectLifecycleListeners.get(path);
@@ -300,7 +238,7 @@ public abstract class ProxyRoot<
     }
 
     public void clearLoadedObjects() {
-        sendMessage(CLEAR_LOADED, new StringPayload(""));
+        sendMessage("clear-loaded", NoPayload.INSTANCE);
         // clone the set so we can edit it while we iterate it
         for(String childName : Sets.newHashSet(getChildNames()))
             removeChild(childName);

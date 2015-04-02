@@ -15,6 +15,6 @@ import com.intuso.utilities.listener.ListenersFactory;
 public class GWTListenersFactory implements ListenersFactory {
     @Override
     public <LISTENER extends Listener> Listeners<LISTENER> create() {
-        return new Listeners<LISTENER>(Lists.<LISTENER>newArrayList());
+        return new Listeners<>(Lists.<LISTENER>newArrayList());
     }
 }

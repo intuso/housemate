@@ -4,12 +4,12 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.type.SimpleTypeData;
-import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
+import com.intuso.housemate.web.client.object.GWTProxyValue;
 
 /**
  */
@@ -21,18 +21,18 @@ public interface ValueDisplay extends IsWidget, ValueListener<com.intuso.housema
 
         private Factory() {}
 
-        public IsWidget create(final com.intuso.housemate.api.object.value.Value<?, ?> value) {
+        public IsWidget create(final GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyValue value) {
             if (value == null)
                 return null;
 
-            Type type = value.getType();
+            GWTProxyType type = types.get(value.getTypeId());
 
             // type is loaded, return widget now
             if (type != null)
-                return create(value, (GWTProxyType) type);
+                return create(value, type);
             else {
                 final SimplePanel panel = new SimplePanel();
-                Housemate.INJECTOR.getProxyRoot().getTypes().load(new LoadManager(new LoadManager.Callback() {
+                types.load(new LoadManager(new LoadManager.Callback() {
                     @Override
                     public void failed(HousemateObject.TreeLoadInfo path) {
                         // todo show error
@@ -40,9 +40,9 @@ public interface ValueDisplay extends IsWidget, ValueListener<com.intuso.housema
 
                     @Override
                     public void allLoaded() {
-                        Type loadedType = value.getType();
+                        GWTProxyType loadedType = types.get(value.getTypeId());
                         if (loadedType != null)
-                            panel.setWidget(create(value, (GWTProxyType) loadedType));
+                            panel.setWidget(create(value, loadedType));
                     }
                 }, "loadValueType" + value.getId(), new HousemateObject.TreeLoadInfo(value.getTypeId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
                 return panel;

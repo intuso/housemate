@@ -9,7 +9,7 @@ import com.intuso.housemate.web.client.handler.PerformCommandHandler;
  */
 public class PerformCommandEvent extends GwtEvent<PerformCommandHandler> {
 
-    public static Type<PerformCommandHandler> TYPE = new Type<PerformCommandHandler>();
+    public static Type<PerformCommandHandler> TYPE = new Type<>();
 
     private Command<?, ?, ?> command;
     private TypeInstanceMap values;

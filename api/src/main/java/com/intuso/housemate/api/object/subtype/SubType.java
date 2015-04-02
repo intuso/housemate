@@ -13,10 +13,4 @@ public interface SubType<TYPE extends Type> extends BaseHousemateObject<SubTypeL
      * @return the sub type's type's id
      */
     public String getTypeId();
-
-    /**
-     * Gets the sub types' type
-     * @return the sub type's type
-     */
-    public TYPE getType();
 }

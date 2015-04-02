@@ -30,12 +30,12 @@ public class PropertyTest {
     public final static String PROPERTIES = "properties";
 
     private SimpleProxyList<PropertyData, SimpleProxyProperty> proxyList
-            = new SimpleProxyList<PropertyData, SimpleProxyProperty>(
+            = new SimpleProxyList<>(
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
             TestEnvironment.TEST_INSTANCE.getInjector(),
             new ListData(PROPERTIES, PROPERTIES, PROPERTIES));
-    private RealList<PropertyData, RealProperty<?>> realList = new RealList<PropertyData, RealProperty<?>>(
+    private RealList<PropertyData, RealProperty<?>> realList = new RealList<>(
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(Log.class),
             TestEnvironment.TEST_INSTANCE.getInjector().getInstance(ListenersFactory.class),
             PROPERTIES, PROPERTIES, PROPERTIES, new ArrayList<RealProperty<?>>());

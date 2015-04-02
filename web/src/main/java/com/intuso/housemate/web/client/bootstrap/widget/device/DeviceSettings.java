@@ -5,9 +5,12 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.object.Control;
 import com.intuso.housemate.web.client.bootstrap.widget.property.PropertyList;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
+import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 
 /**
  */
@@ -20,11 +23,12 @@ public class DeviceSettings extends Composite {
     @UiField(provided = true)
     Control control;
     @UiField
-    PropertyList propertiesList;
+    PropertyList propertyList;
 
-    public DeviceSettings(final GWTProxyDevice device) {
-        control = new Control(device);
+    public DeviceSettings(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyDevice device) {
+        control = new Control(types, device);
         initWidget(ourUiBinder.createAndBindUi(this));
-        propertiesList.setList(device.getProperties());
+        propertyList.setTypes(types);
+        propertyList.setList(device.getProperties());
     }
 }

@@ -100,8 +100,10 @@ public abstract class ProxyCommand<
     @Override
     public boolean isEnabled() {
         ENABLED_VALUE enabled = getEnabledValue();
-        return enabled.getTypeInstances() != null && enabled.getTypeInstances().getFirstValue() != null
-                ? Boolean.parseBoolean(enabled.getTypeInstances().getFirstValue()) : false;
+        return enabled != null
+                && enabled.getTypeInstances() != null
+                && enabled.getTypeInstances().getFirstValue() != null
+                && Boolean.parseBoolean(enabled.getTypeInstances().getFirstValue());
     }
 
     @Override

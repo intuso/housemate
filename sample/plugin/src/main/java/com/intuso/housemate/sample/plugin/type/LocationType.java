@@ -34,13 +34,13 @@ public class LocationType extends RealCompoundType<Location> {
 
     private static RealSubType<Double> makeLatitudeSubType(Log log, ListenersFactory listenersFactory,
                                                            RealList<TypeData<?>, RealType<?, ?, ?>> types) {
-        return new RealSubType<Double>(log, listenersFactory, LATITUDE_ID, LATITUDE_NAME,
+        return new RealSubType<>(log, listenersFactory, LATITUDE_ID, LATITUDE_NAME,
                 LATITUDE_DESCRIPTION, SimpleTypeData.Type.Double.getId(), types);
     }
 
     private static RealSubType<Double> makeLongitudeSubType(Log log, ListenersFactory listenersFactory,
                                                             RealList<TypeData<?>, RealType<?, ?, ?>> types) {
-        return new RealSubType<Double>(log, listenersFactory, LONGITUDE_ID, LONGITUDE_NAME,
+        return new RealSubType<>(log, listenersFactory, LONGITUDE_ID, LONGITUDE_NAME,
                 LONGITUDE_DESCRIPTION, SimpleTypeData.Type.Double.getId(), types);
     }
 
