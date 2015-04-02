@@ -85,7 +85,7 @@ public class RealClientBridge
     }
 
     private static RealClientData makeData(ClientInstance instance) {
-        String id = instance.getApplicationDetails().getApplicationId() + "/" + instance.getApplicationInstanceId();
+        String id = instance.getApplicationDetails().getApplicationId() + "-" + instance.getApplicationInstanceId();
         String name = instance.getApplicationDetails().getApplicationName() + " - " + instance.getApplicationInstanceId();
         return new RealClientData(id, name, name);
     }
