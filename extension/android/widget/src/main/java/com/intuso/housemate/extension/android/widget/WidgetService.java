@@ -50,7 +50,7 @@ public class WidgetService extends HousemateService {
     private final static String ACTION = "action";
 
     private final static String PROPERTY_PREFIX = "android.widget.";
-    private final static String PROPERTY_VALUE_DELIMITER = "/";
+    private final static String PROPERTY_VALUE_DELIMITER = "___";
 
     public final static ApplicationDetails APPLICATION_DETAILS
             = new ApplicationDetails(WidgetService.class.getName(), "Android Widgets", "Android Widgets");
@@ -135,11 +135,16 @@ public class WidgetService extends HousemateService {
         clientHelper.start();
         for(String key : Sets.newHashSet(getProperties().keySet())) {
             if (key.startsWith(PROPERTY_PREFIX)) {
-                WidgetHandler<?> widgetHandler = decodePropertyValue(getProperties().get(key));
-                if(widgetHandler != null)
+                String encodedWidget = getProperties().get(key);
+                getLog().d("Loading widget from " + encodedWidget);
+                WidgetHandler<?> widgetHandler = decodePropertyValue(encodedWidget);
+                if(widgetHandler != null) {
+                    getLog().d("Decoded widget to a " + widgetHandler.getClass().getName());
                     addWidgetHandler(Integer.parseInt(key.substring(PROPERTY_PREFIX.length())), widgetHandler);
-                else
+                } else {
+                    getLog().d("Decoding widget config failed, removing property");
                     getProperties().remove(key);
+                }
             }
         }
     }
