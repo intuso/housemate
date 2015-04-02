@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Sets;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
 import com.intuso.housemate.api.comms.ApplicationStatus;
@@ -130,9 +131,15 @@ public class WidgetService extends HousemateService {
             }
         });
         clientHelper.start();
-        for(String key : getProperties().keySet())
-            if(key.startsWith(PROPERTY_PREFIX))
-                addWidgetHandler(Integer.parseInt(key.substring(PROPERTY_PREFIX.length())), decodePropertyValue(getProperties().get(key)));
+        for(String key : Sets.newHashSet(getProperties().keySet())) {
+            if (key.startsWith(PROPERTY_PREFIX)) {
+                WidgetHandler<?> widgetHandler = decodePropertyValue(getProperties().get(key));
+                if(widgetHandler != null)
+                    addWidgetHandler(Integer.parseInt(key.substring(PROPERTY_PREFIX.length())), widgetHandler);
+                else
+                    getProperties().remove(key);
+            }
+        }
     }
 
     private void updateStatus() {

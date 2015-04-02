@@ -96,7 +96,7 @@ public class WidgetConfigureActivity
     @Override
     public void allLoaded() {
         setStatus("Pick device to control");
-        listenerRegistrations.add(clientHelper.getRoot().getRealClients().addObjectListener(new ClientListListener()));
+        listenerRegistrations.add(clientHelper.getRoot().getRealClients().addObjectListener(new ClientListListener(), true));
         listAdapter.notifyDataSetChanged();
         listAdapter.setNotifyOnChange(true);
     }
