@@ -28,7 +28,7 @@ public class Or extends RealConditionNonLeaf {
               AddConditionCommand.Factory addConditionCommandFactory,
               @Assisted ConditionData data,
               @Assisted RealConditionOwner owner) throws HousemateException {
-		super(log, listenersFactory, addConditionCommandFactory, data, owner);
+		super(log, listenersFactory, "or", addConditionCommandFactory, data, owner);
     }
 
     /**

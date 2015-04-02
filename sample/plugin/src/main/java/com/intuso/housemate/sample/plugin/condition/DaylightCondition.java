@@ -17,7 +17,7 @@ public class DaylightCondition extends RealCondition {
                              ListenersFactory listenersFactory,
                              @Assisted ConditionData data,
                              @Assisted RealConditionOwner owner) {
-        super(log, listenersFactory, data, owner);
+        super(log, listenersFactory, "daylight-condition", data, owner);
     }
 
     @Override

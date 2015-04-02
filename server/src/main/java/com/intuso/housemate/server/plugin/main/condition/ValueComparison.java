@@ -51,7 +51,7 @@ public class ValueComparison extends RealCondition {
                            @Assisted RealConditionOwner owner,
                            RealList<TypeData<?>, RealType<?, ?, ?>> types,
                            ComparisonType comparisonType) {
-        super(log, listenersFactory, data, owner);
+        super(log, listenersFactory, "value-comparison", data, owner);
         this.types = types;
         comparisonProperty = new RealProperty<>(log, listenersFactory, COMPARISON_ID, COMPARISON_NAME,
                 COMPARISON_DESCRIPTION, comparisonType, (List)null);

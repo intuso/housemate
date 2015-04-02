@@ -42,7 +42,7 @@ public class Delay extends RealTask {
                  @Assisted TaskData data,
                  @Assisted RealTaskOwner owner,
                  TimeUnitType timeUnitType, IntegerType integerType) {
-		super(log, listenersFactory, data, owner);
+		super(log, listenersFactory, "delay", data, owner);
         unit = new RealProperty<>(log, listenersFactory, "unit", "Unit", "the unit of time to wait for", timeUnitType, TimeUnit.MINUTES);
         amount = new RealProperty<>(log, listenersFactory, "amount", "Amount", "the amount of time to wait", integerType, 1);
         getProperties().add(unit);

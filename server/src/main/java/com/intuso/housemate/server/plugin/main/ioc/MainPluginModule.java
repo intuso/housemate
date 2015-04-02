@@ -43,13 +43,16 @@ import com.intuso.utilities.log.Log;
 @TypeInfo(id = "main-plugin",
         name = "Main plugin",
         description = "Plugin containing the core types and factories")
-@Types({StringType.class,
+@Types({ApplicationInstanceStatusType.class,
+        ApplicationStatusType.class,
         BooleanType.class,
-        IntegerType.class,
-        DoubleType.class,
-        TimeType.class,
         DaysType.class,
+        DoubleType.class,
         EmailType.class,
+        IntegerType.class,
+        StringType.class,
+        TimeType.class,
+        TimeUnitType.class,
         ConstantType.class,
         ValueSourceType.class,
         ComparisonTypeType.class,
@@ -119,7 +122,7 @@ public class MainPluginModule extends PluginModule {
     public void configure() {
 
         super.configure();
-        
+
         // mark all as singletons
         bind(com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType.class).in(Scopes.SINGLETON);
         bind(ComparisonTypeType.class).in(Scopes.SINGLETON);

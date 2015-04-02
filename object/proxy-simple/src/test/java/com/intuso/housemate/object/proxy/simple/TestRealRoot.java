@@ -10,8 +10,12 @@ import com.intuso.housemate.object.real.RealObject;
 import com.intuso.housemate.object.real.RealRoot;
 import com.intuso.housemate.object.real.RealType;
 import com.intuso.housemate.object.real.factory.automation.AddAutomationCommand;
+import com.intuso.housemate.object.real.factory.condition.ConditionFactoryType;
 import com.intuso.housemate.object.real.factory.device.AddDeviceCommand;
+import com.intuso.housemate.object.real.factory.device.DeviceFactoryType;
 import com.intuso.housemate.object.real.factory.hardware.AddHardwareCommand;
+import com.intuso.housemate.object.real.factory.hardware.HardwareFactoryType;
+import com.intuso.housemate.object.real.factory.task.TaskFactoryType;
 import com.intuso.housemate.object.real.factory.user.AddUserCommand;
 import com.intuso.housemate.object.real.impl.type.BooleanType;
 import com.intuso.housemate.object.real.impl.type.IntegerType;
@@ -29,11 +33,13 @@ public class TestRealRoot extends RealRoot {
     @Inject
     public TestRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
                         RealList<TypeData<?>, RealType<?, ?, ?>> types,
-                        AddHardwareCommand.Factory addHardwareCommandFactory,
-                        AddDeviceCommand.Factory addDeviceCommandFactory,
-                        AddAutomationCommand.Factory addAutomationCommandFactory,
-                        AddUserCommand.Factory addUserCommandFactory) {
-        super(log, listenersFactory, properties, router, types, addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory);
+                        AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory,
+                        AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory,
+                        ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType,
+                        HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType) {
+        super(log, listenersFactory, properties, router, types,
+                addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory,
+                conditionFactoryType, deviceFactoryType, hardwareFactoryType, taskFactoryType);
         try {
             distributeMessage(new Message<>(new String[] {""}, Root.SERVER_CONNECTION_STATUS_TYPE, ServerConnectionStatus.ConnectedToServer));
             distributeMessage(new Message<>(new String[] {""}, Root.APPLICATION_STATUS_TYPE, ApplicationStatus.AllowInstances));

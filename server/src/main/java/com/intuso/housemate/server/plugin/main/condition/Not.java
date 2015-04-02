@@ -27,7 +27,7 @@ public class Not extends RealConditionNonLeaf {
                AddConditionCommand.Factory addConditionCommandFactory,
                @Assisted ConditionData data,
                @Assisted RealConditionOwner owner) throws HousemateException {
-		super(log, listenersFactory, addConditionCommandFactory, data, owner);
+		super(log, listenersFactory, "not", addConditionCommandFactory, data, owner);
 
         // todo move this check somewhere else
         /*if(getConditions().size() > 1) {

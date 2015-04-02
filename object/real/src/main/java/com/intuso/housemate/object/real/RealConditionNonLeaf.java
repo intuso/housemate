@@ -20,14 +20,16 @@ public abstract class RealConditionNonLeaf extends RealCondition
     private final Map<RealCondition, ListenerRegistration> conditionListenerRegistrations = Maps.newHashMap();
     private RealCommand addConditionCommand;
 
-    public RealConditionNonLeaf(Log log, ListenersFactory listenersFactory, AddConditionCommand.Factory addConditionCommandFactory,
-                                ConditionData data, RealConditionOwner owner) {
-        this(log, listenersFactory, addConditionCommandFactory, data, owner, new ArrayList<RealProperty<?>>());
+    public RealConditionNonLeaf(Log log, ListenersFactory listenersFactory, String type,
+                                AddConditionCommand.Factory addConditionCommandFactory, ConditionData data,
+                                RealConditionOwner owner) {
+        this(log, listenersFactory, type, addConditionCommandFactory, data, owner, new ArrayList<RealProperty<?>>());
     }
 
-    public RealConditionNonLeaf(Log log, ListenersFactory listenersFactory, AddConditionCommand.Factory addConditionCommandFactory,
-                                ConditionData data, RealConditionOwner owner, java.util.List<RealProperty<?>> properties) {
-        super(log, listenersFactory, data, owner, properties);
+    public RealConditionNonLeaf(Log log, ListenersFactory listenersFactory, String type,
+                                AddConditionCommand.Factory addConditionCommandFactory, ConditionData data,
+                                RealConditionOwner owner, java.util.List<RealProperty<?>> properties) {
+        super(log, listenersFactory, type, data, owner, properties);
         addConditionCommand = addConditionCommandFactory.create(this);
         addChild(addConditionCommand);
     }

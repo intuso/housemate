@@ -26,10 +26,14 @@ import com.intuso.housemate.api.object.user.HasUsers;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.object.real.factory.automation.AddAutomationCommand;
 import com.intuso.housemate.object.real.factory.automation.RealAutomationOwner;
+import com.intuso.housemate.object.real.factory.condition.ConditionFactoryType;
 import com.intuso.housemate.object.real.factory.device.AddDeviceCommand;
+import com.intuso.housemate.object.real.factory.device.DeviceFactoryType;
 import com.intuso.housemate.object.real.factory.device.RealDeviceOwner;
 import com.intuso.housemate.object.real.factory.hardware.AddHardwareCommand;
+import com.intuso.housemate.object.real.factory.hardware.HardwareFactoryType;
 import com.intuso.housemate.object.real.factory.hardware.RealHardwareOwner;
+import com.intuso.housemate.object.real.factory.task.TaskFactoryType;
 import com.intuso.housemate.object.real.factory.user.AddUserCommand;
 import com.intuso.housemate.object.real.factory.user.RealUserOwner;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -83,7 +87,9 @@ public class RealRoot
     public RealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
                     RealList<TypeData<?>, RealType<?, ?, ?>> types,
                     AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory,
-                    AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory) {
+                    AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory,
+                    ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType,
+                    HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType) {
         super(log, listenersFactory, new RootData());
 
         properties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, properties);
@@ -116,6 +122,11 @@ public class RealRoot
         addChild(addDeviceCommand);
         addChild(addHardwareCommand);
         addChild(addUserCommand);
+
+        addType(conditionFactoryType);
+        addType(deviceFactoryType);
+        addType(hardwareFactoryType);
+        addType(taskFactoryType);
 
         init(null);
     }

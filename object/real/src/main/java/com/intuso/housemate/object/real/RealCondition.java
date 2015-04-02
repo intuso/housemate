@@ -26,6 +26,8 @@ public abstract class RealCondition
             RealList<ConditionData, RealCondition>>,
         RealConditionOwner {
 
+    private final String type;
+
     private RealCommand removeCommand;
     private RealValue<String> errorValue;
     private RealValue<Boolean> satisfiedValue;
@@ -37,9 +39,9 @@ public abstract class RealCondition
      * @param data the condition's data
      * @param properties the condition's properties
      */
-    public RealCondition(Log log, ListenersFactory listenersFactory, ConditionData data, RealConditionOwner owner,
+    public RealCondition(Log log, ListenersFactory listenersFactory, String type, ConditionData data, RealConditionOwner owner,
                          RealProperty<?>... properties) {
-        this(log, listenersFactory, data, owner, Arrays.asList(properties));
+        this(log, listenersFactory, type, data, owner, Arrays.asList(properties));
     }
 
     /**
@@ -47,9 +49,10 @@ public abstract class RealCondition
      * @param data the condition's data
      * @param properties the condition's properties
      */
-    public RealCondition(final Log log, ListenersFactory listenersFactory, ConditionData data,
+    public RealCondition(final Log log, ListenersFactory listenersFactory, String type, ConditionData data,
                          final RealConditionOwner owner, java.util.List<RealProperty<?>> properties) {
         super(log, listenersFactory, data);
+        this.type = type;
         removeCommand = new RealCommand(log, listenersFactory, REMOVE_ID, REMOVE_ID, "Remove the condition", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -66,6 +69,10 @@ public abstract class RealCondition
         addChild(satisfiedValue);
         addChild(propertyList);
         addChild(conditions);
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override

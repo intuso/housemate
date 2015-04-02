@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationStatus;
+import com.intuso.housemate.api.object.application.Application;
 import com.intuso.housemate.api.object.application.ApplicationData;
 import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
 import com.intuso.housemate.api.object.automation.Automation;
@@ -127,7 +128,12 @@ public class RealObjectWatcher {
                     RealApplication application = new RealApplication(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
                             details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(),
                             injector.getInstance(ApplicationStatusType.class));
-                    loadApplicationInstances(Lists.newArrayList(path), application.getApplicationInstances(), application.getStatus());
+                    path.add(Application.APPLICATION_INSTANCES_ID);
+                    try {
+                        loadApplicationInstances(Lists.newArrayList(path), application.getApplicationInstances(), application.getStatus());
+                    } finally {
+                        path.remove(path.size() - 1);
+                    }
                     applications.add(application);
                 } finally {
                     path.remove(path.size() - 1);

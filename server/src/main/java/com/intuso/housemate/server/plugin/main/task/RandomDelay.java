@@ -43,7 +43,7 @@ public class RandomDelay extends RealTask {
                        @Assisted TaskData data,
                        @Assisted RealTaskOwner owner,
                        TimeUnitType timeUnitType, IntegerType integerType) {
-        super(log, listenersFactory, data, owner);
+        super(log, listenersFactory, "random-delay", data, owner);
         unit = new RealProperty<>(log, listenersFactory, "unit", "Unit", "the unit of time to wait for",
                 timeUnitType, TimeUnit.MINUTES);
         maxAmount = new RealProperty<>(log, listenersFactory, "amount", "Amount", "the amount of time to wait",

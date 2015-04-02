@@ -28,6 +28,8 @@ public abstract class RealTask
             RealValue<String>,
             RealList<PropertyData, RealProperty<?>>, RealTask> {
 
+    private final String type;
+
     private RealCommand removeCommand;
     private RealValue<String> errorValue;
     private RealValue<Boolean> executingValue;
@@ -37,9 +39,9 @@ public abstract class RealTask
      * @param log {@inheritDoc}
      * @param data the task's data
      */
-    public RealTask(Log log, ListenersFactory listenersFactory, TaskData data,
+    public RealTask(Log log, ListenersFactory listenersFactory, String type, TaskData data,
                     RealTaskOwner owner, RealProperty<?>... properties) {
-        this(log, listenersFactory, data, owner, Lists.newArrayList(properties));
+        this(log, listenersFactory, type, data, owner, Lists.newArrayList(properties));
     }
 
     /**
@@ -47,9 +49,10 @@ public abstract class RealTask
      * @param data the object's data
      * @param properties the task's properties
      */
-    public RealTask(Log log, ListenersFactory listenersFactory, TaskData data,
+    public RealTask(Log log, ListenersFactory listenersFactory, String type, TaskData data,
                     final RealTaskOwner owner, java.util.List<RealProperty<?>> properties) {
         super(log, listenersFactory, data);
+        this.type = type;
         removeCommand = new RealCommand(log, listenersFactory, REMOVE_ID, REMOVE_ID, "Remove the task", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) throws HousemateException {
@@ -63,6 +66,10 @@ public abstract class RealTask
         addChild(errorValue);
         addChild(executingValue);
         addChild(propertyList);
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override

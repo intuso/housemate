@@ -28,7 +28,7 @@ public class And extends RealConditionNonLeaf {
                AddConditionCommand.Factory addConditionCommandFactory,
                @Assisted ConditionData data,
                @Assisted RealConditionOwner owner) throws HousemateException {
-		super(log, listenersFactory, addConditionCommandFactory, data, owner);
+		super(log, listenersFactory, "and", addConditionCommandFactory, data, owner);
     }
 	
 	/**

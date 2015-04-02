@@ -29,14 +29,14 @@ public class AutomationBody extends Composite {
 
     public AutomationBody(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyAutomation automation) {
         initWidget(ourUiBinder.createAndBindUi(this));
-        conditions.setList(automation.getConditions());
         conditions.setTypes(types);
+        conditions.setList(automation.getConditions());
         conditions.setAddCommand(automation.getAddConditionCommand());
-        satisfiedTasks.setList(automation.getSatisfiedTasks());
         satisfiedTasks.setTypes(types);
+        satisfiedTasks.setList(automation.getSatisfiedTasks());
         satisfiedTasks.setAddCommand(automation.getAddSatisifedTaskCommand());
-        unsatisfiedTasks.setList(automation.getUnsatisfiedTasks());
         unsatisfiedTasks.setTypes(types);
+        unsatisfiedTasks.setList(automation.getUnsatisfiedTasks());
         unsatisfiedTasks.setAddCommand(automation.getAddUnsatisifedTaskCommand());
     }
 }

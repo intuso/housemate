@@ -56,7 +56,7 @@ public class PerformCommand extends RealTask implements ObjectLifecycleListener 
                           @Assisted TaskData data,
                           @Assisted RealTaskOwner owner,
                           RootBridge root, RealObjectType<BaseHousemateObject<?>> realObjectType) {
-        super(log, listenersFactory, data, owner);
+        super(log, listenersFactory, "perform-command", data, owner);
         commandPath = new RealProperty<>(log, listenersFactory,
                 "command-path", "Command Path", "The path to the command to perform", realObjectType, (List)null);
         getProperties().add(commandPath);

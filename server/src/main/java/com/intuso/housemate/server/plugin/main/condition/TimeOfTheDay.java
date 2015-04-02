@@ -62,7 +62,7 @@ public class TimeOfTheDay extends RealCondition {
                         @Assisted RealConditionOwner owner,
                         TimeType timeType)
             throws HousemateException {
-		super(log, listenersFactory, data, owner);
+		super(log, listenersFactory, "time-of-the-day", data, owner);
         before = new RealProperty<>(log, listenersFactory, BEFORE_FIELD, BEFORE_FIELD, "The condition is satisfied when the current time is before this time",
                 timeType, DAY_END);
         after = new RealProperty<>(log, listenersFactory, AFTER_FIELD, AFTER_FIELD, "The condition is satisfied when the current time is after this time",

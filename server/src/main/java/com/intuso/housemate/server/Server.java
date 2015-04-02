@@ -2,16 +2,7 @@ package com.intuso.housemate.server;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
-import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.real.factory.condition.ConditionFactoryType;
-import com.intuso.housemate.object.real.factory.device.DeviceFactoryType;
-import com.intuso.housemate.object.real.factory.hardware.HardwareFactoryType;
-import com.intuso.housemate.object.real.factory.task.TaskFactoryType;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.object.bridge.RootBridge;
@@ -50,43 +41,6 @@ public class Server {
 
         // add the default plugin
         injector.getInstance(PluginManager.class).addPlugin(MainPluginModule.class);
-
-        final RealRoot serverRealRoot = injector.getInstance(RealRoot.class);
-        serverRealRoot.addObjectListener(new RootListener<RealRoot>() {
-
-            boolean typesAdded = false;
-
-            @Override
-            public void serverConnectionStatusChanged(RealRoot root, ServerConnectionStatus serverConnectionStatus) {
-
-            }
-
-            @Override
-            public void applicationStatusChanged(RealRoot root, ApplicationStatus applicationStatus) {
-
-            }
-
-            @Override
-            public void applicationInstanceStatusChanged(RealRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
-                if (!typesAdded && applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
-                    typesAdded = true;
-                    root.addType(injector.getInstance(ConditionFactoryType.class));
-                    root.addType(injector.getInstance(DeviceFactoryType.class));
-                    root.addType(injector.getInstance(HardwareFactoryType.class));
-                    root.addType(injector.getInstance(TaskFactoryType.class));
-                }
-            }
-
-            @Override
-            public void newApplicationInstance(RealRoot root, String instanceId) {
-
-            }
-
-            @Override
-            public void newServerInstance(RealRoot root, String serverId) {
-
-            }
-        });
     }
 
     public final void acceptClients() {

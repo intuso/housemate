@@ -18,7 +18,7 @@ public class DoYourThingTask extends RealTask {
                            ListenersFactory listenersFactory,
                            @Assisted TaskData data,
                            @Assisted RealTaskOwner owner) {
-        super(log, listenersFactory, data, owner);
+        super(log, listenersFactory, "do-your-thing", data, owner);
     }
 
     @Override
