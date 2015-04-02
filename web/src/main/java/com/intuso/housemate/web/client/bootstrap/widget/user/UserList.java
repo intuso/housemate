@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.UserData;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
+import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 import com.intuso.housemate.web.client.object.GWTProxyUser;
@@ -21,8 +22,8 @@ public class UserList extends MainList<UserData, GWTProxyUser> {
     private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final GWTProxyList<UserData, GWTProxyUser> users;
 
-    public UserList(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<UserData, GWTProxyUser> users, String name) {
-        super(name, null, true);
+    public UserList(String title, GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<UserData, GWTProxyUser> users, GWTProxyCommand addCommand) {
+        super(title, types, addCommand);
         this.types = types;
         this.users = users;
         setList(users);

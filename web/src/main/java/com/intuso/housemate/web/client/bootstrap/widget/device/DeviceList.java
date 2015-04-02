@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
+import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
@@ -21,8 +22,8 @@ public class DeviceList extends MainList<DeviceData, GWTProxyDevice> {
     private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final GWTProxyList<DeviceData, GWTProxyDevice> devices;
 
-    public DeviceList(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<DeviceData, GWTProxyDevice> devices, String name) {
-        super(name, null, true);
+    public DeviceList(String title, GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<DeviceData, GWTProxyDevice> devices, GWTProxyCommand addCommand) {
+        super(title, types, addCommand);
         this.types = types;
         this.devices = devices;
         setList(devices);

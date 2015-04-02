@@ -16,6 +16,7 @@ import com.intuso.housemate.api.object.type.Type;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.user.User;
 import com.intuso.housemate.api.object.user.UserData;
+import com.intuso.housemate.server.comms.ClientInstance;
 import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -46,8 +47,7 @@ public class RealClientBridge
 
     public RealClientBridge(Log log, ListenersFactory listenersFactory,
                             ServerProxyRoot realClient) {
-        super(log, listenersFactory,
-                new RealClientData(realClient.getId(), realClient.getName(), realClient.getDescription()));
+        super(log, listenersFactory, makeData(realClient.getClient().getClientInstance()));
         applications = new ConvertingListBridge<ApplicationData, Application<?, ?, ?, ?, ?>, ApplicationBridge>(
                 log, listenersFactory, realClient.getApplications(),
                 new ApplicationBridge.Converter(log, listenersFactory));
@@ -82,6 +82,12 @@ public class RealClientBridge
         addChild(addDevice);
         addChild(addHardware);
         addChild(addUser);
+    }
+
+    private static RealClientData makeData(ClientInstance instance) {
+        String id = instance.getApplicationDetails().getApplicationId() + "/" + instance.getApplicationInstanceId();
+        String name = instance.getApplicationDetails().getApplicationName() + " - " + instance.getApplicationInstanceId();
+        return new RealClientData(id, name, name);
     }
 
     @Override

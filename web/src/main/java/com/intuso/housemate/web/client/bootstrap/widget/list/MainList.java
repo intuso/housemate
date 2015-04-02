@@ -6,19 +6,21 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.api.object.ChildOverview;
 import com.intuso.housemate.api.object.HousemateData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.AvailableChildrenListener;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.event.SelectedIdsChangedEvent;
 import com.intuso.housemate.web.client.handler.HasSelectedIdsChangedHandlers;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
+import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.Heading;
 import org.gwtbootstrap3.client.ui.Row;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,22 +35,15 @@ public abstract class MainList<DATA extends HousemateData<?>, OBJECT extends Pro
         extends FlowPanel implements AvailableChildrenListener<GWTProxyList<DATA, OBJECT>>, HasSelectedIdsChangedHandlers {
 
     private final Row row = new Row();
-    private final List<String> filteredIds;
-    private final boolean includeFiltered;
-
     private final Map<String, IsWidget> widgets = Maps.newHashMap();
 
-    public MainList(String title, List<String> filteredIds, boolean includeFiltered) {
-
-        this.filteredIds = filteredIds;
-        this.includeFiltered = includeFiltered;
-
-        // only show when there is something in the list
-        setVisible(false);
+    public MainList(String title, GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand addCommand) {
 
         addStyleName("main");
         add(new Heading(HeadingSize.H4, title));
         add(row);
+        if(addCommand != null)
+            add(new AddButton(types, addCommand));
     }
 
     public void setList(GWTProxyList<DATA, OBJECT> list) {
@@ -56,21 +51,7 @@ public abstract class MainList<DATA extends HousemateData<?>, OBJECT extends Pro
     }
 
     @Override
-    public void childAdded(GWTProxyList<DATA, OBJECT> list, ChildOverview childOverview) {
-        if(filteredIds == null || includeFiltered == filteredIds.contains(childOverview.getId())) {
-            setVisible(true);
-            addEntry(childOverview);
-        }
-    }
-
-    @Override
-    public void childRemoved(GWTProxyList<DATA, OBJECT> list, ChildOverview childOverview) {
-        IsWidget widget = widgets.get(childOverview.getId());
-        if(widget != null)
-            remove(widget);
-    }
-
-    private void addEntry(final ChildOverview childOverview) {
+    public void childAdded(GWTProxyList<DATA, OBJECT> list, final ChildOverview childOverview) {
         getWidget(childOverview, new LazyLoadedWidgetCallback() {
             @Override
             public void widgetReady(IsWidget widget) {
@@ -78,6 +59,13 @@ public abstract class MainList<DATA extends HousemateData<?>, OBJECT extends Pro
                 row.add(widget);
             }
         });
+    }
+
+    @Override
+    public void childRemoved(GWTProxyList<DATA, OBJECT> list, ChildOverview childOverview) {
+        IsWidget widget = widgets.get(childOverview.getId());
+        if(widget != null)
+            remove(widget);
     }
 
     @Override

@@ -7,10 +7,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
+import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.api.object.type.TypeInstances;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxySubType;
+import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.Modal;
 
 /**
@@ -27,9 +29,10 @@ public class CompoundTypeInputModal extends Composite implements TypeInput {
     @UiField
     SubTypeList subTypeList;
 
-    public CompoundTypeInputModal(GWTProxyList<SubTypeData, GWTProxySubType> list, TypeInstances typeInstances) {
+    public CompoundTypeInputModal(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<SubTypeData, GWTProxySubType> list, TypeInstances typeInstances) {
         initWidget(ourUiBinder.createAndBindUi(this));
         modal.setTitle(list.getName());
+        subTypeList.setTypes(types);
         subTypeList.setTypeInstances(typeInstances);
         subTypeList.setList(list);
         modal.show();

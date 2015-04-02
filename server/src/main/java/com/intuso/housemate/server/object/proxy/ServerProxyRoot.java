@@ -202,4 +202,8 @@ public class ServerProxyRoot
     public void sendMessage(Message<?> message) {
         throw new HousemateRuntimeException("What ARE you trying to do!?!?");
     }
+
+    public RemoteClient getClient() {
+        return client;
+    }
 }

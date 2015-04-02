@@ -5,6 +5,7 @@ import com.intuso.housemate.api.object.hardware.HardwareData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
+import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyHardware;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
@@ -21,8 +22,8 @@ public class HardwareList extends MainList<HardwareData, GWTProxyHardware> {
     private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final GWTProxyList<HardwareData, GWTProxyHardware> hardwares;
 
-    public HardwareList(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<HardwareData, GWTProxyHardware> hardwares, String name) {
-        super(name, null, true);
+    public HardwareList(String title, GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<HardwareData, GWTProxyHardware> hardwares, GWTProxyCommand addCommand) {
+        super(title, types, addCommand);
         this.types = types;
         this.hardwares = hardwares;
         setList(hardwares);

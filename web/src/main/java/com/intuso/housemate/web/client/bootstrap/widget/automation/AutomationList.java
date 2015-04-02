@@ -6,6 +6,7 @@ import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
+import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
@@ -21,8 +22,8 @@ public class AutomationList extends MainList<AutomationData, GWTProxyAutomation>
     private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final GWTProxyList<AutomationData, GWTProxyAutomation> automations;
 
-    public AutomationList(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<AutomationData, GWTProxyAutomation> automations, String name) {
-        super(name, null, true);
+    public AutomationList(String title, GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<AutomationData, GWTProxyAutomation> automations, GWTProxyCommand addCommand) {
+        super(title, types, addCommand);
         this.types = types;
         this.automations = automations;
         setList(automations);

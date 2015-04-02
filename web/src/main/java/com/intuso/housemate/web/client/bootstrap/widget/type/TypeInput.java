@@ -68,7 +68,7 @@ public interface TypeInput extends IsWidget, HasUserInputHandlers {
             else if (typeData instanceof ObjectTypeData)
                 return new ObjectBrowserInput((ObjectTypeData) typeData, typeInstances);
             else if (typeData instanceof CompoundTypeData)
-                return new CompoundTypeInput((GWTProxyList<SubTypeData, GWTProxySubType>) type.getChild("sub-types"), typeInstances);
+                return new CompoundTypeInput(types, (GWTProxyList<SubTypeData, GWTProxySubType>) type.getChild("sub-types"), typeInstances);
             return null;
         }
 

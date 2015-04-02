@@ -85,10 +85,10 @@ public class Housemate implements EntryPoint {
                 clientLoadInfo.getChildren().put(RealClient.HARDWARES_ID, new HousemateObject.TreeLoadInfo(RealClient.HARDWARES_ID));
                 clientLoadInfo.getChildren().put(RealClient.TYPES_ID, new HousemateObject.TreeLoadInfo(RealClient.TYPES_ID));
                 clientLoadInfo.getChildren().put(RealClient.USERS_ID, new HousemateObject.TreeLoadInfo(RealClient.USERS_ID));
-                clientLoadInfo.getChildren().put(RealClient.ADD_AUTOMATION_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_AUTOMATION_ID));
-                clientLoadInfo.getChildren().put(RealClient.ADD_DEVICE_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_DEVICE_ID));
-                clientLoadInfo.getChildren().put(RealClient.ADD_HARDWARE_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_HARDWARE_ID));
-                clientLoadInfo.getChildren().put(RealClient.ADD_USER_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_USER_ID));
+                clientLoadInfo.getChildren().put(RealClient.ADD_AUTOMATION_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_AUTOMATION_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                clientLoadInfo.getChildren().put(RealClient.ADD_DEVICE_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_DEVICE_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                clientLoadInfo.getChildren().put(RealClient.ADD_HARDWARE_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_HARDWARE_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                clientLoadInfo.getChildren().put(RealClient.ADD_USER_ID, new HousemateObject.TreeLoadInfo(RealClient.ADD_USER_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
                 HousemateObject.TreeLoadInfo clientsLoadInfo = new HousemateObject.TreeLoadInfo(ProxyRoot.REAL_CLIENTS_ID, clientLoadInfo);
                 INJECTOR.getProxyRoot().load(new LoadManager(new LoadManager.Callback() {
                     @Override

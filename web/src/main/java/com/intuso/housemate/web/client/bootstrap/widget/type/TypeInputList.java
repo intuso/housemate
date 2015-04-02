@@ -20,11 +20,11 @@ public abstract class TypeInputList<DATA extends HousemateData<?>, OBJECT extend
         extends NestedList<DATA, OBJECT>
         implements TypeInput, UserInputHandler {
 
-    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+    private GWTProxyList<TypeData<?>, GWTProxyType> types;
     private TypeInstances typeInstances;
     private TypeInstanceMap typeInstanceMap;
 
-    protected TypeInputList(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+    public void setTypes(GWTProxyList<TypeData<?>, GWTProxyType> types) {
         this.types = types;
     }
 

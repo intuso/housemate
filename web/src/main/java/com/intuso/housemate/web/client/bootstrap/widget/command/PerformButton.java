@@ -73,9 +73,8 @@ public class PerformButton extends Button implements ClickHandler {
                 setText(text);
             else if(command != null)
                 setText(command.getName());
-
             if(command != null && command.getParameters() != null && command.getParameters().size() > 0)
-                    setIcon(IconType.CHEVRON_RIGHT);
+                setIcon(IconType.CHEVRON_RIGHT);
         }
     }
 

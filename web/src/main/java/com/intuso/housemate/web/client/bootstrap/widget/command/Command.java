@@ -28,7 +28,7 @@ public class Command extends Composite implements CommandPerformListener<GWTProx
 
     @UiField
     Alert errorAlert;
-    @UiField(provided = true)
+    @UiField
     ParameterInputList parameterList;
     @UiField
     Button performButton;
@@ -47,11 +47,12 @@ public class Command extends Composite implements CommandPerformListener<GWTProx
         this.listener = listener;
 
         values = new TypeInstances();
-        parameterList = new ParameterInputList(types);
-        parameterList.setTypeInstances(values);
-        parameterList.setList(command.getParameters());
 
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        parameterList.setTypes(types);
+        parameterList.setTypeInstances(values);
+        parameterList.setList(command.getParameters());
     }
 
     @UiFactory
