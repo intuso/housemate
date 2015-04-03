@@ -192,7 +192,7 @@ public class WidgetService extends HousemateService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        int result = super.onStartCommand(intent, flags, startId);
+        super.onStartCommand(intent, flags, startId);
         if(intent != null && DELETE_WIDGETS_ACTION.equals(intent.getAction())) {
             for(int widgetId : intent.getIntArrayExtra(WIDGET_ID)) {
                 getProperties().remove(PROPERTY_PREFIX + widgetId);
@@ -217,7 +217,7 @@ public class WidgetService extends HousemateService {
                 updateStatus();
             }
         }
-        return result;
+        return START_STICKY;
     }
 
     private void addNewWidgetHandler(int widgetId, WidgetHandler<?> widgetHandler) {
