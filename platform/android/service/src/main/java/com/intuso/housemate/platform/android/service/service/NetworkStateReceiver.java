@@ -20,7 +20,7 @@ public class NetworkStateReceiver extends BroadcastReceiver {
             NetworkInfo ni = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
             Intent serviceIntent = new Intent(context, ConnectionService.class);
             serviceIntent.setAction(ConnectionService.NETWORK_AVAILABLE_ACTION);
-            serviceIntent.putExtra(ConnectionService.NETWORK_AVAILABLE, ni.isConnected());
+            serviceIntent.putExtra(ConnectionService.NETWORK_AVAILABLE, ni != null && ni.isConnectedOrConnecting());
             context.startService(serviceIntent);
         }
     }
