@@ -12,19 +12,25 @@ import com.intuso.housemate.api.comms.access.ApplicationDetails;
  */
 public class ClientInstance {
 
+    private final boolean internal;
     private final ApplicationDetails applicationDetails;
     private final String applicationInstanceId;
     private final String component;
     private final ClientType clientType;
     private final int hashCode;
 
-    public ClientInstance(ApplicationDetails applicationDetails, String applicationInstanceId, String component,
-                          ClientType clientType) {
+    public ClientInstance(boolean internal, ApplicationDetails applicationDetails, String applicationInstanceId,
+                          String component, ClientType clientType) {
+        this.internal = internal;
         this.applicationDetails = applicationDetails;
         this.applicationInstanceId = applicationInstanceId;
         this.component = component;
         this.clientType = clientType;
         hashCode = (applicationDetails.getApplicationId() + "/" + applicationInstanceId + "/" + component + "/" + clientType).hashCode();
+    }
+
+    public boolean isInternal() {
+        return internal;
     }
 
     public ApplicationDetails getApplicationDetails() {

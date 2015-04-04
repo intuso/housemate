@@ -81,7 +81,7 @@ public class ServerGeneralRoot
             public void messageReceived(Message<ClientPayload<ApplicationRegistration>> message) throws HousemateException {
                 getLog().d("Access request received");
                 // get the client for the request
-                ClientInstance clientInstance = accessManager.getClientInstance(message.getPayload().getOriginal());
+                ClientInstance clientInstance = accessManager.getClientInstance(message.getRoute(), message.getPayload().getOriginal());
                 RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(clientInstance, message.getRoute());
                 accessManager.sendAccessStatusToClient(client);
             }

@@ -20,7 +20,7 @@ import java.util.UUID;
 public class Server {
 
     public final static String INSTANCE_ID = UUID.randomUUID().toString();
-    public final static ApplicationDetails INTERNAL_APPLICATION = new ApplicationDetails(UUID.randomUUID().toString(), "Server", "Server");
+    public final static ApplicationDetails INTERNAL_APPLICATION = new ApplicationDetails("server", "Server", "Server");
 
     public final static String SERVER_NAME = "server.name";
 

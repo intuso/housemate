@@ -18,6 +18,7 @@ import com.intuso.housemate.server.Server;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -43,56 +44,77 @@ public class AccessManager {
         this.realRoot = realRoot;
     }
 
-    public ClientInstance getClientInstance(ApplicationRegistration request) {
+    public ClientInstance getClientInstance(List<String> route, ApplicationRegistration registration) {
 
         // get the application
-        String appId = request.getApplicationDetails().getApplicationId();
-        RealApplication application = realRoot.getApplications().get(appId);
-        if(application == null) {
-            application = new RealApplication(log, listenersFactory, request.getApplicationDetails(),
-                    injector.getInstance(ApplicationStatusType.class));
-            realRoot.getApplications().add(application);
-            application.setStatus(getInitialStatus(appId));
-        }
+        if(isInternalRegistration(route, registration)) {
+            return new ClientInstance(true, Server.INTERNAL_APPLICATION, UUID.randomUUID().toString(), registration.getComponent(), registration.getType());
+        } else {
+            String appId = registration.getApplicationDetails().getApplicationId();
+            RealApplication application = realRoot.getApplications().get(appId);
+            if (application == null) {
+                application = new RealApplication(log, listenersFactory, registration.getApplicationDetails(),
+                        injector.getInstance(ApplicationStatusType.class));
+                realRoot.getApplications().add(application);
+                application.setStatus(getInitialStatus(appId));
+            }
 
-        // get the application instance supplied by the client
-        String instanceId = request.getApplicationInstanceId();
-        // if there was no instance id or no app instance for that id, create a new id (don't want client choosing it)
-        // and a new instance for the id
-        if(instanceId == null || application.getApplicationInstances().get(instanceId) == null) {
-            instanceId = UUID.randomUUID().toString();
-            RealApplicationInstance applicationInstance =
-                    new RealApplicationInstance(log, listenersFactory, instanceId,
-                            injector.getInstance(ApplicationInstanceStatusType.class),
-                            application.getStatus());
-            application.getApplicationInstances().add(applicationInstance);
-            applicationInstance.getStatusValue().setTypedValues(getInitialStatus(application));
-        }
+            // get the application instance supplied by the client
+            String instanceId = registration.getApplicationInstanceId();
+            // if there was no instance id or no app instance for that id, create a new id (don't want client choosing it)
+            // and a new instance for the id
+            if (instanceId == null || application.getApplicationInstances().get(instanceId) == null) {
+                instanceId = UUID.randomUUID().toString();
+                RealApplicationInstance applicationInstance =
+                        new RealApplicationInstance(log, listenersFactory, instanceId,
+                                injector.getInstance(ApplicationInstanceStatusType.class),
+                                application.getStatus());
+                application.getApplicationInstances().add(applicationInstance);
+                applicationInstance.getStatusValue().setTypedValues(getInitialStatus(application));
+            }
 
-        return new ClientInstance(request.getApplicationDetails(), instanceId, request.getComponent(), request.getType());
+            return new ClientInstance(false, registration.getApplicationDetails(), instanceId, registration.getComponent(), registration.getType());
+        }
+    }
+
+    private boolean isInternalRegistration(List<String> route, ApplicationRegistration registration) {
+        return registration.getApplicationDetails().getApplicationId().equals(Server.INTERNAL_APPLICATION.getApplicationId())
+                && (route.size() == 0 || route.size() == 1);
     }
 
     public void sendAccessStatusToClient(RemoteClient client) {
 
-        RealApplication application = realRoot.getApplications().get(client.getClientInstance().getApplicationDetails().getApplicationId());
-        RealApplicationInstance applicationInstance = application.getApplicationInstances().get(client.getClientInstance().getApplicationInstanceId());
+        if(client.getClientInstance().isInternal()) {
 
-        // tell the client what access etc it has
-        try {
-            client.sendMessage(new String[] {""}, Root.SERVER_INSTANCE_ID_TYPE, new StringPayload(Server.INSTANCE_ID));
-            client.sendMessage(new String[] {""}, Root.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(client.getClientInstance().getApplicationInstanceId()));
-            client.sendMessage(new String[] {""}, Root.APPLICATION_STATUS_TYPE, application.getStatus());
-            client.sendMessage(new String[] {""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, applicationInstance.getStatus());
-        } catch(HousemateException e) {
-            log.e("Failed to tell application instance about statuses", e);
+            try {
+                client.sendMessage(new String[]{""}, Root.SERVER_INSTANCE_ID_TYPE, new StringPayload(Server.INSTANCE_ID));
+                client.sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(client.getClientInstance().getApplicationInstanceId()));
+                client.sendMessage(new String[]{""}, Root.APPLICATION_STATUS_TYPE, ApplicationStatus.AllowInstances);
+                client.sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, ApplicationInstanceStatus.Allowed);
+            } catch (HousemateException e) {
+                log.e("Failed to tell application instance about statuses", e);
+            }
+
+        } else {
+            RealApplication application = realRoot.getApplications().get(client.getClientInstance().getApplicationDetails().getApplicationId());
+            RealApplicationInstance applicationInstance = application.getApplicationInstances().get(client.getClientInstance().getApplicationInstanceId());
+
+            // tell the client what access etc it has
+            try {
+                client.sendMessage(new String[]{""}, Root.SERVER_INSTANCE_ID_TYPE, new StringPayload(Server.INSTANCE_ID));
+                client.sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(client.getClientInstance().getApplicationInstanceId()));
+                client.sendMessage(new String[]{""}, Root.APPLICATION_STATUS_TYPE, application.getStatus());
+                client.sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, applicationInstance.getStatus());
+            } catch (HousemateException e) {
+                log.e("Failed to tell application instance about statuses", e);
+            }
+
+            // ensure the client belongs to the application instance
+            client.setApplicationAndInstance(application, applicationInstance);
         }
-
-        // ensure the client belongs to the application instance
-        client.setApplicationAndInstance(application, applicationInstance);
     }
 
     private final static Set<String> allowedAllApps = Sets.newHashSet(
-            Server.INTERNAL_APPLICATION.getApplicationId(),
             "com.intuso.housemate.web.server",
             "com.intuso.housemate.web.client");
     private ApplicationStatus getInitialStatus(String appId) {
