@@ -46,13 +46,13 @@ public final class MainRouter extends Router {
         // register the main router. This will cause the connection manager to send a message (put a it on our queue)
         // so we then need to get it and process it to finish the registration. We need this to block so it happens
         // before we create the external client routers so do this before starting the normal thread
-        register(Server.INTERNAL_APPLICATION, MainRouter.class.getName());
+        register(Server.INTERNAL_APPLICATION_DETAILS, MainRouter.class.getName());
         processMessage(incomingMessages.poll());
         // start processing all the messages
         messageProcessor.start();
 
         // register the local client
-        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION, RealRoot.class.getName());
+        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION_DETAILS, RealRoot.class.getName());
     }
 
     public final void startExternalRouters() {
@@ -62,7 +62,7 @@ public final class MainRouter extends Router {
         for(ExternalClientRouter externalClientRouter : externalClientRouters) {
             try {
                 externalClientRouter.start();
-                externalClientRouter.register(Server.INTERNAL_APPLICATION, externalClientRouter.getClass().getName());
+                externalClientRouter.register(Server.INTERNAL_APPLICATION_DETAILS, externalClientRouter.getClass().getName());
             } catch(HousemateException e) {
                 throw new HousemateRuntimeException("Could not start external client router", e);
             }

@@ -9,10 +9,6 @@ import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.ClientType;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.real.RealApplication;
-import com.intuso.housemate.object.real.RealApplicationInstance;
-import com.intuso.housemate.object.real.RealValue;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.log.Log;
@@ -37,10 +33,6 @@ public class RemoteClient {
     private List<String> route = null;
     private List<Message<?>> messageQueue = new CopyOnWriteArrayList<>();
     private boolean applicationInstanceAllowed = false;
-
-    private final StatusListener statusListener = new StatusListener();
-    private RealValue<ApplicationStatus> applicationStatus;
-    private RealValue<ApplicationInstanceStatus> applicationInstanceStatus;
 
     public RemoteClient(Log log, ClientInstance clientInstance, Root<?> root, MainRouter comms) {
         this.log= log;
@@ -81,9 +73,8 @@ public class RemoteClient {
         }
     }
 
-    private void updateStatus() {
-        ApplicationInstanceStatus applicationInstanceStatus = this.applicationInstanceStatus.getTypedValue();
-        ApplicationStatus applicationStatus = this.applicationStatus.getTypedValue();
+    public void setApplicationAndInstanceStatus(ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+
         try {
             sendMessage(new String[]{""}, Root.APPLICATION_STATUS_TYPE, applicationStatus);
             sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, applicationInstanceStatus);
@@ -234,26 +225,5 @@ public class RemoteClient {
 
     public boolean isApplicationInstanceAllowed() {
         return applicationInstanceAllowed;
-    }
-
-    public void setApplicationAndInstance(RealApplication application, RealApplicationInstance applicationInstance) {
-        applicationStatus = application.getStatusValue();
-        applicationInstanceStatus = applicationInstance.getStatusValue();
-        applicationStatus.addObjectListener(statusListener);
-        applicationInstanceStatus.addObjectListener(statusListener);
-        updateStatus();
-    }
-
-    private class StatusListener implements ValueListener<RealValue<?>> {
-
-        @Override
-        public void valueChanging(RealValue<?> value) {
-            // do nothing
-        }
-
-        @Override
-        public void valueChanged(RealValue<?> value) {
-            updateStatus();
-        }
     }
 }

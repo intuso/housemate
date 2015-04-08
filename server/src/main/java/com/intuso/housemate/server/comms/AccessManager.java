@@ -1,5 +1,6 @@
 package com.intuso.housemate.server.comms;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -9,9 +10,11 @@ import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.access.ApplicationRegistration;
 import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.object.real.RealApplication;
 import com.intuso.housemate.object.real.RealApplicationInstance;
 import com.intuso.housemate.object.real.RealRoot;
+import com.intuso.housemate.object.real.RealValue;
 import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.object.real.impl.type.ApplicationStatusType;
 import com.intuso.housemate.server.Server;
@@ -19,6 +22,7 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,6 +39,7 @@ public class AccessManager {
     private final ListenersFactory listenersFactory;
     private final Injector injector;
     private final RealRoot realRoot;
+    private Map<RemoteClient, StatusListener> statusListeners = Maps.newHashMap();
 
     @Inject
     public AccessManager(Log log, ListenersFactory listenersFactory, Injector injector, RealRoot realRoot) {
@@ -48,7 +53,7 @@ public class AccessManager {
 
         // get the application
         if(isInternalRegistration(route, registration)) {
-            return new ClientInstance(true, Server.INTERNAL_APPLICATION, UUID.randomUUID().toString(), registration.getComponent(), registration.getType());
+            return new ClientInstance(true, Server.INTERNAL_APPLICATION_DETAILS, UUID.randomUUID().toString(), registration.getComponent(), registration.getType());
         } else {
             String appId = registration.getApplicationDetails().getApplicationId();
             RealApplication application = realRoot.getApplications().get(appId);
@@ -78,11 +83,11 @@ public class AccessManager {
     }
 
     private boolean isInternalRegistration(List<String> route, ApplicationRegistration registration) {
-        return registration.getApplicationDetails().getApplicationId().equals(Server.INTERNAL_APPLICATION.getApplicationId())
+        return registration.getApplicationDetails().getApplicationId().equals(Server.INTERNAL_APPLICATION_DETAILS.getApplicationId())
                 && (route.size() == 0 || route.size() == 1);
     }
 
-    public void sendAccessStatusToClient(RemoteClient client) {
+    public void initialiseClient(RemoteClient client) {
 
         if(client.getClientInstance().isInternal()) {
 
@@ -94,6 +99,9 @@ public class AccessManager {
             } catch (HousemateException e) {
                 log.e("Failed to tell application instance about statuses", e);
             }
+
+            // ensure the client belongs to the application instance
+            client.setApplicationAndInstanceStatus(ApplicationStatus.AllowInstances, ApplicationInstanceStatus.Allowed);
 
         } else {
             RealApplication application = realRoot.getApplications().get(client.getClientInstance().getApplicationDetails().getApplicationId());
@@ -110,7 +118,8 @@ public class AccessManager {
             }
 
             // ensure the client belongs to the application instance
-            client.setApplicationAndInstance(application, applicationInstance);
+            client.setApplicationAndInstanceStatus(application.getStatus(), applicationInstance.getStatus());
+            statusListeners.put(client, new StatusListener(client, application, applicationInstance));
         }
     }
 
@@ -133,6 +142,32 @@ public class AccessManager {
                 return ApplicationInstanceStatus.Expired;
             default:
                 return ApplicationInstanceStatus.Rejected;
+        }
+    }
+
+    private class StatusListener implements ValueListener<RealValue<?>> {
+
+        private final RemoteClient client;
+        private final RealValue<ApplicationStatus> applicationStatus;
+        private final RealValue<ApplicationInstanceStatus> applicationInstanceStatus;
+
+
+        private StatusListener(RemoteClient client, RealApplication application, RealApplicationInstance applicationInstance) {
+            this.client = client;
+            this.applicationStatus = application.getStatusValue();
+            this.applicationInstanceStatus = applicationInstance.getStatusValue();
+            applicationStatus.addObjectListener(this);
+            applicationInstanceStatus.addObjectListener(this);
+        }
+
+        @Override
+        public void valueChanging(RealValue<?> value) {
+            // do nothing
+        }
+
+        @Override
+        public void valueChanged(RealValue<?> value) {
+            client.setApplicationAndInstanceStatus(applicationStatus.getTypedValue(), applicationInstanceStatus.getTypedValue());
         }
     }
 }
