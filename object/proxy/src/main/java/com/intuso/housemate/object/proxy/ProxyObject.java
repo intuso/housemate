@@ -126,7 +126,8 @@ public abstract class ProxyObject<
     protected abstract CHILD createChildInstance(CHILD_DATA child_data);
 
     protected void initObject(TreeData treeData) throws HousemateException {
-        childOverviews.putAll(treeData.getChildOverviews());
+        if(treeData.getChildOverviews() != null)
+            childOverviews.putAll(treeData.getChildOverviews());
         for(TreeData childData : treeData.getChildren().values())
             addChild(createChild(childData));
     }
