@@ -31,7 +31,7 @@ public abstract class HousemateActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        log = new Log(new AndroidLogWriter(LogLevel.DEBUG, getApplicationContext().getPackageName()));
+        log = new Log(new AndroidLogWriter(LogLevel.DEBUG, getApplicationContext().getApplicationInfo().name));
         listenersFactory = new ListenersFactory() {
             @Override
             public <LISTENER extends Listener> Listeners<LISTENER> create() {

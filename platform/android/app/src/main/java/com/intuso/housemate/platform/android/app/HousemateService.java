@@ -31,7 +31,7 @@ public abstract class HousemateService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        log = new Log(new AndroidLogWriter(LogLevel.DEBUG, getApplicationContext().getPackageName()));
+        log = new Log(new AndroidLogWriter(LogLevel.DEBUG, getApplicationContext().getApplicationInfo().name));
         listenersFactory = new ListenersFactory() {
             @Override
             public <LISTENER extends Listener> Listeners<LISTENER> create() {
