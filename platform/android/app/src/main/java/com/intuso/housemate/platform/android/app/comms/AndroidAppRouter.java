@@ -10,7 +10,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
@@ -42,9 +41,10 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     private String id;
     private final Messenger receiver;
     private final LinkedBlockingQueue<Message> outputQueue;
-    private boolean shouldBeConnected = false;
     private boolean registered = false;
-    private ServerConnectionStatus lastStatus = ServerConnectionStatus.DisconnectedPermanently;
+
+    private boolean shouldBeConnected = false;
+    private ServerConnectionStatus lastStatus;
 
     @Inject
     public AndroidAppRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Context context) {
@@ -56,49 +56,55 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
 
     @Override
     public synchronized void connect() {
+
+        getLog().d("App Router: connect()");
+
         if (shouldBeConnected)
             return;
         shouldBeConnected = true;
 
-        _ensureConnected();
-    }
-
-    private void _ensureConnected() {
-        if(registered)
-            return;
-
-        getLog().d("Connecting to app service");
-
-        bindThread = new BindThread();
-        bindThread.start();
+        checkConnection();
     }
 
     @Override
     public synchronized final void disconnect() {
 
+        getLog().d("App Router: disconnect()");
+
         if(!shouldBeConnected)
             return;
         shouldBeConnected = false;
 
-        try {
-            if(sender != null) {
-                getLog().d("Removing server registration");
-                android.os.Message msg = android.os.Message.obtain(null, MessageCodes.UNREGISTER);
-                registered = false;
-                msg.getData().putString("id", id);
-                sender.send(msg);
-            }
-            id = null;
-        } catch (RemoteException e) {
-            throw new HousemateRuntimeException("Failed to send disconnect message from service", e);
-        }
-
-        _disconnect(false);
+        checkConnection();
     }
 
-    private synchronized void _disconnect(boolean reconnect) {
+    @Override
+    public void sendMessage(Message message) {
+        checkConnection();
+        outputQueue.add(message);
+    }
 
-        getLog().d("Disconnecting from service");
+    public synchronized void checkConnection() {
+        if(shouldBeConnected)
+            _ensureConnecte();
+        else
+            _disconnect();
+    }
+
+    private void _ensureConnecte() {
+        if(registered || bindThread != null || registerThread != null)
+            return;
+
+        bindThread = new BindThread();
+        bindThread.start();
+    }
+
+    private synchronized void _disconnect() {
+
+        if(!registered && bindThread == null && registerThread == null)
+            return;
+
+        getLog().d("App Router: Disconnecting from service");
 
         if(bindThread != null) {
             bindThread.interrupt();
@@ -113,45 +119,31 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
             messageSender = null;
         }
         if(sender != null) {
+            try {
+                getLog().d("App Router: Unregistering");
+                android.os.Message msg = android.os.Message.obtain(null, MessageCodes.UNREGISTER);
+                registered = false;
+                msg.getData().putString("id", id);
+                sender.send(msg);
+                id = null;
+            } catch (RemoteException e) {
+                getLog().w("App Router: Failed to send disconnect message from service", e);
+            }
             context.unbindService(this);
             registered = false;
             sender = null;
         }
 
-        getLog().d("Disconnected");
+        getLog().d("App Router: Disconnected");
 
         // set the connection status, and check if we should reconnect
-        if(shouldBeConnected) {
-            lastStatus = getServerConnectionStatus();
-            setServerConnectionStatus(ServerConnectionStatus.DisconnectedTemporarily);
-            if(reconnect)
-                _ensureConnected();
-        } else {
-            setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
-            getLog().d("Should not be connected, leaving disconnected");
-        }
-    }
-
-    @Override
-    public void sendMessage(Message message) {
-        _ensureConnected();
-        outputQueue.add(message);
-    }
-
-    private void _sendMessage(Message<?> message) throws IOException {
-        try {
-            android.os.Message msg = android.os.Message.obtain(null, MessageCodes.SEND_MESSAGE);
-            msg.getData().putString("id", id);
-            msg.getData().putParcelable("message", new JsonMessage(message));
-            sender.send(msg);
-        } catch (RemoteException e) {
-            throw new IOException("Failed to send message to Housemate service");
-        }
+        lastStatus = getServerConnectionStatus();
+        setServerConnectionStatus(shouldBeConnected ? ServerConnectionStatus.DisconnectedTemporarily : ServerConnectionStatus.DisconnectedPermanently);
     }
 
     @Override
     public void onServiceConnected(ComponentName className, IBinder binder) {
-        getLog().d("Service connected");
+        getLog().d("App Router: Service connected");
         if(bindThread != null) {
             bindThread.interrupt();
             bindThread = null;
@@ -163,43 +155,9 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
-        getLog().d("Service connection lost unexpectedly, trying to re-establish connection");
-        sender = null;
-        _disconnect(true);
-    }
-
-    private class MessageHandler extends Handler {
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            switch (msg.what) {
-                case MessageCodes.SEND_MESSAGE:
-                    msg.getData().setClassLoader(Message.class.getClassLoader());
-                    try {
-                        messageReceived(((JsonMessage) msg.getData().getParcelable("message")).getMessage());
-                    } catch (HousemateException e) {
-                        getLog().e("Failed to receive message", e);
-                    }
-                    break;
-                case MessageCodes.REGISTERED:
-                    getLog().d("Registration created");
-                    registered = true;
-                    if(registerThread != null) {
-                        registerThread.interrupt();
-                        registerThread = null;
-                    }
-                    messageSender = new MessageSender();
-                    if(getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily)
-                        setServerConnectionStatus(lastStatus);
-                    else
-                        setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
-                    // start the sender thread
-                    messageSender.start();
-                    id = msg.getData().getString("id");
-                    break;
-                default:
-                    super.handleMessage(msg);
-            }
-        }
+        getLog().d("App Router: Service connection lost unexpectedly, trying to re-establish connection");
+        _disconnect();
+        checkConnection();
     }
 
     private class BindThread extends Thread {
@@ -222,9 +180,11 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     private class RegisterThread extends Thread {
         @Override
         public void run() {
-            while(!isInterrupted() && getServerConnectionStatus() == ServerConnectionStatus.Connecting) {
+            while(!isInterrupted()
+                    && (getServerConnectionStatus() == ServerConnectionStatus.Connecting
+                            || getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily)) {
                 try {
-                    getLog().d("Creating server registration");
+                    getLog().d("App Router: Creating server registration");
                     if(id == null) {
                         android.os.Message msg = android.os.Message.obtain(null, MessageCodes.CREATE_REGISTRATION);
                         msg.replyTo = receiver;
@@ -236,13 +196,49 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                         sender.send(msg);
                     }
                 } catch (RemoteException e) {
-                    getLog().e("Failed to connect to service", e);
+                    getLog().e("App Router: Failed to send registration message", e);
                 }
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     break;
                 }
+            }
+        }
+    }
+
+    private class MessageHandler extends Handler {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            switch (msg.what) {
+                case MessageCodes.SEND_MESSAGE:
+                    msg.getData().setClassLoader(Message.class.getClassLoader());
+                    try {
+                        messageReceived(((JsonMessage) msg.getData().getParcelable("message")).getMessage());
+                    } catch (HousemateException e) {
+                        getLog().e("App Router: Failed to receive message", e);
+                        disconnect();
+                        checkConnection();
+                    }
+                    break;
+                case MessageCodes.REGISTERED:
+                    getLog().d("App Router: Registration created");
+                    registered = true;
+                    if(registerThread != null) {
+                        registerThread.interrupt();
+                        registerThread = null;
+                    }
+                    messageSender = new MessageSender();
+                    if(getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily && lastStatus != null)
+                        setServerConnectionStatus(lastStatus);
+                    else
+                        setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
+                    // start the sender thread
+                    messageSender.start();
+                    id = msg.getData().getString("id");
+                    break;
+                default:
+                    super.handleMessage(msg);
             }
         }
     }
@@ -257,7 +253,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
         @Override
         public void run() {
 
-            getLog().d("Starting the message sender");
+            getLog().d("App Router: Starting the message sender");
 
             while(!isInterrupted()) {
 
@@ -266,18 +262,30 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                 try {
                     // get the next message
                     message = outputQueue.take();
-                    getLog().d("Sending message " + message.toString());
-                    _sendMessage(message);
+                    getLog().d("App Router: Sending message " + message.toString());
+                    sendMessage(message);
                 } catch(InterruptedException e) {
                     break;
                 } catch(IOException e) {
-                    getLog().e("Error sending message to client", e);
-                    _disconnect(true);
+                    getLog().e("App Router: Error sending message to client", e);
+                    _disconnect();
+                    checkConnection();
                     break;
                 }
             }
 
-            getLog().d("Stopped message sender");
+            getLog().d("App Router: Stopped message sender");
+        }
+
+        private void sendMessage(Message<?> message) throws IOException {
+            try {
+                android.os.Message msg = android.os.Message.obtain(null, MessageCodes.SEND_MESSAGE);
+                msg.getData().putString("id", id);
+                msg.getData().putParcelable("message", new JsonMessage(message));
+                sender.send(msg);
+            } catch (RemoteException e) {
+                throw new IOException("Failed to send message to Housemate service");
+            }
         }
     }
 }

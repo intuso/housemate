@@ -179,7 +179,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
             _disconnect();
     }
 
-    public synchronized void _ensureConnected() {
+    private synchronized void _ensureConnected() {
 
         if(connectThread != null || socket != null)
             return;
