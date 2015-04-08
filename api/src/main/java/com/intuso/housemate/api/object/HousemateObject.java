@@ -422,15 +422,15 @@ public abstract class HousemateObject<
         private String id;
         private HousemateData<?> data;
         private Map<String, TreeData> children;
-        private Map<String, ChildOverview> childData;
+        private Map<String, ChildOverview> childOverviews;
 
         public TreeData() {}
 
-        public TreeData(String id, HousemateData<?> data, Map<String, TreeData> children, Map<String, ChildOverview> childData) {
+        public TreeData(String id, HousemateData<?> data, Map<String, TreeData> children, Map<String, ChildOverview> childOverviews) {
             this.id = id;
             this.data = data;
             this.children = children;
-            this.childData = childData;
+            this.childOverviews = childOverviews;
         }
 
         /**
@@ -473,20 +473,20 @@ public abstract class HousemateObject<
          * Get the overviews of other unloaded children
          * @return the overviews of other unloaded children
          */
-        public Map<String, ChildOverview> getChildData() {
-            return childData;
+        public Map<String, ChildOverview> getChildOverviews() {
+            return childOverviews;
         }
 
-        public void setChildData(Map<String, ChildOverview> childData) {
-            this.childData = childData == null || childData instanceof Serializable ? childData : Maps.newHashMap(childData);
+        public void setChildOverviews(Map<String, ChildOverview> childOverviews) {
+            this.childOverviews = childOverviews == null || childOverviews instanceof Serializable ? childOverviews : Maps.newHashMap(childOverviews);
         }
 
         @Override
         public void ensureSerialisable() {
             if(children != null && !(children instanceof HashMap))
                 children = Maps.newHashMap(children);
-            if(childData != null && !(childData instanceof HashMap))
-                childData = Maps.newHashMap(childData);
+            if(childOverviews != null && !(childOverviews instanceof HashMap))
+                childOverviews = Maps.newHashMap(childOverviews);
             if(data != null)
                 data.ensureSerialisable();
             if(children != null)

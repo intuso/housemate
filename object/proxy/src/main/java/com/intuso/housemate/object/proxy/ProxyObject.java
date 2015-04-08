@@ -118,15 +118,15 @@ public abstract class ProxyObject<
     }
 
     protected final CHILD createChild(TreeData treeData) throws HousemateException {
-        CHILD object = createChildInstance((CHILD_DATA)treeData.getData());
-        object.initObject(treeData);
-        return object;
+        CHILD child = createChildInstance((CHILD_DATA)treeData.getData());
+        child.initObject(treeData);
+        return child;
     }
 
     protected abstract CHILD createChildInstance(CHILD_DATA child_data);
 
     protected void initObject(TreeData treeData) throws HousemateException {
-        childOverviews.putAll(treeData.getChildData());
+        childOverviews.putAll(treeData.getChildOverviews());
         for(TreeData childData : treeData.getChildren().values())
             addChild(createChild(childData));
     }
@@ -154,7 +154,11 @@ public abstract class ProxyObject<
     }
 
     @Override
-    protected void initPostRecurseHook(HousemateObject<?, ?, ?, ?> parent) {}
+    protected void initPostRecurseHook(HousemateObject<?, ?, ?, ?> parent) {
+        for(CHILD child : getChildren())
+            if(!childOverviews.containsKey(child.getId()))
+                childOverviews.put(child.getId(), new ChildOverview(child.getId(), child.getName(), child.getDescription()));
+    }
 
     /**
      * Sends a message to the server
