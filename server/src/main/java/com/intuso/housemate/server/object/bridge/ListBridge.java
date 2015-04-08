@@ -34,21 +34,21 @@ public class ListBridge<
 
     @Override
     public void childObjectAdded(String childId, WR child) {
-        super.childObjectAdded(childId, child);
         child.init(this);
         addLoadedBy(child);
         broadcastMessage(ADD_TYPE, child.getData().deepClone());
         for(ListListener<? super WR> listener : getObjectListeners())
             listener.elementAdded(child);
+        super.childObjectAdded(childId, child);
     }
 
     @Override
     public void childObjectRemoved(String childId, WR child) {
-        super.childObjectRemoved(childId, child);
         child.uninit();
         broadcastMessage(REMOVE_TYPE, child.getData());
         for(ListListener<? super WR> listener : getObjectListeners())
             listener.elementRemoved(child);
+        super.childObjectRemoved(childId, child);
     }
 
     @Override
