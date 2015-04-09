@@ -53,7 +53,7 @@ public class AccessManager {
 
         // get the application
         if(isInternalRegistration(route, registration)) {
-            return new ClientInstance(true, Server.INTERNAL_APPLICATION_DETAILS, UUID.randomUUID().toString(), registration.getComponent(), registration.getType());
+            return new ClientInstance(true, Server.INTERNAL_APPLICATION_DETAILS, registration.getComponent(), registration.getComponent(), registration.getType());
         } else {
             String appId = registration.getApplicationDetails().getApplicationId();
             RealApplication application = realRoot.getApplications().get(appId);
