@@ -61,7 +61,7 @@ public class HousemateTweeter {
     private final String applicationInstanceId;
 
     private final Map<SimpleProxyDevice, java.util.List<ListenerRegistration>> listeners;
-    private RealClientListListener realClientListListener = new RealClientListListener();
+    private ServerListListener serverListListener = new ServerListListener();
     private DeviceListListener deviceListListener = new DeviceListListener();
     private DeviceListener deviceListener = new DeviceListener();
 
@@ -156,10 +156,10 @@ public class HousemateTweeter {
 
                             @Override
                             public void allLoaded() {
-                                root.getRealClients().addObjectListener(realClientListListener, true);
+                                root.getServers().addObjectListener(serverListListener, true);
                             }
                         }, "twitterClientInitialLoad",
-                                new HousemateObject.TreeLoadInfo(ProxyRoot.REAL_CLIENTS_ID),
+                                new HousemateObject.TreeLoadInfo(ProxyRoot.SERVERS_ID),
                                 new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
                         break;
                 }
@@ -261,14 +261,14 @@ public class HousemateTweeter {
 		}
 	}
 
-    private class RealClientListListener implements ListListener<SimpleProxyRealClient> {
+    private class ServerListListener implements ListListener<SimpleProxyServer> {
         @Override
-        public void elementAdded(SimpleProxyRealClient realClient) {
-            realClient.getDevices().addObjectListener(deviceListListener, true);
+        public void elementAdded(SimpleProxyServer server) {
+            server.getDevices().addObjectListener(deviceListListener, true);
         }
 
         @Override
-        public void elementRemoved(SimpleProxyRealClient realClient) {
+        public void elementRemoved(SimpleProxyServer server) {
             // remove the old listener
         }
     };

@@ -9,14 +9,14 @@ import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.api.object.server.ServerData;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyCommand;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyDevice;
-import com.intuso.housemate.object.proxy.simple.SimpleProxyRealClient;
 import com.intuso.housemate.object.proxy.simple.SimpleProxyRoot;
+import com.intuso.housemate.object.proxy.simple.SimpleProxyServer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -73,18 +73,18 @@ public class ContextualResource implements RootListener<SimpleProxyRoot>, Comman
 
     @Path("clients")
     @GET
-    public java.util.List<RealClientData> getClients(@Context HttpServletRequest request) {
-        java.util.List<RealClientData> result = Lists.newArrayList();
-        for(SimpleProxyRealClient client : getRoot(request).getRealClients())
-            result.add((RealClientData)client.getData().clone());
+    public java.util.List<ServerData> getClients(@Context HttpServletRequest request) {
+        java.util.List<ServerData> result = Lists.newArrayList();
+        for(SimpleProxyServer client : getRoot(request).getServers())
+            result.add((ServerData)client.getData().clone());
         return result;
     }
 
     @Path("clients/{clientId}")
     @GET
-    public RealClientData getClient(@Context HttpServletRequest request,
+    public ServerData getClient(@Context HttpServletRequest request,
                                 @PathParam("clientId") String clientId) {
-        SimpleProxyRealClient client = getRoot(request).getRealClients().get(clientId);
+        SimpleProxyServer client = getRoot(request).getServers().get(clientId);
         return client != null ? client.getData() : null;
     }
 
@@ -93,7 +93,7 @@ public class ContextualResource implements RootListener<SimpleProxyRoot>, Comman
     public java.util.List<DeviceData> getDevices(@Context HttpServletRequest request,
                                                  @PathParam("clientId") String clientId) {
         java.util.List<DeviceData> result = Lists.newArrayList();
-        for(SimpleProxyDevice device : getRoot(request).getRealClients().get(clientId).getDevices())
+        for(SimpleProxyDevice device : getRoot(request).getServers().get(clientId).getDevices())
             result.add((DeviceData)device.getData().clone());
         return result;
     }
@@ -103,7 +103,7 @@ public class ContextualResource implements RootListener<SimpleProxyRoot>, Comman
     public DeviceData getDevice(@Context HttpServletRequest request,
                                 @PathParam("clientId") String clientId,
                                 @PathParam("deviceId") String deviceId) {
-        SimpleProxyDevice device = getRoot(request).getRealClients().get(clientId).getDevices().get(deviceId);
+        SimpleProxyDevice device = getRoot(request).getServers().get(clientId).getDevices().get(deviceId);
         return device != null ? device.getData() : null;
     }
 
@@ -114,7 +114,7 @@ public class ContextualResource implements RootListener<SimpleProxyRoot>, Comman
                                      @PathParam("deviceId") String deviceId,
                                      @PathParam("commandId") String commandId,
                                      TypeInstanceMap typeInstanceMap) {
-        SimpleProxyDevice device = getRoot(request).getRealClients().get(clientId).getDevices().get(deviceId);
+        SimpleProxyDevice device = getRoot(request).getServers().get(clientId).getDevices().get(deviceId);
         if(device != null) {
             SimpleProxyCommand command = device.getCommands().get(commandId);
             if(command != null) {

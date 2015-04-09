@@ -8,7 +8,7 @@ import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.device.feature.FeatureLoadedListener;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
-import com.intuso.housemate.platform.android.app.object.AndroidProxyRealClient;
+import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 
 /**
 * Created with IntelliJ IDEA.
@@ -95,7 +95,7 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
     }
 
     private void loadData() {
-        final AndroidProxyRealClient client = widgetService.getRoot().getRealClients().get(clientId);
+        final AndroidProxyServer client = widgetService.getRoot().getServers().get(clientId);
         if(client == null)
             status = Status.NO_CLIENT;
         else {

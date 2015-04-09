@@ -14,11 +14,11 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
 import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.realclient.HasRealClients;
-import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.api.object.server.HasServers;
+import com.intuso.housemate.api.object.server.ServerData;
 import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
@@ -36,12 +36,12 @@ public class RootBridge
         extends BridgeObject<RootData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>,
             RootBridge, RootListener<? super RootBridge>>
         implements Root<RootBridge>,
-            HasRealClients<ListBridge<RealClientData, RealClientBridge>> {
+        HasServers<ListBridge<ServerData, ServerBridge>> {
 
-    public final static String REAL_CLIENTS_ID = "real-clients";
+    public final static String SERVERS_ID = "servers";
 
     private final ListenersFactory listenersFactory;
-    private final ListBridge<RealClientData, RealClientBridge> realClients;
+    private final ListBridge<ServerData, ServerBridge> servers;
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<>();
     private final Persistence persistence;
 
@@ -50,8 +50,8 @@ public class RootBridge
         super(log, listenersFactory, new RootData());
         this.listenersFactory = listenersFactory;
         this.persistence = persistence;
-        realClients = new ListBridge<>(log, listenersFactory, new ListData<RealClientData>(REAL_CLIENTS_ID, "Clients", "Clients"));
-        addChild(realClients);
+        servers = new ListBridge<>(log, listenersFactory, new ListData<ServerData>(SERVERS_ID, "Servers", "Servers"));
+        addChild(servers);
         init(null);
     }
 
@@ -112,12 +112,12 @@ public class RootBridge
     }
 
     @Override
-    public ListBridge<RealClientData, RealClientBridge> getRealClients() {
-        return realClients;
+    public ListBridge<ServerData, ServerBridge> getServers() {
+        return servers;
     }
 
     public void addProxyRoot(ServerProxyRoot root) {
-        realClients.add(new RealClientBridge(getLog(), getListenersFactory(), root, persistence));
+        servers.add(new ServerBridge(getLog(), getListenersFactory(), root, persistence));
     }
 
     private void objectAdded(String path, HousemateObject<?, ?, ?, ?> object) {

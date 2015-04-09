@@ -41,7 +41,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>realclient</artifactId>
+            <artifactId>object-real</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>plugin-host</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

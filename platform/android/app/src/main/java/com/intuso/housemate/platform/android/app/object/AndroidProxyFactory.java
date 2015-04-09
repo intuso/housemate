@@ -14,7 +14,7 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.api.object.realclient.RealClientData;
+import com.intuso.housemate.api.object.server.ServerData;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -71,8 +71,8 @@ public class AndroidProxyFactory implements HousemateObjectFactory<HousemateData
             return createProperty((PropertyData) data);
         else if(data instanceof AutomationData)
             return createAutomation((AutomationData) data);
-        else if(data instanceof RealClientData)
-            return createRealClient((RealClientData) data);
+        else if(data instanceof ServerData)
+            return createServer((ServerData) data);
         else if(data instanceof SubTypeData)
             return createSubType((SubTypeData) data);
         else if(data instanceof TypeData)
@@ -136,8 +136,8 @@ public class AndroidProxyFactory implements HousemateObjectFactory<HousemateData
         return new AndroidProxyAutomation(log, listenersFactory, data, this);
     }
 
-    public AndroidProxyRealClient createRealClient(RealClientData data) {
-        return new AndroidProxyRealClient(log, listenersFactory, data, this);
+    public AndroidProxyServer createServer(ServerData data) {
+        return new AndroidProxyServer(log, listenersFactory, data, this);
     }
 
     public AndroidProxySubType createSubType(SubTypeData data) {

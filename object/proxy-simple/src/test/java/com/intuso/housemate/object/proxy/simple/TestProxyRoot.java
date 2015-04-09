@@ -12,12 +12,12 @@ import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObjectFactory;
 import com.intuso.housemate.api.object.device.DeviceData;
 import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.api.object.server.ServerData;
 import com.intuso.housemate.api.object.type.TypeData;
 import com.intuso.housemate.object.proxy.ProxyObject;
-import com.intuso.housemate.object.proxy.ProxyRealClient;
 import com.intuso.housemate.object.proxy.ProxyRoot;
+import com.intuso.housemate.object.proxy.ProxyServer;
 import com.intuso.housemate.object.proxy.simple.comms.ProxyRouterImpl;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -28,7 +28,7 @@ import org.junit.Ignore;
  */
 @Ignore
 public class TestProxyRoot extends ProxyRoot<
-        SimpleProxyRealClient, SimpleProxyList<RealClientData, SimpleProxyRealClient>,
+        SimpleProxyServer, SimpleProxyList<ServerData, SimpleProxyServer>,
         TestProxyRoot> {
 
     private final Injector injector;
@@ -45,9 +45,9 @@ public class TestProxyRoot extends ProxyRoot<
         }
         this.injector = injector;
         super.addChild(new SimpleProxyList<TypeData<?>, SimpleProxyType>(
-                log, listenersFactory, injector, new ListData(ProxyRealClient.TYPES_ID, ProxyRealClient.TYPES_ID, ProxyRealClient.TYPES_ID)));
+                log, listenersFactory, injector, new ListData(ProxyServer.TYPES_ID, ProxyServer.TYPES_ID, ProxyServer.TYPES_ID)));
         super.addChild(new SimpleProxyList<DeviceData, SimpleProxyDevice>(
-                log, listenersFactory, injector, new ListData(ProxyRealClient.DEVICES_ID, ProxyRealClient.DEVICES_ID, ProxyRealClient.DEVICES_ID)));
+                log, listenersFactory, injector, new ListData(ProxyServer.DEVICES_ID, ProxyServer.DEVICES_ID, ProxyServer.DEVICES_ID)));
         init(null);
     }
 

@@ -20,13 +20,13 @@ import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.WidgetService;
 import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.ProxyRealClient;
 import com.intuso.housemate.object.proxy.ProxyRoot;
+import com.intuso.housemate.object.proxy.ProxyServer;
 import com.intuso.housemate.object.proxy.simple.ProxyClientHelper;
 import com.intuso.housemate.platform.android.app.HousemateActivity;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
-import com.intuso.housemate.platform.android.app.object.AndroidProxyRealClient;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
+import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
@@ -69,7 +69,7 @@ public class WidgetConfigureActivity
                 new AndroidProxyRoot(getLog(), getListenersFactory(), getProperties(), getRouter()), getRouter());
         clientHelper.applicationDetails(WidgetService.APPLICATION_DETAILS)
                 .component(WidgetConfigureActivity.class.getName())
-                .load(ProxyRoot.REAL_CLIENTS_ID, HousemateObject.EVERYTHING, ProxyRealClient.DEVICES_ID, HousemateObject.EVERYTHING)
+                .load(ProxyRoot.SERVERS_ID, HousemateObject.EVERYTHING, ProxyServer.DEVICES_ID, HousemateObject.EVERYTHING)
                 .callback(this)
                 .start();
     }
@@ -97,7 +97,7 @@ public class WidgetConfigureActivity
     @Override
     public void allLoaded() {
         setStatus("Pick device to control");
-        listenerRegistrations.add(clientHelper.getRoot().getRealClients().addObjectListener(new ClientListListener(), true));
+        listenerRegistrations.add(clientHelper.getRoot().getServers().addObjectListener(new ClientListListener(), true));
         listAdapter.notifyDataSetChanged();
         listAdapter.setNotifyOnChange(true);
     }
@@ -136,24 +136,24 @@ public class WidgetConfigureActivity
         });
     }
 
-    private class ClientListListener implements ListListener<AndroidProxyRealClient> {
+    private class ClientListListener implements ListListener<AndroidProxyServer> {
 
         @Override
-        public void elementAdded(AndroidProxyRealClient client) {
+        public void elementAdded(AndroidProxyServer client) {
             listenerRegistrations.add(client.getDevices().addObjectListener(new DeviceListListener(client), true));
         }
 
         @Override
-        public void elementRemoved(AndroidProxyRealClient client) {
+        public void elementRemoved(AndroidProxyServer client) {
             // should probably clean up the list! todo
         }
     }
 
     private class DeviceListListener implements ListListener<AndroidProxyDevice> {
 
-        private final AndroidProxyRealClient client;
+        private final AndroidProxyServer client;
 
-        private DeviceListListener(AndroidProxyRealClient client) {
+        private DeviceListListener(AndroidProxyServer client) {
             this.client = client;
         }
 
@@ -171,15 +171,15 @@ public class WidgetConfigureActivity
 
     private class DeviceInfo {
 
-        private final AndroidProxyRealClient client;
+        private final AndroidProxyServer client;
         private final AndroidProxyDevice device;
 
-        private DeviceInfo(AndroidProxyRealClient client, AndroidProxyDevice device) {
+        private DeviceInfo(AndroidProxyServer client, AndroidProxyDevice device) {
             this.client = client;
             this.device = device;
         }
 
-        public AndroidProxyRealClient getClient() {
+        public AndroidProxyServer getClient() {
             return client;
         }
 

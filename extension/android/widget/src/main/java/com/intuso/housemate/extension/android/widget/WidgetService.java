@@ -14,8 +14,8 @@ import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.realclient.RealClient;
 import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.api.object.server.Server;
 import com.intuso.housemate.extension.android.widget.handler.WidgetHandler;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.ProxyRoot;
@@ -93,7 +93,7 @@ public class WidgetService extends HousemateService {
                 getRouter())
                 .applicationDetails(APPLICATION_DETAILS)
                 .component(WidgetService.class.getName())
-                .load(ProxyRoot.REAL_CLIENTS_ID, HousemateObject.EVERYTHING, RealClient.DEVICES_ID)
+                .load(ProxyRoot.SERVERS_ID, HousemateObject.EVERYTHING, Server.DEVICES_ID)
                 .callback(new LoadManager.Callback() {
                               @Override
                               public void failed(HousemateObject.TreeLoadInfo path) {
@@ -156,7 +156,7 @@ public class WidgetService extends HousemateService {
             status = Status.NOT_CONNECTED;
         else if(getRoot().getApplicationInstanceStatus() != ApplicationInstanceStatus.Allowed)
             status = Status.NOT_ALLOWED;
-        else if(getRoot().getRealClients() == null)
+        else if(getRoot().getServers() == null)
             status = Status.NOT_LOADED;
         else
             status = Status.LOADED;

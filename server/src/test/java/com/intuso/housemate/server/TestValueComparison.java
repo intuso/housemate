@@ -165,7 +165,7 @@ public class TestValueComparison {
         device.values.doubleValue(0.0);
         assertNull(vc.getError());
         assertSatisfied(vc, false);
-        lr = injector.getInstance(RootBridge.class).getRealClients().get("client").getDevices().get("device").getValues().get("dv").addObjectListener(new ValueListener<ValueBridge>() {
+        lr = injector.getInstance(RootBridge.class).getServers().get("client").getDevices().get("device").getValues().get("dv").addObjectListener(new ValueListener<ValueBridge>() {
             @Override
             public void valueChanging(ValueBridge value) {
                 // do nothing

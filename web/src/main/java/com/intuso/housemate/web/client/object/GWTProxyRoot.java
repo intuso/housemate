@@ -3,7 +3,7 @@ package com.intuso.housemate.web.client.object;
 import com.google.inject.Inject;
 import com.intuso.housemate.api.comms.Router;
 import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.realclient.RealClientData;
+import com.intuso.housemate.api.object.server.ServerData;
 import com.intuso.housemate.object.proxy.ProxyObject;
 import com.intuso.housemate.object.proxy.ProxyRoot;
 import com.intuso.housemate.web.client.ioc.GWTGinjector;
@@ -14,7 +14,7 @@ import com.intuso.utilities.properties.api.PropertyRepository;
 /**
  */
 public class GWTProxyRoot extends ProxyRoot<
-            GWTProxyRealClient, GWTProxyList<RealClientData, GWTProxyRealClient>,
+        GWTProxyServer, GWTProxyList<ServerData, GWTProxyServer>,
             GWTProxyRoot> {
 
     private final GWTGinjector injector;

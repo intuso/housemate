@@ -175,7 +175,7 @@ public class ServerProxyRoot
             if (applicationInstanceStatus == ApplicationInstanceStatus.Allowed && getData().getChildData().size() == 0)
                 sendMessage(RealRoot.SEND_INITIAL_DATA, NoPayload.INSTANCE);
         } catch(Throwable t) {
-            getLog().e("Failed to send message to load real client's initial data", t);
+            getLog().e("Failed to send message to load server's initial data", t);
         }
     }
 

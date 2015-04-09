@@ -7,8 +7,8 @@ import com.google.inject.Inject;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.web.client.bootstrap.widget.hardware.HardwareList;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
-import com.intuso.housemate.web.client.object.GWTProxyRealClient;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
+import com.intuso.housemate.web.client.object.GWTProxyServer;
 import com.intuso.housemate.web.client.place.HardwaresPlace;
 
 import java.util.Set;
@@ -22,7 +22,7 @@ import java.util.Set;
  */
 public class HardwaresView extends FlowPanel
         implements com.intuso.housemate.web.client.ui.view.HardwaresView,
-            ListListener<GWTProxyRealClient>,
+            ListListener<GWTProxyServer>,
             SelectedIdsChangedHandler {
 
     private final PlaceHistoryMapper placeHistoryMapper;
@@ -30,7 +30,7 @@ public class HardwaresView extends FlowPanel
     @Inject
     public HardwaresView(PlaceHistoryMapper placeHistoryMapper, GWTProxyRoot root) {
         this.placeHistoryMapper = placeHistoryMapper;
-        root.getRealClients().addObjectListener(this, true);
+        root.getServers().addObjectListener(this, true);
     }
 
     @Override
@@ -44,12 +44,12 @@ public class HardwaresView extends FlowPanel
     }
 
     @Override
-    public void elementAdded(GWTProxyRealClient client) {
+    public void elementAdded(GWTProxyServer client) {
         add(new HardwareList(client.getName(), client.getTypes(), client.getHardwares(), client.getAddHardwareCommand()));
     }
 
     @Override
-    public void elementRemoved(GWTProxyRealClient client) {
+    public void elementRemoved(GWTProxyServer client) {
         // do nothing atm
     }
 }

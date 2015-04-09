@@ -12,10 +12,10 @@ import com.intuso.housemate.api.comms.message.StringPayload;
 import com.intuso.housemate.api.object.HousemateData;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.realclient.HasRealClients;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.api.object.server.HasServers;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -32,14 +32,14 @@ import java.util.Set;
  * @param <ROOT> the type of the root
  */
 public abstract class ProxyRoot<
-            REAL_CLIENT extends ProxyRealClient<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
-            REAL_CLIENTS extends ProxyList<?, REAL_CLIENT, REAL_CLIENTS>,
-            ROOT extends ProxyRoot<REAL_CLIENT, REAL_CLIENTS, ROOT>>
+            SERVER extends ProxyServer<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
+            SERVERS extends ProxyList<?, SERVER, SERVERS>,
+            ROOT extends ProxyRoot<SERVER, SERVERS, ROOT>>
         extends ProxyObject<RootData, HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>, ROOT, RootListener<? super ROOT>>
-        implements Root<ROOT>, HasRealClients<REAL_CLIENTS>,
+        implements Root<ROOT>, HasServers<SERVERS>,
             ObjectListener<ProxyObject<?, ?, ?, ?, ?>> {
 
-    public final static String REAL_CLIENTS_ID = "real-clients";
+    public final static String SERVERS_ID = "servers";
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = Maps.newHashMap();
 
@@ -171,8 +171,8 @@ public abstract class ProxyRoot<
     }
 
     @Override
-    public REAL_CLIENTS getRealClients() {
-        return (REAL_CLIENTS) getChild(REAL_CLIENTS_ID);
+    public SERVERS getServers() {
+        return (SERVERS) getChild(SERVERS_ID);
     }
 
     @Override

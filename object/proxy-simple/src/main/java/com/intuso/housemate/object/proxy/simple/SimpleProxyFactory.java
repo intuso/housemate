@@ -14,7 +14,7 @@ import com.intuso.housemate.api.object.list.ListData;
 import com.intuso.housemate.api.object.option.OptionData;
 import com.intuso.housemate.api.object.parameter.ParameterData;
 import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.api.object.realclient.RealClientData;
+import com.intuso.housemate.api.object.server.ServerData;
 import com.intuso.housemate.api.object.subtype.SubTypeData;
 import com.intuso.housemate.api.object.task.TaskData;
 import com.intuso.housemate.api.object.type.TypeData;
@@ -44,7 +44,7 @@ public class SimpleProxyFactory implements HousemateObjectFactory<HousemateData<
     private final HousemateObjectFactory<OptionData, SimpleProxyOption> optionFactory;
     private final HousemateObjectFactory<ParameterData, SimpleProxyParameter> parameterFactory;
     private final HousemateObjectFactory<PropertyData, SimpleProxyProperty> propertyFactory;
-    private final HousemateObjectFactory<RealClientData, SimpleProxyRealClient> realClientFactory;
+    private final HousemateObjectFactory<ServerData, SimpleProxyServer> serverFactory;
     private final HousemateObjectFactory<SubTypeData, SimpleProxySubType> subTypeFactory;
     private final HousemateObjectFactory<TaskData,SimpleProxyTask> taskFactory;
     private final HousemateObjectFactory<TypeData<HousemateData<?>>, SimpleProxyType> typeFactory;
@@ -64,7 +64,7 @@ public class SimpleProxyFactory implements HousemateObjectFactory<HousemateData<
                               HousemateObjectFactory<OptionData, SimpleProxyOption> optionFactory,
                               HousemateObjectFactory<ParameterData, SimpleProxyParameter> parameterFactory,
                               HousemateObjectFactory<PropertyData, SimpleProxyProperty> propertyFactory,
-                              HousemateObjectFactory<RealClientData, SimpleProxyRealClient> realClientFactory,
+                              HousemateObjectFactory<ServerData, SimpleProxyServer> serverFactory,
                               HousemateObjectFactory<SubTypeData, SimpleProxySubType> subTypeFactory,
                               HousemateObjectFactory<TaskData,SimpleProxyTask> taskFactory,
                               HousemateObjectFactory<TypeData<HousemateData<?>>, SimpleProxyType> typeFactory,
@@ -82,7 +82,7 @@ public class SimpleProxyFactory implements HousemateObjectFactory<HousemateData<
         this.optionFactory = optionFactory;
         this.parameterFactory = parameterFactory;
         this.propertyFactory = propertyFactory;
-        this.realClientFactory = realClientFactory;
+        this.serverFactory = serverFactory;
         this.subTypeFactory = subTypeFactory;
         this.taskFactory = taskFactory;
         this.typeFactory = typeFactory;
@@ -118,8 +118,8 @@ public class SimpleProxyFactory implements HousemateObjectFactory<HousemateData<
             return propertyFactory.create((PropertyData) data);
         else if(data instanceof AutomationData)
             return automationFactory.create((AutomationData) data);
-        else if(data instanceof RealClientData)
-            return realClientFactory.create((RealClientData) data);
+        else if(data instanceof ServerData)
+            return serverFactory.create((ServerData) data);
         else if(data instanceof SubTypeData)
             return subTypeFactory.create((SubTypeData) data);
         else if(data instanceof TypeData)
