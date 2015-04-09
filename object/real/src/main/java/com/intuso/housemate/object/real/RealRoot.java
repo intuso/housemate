@@ -40,7 +40,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
-import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 import java.util.List;
 
@@ -69,15 +68,16 @@ public class RealRoot
     public final static String ADD_DEVICE_ID = "add-device";
     public final static String ADD_AUTOMATION_ID = "add-automation";
 
-    private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
-    private final RealList<HardwareData, RealHardware> hardwares;
-    private final RealCommand addHardwareCommand;
-    private final RealList<DeviceData, RealDevice> devices;
-    private final RealCommand addDeviceCommand;
-    private final RealList<AutomationData, RealAutomation> automations;
-    private final RealCommand addAutomationCommand;
     private final RealList<ApplicationData, RealApplication> applications;
+    private final RealList<AutomationData, RealAutomation> automations;
+    private final RealList<DeviceData, RealDevice> devices;
+    private final RealList<HardwareData, RealHardware> hardwares;
+    private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
     private final RealList<UserData, RealUser> users;
+
+    private final RealCommand addAutomationCommand;
+    private final RealCommand addDeviceCommand;
+    private final RealCommand addHardwareCommand;
     private final RealCommand addUserCommand;
 
     private final Router.Registration routerRegistration;
@@ -91,8 +91,6 @@ public class RealRoot
                     ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType,
                     HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType) {
         super(log, listenersFactory, new RootData());
-
-        properties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, properties);
 
         this.applications = new RealList<>(log, listenersFactory, APPLICATIONS_ID, "Applications", "Applications");
         this.automations = new RealList<>(log, listenersFactory, AUTOMATIONS_ID, "Automations", "Automations");
