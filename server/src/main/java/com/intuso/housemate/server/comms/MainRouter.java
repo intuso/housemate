@@ -52,7 +52,7 @@ public final class MainRouter extends Router {
         messageProcessor.start();
 
         // register the local client
-        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION_DETAILS, RealRoot.class.getName());
+        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION_DETAILS, "Internal Client");
     }
 
     public final void startExternalRouters() {

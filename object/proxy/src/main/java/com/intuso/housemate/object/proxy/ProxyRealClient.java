@@ -103,6 +103,11 @@ public abstract class ProxyRealClient<
     }
 
     @Override
+    public COMMAND getRenameCommand() {
+        return (COMMAND) getChild(RENAME_ID);
+    }
+
+    @Override
     public void childObjectAdded(String childName, ProxyObject<?, ?, ?, ?, ?> child) {
         // do nothing
     }

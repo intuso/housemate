@@ -19,6 +19,7 @@ import com.intuso.housemate.api.object.realclient.RealClientData;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.api.object.root.RootData;
 import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.persistence.api.Persistence;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -42,11 +43,13 @@ public class RootBridge
     private final ListenersFactory listenersFactory;
     private final ListBridge<RealClientData, RealClientBridge> realClients;
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<>();
+    private final Persistence persistence;
 
     @Inject
-    public RootBridge(Log log, ListenersFactory listenersFactory) {
+    public RootBridge(Log log, ListenersFactory listenersFactory, Persistence persistence) {
         super(log, listenersFactory, new RootData());
         this.listenersFactory = listenersFactory;
+        this.persistence = persistence;
         realClients = new ListBridge<>(log, listenersFactory, new ListData<RealClientData>(REAL_CLIENTS_ID, "Clients", "Clients"));
         addChild(realClients);
         init(null);
@@ -114,7 +117,7 @@ public class RootBridge
     }
 
     public void addProxyRoot(ServerProxyRoot root) {
-        realClients.add(new RealClientBridge(getLog(), getListenersFactory(), root));
+        realClients.add(new RealClientBridge(getLog(), getListenersFactory(), root, persistence));
     }
 
     private void objectAdded(String path, HousemateObject<?, ?, ?, ?> object) {

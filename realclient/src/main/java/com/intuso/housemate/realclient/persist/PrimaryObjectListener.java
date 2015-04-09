@@ -1,5 +1,6 @@
 package com.intuso.housemate.realclient.persist;
 
+import com.intuso.housemate.api.object.Renameable;
 import com.intuso.housemate.api.object.primary.PrimaryListener;
 import com.intuso.housemate.api.object.type.TypeInstance;
 import com.intuso.housemate.api.object.type.TypeInstanceMap;
@@ -13,8 +14,6 @@ import com.intuso.utilities.log.Log;
  */
 public abstract class PrimaryObjectListener<PO extends RealPrimaryObject<?, ?, ?>> implements PrimaryListener<PO> {
 
-    public final String NAME_PARAMETER_ID = "name";
-
     private final Log log;
     private final Persistence persistence;
 
@@ -27,7 +26,7 @@ public abstract class PrimaryObjectListener<PO extends RealPrimaryObject<?, ?, ?
     public void renamed(PO primaryObject, String oldName, String newName) {
         try {
             TypeInstanceMap values = persistence.getValues(primaryObject.getPath());
-            values.getChildren().put(NAME_PARAMETER_ID, new TypeInstances(new TypeInstance(newName)));
+            values.getChildren().put(Renameable.NAME_ID, new TypeInstances(new TypeInstance(newName)));
             persistence.saveValues(primaryObject.getPath(), values);
         } catch(Throwable t) {
             log.e("Failed to update persisted name", t);

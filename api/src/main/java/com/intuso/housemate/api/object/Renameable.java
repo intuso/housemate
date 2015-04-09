@@ -9,6 +9,7 @@ public interface Renameable<RENAME_COMMAND extends Command<?, ?, ?>> {
 
     public final static String RENAME_ID = "rename";
     public final static String NAME_ID = "name";
+    public final static String NEW_NAME = "new-name";
 
     /**
      * Gets the rename command

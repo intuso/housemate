@@ -1,6 +1,7 @@
 package com.intuso.housemate.api.object.realclient;
 
 import com.intuso.housemate.api.object.BaseHousemateObject;
+import com.intuso.housemate.api.object.Renameable;
 import com.intuso.housemate.api.object.application.Application;
 import com.intuso.housemate.api.object.application.HasApplications;
 import com.intuso.housemate.api.object.automation.Automation;
@@ -33,7 +34,8 @@ public interface RealClient<
             HasDevices<DEVICES>,
             HasAutomations<AUTOMATIONS>,
             HasApplications<APPLICATIONS>,
-            HasUsers<USERS> {
+            HasUsers<USERS>,
+            Renameable<COMMAND> {
 
     public final static String APPLICATIONS_ID = "applications";
     public final static String AUTOMATIONS_ID = "automations";

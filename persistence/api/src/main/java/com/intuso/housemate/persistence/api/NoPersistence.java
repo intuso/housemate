@@ -36,6 +36,11 @@ public class NoPersistence implements Persistence {
     }
 
     @Override
+    public TypeInstanceMap getOrCreateValues(String[] path) throws HousemateException {
+        return new TypeInstanceMap();
+    }
+
+    @Override
     public void saveValues(String[] path, TypeInstanceMap details) throws HousemateException {
         // do nothing
     }

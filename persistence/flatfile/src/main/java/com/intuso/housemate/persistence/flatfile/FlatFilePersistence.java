@@ -106,6 +106,15 @@ public class FlatFilePersistence implements Persistence {
     }
 
     @Override
+    public TypeInstanceMap getOrCreateValues(String[] path) throws HousemateException {
+        try {
+            return getValues(path);
+        } catch(DetailsNotFoundException e) {
+            return new TypeInstanceMap();
+        }
+    }
+
+    @Override
     public void saveValues(String[] path, TypeInstanceMap details) throws HousemateException {
         try {
             String[] newPath = new String[path.length];

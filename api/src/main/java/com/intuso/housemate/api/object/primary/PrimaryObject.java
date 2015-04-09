@@ -31,7 +31,6 @@ public interface PrimaryObject<
             Removeable<REMOVE_COMMAND> {
 
     public final static String CONNECTED_ID = "connected";
-    public final static String NEW_NAME = "new-name";
     public final static String ERROR_ID = "error";
 
     /**

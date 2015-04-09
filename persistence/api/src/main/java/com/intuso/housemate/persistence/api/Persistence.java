@@ -13,6 +13,7 @@ public interface Persistence {
     public void saveTypeInstances(String[] path, TypeInstances instances) throws HousemateException;
     public Set<String> getValuesKeys(String[] path) throws DetailsNotFoundException, HousemateException;
     public TypeInstanceMap getValues(String[] path) throws DetailsNotFoundException, HousemateException;
+    public TypeInstanceMap getOrCreateValues(String[] path) throws HousemateException;
     public void saveValues(String[] path, TypeInstanceMap details) throws HousemateException;
     public void removeValues(String[] path) throws HousemateException;
 }
