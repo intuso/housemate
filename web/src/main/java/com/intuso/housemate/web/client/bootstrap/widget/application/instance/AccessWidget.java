@@ -17,8 +17,8 @@ public class AccessWidget extends CommandToggleSwitch {
     private GWTProxyApplicationInstance applicationInstance;
 
     public AccessWidget() {
-        setTrueLabel("Allowed");
-        setFalseLabel("Rejected");
+        setOnText("Allowed");
+        setOffText("Rejected");
     }
 
     public void setApplicationInstance(GWTProxyApplicationInstance applicationInstance) {

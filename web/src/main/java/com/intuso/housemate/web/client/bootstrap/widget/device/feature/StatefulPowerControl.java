@@ -1,15 +1,9 @@
 package com.intuso.housemate.web.client.bootstrap.widget.device.feature;
 
 import com.google.common.collect.Sets;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.command.CommandListener;
 import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.web.client.Housemate;
-import com.intuso.housemate.web.client.bootstrap.extensions.ToggleSwitch;
-import com.intuso.housemate.web.client.event.PerformCommandEvent;
+import com.intuso.housemate.web.client.bootstrap.extensions.CommandToggleSwitch;
 import com.intuso.housemate.web.client.object.*;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeature;
 
@@ -72,63 +66,27 @@ public class StatefulPowerControl
         return new StatefulPowerControlWidget();
     }
 
-    public class StatefulPowerControlWidget extends ToggleSwitch
-            implements ValueListener<GWTProxyValue>, CommandListener<GWTProxyCommand>,ValueChangeHandler<Boolean> {
+    public class StatefulPowerControlWidget extends CommandToggleSwitch {
 
         private StatefulPowerControlWidget() {
-
-            setTrueLabel("On");
-            setFalseLabel("Off");
-
-            GWTProxyValue isOn = getIsOnValue();
-            if(isOn != null)
-                isOn.addObjectListener(this);
-            setValue(isOn());
-
-            if(getOnCommand() != null && getOffCommand() != null) {
-                getOnCommand().addObjectListener(this);
-                getOffCommand().addObjectListener(this);
-                commandEnabled(/* args not used so can be anything */ null, false);
-            }
-
-            addValueChangeHandler(this);
+            setOnText("On");
+            setOffText("Off");
+            setValue(getIsOnValue());
         }
 
         @Override
-        public void valueChanging(GWTProxyValue value) {
-            // do nothing
+        protected boolean isTrue() {
+            return isOn();
         }
 
         @Override
-        public void valueChanged(GWTProxyValue value) {
-            setValue(isOn());
-            setEnabled(true);
+        protected GWTProxyCommand getTrueCommand() {
+            return getOnCommand();
         }
 
         @Override
-        public void commandEnabled(GWTProxyCommand command, boolean enabled) {
-            setEnabled(getOnCommand().isEnabled() && getOffCommand().isEnabled());
-        }
-
-        @Override
-        public void commandStarted(GWTProxyCommand command, String user) {
-            // do nothing
-        }
-
-        @Override
-        public void commandFinished(GWTProxyCommand command) {
-            setEnabled(true);
-        }
-
-        @Override
-        public void commandFailed(GWTProxyCommand command, String error) {
-            setEnabled(true);
-        }
-
-        @Override
-        public void onValueChange(ValueChangeEvent<Boolean> event) {
-            setEnabled(false);
-            Housemate.INJECTOR.getEventBus().fireEvent(new PerformCommandEvent(event.getValue() ? getOnCommand() : getOffCommand(), null));
+        protected GWTProxyCommand getFalseCommand() {
+            return getOffCommand();
         }
     }
 }

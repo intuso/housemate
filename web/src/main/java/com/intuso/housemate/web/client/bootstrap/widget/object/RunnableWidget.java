@@ -10,8 +10,8 @@ public class RunnableWidget extends CommandToggleSwitch {
     private Runnable<GWTProxyCommand, GWTProxyValue> object;
 
     public RunnableWidget() {
-        setTrueLabel("Running");
-        setFalseLabel("Stopped");
+        setOnText("Running");
+        setOffText("Stopped");
     }
 
     public RunnableWidget(Runnable<GWTProxyCommand, GWTProxyValue> object) {
@@ -35,11 +35,11 @@ public class RunnableWidget extends CommandToggleSwitch {
 
     @Override
     protected GWTProxyCommand getTrueCommand() {
-        return object.getStopCommand();
+        return object.getStartCommand();
     }
 
     @Override
     protected GWTProxyCommand getFalseCommand() {
-        return object.getStartCommand();
+        return object.getStopCommand();
     }
 }

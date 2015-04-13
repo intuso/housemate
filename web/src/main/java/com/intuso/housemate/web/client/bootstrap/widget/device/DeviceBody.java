@@ -31,16 +31,16 @@ public class DeviceBody extends Composite {
 
     public DeviceBody(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyDevice device) {
         initWidget(ourUiBinder.createAndBindUi(this));
+        for(String featureId : device.getFeatureIds()) {
+            GWTProxyFeature feature = device.getFeature(featureId);
+            if(feature != null)
+                featuresTable.addRow(feature.getTitle(), feature.getWidget(types));
+        }
         commandsList.setTypes(types);
         commandsList.filter(device.getCustomCommandIds(), true);
         commandsList.setList(device.getCommands());
         valuesList.setTypes(types);
         valuesList.filter(device.getCustomValueIds(), true);
         valuesList.setList(device.getValues());
-        for(String featureId : device.getFeatureIds()) {
-            GWTProxyFeature feature = device.getFeature(featureId);
-            if(feature != null)
-                featuresTable.addRow(feature.getTitle(), feature.getWidget(types));
-        }
     }
 }

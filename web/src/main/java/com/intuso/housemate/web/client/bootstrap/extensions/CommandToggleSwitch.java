@@ -2,8 +2,11 @@ package com.intuso.housemate.web.client.bootstrap.extensions;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Window;
 import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.web.client.Housemate;
+import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
 
@@ -20,7 +23,7 @@ public abstract class CommandToggleSwitch
 
     protected final void setValue(GWTProxyValue value) {
         value.addObjectListener(this);
-        setValue(isTrue());
+        setState(isTrue(), true);
         addValueChangeHandler(this);
     }
 
@@ -31,8 +34,7 @@ public abstract class CommandToggleSwitch
 
     @Override
     public void valueChanged(GWTProxyValue value) {
-        setValue(isTrue());
-        setEnabled(true);
+        setState(isTrue(), true);
     }
 
     @Override
@@ -42,22 +44,22 @@ public abstract class CommandToggleSwitch
 
     @Override
     public void commandFinished(GWTProxyCommand command) {
-        setEnabled(true);
+        setReadonly(false);
+        setIndeterminate(false);
+        setState(isTrue(), true);
     }
 
     @Override
     public void commandFailed(GWTProxyCommand command, String error) {
-        setEnabled(true);
-        // todo notify the failure
+        Window.alert("Command " + command.getName() + " failed to complete: " + error);
+        commandFinished(command);
     }
 
     @Override
     public void onValueChange(ValueChangeEvent<Boolean> event) {
-        setEnabled(false);
-        if(event.getValue())
-            getFalseCommand().perform(this);
-        else
-            getTrueCommand().perform(this);
+        setReadonly(true);
+        setIndeterminate(true);
+        Housemate.INJECTOR.getEventBus().fireEvent(new PerformCommandEvent(event.getValue() ? getTrueCommand() : getFalseCommand(), null, this));
     }
 
     protected abstract boolean isTrue();
