@@ -44,8 +44,10 @@ public abstract class RealPrimaryObject<
             public void perform(TypeInstanceMap values) throws HousemateException {
                 if(values != null && values.getChildren().containsKey(NAME_ID)) {
                     String newName = values.getChildren().get(NAME_ID).getFirstValue();
-                    if (newName != null && !RealPrimaryObject.this.getData().getName().equals(newName)) {
+                    if (newName != null && !RealPrimaryObject.this.getName().equals(newName)) {
                         RealPrimaryObject.this.getData().setName(newName);
+                        for(LISTENER listener : RealPrimaryObject.this.getObjectListeners())
+                            listener.renamed((PRIMARY_OBJECT)RealPrimaryObject.this, RealPrimaryObject.this.getName(), newName);
                         RealPrimaryObject.this.sendMessage(NEW_NAME, new StringPayload(newName));
                     }
                 }
