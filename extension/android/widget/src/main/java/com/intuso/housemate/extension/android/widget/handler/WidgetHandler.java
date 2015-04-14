@@ -128,7 +128,7 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
                         status = Status.NO_DEVICE;
                     updateWidget();
                 }
-            }, "androidWidgetLoad-" + LOAD_ID++, HousemateObject.TreeLoadInfo.create(deviceId)));
+            }, HousemateObject.TreeLoadInfo.create(deviceId)));
         }
     }
 

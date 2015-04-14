@@ -39,8 +39,7 @@ public class Application extends ObjectWidget<GWTProxyApplication> {
                     loading(false);
                     setObject(applications.get(childOverview.getId()));
                 }
-            }, "loadApplication-" + childOverview.getId(),
-                    new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+            }, new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
         }
     }
     

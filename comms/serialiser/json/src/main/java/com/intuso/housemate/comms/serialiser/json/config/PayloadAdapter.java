@@ -49,7 +49,7 @@ public class PayloadAdapter extends RuntimeTypeAdapterFactory<Message.Payload> {
         registerSubtype(HousemateObject.TreeLoadInfo.class, "treeLoadInfo");
         registerSubtype(HousemateObject.TreeData.class, "tree");
         registerSubtype(HousemateObject.LoadRequest.class, "loadRequest");
-        registerSubtype(HousemateObject.LoadResponse.class, "loadResponse");
+        registerSubtype(HousemateObject.LoadFinished.class, "loadResponse");
         registerSubtype(NoChildrenData.class, "noChildren");
         registerSubtype(ApplicationData.class, "application");
         registerSubtype(ApplicationInstanceData.class, "applicationInstance");

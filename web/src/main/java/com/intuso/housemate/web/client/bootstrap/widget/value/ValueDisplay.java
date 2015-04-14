@@ -44,7 +44,7 @@ public interface ValueDisplay extends IsWidget, ValueListener<com.intuso.housema
                         if (loadedType != null)
                             panel.setWidget(create(value, loadedType));
                     }
-                }, "loadValueType" + value.getId(), new HousemateObject.TreeLoadInfo(value.getTypeId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+                }, new HousemateObject.TreeLoadInfo(value.getTypeId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
                 return panel;
             }
         }

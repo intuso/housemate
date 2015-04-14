@@ -38,8 +38,7 @@ public class User extends ObjectWidget<GWTProxyUser> {
                     loading(false);
                     setObject(users.get(childOverview.getId()));
                 }
-            }, "loadUser-" + childOverview.getId(),
-                    new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+            }, new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
         }
     }
 

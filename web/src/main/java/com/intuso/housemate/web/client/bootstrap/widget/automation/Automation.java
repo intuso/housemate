@@ -39,8 +39,7 @@ public class Automation extends ObjectWidget<GWTProxyAutomation> {
                     loading(false);
                     setObject(automations.get(childOverview.getId()));
                 }
-            }, "loadAutomation-" + childOverview.getId(),
-                    new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+            }, new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
         }
     }
 

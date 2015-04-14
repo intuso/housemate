@@ -39,8 +39,7 @@ public class Device extends ObjectWidget<GWTProxyDevice> {
                     loading(false);
                     setObject(devices.get(childOverview.getId()));
                 }
-            }, "loadDevice-" + childOverview.getId(),
-                    new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+            }, new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
         }
     }
 

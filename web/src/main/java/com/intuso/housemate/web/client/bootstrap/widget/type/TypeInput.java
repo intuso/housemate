@@ -44,7 +44,7 @@ public interface TypeInput extends IsWidget, HasUserInputHandlers {
                         if (loadedType != null)
                             lazyLoaded.setWidget(_create(types, types.get(typeId), typeInstances));
                     }
-                }, "loadType-" + typeId, new HousemateObject.TreeLoadInfo(typeId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+                }, new HousemateObject.TreeLoadInfo(typeId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
                 return lazyLoaded;
             }
         }

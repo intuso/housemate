@@ -1,5 +1,6 @@
 package com.intuso.housemate.api.object;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.intuso.housemate.api.HousemateException;
@@ -37,7 +38,8 @@ public abstract class HousemateObject<
     public final static String ADD_TYPE = "add";
     public final static String REMOVE_TYPE = "remove";
     public final static String LOAD_REQUEST = "load-request";
-    public final static String LOAD_RESPONSE = "load-response";
+    public final static String LOAD_RESPONSE = "load-response-part";
+    public final static String LOAD_FINISHED = "load-response-finished";
     public final static String CHILD_OVERVIEWS_REQUEST = "child-overviews-request";
     public final static String CHILD_OVERVIEWS_RESPONSE = "child-overviews-response";
     public final static String CHILD_ADDED = "child-added";
@@ -305,7 +307,6 @@ public abstract class HousemateObject<
         private static final long serialVersionUID = -1L;
 
         private String id;
-        private boolean load;
         private Map<String, TreeLoadInfo> children;
 
         public static TreeLoadInfo create(String ... path) {
@@ -372,22 +373,6 @@ public abstract class HousemateObject<
 
         public void setId(String id) {
             this.id = id;
-        }
-
-        /**
-         * Is there data to load
-         * @return true if there is data to load
-         */
-        public boolean isLoad() {
-            return load;
-        }
-
-        /**
-         * Set whether there is data to load
-         * @param load true if there is data to load
-         */
-        public void setLoad(boolean load) {
-            this.load = load;
         }
 
         /**
@@ -502,123 +487,120 @@ public abstract class HousemateObject<
 
         private static final long serialVersionUID = -1L;
 
-        private String loaderName;
-        private TreeLoadInfo loadInfo;
+        private String loaderId;
+        private List<TreeLoadInfo> treeLoadInfos;
 
         public LoadRequest() {}
 
         /**
-         * @param loadInfo the id of the child object to load
+         * @param treeLoadInfos the id of the child object to load
          */
-        public LoadRequest(String loaderName, TreeLoadInfo loadInfo) {
-            this.loaderName = loaderName;
-            this.loadInfo = loadInfo;
+        public LoadRequest(String loaderId, List<TreeLoadInfo> treeLoadInfos) {
+            this.loaderId = loaderId;
+            this.treeLoadInfos = treeLoadInfos;
         }
 
         /**
          * Get the loader name
          * @return the loader name
          */
-        public String getLoaderName() {
-            return loaderName;
+        public String getLoaderId() {
+            return loaderId;
         }
 
-        public void setLoaderName(String loaderName) {
-            this.loaderName = loaderName;
+        public void setLoaderId(String loaderId) {
+            this.loaderId = loaderId;
         }
 
         /**
          * Gets the id of the child object to load
          * @return the id of the child object to load
          */
-        public TreeLoadInfo getLoadInfo() {
-            return loadInfo;
+        public List<TreeLoadInfo> getTreeLoadInfos() {
+            return treeLoadInfos;
         }
 
-        public void setLoadInfo(TreeLoadInfo loadInfo) {
-            this.loadInfo = loadInfo;
+        public void setTreeLoadInfos(List<TreeLoadInfo> treeLoadInfos) {
+            this.treeLoadInfos = treeLoadInfos;
         }
 
         @Override
         public String toString() {
-            return loaderName + " " + loadInfo.getId();
+            return loaderId;
         }
 
         @Override
         public void ensureSerialisable() {
-            if(loadInfo != null)
-                loadInfo.ensureSerialisable();
+            if(treeLoadInfos != null && !(treeLoadInfos instanceof ArrayList))
+                treeLoadInfos = Lists.newArrayList(treeLoadInfos);
+            if(treeLoadInfos != null)
+                for(TreeLoadInfo treeLoadInfo : treeLoadInfos)
+                    treeLoadInfo.ensureSerialisable();
         }
     }
 
     /**
      * Message payload for a load response of a remote object
      */
-    public static class LoadResponse implements Message.Payload {
+    public static class LoadFinished implements Message.Payload {
 
         private static final long serialVersionUID = -1L;
 
-        private String loaderName;
-        private TreeData treeData;
-        private String error;
+        private String loaderId;
+        private List<String> errors;
 
-        public LoadResponse() {}
+        public LoadFinished() {}
 
-        public LoadResponse(String loaderName, TreeData treeData) {
-            this(loaderName, treeData, null);
+        public static LoadFinished forSuccess(String loaderName) {
+            return new LoadFinished(loaderName, null);
         }
 
-        public LoadResponse(String loaderName, TreeData treeData, String error) {
-            this.loaderName = loaderName;
-            this.treeData = treeData;
-            this.error = error;
+        public static LoadFinished forErrors(String loaderName, String ... errors) {
+            return forErrors(loaderName, Lists.newArrayList(errors));
+        }
+
+        public static LoadFinished forErrors(String loaderName, List<String> errors) {
+            return new LoadFinished(loaderName, errors);
+        }
+
+        private LoadFinished(String loaderId, List<String> errors) {
+            this.loaderId = loaderId;
+            this.errors = errors;
         }
 
         /**
          * Get the loader name
          * @return the loader name
          */
-        public String getLoaderName() {
-            return loaderName;
+        public String getLoaderId() {
+            return loaderId;
         }
 
-        public void setLoaderName(String loaderName) {
-            this.loaderName = loaderName;
-        }
-
-        /**
-         * Get the loaded object's data
-         * @return the loaded object's data
-         */
-        public TreeData getTreeData() {
-            return treeData;
-        }
-
-        public void setTreeData(TreeData treeData) {
-            this.treeData = treeData;
+        public void setLoaderId(String loaderId) {
+            this.loaderId = loaderId;
         }
 
         /**
          * Get the error that occurred
          * @return the error that occurred
          */
-        public String getError() {
-            return error;
+        public List<String> getErrors() {
+            return errors;
         }
 
-        public void setError(String error) {
-            this.error = error;
+        public void setErrors(List<String> errors) {
+            this.errors = errors;
         }
 
         @Override
         public String toString() {
-            return loaderName + " tree " + treeData.getId() + " " + (treeData.getData() != null ? "data" : (error != null ? "failed because " + error : ""));
+            return loaderId + " load finished" + (errors != null ? " and failed because " + Joiner.on(",").join(errors) : "");
         }
 
         @Override
         public void ensureSerialisable() {
-            if(treeData != null)
-                treeData.ensureSerialisable();
+            if(errors != null && !(errors instanceof Serializable))
+                errors = Lists.newArrayList(errors);
         }
     }
 }

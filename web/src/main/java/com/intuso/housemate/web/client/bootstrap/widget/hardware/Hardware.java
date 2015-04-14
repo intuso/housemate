@@ -39,8 +39,7 @@ public class Hardware extends ObjectWidget<GWTProxyHardware> {
                     loading(false);
                     setObject(hardwares.get(childOverview.getId()));
                 }
-            }, "loadHardware-" + childOverview.getId(),
-                    new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+            }, new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
         }
     }
     

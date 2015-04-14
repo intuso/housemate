@@ -188,7 +188,7 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?>> {
                 if(!rootCleared)
                     proxyRoot.clearLoadedObjects();
                 if(toLoad.size() > 0)
-                    proxyRoot.load(new LoadManager(callback, "clientHelper", toLoad));
+                    proxyRoot.load(new LoadManager(callback, toLoad));
                 else if(callback != null)
                     callback.allLoaded();
             }

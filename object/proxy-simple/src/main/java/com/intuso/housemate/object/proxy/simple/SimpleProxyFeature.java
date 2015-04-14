@@ -46,7 +46,7 @@ public abstract class SimpleProxyFeature implements ProxyFeature<SimpleProxyFeat
             public void allLoaded() {
                 listener.featureLoaded(device, SimpleProxyFeature.this);
             }
-        }, "featureLoader-" + listener.hashCode(), treeInfos));
+        }, treeInfos));
     }
 
     private HousemateObject.TreeLoadInfo makeTreeInfo(String objectName, Set<String> childNames) {

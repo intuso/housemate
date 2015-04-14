@@ -104,7 +104,7 @@ public class Housemate implements EntryPoint {
                         // force the page to reload by going to a "new" place
                         INJECTOR.getPlaceController().goTo(INJECTOR.getPlaceHistoryMapper().getPlace(History.getToken()));
                     }
-                }, "webInitialLoad", Lists.newArrayList(clientsLoadInfo)));
+                }, Lists.newArrayList(clientsLoadInfo)));
             }
         }
 

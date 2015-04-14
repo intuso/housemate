@@ -158,9 +158,7 @@ public class HousemateTweeter {
                             public void allLoaded() {
                                 root.getServers().addObjectListener(serverListListener, true);
                             }
-                        }, "twitterClientInitialLoad",
-                                new HousemateObject.TreeLoadInfo(ProxyRoot.SERVERS_ID),
-                                new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
+                        }, new HousemateObject.TreeLoadInfo(ProxyRoot.SERVERS_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
                         break;
                 }
             }

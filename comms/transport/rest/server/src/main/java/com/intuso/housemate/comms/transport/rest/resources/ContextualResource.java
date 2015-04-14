@@ -151,7 +151,7 @@ public class ContextualResource implements RootListener<SimpleProxyRoot>, Comman
                 public void allLoaded() {
                     // TODO, anything?
                 }
-            }, "RESTClientInitialLoad", new HousemateObject.TreeLoadInfo("devices",
+            }, new HousemateObject.TreeLoadInfo("devices",
                     new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
         }
     }

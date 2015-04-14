@@ -46,7 +46,7 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
             public void allLoaded() {
                 listener.featureLoaded(device, AndroidProxyFeature.this);
             }
-        }, "featureLoader-" + listener.hashCode(), treeInfos));
+        }, treeInfos));
     }
 
     private HousemateObject.TreeLoadInfo makeTreeInfo(String objectName, Set<String> childNames) {

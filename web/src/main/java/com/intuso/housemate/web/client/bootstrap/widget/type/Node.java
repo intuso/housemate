@@ -115,7 +115,7 @@ public class Node extends Composite implements HasObjectSelectedHandlers,
                         object.addChildListener(Node.this, true, false);
                         object.addAvailableChildrenListener(Node.this, true);
                     }
-                }, "treeBrowseNodeLoader-" + childOverview.getId(), new HousemateObject.TreeLoadInfo(childOverview.getId())));
+                }, new HousemateObject.TreeLoadInfo(childOverview.getId())));
             }
         }
         expanded = show;
