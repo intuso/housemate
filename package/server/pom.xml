@@ -14,7 +14,9 @@
     <description>Deployable packages for the Housemate server</description>
 
     <modules>
-        <module>pc</module>
+        <module>deb</module>
+        <module>jar</module>
+        <module>jsw</module>
     </modules>
 
 </project>

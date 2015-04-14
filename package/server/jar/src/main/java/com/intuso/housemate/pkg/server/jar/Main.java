@@ -1,4 +1,4 @@
-package com.intuso.housemate.pkg.server.pc;
+package com.intuso.housemate.pkg.server.jar;
 
 import com.intuso.housemate.api.HousemateException;
 

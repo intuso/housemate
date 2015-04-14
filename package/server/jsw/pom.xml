@@ -1,0 +1,141 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.intuso.housemate</groupId>
+        <artifactId>package-server</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+    </parent>
+
+	<artifactId>package-server-jsw</artifactId>
+    <packaging>jar</packaging>
+    <name>Housemate Package Server JSW</name>
+	<description>Housemate Server Java Service Wrapper</description>
+
+    <dependencies>
+
+        <!-- Jar module -->
+		<dependency>
+            <groupId>${project.groupId}</groupId>
+			<artifactId>package-server-jar</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+    </dependencies>
+
+	<build>
+        <plugins>
+            <!-- Wrap everything in a java service wrapper -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-empty-directory</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="${basedir}/target/jsw/housemate/logs" />
+                                <mkdir dir="${basedir}/target/jsw/housemate/tmp" />
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.9.0</version>
+                <configuration>
+                    <configurationDirectory>conf</configurationDirectory>
+                    <assembleDirectory>${project.build.directory}/jsw/housemate</assembleDirectory>
+                    <target>${project.build.directory}</target>
+                    <repositoryLayout>flat</repositoryLayout>
+                    <includeConfigurationDirectoryInClasspath>false</includeConfigurationDirectoryInClasspath>
+                    <defaultJvmSettings>
+                        <initialMemorySize>256M</initialMemorySize>
+                        <maxMemorySize>1024M</maxMemorySize>
+                        <extraArguments>
+                            <extraArgument>-Djava.library.path=lib</extraArgument>
+                            <extraArgument>-Dfile.encoding=UTF-8</extraArgument>
+                        </extraArguments>
+                    </defaultJvmSettings>
+                    <daemons>
+                        <daemon>
+                            <id>housemate</id>
+                            <mainClass>com.intuso.housemate.pkg.server.jar.Main</mainClass>
+                            <platforms>
+                                <platform>jsw</platform>
+                            </platforms>
+                            <generatorConfigurations>
+                                <generatorConfiguration>
+                                    <generator>jsw</generator>
+                                    <includes>
+                                        <include>linux-x86-32</include>
+                                        <include>linux-x86-64</include>
+                                        <include>windows-x86-32</include>
+                                        <include>windows-x86-64</include>
+                                    </includes>
+                                    <configuration>
+                                        <property>
+                                            <name>wrapper.logfile</name>
+                                            <value>logs/wrapper.log</value>
+                                        </property>
+                                        <property>
+                                            <name>wrapper.logfile.rollmode</name>
+                                            <value>SIZE</value>
+                                        </property>
+                                        <property>
+                                            <name>wrapper.logfile.maxsize</name>
+                                            <value>10m</value>
+                                        </property>
+                                        <property>
+                                            <name>wrapper.logfile.maxfiles</name>
+                                            <value>10</value>
+                                        </property>
+                                        <property>
+                                            <name>wrapper.ntservice.displayname</name>
+                                            <value>Intuso Housemate</value>
+                                        </property>
+                                    </configuration>
+                                </generatorConfiguration>
+                            </generatorConfigurations>
+                        </daemon>
+                    </daemons>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-jsw-scripts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>generate-daemons</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Zip up the jsw directory -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-5</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>${basedir}/jsw.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <!-- this is used for inheritance merges -->
+                        <phase>package</phase>
+                        <!-- append to the packaging phase. -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+	</build>
+</project>

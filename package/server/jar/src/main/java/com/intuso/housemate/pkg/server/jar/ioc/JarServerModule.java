@@ -1,4 +1,4 @@
-package com.intuso.housemate.pkg.server.pc.ioc;
+package com.intuso.housemate.pkg.server.jar.ioc;
 
 import com.google.inject.AbstractModule;
 import com.intuso.housemate.persistence.flatfile.ioc.FlatFilePersistenceModule;
@@ -14,12 +14,12 @@ import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
  * Time: 10:22
  * To change this template use File | Settings | File Templates.
  */
-public class PCServerModule extends AbstractModule {
+public class JarServerModule extends AbstractModule {
 
     private final WriteableMapPropertyRepository defaultProperties;
     private final PropertyRepository properties;
 
-    public PCServerModule(WriteableMapPropertyRepository defaultProperties, PropertyRepository properties) {
+    public JarServerModule(WriteableMapPropertyRepository defaultProperties, PropertyRepository properties) {
         this.defaultProperties = defaultProperties;
         this.properties = properties;
     }

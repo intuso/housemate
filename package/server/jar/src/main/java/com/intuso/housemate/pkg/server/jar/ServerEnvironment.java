@@ -1,10 +1,10 @@
-package com.intuso.housemate.pkg.server.pc;
+package com.intuso.housemate.pkg.server.jar;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.pkg.server.pc.ioc.PCServerModule;
+import com.intuso.housemate.pkg.server.jar.ioc.JarServerModule;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.api.PluginModule;
 import com.intuso.housemate.plugin.host.PluginManager;
@@ -68,7 +68,7 @@ public class ServerEnvironment {
         PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, args);
         setExtraDefaults(defaultProperties);
 
-        Injector injector = Guice.createInjector(new PCServerModule(defaultProperties, properties));
+        Injector injector = Guice.createInjector(new JarServerModule(defaultProperties, properties));
 
         Log log = injector.getInstance(Log.class);
 

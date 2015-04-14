@@ -1,4 +1,4 @@
-package com.intuso.housemate.pkg.server.pc;
+package com.intuso.housemate.pkg.server.jar;
 
 import com.google.common.io.ByteStreams;
 import com.intuso.housemate.web.server.service.CommsServiceImpl;
@@ -16,6 +16,7 @@ import java.io.InputStream;
  */
 public class StaticFilesServlet extends HttpServlet {
 
+    // class loader of web ui module where static files are located
     private final static ClassLoader CLASS_LOADER = CommsServiceImpl.class.getClassLoader();
 
     @Override

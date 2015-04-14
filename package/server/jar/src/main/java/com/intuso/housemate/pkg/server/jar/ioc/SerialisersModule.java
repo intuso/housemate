@@ -1,4 +1,4 @@
-package com.intuso.housemate.pkg.server.pc.ioc;
+package com.intuso.housemate.pkg.server.jar.ioc;
 
 import com.google.inject.AbstractModule;
 import com.intuso.housemate.comms.serialiser.javabin.ioc.JavabinSerialiserServerModule;
