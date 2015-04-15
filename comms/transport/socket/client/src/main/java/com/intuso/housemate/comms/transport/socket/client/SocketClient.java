@@ -34,8 +34,9 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
     public final static String HOST = "client.socket.host";
     public final static String PORT = "client.socket.port";
-    public final static String ACTIVITY_DELAY = "client.socket.activity-delay";
-    public final static String MAX_INACTIVE_TIME = "client.socket.max-inactive-time";
+    public final static String ACTIVITY_CHECK_DELAY = "client.socket.activity-check-delay";
+    public final static String POST_ACTIVITY_DELAY = "client.socket.post-activity-delay";
+    public final static String MAX_DISCONNECT_TIME = "client.socket.max-disconnect-time";
 
     private final PropertyRepository properties;
     private final StreamSerialiserFactory serialiserFactory;
@@ -80,13 +81,11 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
         listenerRegistrations.add(properties.addListener(HOST, this));
         listenerRegistrations.add(properties.addListener(PORT, this));
-        listenerRegistrations.add(properties.addListener(ACTIVITY_DELAY, this));
-        listenerRegistrations.add(properties.addListener(MAX_INACTIVE_TIME, this));
+        listenerRegistrations.add(properties.addListener(ACTIVITY_CHECK_DELAY, this));
+        listenerRegistrations.add(properties.addListener(POST_ACTIVITY_DELAY, this));
+        listenerRegistrations.add(properties.addListener(MAX_DISCONNECT_TIME, this));
 
-        activityMonitor = new ActivityMonitor();
-        propertyValueChanged(ACTIVITY_DELAY, null, properties.get(ACTIVITY_DELAY));
-        propertyValueChanged(MAX_INACTIVE_TIME, null, properties.get(MAX_INACTIVE_TIME));
-        activityMonitor.start();
+        checkActivityMonitor();
 
         checkConnection();
     }
@@ -145,24 +144,9 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
             getLog().d("Socket Client: host/port changed");
             _disconnect();
             checkConnection();
-        } else if(activityMonitor != null) {
-            if(key.equals(MAX_INACTIVE_TIME) && newValue != null) {
-                try {
-                    Long newMaxInactiveTime = Long.parseLong(properties.get(SocketClient.MAX_INACTIVE_TIME));
-                    getLog().d("Socket Client: " + MAX_INACTIVE_TIME + " changed to " + newMaxInactiveTime);
-                    activityMonitor.setMaxInactiveTime(newMaxInactiveTime);
-                } catch (NumberFormatException e) {
-                    getLog().e("Socket Client: Failed to parse " + MAX_INACTIVE_TIME + " new value " + properties.get(MAX_INACTIVE_TIME));
-                }
-            } else if(key.equals(ACTIVITY_DELAY) && newValue != null) {
-                try {
-                    Long newActivityDelay = Long.parseLong(properties.get(SocketClient.ACTIVITY_DELAY));
-                    getLog().d("Socket Client: " + ACTIVITY_DELAY + " changed to " + newActivityDelay);
-                    activityMonitor.setActivityDelay(newActivityDelay);
-                } catch (NumberFormatException e) {
-                    getLog().e("Socket Client: Failed to parse " + ACTIVITY_DELAY + " new value " + properties.get(ACTIVITY_DELAY));
-                }
-            }
+        } else if(key.equals(ACTIVITY_CHECK_DELAY) || key.equals(MAX_DISCONNECT_TIME) || key.equals(POST_ACTIVITY_DELAY)) {
+            getLog().d("Socket Client: activity params changed");
+            checkActivityMonitor();
         }
     }
 
@@ -172,11 +156,43 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
         checkConnection();
     }
 
-    public synchronized void checkConnection() {
+    private synchronized void checkConnection() {
         if(shouldBeConnected && networkAvailable && active)
             _ensureConnected();
         else
             _disconnect();
+    }
+
+    private synchronized void checkActivityMonitor() {
+        Long maxInactiveTime = null;
+        Long activityDelay = null;
+        try {
+            maxInactiveTime = Long.parseLong(properties.get(SocketClient.MAX_DISCONNECT_TIME));
+            getLog().d("Socket Client: " + MAX_DISCONNECT_TIME + " = " + maxInactiveTime);
+        } catch (NumberFormatException e) {
+            getLog().e("Socket Client: Failed to parse " + MAX_DISCONNECT_TIME + " value " + properties.get(MAX_DISCONNECT_TIME));
+        }
+        try {
+            activityDelay = Long.parseLong(properties.get(SocketClient.POST_ACTIVITY_DELAY));
+            getLog().d("Socket Client: " + POST_ACTIVITY_DELAY + " = " + activityDelay);
+        } catch (NumberFormatException e) {
+            getLog().e("Socket Client: Failed to parse " + POST_ACTIVITY_DELAY + " value " + properties.get(POST_ACTIVITY_DELAY));
+        }
+        if(maxInactiveTime == null || maxInactiveTime == 0
+                || activityDelay == null || activityDelay == 0) {
+            getLog().d("Socket Client: Activity monitor prop(s) not configured or == 0, not monitoring activity");
+            if (activityMonitor != null) {
+                activityMonitor.interrupt();
+                activityMonitor = null;
+            }
+        } else {
+            if(activityMonitor == null) {
+                activityMonitor = new ActivityMonitor();
+                activityMonitor.start();
+            }
+            activityMonitor.setMaxDisconnectTime(maxInactiveTime);
+            activityMonitor.setPostActivityDelay(activityDelay);
+        }
     }
 
     private synchronized void _ensureConnected() {
@@ -440,18 +456,23 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
     private class ActivityMonitor extends Thread {
 
-        private long maxInactiveTime = 0L; // by default, don't have any inactive time -> reconnects immediately
-        private long activityDelay = Long.MAX_VALUE; // by default, wait forever after something happened -> never gets inactive
+        private long activityCheckDelay = 1000;
+        private long postActivityDelay = 10000;
+        private long maxDisconnectTime = 10000;
 
         private long lastActivity = System.currentTimeMillis();
         private long inactiveAt = 0L;
 
-        public void setMaxInactiveTime(long maxInactiveTime) {
-            this.maxInactiveTime = maxInactiveTime;
+        public void setActivityCheckDelay(long activityCheckDelay) {
+            this.activityCheckDelay = activityCheckDelay;
         }
 
-        public void setActivityDelay(long activityDelay) {
-            this.activityDelay = activityDelay;
+        public void setPostActivityDelay(long postActivityDelay) {
+            this.postActivityDelay = postActivityDelay;
+        }
+
+        public void setMaxDisconnectTime(long maxDisconnectTime) {
+            this.maxDisconnectTime = maxDisconnectTime;
         }
 
         public void somethingHappened() {
@@ -470,7 +491,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
                         // see if the activity delay has been reached
                         long inactiveFor = (System.currentTimeMillis() - lastActivity);
-                        if (inactiveFor > activityDelay) {
+                        if (inactiveFor > postActivityDelay) {
                             getLog().d("Socket Client: Activity delay reached. Setting active to false");
                             inactiveAt = System.currentTimeMillis();
                             active = false;
@@ -482,7 +503,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
                         // see if the check in timeout has been reached
                         long disconnectedFor = (System.currentTimeMillis() - inactiveAt);
-                        if (disconnectedFor > maxInactiveTime) {
+                        if (disconnectedFor > maxDisconnectTime) {
                             getLog().d("Socket Client: Max inactive time reached. Setting active to true");
                             lastActivity = System.currentTimeMillis();
                             active = true;
@@ -491,7 +512,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     }
                 }
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(activityCheckDelay);
                 } catch(InterruptedException e) {} // don't worry, loop will break and thread will stop
             }
         }
