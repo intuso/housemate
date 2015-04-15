@@ -133,7 +133,8 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
     @Override
     public void sendMessage(Message message) {
         active = true;
-        activityMonitor.somethingHappened();
+        if(activityMonitor != null)
+            activityMonitor.somethingHappened();
         checkConnection();
         outputQueue.add(message);
     }
