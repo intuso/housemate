@@ -117,6 +117,7 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
 
     @UiHandler("logoutButton")
     public void logoutButtonClicked(ClickEvent e) {
+        navbarCollapse.hide();
         loginManager.logout();
     }
 }
