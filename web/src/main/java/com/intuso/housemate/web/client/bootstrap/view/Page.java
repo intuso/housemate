@@ -16,6 +16,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.web.client.comms.LoginManager;
 import com.intuso.housemate.web.client.place.*;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.NavbarCollapse;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,6 +44,8 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
     AnchorListItem hardwaresButton;
     @UiField
     AnchorListItem usersButton;
+    @UiField
+    NavbarCollapse navbarCollapse;
 
     private AnchorListItem activeButton = null;
 
@@ -84,26 +87,31 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
 
     @UiHandler("devicesButton")
     public void devicesButtonClicked(ClickEvent e) {
+        navbarCollapse.hide();
         placeController.goTo(new DevicesPlace());
     }
 
     @UiHandler("automationsButton")
     public void automationsButtonClicked(ClickEvent e) {
+        navbarCollapse.hide();
         placeController.goTo(new AutomationsPlace());
     }
 
     @UiHandler("applicationsButton")
     public void applicationsButtonClicked(ClickEvent e) {
+        navbarCollapse.hide();
         placeController.goTo(new ApplicationsPlace());
     }
 
     @UiHandler("usersButton")
     public void usersButtonClicked(ClickEvent e) {
+        navbarCollapse.hide();
         placeController.goTo(new UsersPlace());
     }
 
     @UiHandler("hardwaresButton")
     public void hardwaresButtonClicked(ClickEvent e) {
+        navbarCollapse.hide();
         placeController.goTo(new HardwaresPlace());
     }
 

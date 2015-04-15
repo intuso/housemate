@@ -8,7 +8,7 @@
                     <b:Image addStyleNames="brand" url="img/nav-brand-50px-high.png"/>
                     <b:NavbarCollapseButton dataTarget="#navbarLinks"/>
                 </b:NavbarHeader>
-                <b:NavbarCollapse b:id="navbarLinks">
+                <b:NavbarCollapse b:id="navbarLinks" ui:field="navbarCollapse">
                     <b:NavbarNav>
                         <b:AnchorListItem ui:field="devicesButton">devices</b:AnchorListItem>
                         <b:AnchorListItem ui:field="automationsButton">automations</b:AnchorListItem>
