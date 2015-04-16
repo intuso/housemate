@@ -91,6 +91,12 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
         placeController.goTo(new DevicesPlace());
     }
 
+    @UiHandler("serversButton")
+    public void serversButtonClicked(ClickEvent e) {
+        navbarCollapse.hide();
+        placeController.goTo(new ServersPlace());
+    }
+
     @UiHandler("automationsButton")
     public void automationsButtonClicked(ClickEvent e) {
         navbarCollapse.hide();

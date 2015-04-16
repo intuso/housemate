@@ -10,12 +10,13 @@
                 </b:NavbarHeader>
                 <b:NavbarCollapse b:id="navbarLinks" ui:field="navbarCollapse">
                     <b:NavbarNav>
-                        <b:AnchorListItem ui:field="devicesButton">devices</b:AnchorListItem>
-                        <b:AnchorListItem ui:field="automationsButton">automations</b:AnchorListItem>
-                        <b:AnchorListItem ui:field="applicationsButton">applications</b:AnchorListItem>
-                        <b:AnchorListItem ui:field="hardwaresButton">hardware</b:AnchorListItem>
-                        <b:AnchorListItem ui:field="usersButton">users</b:AnchorListItem>
-                        <b:AnchorListItem ui:field="logoutButton">logout</b:AnchorListItem>
+                        <b:AnchorListItem ui:field="devicesButton">Devices</b:AnchorListItem>
+                        <b:AnchorListItem ui:field="serversButton">Servers</b:AnchorListItem>
+                        <b:AnchorListItem ui:field="automationsButton">Automations</b:AnchorListItem>
+                        <b:AnchorListItem ui:field="applicationsButton">Applications</b:AnchorListItem>
+                        <b:AnchorListItem ui:field="hardwaresButton">Hardware</b:AnchorListItem>
+                        <b:AnchorListItem ui:field="usersButton">Users</b:AnchorListItem>
+                        <b:AnchorListItem ui:field="logoutButton">Logout</b:AnchorListItem>
                     </b:NavbarNav>
                 </b:NavbarCollapse>
             </b:Container>

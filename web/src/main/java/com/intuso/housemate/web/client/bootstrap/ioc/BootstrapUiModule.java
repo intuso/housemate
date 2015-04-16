@@ -26,10 +26,11 @@ public class BootstrapUiModule extends AbstractGinModule {
         // ui
         bind(LoginView.class).to(LoginModal.class).in(Singleton.class);
         bind(com.intuso.housemate.web.client.ui.view.Page.class).to(Page.class).in(Singleton.class);
-        bind(com.intuso.housemate.web.client.ui.view.DevicesView.class).to(DevicesView.class).in(Singleton.class);
-        bind(com.intuso.housemate.web.client.ui.view.AutomationsView.class).to(AutomationsView.class).in(Singleton.class);
-        bind(com.intuso.housemate.web.client.ui.view.UsersView.class).to(UsersView.class).in(Singleton.class);
-        bind(com.intuso.housemate.web.client.ui.view.HardwaresView.class).to(HardwaresView.class).in(Singleton.class);
         bind(com.intuso.housemate.web.client.ui.view.ApplicationsView.class).to(ApplicationsView.class).in(Singleton.class);
+        bind(com.intuso.housemate.web.client.ui.view.AutomationsView.class).to(AutomationsView.class).in(Singleton.class);
+        bind(com.intuso.housemate.web.client.ui.view.DevicesView.class).to(DevicesView.class).in(Singleton.class);
+        bind(com.intuso.housemate.web.client.ui.view.HardwaresView.class).to(HardwaresView.class).in(Singleton.class);
+        bind(com.intuso.housemate.web.client.ui.view.ServersView.class).to(ServersView.class).in(Singleton.class);
+        bind(com.intuso.housemate.web.client.ui.view.UsersView.class).to(UsersView.class).in(Singleton.class);
     }
 }
