@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
@@ -102,7 +103,10 @@ public class Housemate implements EntryPoint {
                         // add the main view to the root panel of the page
                         RootPanel.get().add(INJECTOR.getPage());
                         // force the page to reload by going to a "new" place
-                        INJECTOR.getPlaceController().goTo(INJECTOR.getPlaceHistoryMapper().getPlace(History.getToken()));
+                        Place place = INJECTOR.getPlaceHistoryMapper().getPlace(History.getToken());
+                        if(place == null)
+                            place = new DevicesPlace();
+                        INJECTOR.getPlaceController().goTo(place);
                     }
                 }, Lists.newArrayList(clientsLoadInfo)));
             }
