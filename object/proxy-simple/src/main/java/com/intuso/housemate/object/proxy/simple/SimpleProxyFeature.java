@@ -38,13 +38,13 @@ public abstract class SimpleProxyFeature implements ProxyFeature<SimpleProxyFeat
             treeInfos.add(makeTreeInfo(Device.PROPERTIES_ID, getPropertyIds()));
         device.load(new LoadManager(new LoadManager.Callback() {
             @Override
-            public void failed(HousemateObject.TreeLoadInfo failed) {
+            public void failed(List<String> errors) {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
 
             @Override
-            public void allLoaded() {
-                listener.featureLoaded(device, SimpleProxyFeature.this);
+            public void succeeded() {
+                listener.loadFinished(device, SimpleProxyFeature.this);
             }
         }, treeInfos));
     }

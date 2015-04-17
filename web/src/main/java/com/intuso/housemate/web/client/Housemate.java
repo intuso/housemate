@@ -23,6 +23,8 @@ import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
 import com.intuso.housemate.web.client.place.DevicesPlace;
 
+import java.util.List;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -93,13 +95,13 @@ public class Housemate implements EntryPoint {
                 HousemateObject.TreeLoadInfo clientsLoadInfo = new HousemateObject.TreeLoadInfo(ProxyRoot.SERVERS_ID, clientLoadInfo);
                 INJECTOR.getProxyRoot().load(new LoadManager(new LoadManager.Callback() {
                     @Override
-                    public void failed(HousemateObject.TreeLoadInfo tl) {
+                    public void failed(List<String> errors) {
                         INJECTOR.getProxyRoot().getLog().e("Failed to load clients");
                         // todo show error
                     }
 
                     @Override
-                    public void allLoaded() {
+                    public void succeeded() {
                         // add the main view to the root panel of the page
                         RootPanel.get().add(INJECTOR.getPage());
                         // force the page to reload by going to a "new" place

@@ -10,10 +10,12 @@ import com.intuso.housemate.api.object.device.feature.Feature;
  */
 public interface FeatureLoadedListener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, FEATURE extends Feature> {
 
+    public void loadFailed(DEVICE device, FEATURE feature);
+
     /**
      * Callback method for when the feature has finished loading
      * @param device the device the feature was loaded for
      * @param feature the feature that was loaded
      */
-    public void featureLoaded(DEVICE device, FEATURE feature);
+    public void loadFinished(DEVICE device, FEATURE feature);
 }

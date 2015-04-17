@@ -114,9 +114,9 @@ public abstract class ProxyObject<
                 if (manager != null) {
                     if (message.getPayload().getErrors() != null) {
                         getLog().e("Failed to load data for " + message.getPayload().getLoaderId() + " because " + Joiner.on(", ").join(message.getPayload().getErrors()));
-                        manager.finished(false);
+                        manager.failed(message.getPayload().getErrors());
                     } else
-                        manager.finished(true);
+                        manager.succeeded();
                 }
             }
         }));
@@ -227,7 +227,7 @@ public abstract class ProxyObject<
         if(manager == null)
             throw new HousemateRuntimeException("Null manager");
         else if(manager.getToLoad().size() == 0)
-            manager.finished(true);
+            manager.succeeded();
         else {
             String id = Integer.toString(nextLoaderId++);
             pendingLoads.put(id, manager);

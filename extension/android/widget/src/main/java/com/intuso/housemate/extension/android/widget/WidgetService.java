@@ -23,6 +23,8 @@ import com.intuso.housemate.object.proxy.simple.ProxyClientHelper;
 import com.intuso.housemate.platform.android.app.HousemateService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: tomc
@@ -96,12 +98,12 @@ public class WidgetService extends HousemateService {
                 .load(ProxyRoot.SERVERS_ID, HousemateObject.EVERYTHING, Server.DEVICES_ID)
                 .callback(new LoadManager.Callback() {
                               @Override
-                              public void failed(HousemateObject.TreeLoadInfo path) {
+                              public void failed(List<String> errors) {
                                   updateStatus();
                               }
 
                               @Override
-                              public void allLoaded() {
+                              public void succeeded() {
                                   updateStatus();
                               }
                           });

@@ -21,6 +21,7 @@ import com.intuso.utilities.object.ObjectListener;
 import org.gwtbootstrap3.client.ui.Icon;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -105,12 +106,12 @@ public class Node extends Composite implements HasObjectSelectedHandlers,
             } else {
                 parent.load(new LoadManager(new LoadManager.Callback() {
                     @Override
-                    public void failed(HousemateObject.TreeLoadInfo path) {
+                    public void failed(List<String> errors) {
                         // todo show an error
                     }
 
                     @Override
-                    public void allLoaded() {
+                    public void succeeded() {
                         object = parent.getChild(childOverview.getId());
                         object.addChildListener(Node.this, true, false);
                         object.addAvailableChildrenListener(Node.this, true);

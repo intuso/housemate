@@ -12,6 +12,8 @@ import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 
+import java.util.List;
+
 /**
  * Created by tomc on 05/03/15.
  */
@@ -29,13 +31,13 @@ public class Hardware extends ObjectWidget<GWTProxyHardware> {
             loading(true);
             hardwares.load(new LoadManager(new LoadManager.Callback() {
                 @Override
-                public void failed(HousemateObject.TreeLoadInfo path) {
+                public void failed(List<String> errors) {
                     loading(false);
                     setMessage(AlertType.WARNING, "Failed to load hardware");
                 }
 
                 @Override
-                public void allLoaded() {
+                public void succeeded() {
                     loading(false);
                     setObject(hardwares.get(childOverview.getId()));
                 }

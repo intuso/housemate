@@ -38,13 +38,13 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
             treeInfos.add(makeTreeInfo(Device.PROPERTIES_ID, getPropertyIds()));
         device.load(new LoadManager(new LoadManager.Callback() {
             @Override
-            public void failed(HousemateObject.TreeLoadInfo failed) {
-                //To change body of implemented methods use File | Settings | File Templates.
+            public void failed(List<String> errors) {
+                listener.loadFailed(device, AndroidProxyFeature.this);
             }
 
             @Override
-            public void allLoaded() {
-                listener.featureLoaded(device, AndroidProxyFeature.this);
+            public void succeeded() {
+                listener.loadFinished(device, AndroidProxyFeature.this);
             }
         }, treeInfos));
     }

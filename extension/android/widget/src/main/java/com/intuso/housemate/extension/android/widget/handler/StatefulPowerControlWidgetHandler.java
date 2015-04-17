@@ -77,6 +77,9 @@ public class StatefulPowerControlWidgetHandler
                     case DEVICE_NOT_LOADED:
                         views.setTextViewText(R.id.device_label, "Loading device");
                         break;
+                    case DEVICE_LOAD_FAILED:
+                        views.setTextViewText(R.id.device_label, "Load device failed");
+                        break;
                     case NO_CLIENT:
                         views.setTextViewText(R.id.device_label, "Unknown client");
                         break;
@@ -88,6 +91,9 @@ public class StatefulPowerControlWidgetHandler
                         break;
                     case FEATURE_NOT_LOADED:
                         views.setTextViewText(R.id.device_label, "Loading feature");
+                        break;
+                    case FEATURE_LOAD_FAILED:
+                        views.setTextViewText(R.id.device_label, "Load feature failed");
                         break;
                     case READY:
                         views.setTextViewText(R.id.device_label, getDevice().getName());

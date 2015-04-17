@@ -18,6 +18,8 @@ import com.intuso.housemate.platform.android.app.HousemateService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
 
+import java.util.List;
+
 /**
  * Created by tomc on 09/05/14.
  */
@@ -91,13 +93,13 @@ public class NFCService extends HousemateService {
         }
 
         @Override
-        public void failed(HousemateObject.TreeLoadInfo path) {
+        public void failed(List<String> errors) {
             message("Failed to load scanned tag's path", false);
             finished();
         }
 
         @Override
-        public void allLoaded() {
+        public void succeeded() {
             final HousemateObject<?, ?, ?, ?> object = clientHelper.getRoot().getObject(objectPath.substring(1).split("/"));
             if (object == null) {
                 message("Scanned tag's path does not exist", false);

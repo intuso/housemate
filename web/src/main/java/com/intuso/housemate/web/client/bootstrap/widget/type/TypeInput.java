@@ -14,6 +14,8 @@ import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxySubType;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
+import java.util.List;
+
 /**
  */
 public interface TypeInput extends IsWidget, HasUserInputHandlers {
@@ -34,12 +36,12 @@ public interface TypeInput extends IsWidget, HasUserInputHandlers {
                 final LazyLoaded lazyLoaded = new LazyLoaded(typeInstances);
                 types.load(new LoadManager(new LoadManager.Callback() {
                     @Override
-                    public void failed(HousemateObject.TreeLoadInfo path) {
+                    public void failed(List<String> errors) {
                         // todo show error
                     }
 
                     @Override
-                    public void allLoaded() {
+                    public void succeeded() {
                         GWTProxyType loadedType = types.get(typeId);
                         if (loadedType != null)
                             lazyLoaded.setWidget(_create(types, types.get(typeId), typeInstances));

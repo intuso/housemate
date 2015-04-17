@@ -12,6 +12,8 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
 import com.intuso.housemate.web.client.object.GWTProxyUser;
 import org.gwtbootstrap3.client.ui.constants.AlertType;
 
+import java.util.List;
+
 /**
  */
 public class User extends ObjectWidget<GWTProxyUser> {
@@ -28,13 +30,13 @@ public class User extends ObjectWidget<GWTProxyUser> {
             loading(true);
             users.load(new LoadManager(new LoadManager.Callback() {
                 @Override
-                public void failed(HousemateObject.TreeLoadInfo path) {
+                public void failed(List<String> errors) {
                     loading(false);
                     setMessage(AlertType.WARNING, "Failed to load user");
                 }
 
                 @Override
-                public void allLoaded() {
+                public void succeeded() {
                     loading(false);
                     setObject(users.get(childOverview.getId()));
                 }

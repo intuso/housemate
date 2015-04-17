@@ -10,6 +10,8 @@ import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 
+import java.util.List;
+
 /**
 * Created with IntelliJ IDEA.
 * User: tomc
@@ -24,10 +26,12 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
     public enum Status {
         SERVICE_NOT_READY,
         DEVICE_NOT_LOADED,
+        DEVICE_LOAD_FAILED,
         NO_CLIENT,
         NO_DEVICE,
         NO_FEATURE,
         FEATURE_NOT_LOADED,
+        FEATURE_LOAD_FAILED,
         READY
     }
 
@@ -101,13 +105,13 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
         else {
             client.getDevices().load(new LoadManager(new LoadManager.Callback() {
                 @Override
-                public void failed(HousemateObject.TreeLoadInfo path) {
-                    status = Status.NO_DEVICE;
+                public void failed(List<String> errors) {
+                    status = Status.DEVICE_LOAD_FAILED;
                     updateWidget();
                 }
 
                 @Override
-                public void allLoaded() {
+                public void succeeded() {
                     device = client.getDevices().get(deviceId);
                     if (device != null) {
                         AndroidProxyFeature proxyFeature = device.getFeature(getFeatureId());
@@ -115,8 +119,15 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
                         if (proxyFeature != null) {
                             status = Status.FEATURE_NOT_LOADED;
                             proxyFeature.load(new FeatureLoadedListener<AndroidProxyDevice, AndroidProxyFeature>() {
+
                                 @Override
-                                public void featureLoaded(AndroidProxyDevice device, AndroidProxyFeature feature) {
+                                public void loadFailed(AndroidProxyDevice device, AndroidProxyFeature feature) {
+                                    status = Status.FEATURE_LOAD_FAILED;
+                                    updateWidget();
+                                }
+
+                                @Override
+                                public void loadFinished(AndroidProxyDevice device, AndroidProxyFeature feature) {
                                     init();
                                     status = Status.READY;
                                     updateWidget();

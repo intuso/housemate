@@ -90,12 +90,12 @@ public class WidgetConfigureActivity
     }
 
     @Override
-    public void failed(HousemateObject.TreeLoadInfo path) {
+    public void failed(List<String> errors) {
         setStatus("Failed to load device names");
     }
 
     @Override
-    public void allLoaded() {
+    public void succeeded() {
         setStatus("Pick device to control");
         listenerRegistrations.add(clientHelper.getRoot().getServers().addObjectListener(new ClientListListener(), true));
         listAdapter.notifyDataSetChanged();

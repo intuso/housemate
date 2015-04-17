@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -143,12 +144,12 @@ public class ContextualResource implements RootListener<SimpleProxyRoot>, Comman
         if(applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
             ROOT.load(new LoadManager(new LoadManager.Callback() {
                 @Override
-                public void failed(HousemateObject.TreeLoadInfo path) {
+                public void failed(List<String> errors) {
                     // TODO tell the client somehow
                 }
 
                 @Override
-                public void allLoaded() {
+                public void succeeded() {
                     // TODO, anything?
                 }
             }, new HousemateObject.TreeLoadInfo("devices",

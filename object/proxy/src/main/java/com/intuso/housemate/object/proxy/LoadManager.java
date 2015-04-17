@@ -12,7 +12,6 @@ public class LoadManager {
 
     private final Callback callback;
     private final List<HousemateObject.TreeLoadInfo> toLoad;
-    private int loaded = 0;
 
     public LoadManager(Callback callback, HousemateObject.TreeLoadInfo... toLoad) {
         this(callback, Lists.newArrayList(toLoad));
@@ -33,24 +32,26 @@ public class LoadManager {
 
     /**
      * Callback for when an object's load has finished
-     * @param succeeded true if the load was successful
      */
-    protected final void finished(boolean succeeded) {
-        if(!succeeded || toLoad.size() == ++loaded)
-            callback.allLoaded();
+    protected final void succeeded() {
+        callback.succeeded();
+    }
+
+    protected final void failed(List<String> errors) {
+        callback.failed(errors);
     }
 
     public static interface Callback {
 
         /**
          * Callback for when the load of some objects failed
-         * @param path the path of the failed object
+         * @param errors
          */
-        public void failed(HousemateObject.TreeLoadInfo path);
+        public void failed(List<String> errors);
 
         /**
          * Callback for when all required objects have been loaded
          */
-        public void allLoaded();
+        public void succeeded();
     }
 }

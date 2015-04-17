@@ -150,12 +150,12 @@ public class HousemateTweeter {
                         tweet("Access to the server allowed");
                         root.load(new LoadManager(new LoadManager.Callback() {
                             @Override
-                            public void failed(HousemateObject.TreeLoadInfo tl) {
+                            public void failed(List<String> errors) {
                                 tweet("Could not load devices from server. Do you have permission?");
                             }
 
                             @Override
-                            public void allLoaded() {
+                            public void succeeded() {
                                 root.getServers().addObjectListener(serverListListener, true);
                             }
                         }, new HousemateObject.TreeLoadInfo(ProxyRoot.SERVERS_ID, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));

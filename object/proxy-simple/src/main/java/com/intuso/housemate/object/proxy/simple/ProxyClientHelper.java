@@ -190,7 +190,7 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?>> {
                 if(toLoad.size() > 0)
                     proxyRoot.load(new LoadManager(callback, toLoad));
                 else if(callback != null)
-                    callback.allLoaded();
+                    callback.succeeded();
             }
         }
 
