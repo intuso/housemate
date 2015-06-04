@@ -33,7 +33,8 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?>> {
     private List<HousemateObject.TreeLoadInfo> toLoad = Lists.newArrayList();
     private LoadManager.Callback callback;
 
-    private boolean rootCleared = false;
+    private boolean shouldClearRoot = true;
+    private boolean shouldLoad = true;
     private ListenerRegistration proxyListenerRegistration;
     private ListenerRegistration routerListenerRegistration;
 
@@ -185,12 +186,14 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?>> {
         public void applicationInstanceStatusChanged(ProxyRoot<?, ?, ?> root, ApplicationInstanceStatus applicationInstanceStatus) {
             log.d("Root applicationInstanceStatus = " + applicationInstanceStatus);
             if(applicationInstanceStatus == ApplicationInstanceStatus.Allowed) {
-                if(!rootCleared)
+                if(shouldClearRoot) {
                     proxyRoot.clearLoadedObjects();
-                if(toLoad.size() > 0)
+                    shouldClearRoot = false;
+                }
+                if(shouldLoad) {
                     proxyRoot.load(new LoadManager(callback, toLoad));
-                else if(callback != null)
-                    callback.succeeded();
+                    shouldLoad = false;
+                }
             }
         }
 
@@ -201,7 +204,8 @@ public class ProxyClientHelper<ROOT extends ProxyRoot<?, ?, ?>> {
 
         @Override
         public void newServerInstance(ProxyRoot<?, ?, ?> root, String serverId) {
-            // nothing to do here
+            shouldClearRoot = true;
+            shouldLoad = true;
         }
     }
 }
