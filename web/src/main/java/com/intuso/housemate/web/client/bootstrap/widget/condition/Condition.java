@@ -24,8 +24,6 @@ public class Condition extends Composite {
 
     @UiField
     BooleanValueDisplay value;
-    @UiField
-    ConditionList conditionList;
 
     private final GWTProxyList<TypeData<?>, GWTProxyType> types;
     private final GWTProxyCondition condition;
@@ -35,9 +33,6 @@ public class Condition extends Composite {
         this.condition = condition;
         initWidget(ourUiBinder.createAndBindUi(this));
         value.setValue(condition.getSatisfiedValue());
-        conditionList.setList(condition.getConditions());
-        conditionList.setTypes(types);
-        conditionList.setAddCommand(condition.getAddConditionCommand());
     }
 
     @UiHandler("settings")

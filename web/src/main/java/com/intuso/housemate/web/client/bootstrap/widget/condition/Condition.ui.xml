@@ -4,6 +4,5 @@
     <g:FlowPanel>
         <h:value.BooleanValueDisplay ui:field="value" trueIcon="THUMBS_UP" falseIcon="THUMBS_DOWN"/>
         <h:object.SettingsButton ui:field="settings"/>
-        <h:condition.ConditionList ui:field="conditionList" showIfEmpty="false" header="Child conditions"/>
     </g:FlowPanel>
 </ui:UiBinder>
