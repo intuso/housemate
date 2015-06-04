@@ -9,6 +9,7 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
+import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
 import com.intuso.housemate.api.comms.ApplicationStatus;
 import com.intuso.housemate.api.comms.ServerConnectionStatus;
@@ -156,9 +157,10 @@ public class WidgetService extends HousemateService {
             status = Status.NO_NETWORK;
         else if(getRouter().getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && getRouter().getServerConnectionStatus() != ServerConnectionStatus.DisconnectedTemporarily)
             status = Status.NOT_CONNECTED;
-        else if(getRoot().getApplicationInstanceStatus() != ApplicationInstanceStatus.Allowed)
+        else if(getRoot().getApplicationInstanceStatus() != ApplicationInstanceStatus.Allowed) {
             status = Status.NOT_ALLOWED;
-        else if(getRoot().getServers() == null)
+            new HousemateException("Widget service access not allowed").printStackTrace();
+        } else if(getRoot().getServers() == null)
             status = Status.NOT_LOADED;
         else
             status = Status.LOADED;

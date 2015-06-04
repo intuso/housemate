@@ -6,7 +6,6 @@ import com.intuso.housemate.api.HousemateRuntimeException;
 import com.intuso.housemate.api.comms.Message;
 import com.intuso.housemate.api.comms.Receiver;
 import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.comms.serialiser.api.Serialiser;
 import com.intuso.housemate.comms.serialiser.api.StreamSerialiserFactory;
 import com.intuso.utilities.log.Log;
@@ -40,11 +39,6 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
 	 * The thread that reads from the socket's input stream 
 	 */
 	private final StreamReader streamReader;
-	
-	/**
-	 * The thread that takes messages and writes them to the socket's output stream 
-	 */
-	private final HeartbeatSender heartbeatSender;
 
     private final Router.Registration routerRegistration;
 
@@ -85,13 +79,11 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
         serialiser = getSerialiser(clientDetails, serialiserFactories, socket);
 
         streamReader = new StreamReader();
-        heartbeatSender = new HeartbeatSender();
 
         routerRegistration = router.registerReceiver(this);
 		
 		// start the reader/writer threads 
 		streamReader.start();
-		heartbeatSender.start();
 	}
 
     private Map<String, String> readClientData(Socket socket) throws HousemateException {
@@ -194,12 +186,10 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
 				
 				// interrupt the reader/writer threads
 				streamReader.interrupt();
-				heartbeatSender.interrupt();
 				
 				// wait for the reader/writer threads to stop
 				try {
 					streamReader.join();
-					heartbeatSender.join();
 				} catch(InterruptedException e) {
 					log.e("Interrupted waiting for reader/writer threads to stop");
 				}
@@ -232,7 +222,9 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
 			while(!isInterrupted()) {
 				try {
                     Message message = readMessage();
-                    if(!(message.getPath().length == 0 && message.getType().equals("heartbeat"))) {
+                    if(message == null)
+                        return;
+                    else {
                         log.d("Received message " + message);
                         routerRegistration.sendMessage(message);
                     }
@@ -255,35 +247,14 @@ public final class SocketClientHandler implements Receiver<Message.Payload> {
                     return serialiser.read();
                 } catch(HousemateException e) {
                     log.e("Problem reading message, retrying", e);
+                } catch(SocketException e) {
+                    if(e.getMessage().equals("Socket closed"))
+                        return null;
+                    throw new HousemateException("Could not read message", e);
                 } catch(IOException e) {
                     throw new HousemateException("Could not read message", e);
                 } catch (InterruptedException e) {
                     throw new HousemateException("Interrupted waiting to receive message", e);
-                }
-            }
-		}
-	}
-	
-	/**
-	 * Reads outgoing messages off a queue and sends them over the socket to the client
-	 * @author Tom Clabon
-	 *
-	 */
-	private class HeartbeatSender extends Thread {
-
-        /**
-         * heartbeat message
-         */
-        private Message heartbeat = new Message<>(new String[] {}, "heartbeat", NoPayload.INSTANCE);
-		
-		@Override
-		public void run() {
-            while(!isInterrupted()) {
-                _sendMessage(heartbeat);
-                try {
-                    Thread.sleep(30000);
-                } catch(InterruptedException e) {
-                    break;
                 }
             }
 		}

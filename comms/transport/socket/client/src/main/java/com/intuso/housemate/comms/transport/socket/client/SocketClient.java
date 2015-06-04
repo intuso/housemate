@@ -6,7 +6,6 @@ import com.intuso.housemate.api.HousemateException;
 import com.intuso.housemate.api.comms.*;
 import com.intuso.housemate.api.comms.access.ApplicationDetails;
 import com.intuso.housemate.api.comms.access.ApplicationRegistration;
-import com.intuso.housemate.api.comms.message.NoPayload;
 import com.intuso.housemate.api.object.root.Root;
 import com.intuso.housemate.comms.serialiser.api.Serialiser;
 import com.intuso.housemate.comms.serialiser.api.StreamSerialiserFactory;
@@ -24,7 +23,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Client comms implementation that provides socket-based communications with the server
@@ -370,7 +368,7 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
                     Message message = this.readMessage();
                     if(message == null)
                         return;
-                    else if(!(message.getPath().length == 0 && message.getType().equals("heartbeat"))) {
+                    else {
                         getLog().d("Socket Client: Message received " + message);
                         if(activityMonitor != null)
                             activityMonitor.somethingHappened();
@@ -417,11 +415,6 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
      */
     private class MessageSender extends Thread {
 
-        /**
-         * heartbeat messgae
-         */
-        private Message heartbeat = new Message<>(new String[] {}, "heartbeat", NoPayload.INSTANCE);
-
         @Override
         public void run() {
 
@@ -433,11 +426,8 @@ public class SocketClient extends Router implements PropertyValueChangeListener 
 
                 try {
                     // get the next message
-                    message = outputQueue.poll(30, TimeUnit.SECONDS);
-                    if(message == null) {
-                        message = heartbeat;
-                    } else
-                        getLog().d("Socket Client: Sending message " + message.toString());
+                    message = outputQueue.take();
+                    getLog().d("Socket Client: Sending message " + message.toString());
                     serialiser.write(message);
                 } catch(InterruptedException e) {
                     if(socket == null || socket.isClosed())
