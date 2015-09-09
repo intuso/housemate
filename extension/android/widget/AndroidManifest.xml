@@ -5,8 +5,8 @@
           android:versionName="1.0">
 
     <uses-sdk
-            android:minSdkVersion="14"
-            android:targetSdkVersion="14" />
+            android:minSdkVersion="16"
+            android:targetSdkVersion="16" />
 
     <uses-permission android:name="com.intuso.housemate.android.permission.ACCESS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -20,20 +20,20 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
-        <service android:name=".WidgetService" />
-        <receiver android:name=".WidgetProvider" >
+        <service android:name=".service.WidgetService" />
+        <receiver android:name=".configure.WidgetProvider" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                        android:resource="@xml/widget_info" />
         </receiver>
-        <receiver android:name=".NetworkStateReceiver">
+        <receiver android:name=".service.NetworkStateReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".UpgradeRestarter" >
+        <receiver android:name=".service.ServiceRestarter" >
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
                 <data android:scheme="package" android:path="com.intuso.housemate.extension.android.widget" />

@@ -6,7 +6,7 @@ import com.intuso.housemate.api.object.command.CommandPerformListener;
 import com.intuso.housemate.api.object.device.feature.StatefulPowerControl;
 import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.extension.android.widget.R;
-import com.intuso.housemate.extension.android.widget.WidgetService;
+import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyValue;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -60,6 +60,9 @@ public class StatefulPowerControlWidgetHandler
         // make the remote views
         RemoteViews views = new RemoteViews(getWidgetService().getApplicationContext().getPackageName(), R.layout.stateful_power_widget);
         switch (getServiceStatus()) {
+            case SERVICE_STOPPED:
+                views.setTextViewText(R.id.device_label, "Widget service stopped");
+                break;
             case NO_NETWORK:
                 views.setTextViewText(R.id.device_label, "No network");
                 break;

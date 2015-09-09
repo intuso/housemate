@@ -3,7 +3,7 @@ package com.intuso.housemate.extension.android.widget.handler;
 import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.device.feature.Feature;
 import com.intuso.housemate.api.object.device.feature.StatefulPowerControl;
-import com.intuso.housemate.extension.android.widget.WidgetService;
+import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.device.feature.FeatureLoadedListener;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;

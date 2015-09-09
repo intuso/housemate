@@ -1,11 +1,8 @@
 package com.intuso.housemate.extension.android.widget.configure;
 
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +15,7 @@ import com.intuso.housemate.api.object.HousemateObject;
 import com.intuso.housemate.api.object.device.feature.StatefulPowerControl;
 import com.intuso.housemate.api.object.list.ListListener;
 import com.intuso.housemate.extension.android.widget.R;
-import com.intuso.housemate.extension.android.widget.WidgetService;
+import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.object.proxy.LoadManager;
 import com.intuso.housemate.object.proxy.ProxyRoot;
 import com.intuso.housemate.object.proxy.ProxyServer;
@@ -40,16 +37,13 @@ import java.util.List;
  */
 public class WidgetConfigureActivity
         extends HousemateActivity
-        implements ServiceConnection, LoadManager.Callback, AdapterView.OnItemClickListener {
+        implements LoadManager.Callback, AdapterView.OnItemClickListener {
 
     private final String featureId = StatefulPowerControl.ID;
 
-    private boolean bound = false;
     private ProxyClientHelper<AndroidProxyRoot> clientHelper;
     private List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
     private DeviceListAdapter listAdapter;
-    private String chosenClientId;
-    private String chosenDeviceId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,10 +71,6 @@ public class WidgetConfigureActivity
     @Override
     protected void onStop() {
         super.onStop();
-        if(bound) {
-            unbindService(this);
-            bound = false;
-        }
         for(ListenerRegistration listenerRegistration : listenerRegistrations)
             listenerRegistration.removeListener();
         if(clientHelper != null) {
@@ -104,27 +94,15 @@ public class WidgetConfigureActivity
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        chosenClientId = listAdapter.getItem(position).getClient().getId();
-        chosenDeviceId = listAdapter.getItem(position).getDevice().getId();
-        Intent intent = new Intent(this, WidgetService.class);
-        startService(intent);
-        bindService(intent, this, BIND_AUTO_CREATE);
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        bound = true;
+        DeviceInfo deviceInfo = listAdapter.getItem(position);
+        String clientId = deviceInfo.getClient().getId();
+        String deviceId = deviceInfo.getDevice().getId();
         int widgetId = getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-        ((WidgetService.Binder)service).addWidget(widgetId, chosenClientId, chosenDeviceId, featureId);
+        WidgetService.addWidget(getApplicationContext(), widgetId, clientId, deviceId, featureId);
         Intent result = new Intent();
         result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
         setResult(RESULT_OK, result);
         finish();
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        bound = false;
     }
 
     private void setStatus(final String message) {

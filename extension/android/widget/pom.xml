@@ -16,7 +16,7 @@
 
 	<properties>
         <android.sdk.path>/opt/adt/sdk</android.sdk.path>
-        <android.platform.version>4.0.1.2</android.platform.version>
+        <android.platform.version>4.1.1.4</android.platform.version>
         <android.plugin.version>3.6.0</android.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -66,7 +66,7 @@
 				<artifactId>android-maven-plugin</artifactId>
 				<configuration>
 					<sdk>
-						<platform>14</platform>
+						<platform>16</platform>
 					</sdk>
                 </configuration>
 			</plugin>

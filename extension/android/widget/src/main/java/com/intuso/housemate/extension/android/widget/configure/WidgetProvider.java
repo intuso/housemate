@@ -1,7 +1,8 @@
-package com.intuso.housemate.extension.android.widget;
+package com.intuso.housemate.extension.android.widget.configure;
 
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import com.intuso.housemate.extension.android.widget.service.WidgetService;
 
 /**
  * Created with IntelliJ IDEA.
