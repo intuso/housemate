@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
 import android.util.Log;
 
 /**
@@ -20,7 +19,6 @@ public class NetworkStateReceiver extends BroadcastReceiver {
     private final static String TAG = "PlatformNetworkState";
 
     public void onReceive(Context context, Intent intent) {
-        debugIntent(intent);
         if(intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
             ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo ni = connectivityManager.getActiveNetworkInfo();
@@ -35,21 +33,6 @@ public class NetworkStateReceiver extends BroadcastReceiver {
             serviceIntent.setAction(ConnectionService.NETWORK_AVAILABLE_ACTION);
             serviceIntent.putExtra(ConnectionService.NETWORK_AVAILABLE, connected);
             context.startService(serviceIntent);
-        }
-    }
-
-    private void debugIntent(Intent intent) {
-        Log.d(TAG, "action: " + intent.getAction());
-        Log.d(TAG, "component: " + intent.getComponent());
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            for (String key: extras.keySet()) {
-                Log.d(TAG, "key [" + key + "]: " +
-                        extras.get(key));
-            }
-        }
-        else {
-            Log.d(TAG, "no extras");
         }
     }
 }
