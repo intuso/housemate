@@ -3,8 +3,8 @@ package com.intuso.housemate.server.object.real.persist;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.object.real.RealProperty;
+import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.object.api.internal.List;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.Collection;
@@ -16,20 +16,20 @@ import java.util.Collection;
 * Time: 19:25
 * To change this template use File | Settings | File Templates.
 */
-public class PropertyListWatcher implements ListListener<RealProperty<?>> {
+public class PropertyListWatcher implements List.Listener<RealProperty<?>> {
 
     private final Multimap<RealProperty, ListenerRegistration> listeners = HashMultimap.create();
 
-    private final ValueWatcher valueWatcher;
+    private final ValueBaseWatcher valueBaseWatcher;
 
     @Inject
-    public PropertyListWatcher(ValueWatcher valueWatcher) {
-        this.valueWatcher = valueWatcher;
+    public PropertyListWatcher(ValueBaseWatcher valueBaseWatcher) {
+        this.valueBaseWatcher = valueBaseWatcher;
     }
 
     @Override
     public void elementAdded(RealProperty<?> property) {
-        listeners.put(property, valueWatcher.watch(property));
+        listeners.put(property, valueBaseWatcher.watch(property));
     }
 
     @Override

@@ -3,12 +3,15 @@ package com.intuso.housemate.server.object.bridge;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.*;
-import com.intuso.housemate.api.comms.message.NoPayload;
-import com.intuso.housemate.api.object.ChildOverview;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.HousemateObject;
+import com.intuso.housemate.comms.api.internal.ChildOverview;
+import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import com.intuso.housemate.comms.api.internal.Message;
+import com.intuso.housemate.comms.api.internal.RemoteLinkedObject;
+import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.NoPayload;
+import com.intuso.housemate.object.api.internal.Application;
+import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.housemate.server.comms.RemoteClient;
 import com.intuso.housemate.server.comms.RemoteClientListener;
@@ -29,8 +32,8 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
             CHILD_DATA extends HousemateData<?>,
             CHILD extends BridgeObject<? extends CHILD_DATA, ?, ?, ?, ?>,
             OBJECT extends BridgeObject<DATA, CHILD_DATA, CHILD, OBJECT, LISTENER>,
-            LISTENER extends com.intuso.housemate.api.object.ObjectListener>
-        extends HousemateObject<DATA, CHILD_DATA, CHILD, LISTENER>
+            LISTENER extends com.intuso.housemate.object.api.internal.ObjectListener>
+        extends RemoteLinkedObject<DATA, CHILD_DATA, CHILD, LISTENER>
         implements RemoteClientListener, ObjectListener<CHILD> {
 
     private final Set<RemoteClient> loadedByClients = Sets.newHashSet();
@@ -43,31 +46,31 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(CHILD_OVERVIEWS_REQUEST, new Receiver<ClientPayload<NoPayload>>() {
+        result.add(addMessageListener(CHILD_OVERVIEWS_REQUEST, new Message.Receiver<ClientPayload<NoPayload>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<NoPayload>> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<NoPayload>> message) {
                 RemoteClient client = message.getPayload().getClient();
-                if(client.getClientInstance().getClientType() != ClientType.Proxy) {
-                    getLog().e("Client requesting an object is not of type " + ClientType.Proxy);
-                    sendMessage(CHILD_OVERVIEWS_RESPONSE, new ChildOverviews("Connection type is not " + ClientType.Proxy.name()), client);
+                if(client.getClientInstance().getClientType() != ApplicationRegistration.ClientType.Proxy) {
+                    getLog().e("Client requesting an object is not of type " + ApplicationRegistration.ClientType.Proxy);
+                    sendMessage(CHILD_OVERVIEWS_RESPONSE, new ChildOverviews("Connection type is not " + ApplicationRegistration.ClientType.Proxy.name()), client);
                 } else
                     sendMessage(CHILD_OVERVIEWS_RESPONSE, new ChildOverviews(getChildOverviewsForClient(client)), client);
             }
         }));
-        result.add(addMessageListener(LOAD_REQUEST, new Receiver<ClientPayload<LoadRequest>>() {
+        result.add(addMessageListener(LOAD_REQUEST, new Message.Receiver<ClientPayload<LoadRequest>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<LoadRequest>> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<LoadRequest>> message) {
                 RemoteClient client = message.getPayload().getClient();
                 String loaderId = message.getPayload().getOriginal().getLoaderId();
-                if(client.getClientInstance().getClientType() != ClientType.Proxy) {
-                    getLog().e("Client requesting an object is not of type " + ClientType.Proxy);
-                    sendMessage(LOAD_FINISHED, LoadFinished.forErrors(loaderId, "Connection type is not " + ClientType.Proxy.name()), client);
+                if(client.getClientInstance().getClientType() != ApplicationRegistration.ClientType.Proxy) {
+                    getLog().e("Client requesting an object is not of type " + ApplicationRegistration.ClientType.Proxy);
+                    sendMessage(LOAD_FINISHED, LoadFinished.forErrors(loaderId, "Connection type is not " + ApplicationRegistration.ClientType.Proxy.name()), client);
                 } else {
                     List<String> errors = Lists.newArrayList();
                     for(TreeLoadInfo treeLoadInfo : message.getPayload().getOriginal().getTreeLoadInfos()) {
-                        if (treeLoadInfo.getId().equals(HousemateObject.EVERYTHING_RECURSIVE)
-                                || treeLoadInfo.getId().equals(HousemateObject.EVERYTHING)) {
-                            boolean recursive = treeLoadInfo.getId().equals(HousemateObject.EVERYTHING_RECURSIVE);
+                        if (treeLoadInfo.getId().equals(RemoteLinkedObject.EVERYTHING_RECURSIVE)
+                                || treeLoadInfo.getId().equals(RemoteLinkedObject.EVERYTHING)) {
+                            boolean recursive = treeLoadInfo.getId().equals(RemoteLinkedObject.EVERYTHING_RECURSIVE);
                             for (CHILD child : getChildren())
                                 sendRequestedDataToClient(client, child, treeLoadInfo.getChildren(), recursive);
                         } else {
@@ -90,7 +93,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
         return result;
     }
 
-    protected void sendRequestedDataToClient(RemoteClient client, BridgeObject<?, ?, ?, ?, ?> child, Map<String, TreeLoadInfo> treeLoadInfos, boolean recursive) throws HousemateException {
+    protected void sendRequestedDataToClient(RemoteClient client, BridgeObject<?, ?, ?, ?, ?> child, Map<String, TreeLoadInfo> treeLoadInfos, boolean recursive) {
         if(child == null)
             return;
         if(!child.isLoadedBy(client)) {
@@ -101,9 +104,9 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
                 child.sendRequestedDataToClient(client, c, null, recursive);
         } else if(treeLoadInfos != null) {
             for(Map.Entry<String, TreeLoadInfo> entry : treeLoadInfos.entrySet()) {
-                if(entry.getKey().equals(HousemateObject.EVERYTHING_RECURSIVE)
-                        || entry.getKey().equals(HousemateObject.EVERYTHING)) {
-                    boolean childRecursive = entry.getKey().equals(HousemateObject.EVERYTHING_RECURSIVE);
+                if(entry.getKey().equals(RemoteLinkedObject.EVERYTHING_RECURSIVE)
+                        || entry.getKey().equals(RemoteLinkedObject.EVERYTHING)) {
+                    boolean childRecursive = entry.getKey().equals(RemoteLinkedObject.EVERYTHING_RECURSIVE);
                     for(CHILD c : getChildren())
                         child.sendRequestedDataToClient(client, c, entry.getValue().getChildren(), childRecursive);
                 } else {
@@ -116,7 +119,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
     }
 
     @Override
-    public void statusChanged(ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+    public void statusChanged(Application.Status applicationStatus, ApplicationInstance.Status applicationInstanceStatus) {
         // do nothing
     }
 
@@ -138,12 +141,12 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
     }
 
     @Override
-    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?> ancestor) {
         // do nothing
     }
 
     @Override
-    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?> ancestor) {
         // do nothing
     }
 
@@ -166,9 +169,9 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
             }
         } else {
             for(Map.Entry<String, TreeLoadInfo> entry : treeLoadInfos.entrySet()) {
-                if(entry.getKey().equals(HousemateObject.EVERYTHING_RECURSIVE) ||
-                        entry.getKey().equals(HousemateObject.EVERYTHING)) {
-                    boolean childRecursive = entry.getKey().equals(HousemateObject.EVERYTHING_RECURSIVE);
+                if(entry.getKey().equals(RemoteLinkedObject.EVERYTHING_RECURSIVE) ||
+                        entry.getKey().equals(RemoteLinkedObject.EVERYTHING)) {
+                    boolean childRecursive = entry.getKey().equals(RemoteLinkedObject.EVERYTHING_RECURSIVE);
                     for (CHILD child : getChildren())
                         children.put(child.getId(), child.getDataForClient(client, entry.getValue().getChildren(), childRecursive));
                 } else if(getChild(entry.getKey()) != null)
@@ -190,7 +193,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
             child.clearClientInfo(client);
     }
 
-    protected void sendMessage(String type, Message.Payload payload, RemoteClient client) throws HousemateException {
+    protected void sendMessage(String type, Message.Payload payload, RemoteClient client) {
         client.sendMessage(getPath(), type, payload);
     }
 
@@ -198,7 +201,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
         for(RemoteClient client : loadedByClients) {
             try {
                 sendMessage(type, content, client);
-            } catch(HousemateException e) {
+            } catch(HousemateCommsException e) {
                 getLog().e("Failed to broadcast message to client");
                 getLog().e(e.getMessage());
             }

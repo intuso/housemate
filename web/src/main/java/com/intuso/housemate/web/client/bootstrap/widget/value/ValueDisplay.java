@@ -2,11 +2,11 @@ package com.intuso.housemate.web.client.bootstrap.widget.value;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.type.SimpleTypeData;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.payload.SimpleTypeData;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.object.v1_0.api.Value;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  */
-public interface ValueDisplay extends IsWidget, ValueListener<com.intuso.housemate.api.object.value.Value<?, ?>> {
+public interface ValueDisplay extends IsWidget, Value.Listener<GWTProxyValue> {
 
     public final static Factory FACTORY = new Factory();
 
@@ -46,12 +46,12 @@ public interface ValueDisplay extends IsWidget, ValueListener<com.intuso.housema
                         if (loadedType != null)
                             panel.setWidget(create(value, loadedType));
                     }
-                }, new HousemateObject.TreeLoadInfo(value.getTypeId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+                }, new RemoteObject.TreeLoadInfo(value.getTypeId(), new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
                 return panel;
             }
         }
 
-        private ValueDisplay create(com.intuso.housemate.api.object.value.Value<?, ?> value, GWTProxyType proxyType) {
+        private ValueDisplay create(GWTProxyValue value, GWTProxyType proxyType) {
 
             ValueDisplay result = null;
             TypeData typeData = proxyType.getData();
@@ -74,5 +74,5 @@ public interface ValueDisplay extends IsWidget, ValueListener<com.intuso.housema
         }
     }
 
-    public void setValue(com.intuso.housemate.api.object.value.Value<?, ?> value);
+    public void setValue(GWTProxyValue value);
 }

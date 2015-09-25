@@ -1,8 +1,8 @@
 package com.intuso.housemate.server.plugin.main.type.operation;
 
+import com.intuso.housemate.plugin.api.internal.OperationType;
+import com.intuso.housemate.plugin.api.internal.Operator;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
-import com.intuso.housemate.plugin.api.OperationType;
-import com.intuso.housemate.plugin.api.Operator;
 
 import java.util.Map;
 

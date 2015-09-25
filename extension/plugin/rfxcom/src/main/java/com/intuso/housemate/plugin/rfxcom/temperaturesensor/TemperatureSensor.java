@@ -1,9 +1,11 @@
 package com.intuso.housemate.plugin.rfxcom.temperaturesensor;
 
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.annotations.Property;
-import com.intuso.housemate.object.real.annotations.Value;
+import com.google.common.collect.Lists;
+import com.intuso.housemate.client.v1_0.real.api.RealDevice;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Values;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -18,16 +20,16 @@ public abstract class TemperatureSensor extends RealDevice {
     private ListenerRegistration listenerRegistration;
     private int sensorId = 0;
 
-    @com.intuso.housemate.object.real.annotations.Values
-    public Values values;
+    @Values
+    public DeviceValues deviceValues;
 
 	public TemperatureSensor(Log log,
                              ListenersFactory listenersFactory,
                              String type,
                              DeviceData data) {
 		super(log, listenersFactory, type, data);
-        getCustomPropertyIds().add("sensor-id");
-        getCustomValueIds().add("temperature");
+        getData().setCustomPropertyIds(Lists.newArrayList("sensor-id"));
+        getData().setCustomValueIds(Lists.newArrayList("temperature"));
 	}
 
     public void propertyChanged() {
@@ -37,7 +39,7 @@ public abstract class TemperatureSensor extends RealDevice {
             return;
         }
 
-        getErrorValue().setTypedValues((String)null);
+        getErrorValue().setTypedValues((String) null);
 
         if(listenerRegistration != null) {
             listenerRegistration.removeListener();
@@ -48,7 +50,7 @@ public abstract class TemperatureSensor extends RealDevice {
 
             @Override
             public void newTemperature(double temperature) {
-                values.setTemperature(temperature);
+                deviceValues.setTemperature(temperature);
             }
         });
 	}
@@ -75,7 +77,7 @@ public abstract class TemperatureSensor extends RealDevice {
 		sensor = null;
 	}
 
-    public interface Values {
+    public interface DeviceValues {
 
         @Value(id = "temperature", name = "Temperature", description = "The current temperature", typeId = "double")
         void setTemperature(double temperature);

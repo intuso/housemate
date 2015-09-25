@@ -1,17 +1,12 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.command.Command;
-import com.intuso.housemate.api.object.command.CommandData;
-import com.intuso.housemate.api.object.device.Device;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.device.DeviceListener;
-import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.api.object.value.ValueData;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.BooleanType;
+import com.intuso.housemate.comms.api.internal.payload.*;
+import com.intuso.housemate.object.api.internal.Command;
+import com.intuso.housemate.object.api.internal.Device;
+import com.intuso.housemate.object.api.internal.Property;
+import com.intuso.housemate.object.api.internal.Value;
+import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -20,17 +15,13 @@ import java.util.List;
 /**
  */
 public class DeviceBridge
-        extends PrimaryObjectBridge<
-            DeviceData,
-            DeviceBridge,
-            DeviceListener<? super DeviceBridge>>
+        extends BridgeObject<DeviceData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, DeviceBridge, Device.Listener<? super DeviceBridge>>
         implements Device<
             CommandBridge,
             CommandBridge,
             CommandBridge,
             CommandBridge,
-        ConvertingListBridge<CommandData, Command<?, ?, ?>, CommandBridge>,
-            ValueBridge,
+        ConvertingListBridge<CommandData, Command<?, ?, ?, ?>, CommandBridge>,
             ValueBridge,
             ValueBridge,
             ValueBridge,
@@ -39,29 +30,101 @@ public class DeviceBridge
         ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
             DeviceBridge> {
 
-    private ConvertingListBridge<CommandData, Command<?, ?, ?>, CommandBridge> commandList;
+    private Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device;
+    private CommandBridge renameCommand;
+    private CommandBridge removeCommand;
+    private ValueBridge runningValue;
+    private CommandBridge startCommand;
+    private CommandBridge stopCommand;
+    private ValueBridge errorValue;
+    private ConvertingListBridge<CommandData, Command<?, ?, ?, ?>, CommandBridge> commandList;
     private ConvertingListBridge<ValueData, Value<?, ?>, ValueBridge> valueList;
     private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
-    private ValueBridge connectedValue;
 
     public DeviceBridge(Log log, ListenersFactory listenersFactory,
-                        Device<?, ?, ?, ? extends Command<?, ?, ?>, ?, ?, ?, ?, ? extends Value<?, ?>, ?, ? extends Property<?, ?, ?>, ?, ?> device) {
+                        Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
         super(log, listenersFactory,
                 new DeviceData(device.getId(), device.getName(), device.getDescription(), device.getFeatureIds(),
-                        device.getCustomCommandIds(), device.getCustomValueIds(), device.getCustomPropertyIds()),
-                device);
-        commandList = new ConvertingListBridge<>(log, listenersFactory, device.getCommands(), new CommandBridge.Converter(log, listenersFactory));
-        valueList = new ConvertingListBridge<>(log, listenersFactory, device.getValues(), new ValueBridge.Converter(log, listenersFactory));
-        propertyList = new ConvertingListBridge<>(log, listenersFactory, device.getProperties(), new PropertyBridge.Converter(log, listenersFactory));
-        connectedValue = new ValueBridge(log, listenersFactory, device.getConnectedValue());
+                        device.getCustomCommandIds(), device.getCustomValueIds(), device.getCustomPropertyIds()));
+        this.device = device;
+        renameCommand = new CommandBridge(log, listenersFactory, device.getRenameCommand());
+        removeCommand = new CommandBridge(log, listenersFactory, device.getRemoveCommand());
+        runningValue = new ValueBridge(log, listenersFactory, device.getRunningValue());
+        startCommand = new CommandBridge(log, listenersFactory, device.getStartCommand());
+        stopCommand = new CommandBridge(log, listenersFactory, device.getStopCommand());
+        errorValue = new ValueBridge(log, listenersFactory, device.getErrorValue());
+        commandList = new ConvertingListBridge<>(log, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Command<?, ?, ?, ?>>) device.getCommands(), new CommandBridge.Converter(log, listenersFactory));
+        valueList = new ConvertingListBridge<>(log, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Value<?, ?>>) device.getValues(), new ValueBridge.Converter(log, listenersFactory));
+        propertyList = new ConvertingListBridge<>(log, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Property<?, ?, ?>>) device.getProperties(), new PropertyBridge.Converter(log, listenersFactory));
+        addChild(renameCommand);
+        addChild(removeCommand);
+        addChild(runningValue);
+        addChild(startCommand);
+        addChild(stopCommand);
+        addChild(errorValue);
         addChild(commandList);
         addChild(valueList);
         addChild(propertyList);
-        addChild(connectedValue);
     }
 
     @Override
-    public ConvertingListBridge<CommandData, Command<?, ?, ?>, CommandBridge> getCommands() {
+    protected List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
+        result.add(device.addObjectListener(new Device.Listener<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>() {
+
+            @Override
+            public void renamed(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device, String oldName, String newName) {
+                for(Device.Listener<? super DeviceBridge> listener : getObjectListeners())
+                    listener.renamed(getThis(), oldName, newName);
+                getData().setName(newName);
+                broadcastMessage(DeviceData.NEW_NAME, new StringPayload(newName));
+            }
+
+            @Override
+            public void error(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device, String error) {
+
+            }
+
+            @Override
+            public void running(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device, boolean running) {
+
+            }
+        }));
+        return result;
+    }
+
+    @Override
+    public CommandBridge getRenameCommand() {
+        return renameCommand;
+    }
+
+    @Override
+    public CommandBridge getRemoveCommand() {
+        return removeCommand;
+    }
+
+    @Override
+    public ValueBridge getRunningValue() {
+        return runningValue;
+    }
+
+    @Override
+    public CommandBridge getStartCommand() {
+        return startCommand;
+    }
+
+    @Override
+    public CommandBridge getStopCommand() {
+        return stopCommand;
+    }
+
+    @Override
+    public ValueBridge getErrorValue() {
+        return errorValue;
+    }
+
+    @Override
+    public ConvertingListBridge<CommandData, Command<?, ?, ?, ?>, CommandBridge> getCommands() {
         return commandList;
     }
 
@@ -73,17 +136,6 @@ public class DeviceBridge
     @Override
     public ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> getProperties() {
         return propertyList;
-    }
-
-    @Override
-    public boolean isConnected() {
-        List<Boolean> connecteds = RealType.deserialiseAll(BooleanType.SERIALISER, connectedValue.getTypeInstances());
-        return connecteds != null && connecteds.size() > 0 && connecteds.get(0) != null ? connecteds.get(0) : false;
-    }
-
-    @Override
-    public ValueBridge getConnectedValue() {
-        return connectedValue;
     }
 
     @Override
@@ -106,7 +158,7 @@ public class DeviceBridge
         return getData().getCustomPropertyIds();
     }
 
-    public final static class Converter implements Function<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> {
+    public final static class Converter implements Function<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> {
 
         private final Log log;
         private final ListenersFactory listenersFactory;
@@ -117,7 +169,7 @@ public class DeviceBridge
         }
 
         @Override
-        public DeviceBridge apply(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
+        public DeviceBridge apply(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
             return new DeviceBridge(log, listenersFactory, device);
         }
     }

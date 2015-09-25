@@ -3,11 +3,11 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>comms-transport-socket</artifactId>
+        <artifactId>housemate-comms-transport-socket</artifactId>
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>comms-transport-socket-server</artifactId>
+    <artifactId>housemate-comms-transport-socket-server</artifactId>
     <packaging>jar</packaging>
     <name>Housemate Comms Transport Socket Server</name>
     <description>Server for socket transport between Housemate components</description>
@@ -15,13 +15,13 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>plugin-api</artifactId>
+            <artifactId>housemate-plugin-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>comms-serialiser-api</artifactId>
-            <version>${project.version}</version>
+            <artifactId>housemate-comms-1-0-serialiser-api</artifactId>
+            <version>${intuso.housemate.comms.version}</version>
         </dependency>
 
         <dependency>

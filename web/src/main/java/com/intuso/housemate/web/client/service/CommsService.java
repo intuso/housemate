@@ -2,7 +2,7 @@ package com.intuso.housemate.web.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.comms.v1_0.api.Message;
 import com.intuso.housemate.web.client.NotConnectedException;
 
 /**

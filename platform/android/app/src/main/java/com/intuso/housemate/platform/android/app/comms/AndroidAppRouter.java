@@ -9,10 +9,9 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.comms.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.Message;
+import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
 import com.intuso.housemate.platform.android.common.JsonMessage;
 import com.intuso.housemate.platform.android.common.MessageCodes;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -215,8 +214,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                     msg.getData().setClassLoader(Message.class.getClassLoader());
                     try {
                         messageReceived(((JsonMessage) msg.getData().getParcelable("message")).getMessage());
-                    } catch (HousemateException e) {
-                        getLog().e("App Router: Failed to receive message", e);
+                    } catch (Throwable t) {
+                        getLog().e("App Router: Failed to receive message", t);
                         disconnect();
                         checkConnection();
                     }

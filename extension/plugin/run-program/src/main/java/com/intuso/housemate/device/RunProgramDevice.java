@@ -1,14 +1,15 @@
 package com.intuso.housemate.device;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.type.TypeInstanceMap;
-import com.intuso.housemate.object.real.*;
-import com.intuso.housemate.object.real.impl.type.BooleanType;
-import com.intuso.housemate.object.real.impl.type.StringType;
-import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.*;
+import com.intuso.housemate.client.v1_0.real.api.impl.type.BooleanType;
+import com.intuso.housemate.client.v1_0.real.api.impl.type.StringType;
+import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.object.v1_0.api.TypeInstanceMap;
+import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -38,16 +39,16 @@ public class RunProgramDevice extends RealDevice {
 	/**
 	 * The command to start the program
 	 */
-    private final RealCommand start = new RealCommand(getLog(), getListenersFactory(), "start", "Start", "Start the program", new ArrayList<RealParameter<?>>()) {
+	public final RealCommand start = new RealCommand(getLog(), getListenersFactory(), "start", "Start", "Start the program", new ArrayList<RealParameter<?>>()) {
 		@Override
-		public void perform(TypeInstanceMap values) throws HousemateException {
+		public void perform(TypeInstanceMap values) {
 			try {
 				if(command.getTypedValue() ==  null || command.getTypedValue().length() == 0)
-					throw new HousemateException("No command has been set");
+					throw new HousemateCommsException("No command has been set");
 				Runtime.getRuntime().exec(command.getTypedValue());
 			} catch (Throwable t) {
 				getLog().e("Could not start program: " + t.getMessage(), t);
-				throw new HousemateException("Could not start program", t);
+				throw new HousemateCommsException("Could not start program", t);
 			}
 		}
 	};
@@ -57,13 +58,13 @@ public class RunProgramDevice extends RealDevice {
 	 */
 	private final RealCommand stop = new RealCommand(getLog(), getListenersFactory(), "stop", "Stop", "Stop the program", new ArrayList<RealParameter<?>>()) {
 		@Override
-		public void perform(TypeInstanceMap values) throws HousemateException {
+		public void perform(TypeInstanceMap values) {
 			Integer pid = getFirstPID();
 			if(pid != null) {
 				try {
 					Runtime.getRuntime().exec("kill " + pid);
 				} catch(IOException e) {
-					throw new HousemateException("Failed to stop the program", e);
+					throw new HousemateCommsException("Failed to stop the program", e);
 				}
 			} else
 				getLog().d("No program running, not stopping");
@@ -81,11 +82,10 @@ public class RunProgramDevice extends RealDevice {
                             @Assisted DeviceData data) {
 		super(log, listenersFactory, "run-program", data);
         getProperties().add(command);
-        getCustomCommandIds().add(start.getId());
+        getData().setCustomCommandIds(Lists.newArrayList(start.getId(), stop.getId()));
+		getData().setCustomValueIds(Lists.newArrayList(runningValue.getId()));
         getCommands().add(start);
-        getCustomCommandIds().add(stop.getId());
         getCommands().add(stop);
-        getCustomValueIds().add(runningValue.getId());
         getValues().add(runningValue);
 	}
 

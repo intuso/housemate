@@ -11,15 +11,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.google.common.collect.Lists;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.device.feature.StatefulPowerControl;
-import com.intuso.housemate.api.object.list.ListListener;
+import com.google.common.collect.Sets;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
+import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
-import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.ProxyRoot;
-import com.intuso.housemate.object.proxy.ProxyServer;
-import com.intuso.housemate.object.proxy.simple.ProxyClientHelper;
+import com.intuso.housemate.object.v1_0.api.feature.StatefulPowerControl;
 import com.intuso.housemate.platform.android.app.HousemateActivity;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
@@ -63,7 +63,7 @@ public class WidgetConfigureActivity
                 new AndroidProxyRoot(getLog(), getListenersFactory(), getProperties(), getRouter()), getRouter());
         clientHelper.applicationDetails(WidgetService.APPLICATION_DETAILS)
                 .component(WidgetConfigureActivity.class.getName())
-                .load(ProxyRoot.SERVERS_ID, HousemateObject.EVERYTHING, ProxyServer.DEVICES_ID, HousemateObject.EVERYTHING)
+                .load(ProxyRoot.SERVERS_ID, RemoteObject.EVERYTHING, ServerData.DEVICES_ID, RemoteObject.EVERYTHING)
                 .callback(this)
                 .start();
     }
@@ -114,7 +114,7 @@ public class WidgetConfigureActivity
         });
     }
 
-    private class ClientListListener implements ListListener<AndroidProxyServer> {
+    private class ClientListListener implements com.intuso.housemate.object.v1_0.api.List.Listener<AndroidProxyServer> {
 
         @Override
         public void elementAdded(AndroidProxyServer client) {
@@ -127,7 +127,7 @@ public class WidgetConfigureActivity
         }
     }
 
-    private class DeviceListListener implements ListListener<AndroidProxyDevice> {
+    private class DeviceListListener implements com.intuso.housemate.object.v1_0.api.List.Listener<AndroidProxyDevice> {
 
         private final AndroidProxyServer client;
 
@@ -137,7 +137,7 @@ public class WidgetConfigureActivity
 
         @Override
         public void elementAdded(AndroidProxyDevice device) {
-            if(device.getFeatureIds().contains(featureId))
+            if(Sets.newHashSet(device.getFeatureIds()).contains(featureId))
                 listAdapter.add(new DeviceInfo(client, device));
         }
 

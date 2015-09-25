@@ -1,6 +1,6 @@
 package com.intuso.housemate.web.client.bootstrap.widget.list;
 
-import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;

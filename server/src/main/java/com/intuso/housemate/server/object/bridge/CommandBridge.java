@@ -1,20 +1,13 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.command.Command;
-import com.intuso.housemate.api.object.command.CommandData;
-import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.command.CommandPerformListener;
-import com.intuso.housemate.api.object.list.List;
-import com.intuso.housemate.api.object.parameter.Parameter;
-import com.intuso.housemate.api.object.parameter.ParameterData;
-import com.intuso.housemate.api.object.type.TypeInstanceMap;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.BooleanType;
+import com.intuso.housemate.comms.api.internal.Message;
+import com.intuso.housemate.comms.api.internal.payload.CommandData;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.ParameterData;
+import com.intuso.housemate.object.api.internal.Command;
+import com.intuso.housemate.object.api.internal.Parameter;
+import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -25,27 +18,21 @@ import com.intuso.utilities.log.Log;
 public class CommandBridge
         extends BridgeObject<CommandData, HousemateData<?>,
             BridgeObject<?, ?, ?, ?, ?>, CommandBridge,
-            CommandListener<? super CommandBridge>>
-        implements Command<ValueBridge, ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge> {
+            Command.Listener<? super CommandBridge>>
+        implements Command<TypeInstanceMap, ValueBridge, ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge>, CommandBridge> {
 
-    private Command<?, ?, ?> proxyCommand;
+    private Command<TypeInstanceMap, ?, ?, ?> proxyCommand;
     private ValueBridge enabledValue;
     private ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge> parameters;
 
-    public CommandBridge(Log log, ListenersFactory listenersFactory, Command<?, ? extends List<? extends Parameter<?>>, ?> proxyCommand) {
+    public CommandBridge(Log log, ListenersFactory listenersFactory, Command<?, ?, ?, ?> proxyCommand) {
         super(log, listenersFactory,
                 new CommandData(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
-        this.proxyCommand = proxyCommand;
+        this.proxyCommand = (Command<TypeInstanceMap, ?, ?, ?>) proxyCommand;
         enabledValue = new ValueBridge(log, listenersFactory, proxyCommand.getEnabledValue());
         parameters = new ConvertingListBridge<>(log, listenersFactory, proxyCommand.getParameters(), new ParameterBridge.Converter(log, listenersFactory));
         addChild(enabledValue);
         addChild(parameters);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        java.util.List<Boolean> enableds = RealType.deserialiseAll(BooleanType.SERIALISER, enabledValue.getTypeInstances());
-        return enableds != null && enableds.size() > 0 && enableds.get(0) != null ? enableds.get(0) : false;
     }
 
     @Override
@@ -61,43 +48,43 @@ public class CommandBridge
     @Override
     protected final java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(PERFORM_TYPE, new Receiver<ClientPayload<PerformPayload>>() {
+        result.add(addMessageListener(CommandData.PERFORM_TYPE, new Message.Receiver<ClientPayload<CommandData.PerformPayload>>() {
             @Override
-            public void messageReceived(final Message<ClientPayload<PerformPayload>> message) throws HousemateException {
-                perform(message.getPayload().getOriginal().getValues(), new CommandPerformListener<CommandBridge>() {
+            public void messageReceived(final Message<ClientPayload<CommandData.PerformPayload>> message) {
+                perform(message.getPayload().getOriginal().getValues(), new Command.PerformListener<CommandBridge>() {
                     @Override
                     public void commandStarted(CommandBridge command) {
                         try {
-                            for(CommandListener<? super CommandBridge> listener : getObjectListeners())
+                            for(Command.Listener<? super CommandBridge> listener : getObjectListeners())
                                 listener.commandStarted(getThis(), "");
-                            sendMessage(PERFORMING_TYPE, new PerformingPayload(message.getPayload().getOriginal().getOpId(), true), message.getPayload().getClient());
-                        } catch(HousemateException e) {
+                            sendMessage(CommandData.PERFORMING_TYPE, new CommandData.PerformingPayload(message.getPayload().getOriginal().getOpId(), true), message.getPayload().getClient());
+                        } catch(Throwable t) {
                             getLog().e("Failed to send command started message to client");
-                            getLog().e(e.getMessage());
+                            getLog().e(t.getMessage());
                         }
                     }
 
                     @Override
                     public void commandFinished(CommandBridge command) {
                         try {
-                            for(CommandListener<? super CommandBridge> listener : getObjectListeners())
+                            for(Command.Listener<? super CommandBridge> listener : getObjectListeners())
                                 listener.commandFinished(getThis());
-                            sendMessage(PERFORMING_TYPE, new PerformingPayload(message.getPayload().getOriginal().getOpId(), false), message.getPayload().getClient());
-                        } catch(HousemateException e) {
+                            sendMessage(CommandData.PERFORMING_TYPE, new CommandData.PerformingPayload(message.getPayload().getOriginal().getOpId(), false), message.getPayload().getClient());
+                        } catch(Throwable t) {
                             getLog().e("Failed to send command finished message to client");
-                            getLog().e(e.getMessage());
+                            getLog().e(t.getMessage());
                         }
                     }
 
                     @Override
                     public void commandFailed(CommandBridge command, String error) {
                         try {
-                            for(CommandListener<? super CommandBridge> listener : getObjectListeners())
+                            for(Command.Listener<? super CommandBridge> listener : getObjectListeners())
                                 listener.commandFailed(getThis(), error);
-                            sendMessage(FAILED_TYPE, new FailedPayload(message.getPayload().getOriginal().getOpId(), error), message.getPayload().getClient());
-                        } catch(HousemateException e) {
+                            sendMessage(CommandData.FAILED_TYPE, new CommandData.FailedPayload(message.getPayload().getOriginal().getOpId(), error), message.getPayload().getClient());
+                        } catch(Throwable t) {
                             getLog().e("Failed to send command failed message to client");
-                            getLog().e(e.getMessage());
+                            getLog().e(t.getMessage());
                         }
                     }
                 });
@@ -107,26 +94,26 @@ public class CommandBridge
     }
 
     @Override
-    public void perform(TypeInstanceMap values, final CommandPerformListener<? super CommandBridge> listener) {
-        proxyCommand.perform(values, new CommandPerformListener<Command<?, ?, ?>>() {
+    public void perform(TypeInstanceMap values, final Command.PerformListener<? super CommandBridge> listener) {
+        proxyCommand.perform(values, new Command.PerformListener<Command<?, ?, ?, ?>>() {
             @Override
-            public void commandStarted(Command<?, ?, ?> command) {
+            public void commandStarted(Command<?, ?, ?, ?> command) {
                 listener.commandStarted(getThis());
             }
 
             @Override
-            public void commandFinished(Command<?, ?, ?> command) {
+            public void commandFinished(Command<?, ?, ?, ?> command) {
                 listener.commandFinished(getThis());
             }
 
             @Override
-            public void commandFailed(Command<?, ?, ?> command, String error) {
+            public void commandFailed(Command<?, ?, ?, ?> command, String error) {
                 listener.commandFailed(getThis(), error);
             }
         });
     }
 
-    public static class Converter implements Function<Command<?, ?, ?>, CommandBridge> {
+    public static class Converter implements Function<Command<?, ?, ?, ?>, CommandBridge> {
 
         private final Log log;
         private final ListenersFactory listenersFactory;
@@ -137,7 +124,7 @@ public class CommandBridge
         }
 
         @Override
-        public CommandBridge apply(Command<?, ?, ?> command) {
+        public CommandBridge apply(Command<?, ?, ?, ?> command) {
             return new CommandBridge(log, listenersFactory, command);
         }
     }

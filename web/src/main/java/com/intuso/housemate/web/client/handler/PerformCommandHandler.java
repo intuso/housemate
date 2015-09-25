@@ -2,8 +2,8 @@ package com.intuso.housemate.web.client.handler;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.user.client.Window;
-import com.intuso.housemate.api.object.command.CommandPerformListener;
-import com.intuso.housemate.api.object.type.TypeInstanceMap;
+import com.intuso.housemate.object.v1_0.api.Command;
+import com.intuso.housemate.object.v1_0.api.TypeInstanceMap;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 
 /**
@@ -12,7 +12,7 @@ public class PerformCommandHandler implements EventHandler {
 
     public final static PerformCommandHandler HANDLER = new PerformCommandHandler();
 
-    private CommandPerformListener<GWTProxyCommand> commandPerformListener = new CommandPerformListener<GWTProxyCommand>() {
+    private Command.PerformListener<GWTProxyCommand> commandPerformListener = new Command.PerformListener<GWTProxyCommand>() {
 
         @Override
         public void commandStarted(GWTProxyCommand command) {
@@ -30,7 +30,7 @@ public class PerformCommandHandler implements EventHandler {
         }
     };
 
-    public void performCommand(GWTProxyCommand command, TypeInstanceMap values, CommandPerformListener<GWTProxyCommand> commandPerformListener) {
+    public void performCommand(GWTProxyCommand command, TypeInstanceMap values, Command.PerformListener<GWTProxyCommand> commandPerformListener) {
         command.perform(values, commandPerformListener != null ? commandPerformListener : this.commandPerformListener);
     }
 }

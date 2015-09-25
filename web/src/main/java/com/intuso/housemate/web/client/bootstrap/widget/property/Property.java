@@ -2,9 +2,10 @@ package com.intuso.housemate.web.client.bootstrap.widget.property;
 
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.type.TypeInstanceMap;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.comms.v1_0.api.payload.PropertyData;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.object.v1_0.api.TypeInstanceMap;
+import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.type.TypeInput;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
@@ -27,12 +28,12 @@ public class Property extends SimplePanel implements UserInputHandler {
         this.property = property;
 
         values = new TypeInstanceMap();
-        if(property.getTypeInstances() != null)
-            values.getChildren().put(com.intuso.housemate.api.object.property.Property.VALUE_PARAM, property.getTypeInstances());
+        if(property.getValue() != null)
+            values.getChildren().put(PropertyData.VALUE_PARAM, property.getValue());
         else
-            values.getChildren().put(com.intuso.housemate.api.object.property.Property.VALUE_PARAM, new TypeInstances());
+            values.getChildren().put(PropertyData.VALUE_PARAM, new TypeInstances());
 
-        setWidget(TypeInput.FACTORY.create(types, property.getTypeId(), values.getChildren().get(com.intuso.housemate.api.object.property.Property.VALUE_PARAM), this));
+        setWidget(TypeInput.FACTORY.create(types, property.getTypeId(), values.getChildren().get(PropertyData.VALUE_PARAM), this));
     }
 
     @UiFactory

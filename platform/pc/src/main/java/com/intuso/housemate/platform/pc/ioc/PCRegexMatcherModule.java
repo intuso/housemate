@@ -1,9 +1,7 @@
 package com.intuso.housemate.platform.pc.ioc;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import com.intuso.housemate.api.resources.RegexMatcher;
-import com.intuso.housemate.api.resources.RegexMatcherFactory;
+import com.intuso.housemate.object.api.internal.RegexMatcher;
 
 import java.util.regex.Pattern;
 
@@ -18,11 +16,11 @@ public class PCRegexMatcherModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(RMF.class).in(Scopes.SINGLETON);
-        bind(RegexMatcherFactory.class).to(RMF.class);
+//        bind(RMF.class).in(Scopes.SINGLETON);
+//        bind(RegexMatcher.Factory.class).to(RMF.class);
     }
 
-    public static class RMF implements RegexMatcherFactory {
+    public static class RMF implements RegexMatcher.Factory {
 
         @Override
         public RegexMatcher createRegexMatcher(String pattern) {

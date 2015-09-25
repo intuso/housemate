@@ -2,14 +2,14 @@ package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.object.real.RealCondition;
-import com.intuso.housemate.object.real.RealProperty;
-import com.intuso.housemate.object.real.factory.condition.RealConditionOwner;
-import com.intuso.housemate.object.real.impl.type.Time;
-import com.intuso.housemate.object.real.impl.type.TimeType;
-import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.RealCondition;
+import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionOwner;
+import com.intuso.housemate.client.real.api.internal.impl.type.Time;
+import com.intuso.housemate.client.real.api.internal.impl.type.TimeType;
+import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import com.intuso.housemate.comms.api.internal.payload.ConditionData;
+import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -60,8 +60,7 @@ public class TimeOfTheDay extends RealCondition {
                         ListenersFactory listenersFactory,
                         @Assisted ConditionData data,
                         @Assisted RealConditionOwner owner,
-                        TimeType timeType)
-            throws HousemateException {
+                        TimeType timeType) {
 		super(log, listenersFactory, "time-of-the-day", data, owner);
         before = new RealProperty<>(log, listenersFactory, BEFORE_FIELD, BEFORE_FIELD, "The condition is satisfied when the current time is before this time",
                 timeType, DAY_END);
@@ -93,9 +92,8 @@ public class TimeOfTheDay extends RealCondition {
 	 * parse a time string. The format is hh:mm:ss.mmm where only hh has to be given
 	 * @param in the time string
 	 * @return a long representing the number of milliseconds from 00:00:00.000 until the time
-	 * @throws HousemateException if the time cannot be parsed
 	 */
-	private long parseTime(String in) throws HousemateException {
+	private long parseTime(String in) {
 		String time = in.trim();
 		int index = time.indexOf(":");
 		short hours = 0, minutes = 0, seconds = 0, millis = 0;
@@ -140,16 +138,16 @@ public class TimeOfTheDay extends RealCondition {
 		// verify the time components
 		if(hours < 0 || hours > 23) {
 			getLog().e("Invalid hours value in time \"" + in + "\". Must be between 0 and 23 inclusive");
-			throw new HousemateException("Invalid hours value in time \"" + in + "\". Must be between 0 and 23 inclusive");
+			throw new HousemateCommsException("Invalid hours value in time \"" + in + "\". Must be between 0 and 23 inclusive");
 		} else if(minutes < 0 || minutes > 59) {
 			getLog().e("Invalid minutes value in time \"" + in + "\". Must be between 0 and 59 inclusive");
-			throw new HousemateException("Invalid minutes value in time \"" + in + "\". Must be between 0 and 59 inclusive");
+			throw new HousemateCommsException("Invalid minutes value in time \"" + in + "\". Must be between 0 and 59 inclusive");
 		} else if(seconds < 0 || seconds > 59) {
 			getLog().e("Invalid seconds value in time \"" + in + "\". Must be between 0 and 59 inclusive");
-			throw new HousemateException("Invalid seconds value in time \"" + in + "\". Must be between 0 and 59 inclusive");
+			throw new HousemateCommsException("Invalid seconds value in time \"" + in + "\". Must be between 0 and 59 inclusive");
 		} else if(millis < 0 || millis > 999) {
 			getLog().e("Invalid milliseconds value in time \"" + in + "\". Must be between 0 and 999 inclusive");
-			throw new HousemateException("Invalid milliseconds value in time \"" + in + "\". Must be between 0 and 999 inclusive");
+			throw new HousemateCommsException("Invalid milliseconds value in time \"" + in + "\". Must be between 0 and 999 inclusive");
 		// time is correct
 		} else {
 			long result = (hours * 3600000) + (minutes * 60000) + (seconds * 1000) + millis;

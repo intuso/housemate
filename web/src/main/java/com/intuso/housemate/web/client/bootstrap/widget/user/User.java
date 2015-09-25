@@ -1,11 +1,11 @@
 package com.intuso.housemate.web.client.bootstrap.widget.user;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.ChildOverview;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.comms.v1_0.api.ChildOverview;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.comms.v1_0.api.payload.UserData;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
@@ -40,7 +40,7 @@ public class User extends ObjectWidget<GWTProxyUser> {
                     loading(false);
                     setObject(users.get(childOverview.getId()));
                 }
-            }, new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+            }, new RemoteObject.TreeLoadInfo(childOverview.getId(), new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
         }
     }
 

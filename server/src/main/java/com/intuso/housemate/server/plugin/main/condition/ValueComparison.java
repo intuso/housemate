@@ -2,18 +2,18 @@ package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.real.RealCondition;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealProperty;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.factory.condition.RealConditionOwner;
-import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.RealCondition;
+import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionOwner;
+import com.intuso.housemate.comms.api.internal.payload.ConditionData;
+import com.intuso.housemate.comms.api.internal.payload.TypeData;
+import com.intuso.housemate.object.api.internal.Property;
+import com.intuso.housemate.object.api.internal.TypeInstances;
+import com.intuso.housemate.object.api.internal.Value;
+import com.intuso.housemate.plugin.api.internal.Comparator;
+import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.housemate.server.plugin.main.type.comparison.Comparison;
 import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueAvailableListener;
@@ -41,8 +41,8 @@ public class ValueComparison extends RealCondition {
     private final RealProperty<Comparison> comparisonProperty;
     private final PropertyListener propertyListener;
     private ListenerRegistration propertyListenerRegistration;
-    private Value<?, ?> firstValue = null;
-    private Value<?, ?> secondValue = null;
+    private Value<TypeInstances, ?> firstValue = null;
+    private Value<TypeInstances, ?> secondValue = null;
 
     @Inject
 	public ValueComparison(Log log,
@@ -109,24 +109,24 @@ public class ValueComparison extends RealCondition {
                     setError("No comparator found for type id " + firstValue.getTypeId());
                 else {
                     try {
-                        Object first = firstValue.getTypeInstances() != null && firstValue.getTypeInstances().getElements().size() > 0
-                                ? type.deserialise(firstValue.getTypeInstances().getElements().get(0))
+                        Object first = firstValue.getValue() != null && firstValue.getValue().getElements().size() > 0
+                                ? type.deserialise(firstValue.getValue().getElements().get(0))
                                 : null;
-                        Object second = secondValue.getTypeInstances() != null && secondValue.getTypeInstances().getElements().size() > 0
-                                ? type.deserialise(secondValue.getTypeInstances().getElements().get(0))
+                        Object second = secondValue.getValue() != null && secondValue.getValue().getElements().size() > 0
+                                ? type.deserialise(secondValue.getValue().getElements().get(0))
                                 : null;
                         conditionSatisfied(comparator.compare(first, second));
                         setError(null);
-                    } catch(HousemateException e) {
-                        setError("Error comparing values: " + e.getMessage());
-                        getLog().e("Error comparing values", e);
+                    } catch(Throwable t) {
+                        setError("Error comparing values: " + t.getMessage());
+                        getLog().e("Error comparing values", t);
                     }
                 }
             }
         }
     }
 
-    private class PropertyListener implements ValueListener<RealProperty<Comparison>> {
+    private class PropertyListener implements Property.Listener<RealProperty<Comparison>> {
 
         private final ValueSourceListener firstValueSourceListener = new ValueSourceListener(0);
         private final ValueSourceListener secondValueSourceListener = new ValueSourceListener(1);
@@ -171,7 +171,7 @@ public class ValueComparison extends RealCondition {
             valueChangedListener = new ValueChangedListener();
         }
 
-        private void addListener(Value<?, ?> value) {
+        private void addListener(Value<TypeInstances, ?> value) {
             if(value != null) {
                 valueChangedListenerRegistration = value.addObjectListener(valueChangedListener);
                 if(index == 0)
@@ -189,7 +189,7 @@ public class ValueComparison extends RealCondition {
 
 
         @Override
-        public void valueAvailable(ValueSource source, Value<?, ?> value) {
+        public void valueAvailable(ValueSource source, Value<TypeInstances, ?> value) {
             removeListener();
             addListener(value);
         }
@@ -200,7 +200,7 @@ public class ValueComparison extends RealCondition {
         }
     }
 
-    private class ValueChangedListener implements ValueListener<Value<?, ?>> {
+    private class ValueChangedListener implements Value.Listener<Value<?, ?>> {
         @Override
         public void valueChanging(Value<?, ?> value) {
             // do nothing

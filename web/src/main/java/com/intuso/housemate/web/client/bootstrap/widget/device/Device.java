@@ -1,11 +1,11 @@
 package com.intuso.housemate.web.client.bootstrap.widget.device;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.intuso.housemate.api.object.ChildOverview;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.comms.v1_0.api.ChildOverview;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -17,15 +17,15 @@ import java.util.List;
 /**
  * Created by tomc on 05/03/15.
  */
-public class Device extends ObjectWidget<GWTProxyDevice> {
+public class Device extends ObjectWidget<GWTProxyDevice> implements com.intuso.housemate.object.v1_0.api.Device.Listener<GWTProxyDevice> {
 
     private final GWTProxyList<TypeData<?>, GWTProxyType> types;
 
     public Device(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyList<DeviceData, GWTProxyDevice> devices, final ChildOverview childOverview) {
         this.types = types;
-        GWTProxyDevice user = devices.get(childOverview.getId());
-        if(user != null)
-            setObject(user);
+        GWTProxyDevice device = devices.get(childOverview.getId());
+        if(device != null)
+            setObject(device);
         else {
             setName(childOverview.getName());
             loading(true);
@@ -41,8 +41,14 @@ public class Device extends ObjectWidget<GWTProxyDevice> {
                     loading(false);
                     setObject(devices.get(childOverview.getId()));
                 }
-            }, new HousemateObject.TreeLoadInfo(childOverview.getId(), new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+            }, new RemoteObject.TreeLoadInfo(childOverview.getId(), new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
         }
+    }
+
+    @Override
+    protected void setObject(GWTProxyDevice device) {
+        super.setObject(device);
+        device.addObjectListener(this);
     }
 
     @Override
@@ -53,5 +59,20 @@ public class Device extends ObjectWidget<GWTProxyDevice> {
     @Override
     protected IsWidget getSettingsWidget(GWTProxyDevice object) {
         return new DeviceSettings(types, object);
+    }
+
+    @Override
+    public void renamed(GWTProxyDevice device, String oldName, String newName) {
+        updateName(newName);
+    }
+
+    @Override
+    public void error(GWTProxyDevice device, String error) {
+
+    }
+
+    @Override
+    public void running(GWTProxyDevice runnable, boolean running) {
+
     }
 }

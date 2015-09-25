@@ -1,29 +1,23 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.api.object.task.Task;
-import com.intuso.housemate.api.object.task.TaskData;
-import com.intuso.housemate.api.object.task.TaskListener;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.BooleanType;
-import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.PropertyData;
+import com.intuso.housemate.comms.api.internal.payload.TaskData;
+import com.intuso.housemate.object.api.internal.Property;
+import com.intuso.housemate.object.api.internal.Task;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-
-import java.util.List;
 
 /**
  */
 public class TaskBridge
         extends BridgeObject<
-            TaskData,
-            HousemateData<?>,
+        TaskData,
+        HousemateData<?>,
             BridgeObject<?, ?, ?, ?, ?>,
             TaskBridge,
-            TaskListener<? super TaskBridge>>
+            Task.Listener<? super TaskBridge>>
         implements Task<
             CommandBridge,
             ValueBridge,
@@ -41,7 +35,7 @@ public class TaskBridge
         removeCommand = new CommandBridge(log, listenersFactory, task.getRemoveCommand());
         executingValue = new ValueBridge(log, listenersFactory, task.getExecutingValue());
         errorValue = new ValueBridge(log, listenersFactory, task.getErrorValue());
-        propertyList = new ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>(log, listenersFactory, task.getProperties(),
+        propertyList = new ConvertingListBridge<>(log, listenersFactory, task.getProperties(),
                 new PropertyBridge.Converter(log, listenersFactory));
         addChild(removeCommand);
         addChild(executingValue);
@@ -60,20 +54,8 @@ public class TaskBridge
     }
 
     @Override
-    public String getError() {
-        List<String> errors = RealType.deserialiseAll(StringType.SERIALISER, errorValue.getTypeInstances());
-        return errors != null && errors.size() > 0 ? errors.get(0) : null;
-    }
-
-    @Override
     public ValueBridge getExecutingValue() {
         return executingValue;
-    }
-
-    @Override
-    public boolean isExecuting() {
-        List<Boolean> executings = RealType.deserialiseAll(BooleanType.SERIALISER, executingValue.getTypeInstances());
-        return executings != null && executings.size() > 0 && executings.get(0) != null ? executings.get(0) : false;
     }
 
     @Override

@@ -3,11 +3,11 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 import com.google.common.base.Joiner;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.type.ObjectTypeData;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.payload.ObjectTypeData;
+import com.intuso.housemate.object.v1_0.api.TypeInstance;
+import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.event.UserInputEvent;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
@@ -32,8 +32,8 @@ public class ObjectBrowserInput extends FlowPanel implements TypeInput, ObjectSe
         rootNode.addObjectSelectedHandler(this);
         add(rootNode);
         if(typeInstances.getFirstValue() != null) {
-            HousemateObject<?, ?, ?, ?> object =
-                    HousemateObject.getChild(Housemate.INJECTOR.getProxyRoot(),
+            RemoteObject<?, ?, ?, ?> object =
+                    ProxyObject.getChild(Housemate.INJECTOR.getProxyRoot(),
                     typeInstances.getFirstValue().split("/"), 1);
             if(object instanceof ProxyObject)
                 rootNode.selectObject((ProxyObject<?, ?, ?, ?, ?>) object);

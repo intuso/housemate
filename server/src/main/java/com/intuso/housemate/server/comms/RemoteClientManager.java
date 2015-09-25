@@ -4,11 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.comms.ClientType;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import com.intuso.housemate.comms.api.internal.Message;
+import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
@@ -16,6 +14,7 @@ import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.housemate.server.object.proxy.ioc.ServerProxyModule;
 import com.intuso.utilities.log.Log;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,7 +39,7 @@ public class RemoteClientManager {
         this.generalRoot = generalRoot;
         this.bridgeRoot = bridgeRoot;
         rootClient = new RemoteClient(log,
-                new ClientInstance(true, Server.INTERNAL_APPLICATION_DETAILS, UUID.randomUUID().toString(), "root", ClientType.Router),
+                new ClientInstance(true, Server.INTERNAL_APPLICATION_DETAILS, UUID.randomUUID().toString(), "root", ApplicationRegistration.ClientType.Router),
                 generalRoot, mainRouter);
         rootClient.setBaseRoute(Lists.<String>newArrayList());
     }
@@ -59,8 +58,8 @@ public class RemoteClientManager {
             client.setBaseRoute(route);
             try {
                 rootClient.addClient(client);
-            } catch(HousemateException e) {
-                throw new HousemateRuntimeException("Failed to add reconnected client", e);
+            } catch(Throwable e) {
+                throw new HousemateCommsException("Failed to add reconnected client", e);
             }
 
             return client;
@@ -68,35 +67,34 @@ public class RemoteClientManager {
             // try and add the client. If this fails, it's because one of the intermediate clients isn't allowed access
             // in which case it shouldn't have allowed this message through. We shouldn't reply to prevent misuse
             try {
-                Root<?> root;
+                Message.Receiver<Message.Payload> receiver;
                 switch(clientInstance.getClientType()) {
                     case Real: // the server proxy objects are for remote real objects
-                        root = injector.createChildInjector(new ServerProxyModule()).getInstance(ServerProxyRoot.class);
+                        receiver = injector.createChildInjector(new ServerProxyModule()).getInstance(ServerProxyRoot.class);
                         break;
                     case Proxy: // the server bridge objects are for remote proxy objects
-                        root = bridgeRoot;
+                        receiver = bridgeRoot;
                         break;
                     default:
-                        root = generalRoot;
+                        receiver = generalRoot;
                         break;
                 }
-                client = addClient(root, clientInstance, route);
-                if(clientInstance.getClientType() == ClientType.Real)
-                    ((ServerProxyRoot) root).setClient(client);
+                client = addClient(receiver, clientInstance, route);
+                if(clientInstance.getClientType() == ApplicationRegistration.ClientType.Real)
+                    ((ServerProxyRoot) receiver).setClient(client);
                 clients.put(clientInstance, client);
                 client.setBaseRoute(route);
                 return client;
-            } catch(HousemateException e) {
-                log.e("Failed to add client endpoint for " + Message.routeToString(route), e);
-                log.d("Maybe one of the intermediate clients isn't connected or isn't of type " + ClientType.Router);
-                throw new HousemateRuntimeException("Failed to add client endpoint for " + Message.routeToString(route), e);
+            } catch(Throwable t) {
+                log.e("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
+                log.d("Maybe one of the intermediate clients isn't connected or isn't of type " + ApplicationRegistration.ClientType.Router);
+                throw new HousemateCommsException("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
             }
         }
     }
 
-    private RemoteClient addClient(Root<?> root, ClientInstance clientInstance, List<String> route)
-            throws HousemateException {
-        return rootClient.addClient(route, root, clientInstance);
+    private RemoteClient addClient(Message.Receiver<Message.Payload> receiver, ClientInstance clientInstance, List<String> route) {
+        return rootClient.addClient(route, receiver, clientInstance);
     }
 
     public void clientUnregistered(List<String> route) {

@@ -4,33 +4,22 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.object.application.Application;
-import com.intuso.housemate.api.object.application.ApplicationData;
-import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
-import com.intuso.housemate.api.object.automation.Automation;
-import com.intuso.housemate.api.object.automation.AutomationData;
-import com.intuso.housemate.api.object.command.Command;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
-import com.intuso.housemate.api.object.task.TaskData;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstanceMap;
-import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.object.real.*;
-import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
-import com.intuso.housemate.object.real.factory.automation.RealAutomationFactory;
-import com.intuso.housemate.object.real.factory.device.DeviceFactoryType;
-import com.intuso.housemate.object.real.factory.device.RealDeviceFactory;
-import com.intuso.housemate.object.real.factory.hardware.HardwareFactoryType;
-import com.intuso.housemate.object.real.factory.hardware.RealHardwareFactory;
-import com.intuso.housemate.object.real.factory.user.RealUserFactory;
-import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
-import com.intuso.housemate.object.real.impl.type.ApplicationStatusType;
-import com.intuso.housemate.persistence.api.DetailsNotFoundException;
-import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.api.internal.annotations.AnnotationProcessor;
+import com.intuso.housemate.client.real.api.internal.factory.automation.RealAutomationFactory;
+import com.intuso.housemate.client.real.api.internal.factory.device.DeviceFactoryType;
+import com.intuso.housemate.client.real.api.internal.factory.device.RealDeviceFactory;
+import com.intuso.housemate.client.real.api.internal.factory.hardware.HardwareFactoryType;
+import com.intuso.housemate.client.real.api.internal.factory.hardware.RealHardwareFactory;
+import com.intuso.housemate.client.real.api.internal.factory.user.RealUserFactory;
+import com.intuso.housemate.client.real.api.internal.impl.type.ApplicationInstanceStatusType;
+import com.intuso.housemate.client.real.api.internal.impl.type.ApplicationStatusType;
+import com.intuso.housemate.comms.api.internal.payload.*;
+import com.intuso.housemate.object.api.internal.Command;
+import com.intuso.housemate.object.api.internal.TypeInstance;
+import com.intuso.housemate.object.api.internal.TypeInstanceMap;
+import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
+import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -128,9 +117,9 @@ public class RealObjectWatcher {
                     RealApplication application = new RealApplication(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
                             details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(),
                             injector.getInstance(ApplicationStatusType.class));
-                    path.add(Application.APPLICATION_INSTANCES_ID);
+                    path.add(ApplicationData.APPLICATION_INSTANCES_ID);
                     try {
-                        loadApplicationInstances(Lists.newArrayList(path), application.getApplicationInstances(), application.getStatus());
+                        loadApplicationInstances(Lists.newArrayList(path), application.getApplicationInstances());
                     } finally {
                         path.remove(path.size() - 1);
                     }
@@ -141,20 +130,19 @@ public class RealObjectWatcher {
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved applications " + Arrays.toString(applications.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get names of existing applications", e);
+        } catch(Throwable t) {
+            log.e("Failed to get names of existing applications", t);
         }
     }
 
-    private void loadApplicationInstances(java.util.List<String> path, RealList<ApplicationInstanceData, RealApplicationInstance> realApplicationInstances, ApplicationStatus applicationStatus) {
+    private void loadApplicationInstances(java.util.List<String> path, RealList<ApplicationInstanceData, RealApplicationInstance> realApplicationInstances) {
         try {
             for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
                     RealApplicationInstance applicationInstance = new RealApplicationInstance(log, listenersFactory,
-                            details.getChildren().get("id").getFirstValue(), injector.getInstance(ApplicationInstanceStatusType.class),
-                            applicationStatus);
+                            details.getChildren().get("id").getFirstValue(), injector.getInstance(ApplicationInstanceStatusType.class));
                     realApplicationInstances.add(applicationInstance);
                 } finally {
                     path.remove(path.size() - 1);
@@ -162,8 +150,8 @@ public class RealObjectWatcher {
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved users " + Arrays.toString(realApplicationInstances.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get names of existing users", e);
+        } catch(Throwable t) {
+            log.e("Failed to get names of existing users", t);
         }
     }
 
@@ -181,34 +169,34 @@ public class RealObjectWatcher {
                     // automation is not yet initialised so we cannot use it's path to load conditions etc. Instead,
                     // we can manually build the path using the list's path as a base.
                     try {
-                        path.add(Automation.CONDITIONS_ID);
+                        path.add(AutomationData.CONDITIONS_ID);
                         loadConditions(path, automation.getConditions(), automation.getAddConditionCommand());
                     } finally {
                         path.remove(path.size() - 1);
                     }
                     try {
-                        path.add(Automation.SATISFIED_TASKS_ID);
+                        path.add(AutomationData.SATISFIED_TASKS_ID);
                         loadTasks(path, automation.getSatisfiedTasks(), automation.getAddSatisifedTaskCommand());
                     } finally {
                         path.remove(path.size() - 1);
                     }
                     try {
-                        path.add(Automation.UNSATISFIED_TASKS_ID);
+                        path.add(AutomationData.UNSATISFIED_TASKS_ID);
                         loadTasks(path, automation.getUnsatisfiedTasks(), automation.getAddUnsatisifedTaskCommand());
                     } finally {
                         path.remove(path.size() - 1);
                     }
                     automations.add(automation);
-                } catch(HousemateException e) {
-                    log.e("Failed to load automation", e);
+                } catch(Throwable t) {
+                    log.e("Failed to load automation", t);
                 } finally {
                     path.remove(path.size() - 1);
                 }
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved automations " + Arrays.toString(automations.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get names of existing automations", e);
+        } catch(Throwable t) {
+            log.e("Failed to get names of existing automations", t);
         }
     }
 
@@ -219,16 +207,16 @@ public class RealObjectWatcher {
                     path.add(conditionName);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
                     command.perform(details);
-                } catch(HousemateException e) {
-                    log.e("Failed to load condition", e);
+                } catch(Throwable t) {
+                    log.e("Failed to load condition", t);
                 } finally {
                     path.remove(path.size() - 1);
                 }
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved conditions " + Arrays.toString(conditions.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get device names of existing conditions", e);
+        } catch(Throwable t) {
+            log.e("Failed to get device names of existing conditions", t);
         }
     }
 
@@ -257,16 +245,16 @@ public class RealObjectWatcher {
                             devices.add(device);
                         }
                     }
-                } catch(HousemateException e) {
-                    log.e("Failed to load device", e);
+                } catch(Throwable t) {
+                    log.e("Failed to load device", t);
                 } finally {
                     path.remove(path.size() - 1);
                 }
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved devices at " + Joiner.on("/").join(devices.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get names of existing devices", e);
+        } catch(Throwable t) {
+            log.e("Failed to get names of existing devices", t);
         }
     }
 
@@ -295,16 +283,16 @@ public class RealObjectWatcher {
                             hardwares.add(hardware);
                         }
                     }
-                } catch(HousemateException e) {
-                    log.e("Failed to load hardware", e);
+                } catch(Throwable t) {
+                    log.e("Failed to load hardware", t);
                 } finally {
                     path.remove(path.size() - 1);
                 }
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved hardwares at " + Joiner.on("/").join(hardwares.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get names of existing hardwares", e);
+        } catch(Throwable t) {
+            log.e("Failed to get names of existing hardwares", t);
         }
     }
 
@@ -315,16 +303,16 @@ public class RealObjectWatcher {
                     path.add(taskName);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
                     command.perform(details);
-                } catch(HousemateException e) {
-                    log.e("Failed to load task", e);
+                } catch(Throwable t) {
+                    log.e("Failed to load task", t);
                 } finally {
                     path.remove(path.size() - 1);
                 }
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved tasks " + Arrays.toString(tasks.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get device names of existing tasks", e);
+        } catch(Throwable t) {
+            log.e("Failed to get device names of existing tasks", t);
         }
     }
 
@@ -346,14 +334,14 @@ public class RealObjectWatcher {
             }
         } catch(DetailsNotFoundException e) {
             log.w("No details found for saved users " + Arrays.toString(users.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to get names of existing users", e);
+        } catch(Throwable t) {
+            log.e("Failed to get names of existing users", t);
         }
         if(users.getChildren().size() == 0)
             users.add(realUserFactory.create(new UserData("admin", "admin", "Default admin user"), root));
     }
 
-    private class CommandPerformListener implements com.intuso.housemate.api.object.command.CommandPerformListener<Command<?, ?, ?>> {
+    private class CommandPerformListener implements Command.PerformListener<Command<?, ?, ?, ?>> {
 
         private final String description;
 
@@ -362,17 +350,17 @@ public class RealObjectWatcher {
         }
 
         @Override
-        public void commandStarted(Command<?, ?, ?> command) {
+        public void commandStarted(Command<?, ?, ?, ?> command) {
             log.d("Doing " + description);
         }
 
         @Override
-        public void commandFinished(Command<?, ?, ?> command) {
+        public void commandFinished(Command<?, ?, ?, ?> command) {
             log.d("Done " + description);
         }
 
         @Override
-        public void commandFailed(Command<?, ?, ?> command, String error) {
+        public void commandFailed(Command<?, ?, ?, ?> command, String error) {
             log.d(description + " failed: " + error);
         }
     }

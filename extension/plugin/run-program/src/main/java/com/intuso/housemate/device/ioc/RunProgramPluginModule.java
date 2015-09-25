@@ -2,9 +2,9 @@ package com.intuso.housemate.device.ioc;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.device.RunProgramDevice;
-import com.intuso.housemate.plugin.api.Devices;
-import com.intuso.housemate.plugin.api.PluginModule;
-import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.plugin.v1_0.api.Devices;
+import com.intuso.housemate.plugin.v1_0.api.PluginModule;
+import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.log.Log;
 
 /**

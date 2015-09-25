@@ -1,9 +1,9 @@
 package com.intuso.housemate.web.client.bootstrap.widget.value;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.intuso.housemate.api.object.ChildOverview;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.value.ValueData;
+import com.intuso.housemate.comms.v1_0.api.ChildOverview;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.comms.v1_0.api.payload.ValueData;
 import com.intuso.housemate.web.client.bootstrap.widget.list.NestedList;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;

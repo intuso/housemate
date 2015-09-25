@@ -1,9 +1,8 @@
 package com.intuso.housemate.server.plugin.main.comparator;
 
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.type.SimpleTypeData;
-import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.ComparisonType;
+import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
+import com.intuso.housemate.plugin.api.internal.Comparator;
+import com.intuso.housemate.plugin.api.internal.ComparisonType;
 
 /**
  */
@@ -24,7 +23,7 @@ public class DoubleComparators {
         }
 
         @Override
-        public boolean compare(Double first, Double second) throws HousemateException {
+        public boolean compare(Double first, Double second) {
             return first != null && first.equals(second);
         }
     }
@@ -42,7 +41,7 @@ public class DoubleComparators {
         }
 
         @Override
-        public boolean compare(Double first, Double second) throws HousemateException {
+        public boolean compare(Double first, Double second) {
             return first != null && first.compareTo(second) > 0;
         }
     }
@@ -60,7 +59,7 @@ public class DoubleComparators {
         }
 
         @Override
-        public boolean compare(Double first, Double second) throws HousemateException {
+        public boolean compare(Double first, Double second) {
             return first != null && first.compareTo(second) >= 0;
         }
     }
@@ -78,7 +77,7 @@ public class DoubleComparators {
         }
 
         @Override
-        public boolean compare(Double first, Double second) throws HousemateException {
+        public boolean compare(Double first, Double second) {
             return first != null && first.compareTo(second) < 0;
         }
     }
@@ -96,7 +95,7 @@ public class DoubleComparators {
         }
 
         @Override
-        public boolean compare(Double first, Double second) throws HousemateException {
+        public boolean compare(Double first, Double second) {
             return first != null && first.compareTo(second) <= 0;
         }
     }

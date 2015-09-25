@@ -2,12 +2,12 @@ package com.intuso.housemate.web.client.object;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.automation.AutomationData;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.task.TaskData;
-import com.intuso.housemate.object.proxy.ProxyAutomation;
-import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyAutomation;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.payload.AutomationData;
+import com.intuso.housemate.comms.v1_0.api.payload.ConditionData;
+import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
+import com.intuso.housemate.comms.v1_0.api.payload.TaskData;
 import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;

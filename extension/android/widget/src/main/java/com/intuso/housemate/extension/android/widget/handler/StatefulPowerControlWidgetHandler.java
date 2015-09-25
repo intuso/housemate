@@ -2,11 +2,11 @@ package com.intuso.housemate.extension.android.widget.handler;
 
 import android.widget.RemoteViews;
 import android.widget.Toast;
-import com.intuso.housemate.api.object.command.CommandPerformListener;
-import com.intuso.housemate.api.object.device.feature.StatefulPowerControl;
-import com.intuso.housemate.api.object.value.ValueListener;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
+import com.intuso.housemate.object.v1_0.api.Command;
+import com.intuso.housemate.object.v1_0.api.Value;
+import com.intuso.housemate.object.v1_0.api.feature.StatefulPowerControl;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyValue;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -20,7 +20,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
  */
 public class StatefulPowerControlWidgetHandler
         extends WidgetHandler<StatefulPowerControl<AndroidProxyCommand, AndroidProxyValue>>
-        implements CommandPerformListener<AndroidProxyCommand> {
+        implements Command.PerformListener<AndroidProxyCommand> {
 
     private ListenerRegistration listenerRegistration;
 
@@ -34,7 +34,7 @@ public class StatefulPowerControlWidgetHandler
     }
 
     protected void init() {
-        listenerRegistration = getFeature().getIsOnValue().addObjectListener(new ValueListener<AndroidProxyValue>() {
+        listenerRegistration = getFeature().getIsOnValue().addObjectListener(new Value.Listener<AndroidProxyValue>() {
             @Override
             public void valueChanging(AndroidProxyValue value) {
                 // do nothing
@@ -103,7 +103,7 @@ public class StatefulPowerControlWidgetHandler
                         views.setImageViewResource(R.id.button, getFeature().isOn() ? R.drawable.stateful_power_on : R.drawable.stateful_power_off);
                         // listen for button presses
                         views.setOnClickPendingIntent(R.id.button, getWidgetService().makePendingIntent(this,
-                                getFeature() != null && !getFeature().isOn() ? StatefulPowerControl.ON_COMMAND : StatefulPowerControl.OFF_COMMAND));
+                                getFeature() != null && !getFeature().isOn() ? "on" : "off"));
                         break;
                 }
                 break;
@@ -114,9 +114,9 @@ public class StatefulPowerControlWidgetHandler
 
     @Override
     public void handleAction(String action) {
-        if(StatefulPowerControl.ON_COMMAND.equals(action))
+        if("on".equals(action))
             getFeature().getOnCommand().perform(this);
-        else if(StatefulPowerControl.OFF_COMMAND.equals(action))
+        else if("off".equals(action))
             getFeature().getOffCommand().perform(this);
     }
 

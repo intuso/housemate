@@ -1,10 +1,10 @@
 package com.intuso.housemate.web.client.bootstrap.widget.object;
 
-import com.intuso.housemate.api.object.Removeable;
-import com.intuso.housemate.api.object.Renameable;
-import com.intuso.housemate.api.object.Runnable;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyRemoveable;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyRenameable;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyRunnable;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.NestedTable;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -21,11 +21,11 @@ import com.intuso.housemate.web.client.object.GWTProxyValue;
 public class Control extends NestedTable {
 
     public Control(GWTProxyList<TypeData<?>, GWTProxyType> types, ProxyObject<?, ?, ?, ?, ?> object) {
-        if(object instanceof Renameable)
-            addRow("Rename", new RenameableWidget(types, (Renameable<GWTProxyCommand>) object));
-        if(object instanceof Renameable)
-            addRow("Running", new RunnableWidget((Runnable<GWTProxyCommand, GWTProxyValue>) object));
-        if(object instanceof Renameable)
-            addRow("Remove", new RemoveableWidget(types, (Removeable<GWTProxyCommand>) object));
+        if(object instanceof ProxyRenameable)
+            addRow("Rename", new RenameableWidget(types, (ProxyRenameable<GWTProxyCommand>) object));
+        if(object instanceof ProxyRunnable)
+            addRow("Running", new RunnableWidget((ProxyRunnable<GWTProxyCommand, GWTProxyValue>) object));
+        if(object instanceof ProxyRemoveable)
+            addRow("Remove", new RemoveableWidget(types, (ProxyRemoveable<GWTProxyCommand>) object));
     }
 }

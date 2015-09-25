@@ -4,11 +4,11 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>platform-android</artifactId>
+        <artifactId>housemate-platform-android</artifactId>
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-	<artifactId>platform-android-service</artifactId>
+	<artifactId>housemate-platform-android-service</artifactId>
 	<packaging>apk</packaging>
     <name>Housemate Platform Android Service</name>
     <description>Platform and config app for the Android service</description>
@@ -20,14 +20,14 @@
 	<dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>platform-android-common</artifactId>
+            <artifactId>housemate-platform-android-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>comms-serialiser-javabin</artifactId>
-            <version>${project.version}</version>
+            <artifactId>housemate-comms-1-0-serialiser-javabin</artifactId>
+            <version>${intuso.housemate.comms.version}</version>
             <!-- Needs AOP version of guice -->
             <exclusions>
                 <exclusion>
@@ -39,8 +39,8 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>comms-transport-socket-client</artifactId>
-            <version>${project.version}</version>
+            <artifactId>housemate-comms-1-0-transport-socket-client</artifactId>
+            <version>${intuso.housemate.comms.version}</version>
             <!-- Needs AOP version of guice -->
             <exclusions>
                 <exclusion>

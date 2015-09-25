@@ -1,8 +1,8 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.intuso.housemate.api.object.ChildOverview;
-import com.intuso.housemate.api.object.subtype.SubTypeData;
+import com.intuso.housemate.comms.v1_0.api.ChildOverview;
+import com.intuso.housemate.comms.v1_0.api.payload.SubTypeData;
 import com.intuso.housemate.web.client.object.GWTProxySubType;
 
 /**

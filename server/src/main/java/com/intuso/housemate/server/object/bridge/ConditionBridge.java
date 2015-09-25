@@ -1,24 +1,18 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.condition.Condition;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.condition.ConditionListener;
-import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.BooleanType;
-import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.comms.api.internal.payload.ConditionData;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.PropertyData;
+import com.intuso.housemate.object.api.internal.Condition;
+import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-
-import java.util.List;
 
 /**
  */
 public class ConditionBridge
-        extends BridgeObject<ConditionData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, ConditionBridge, ConditionListener<? super ConditionBridge>>
+        extends BridgeObject<ConditionData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, ConditionBridge, Condition.Listener<? super ConditionBridge>>
         implements Condition<CommandBridge, ValueBridge, ValueBridge,
         ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>, CommandBridge, ConditionBridge,
         ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>> {
@@ -38,7 +32,7 @@ public class ConditionBridge
         satisfiedValue = new ValueBridge(log, listenersFactory, condition.getSatisfiedValue());
         errorValue = new ValueBridge(log, listenersFactory, condition.getErrorValue());
         propertyList = new ConvertingListBridge<>(log, listenersFactory, condition.getProperties(), new PropertyBridge.Converter(log, listenersFactory));
-        conditionList = new ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>(log, listenersFactory, condition.getConditions(), new Converter(log, listenersFactory));
+        conditionList = new ConvertingListBridge<>(log, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Condition<?, ?, ?, ?, ?, ?, ?>>) condition.getConditions(), new Converter(log, listenersFactory));
         addConditionCommand = condition.getAddConditionCommand() == null ? null : new CommandBridge(log, listenersFactory, condition.getAddConditionCommand());
         addChild(removeCommand);
         addChild(satisfiedValue);
@@ -74,20 +68,8 @@ public class ConditionBridge
     }
 
     @Override
-    public String getError() {
-        List<String> errors = RealType.deserialiseAll(StringType.SERIALISER, errorValue.getTypeInstances());
-        return errors != null && errors.size() > 0 ? errors.get(0) : null;
-    }
-
-    @Override
     public ValueBridge getSatisfiedValue() {
         return satisfiedValue;
-    }
-
-    @Override
-    public boolean isSatisfied() {
-        List<Boolean> satisfieds = RealType.deserialiseAll(BooleanType.SERIALISER, satisfiedValue.getTypeInstances());
-        return satisfieds != null && satisfieds.size() > 0 && satisfieds.get(0) != null ? satisfieds.get(0) : false;
     }
 
     public static class Converter implements Function<Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> {

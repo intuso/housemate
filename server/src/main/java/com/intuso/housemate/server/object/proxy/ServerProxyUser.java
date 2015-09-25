@@ -1,23 +1,21 @@
 package com.intuso.housemate.server.object.proxy;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.user.User;
-import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.api.object.user.UserListener;
-import com.intuso.housemate.object.real.impl.type.BooleanType;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.UserData;
+import com.intuso.housemate.object.api.internal.User;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.object.ObjectFactory;
 
 public class ServerProxyUser
         extends ServerProxyObject<
-            UserData,
-            HousemateData<?>,
+        UserData,
+        HousemateData<?>,
             ServerProxyObject<?, ?, ?, ?, ?>,
             ServerProxyUser,
-            UserListener>
+            User.Listener>
         implements User<
             ServerProxyCommand,
             ServerProxyProperty> {
@@ -27,19 +25,19 @@ public class ServerProxyUser
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
+     * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyUser(Log log, ListenersFactory listenersFactory, Injector injector, BooleanType booleanType, @Assisted UserData data) {
-        super(log, listenersFactory, injector, data);
+    public ServerProxyUser(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted UserData data) {
+        super(log, listenersFactory, objectFactory, data);
     }
 
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        remove = (ServerProxyCommand) getChild(REMOVE_ID);
-        email = (ServerProxyProperty) getChild(EMAIL_ID);
+        remove = (ServerProxyCommand) getChild(UserData.REMOVE_ID);
+        email = (ServerProxyProperty) getChild(UserData.EMAIL_ID);
     }
 
     @Override
@@ -55,6 +53,6 @@ public class ServerProxyUser
     @Override
     protected void copyValues(HousemateData<?> data) {
         if(data instanceof UserData)
-            getEmailProperty().copyValues(data.getChildData(EMAIL_ID));
+            getEmailProperty().copyValues(data.getChildData(UserData.EMAIL_ID));
     }
 }

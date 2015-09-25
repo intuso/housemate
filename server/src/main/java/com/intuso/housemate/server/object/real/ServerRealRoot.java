@@ -1,26 +1,24 @@
 package com.intuso.housemate.server.object.real;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.comms.access.ApplicationDetails;
-import com.intuso.housemate.api.comms.access.ApplicationRegistration;
-import com.intuso.housemate.api.comms.message.NoPayload;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.factory.automation.AddAutomationCommand;
-import com.intuso.housemate.object.real.factory.condition.ConditionFactoryType;
-import com.intuso.housemate.object.real.factory.device.AddDeviceCommand;
-import com.intuso.housemate.object.real.factory.device.DeviceFactoryType;
-import com.intuso.housemate.object.real.factory.hardware.AddHardwareCommand;
-import com.intuso.housemate.object.real.factory.hardware.HardwareFactoryType;
-import com.intuso.housemate.object.real.factory.task.TaskFactoryType;
-import com.intuso.housemate.object.real.factory.user.AddUserCommand;
+import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
+import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.factory.automation.AddAutomationCommand;
+import com.intuso.housemate.client.real.api.internal.factory.condition.ConditionFactoryType;
+import com.intuso.housemate.client.real.api.internal.factory.device.AddDeviceCommand;
+import com.intuso.housemate.client.real.api.internal.factory.device.DeviceFactoryType;
+import com.intuso.housemate.client.real.api.internal.factory.hardware.AddHardwareCommand;
+import com.intuso.housemate.client.real.api.internal.factory.hardware.HardwareFactoryType;
+import com.intuso.housemate.client.real.api.internal.factory.task.TaskFactoryType;
+import com.intuso.housemate.client.real.api.internal.factory.user.AddUserCommand;
+import com.intuso.housemate.comms.api.internal.Message;
+import com.intuso.housemate.comms.api.internal.Router;
+import com.intuso.housemate.comms.api.internal.access.ApplicationDetails;
+import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.NoPayload;
+import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -50,9 +48,9 @@ public class ServerRealRoot extends RealRoot {
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(SEND_INITIAL_DATA, new Receiver<NoPayload>() {
+        result.add(addMessageListener(SEND_INITIAL_DATA, new Message.Receiver<NoPayload>() {
             @Override
-            public void messageReceived(Message<NoPayload> message) throws HousemateException {
+            public void messageReceived(Message<NoPayload> message) {
                 initialDataSent = true;
             }
         }));
@@ -65,7 +63,7 @@ public class ServerRealRoot extends RealRoot {
     }
 
     @Override
-    public void messageReceived(Message<Message.Payload> message) throws HousemateException {
+    public void messageReceived(Message<Message.Payload> message) {
         distributeMessage(message);
     }
 

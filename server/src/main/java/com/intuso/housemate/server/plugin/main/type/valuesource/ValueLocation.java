@@ -1,10 +1,7 @@
 package com.intuso.housemate.server.plugin.main.type.valuesource;
 
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.object.real.impl.type.RealObjectType;
-import com.intuso.housemate.server.object.bridge.RootBridge;
+import com.intuso.housemate.client.real.api.internal.impl.type.RealObjectType;
+import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.server.object.bridge.ValueBridge;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -13,10 +10,10 @@ import com.intuso.utilities.listener.ListenersFactory;
  */
 public class ValueLocation extends ValueSource implements ObjectLifecycleListener {
 
-    private final RealObjectType.Reference<Value<?, ?>> objectReference;
+    private final RealObjectType.Reference<Value<TypeInstances, ?>> objectReference;
     private final ListenerRegistration lifecycleListenerRegistration;
 
-    public ValueLocation(ListenersFactory listenersFactory, RealObjectType.Reference<Value<?, ?>> objectReference, RootBridge root) {
+    public ValueLocation(ListenersFactory listenersFactory, RealObjectType.Reference<Value<TypeInstances, ?>> objectReference, ObjectRoot<?, ?> root) {
         super(listenersFactory);
         this.objectReference = objectReference;
         lifecycleListenerRegistration = objectReference != null
@@ -24,26 +21,26 @@ public class ValueLocation extends ValueSource implements ObjectLifecycleListene
                 : null;
     }
 
-    public RealObjectType.Reference<Value<?, ?>> getObjectReference() {
+    public RealObjectType.Reference<Value<TypeInstances, ?>> getObjectReference() {
         return objectReference;
     }
 
     @Override
-    public Value<?, ?> getValue() {
+    public Value<TypeInstances, ?> getValue() {
         return objectReference != null ? objectReference.getObject() : null;
     }
 
     @Override
-    public void objectCreated(String[] path, HousemateObject<?, ?, ?, ?> object) {
+    public void objectCreated(String[] path, BaseHousemateObject<?> object) {
         if(object instanceof ValueBridge) {
-            objectReference.setObject((Value<?, ?>)object);
+            objectReference.setObject((Value<TypeInstances, ?>)object);
             for(ValueAvailableListener listener : listeners)
                 listener.valueAvailable(this, objectReference.getObject());
         }
     }
 
     @Override
-    public void objectRemoved(String[] path, HousemateObject<?, ?, ?, ?> object) {
+    public void objectRemoved(String[] path, BaseHousemateObject<?> object) {
         for(ValueAvailableListener listener : listeners)
             listener.valueUnavailable(this);
     }

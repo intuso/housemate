@@ -1,31 +1,22 @@
 package com.intuso.housemate.server.object.proxy;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.application.instance.ApplicationInstance;
-import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
-import com.intuso.housemate.api.object.application.instance.ApplicationInstanceListener;
-import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
-import com.intuso.housemate.object.real.impl.type.EnumChoiceType;
+import com.intuso.housemate.comms.api.internal.payload.ApplicationInstanceData;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-
-import java.util.List;
+import com.intuso.utilities.object.ObjectFactory;
 
 public class ServerProxyApplicationInstance
         extends ServerProxyObject<
-            ApplicationInstanceData,
-            HousemateData<?>,
+        ApplicationInstanceData,
+        HousemateData<?>,
             ServerProxyObject<?, ?, ?, ?, ?>,
             ServerProxyApplicationInstance,
-            ApplicationInstanceListener<? super ServerProxyApplicationInstance>>
-        implements ApplicationInstance<
-                    ServerProxyValue,
-                    ServerProxyCommand,
-                    ServerProxyApplicationInstance> {
+            ApplicationInstance.Listener<? super ServerProxyApplicationInstance>>
+        implements ApplicationInstance<ServerProxyValue, ServerProxyCommand, ServerProxyApplicationInstance> {
 
     private ServerProxyCommand allow;
     private ServerProxyCommand reject;
@@ -33,20 +24,20 @@ public class ServerProxyApplicationInstance
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
+     * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyApplicationInstance(Log log, ListenersFactory listenersFactory, Injector injector, @Assisted ApplicationInstanceData data) {
-        super(log, listenersFactory, injector, data);
+    public ServerProxyApplicationInstance(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted ApplicationInstanceData data) {
+        super(log, listenersFactory, objectFactory, data);
     }
 
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        allow = (ServerProxyCommand) getChild(ALLOW_COMMAND_ID);
-        reject = (ServerProxyCommand) getChild(REJECT_COMMAND_ID);
-        status = (ServerProxyValue) getChild(STATUS_VALUE_ID);
+        allow = (ServerProxyCommand) getChild(ApplicationInstanceData.ALLOW_COMMAND_ID);
+        reject = (ServerProxyCommand) getChild(ApplicationInstanceData.REJECT_COMMAND_ID);
+        status = (ServerProxyValue) getChild(ApplicationInstanceData.STATUS_VALUE_ID);
     }
 
     @Override
@@ -57,12 +48,6 @@ public class ServerProxyApplicationInstance
     @Override
     public ServerProxyCommand getRejectCommand() {
         return reject;
-    }
-
-    @Override
-    public ApplicationInstanceStatus getStatus() {
-        List<ApplicationInstanceStatus> statuses = ApplicationInstanceStatusType.deserialiseAll(new EnumChoiceType.EnumInstanceSerialiser<>(ApplicationInstanceStatus.class), status.getTypeInstances());
-        return statuses != null && statuses.size() > 0 ? statuses.get(0) : null;
     }
 
     @Override

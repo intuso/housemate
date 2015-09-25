@@ -1,8 +1,8 @@
 package com.intuso.housemate.server.plugin.main.type.comparison;
 
+import com.intuso.housemate.plugin.api.internal.Comparator;
+import com.intuso.housemate.plugin.api.internal.ComparisonType;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
-import com.intuso.housemate.plugin.api.*;
-import com.intuso.housemate.plugin.api.ComparisonType;
 
 import java.util.Map;
 
@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class Comparison {
 
-    private final ComparisonType comparisonType;
+    private final com.intuso.housemate.plugin.api.internal.ComparisonType comparisonType;
     private final Map<String, Comparator<?>> comparatorsByType;
     private final ValueSource firstValueSource;
     private final ValueSource secondValueSource;
@@ -23,7 +23,7 @@ public class Comparison {
         this.secondValueSource = secondValueSource;
     }
 
-    public com.intuso.housemate.plugin.api.ComparisonType getComparisonType() {
+    public ComparisonType getComparisonType() {
         return comparisonType;
     }
 

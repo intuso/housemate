@@ -1,17 +1,16 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.user.User;
-import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.api.object.user.UserListener;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.UserData;
+import com.intuso.housemate.object.api.internal.User;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
  */
 public class UserBridge
-        extends BridgeObject<UserData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, UserBridge, UserListener>
+        extends BridgeObject<UserData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, UserBridge, User.Listener>
         implements User<CommandBridge, PropertyBridge> {
 
     private final CommandBridge removeCommand;

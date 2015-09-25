@@ -6,7 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.object.*;
 import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeature;
@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class StatefulVolumeControl
         extends GWTProxyFeature
-        implements com.intuso.housemate.api.object.device.feature.StatefulVolumeControl<GWTProxyCommand, GWTProxyValue> {
+        implements com.intuso.housemate.object.v1_0.api.feature.StatefulVolumeControl<GWTProxyCommand, GWTProxyValue> {
 
     public StatefulVolumeControl(GWTProxyDevice device) {
         super(device);
@@ -23,32 +23,32 @@ public class StatefulVolumeControl
 
     @Override
     public GWTProxyValue getCurrentVolumeValue() {
-        return device.getValues() != null ? device.getValues().get(CURRENT_VOLUME_VALUE) : null;
+        return device.getValues() != null ? device.getValues().get("volume") : null;
     }
 
     @Override
     public GWTProxyCommand getMuteCommand() {
-        return device.getCommands() != null ? device.getCommands().get(MUTE_COMMAND) : null;
+        return device.getCommands() != null ? device.getCommands().get("mute") : null;
     }
 
     @Override
     public GWTProxyCommand getVolumeUpCommand() {
-        return device.getCommands() != null ? device.getCommands().get(VOLUME_UP_COMMAND) : null;
+        return device.getCommands() != null ? device.getCommands().get("volume-up") : null;
     }
 
     @Override
     public GWTProxyCommand getVolumeDownCommand() {
-        return device.getCommands() != null ? device.getCommands().get(VOLUME_DOWN_COMMAND) : null;
+        return device.getCommands() != null ? device.getCommands().get("volume-down") : null;
     }
 
     @Override
     public Set<String> getCommandIds() {
-        return Sets.newHashSet(VOLUME_UP_COMMAND, VOLUME_DOWN_COMMAND);
+        return Sets.newHashSet("mute", "volume-up", "volume-down");
     }
 
     @Override
     public Set<String> getValueIds() {
-        return Sets.newHashSet(CURRENT_VOLUME_VALUE);
+        return Sets.newHashSet("volume");
     }
 
     @Override

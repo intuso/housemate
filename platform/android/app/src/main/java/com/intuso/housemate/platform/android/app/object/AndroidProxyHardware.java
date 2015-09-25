@@ -1,10 +1,10 @@
 package com.intuso.housemate.platform.android.app.object;
 
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
-import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.object.proxy.ProxyHardware;
-import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyHardware;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.payload.HardwareData;
+import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
+import com.intuso.housemate.comms.v1_0.api.payload.PropertyData;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

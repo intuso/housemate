@@ -5,12 +5,12 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstanceMap;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.persistence.api.DetailsNotFoundException;
-import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.housemate.object.v1_0.api.TypeInstance;
+import com.intuso.housemate.object.v1_0.api.TypeInstanceMap;
+import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.persistence.v1_0.api.DetailsNotFoundException;
+import com.intuso.housemate.persistence.v1_0.api.HousematePersistenceException;
+import com.intuso.housemate.persistence.v1_0.api.Persistence;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
@@ -32,42 +32,42 @@ public class FlatFilePersistence implements Persistence {
     private final String basePath;
 
     @Inject
-    public FlatFilePersistence(Log log, PropertyRepository properties) throws HousemateException {
+    public FlatFilePersistence(Log log, PropertyRepository properties) {
         String basePath = properties.get(PATH_PROPERTY_KEY);
         File baseDir = new File(basePath);
         log.d("Using flat file storage, base path is " + baseDir.getAbsolutePath());
         if(baseDir.exists()) {
             if(!baseDir.isDirectory())
-                throw new HousemateException("File storage base directory is not a directory");
+                throw new HousematePersistenceException("File storage base directory is not a directory");
         } else {
             if(!baseDir.mkdirs())
-                throw new HousemateException("File storage base directory did not exist and could not be created");
+                throw new HousematePersistenceException("File storage base directory did not exist and could not be created");
         }
         this.basePath = basePath.endsWith(File.separator) ? basePath : basePath + File.separator;
     }
 
     @Override
-    public TypeInstances getTypeInstances(String[] path) throws DetailsNotFoundException, HousemateException {
+    public TypeInstances getTypeInstances(String[] path) throws DetailsNotFoundException {
         TypeInstanceMap details = null;
         try {
             details = getDetails(getFile(false, path, VALUE_FILENAME));
         }  catch(FileNotFoundException e) {
             throw new DetailsNotFoundException(e);
         } catch(IOException e) {
-            throw new HousemateException("Failed to get value", e);
+            throw new HousematePersistenceException("Failed to get value", e);
         }
         TypeInstances instances = details.getChildren().get(PROPERTY_VALUE_KEY);
         return instances;
     }
 
     @Override
-    public void saveTypeInstances(String[] path, TypeInstances value) throws HousemateException {
+    public void saveTypeInstances(String[] path, TypeInstances value) {
         TypeInstanceMap details = new TypeInstanceMap();
         details.getChildren().put(PROPERTY_VALUE_KEY, value);
         try {
             saveDetails(getFile(true, path, VALUE_FILENAME), details);
         } catch(IOException e) {
-            throw new HousemateException("Could not save value", e);
+            throw new HousematePersistenceException("Could not save value", e);
         }
     }
 
@@ -95,18 +95,18 @@ public class FlatFilePersistence implements Persistence {
     }
 
     @Override
-    public TypeInstanceMap getValues(String[] path) throws DetailsNotFoundException, HousemateException {
+    public TypeInstanceMap getValues(String[] path) throws DetailsNotFoundException {
         try {
             return readDetailsFile(path);
         } catch(FileNotFoundException e) {
             throw new DetailsNotFoundException(e);
         } catch(IOException e) {
-            throw new HousemateException("Failed to read details file", e);
+            throw new HousematePersistenceException("Failed to read details file", e);
         }
     }
 
     @Override
-    public TypeInstanceMap getOrCreateValues(String[] path) throws HousemateException {
+    public TypeInstanceMap getOrCreateValues(String[] path) {
         try {
             return getValues(path);
         } catch(DetailsNotFoundException e) {
@@ -115,19 +115,19 @@ public class FlatFilePersistence implements Persistence {
     }
 
     @Override
-    public void saveValues(String[] path, TypeInstanceMap details) throws HousemateException {
+    public void saveValues(String[] path, TypeInstanceMap details) {
         try {
             String[] newPath = new String[path.length];
             System.arraycopy(path, 0, newPath, 0, path.length - 1);
             newPath[path.length - 1] = path[path.length - 1] + PROPERTIES_EXTENSION;
             saveDetails(getFile(true, newPath), details);
         } catch(IOException e) {
-            throw new HousemateException("Could not save details", e);
+            throw new HousematePersistenceException("Could not save details", e);
         }
     }
 
     @Override
-    public void removeValues(String[] path) throws HousemateException {
+    public void removeValues(String[] path) {
         deleteFile(getFile(false, path));
         String[] newPath = new String[path.length];
         System.arraycopy(path, 0, newPath, 0, path.length - 1);

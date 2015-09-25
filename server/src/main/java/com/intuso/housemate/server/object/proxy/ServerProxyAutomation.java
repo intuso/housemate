@@ -1,23 +1,20 @@
 package com.intuso.housemate.server.object.proxy;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.automation.Automation;
-import com.intuso.housemate.api.object.automation.AutomationData;
-import com.intuso.housemate.api.object.automation.AutomationListener;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.task.TaskData;
-import com.intuso.housemate.object.real.impl.type.BooleanType;
+import com.intuso.housemate.comms.api.internal.Message;
+import com.intuso.housemate.comms.api.internal.payload.*;
+import com.intuso.housemate.object.api.internal.Automation;
+import com.intuso.housemate.server.comms.ClientPayload;
+import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.object.ObjectFactory;
+
+import java.util.List;
 
 public class ServerProxyAutomation
-        extends ServerProxyPrimaryObject<
-            AutomationData,
-            ServerProxyAutomation,
-            AutomationListener<? super ServerProxyAutomation>>
+        extends ServerProxyObject<AutomationData, HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>, ServerProxyAutomation, Automation.Listener<? super ServerProxyAutomation>>
         implements Automation<
             ServerProxyCommand,
             ServerProxyCommand,
@@ -31,6 +28,12 @@ public class ServerProxyAutomation
             ServerProxyList<TaskData, ServerProxyTask>,
             ServerProxyAutomation> {
 
+    private ServerProxyCommand rename;
+    private ServerProxyCommand remove;
+    private ServerProxyValue running;
+    private ServerProxyCommand start;
+    private ServerProxyCommand stop;
+    private ServerProxyValue error;
     private ServerProxyList<ConditionData, ServerProxyCondition> conditions;
     private ServerProxyCommand addCondition;
     private ServerProxyList<TaskData, ServerProxyTask> satisfiedTasks;
@@ -40,23 +43,74 @@ public class ServerProxyAutomation
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
+     * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyAutomation(Log log, ListenersFactory listenersFactory, Injector injector, BooleanType booleanType, @Assisted AutomationData data) {
-        super(log, listenersFactory, injector, data);
+    public ServerProxyAutomation(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted AutomationData data) {
+        super(log, listenersFactory, objectFactory, data);
     }
 
     @Override
     protected void getChildObjects() {
-        super.getChildObjects();
-        conditions = (ServerProxyList<ConditionData, ServerProxyCondition>) getChild(CONDITIONS_ID);
-        addCondition = (ServerProxyCommand) getChild(ADD_CONDITION_ID);
-        satisfiedTasks = (ServerProxyList<TaskData, ServerProxyTask>) getChild(SATISFIED_TASKS_ID);
-        addSatisifedTask = (ServerProxyCommand) getChild(ADD_SATISFIED_TASK_ID);
-        unsatisfiedTasks = (ServerProxyList<TaskData, ServerProxyTask>) getChild(UNSATISFIED_TASKS_ID);
-        addUnsatisfiedTask = (ServerProxyCommand) getChild(ADD_UNSATISFIED_TASK_ID);
+        rename = (ServerProxyCommand) getChild(AutomationData.RENAME_ID);
+        remove = (ServerProxyCommand) getChild(AutomationData.REMOVE_ID);
+        running = (ServerProxyValue) getChild(AutomationData.RUNNING_ID);
+        start = (ServerProxyCommand) getChild(AutomationData.START_ID);
+        stop = (ServerProxyCommand) getChild(AutomationData.STOP_ID);
+        error = (ServerProxyValue) getChild(AutomationData.ERROR_ID);
+        conditions = (ServerProxyList<ConditionData, ServerProxyCondition>) getChild(AutomationData.CONDITIONS_ID);
+        addCondition = (ServerProxyCommand) getChild(AutomationData.ADD_CONDITION_ID);
+        satisfiedTasks = (ServerProxyList<TaskData, ServerProxyTask>) getChild(AutomationData.SATISFIED_TASKS_ID);
+        addSatisifedTask = (ServerProxyCommand) getChild(AutomationData.ADD_SATISFIED_TASK_ID);
+        unsatisfiedTasks = (ServerProxyList<TaskData, ServerProxyTask>) getChild(AutomationData.UNSATISFIED_TASKS_ID);
+        addUnsatisfiedTask = (ServerProxyCommand) getChild(AutomationData.ADD_UNSATISFIED_TASK_ID);
+    }
+
+    @Override
+    public ServerProxyCommand getRenameCommand() {
+        return rename;
+    }
+
+    @Override
+    public ServerProxyCommand getRemoveCommand() {
+        return remove;
+    }
+
+    @Override
+    public ServerProxyValue getRunningValue() {
+        return running;
+    }
+
+    @Override
+    public ServerProxyCommand getStartCommand() {
+        return start;
+    }
+
+    @Override
+    public ServerProxyCommand getStopCommand() {
+        return stop;
+    }
+
+    @Override
+    public ServerProxyValue getErrorValue() {
+        return error;
+    }
+
+    @Override
+    public List<ListenerRegistration> registerListeners() {
+        List<ListenerRegistration> result = super.registerListeners();
+        result.add(addMessageListener(AutomationData.NEW_NAME, new Message.Receiver<ClientPayload<StringPayload>>() {
+            @Override
+            public void messageReceived(Message<ClientPayload<StringPayload>> message) {
+                String oldName = getData().getName();
+                String newName = message.getPayload().getOriginal().getValue();
+                getData().setName(newName);
+                for(Automation.Listener<? super ServerProxyAutomation> listener : getObjectListeners())
+                    listener.renamed(getThis(), oldName, newName);
+            }
+        }));
+        return result;
     }
 
     @Override
@@ -92,9 +146,9 @@ public class ServerProxyAutomation
     @Override
     protected void copyValues(HousemateData<?> data) {
         if(data instanceof AutomationData) {
-            getConditions().copyValues(data.getChildData(CONDITIONS_ID));
-            getSatisfiedTasks().copyValues(data.getChildData(SATISFIED_TASKS_ID));
-            getUnsatisfiedTasks().copyValues(data.getChildData(UNSATISFIED_TASKS_ID));
+            getConditions().copyValues(data.getChildData(AutomationData.CONDITIONS_ID));
+            getSatisfiedTasks().copyValues(data.getChildData(AutomationData.SATISFIED_TASKS_ID));
+            getUnsatisfiedTasks().copyValues(data.getChildData(AutomationData.UNSATISFIED_TASKS_ID));
         }
     }
 }

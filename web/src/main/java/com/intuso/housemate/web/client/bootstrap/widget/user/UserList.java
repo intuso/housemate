@@ -1,8 +1,8 @@
 package com.intuso.housemate.web.client.bootstrap.widget.user;
 
-import com.intuso.housemate.api.object.ChildOverview;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.user.UserData;
+import com.intuso.housemate.comms.v1_0.api.ChildOverview;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.comms.v1_0.api.payload.UserData;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;

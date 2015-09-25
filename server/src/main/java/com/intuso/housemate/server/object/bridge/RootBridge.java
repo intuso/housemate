@@ -2,24 +2,10 @@ package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.comms.access.ApplicationDetails;
-import com.intuso.housemate.api.comms.message.NoPayload;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.root.RootData;
-import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.server.HasServers;
-import com.intuso.housemate.api.object.server.ServerData;
-import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.housemate.comms.api.internal.Message;
+import com.intuso.housemate.comms.api.internal.payload.*;
+import com.intuso.housemate.object.api.internal.*;
+import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -34,9 +20,10 @@ import java.util.Map;
 
 public class RootBridge
         extends BridgeObject<RootData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>,
-            RootBridge, RootListener<? super RootBridge>>
-        implements Root<RootBridge>,
-        HasServers<ListBridge<ServerData, ServerBridge>> {
+            RootBridge, Root.Listener<? super RootBridge>>
+        implements ObjectRoot<Root.Listener<? super RootBridge>, RootBridge>,
+        Message.Receiver<Message.Payload>,
+        Server.Container<ListBridge<ServerData, ServerBridge>> {
 
     public final static String SERVERS_ID = "servers";
 
@@ -58,9 +45,9 @@ public class RootBridge
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener("clear-loaded", new Receiver<ClientPayload<NoPayload>>() {
+        result.add(addMessageListener("clear-loaded", new Message.Receiver<ClientPayload<NoPayload>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<NoPayload>> message) throws HousemateException {
+            public void messageReceived(Message<ClientPayload<NoPayload>> message) {
                 clearClientInfo(message.getPayload().getClient());
             }
         }));
@@ -68,47 +55,20 @@ public class RootBridge
     }
 
     @Override
-    public ApplicationStatus getApplicationStatus() {
-        return ApplicationStatus.AllowInstances;
-    }
-
-    @Override
-    public ApplicationInstanceStatus getApplicationInstanceStatus() {
-        return ApplicationInstanceStatus.Allowed;
-    }
-
-    @Override
-    public void register(ApplicationDetails applicationDetails, String component) {
-        throw new HousemateRuntimeException("Cannot connect this type of root object");
-    }
-
-    @Override
-    public void unregister() {
-        throw new HousemateRuntimeException("Cannot disconnect this type of root object");
-    }
-
-    @Override
-    public void messageReceived(Message<Message.Payload> message) throws HousemateException {
+    public void messageReceived(Message<Message.Payload> message) {
         distributeMessage(message);
     }
 
     @Override
-    public void sendMessage(Message<?> message) {
-        throw new HousemateRuntimeException("Watcha playing at, fool?");
-    }
-
-    @Override
-    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?> ancestor) {
         super.ancestorObjectAdded(ancestorPath, ancestor);
-        if(ancestor instanceof HousemateObject)
-            objectAdded(ancestorPath, (HousemateObject<?, ?, ?, ?>) ancestor);
+        objectAdded(ancestorPath, ancestor);
     }
 
     @Override
-    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?> ancestor) {
         super.ancestorObjectRemoved(ancestorPath, ancestor);
-        if(ancestor instanceof HousemateObject)
-            objectRemoved(ancestorPath, (HousemateObject<?, ?, ?, ?>) ancestor);
+        objectRemoved(ancestorPath, ancestor);
     }
 
     @Override
@@ -120,24 +80,24 @@ public class RootBridge
         servers.add(new ServerBridge(getLog(), getListenersFactory(), root, persistence));
     }
 
-    private void objectAdded(String path, HousemateObject<?, ?, ?, ?> object) {
+    private void objectAdded(String path, BaseObject<?, ?, ?> object) {
         if(objectLifecycleListeners.get(path) != null) {
             String splitPath[] = path.split(BaseObject.PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
-                listener.objectCreated(splitPath, object);
+                listener.objectCreated(splitPath, (BaseHousemateObject<?>) object);
         }
-        for(HousemateObject<?, ?, ?, ?> child : object.getChildren())
-            objectAdded(path + BaseObject.PATH_SEPARATOR + child.getId(), child);
+        for(BaseObject<?, ?, ?> child : object.getChildren())
+            objectAdded(path + BaseObject.PATH_SEPARATOR + child.getId(), (BaseObject<?, ?, ?>) child);
     }
 
-    private void objectRemoved(String path, HousemateObject<?, ?, ?, ?> object) {
+    private void objectRemoved(String path, BaseObject<?, ?, ?> object) {
         if(objectLifecycleListeners.get(path) != null) {
             String splitPath[] = path.split(BaseObject.PATH_SEPARATOR);
             for(ObjectLifecycleListener listener : objectLifecycleListeners.get(path))
-                listener.objectRemoved(splitPath, object);
+                listener.objectRemoved(splitPath, (BaseHousemateObject<?>) object);
         }
-        for(HousemateObject<?, ?, ?, ?> child : object.getChildren())
-            objectRemoved(path + BaseObject.PATH_SEPARATOR + child.getId(), child);
+        for(BaseObject<?, ?, ?> child : object.getChildren())
+            objectRemoved(path + BaseObject.PATH_SEPARATOR + child.getId(), (BaseObject<?, ?, ?>) child);
     }
 
     public final ListenerRegistration addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener) {

@@ -3,12 +3,16 @@ package com.intuso.housemate.platform.android.service.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import com.intuso.housemate.api.comms.*;
-import com.intuso.housemate.api.comms.access.ApplicationDetails;
-import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.comms.serialiser.javabin.JavabinSerialiser;
-import com.intuso.housemate.comms.transport.socket.client.SocketClient;
-import com.intuso.housemate.comms.transport.socket.client.ioc.SocketClientModule;
+import com.intuso.housemate.comms.v1_0.api.ClientRoot;
+import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.RouterRoot;
+import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.serialiser.javabin.JavabinSerialiser;
+import com.intuso.housemate.comms.v1_0.transport.socket.client.SocketClient;
+import com.intuso.housemate.comms.v1_0.transport.socket.client.ioc.SocketClientModule;
+import com.intuso.housemate.object.v1_0.api.Application;
+import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.platform.android.common.AndroidLogWriter;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.listener.Listener;
@@ -75,7 +79,7 @@ public class ConnectionService extends Service {
         log.d("Connection Service created");
 
         // listen on the router root object, then connect the router
-        routerListenerRegistration = router.addObjectListener(new RootListener<RouterRoot>() {
+        routerListenerRegistration = router.addObjectListener(new ClientRoot.Listener<RouterRoot>() {
             private boolean needsRegistering = true;
 
             @Override
@@ -91,12 +95,12 @@ public class ConnectionService extends Service {
             }
 
             @Override
-            public void applicationStatusChanged(RouterRoot root, ApplicationStatus applicationStatus) {
+            public void applicationStatusChanged(RouterRoot root, Application.Status applicationStatus) {
 
             }
 
             @Override
-            public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
+            public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstance.Status applicationInstanceStatus) {
             }
 
             @Override

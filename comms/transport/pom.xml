@@ -4,11 +4,11 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>comms</artifactId>
+        <artifactId>housemate-comms</artifactId>
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>comms-transport</artifactId>
+    <artifactId>housemate-comms-transport</artifactId>
     <packaging>pom</packaging>
     <name>Housemate Comms Transport</name>
     <description>Transport for Comms for the Housemate framework</description>

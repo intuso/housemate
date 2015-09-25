@@ -3,16 +3,19 @@ package com.intuso.housemate.server.comms;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.comms.ClientType;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.object.root.Root;
+import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import com.intuso.housemate.comms.api.internal.Message;
+import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
+import com.intuso.housemate.comms.api.internal.payload.ApplicationData;
+import com.intuso.housemate.comms.api.internal.payload.ApplicationInstanceData;
+import com.intuso.housemate.comms.api.internal.payload.RootData;
+import com.intuso.housemate.object.api.internal.Application;
+import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.log.Log;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +28,7 @@ public class RemoteClient {
 
     private final Log log;
     private final ClientInstance clientInstance;
-    private final Root<?> root;
+    private final Message.Receiver<Message.Payload> receiver;
     private final MainRouter comms;
     private final BiMap<String, RemoteClient> children = HashBiMap.create();
     private final Listeners<RemoteClientListener> listeners = new Listeners<>(new CopyOnWriteArrayList<RemoteClientListener>());
@@ -34,10 +37,10 @@ public class RemoteClient {
     private List<Message<?>> messageQueue = new CopyOnWriteArrayList<>();
     private boolean applicationInstanceAllowed = false;
 
-    public RemoteClient(Log log, ClientInstance clientInstance, Root<?> root, MainRouter comms) {
+    public RemoteClient(Log log, ClientInstance clientInstance, Message.Receiver<Message.Payload> receiver, MainRouter comms) {
         this.log= log;
         this.clientInstance = clientInstance;
-        this.root = root;
+        this.receiver = receiver;
         this.comms = comms;
     }
 
@@ -45,43 +48,43 @@ public class RemoteClient {
         this.parent = parent;
     }
 
-    public Root<?> getRoot() {
-        return root;
+    public Message.Receiver<Message.Payload> getReceiver() {
+        return receiver;
     }
 
     public ClientInstance getClientInstance() {
         return clientInstance;
     }
 
-    public void sendMessage(String[] path, String type, Message.Payload payload) throws HousemateException {
+    public void sendMessage(String[] path, String type, Message.Payload payload) {
         if(!applicationInstanceAllowed
                 && !(path.length == 1
-                    && (type.equals(Root.SERVER_CONNECTION_STATUS_TYPE)
-                        || type.equals(Root.APPLICATION_STATUS_TYPE)
-                        || type.equals(Root.APPLICATION_INSTANCE_STATUS_TYPE)
-                        || type.equals(Root.SERVER_INSTANCE_ID_TYPE)
-                        || type.equals(Root.APPLICATION_INSTANCE_ID_TYPE))))
-            throw new HousemateException("Remote client is not allowed access");
+                    && (type.equals(RootData.SERVER_CONNECTION_STATUS_TYPE)
+                        || type.equals(RootData.APPLICATION_STATUS_TYPE)
+                        || type.equals(RootData.APPLICATION_INSTANCE_STATUS_TYPE)
+                        || type.equals(RootData.SERVER_INSTANCE_ID_TYPE)
+                        || type.equals(RootData.APPLICATION_INSTANCE_ID_TYPE))))
+            throw new HousemateCommsException("Remote client is not allowed access");
         else if(route == null)
             messageQueue.add(new Message<>(path, type, payload));
         else {
             try {
                 comms.sendMessageToClient(path, type, payload, this);
-            } catch(HousemateException e) {
+            } catch(Throwable e) {
                 messageQueue.add(new Message<>(path, type, payload));
             }
         }
     }
 
-    public void setApplicationAndInstanceStatus(ApplicationStatus applicationStatus, ApplicationInstanceStatus applicationInstanceStatus) {
+    public void setApplicationAndInstanceStatus(Application.Status applicationStatus, ApplicationInstance.Status applicationInstanceStatus) {
 
         try {
-            sendMessage(new String[]{""}, Root.APPLICATION_STATUS_TYPE, applicationStatus);
-            sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, applicationInstanceStatus);
+            sendMessage(new String[]{""}, RootData.APPLICATION_STATUS_TYPE, new ApplicationData.StatusPayload(applicationStatus));
+            sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_STATUS_TYPE, new ApplicationInstanceData.StatusPayload(applicationInstanceStatus));
         } catch(Throwable t) {
             log.e("Failed to send message to client", t);
         }
-        this.applicationInstanceAllowed = applicationInstanceStatus == ApplicationInstanceStatus.Allowed;
+        this.applicationInstanceAllowed = applicationInstanceStatus == ApplicationInstance.Status.Allowed;
         for(RemoteClientListener listener : listeners)
             listener.statusChanged(applicationStatus, applicationInstanceStatus);
         while(messageQueue.size() > 0) {
@@ -89,7 +92,7 @@ public class RemoteClient {
                 Message message = messageQueue.get(0);
                 comms.sendMessageToClient(message.getPath(), message.getType(), message.getPayload(), this);
                 messageQueue.remove(0);
-            } catch(HousemateException e) {
+            } catch(Throwable t) {
                 break;
             }
         }
@@ -99,15 +102,14 @@ public class RemoteClient {
         return listeners.addListener(listener);
     }
 
-    public RemoteClient addClient(List<String> route, Root<?> root, ClientInstance clientInstance)
-                throws HousemateException {
-        RemoteClient client = new RemoteClient(log, clientInstance, root, comms);
+    public RemoteClient addClient(List<String> route, Message.Receiver<Message.Payload> receiver, ClientInstance clientInstance) {
+        RemoteClient client = new RemoteClient(log, clientInstance, receiver, comms);
         client.setBaseRoute(route);
         addClient(client);
         return client;
     }
 
-    public void addClient(RemoteClient remoteClient) throws HousemateException {
+    public void addClient(RemoteClient remoteClient) {
         addClient(parent, this, 0, remoteClient);
     }
 
@@ -147,7 +149,7 @@ public class RemoteClient {
         }
     }
 
-    private static void addClient(RemoteClient parent, RemoteClient current, int currentIndex, RemoteClient client) throws HousemateException {
+    private static void addClient(RemoteClient parent, RemoteClient current, int currentIndex, RemoteClient client) {
 
         // if we're past the end return null
         if(client.getRoute().size() < currentIndex)
@@ -162,7 +164,7 @@ public class RemoteClient {
         // else, if we're at the last position, then check the client route doesn't already exist
         else if(client.getRoute().size() - 1 == currentIndex) {
             if(current.children.containsKey(client.getRoute().get(currentIndex))) {
-                throw new HousemateException("Client route already exists");
+                throw new HousemateCommsException("Client route already exists");
             }
             current.children.put(client.getRoute().get(currentIndex), client);
             client.setParent(current);
@@ -171,9 +173,9 @@ public class RemoteClient {
         // else, check there is a client with access for the next key
         } else {
             if(!current.children.containsKey(client.getRoute().get(currentIndex)))
-                throw new HousemateException("No client with access at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()));
-            else if(current.children.get(client.getRoute().get(currentIndex)).getClientInstance().getClientType() != ClientType.Router)
-                throw new HousemateException("Client at index " + currentIndex + " of route " + Message.routeToString(client.getRoute()) + " is not of type " + ClientType.Router.name());
+                throw new HousemateCommsException("No client with access at index " + currentIndex + " of route " + Arrays.toString(client.getRoute().toArray()));
+            else if(current.children.get(client.getRoute().get(currentIndex)).getClientInstance().getClientType() != ApplicationRegistration.ClientType.Router)
+                throw new HousemateCommsException("Client at index " + currentIndex + " of route " + Arrays.toString(client.getRoute().toArray()) + " is not of type " + ApplicationRegistration.ClientType.Router.name());
             addClient(current, current.children.get(client.getRoute().get(currentIndex)), currentIndex + 1, client);
         }
     }

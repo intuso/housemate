@@ -7,7 +7,7 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>web</artifactId>
+    <artifactId>housemate-web</artifactId>
     <name>Housemate Web</name>
     <description>Housemate Web interface</description>
     <packaging>war</packaging>
@@ -29,80 +29,118 @@
     <properties>
         <gwt.version.main>2.7</gwt.version.main>
         <gwt.version>${gwt.version.main}.0</gwt.version>
+        <gin.version>2.1.2</gin.version>
+        <guice.gin.version>3.0</guice.gin.version>
         <bootstrap.version>0.9</bootstrap.version>
     </properties>
 
     <dependencies>
 
-        <!-- Housemate -->
+        <!-- Non-sources deps for maven to compile properly -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>api</artifactId>
-            <version>${project.version}</version>
-            <classifier>sources</classifier>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-client-1-0-proxy-api</artifactId>
+            <version>${intuso.housemate.client.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>object-proxy</artifactId>
+            <artifactId>housemate-platform-pc</artifactId>
             <version>${project.version}</version>
-            <classifier>sources</classifier>
+            <exclusions>
+                <!-- Exclude non-gin-compliant version of guice -->
+                <exclusion>
+                    <groupId>com.google.inject.extensions</groupId>
+                    <artifactId>guice-multibindings</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>platform-pc</artifactId>
-            <version>${project.version}</version>
+            <artifactId>housemate-comms-1-0-serialiser-javabin</artifactId>
+            <version>${intuso.housemate.comms.version}</version>
+            <exclusions>
+                <!-- Exclude non-gin-compliant version of guice -->
+                <exclusion>
+                    <groupId>com.google.inject</groupId>
+                    <artifactId>guice</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>comms-serialiser-javabin</artifactId>
-            <version>${project.version}</version>
+            <artifactId>housemate-comms-1-0-transport-socket-client</artifactId>
+            <version>${intuso.housemate.comms.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>comms-transport-socket-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>persistence-flatfile</artifactId>
+            <artifactId>housemate-persistence-flatfile</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Utilities -->
+        <!-- Sources deps for gwt to compile -->
         <dependency>
-            <groupId>com.intuso.utilities</groupId>
-            <artifactId>wrapper</artifactId>
-            <version>${intuso.utils.version}</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>housemate-object-1-0-api</artifactId>
+            <version>${intuso.housemate.object.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>housemate-comms-1-0-api</artifactId>
+            <version>${intuso.housemate.comms.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>housemate-client-1-0-proxy-api</artifactId>
+            <version>${intuso.housemate.client.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>com.intuso.utilities</groupId>
-            <artifactId>listener</artifactId>
-            <version>${intuso.utils.version}</version>
+            <artifactId>utilities-object</artifactId>
+            <version>${intuso.utilities.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>com.intuso.utilities</groupId>
-            <artifactId>log</artifactId>
-            <version>${intuso.utils.version}</version>
+            <artifactId>utilities-listener</artifactId>
+            <version>${intuso.utilities.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>com.intuso.utilities</groupId>
-            <artifactId>properties-api</artifactId>
-            <version>${intuso.utils.version}</version>
+            <artifactId>utilities-log</artifactId>
+            <version>${intuso.utilities.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>utilities-properties-api</artifactId>
+            <version>${intuso.utilities.version}</version>
             <classifier>sources</classifier>
         </dependency>
 
+        <!-- Guice (Gin is GWT version) -->
         <dependency>
             <groupId>com.google.gwt.inject</groupId>
             <artifactId>gin</artifactId>
-            <version>2.1.2</version>
+            <version>${gin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice.gin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>${guice.gin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
-            <version>${guice.version}</version>
+            <version>${guice.gin.version}</version>
         </dependency>
 
         <!-- GWT -->
@@ -110,6 +148,7 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava-gwt</artifactId>
             <version>${guava.version}</version>
+            <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>

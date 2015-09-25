@@ -1,8 +1,8 @@
 package com.intuso.housemate.server.plugin.main.type.transformation;
 
-import com.intuso.housemate.object.real.RealType;
+import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.plugin.api.internal.Transformer;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
-import com.intuso.housemate.plugin.api.Transformer;
 
 import java.util.Map;
 

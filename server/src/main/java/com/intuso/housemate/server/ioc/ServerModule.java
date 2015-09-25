@@ -3,10 +3,11 @@ package com.intuso.housemate.server.ioc;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
-import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.real.ioc.RealObjectModule;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
+import com.intuso.housemate.client.real.api.internal.ioc.RealObjectModule;
+import com.intuso.housemate.comms.api.internal.Router;
+import com.intuso.housemate.object.api.internal.ObjectRoot;
+import com.intuso.housemate.object.api.internal.Root;
 import com.intuso.housemate.plugin.host.ioc.PluginHostModule;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.comms.MainRouter;
@@ -36,6 +37,7 @@ public class ServerModule extends AbstractModule {
         bind(ServerRealRoot.class).in(Scopes.SINGLETON);
         bind(ServerGeneralRoot.class).in(Scopes.SINGLETON);
         bind(RootBridge.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<ObjectRoot<?, ?>>() {}).to(RootBridge.class);
         // other things
         bind(FactoryPluginListener.class).in(Scopes.SINGLETON);
         bind(Server.class).in(Scopes.SINGLETON);
@@ -45,6 +47,6 @@ public class ServerModule extends AbstractModule {
         // bind implementations
         bind(RealRoot.class).to(ServerRealRoot.class);
         bind(Router.class).to(MainRouter.class);
-        bind(new TypeLiteral<Root<?>>() {}).to(RootBridge.class);
+        bind(new TypeLiteral<Root<?, ?>>() {}).to(RootBridge.class);
     }
 }

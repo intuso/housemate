@@ -1,14 +1,14 @@
 package com.intuso.housemate.server.plugin.main.type.valuesource;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.api.object.type.*;
-import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.RealSubType;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.RealChoiceType;
-import com.intuso.housemate.object.real.impl.type.RealObjectType;
+import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealOption;
+import com.intuso.housemate.client.real.api.internal.RealSubType;
+import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.impl.type.RealChoiceType;
+import com.intuso.housemate.client.real.api.internal.impl.type.RealObjectType;
+import com.intuso.housemate.comms.api.internal.payload.TypeData;
+import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.plugin.main.type.constant.ConstantInstance;
 import com.intuso.housemate.server.plugin.main.type.constant.ConstantType;
@@ -110,7 +110,7 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
             if(source instanceof ConstantValue) {
                 TypeInstanceMap childValues = new TypeInstanceMap();
                 TypeInstance typeInstance = new TypeInstance(source.getValue().getTypeId());
-                typeInstance.getChildValues().getChildren().put(ConstantType.SUB_TYPE_ID, source.getValue().getTypeInstances());
+                typeInstance.getChildValues().getChildren().put(ConstantType.SUB_TYPE_ID, source.getValue().getValue());
                 childValues.getChildren().put("type", new TypeInstances(typeInstance));
                 return new TypeInstance(CONSTANT_ID, childValues);
             } else if(source instanceof ValueLocation) {
@@ -151,7 +151,7 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
             } else if(value.getValue().equals(LOCATION_ID)) {
                 if(value.getChildValues().getChildren().get("path") != null && value.getChildValues().getChildren().get("path").getElements().size() > 0) {
                     RealObjectType.Reference<?> object = realObjectTypeSerialiser.deserialise(value.getChildValues().getChildren().get("path").getElements().get(0));
-                    return new ValueLocation(listenersFactory, (RealObjectType.Reference<Value<?, ?>>)object, root);
+                    return new ValueLocation(listenersFactory, (RealObjectType.Reference<Value<TypeInstances, ?>>)object, root);
                 } else
                     return null;
             } else if(value.getValue().equals(OPERATION_ID)) {

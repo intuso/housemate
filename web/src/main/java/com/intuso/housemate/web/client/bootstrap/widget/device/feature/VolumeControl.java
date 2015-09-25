@@ -6,7 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class VolumeControl
         extends GWTProxyFeature
-        implements com.intuso.housemate.api.object.device.feature.VolumeControl<GWTProxyCommand> {
+        implements com.intuso.housemate.object.v1_0.api.feature.VolumeControl<GWTProxyCommand> {
 
     public VolumeControl(GWTProxyDevice device) {
         super(device);
@@ -26,22 +26,22 @@ public class VolumeControl
 
     @Override
     public GWTProxyCommand getMuteCommand() {
-        return device.getCommands() != null ? device.getCommands().get(MUTE_COMMAND) : null;
+        return device.getCommands() != null ? device.getCommands().get("mute") : null;
     }
 
     @Override
     public GWTProxyCommand getVolumeUpCommand() {
-        return device.getCommands() != null ? device.getCommands().get(VOLUME_UP_COMMAND) : null;
+        return device.getCommands() != null ? device.getCommands().get("volume-up") : null;
     }
 
     @Override
     public GWTProxyCommand getVolumeDownCommand() {
-        return device.getCommands() != null ? device.getCommands().get(VOLUME_DOWN_COMMAND) : null;
+        return device.getCommands() != null ? device.getCommands().get("volume-down") : null;
     }
 
     @Override
     public Set<String> getCommandIds() {
-        return Sets.newHashSet(VOLUME_UP_COMMAND, VOLUME_DOWN_COMMAND);
+        return Sets.newHashSet("mute", "volume-up", "volume-down");
     }
 
     @Override

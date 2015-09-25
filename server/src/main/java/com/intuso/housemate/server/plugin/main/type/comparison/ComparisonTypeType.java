@@ -4,13 +4,13 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.impl.type.RealChoiceType;
-import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.api.ComparisonType;
-import com.intuso.housemate.plugin.host.PluginListener;
+import com.intuso.housemate.client.real.api.internal.RealOption;
+import com.intuso.housemate.client.real.api.internal.impl.type.RealChoiceType;
+import com.intuso.housemate.object.api.internal.TypeInstance;
+import com.intuso.housemate.object.api.internal.TypeSerialiser;
+import com.intuso.housemate.plugin.api.internal.Comparator;
+import com.intuso.housemate.plugin.api.internal.ComparisonType;
+import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -44,7 +44,7 @@ public class ComparisonTypeType extends RealChoiceType<ComparisonType> implement
     }
 
     @Override
-    public com.intuso.housemate.plugin.api.ComparisonType deserialise(TypeInstance instance) {
+    public ComparisonType deserialise(TypeInstance instance) {
         return serialiser.deserialise(instance);
     }
 
@@ -76,7 +76,7 @@ public class ComparisonTypeType extends RealChoiceType<ComparisonType> implement
         }
 
         @Override
-        public com.intuso.housemate.plugin.api.ComparisonType deserialise(TypeInstance instance) {
+        public ComparisonType deserialise(TypeInstance instance) {
             return instance != null ? types.get(instance.getValue()) : null;
         }
 

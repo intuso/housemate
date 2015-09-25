@@ -1,11 +1,11 @@
 package com.intuso.housemate.extension.android.widget.handler;
 
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.device.feature.Feature;
-import com.intuso.housemate.api.object.device.feature.StatefulPowerControl;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.device.feature.FeatureLoadedListener;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
-import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.device.feature.FeatureLoadedListener;
+import com.intuso.housemate.object.v1_0.api.Device;
+import com.intuso.housemate.object.v1_0.api.feature.StatefulPowerControl;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
@@ -19,7 +19,7 @@ import java.util.List;
 * Time: 19:13
 * To change this template use File | Settings | File Templates.
 */
-public abstract class WidgetHandler<FEATURE extends Feature> {
+public abstract class WidgetHandler<FEATURE extends Device.Feature> {
 
     private static int LOAD_ID = 0;
 
@@ -139,7 +139,7 @@ public abstract class WidgetHandler<FEATURE extends Feature> {
                         status = Status.NO_DEVICE;
                     updateWidget();
                 }
-            }, HousemateObject.TreeLoadInfo.create(deviceId)));
+            }, RemoteObject.TreeLoadInfo.create(deviceId)));
         }
     }
 

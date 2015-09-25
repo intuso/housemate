@@ -1,8 +1,8 @@
 package com.intuso.housemate.pkg.server.jar.ioc;
 
 import com.google.inject.AbstractModule;
-import com.intuso.housemate.comms.serialiser.javabin.ioc.JavabinSerialiserServerModule;
-import com.intuso.housemate.comms.serialiser.json.ioc.JsonSerialiserServerModule;
+import com.intuso.housemate.comms.v1_0.serialiser.javabin.ioc.JavabinSerialiserServerModule;
+import com.intuso.housemate.comms.v1_0.serialiser.json.ioc.JsonSerialiserServerModule;
 
 /**
  * Created with IntelliJ IDEA.

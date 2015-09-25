@@ -1,8 +1,7 @@
 package com.intuso.housemate.web.client;
 
 import com.google.gwt.regexp.shared.RegExp;
-import com.intuso.housemate.api.resources.RegexMatcher;
-import com.intuso.housemate.api.resources.RegexMatcherFactory;
+import com.intuso.housemate.object.v1_0.api.RegexMatcher;
 
 /**
 * Created with IntelliJ IDEA.
@@ -11,7 +10,7 @@ import com.intuso.housemate.api.resources.RegexMatcherFactory;
 * Time: 07:29
 * To change this template use File | Settings | File Templates.
 */
-public class GWTRegexMatcherFactory implements RegexMatcherFactory {
+public class GWTRegexMatcherFactory implements RegexMatcher.Factory {
 
     @Override
     public RegexMatcher createRegexMatcher(String pattern) {

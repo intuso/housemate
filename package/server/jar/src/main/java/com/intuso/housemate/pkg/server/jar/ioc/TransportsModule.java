@@ -1,7 +1,7 @@
 package com.intuso.housemate.pkg.server.jar.ioc;
 
 import com.google.inject.AbstractModule;
-import com.intuso.housemate.comms.transport.rest.ioc.RestServerModule;
+import com.intuso.housemate.comms.transport.rest.server.ioc.RestServerModule;
 import com.intuso.housemate.comms.transport.socket.server.ioc.SocketServerModule;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 

@@ -1,18 +1,17 @@
 package com.intuso.housemate.server.object.proxy;
 
-import com.google.inject.Injector;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.api.object.value.ValueBaseData;
-import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.comms.api.internal.Message;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.TypeData;
+import com.intuso.housemate.comms.api.internal.payload.ValueBaseData;
+import com.intuso.housemate.comms.api.internal.payload.ValueData;
+import com.intuso.housemate.object.api.internal.TypeInstances;
+import com.intuso.housemate.object.api.internal.ValueBase;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.object.ObjectFactory;
 
 import java.util.List;
 
@@ -26,17 +25,18 @@ public abstract class ServerProxyValueBase<
             DATA extends ValueBaseData<CHILD_DATA>,
             CHILD_DATA extends HousemateData<?>,
             CHILD extends ServerProxyObject<? extends CHILD_DATA, ?, ?, ?, ?>,
-            VALUE extends ServerProxyValueBase<DATA, CHILD_DATA, CHILD, VALUE>>
-        extends ServerProxyObject<DATA, CHILD_DATA, CHILD, VALUE, ValueListener<? super VALUE>>
-        implements Value<ServerProxyType, VALUE> {
+            LISTENER extends ValueBase.Listener<? super VALUE>,
+            VALUE extends ServerProxyValueBase<DATA, CHILD_DATA, CHILD, LISTENER, VALUE>>
+        extends ServerProxyObject<DATA, CHILD_DATA, CHILD, VALUE, LISTENER>
+        implements ValueBase<TypeInstances, LISTENER, VALUE> {
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
+     * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ServerProxyValueBase(Log log, ListenersFactory listenersFactory, Injector injector, DATA data) {
-        super(log, listenersFactory, injector, data);
+    public ServerProxyValueBase(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, DATA data) {
+        super(log, listenersFactory, objectFactory, data);
     }
 
     @Override
@@ -45,20 +45,20 @@ public abstract class ServerProxyValueBase<
     }
 
     @Override
-    public TypeInstances getTypeInstances() {
+    public TypeInstances getValue() {
         return getData().getTypeInstances();
     }
 
     @Override
     public final List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(VALUE_ID, new Receiver<ClientPayload<TypeInstances>>() {
+        result.add(addMessageListener(ValueData.VALUE_ID, new Message.Receiver<ClientPayload<TypeData.TypeInstancesPayload>>() {
             @Override
-            public void messageReceived(Message<ClientPayload<TypeInstances>> stringMessageValueMessage) {
-                for(ValueListener<? super VALUE> listener : getObjectListeners())
+            public void messageReceived(Message<ClientPayload<TypeData.TypeInstancesPayload>> stringMessageValueMessage) {
+                for(ValueBase.Listener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanging(getThis());
-                getData().setTypeInstances(stringMessageValueMessage.getPayload().getOriginal());
-                for(ValueListener<? super VALUE> listener : getObjectListeners())
+                getData().setTypeInstances(stringMessageValueMessage.getPayload().getOriginal().getTypeInstances());
+                for(ValueBase.Listener<? super VALUE> listener : getObjectListeners())
                     listener.valueChanged(getThis());
             }
         }));
@@ -69,9 +69,9 @@ public abstract class ServerProxyValueBase<
     protected final void copyValues(HousemateData<?> data) {
         if(data instanceof ValueBaseData) {
             try {
-                distributeMessage(new Message<>(getPath(), VALUE_ID, new ClientPayload(null, ((ValueBaseData)data).getTypeInstances())));
-            } catch (HousemateException e) {
-                getLog().e("Failed to update server proxy value based on new value from client");
+                distributeMessage(new Message<>(getPath(), ValueData.VALUE_ID, new ClientPayload(null, new TypeData.TypeInstancesPayload(((ValueBaseData)data).getTypeInstances()))));
+            } catch (Throwable t) {
+                getLog().e("Failed to update server proxy value based on new value from client", t);
             }
         }
     }

@@ -1,11 +1,12 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.object.real.annotations.Property;
-import com.intuso.housemate.object.real.impl.device.StatefulPoweredDevice;
-import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
+import com.intuso.housemate.client.v1_0.real.api.impl.device.StatefulPoweredDevice;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -31,8 +32,7 @@ public class ArduinoIndicator extends StatefulPoweredDevice {
                                SerialPortWrapper serialPort) {
         super(log, listenersFactory, "arduino-indicator", data);
         this.serialPort = serialPort;
-        getCustomPropertyIds().add("colour");
-        getCustomPropertyIds().add("intensity");
+        getData().setCustomPropertyIds(Lists.newArrayList("colour", "intensity"));
     }
 
     @Override

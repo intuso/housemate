@@ -1,9 +1,10 @@
 package com.intuso.housemate.plugin.rfxcom.lighting2;
 
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.object.real.annotations.Property;
-import com.intuso.housemate.object.real.impl.device.StatefulPoweredDevice;
+import com.google.common.collect.Lists;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
+import com.intuso.housemate.client.v1_0.real.api.impl.device.StatefulPoweredDevice;
+import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -26,8 +27,7 @@ public abstract class Lighting2Appliance extends StatefulPoweredDevice {
                               String type,
                               DeviceData data) {
 		super(log, listenersFactory, type, data);
-        getCustomPropertyIds().add("house-id");
-        getCustomPropertyIds().add("unit-id");
+        getData().setCustomPropertyIds(Lists.newArrayList("house-id", "unit-id"));
 	}
 
     public void propertyChanged() {
@@ -87,26 +87,26 @@ public abstract class Lighting2Appliance extends StatefulPoweredDevice {
     }
 
     @Override
-    public void turnOn() throws HousemateException {
+    public void turnOn() {
         if(lighting2Appliance == null)
-            throw new HousemateException("Not connected to RFXCom device. Ensure properties are set correctly");
+            throw new HousemateCommsException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting2Appliance.turnOn();
             setOn();
 		} catch (IOException e) {
-			throw new HousemateException("Could not turn appliance on", e);
+			throw new HousemateCommsException("Could not turn appliance on", e);
 		}
 	}
 	
 	@Override
-    public void turnOff() throws HousemateException {
+    public void turnOff() {
         if(lighting2Appliance == null)
-            throw new HousemateException("Not connected to RFXCom device. Ensure properties are set correctly");
+            throw new HousemateCommsException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting2Appliance.turnOff();
             setOff();
 		} catch (IOException e) {
-			throw new HousemateException("Could not turn appliance off", e);
+			throw new HousemateCommsException("Could not turn appliance off", e);
 		}
 	}
 	

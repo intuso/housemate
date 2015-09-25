@@ -3,14 +3,13 @@ package com.intuso.housemate.server.comms;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.comms.ServerConnectionStatus;
-import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.plugin.api.ExternalClientRouter;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
+import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import com.intuso.housemate.comms.api.internal.Message;
+import com.intuso.housemate.comms.api.internal.Router;
+import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
+import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
+import com.intuso.housemate.plugin.api.internal.ExternalClientRouter;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -52,7 +51,7 @@ public final class MainRouter extends Router {
         messageProcessor.start();
 
         // register the local client
-        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION_DETAILS, "Internal Client");
+        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION_DETAILS_V1_0, "Internal Client");
     }
 
     public final void startExternalRouters() {
@@ -62,9 +61,9 @@ public final class MainRouter extends Router {
         for(ExternalClientRouter externalClientRouter : externalClientRouters) {
             try {
                 externalClientRouter.start();
-                externalClientRouter.register(Server.INTERNAL_APPLICATION_DETAILS, externalClientRouter.getClass().getName());
-            } catch(HousemateException e) {
-                throw new HousemateRuntimeException("Could not start external client router", e);
+                externalClientRouter.register(Server.INTERNAL_APPLICATION_DETAILS_V1_0, externalClientRouter.getClass().getName());
+            } catch(Throwable t) {
+                throw new HousemateCommsException("Could not start external client router", t);
             }
         }
 	}
@@ -94,15 +93,15 @@ public final class MainRouter extends Router {
 
     @Override
     public void connect() {
-        throw new HousemateRuntimeException("The main router cannot be connected");
+        throw new HousemateCommsException("The main router cannot be connected");
     }
 
     @Override
     public void disconnect() {
-        throw new HousemateRuntimeException("The main router cannot be disconnected");
+        throw new HousemateCommsException("The main router cannot be disconnected");
     }
 
-    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClient client) throws HousemateException {
+    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClient client) {
         Message<?> message = new Message<>(path, type, payload, client.getRoute());
         getLog().d("Sending message " + message.toString());
         // to send a message we tell the outgoing root it is received. Any listeners on the outgoing root
@@ -115,21 +114,21 @@ public final class MainRouter extends Router {
         getLog().d("Message received " + message.toString());
         try {
             RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(message.getRoute());
-            Root<?> root = getRoot(client, message);
+            Message.Receiver<Message.Payload> receiver = getReceiver(client, message);
             // wrap payload in new payload in which we can put the client's id
             message = new Message<Message.Payload>(message.getPath(), message.getType(),
                     new ClientPayload<>(client, message.getPayload()), message.getRoute());
-            root.messageReceived(message);
+            receiver.messageReceived(message);
         } catch(Throwable t) {
             getLog().e("Failed to distribute received message", t);
         }
     }
 
-    private Root<?> getRoot(RemoteClient client, Message<?> message) throws HousemateException {
+    private Message.Receiver<Message.Payload> getReceiver(RemoteClient client, Message<?> message) {
         // intercept certain messages
         if(message.getPath().length == 1 &&
-                (message.getType().equals(Root.APPLICATION_REGISTRATION_TYPE)
-                    || message.getType().equals(Root.APPLICATION_UNREGISTRATION_TYPE)))
+                (message.getType().equals(ApplicationRegistration.APPLICATION_REGISTRATION_TYPE)
+                    || message.getType().equals(ApplicationRegistration.APPLICATION_UNREGISTRATION_TYPE)))
             return injector.getInstance(ServerGeneralRoot.class);
         // otherwise send it to the route for the client
         if(client == null)
@@ -137,7 +136,7 @@ public final class MainRouter extends Router {
         else if(!client.isApplicationInstanceAllowed())
             throw new ApplicationInstanceNotAllowedException(client);
         else
-            return client.getRoot();
+            return client.getReceiver();
     }
 
     private class MessageProcessor extends Thread {

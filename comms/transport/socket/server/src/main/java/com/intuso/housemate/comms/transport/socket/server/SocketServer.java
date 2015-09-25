@@ -1,10 +1,9 @@
 package com.intuso.housemate.comms.transport.socket.server;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.comms.serialiser.api.StreamSerialiserFactory;
-import com.intuso.housemate.plugin.api.ExternalClientRouter;
+import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import com.intuso.housemate.comms.api.internal.Router;
+import com.intuso.housemate.plugin.api.internal.ExternalClientRouter;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -12,7 +11,6 @@ import com.intuso.utilities.properties.api.PropertyRepository;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Set;
 
 /**
  */
@@ -31,17 +29,17 @@ public class SocketServer extends ExternalClientRouter {
     private Accepter accepter;
 
     private final PropertyRepository properties;
-    private final Set<StreamSerialiserFactory> serialiserFactories;
+    private final V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory;
 
     @Inject
-    public SocketServer(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router, Set<StreamSerialiserFactory> serialiserFactories) {
+    public SocketServer(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router, V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory) {
         super(log, listenersFactory, properties, router);
         this.properties = properties;
-        this.serialiserFactories = serialiserFactories;
+        this.v1_0SocketClientHandlerFactory = v1_0SocketClientHandlerFactory;
     }
 
     @Override
-    public void _start() throws HousemateException {
+    public void _start() {
 
         try {
             // open the server port
@@ -55,7 +53,7 @@ public class SocketServer extends ExternalClientRouter {
             accepter = new Accepter();
         } catch (IOException e) {
             getLog().e("Could not open port to listen on", e);
-            throw new HousemateException("Could not open port to listen on", e);
+            throw new HousemateCommsException("Could not open port to listen on", e);
         }
         
         // start the thread that will accept connections from the port
@@ -112,13 +110,13 @@ public class SocketServer extends ExternalClientRouter {
                     @Override
                     public void run() {
                         try {
-                            new SocketClientHandler(getLog(), SocketServer.this, socket, serialiserFactories);
-                        } catch (HousemateException e) {
-                            getLog().e("Could not create client handle for new client connection", e);
+                            v1_0SocketClientHandlerFactory.create(socket);
+                        } catch (Throwable t) {
+                            getLog().e("Could not create client handle for new client connection", t);
                             try {
                                 socket.close();
                             } catch (IOException e1) {
-                                getLog().e("Failed to create client connection and close the socket", e);
+                                getLog().e("Failed to create client connection and close the socket", t);
                             }
                         }
                     }

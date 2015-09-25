@@ -1,27 +1,10 @@
 package com.intuso.housemate.web.client.object;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.application.ApplicationData;
-import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
-import com.intuso.housemate.api.object.automation.AutomationData;
-import com.intuso.housemate.api.object.command.CommandData;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
-import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.option.OptionData;
-import com.intuso.housemate.api.object.parameter.ParameterData;
-import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.api.object.server.ServerData;
-import com.intuso.housemate.api.object.subtype.SubTypeData;
-import com.intuso.housemate.api.object.task.TaskData;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.api.object.value.ValueData;
-import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.payload.*;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.object.ObjectFactory;
 
 /**
 * Created with IntelliJ IDEA.
@@ -30,46 +13,46 @@ import com.intuso.utilities.log.Log;
 * Time: 18:47
 * To change this template use File | Settings | File Templates.
 */
-public class GWTProxyFactory implements HousemateObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> {
+public class GWTProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> {
 
     private final Log log;
-    private final HousemateObjectFactory<ApplicationData, GWTProxyApplication> applicationFactory;
-    private final HousemateObjectFactory<ApplicationInstanceData, GWTProxyApplicationInstance> applicationInstanceFactory;
-    private final HousemateObjectFactory<AutomationData, GWTProxyAutomation> automationFactory;
-    private final HousemateObjectFactory<CommandData, GWTProxyCommand> commandFactory;
-    private final HousemateObjectFactory<ConditionData, GWTProxyCondition> conditionFactory;
-    private final HousemateObjectFactory<DeviceData, GWTProxyDevice> deviceFactory;
-    private final HousemateObjectFactory<HardwareData, GWTProxyHardware> hardwareFactory;
-    private final HousemateObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory;
-    private final HousemateObjectFactory<OptionData, GWTProxyOption> optionFactory;
-    private final HousemateObjectFactory<ParameterData, GWTProxyParameter> parameterFactory;
-    private final HousemateObjectFactory<PropertyData, GWTProxyProperty> propertyFactory;
-    private final HousemateObjectFactory<ServerData, GWTProxyServer> serverFactory;
-    private final HousemateObjectFactory<SubTypeData, GWTProxySubType> subTypeFactory;
-    private final HousemateObjectFactory<TaskData,GWTProxyTask> taskFactory;
-    private final HousemateObjectFactory<TypeData<HousemateData<?>>, GWTProxyType> typeFactory;
-    private final HousemateObjectFactory<UserData, GWTProxyUser> userFactory;
-    private final HousemateObjectFactory<ValueData, GWTProxyValue> valueFactory;
+    private final ObjectFactory<ApplicationData, GWTProxyApplication> applicationFactory;
+    private final ObjectFactory<ApplicationInstanceData, GWTProxyApplicationInstance> applicationInstanceFactory;
+    private final ObjectFactory<AutomationData, GWTProxyAutomation> automationFactory;
+    private final ObjectFactory<CommandData, GWTProxyCommand> commandFactory;
+    private final ObjectFactory<ConditionData, GWTProxyCondition> conditionFactory;
+    private final ObjectFactory<DeviceData, GWTProxyDevice> deviceFactory;
+    private final ObjectFactory<HardwareData, GWTProxyHardware> hardwareFactory;
+    private final ObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory;
+    private final ObjectFactory<OptionData, GWTProxyOption> optionFactory;
+    private final ObjectFactory<ParameterData, GWTProxyParameter> parameterFactory;
+    private final ObjectFactory<PropertyData, GWTProxyProperty> propertyFactory;
+    private final ObjectFactory<ServerData, GWTProxyServer> serverFactory;
+    private final ObjectFactory<SubTypeData, GWTProxySubType> subTypeFactory;
+    private final ObjectFactory<TaskData,GWTProxyTask> taskFactory;
+    private final ObjectFactory<TypeData<HousemateData<?>>, GWTProxyType> typeFactory;
+    private final ObjectFactory<UserData, GWTProxyUser> userFactory;
+    private final ObjectFactory<ValueData, GWTProxyValue> valueFactory;
 
     @Inject
     public GWTProxyFactory(Log log,
-                           HousemateObjectFactory<ApplicationData, GWTProxyApplication> applicationFactory,
-                           HousemateObjectFactory<ApplicationInstanceData, GWTProxyApplicationInstance> applicationInstanceFactory,
-                           HousemateObjectFactory<AutomationData, GWTProxyAutomation> automationFactory,
-                           HousemateObjectFactory<CommandData, GWTProxyCommand> commandFactory,
-                           HousemateObjectFactory<ConditionData, GWTProxyCondition> conditionFactory,
-                           HousemateObjectFactory<DeviceData, GWTProxyDevice> deviceFactory,
-                           HousemateObjectFactory<HardwareData, GWTProxyHardware> hardwareFactory,
-                           HousemateObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory,
-                           HousemateObjectFactory<OptionData, GWTProxyOption> optionFactory,
-                           HousemateObjectFactory<ParameterData, GWTProxyParameter> parameterFactory,
-                           HousemateObjectFactory<PropertyData, GWTProxyProperty> propertyFactory,
-                           HousemateObjectFactory<ServerData, GWTProxyServer> serverFactory,
-                           HousemateObjectFactory<SubTypeData, GWTProxySubType> subTypeFactory,
-                           HousemateObjectFactory<TaskData,GWTProxyTask> taskFactory,
-                           HousemateObjectFactory<TypeData<HousemateData<?>>, GWTProxyType> typeFactory,
-                           HousemateObjectFactory<UserData, GWTProxyUser> userFactory,
-                           HousemateObjectFactory<ValueData, GWTProxyValue> valueFactory) {
+                           ObjectFactory<ApplicationData, GWTProxyApplication> applicationFactory,
+                           ObjectFactory<ApplicationInstanceData, GWTProxyApplicationInstance> applicationInstanceFactory,
+                           ObjectFactory<AutomationData, GWTProxyAutomation> automationFactory,
+                           ObjectFactory<CommandData, GWTProxyCommand> commandFactory,
+                           ObjectFactory<ConditionData, GWTProxyCondition> conditionFactory,
+                           ObjectFactory<DeviceData, GWTProxyDevice> deviceFactory,
+                           ObjectFactory<HardwareData, GWTProxyHardware> hardwareFactory,
+                           ObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory,
+                           ObjectFactory<OptionData, GWTProxyOption> optionFactory,
+                           ObjectFactory<ParameterData, GWTProxyParameter> parameterFactory,
+                           ObjectFactory<PropertyData, GWTProxyProperty> propertyFactory,
+                           ObjectFactory<ServerData, GWTProxyServer> serverFactory,
+                           ObjectFactory<SubTypeData, GWTProxySubType> subTypeFactory,
+                           ObjectFactory<TaskData,GWTProxyTask> taskFactory,
+                           ObjectFactory<TypeData<HousemateData<?>>, GWTProxyType> typeFactory,
+                           ObjectFactory<UserData, GWTProxyUser> userFactory,
+                           ObjectFactory<ValueData, GWTProxyValue> valueFactory) {
         this.log = log;
         this.applicationFactory = applicationFactory;
         this.applicationInstanceFactory = applicationInstanceFactory;

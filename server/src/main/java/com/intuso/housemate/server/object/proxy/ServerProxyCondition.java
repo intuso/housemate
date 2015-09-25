@@ -1,28 +1,22 @@
 package com.intuso.housemate.server.object.proxy;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.condition.Condition;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.condition.ConditionListener;
-import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.BooleanType;
-import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.comms.api.internal.payload.ConditionData;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.PropertyData;
+import com.intuso.housemate.object.api.internal.Condition;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-
-import java.util.List;
+import com.intuso.utilities.object.ObjectFactory;
 
 public class ServerProxyCondition
         extends ServerProxyObject<
-            ConditionData,
-            HousemateData<?>,
+        ConditionData,
+        HousemateData<?>,
             ServerProxyObject<?, ?, ?, ?, ?>,
             ServerProxyCondition,
-            ConditionListener<? super ServerProxyCondition>>
+            Condition.Listener<? super ServerProxyCondition>>
         implements Condition<
                     ServerProxyCommand,
                     ServerProxyValue,
@@ -41,23 +35,23 @@ public class ServerProxyCondition
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
+     * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyCondition(Log log, ListenersFactory listenersFactory, Injector injector, @Assisted ConditionData data) {
-        super(log, listenersFactory, injector, data);
+    public ServerProxyCondition(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted ConditionData data) {
+        super(log, listenersFactory, objectFactory, data);
     }
 
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        remove = (ServerProxyCommand) getChild(REMOVE_ID);
-        error = (ServerProxyValue) getChild(ERROR_ID);
-        satisfied = (ServerProxyValue) getChild(SATISFIED_ID);
-        properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(PROPERTIES_ID);
-        addCondition = (ServerProxyCommand) getChild(ADD_CONDITION_ID);
-        conditions = (ServerProxyList<ConditionData, ServerProxyCondition>) getChild(CONDITIONS_ID);
+        remove = (ServerProxyCommand) getChild(ConditionData.REMOVE_ID);
+        error = (ServerProxyValue) getChild(ConditionData.ERROR_ID);
+        satisfied = (ServerProxyValue) getChild(ConditionData.SATISFIED_ID);
+        properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(ConditionData.PROPERTIES_ID);
+        addCondition = (ServerProxyCommand) getChild(ConditionData.ADD_CONDITION_ID);
+        conditions = (ServerProxyList<ConditionData, ServerProxyCondition>) getChild(ConditionData.CONDITIONS_ID);
     }
 
     @Override
@@ -71,20 +65,8 @@ public class ServerProxyCondition
     }
 
     @Override
-    public String getError() {
-        List<String> errors = RealType.deserialiseAll(StringType.SERIALISER, error.getTypeInstances());
-        return errors != null && errors.size() > 0 ? errors.get(0) : null;
-    }
-
-    @Override
     public ServerProxyValue getSatisfiedValue() {
         return satisfied;
-    }
-
-    @Override
-    public boolean isSatisfied() {
-        List<Boolean> isSatisfieds = RealType.deserialiseAll(BooleanType.SERIALISER, satisfied.getTypeInstances());
-        return isSatisfieds != null && isSatisfieds.size() > 0 && isSatisfieds.get(0) != null ? isSatisfieds.get(0) : false;
     }
 
     @Override
@@ -105,8 +87,8 @@ public class ServerProxyCondition
     @Override
     protected void copyValues(HousemateData<?> data) {
         if(data instanceof ConditionData) {
-            getConditions().copyValues(data.getChildData(CONDITIONS_ID));
-            getProperties().copyValues(data.getChildData(PROPERTIES_ID));
+            getConditions().copyValues(data.getChildData(ConditionData.CONDITIONS_ID));
+            getProperties().copyValues(data.getChildData(ConditionData.PROPERTIES_ID));
         }
     }
 }

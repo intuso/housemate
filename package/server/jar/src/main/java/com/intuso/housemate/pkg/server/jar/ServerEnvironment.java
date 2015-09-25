@@ -3,10 +3,10 @@ package com.intuso.housemate.pkg.server.jar;
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.intuso.housemate.api.HousemateException;
+import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.pkg.server.jar.ioc.JarServerModule;
 import com.intuso.housemate.platform.pc.Properties;
-import com.intuso.housemate.plugin.api.PluginModule;
+import com.intuso.housemate.plugin.api.internal.PluginModule;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.housemate.server.object.real.FactoryPluginListener;
 import com.intuso.housemate.server.object.real.persist.RealObjectWatcher;
@@ -53,9 +53,8 @@ public class ServerEnvironment {
 	/**
 	 * Create a environment instance
 	 * @param args the command line args that the server was run with
-	 * @throws HousemateException
 	 */
-	public ServerEnvironment(String args[]) throws HousemateException {
+	public ServerEnvironment(String args[]) {
 
         ListenersFactory listenersFactory = new ListenersFactory() {
             @Override
@@ -138,8 +137,8 @@ public class ServerEnvironment {
                 for(Map.Entry<Object, Object> attrEntry : mf.getMainAttributes().entrySet()) {
                     try {
                         result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl, log));
-                    } catch(HousemateException e) {
-                        log.e("Failed to load plugin descriptor", e);
+                    } catch(Throwable t) {
+                        log.e("Failed to load plugin descriptor", t);
                     }
                 }
                 for(Map.Entry<String, Attributes> mfEntry : mf.getEntries().entrySet()) {
@@ -147,8 +146,8 @@ public class ServerEnvironment {
                     for(Map.Entry<Object, Object> attrEntry : attrs.entrySet()) {
                         try {
                             result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl, log));
-                        } catch(HousemateException e) {
-                            log.e("Failed to load plugin descriptor", e);
+                        } catch(Throwable t) {
+                            log.e("Failed to load plugin descriptor", t);
                         }
                     }
                 }
@@ -163,8 +162,7 @@ public class ServerEnvironment {
         }
     }
 
-    private List<Class<? extends PluginModule>> processManifestAttribute(URL url, Object key, Object value, ClassLoader cl, Log log)
-            throws HousemateException {
+    private List<Class<? extends PluginModule>> processManifestAttribute(URL url, Object key, Object value, ClassLoader cl, Log log) {
         List<Class<? extends PluginModule>> result = Lists.newArrayList();
         if(key != null && key.toString().equals(PluginModule.MANIFEST_ATTRIBUTE)
                 && value instanceof String) {
@@ -178,9 +176,9 @@ public class ServerEnvironment {
                         log.d("Successfully loaded plugin class " + className);
                         result.add((Class<? extends PluginModule>) clazz);
                     } else
-                        throw new HousemateException(clazz.getName() + " is not assignable to " + PluginModule.class.getName());
+                        throw new HousemateCommsException(clazz.getName() + " is not assignable to " + PluginModule.class.getName());
                 } catch(ClassNotFoundException e) {
-                    throw new HousemateException("Could not load plugin module class " + className + " from " + url.toExternalForm(), e);
+                    throw new HousemateCommsException("Could not load plugin module class " + className + " from " + url.toExternalForm(), e);
                 }
             }
         }
@@ -194,7 +192,7 @@ public class ServerEnvironment {
         }
     }
 
-    private void startWebapp(Injector injector, PropertyRepository properties) throws HousemateException {
+    private void startWebapp(Injector injector, PropertyRepository properties) {
 
         Log log = injector.getInstance(Log.class);
 
@@ -220,8 +218,7 @@ public class ServerEnvironment {
         }
     }
 
-    private void startJetty(Injector injector, PropertyRepository properties, int port)
-            throws HousemateException {
+    private void startJetty(Injector injector, PropertyRepository properties, int port) {
 
         ServletHandler servletHandler = new ServletHandler();
         servletHandler.addServletWithMapping(CommsServiceImpl.class, "/Housemate/comms");
@@ -239,7 +236,7 @@ public class ServerEnvironment {
             else
                 throw new IOException("Could not find index.html location");
         } catch (IOException e) {
-            throw new HousemateException("Failed to register housemate static web resources", e);
+            throw new HousemateCommsException("Failed to register housemate static web resources", e);
         }
         handler.addEventListener(injector.getInstance(ContextListener.class));
 
@@ -251,7 +248,7 @@ public class ServerEnvironment {
         try {
             server.start();
         } catch(Exception e) {
-            throw new HousemateException("Failed to start internal webserver", e);
+            throw new HousemateCommsException("Failed to start internal webserver", e);
         }
     }
 }

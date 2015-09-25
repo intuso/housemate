@@ -1,7 +1,7 @@
 package com.intuso.housemate.server.comms;
 
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
+import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import com.intuso.housemate.object.api.internal.ApplicationInstance;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,8 +10,8 @@ import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
  * Time: 09:06
  * To change this template use File | Settings | File Templates.
  */
-public class ApplicationInstanceNotAllowedException extends HousemateException {
+public class ApplicationInstanceNotAllowedException extends HousemateCommsException {
     public ApplicationInstanceNotAllowedException(RemoteClient client) {
-        super("Application instance " + client.getClientInstance() + " sent a message but it does not have status " + ApplicationInstanceStatus.Allowed);
+        super("Application instance " + client.getClientInstance() + " sent a message but it does not have status " + ApplicationInstance.Status.Allowed);
     }
 }

@@ -1,7 +1,5 @@
 package com.intuso.housemate.platform.android.common;
 
-import com.intuso.housemate.api.resources.RegexMatcherFactory;
-
 import java.util.regex.Pattern;
 
 /**
@@ -11,7 +9,7 @@ import java.util.regex.Pattern;
  * Time: 09:12
  * To change this template use File | Settings | File Templates.
  */
-public class RegexMatcher implements com.intuso.housemate.api.resources.RegexMatcher {
+public class RegexMatcher implements com.intuso.housemate.object.v1_0.api.RegexMatcher {
 
     private final Pattern pattern;
 
@@ -24,10 +22,10 @@ public class RegexMatcher implements com.intuso.housemate.api.resources.RegexMat
         return pattern.matcher(value).matches();
     }
 
-    public static class Factory implements RegexMatcherFactory {
+    public static class Factory implements com.intuso.housemate.object.v1_0.api.RegexMatcher.Factory {
 
         @Override
-        public com.intuso.housemate.api.resources.RegexMatcher createRegexMatcher(String pattern) {
+        public com.intuso.housemate.object.v1_0.api.RegexMatcher createRegexMatcher(String pattern) {
             return new RegexMatcher(pattern);
         }
     }

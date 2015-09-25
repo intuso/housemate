@@ -8,9 +8,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.intuso.housemate.api.object.command.CommandPerformListener;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.type.TypeInstances;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.web.client.bootstrap.widget.type.ParameterInputList;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -20,7 +19,7 @@ import org.gwtbootstrap3.client.ui.Button;
 
 /**
  */
-public class Command extends Composite implements CommandPerformListener<GWTProxyCommand> {
+public class Command extends Composite implements com.intuso.housemate.object.v1_0.api.Command.PerformListener<GWTProxyCommand> {
 
     interface CommandUiBinder extends UiBinder<FlowPanel, Command> {}
 
@@ -34,14 +33,14 @@ public class Command extends Composite implements CommandPerformListener<GWTProx
     Button performButton;
 
     private GWTProxyCommand command;
-    private CommandPerformListener<GWTProxyCommand> listener;
+    private com.intuso.housemate.object.v1_0.api.Command.PerformListener<GWTProxyCommand> listener;
     private TypeInstances values;
 
     public Command(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command) {
         this(types, command, null);
     }
 
-    public Command(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command, CommandPerformListener<GWTProxyCommand> listener) {
+    public Command(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command, com.intuso.housemate.object.v1_0.api.Command.PerformListener<GWTProxyCommand> listener) {
 
         this.command = command;
         this.listener = listener;

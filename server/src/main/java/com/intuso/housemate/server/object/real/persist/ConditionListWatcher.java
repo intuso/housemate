@@ -3,13 +3,12 @@ package com.intuso.housemate.server.object.real.persist;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstanceMap;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.real.RealCondition;
-import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.housemate.client.real.api.internal.RealCondition;
+import com.intuso.housemate.object.api.internal.List;
+import com.intuso.housemate.object.api.internal.TypeInstance;
+import com.intuso.housemate.object.api.internal.TypeInstanceMap;
+import com.intuso.housemate.object.api.internal.TypeInstances;
+import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -22,7 +21,7 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class ConditionListWatcher implements ListListener<RealCondition> {
+public class ConditionListWatcher implements List.Listener<RealCondition> {
 
     private final Multimap<RealCondition, ListenerRegistration> listeners = HashMultimap.create();
 
@@ -48,8 +47,8 @@ public class ConditionListWatcher implements ListListener<RealCondition> {
         toSave.getChildren().put("type", new TypeInstances(new TypeInstance(condition.getType())));
         try {
             persistence.saveValues(condition.getPath(), toSave);
-        } catch (HousemateException e) {
-            log.e("Failed to save new automation values", e);
+        } catch (Throwable t) {
+            log.e("Failed to save new automation values", t);
         }
 
         listeners.put(condition, condition.getProperties().addObjectListener(propertyListWatcher, true));

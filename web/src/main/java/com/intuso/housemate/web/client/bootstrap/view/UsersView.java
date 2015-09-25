@@ -4,7 +4,7 @@ import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.object.list.ListListener;
+import com.intuso.housemate.object.v1_0.api.List;
 import com.intuso.housemate.web.client.bootstrap.widget.user.UserList;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
@@ -22,7 +22,7 @@ import java.util.Set;
  */
 public class UsersView extends FlowPanel
         implements com.intuso.housemate.web.client.ui.view.UsersView,
-            ListListener<GWTProxyServer>,
+            List.Listener<GWTProxyServer>,
             SelectedIdsChangedHandler {
 
     private final PlaceHistoryMapper placeHistoryMapper;

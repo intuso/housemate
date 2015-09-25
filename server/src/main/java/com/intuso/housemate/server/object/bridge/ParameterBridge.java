@@ -1,18 +1,17 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.NoChildrenData;
-import com.intuso.housemate.api.object.parameter.Parameter;
-import com.intuso.housemate.api.object.parameter.ParameterData;
-import com.intuso.housemate.api.object.parameter.ParameterListener;
+import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
+import com.intuso.housemate.comms.api.internal.payload.ParameterData;
+import com.intuso.housemate.object.api.internal.Parameter;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
  */
 public class ParameterBridge
-        extends BridgeObject<ParameterData, NoChildrenData, NoChildrenBridgeObject, ParameterBridge, ParameterListener>
-        implements Parameter<TypeBridge> {
+        extends BridgeObject<ParameterData, NoChildrenData, NoChildrenBridgeObject, ParameterBridge, Parameter.Listener<? super ParameterBridge>>
+        implements Parameter<ParameterBridge> {
 
     public ParameterBridge(Log log, ListenersFactory listenersFactory, Parameter<?> parameter) {
         super(log, listenersFactory, new ParameterData(parameter.getId(), parameter.getName(), parameter.getDescription(), parameter.getTypeId()));

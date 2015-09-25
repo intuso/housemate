@@ -1,11 +1,12 @@
 package com.intuso.housemate.web.client.bootstrap.widget.device;
 
+import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.NestedTable;
 import com.intuso.housemate.web.client.bootstrap.widget.command.CommandList;
 import com.intuso.housemate.web.client.bootstrap.widget.value.ValueList;
@@ -37,10 +38,10 @@ public class DeviceBody extends Composite {
                 featuresTable.addRow(feature.getTitle(), feature.getWidget(types));
         }
         commandsList.setTypes(types);
-        commandsList.filter(device.getCustomCommandIds(), true);
+        commandsList.filter(Sets.newHashSet(device.getCustomCommandIds()), true);
         commandsList.setList(device.getCommands());
         valuesList.setTypes(types);
-        valuesList.filter(device.getCustomValueIds(), true);
+        valuesList.filter(Sets.newHashSet(device.getCustomValueIds()), true);
         valuesList.setList(device.getValues());
     }
 }

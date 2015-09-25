@@ -1,12 +1,11 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.hardware.Hardware;
-import com.intuso.housemate.api.object.hardware.HardwareData;
-import com.intuso.housemate.api.object.hardware.HardwareListener;
-import com.intuso.housemate.api.object.property.Property;
-import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.comms.api.internal.payload.HardwareData;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.PropertyData;
+import com.intuso.housemate.object.api.internal.Hardware;
+import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -14,15 +13,16 @@ import com.intuso.utilities.log.Log;
  */
 public class HardwareBridge
         extends BridgeObject<
-            HardwareData,
-            HousemateData<?>,
+        HardwareData,
+        HousemateData<?>,
             BridgeObject<?, ?, ?, ?, ?>,
             HardwareBridge,
-            HardwareListener<? super HardwareBridge>>
+            Hardware.Listener<? super HardwareBridge>>
         implements Hardware<
         ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
             HardwareBridge> {
-private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
+
+    private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
     public HardwareBridge(Log log, ListenersFactory listenersFactory, Hardware<?, ?> hardware) {
         super(log, listenersFactory, new HardwareData(hardware.getId(), hardware.getName(), hardware.getDescription()));

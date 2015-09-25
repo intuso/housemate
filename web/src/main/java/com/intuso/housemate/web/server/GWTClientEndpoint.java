@@ -1,9 +1,7 @@
 package com.intuso.housemate.web.server;
 
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.comms.Sender;
+import com.intuso.housemate.comms.v1_0.api.Message;
+import com.intuso.housemate.comms.v1_0.api.Router;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  */
-public class GWTClientEndpoint implements Receiver, Sender {
+public class GWTClientEndpoint implements Message.Receiver, Message.Sender {
     
     private final LinkedBlockingQueue<Message> q = new LinkedBlockingQueue<>();
     private long timeout;

@@ -5,11 +5,11 @@ import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
-import com.intuso.housemate.api.object.BaseHousemateObject;
-import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.*;
-import com.intuso.housemate.plugin.api.*;
+import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.impl.type.*;
+import com.intuso.housemate.object.api.internal.BaseHousemateObject;
+import com.intuso.housemate.object.api.internal.TypeSerialiser;
+import com.intuso.housemate.plugin.api.internal.*;
 import com.intuso.housemate.server.plugin.main.comparator.BooleanComparators;
 import com.intuso.housemate.server.plugin.main.comparator.DoubleComparators;
 import com.intuso.housemate.server.plugin.main.comparator.IntegerComparators;
@@ -135,8 +135,8 @@ public class MainPluginModule extends PluginModule {
 
         // bind implementations
         bind(new TypeLiteral<TypeSerialiser<ValueSource>>() {}).to(ValueSourceType.Serialiser.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.ComparisonType>>() {}).to(ComparisonTypeType.Serialiser.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.OperationType>>() {}).to(OperationTypeType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.internal.ComparisonType>>() {}).to(ComparisonTypeType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.internal.OperationType>>() {}).to(OperationTypeType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<Operation>>() {}).to(OperationType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<RealType<?, ?, ?>>>() {}).to(TransformationOutputType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<Transformation>>() {}).to(TransformationType.Serialiser.class).in(Scopes.SINGLETON);

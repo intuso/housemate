@@ -1,8 +1,8 @@
 package com.intuso.housemate.server.object.proxy;
 
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.NoChildrenData;
-import com.intuso.housemate.api.object.ObjectListener;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
+import com.intuso.housemate.object.api.internal.ObjectListener;
 
 public class NoChildrenServerProxyObject extends ServerProxyObject<NoChildrenData, NoChildrenData,
         NoChildrenServerProxyObject, NoChildrenServerProxyObject, ObjectListener> {

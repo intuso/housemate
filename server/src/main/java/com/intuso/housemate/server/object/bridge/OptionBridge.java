@@ -1,12 +1,11 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.option.Option;
-import com.intuso.housemate.api.object.option.OptionData;
-import com.intuso.housemate.api.object.option.OptionListener;
-import com.intuso.housemate.api.object.subtype.SubType;
-import com.intuso.housemate.api.object.subtype.SubTypeData;
+import com.intuso.housemate.comms.api.internal.payload.ListData;
+import com.intuso.housemate.comms.api.internal.payload.OptionData;
+import com.intuso.housemate.comms.api.internal.payload.SubTypeData;
+import com.intuso.housemate.object.api.internal.Option;
+import com.intuso.housemate.object.api.internal.SubType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -17,12 +16,12 @@ public class OptionBridge
         ListData<SubTypeData>,
         ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge>,
             OptionBridge,
-            OptionListener>
-        implements Option<ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge>> {
+            Option.Listener<? super OptionBridge>>
+        implements Option<ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge>, OptionBridge> {
 
     private ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge> subTypes;
 
-    public OptionBridge(Log log, ListenersFactory listenersFactory, Option<?> option) {
+    public OptionBridge(Log log, ListenersFactory listenersFactory, Option<?, ?> option) {
         super(log, listenersFactory, new OptionData(option.getId(), option.getName(), option.getDescription()));
         if(option.getSubTypes() != null) {
             subTypes = new ConvertingListBridge<>(log, listenersFactory, option.getSubTypes(),
@@ -36,7 +35,7 @@ public class OptionBridge
         return subTypes;
     }
 
-    public final static class Converter implements Function<Option<?>, OptionBridge> {
+    public final static class Converter implements Function<Option<?, ?>, OptionBridge> {
 
         private final Log log;
         private final ListenersFactory listenersFactory;
@@ -47,7 +46,7 @@ public class OptionBridge
         }
 
         @Override
-        public OptionBridge apply(Option<?> option) {
+        public OptionBridge apply(Option<?, ?> option) {
             return new OptionBridge(log, listenersFactory, option);
         }
     }

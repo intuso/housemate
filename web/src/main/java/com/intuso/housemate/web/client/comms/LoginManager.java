@@ -3,8 +3,12 @@ package com.intuso.housemate.web.client.comms;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.comms.*;
-import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.comms.v1_0.api.ClientRoot;
+import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.RouterRoot;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.object.v1_0.api.Application;
+import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.event.CredentialsSubmittedEvent;
 import com.intuso.housemate.web.client.handler.CredentialsSubmittedHandler;
@@ -16,7 +20,7 @@ import com.intuso.utilities.properties.api.PropertyRepository;
 
 /**
  */
-public class LoginManager implements CredentialsSubmittedHandler, RootListener<RouterRoot> {
+public class LoginManager implements CredentialsSubmittedHandler, ClientRoot.Listener<RouterRoot> {
 
     private final static String INSTANCE_ID = "application.instance.id";
 
@@ -55,13 +59,13 @@ public class LoginManager implements CredentialsSubmittedHandler, RootListener<R
     }
 
     @Override
-    public void applicationStatusChanged(RouterRoot root, ApplicationStatus applicationStatus) {
+    public void applicationStatusChanged(RouterRoot root, Application.Status applicationStatus) {
 
     }
 
     @Override
-    public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
-        if(applicationInstanceStatus == ApplicationInstanceStatus.Allowed)
+    public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstance.Status applicationInstanceStatus) {
+        if(applicationInstanceStatus == ApplicationInstance.Status.Allowed)
             proxyRoot.register(Housemate.APPLICATION_DETAILS, "UI");
     }
 

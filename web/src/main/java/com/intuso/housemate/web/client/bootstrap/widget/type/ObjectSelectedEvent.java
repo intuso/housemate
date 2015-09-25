@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.google.gwt.event.shared.GwtEvent;
-import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
 
 /**
  */

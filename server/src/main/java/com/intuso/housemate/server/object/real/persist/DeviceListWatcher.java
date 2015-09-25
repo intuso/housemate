@@ -3,15 +3,14 @@ package com.intuso.housemate.server.object.real.persist;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstanceMap;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.impl.type.BooleanType;
-import com.intuso.housemate.persistence.api.DetailsNotFoundException;
-import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.housemate.client.real.api.internal.RealDevice;
+import com.intuso.housemate.client.real.api.internal.impl.type.BooleanType;
+import com.intuso.housemate.object.api.internal.List;
+import com.intuso.housemate.object.api.internal.TypeInstance;
+import com.intuso.housemate.object.api.internal.TypeInstanceMap;
+import com.intuso.housemate.object.api.internal.TypeInstances;
+import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
+import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -25,21 +24,21 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class DeviceListWatcher implements ListListener<RealDevice> {
+public class DeviceListWatcher implements List.Listener<RealDevice> {
 
     private final Multimap<RealDevice, ListenerRegistration> listeners = HashMultimap.create();
 
     private final Log log;
     private final Persistence persistence;
-    private final ValueWatcher valueWatcher;
+    private final ValueBaseWatcher valueBaseWatcher;
     private final PropertyListWatcher propertyListWatcher;
     private final DeviceListener deviceListener;
 
     @Inject
-    public DeviceListWatcher(Log log, Persistence persistence, ValueWatcher valueWatcher, PropertyListWatcher propertyListWatcher, DeviceListener deviceListener) {
+    public DeviceListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher, DeviceListener deviceListener) {
         this.log = log;
         this.persistence = persistence;
-        this.valueWatcher = valueWatcher;
+        this.valueBaseWatcher = valueBaseWatcher;
         this.propertyListWatcher = propertyListWatcher;
         this.deviceListener = deviceListener;
     }
@@ -54,12 +53,12 @@ public class DeviceListWatcher implements ListListener<RealDevice> {
         toSave.getChildren().put("type", new TypeInstances(new TypeInstance(device.getType())));
         try {
             persistence.saveValues(device.getPath(), toSave);
-        } catch (HousemateException e) {
-            log.e("Failed to save new device values", e);
+        } catch (Throwable t) {
+            log.e("Failed to save new device values", t);
         }
 
         listeners.put(device, device.addObjectListener(deviceListener));
-        listeners.put(device, valueWatcher.watch(device.getRunningValue()));
+        listeners.put(device, valueBaseWatcher.watch(device.getRunningValue()));
         listeners.put(device, device.getProperties().addObjectListener(propertyListWatcher, true));
         try {
             TypeInstances instances = persistence.getTypeInstances(device.getRunningValue().getPath());
@@ -68,8 +67,8 @@ public class DeviceListWatcher implements ListListener<RealDevice> {
                         new CommandPerformListener(log, "Start device \"" + device.getId() + "\""));
         } catch(DetailsNotFoundException e) {
             log.w("No details found for whether the device was previously running" + Arrays.toString(device.getPath()));
-        } catch(HousemateException e) {
-            log.e("Failed to check value for whether the device was previously running", e);
+        } catch(Throwable t) {
+            log.e("Failed to check value for whether the device was previously running", t);
         }
     }
 
@@ -81,8 +80,8 @@ public class DeviceListWatcher implements ListListener<RealDevice> {
                 registration.removeListener();
         try {
             persistence.removeValues(device.getPath());
-        } catch(HousemateException e) {
-            log.e("Failed to delete device properties", e);
+        } catch(Throwable t) {
+            log.e("Failed to delete device properties", t);
         }
     }
 }

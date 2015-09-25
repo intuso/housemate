@@ -1,10 +1,10 @@
 package com.intuso.housemate.platform.android.app.object;
 
-import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.server.ServerData;
-import com.intuso.housemate.object.proxy.ProxyObject;
-import com.intuso.housemate.object.proxy.ProxyRoot;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
+import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
+import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;

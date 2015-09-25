@@ -2,9 +2,9 @@ package com.intuso.housemate.web.client.bootstrap.widget.object;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.intuso.housemate.api.object.Renameable;
-import com.intuso.housemate.api.object.command.CommandListener;
-import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyRenameable;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.object.v1_0.api.Command;
 import com.intuso.housemate.web.client.bootstrap.widget.command.CommandModal;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -12,7 +12,7 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 
-public class RenameableWidget extends Button implements ClickHandler, CommandListener<GWTProxyCommand> {
+public class RenameableWidget extends Button implements ClickHandler, Command.Listener<GWTProxyCommand> {
 
     private GWTProxyList<TypeData<?>, GWTProxyType> types;
     private GWTProxyCommand command;
@@ -22,12 +22,12 @@ public class RenameableWidget extends Button implements ClickHandler, CommandLis
         addClickHandler(this);
     }
 
-    public RenameableWidget(GWTProxyList<TypeData<?>, GWTProxyType> types, Renameable<GWTProxyCommand> object) {
+    public RenameableWidget(GWTProxyList<TypeData<?>, GWTProxyType> types, ProxyRenameable<GWTProxyCommand> object) {
         this();
         setObject(types, object);
     }
 
-    public void setObject(GWTProxyList<TypeData<?>, GWTProxyType> types, Renameable<GWTProxyCommand> object) {
+    public void setObject(GWTProxyList<TypeData<?>, GWTProxyType> types, ProxyRenameable<GWTProxyCommand> object) {
         this.types = types;
         this.command = object.getRenameCommand();
         command.addObjectListener(this);

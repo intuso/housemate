@@ -1,8 +1,7 @@
 package com.intuso.housemate.server.plugin.main.transformer;
 
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.type.SimpleTypeData;
-import com.intuso.housemate.plugin.api.Transformer;
+import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
+import com.intuso.housemate.plugin.api.internal.Transformer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,7 +27,7 @@ public class FromDouble {
         }
 
         @Override
-        public Integer apply(Double input) throws HousemateException {
+        public Integer apply(Double input) {
             return input == null ? null : new Integer((int)input.doubleValue());
         }
     }
@@ -46,7 +45,7 @@ public class FromDouble {
         }
 
         @Override
-        public String apply(Double input) throws HousemateException {
+        public String apply(Double input) {
             return input == null ? null : input.toString();
         }
     }
@@ -64,7 +63,7 @@ public class FromDouble {
         }
 
         @Override
-        public Boolean apply(Double input) throws HousemateException {
+        public Boolean apply(Double input) {
             return input == null ? null : (input > 0 ? Boolean.TRUE : Boolean.FALSE);
         }
     }

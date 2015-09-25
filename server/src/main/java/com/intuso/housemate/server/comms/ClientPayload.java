@@ -1,6 +1,6 @@
 package com.intuso.housemate.server.comms;
 
-import com.intuso.housemate.api.comms.Message;
+import com.intuso.housemate.comms.api.internal.Message;
 
 /**
  * Message payload the wraps the normal client payload and provides extra information about the client that sent it

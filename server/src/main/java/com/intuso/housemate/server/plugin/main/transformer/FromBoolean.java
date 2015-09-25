@@ -1,8 +1,7 @@
 package com.intuso.housemate.server.plugin.main.transformer;
 
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.type.SimpleTypeData;
-import com.intuso.housemate.plugin.api.Transformer;
+import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
+import com.intuso.housemate.plugin.api.internal.Transformer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,7 +27,7 @@ public class FromBoolean {
         }
 
         @Override
-        public Integer apply(Boolean input) throws HousemateException {
+        public Integer apply(Boolean input) {
             return input == null ? null : (input ? 1 : 0);
         }
     }
@@ -46,7 +45,7 @@ public class FromBoolean {
         }
 
         @Override
-        public Double apply(Boolean input) throws HousemateException {
+        public Double apply(Boolean input) {
             return input == null ? null : (input ? 1.0 : 0.0);
         }
     }
@@ -64,7 +63,7 @@ public class FromBoolean {
         }
 
         @Override
-        public String apply(Boolean input) throws HousemateException {
+        public String apply(Boolean input) {
             return input == null ? null : input.toString();
         }
     }

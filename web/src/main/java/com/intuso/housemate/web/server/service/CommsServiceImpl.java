@@ -2,14 +2,13 @@ package com.intuso.housemate.web.server.service;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Router;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.persistence.api.DetailsNotFoundException;
-import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
+import com.intuso.housemate.comms.v1_0.api.Message;
+import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.object.v1_0.api.TypeInstance;
+import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.persistence.v1_0.api.DetailsNotFoundException;
+import com.intuso.housemate.persistence.v1_0.api.Persistence;
 import com.intuso.housemate.web.client.NotConnectedException;
 import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.server.ContextListener;
@@ -58,8 +57,8 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
     public void resetPassword(String username) {
         try {
             persistence.saveTypeInstances(new String[] {"users", username, "password"}, new TypeInstances(new TypeInstance("changeme")));
-        } catch (HousemateException e) {
-            throw new HousemateRuntimeException("Failed to reset password. Couldn't save new one", e);
+        } catch (Throwable t) {
+            throw new HousemateCommsException("Failed to reset password. Couldn't save new one", t);
         }
     }
 
@@ -72,8 +71,8 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
             return firstValue != null && firstValue.equals(hashed);
         } catch (DetailsNotFoundException e) {
             return false;
-        } catch (HousemateException e) {
-            log.e("Failed to check credentials", e);
+        } catch (Throwable t) {
+            log.e("Failed to check credentials", t);
             return false;
         }
     }
@@ -91,8 +90,7 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
         // don't care if it didn't exist
         } catch (NotConnectedException e) {}
         this.getThreadLocalRequest().getSession().setAttribute(ATT_NAME,
-                new GWTClientEndpoint(
-                        ContextListener.INJECTOR.getInstance(Router.class)));
+                new GWTClientEndpoint(ContextListener.INJECTOR.getInstance(Router.class)));
     }
 
     private void removeEndpoint() {

@@ -4,11 +4,11 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>platform</artifactId>
+        <artifactId>housemate-platform</artifactId>
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>platform-pc</artifactId>
+    <artifactId>housemate-platform-pc</artifactId>
     <packaging>jar</packaging>
     <name>Housemate Platform PC</name>
     <description>Platform for running Housemate components on a PC</description>
@@ -17,8 +17,19 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>housemate-object-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>utilities-properties-reader-commandline</artifactId>
+            <version>${intuso.utilities.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>utilities-properties-reader-file</artifactId>
+            <version>${intuso.utilities.version}</version>
         </dependency>
 
         <dependency>

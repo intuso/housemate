@@ -2,19 +2,18 @@ package com.intuso.housemate.server.object.real;
 
 import com.google.common.collect.Sets;
 import com.google.inject.*;
-import com.intuso.housemate.api.object.device.DeviceFactory;
-import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.factory.condition.ConditionFactoryType;
-import com.intuso.housemate.object.real.factory.condition.RealConditionFactory;
-import com.intuso.housemate.object.real.factory.device.DeviceFactoryType;
-import com.intuso.housemate.object.real.factory.device.RealDeviceFactory;
-import com.intuso.housemate.object.real.factory.hardware.HardwareFactoryType;
-import com.intuso.housemate.object.real.factory.hardware.RealHardwareFactory;
-import com.intuso.housemate.object.real.factory.task.RealTaskFactory;
-import com.intuso.housemate.object.real.factory.task.TaskFactoryType;
-import com.intuso.housemate.plugin.api.TypeInfo;
-import com.intuso.housemate.plugin.host.PluginListener;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
+import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.factory.condition.ConditionFactoryType;
+import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionFactory;
+import com.intuso.housemate.client.real.api.internal.factory.device.DeviceFactoryType;
+import com.intuso.housemate.client.real.api.internal.factory.device.RealDeviceFactory;
+import com.intuso.housemate.client.real.api.internal.factory.hardware.HardwareFactoryType;
+import com.intuso.housemate.client.real.api.internal.factory.hardware.RealHardwareFactory;
+import com.intuso.housemate.client.real.api.internal.factory.task.RealTaskFactory;
+import com.intuso.housemate.client.real.api.internal.factory.task.TaskFactoryType;
+import com.intuso.housemate.plugin.api.internal.PluginListener;
+import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.utilities.log.Log;
 
@@ -103,8 +102,8 @@ public class FactoryPluginListener implements PluginListener {
     }
 
     private void removeDeviceFactories(Injector pluginInjector) {
-        Set<Entry<DeviceFactory<?>>> factoryEntries = getEntries(pluginInjector, RealDeviceFactory.class);
-        for(Entry<DeviceFactory<?>> factoryEntry : factoryEntries)
+        Set<Entry<RealDeviceFactory<?>>> factoryEntries = getEntries(pluginInjector, RealDeviceFactory.class);
+        for(Entry<RealDeviceFactory<?>> factoryEntry : factoryEntries)
             deviceFactoryType.removeFactory(factoryEntry.getTypeInfo().id());
     }
 

@@ -4,7 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.comms.transport.socket.server.SocketServer;
-import com.intuso.housemate.plugin.api.ExternalClientRouter;
+import com.intuso.housemate.plugin.api.internal.ExternalClientRouter;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**

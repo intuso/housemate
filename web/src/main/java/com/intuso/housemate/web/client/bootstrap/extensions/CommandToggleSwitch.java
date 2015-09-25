@@ -3,8 +3,8 @@ package com.intuso.housemate.web.client.bootstrap.extensions;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Window;
-import com.intuso.housemate.api.object.command.CommandPerformListener;
-import com.intuso.housemate.api.object.value.ValueListener;
+import com.intuso.housemate.object.v1_0.api.Command;
+import com.intuso.housemate.object.v1_0.api.Value;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
@@ -19,7 +19,7 @@ import com.intuso.housemate.web.client.object.GWTProxyValue;
  */
 public abstract class CommandToggleSwitch
         extends ToggleSwitch
-        implements CommandPerformListener<GWTProxyCommand>, ValueListener<GWTProxyValue>, ValueChangeHandler<Boolean> {
+        implements Command.PerformListener<GWTProxyCommand>, Value.Listener<GWTProxyValue>, ValueChangeHandler<Boolean> {
 
     protected final void setValue(GWTProxyValue value) {
         value.addObjectListener(this);

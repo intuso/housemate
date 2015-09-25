@@ -1,28 +1,22 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.application.Application;
-import com.intuso.housemate.api.object.application.ApplicationData;
-import com.intuso.housemate.api.object.application.ApplicationListener;
-import com.intuso.housemate.api.object.application.instance.ApplicationInstance;
-import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
-import com.intuso.housemate.object.real.impl.type.ApplicationStatusType;
-import com.intuso.housemate.object.real.impl.type.EnumChoiceType;
+import com.intuso.housemate.comms.api.internal.payload.ApplicationData;
+import com.intuso.housemate.comms.api.internal.payload.ApplicationInstanceData;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.object.api.internal.Application;
+import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-
-import java.util.List;
 
 /**
  */
 public class ApplicationBridge
         extends BridgeObject<ApplicationData,
-            HousemateData<?>,
+        HousemateData<?>,
             BridgeObject<?, ?, ?, ?, ?>,
             ApplicationBridge,
-            ApplicationListener<? super ApplicationBridge>>
+            Application.Listener<? super ApplicationBridge>>
         implements Application<
             ValueBridge,
             CommandBridge,
@@ -69,12 +63,6 @@ public class ApplicationBridge
     @Override
     public CommandBridge getRejectCommand() {
         return rejectCommand;
-    }
-
-    @Override
-    public ApplicationStatus getStatus() {
-        List<ApplicationStatus> statuses = ApplicationStatusType.deserialiseAll(new EnumChoiceType.EnumInstanceSerialiser<>(ApplicationStatus.class), statusValue.getTypeInstances());
-        return statuses != null && statuses.size() > 0 ? statuses.get(0) : null;
     }
 
     @Override

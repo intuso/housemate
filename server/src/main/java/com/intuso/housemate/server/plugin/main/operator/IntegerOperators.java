@@ -1,9 +1,8 @@
 package com.intuso.housemate.server.plugin.main.operator;
 
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.type.SimpleTypeData;
-import com.intuso.housemate.plugin.api.OperationType;
-import com.intuso.housemate.plugin.api.Operator;
+import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
+import com.intuso.housemate.plugin.api.internal.OperationType;
+import com.intuso.housemate.plugin.api.internal.Operator;
 
 /**
  */
@@ -33,7 +32,7 @@ public class IntegerOperators {
         }
 
         @Override
-        public Integer apply(Integer first, Integer second) throws HousemateException {
+        public Integer apply(Integer first, Integer second) {
             return getInt(first) + getInt(second);
         }
     }
@@ -56,7 +55,7 @@ public class IntegerOperators {
         }
 
         @Override
-        public Integer apply(Integer first, Integer second) throws HousemateException {
+        public Integer apply(Integer first, Integer second) {
             return getInt(first) - getInt(second);
         }
     }
@@ -79,7 +78,7 @@ public class IntegerOperators {
         }
 
         @Override
-        public Integer apply(Integer first, Integer second) throws HousemateException {
+        public Integer apply(Integer first, Integer second) {
             return getInt(first) * getInt(second);
         }
     }
@@ -102,7 +101,7 @@ public class IntegerOperators {
         }
 
         @Override
-        public Integer apply(Integer first, Integer second) throws HousemateException {
+        public Integer apply(Integer first, Integer second) {
             return getInt(first) / getInt(second);
         }
     }
@@ -125,7 +124,7 @@ public class IntegerOperators {
         }
 
         @Override
-        public Integer apply(Integer first, Integer second) throws HousemateException {
+        public Integer apply(Integer first, Integer second) {
             return Math.max(getInt(first), getInt(second));
         }
     }
@@ -148,7 +147,7 @@ public class IntegerOperators {
         }
 
         @Override
-        public Integer apply(Integer first, Integer second) throws HousemateException {
+        public Integer apply(Integer first, Integer second) {
             return Math.min(getInt(first), getInt(second));
         }
     }

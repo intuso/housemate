@@ -3,12 +3,12 @@ package com.intuso.housemate.web.client.object.device.feature;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.device.Device;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.device.feature.FeatureLoadedListener;
-import com.intuso.housemate.object.proxy.device.feature.ProxyFeature;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.device.feature.FeatureLoadedListener;
+import com.intuso.housemate.client.v1_0.proxy.api.device.feature.ProxyFeature;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
@@ -31,13 +31,13 @@ public abstract class GWTProxyFeature
     }
 
     public void load(final FeatureLoadedListener<GWTProxyDevice, GWTProxyFeature> listener) {
-        List<HousemateObject.TreeLoadInfo> treeInfos = Lists.newArrayList();
+        List<RemoteObject.TreeLoadInfo> treeInfos = Lists.newArrayList();
         if(getCommandIds().size() > 0)
-            treeInfos.add(makeTreeInfo(Device.COMMANDS_ID, getCommandIds()));
+            treeInfos.add(makeTreeInfo(DeviceData.COMMANDS_ID, getCommandIds()));
         if(getValueIds().size() > 0)
-            treeInfos.add(makeTreeInfo(Device.VALUES_ID, getValueIds()));
+            treeInfos.add(makeTreeInfo(DeviceData.VALUES_ID, getValueIds()));
         if(getPropertyIds().size() > 0)
-            treeInfos.add(makeTreeInfo(Device.PROPERTIES_ID, getPropertyIds()));
+            treeInfos.add(makeTreeInfo(DeviceData.PROPERTIES_ID, getPropertyIds()));
         device.load(new LoadManager(new LoadManager.Callback() {
             @Override
             public void failed(List<String> errors) {
@@ -51,11 +51,11 @@ public abstract class GWTProxyFeature
         }, treeInfos));
     }
 
-    private HousemateObject.TreeLoadInfo makeTreeInfo(String objectName, Set<String> childNames) {
-        Map<String, HousemateObject.TreeLoadInfo> children = Maps.newHashMap();
+    private RemoteObject.TreeLoadInfo makeTreeInfo(String objectName, Set<String> childNames) {
+        Map<String, RemoteObject.TreeLoadInfo> children = Maps.newHashMap();
         for(String childName : childNames)
-            children.put(childName, new HousemateObject.TreeLoadInfo(childName, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
-        return new HousemateObject.TreeLoadInfo(objectName, children);
+            children.put(childName, new RemoteObject.TreeLoadInfo(childName, new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE)));
+        return new RemoteObject.TreeLoadInfo(objectName, children);
     }
 
     public abstract String getTitle();

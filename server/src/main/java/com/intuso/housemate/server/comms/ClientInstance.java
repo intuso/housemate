@@ -1,7 +1,7 @@
 package com.intuso.housemate.server.comms;
 
-import com.intuso.housemate.api.comms.ClientType;
-import com.intuso.housemate.api.comms.access.ApplicationDetails;
+import com.intuso.housemate.comms.api.internal.access.ApplicationDetails;
+import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,11 +16,11 @@ public class ClientInstance {
     private final ApplicationDetails applicationDetails;
     private final String applicationInstanceId;
     private final String component;
-    private final ClientType clientType;
+    private final ApplicationRegistration.ClientType clientType;
     private final int hashCode;
 
     public ClientInstance(boolean internal, ApplicationDetails applicationDetails, String applicationInstanceId,
-                          String component, ClientType clientType) {
+                          String component, ApplicationRegistration.ClientType clientType) {
         this.internal = internal;
         this.applicationDetails = applicationDetails;
         this.applicationInstanceId = applicationInstanceId;
@@ -41,7 +41,7 @@ public class ClientInstance {
         return applicationInstanceId;
     }
 
-    public ClientType getClientType() {
+    public ApplicationRegistration.ClientType getClientType() {
         return clientType;
     }
 

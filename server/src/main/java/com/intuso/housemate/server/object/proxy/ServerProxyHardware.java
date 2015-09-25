@@ -1,23 +1,22 @@
 package com.intuso.housemate.server.object.proxy;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.hardware.Hardware;
-import com.intuso.housemate.api.object.hardware.HardwareData;
-import com.intuso.housemate.api.object.hardware.HardwareListener;
-import com.intuso.housemate.api.object.property.PropertyData;
+import com.intuso.housemate.comms.api.internal.payload.HardwareData;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.PropertyData;
+import com.intuso.housemate.object.api.internal.Hardware;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.object.ObjectFactory;
 
 public class ServerProxyHardware
         extends ServerProxyObject<
-            HardwareData,
-            HousemateData<?>,
+        HardwareData,
+        HousemateData<?>,
             ServerProxyObject<?, ?, ?, ?, ?>,
             ServerProxyHardware,
-            HardwareListener<? super ServerProxyHardware>>
+            Hardware.Listener<? super ServerProxyHardware>>
         implements Hardware<
             ServerProxyList<PropertyData, ServerProxyProperty>,
             ServerProxyHardware> {
@@ -26,18 +25,18 @@ public class ServerProxyHardware
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
+     * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyHardware(Log log, ListenersFactory listenersFactory, Injector injector, @Assisted HardwareData data) {
-        super(log, listenersFactory, injector, data);
+    public ServerProxyHardware(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted HardwareData data) {
+        super(log, listenersFactory, objectFactory, data);
     }
 
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(PROPERTIES_ID);
+        properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(HardwareData.PROPERTIES_ID);
     }
 
     @Override
@@ -48,6 +47,6 @@ public class ServerProxyHardware
     @Override
     protected void copyValues(HousemateData<?> data) {
         if(data instanceof HardwareData)
-            getProperties().copyValues(data.getChildData(PROPERTIES_ID));
+            getProperties().copyValues(data.getChildData(HardwareData.PROPERTIES_ID));
     }
 }

@@ -8,13 +8,13 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>comms</artifactId>
+    <artifactId>housemate-comms</artifactId>
     <packaging>pom</packaging>
     <name>Housemate Comms</name>
     <description>Comms for the Housemate framework</description>
 
     <modules>
-        <module>serialiser</module>
+        <module>api</module>
         <module>transport</module>
     </modules>
 

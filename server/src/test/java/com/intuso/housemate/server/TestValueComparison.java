@@ -4,28 +4,23 @@ import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.ChildOverview;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.ObjectLifecycleListener;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.type.*;
-import com.intuso.housemate.api.object.value.Value;
-import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.real.*;
-import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
-import com.intuso.housemate.object.real.factory.condition.AddConditionCommand;
-import com.intuso.housemate.object.real.factory.condition.RealConditionOwner;
-import com.intuso.housemate.object.real.impl.type.DoubleType;
-import com.intuso.housemate.object.real.impl.type.IntegerType;
-import com.intuso.housemate.object.real.impl.type.RealObjectType;
-import com.intuso.housemate.plugin.api.*;
+import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.api.internal.annotations.AnnotationProcessor;
+import com.intuso.housemate.client.real.api.internal.factory.condition.AddConditionCommand;
+import com.intuso.housemate.client.real.api.internal.impl.type.DoubleType;
+import com.intuso.housemate.client.real.api.internal.impl.type.IntegerType;
+import com.intuso.housemate.client.real.api.internal.impl.type.RealObjectType;
+import com.intuso.housemate.comms.api.internal.payload.DeviceData;
+import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
+import com.intuso.housemate.comms.api.internal.payload.TypeData;
+import com.intuso.housemate.object.api.internal.*;
+import com.intuso.housemate.plugin.api.internal.*;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.ioc.ServerModule;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.object.bridge.ValueBridge;
+import com.intuso.housemate.server.object.real.FactoryPluginListener;
 import com.intuso.housemate.server.plugin.main.comparator.DoubleComparators;
 import com.intuso.housemate.server.plugin.main.comparator.IntegerComparators;
 import com.intuso.housemate.server.plugin.main.condition.ValueComparison;
@@ -42,8 +37,7 @@ import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -64,49 +58,58 @@ public class TestValueComparison {
         COMPARISONS_BY_TYPE.get(ComparisonType.Simple.Equals).put(SimpleTypeData.Type.Double.getId(), new DoubleComparators.Equals());
     }
     
-    private Injector injector;
-    private Log log;
-    private final ListenersFactory listenersFactory = new ListenersFactory() {
+    private static Injector injector;
+    private static Log log;
+    private static RealAutomation automation;
+    private static final ListenersFactory listenersFactory = new ListenersFactory() {
         @Override
         public <LISTENER extends Listener> Listeners<LISTENER> create() {
             return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
         }
     };
 
-    @Before
-    public void initResources() {
+    @BeforeClass
+    public static void initResources() {
         // create the default property repository
         WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
         // create the main injector
         injector = Guice.createInjector(new TestModule(listenersFactory, defaultProperties), new ServerModule(defaultProperties));
+        injector = injector.createChildInjector(injector.getInstance(MainPluginModule.class));
         // make sure all the framework is created before we add plugins
         injector.getInstance(RootBridge.class);
         injector.getInstance(MainRouter.class).start();
+        // force factory listener to be created and register itself for new plugins
+        injector.getInstance(FactoryPluginListener.class);
 //        need to get local client too? something not adding plugins types to main type list
         // add the main plugin module
         injector.getInstance(PluginManager.class).addPlugin(MainPluginModule.class);
         log = injector.getInstance(Log.class);
+        RealRoot root = injector.getInstance(RealRoot.class);
+        TypeInstanceMap automationValues = new TypeInstanceMap();
+        automationValues.getChildren().put(AddConditionCommand.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance("test-automation")));
+        automationValues.getChildren().put(AddConditionCommand.DESCRIPTION_PARAMETER_ID, new TypeInstances(new TypeInstance("test-automation")));
+        root.getAddAutomationCommand().perform(automationValues);
+        automation = root.getAutomations().get("test-automation");
     }
 
     @Test
-    @Ignore
-    public void testTwoConstantsEqualsTrue() throws HousemateException {
+    public void testTwoConstantsEqualsTrue() {
         RealType<?, ?, ?> integerType = new IntegerType(log, listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
-        assertValueComparisonSatisfied(ComparisonType.Simple.Equals, valueOne, valueTwo, true);
+        assertValueComparisonSatisfied("constant-true", ComparisonType.Simple.Equals, valueOne, valueTwo, true);
     }
 
     @Test
-    public void testTwoConstantsEqualsFalse() throws HousemateException {
+    public void testTwoConstantsEqualsFalse() {
         RealType<?, ?, ?> integerType = new IntegerType(log, listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("2")));
-        assertValueComparisonSatisfied(ComparisonType.Simple.Equals, valueOne, valueTwo, false);
+        assertValueComparisonSatisfied("constant-false", ComparisonType.Simple.Equals, valueOne, valueTwo, false);
     }
 
     @Test
-    public void testLocationSources() throws HousemateException, InterruptedException {
+    public void testLocationSources() throws InterruptedException {
         final Object lock = new Object();
 
         RealList<TypeData<?>, RealType<?, ?, ?>> types = injector.getInstance(new Key<RealList<TypeData<?>, RealType<?, ?, ?>>>() {});
@@ -133,39 +136,40 @@ public class TestValueComparison {
                 }, doubleTwo, doubleThree));
 
         // create second value as one from the device
-        String[] valuePath = new String[] {"", "devices", "device", "values", "dv"};
+        String[] valuePath = new String[] {"", "servers", "local-Internal Client", "devices", "device", "values", "dv"};
         ValueLocation valueTwo = new ValueLocation(listenersFactory,
-                new RealObjectType.Reference<Value<?, ?>>(valuePath),
+                new RealObjectType.Reference<Value<TypeInstances, ?>>(valuePath),
                 injector.getInstance(RootBridge.class));
         ListenerRegistration lr = injector.getInstance(RootBridge.class).
                 addObjectLifecycleListener(valuePath, new ObjectLifecycleListener() {
                     @Override
-                    public void objectCreated(String[] path, HousemateObject<?, ?, ?, ?> object) {
+                    public void objectCreated(String[] path, BaseHousemateObject<?> object) {
                         synchronized (lock) {
                             lock.notify();
                         }
                     }
 
                     @Override
-                    public void objectRemoved(String[] path, HousemateObject<?, ?, ?, ?> object) {
+                    public void objectRemoved(String[] path, BaseHousemateObject<?> object) {
                         // do nothing
                     }
                 });
-        ValueComparison vc = makeValueComparison(ComparisonType.Simple.Equals, valueOne, valueTwo);
-        assertEquals(vc.getError(), "Second value is not available");
+        ValueComparison vc = makeValueComparison("locations", ComparisonType.Simple.Equals, valueOne, valueTwo);
+        assertEquals(vc.getErrorValue().getTypedValue(), "Second value is not available");
         TestDevice device = new TestDevice(log, listenersFactory, new DeviceData("device", "Device", "Device"));
         injector.getInstance(AnnotationProcessor.class).process(
                 injector.getInstance(new Key<RealList<TypeData<?>, RealType<?, ?, ?>>>() {}),
                 device);
         injector.getInstance(RealRoot.class).addDevice(device);
         synchronized (lock) {
-            lock.wait();
+            lock.wait(1000);
         }
         lr.removeListener();
         device.values.doubleValue(0.0);
-        assertNull(vc.getError());
+        assertNull(vc.getErrorValue().getTypedValue());
         assertSatisfied(vc, false);
-        lr = injector.getInstance(RootBridge.class).getServers().get("client").getDevices().get("device").getValues().get("dv").addObjectListener(new ValueListener<ValueBridge>() {
+        ValueBridge value = injector.getInstance(RootBridge.class).getServers().get("local-Internal Client").getDevices().get("device").getValues().get("dv");
+        lr = value.addObjectListener(new Value.Listener<ValueBridge>() {
             @Override
             public void valueChanging(ValueBridge value) {
                 // do nothing
@@ -180,45 +184,29 @@ public class TestValueComparison {
         });
         device.values.doubleValue(5.0);
         synchronized (lock) {
-            lock.wait();
+            lock.wait(1000);
         }
         Thread.sleep(1); // the listener that notifies might get called before the vc listener, so the vc might not have updated yet
         lr.removeListener();
         assertSatisfied(vc, true);
     }
 
-    private void assertValueComparisonSatisfied(ComparisonType operator, ValueSource sourceOne,
-                                                ValueSource sourceTwo, boolean satisfied) throws HousemateException {
-        assertSatisfied(makeValueComparison(operator, sourceOne, sourceTwo), satisfied);
+    private void assertValueComparisonSatisfied(String id, ComparisonType operator, ValueSource sourceOne,
+                                                ValueSource sourceTwo, boolean satisfied) {
+        assertSatisfied(makeValueComparison(id, operator, sourceOne, sourceTwo), satisfied);
     }
 
     private void assertSatisfied(ValueComparison valueComparison, boolean satisfied) {
         assertEquals(satisfied, valueComparison.isSatisfied());
     }
 
-    private ValueComparison makeValueComparison(ComparisonType operator, ValueSource sourceOne, ValueSource sourceTwo) throws HousemateException {
-        TypeInstanceMap values = new TypeInstanceMap();
-        values.getChildren().put(RealRoot.TYPE_PARAMETER_ID, new TypeInstances(new TypeInstance("value-comparison")));
-        values.getChildren().put(RealRoot.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance("Test")));
-        values.getChildren().put(RealRoot.DESCRIPTION_PARAMETER_ID, new TypeInstances(new TypeInstance("Test VC")));
-        final RealList<ConditionData, RealCondition> list = new RealList<>(log, listenersFactory, "test", "test", "test");
-        injector.getInstance(AddConditionCommand.Factory.class).create(new RealConditionOwner() {
-            @Override
-            public ChildOverview getAddConditionCommandDetails() {
-                return new ChildOverview("test", "test", "test");
-            }
-
-            @Override
-            public void addCondition(RealCondition condition) {
-                list.add(condition);
-            }
-
-            @Override
-            public void removeCondition(RealCondition condition) {
-                list.remove(condition.getId());
-            }
-        }).perform(values);
-        ValueComparison valueComparison = (ValueComparison) list.get("value-comparison");
+    private ValueComparison makeValueComparison(String id, ComparisonType operator, ValueSource sourceOne, ValueSource sourceTwo) {
+        TypeInstanceMap conditionValues = new TypeInstanceMap();
+        conditionValues.getChildren().put(AddConditionCommand.TYPE_PARAMETER_ID, new TypeInstances(new TypeInstance("value-comparison")));
+        conditionValues.getChildren().put(AddConditionCommand.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance(id)));
+        conditionValues.getChildren().put(AddConditionCommand.DESCRIPTION_PARAMETER_ID, new TypeInstances(new TypeInstance(id)));
+        automation.getAddConditionCommand().perform(conditionValues);
+        ValueComparison valueComparison = (ValueComparison) automation.getConditions().get(id);
         RealProperty<Comparison> comparisonProperty = (RealProperty<Comparison>) valueComparison.getProperties().get(ValueComparison.COMPARISON_ID);
         Comparison comparison = new Comparison(operator, COMPARISONS_BY_TYPE.get(operator), sourceOne, sourceTwo);
         comparisonProperty.setTypedValues(comparison);

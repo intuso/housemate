@@ -4,11 +4,11 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>persistence</artifactId>
+        <artifactId>housemate-persistence</artifactId>
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>persistence-flatfile</artifactId>
+    <artifactId>housemate-persistence-flatfile</artifactId>
     <packaging>jar</packaging>
     <name>Housemate Persistence Flat File</name>
     <description>Flat File Persistence for the Housemate framework</description>
@@ -16,14 +16,14 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>${project.version}</version>
+            <artifactId>housemate-persistence-1-0-api</artifactId>
+            <version>${intuso.housemate.persistence.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.intuso.utilities</groupId>
-            <artifactId>properties-api</artifactId>
-            <version>${intuso.utils.version}</version>
+            <artifactId>utilities-properties-api</artifactId>
+            <version>${intuso.utilities.version}</version>
         </dependency>
 
         <dependency>

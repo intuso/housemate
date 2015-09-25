@@ -1,9 +1,9 @@
 package com.intuso.housemate.platform.android.app.object;
 
-import com.intuso.housemate.api.object.NoChildrenData;
-import com.intuso.housemate.api.object.parameter.ParameterData;
-import com.intuso.housemate.object.proxy.NoChildrenProxyObject;
-import com.intuso.housemate.object.proxy.ProxyParameter;
+import com.intuso.housemate.client.v1_0.proxy.api.NoChildrenProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyParameter;
+import com.intuso.housemate.comms.v1_0.api.payload.NoChildrenData;
+import com.intuso.housemate.comms.v1_0.api.payload.ParameterData;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -14,7 +14,7 @@ import com.intuso.utilities.log.Log;
  * Time: 09:28
  * To change this template use File | Settings | File Templates.
  */
-public class AndroidProxyParameter extends ProxyParameter<AndroidProxyType, AndroidProxyParameter> {
+public class AndroidProxyParameter extends ProxyParameter<AndroidProxyParameter> {
 
     private final AndroidProxyFactory factory;
 

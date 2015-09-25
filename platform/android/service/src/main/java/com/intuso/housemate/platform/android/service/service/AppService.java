@@ -7,10 +7,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.*;
 import com.google.common.collect.Maps;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.api.comms.Receiver;
-import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.comms.v1_0.api.Message;
+import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.platform.android.common.JsonMessage;
 import com.intuso.housemate.platform.android.common.MessageCodes;
 import com.intuso.utilities.log.Log;
@@ -135,7 +133,7 @@ public class AppService extends Service implements ServiceConnection {
         }
     }
 
-    private class ClientReceiver implements Receiver<Message.Payload> {
+    private class ClientReceiver implements Message.Receiver<Message.Payload> {
 
         private final String id;
         private final Messenger clientReceiver;
@@ -146,7 +144,7 @@ public class AppService extends Service implements ServiceConnection {
         }
 
         @Override
-        public void messageReceived(Message<Message.Payload> message) throws HousemateException {
+        public void messageReceived(Message<Message.Payload> message) {
             try {
                 android.os.Message msg = android.os.Message.obtain(null, MessageCodes.SEND_MESSAGE);
                 msg.getData().putParcelable("message", new JsonMessage(message));

@@ -2,9 +2,9 @@ package com.intuso.housemate.plugin.rfxcom.lighting2;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
+import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance;

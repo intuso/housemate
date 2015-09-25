@@ -1,7 +1,7 @@
 package com.intuso.housemate.platform.android.app;
 
 import android.app.Service;
-import com.intuso.housemate.api.comms.Router;
+import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.platform.android.app.comms.AndroidAppRouter;
 import com.intuso.housemate.platform.android.common.AndroidLogWriter;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;

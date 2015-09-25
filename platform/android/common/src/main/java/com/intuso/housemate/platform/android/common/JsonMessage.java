@@ -4,10 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
-import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.comms.Message;
-import com.intuso.housemate.comms.serialiser.json.JsonSerialiser;
-import com.intuso.housemate.comms.serialiser.json.config.GsonConfig;
+import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
+import com.intuso.housemate.comms.v1_0.api.Message;
+import com.intuso.housemate.comms.v1_0.serialiser.json.JsonSerialiser;
+import com.intuso.housemate.comms.v1_0.serialiser.json.config.GsonConfig;
 
 import java.io.StringWriter;
 
@@ -51,7 +51,7 @@ public class JsonMessage implements Parcelable {
             try {
                 return new JsonMessage(GSON.<Message<?>>fromJson(json, JsonSerialiser.MESSAGE_TYPE));
             } catch(Throwable t) {
-                throw new HousemateRuntimeException("Could not deserialise JSON message: " + json, t);
+                throw new HousemateCommsException("Could not deserialise JSON message: " + json, t);
             }
         }
 

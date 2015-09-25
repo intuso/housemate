@@ -1,13 +1,14 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.object.real.RealDevice;
-import com.intuso.housemate.object.real.RealValue;
-import com.intuso.housemate.object.real.impl.type.DoubleType;
-import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.RealDevice;
+import com.intuso.housemate.client.v1_0.real.api.RealValue;
+import com.intuso.housemate.client.v1_0.real.api.impl.type.DoubleType;
+import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
@@ -37,20 +38,20 @@ public class ArduinoTemperatureSensor extends RealDevice {
                                        @Assisted DeviceData data,
                                        SerialPortWrapper serialPort) {
         super(log, listenersFactory, "arduino-temp-sensor", data);
-        getCustomValueIds().add(temperature.getId());
+        getData().setCustomValueIds(Lists.newArrayList(temperature.getId()));
         getValues().add(temperature);
         this.serialPort = serialPort;
     }
 
     @Override
-    protected void start() throws HousemateException {
+    protected void start() {
         try {
             serialPort.addEventListener(eventListener, SerialPort.MASK_RXCHAR);
             input = new PipedInputStream();
             output = new PipedOutputStream(input);
             in = new BufferedReader(new InputStreamReader(input));
         } catch(IOException e) {
-            throw new HousemateException("Failed to set up Arduino connection for reading data", e);
+            throw new HousemateCommsException("Failed to set up Arduino connection for reading data", e);
         }
         lineReader = new LineReader();
         lineReader.start();

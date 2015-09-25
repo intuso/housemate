@@ -3,10 +3,10 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.subtype.SubTypeData;
-import com.intuso.housemate.api.object.type.*;
-import com.intuso.housemate.object.proxy.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.payload.*;
+import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.web.client.event.UserInputEvent;
 import com.intuso.housemate.web.client.handler.HasUserInputHandlers;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
@@ -46,7 +46,7 @@ public interface TypeInput extends IsWidget, HasUserInputHandlers {
                         if (loadedType != null)
                             lazyLoaded.setWidget(_create(types, types.get(typeId), typeInstances));
                     }
-                }, new HousemateObject.TreeLoadInfo(typeId, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE))));
+                }, new RemoteObject.TreeLoadInfo(typeId, new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
                 return lazyLoaded;
             }
         }

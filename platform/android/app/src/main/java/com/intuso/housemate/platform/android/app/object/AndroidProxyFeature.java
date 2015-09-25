@@ -3,11 +3,11 @@ package com.intuso.housemate.platform.android.app.object;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.device.Device;
-import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.device.feature.FeatureLoadedListener;
-import com.intuso.housemate.object.proxy.device.feature.ProxyFeature;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.device.feature.FeatureLoadedListener;
+import com.intuso.housemate.client.v1_0.proxy.api.device.feature.ProxyFeature;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 
 import java.util.List;
 import java.util.Map;
@@ -29,13 +29,13 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
     }
 
     public void load(final FeatureLoadedListener<AndroidProxyDevice, AndroidProxyFeature> listener) {
-        List<HousemateObject.TreeLoadInfo> treeInfos = Lists.newArrayList();
+        List<RemoteObject.TreeLoadInfo> treeInfos = Lists.newArrayList();
         if(getCommandIds().size() > 0)
-            treeInfos.add(makeTreeInfo(Device.COMMANDS_ID, getCommandIds()));
+            treeInfos.add(makeTreeInfo(DeviceData.COMMANDS_ID, getCommandIds()));
         if(getValueIds().size() > 0)
-            treeInfos.add(makeTreeInfo(Device.VALUES_ID, getValueIds()));
+            treeInfos.add(makeTreeInfo(DeviceData.VALUES_ID, getValueIds()));
         if(getPropertyIds().size() > 0)
-            treeInfos.add(makeTreeInfo(Device.PROPERTIES_ID, getPropertyIds()));
+            treeInfos.add(makeTreeInfo(DeviceData.PROPERTIES_ID, getPropertyIds()));
         device.load(new LoadManager(new LoadManager.Callback() {
             @Override
             public void failed(List<String> errors) {
@@ -49,16 +49,16 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
         }, treeInfos));
     }
 
-    private HousemateObject.TreeLoadInfo makeTreeInfo(String objectName, Set<String> childNames) {
-        Map<String, HousemateObject.TreeLoadInfo> children = Maps.newHashMap();
+    private RemoteObject.TreeLoadInfo makeTreeInfo(String objectName, Set<String> childNames) {
+        Map<String, RemoteObject.TreeLoadInfo> children = Maps.newHashMap();
         for(String childName : childNames)
-            children.put(childName, new HousemateObject.TreeLoadInfo(childName, new HousemateObject.TreeLoadInfo(HousemateObject.EVERYTHING_RECURSIVE)));
-        return new HousemateObject.TreeLoadInfo(objectName, children);
+            children.put(childName, new RemoteObject.TreeLoadInfo(childName, new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE)));
+        return new RemoteObject.TreeLoadInfo(objectName, children);
     }
 
     public final static class PowerControl
             extends AndroidProxyFeature
-            implements com.intuso.housemate.api.object.device.feature.PowerControl<AndroidProxyCommand> {
+            implements com.intuso.housemate.object.v1_0.api.feature.PowerControl<AndroidProxyCommand> {
 
         public PowerControl(AndroidProxyDevice device) {
             super(device);
@@ -66,17 +66,17 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
         @Override
         public AndroidProxyCommand getOnCommand() {
-            return device.getCommands() != null ? device.getCommands().get(ON_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("on") : null;
         }
 
         @Override
         public AndroidProxyCommand getOffCommand() {
-            return device.getCommands() != null ? device.getCommands().get(OFF_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("off") : null;
         }
 
         @Override
         public Set<String> getCommandIds() {
-            return Sets.newHashSet(ON_COMMAND, OFF_COMMAND);
+            return Sets.newHashSet("on", "off");
         }
 
         @Override
@@ -92,7 +92,7 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
     public final static class StatefulPowerControl
             extends AndroidProxyFeature
-            implements com.intuso.housemate.api.object.device.feature.StatefulPowerControl<AndroidProxyCommand, AndroidProxyValue> {
+            implements com.intuso.housemate.object.v1_0.api.feature.StatefulPowerControl<AndroidProxyCommand, AndroidProxyValue> {
 
         public StatefulPowerControl(AndroidProxyDevice device) {
             super(device);
@@ -100,36 +100,36 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
         @Override
         public AndroidProxyCommand getOnCommand() {
-            return device.getCommands() != null ? device.getCommands().get(ON_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("on") : null;
         }
 
         @Override
         public AndroidProxyCommand getOffCommand() {
-            return device.getCommands() != null ? device.getCommands().get(OFF_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("off") : null;
         }
 
         @Override
         public AndroidProxyValue getIsOnValue() {
-            return device.getValues() != null ? device.getValues().get(IS_ON_VALUE) : null;
+            return device.getValues() != null ? device.getValues().get("is-on") : null;
         }
 
         @Override
         public boolean isOn() {
             AndroidProxyValue value = getIsOnValue();
             return value != null
-                    && value.getTypeInstances() != null
-                    && value.getTypeInstances().getFirstValue() != null
-                    && Boolean.parseBoolean(value.getTypeInstances().getFirstValue());
+                    && value.getValue() != null
+                    && value.getValue().getFirstValue() != null
+                    && Boolean.parseBoolean(value.getValue().getFirstValue());
         }
 
         @Override
         public Set<String> getCommandIds() {
-            return Sets.newHashSet(ON_COMMAND, OFF_COMMAND);
+            return Sets.newHashSet("on", "off");
         }
 
         @Override
         public Set<String> getValueIds() {
-            return Sets.newHashSet(IS_ON_VALUE);
+            return Sets.newHashSet("is-on");
         }
 
         @Override
@@ -140,7 +140,7 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
     public final static class PlaybackControl
             extends AndroidProxyFeature
-            implements com.intuso.housemate.api.object.device.feature.PlaybackControl<AndroidProxyCommand> {
+            implements com.intuso.housemate.object.v1_0.api.feature.PlaybackControl<AndroidProxyCommand> {
 
         public PlaybackControl(AndroidProxyDevice device) {
             super(device);
@@ -148,32 +148,32 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
         @Override
         public AndroidProxyCommand getPlayCommand() {
-            return device.getCommands() != null ? device.getCommands().get(PLAY_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("play") : null;
         }
 
         @Override
         public AndroidProxyCommand getPauseCommand() {
-            return device.getCommands() != null ? device.getCommands().get(PAUSE_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("pause") : null;
         }
 
         @Override
         public AndroidProxyCommand getStopCommand() {
-            return device.getCommands() != null ? device.getCommands().get(STOP_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("stop") : null;
         }
 
         @Override
         public AndroidProxyCommand getForwardCommand() {
-            return device.getCommands() != null ? device.getCommands().get(REWIND_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("rewind") : null;
         }
 
         @Override
         public AndroidProxyCommand getRewindCommand() {
-            return device.getCommands() != null ? device.getCommands().get(FORWARD_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("forward") : null;
         }
 
         @Override
         public Set<String> getCommandIds() {
-            return Sets.newHashSet(PLAY_COMMAND, PAUSE_COMMAND, STOP_COMMAND, FORWARD_COMMAND, REWIND_COMMAND);
+            return Sets.newHashSet("play", "pause", "stop", "forward", "rewind");
         }
 
         @Override
@@ -189,7 +189,7 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
     public final static class StatefulPlaybackControl
             extends AndroidProxyFeature
-            implements com.intuso.housemate.api.object.device.feature.StatefulPlaybackControl<AndroidProxyCommand, AndroidProxyValue> {
+            implements com.intuso.housemate.object.v1_0.api.feature.StatefulPlaybackControl<AndroidProxyCommand, AndroidProxyValue> {
 
         public StatefulPlaybackControl(AndroidProxyDevice device) {
             super(device);
@@ -197,51 +197,51 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
         @Override
         public AndroidProxyValue getIsPlayingValue() {
-            return device.getValues() != null ? device.getValues().get(IS_PLAYING_VALUE) : null;
+            return device.getValues() != null ? device.getValues().get("is-playing") : null;
         }
 
         @Override
         public boolean isPlaying() {
             AndroidProxyValue value = getIsPlayingValue();
             return value != null
-                    && value.getTypeInstances() != null
-                    && value.getTypeInstances().getFirstValue() != null
-                    && Boolean.parseBoolean(value.getTypeInstances().getFirstValue());
+                    && value.getValue() != null
+                    && value.getValue().getFirstValue() != null
+                    && Boolean.parseBoolean(value.getValue().getFirstValue());
         }
 
         @Override
         public AndroidProxyCommand getPlayCommand() {
-            return device.getCommands() != null ? device.getCommands().get(PLAY_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("play") : null;
         }
 
         @Override
         public AndroidProxyCommand getPauseCommand() {
-            return device.getCommands() != null ? device.getCommands().get(PAUSE_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("pause") : null;
         }
 
         @Override
         public AndroidProxyCommand getStopCommand() {
-            return device.getCommands() != null ? device.getCommands().get(STOP_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("stop") : null;
         }
 
         @Override
         public AndroidProxyCommand getForwardCommand() {
-            return device.getCommands() != null ? device.getCommands().get(REWIND_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("rewind") : null;
         }
 
         @Override
         public AndroidProxyCommand getRewindCommand() {
-            return device.getCommands() != null ? device.getCommands().get(FORWARD_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("forward") : null;
         }
 
         @Override
         public Set<String> getCommandIds() {
-            return Sets.newHashSet(PLAY_COMMAND, PAUSE_COMMAND, STOP_COMMAND, FORWARD_COMMAND, REWIND_COMMAND);
+            return Sets.newHashSet("play", "pause", "stop", "forward", "rewind");
         }
 
         @Override
         public Set<String> getValueIds() {
-            return Sets.newHashSet(IS_PLAYING_VALUE);
+            return Sets.newHashSet("is-playing");
         }
 
         @Override
@@ -252,7 +252,7 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
     public final static class VolumeControl
             extends AndroidProxyFeature
-            implements com.intuso.housemate.api.object.device.feature.VolumeControl<AndroidProxyCommand> {
+            implements com.intuso.housemate.object.v1_0.api.feature.VolumeControl<AndroidProxyCommand> {
 
         public VolumeControl(AndroidProxyDevice device) {
             super(device);
@@ -260,22 +260,22 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
         @Override
         public AndroidProxyCommand getMuteCommand() {
-            return device.getCommands() != null ? device.getCommands().get(MUTE_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("mute") : null;
         }
 
         @Override
         public AndroidProxyCommand getVolumeUpCommand() {
-            return device.getCommands() != null ? device.getCommands().get(VOLUME_UP_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("volume-up") : null;
         }
 
         @Override
         public AndroidProxyCommand getVolumeDownCommand() {
-            return device.getCommands() != null ? device.getCommands().get(VOLUME_DOWN_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("volume-down") : null;
         }
 
         @Override
         public Set<String> getCommandIds() {
-            return Sets.newHashSet(VOLUME_UP_COMMAND, VOLUME_DOWN_COMMAND);
+            return Sets.newHashSet("volume-up", "volume-down");
         }
 
         @Override
@@ -291,7 +291,7 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
     public final static class StatefulVolumeControl
             extends AndroidProxyFeature
-            implements com.intuso.housemate.api.object.device.feature.StatefulVolumeControl<AndroidProxyCommand, AndroidProxyValue> {
+            implements com.intuso.housemate.object.v1_0.api.feature.StatefulVolumeControl<AndroidProxyCommand, AndroidProxyValue> {
 
         public StatefulVolumeControl(AndroidProxyDevice device) {
             super(device);
@@ -299,32 +299,32 @@ public abstract class AndroidProxyFeature implements ProxyFeature<AndroidProxyFe
 
         @Override
         public AndroidProxyCommand getMuteCommand() {
-            return device.getCommands() != null ? device.getCommands().get(MUTE_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("mute") : null;
         }
 
         @Override
         public AndroidProxyValue getCurrentVolumeValue() {
-            return device.getValues() != null ? device.getValues().get(CURRENT_VOLUME_VALUE) : null;
+            return device.getValues() != null ? device.getValues().get("current-volume") : null;
         }
 
         @Override
         public AndroidProxyCommand getVolumeUpCommand() {
-            return device.getCommands() != null ? device.getCommands().get(VOLUME_UP_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("volume-up") : null;
         }
 
         @Override
         public AndroidProxyCommand getVolumeDownCommand() {
-            return device.getCommands() != null ? device.getCommands().get(VOLUME_DOWN_COMMAND) : null;
+            return device.getCommands() != null ? device.getCommands().get("volume-down") : null;
         }
 
         @Override
         public Set<String> getCommandIds() {
-            return Sets.newHashSet(VOLUME_UP_COMMAND, VOLUME_DOWN_COMMAND);
+            return Sets.newHashSet("volume-up", "volume-down");
         }
 
         @Override
         public Set<String> getValueIds() {
-            return Sets.newHashSet(CURRENT_VOLUME_VALUE);
+            return Sets.newHashSet("current-volume");
         }
 
         @Override

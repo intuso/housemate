@@ -9,9 +9,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.primary.PrimaryListener;
-import com.intuso.housemate.object.proxy.ProxyObject;
-import com.intuso.housemate.object.proxy.ProxyPrimaryObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
 import com.intuso.housemate.web.client.bootstrap.widget.LoadingWidget;
 import org.gwtbootstrap3.client.ui.Alert;
 import org.gwtbootstrap3.client.ui.Heading;
@@ -20,7 +18,7 @@ import org.gwtbootstrap3.client.ui.constants.AlertType;
 /**
  * Created by tomc on 02/03/15.
  */
-public abstract class ObjectWidget<OBJECT extends ProxyObject<?, ?, ?, ?, ?>> extends Composite implements PrimaryListener<ProxyPrimaryObject<?, ?, ?, ?, ?>> {
+public abstract class ObjectWidget<OBJECT extends ProxyObject<?, ?, ?, ?, ?>> extends Composite {
 
     interface WidgetPanelUiBinder extends UiBinder<Widget, ObjectWidget> {}
 
@@ -45,8 +43,6 @@ public abstract class ObjectWidget<OBJECT extends ProxyObject<?, ?, ?, ?, ?>> ex
     }
 
     protected void setObject(OBJECT object) {
-        if(object instanceof ProxyPrimaryObject)
-                ((ProxyPrimaryObject) object).addObjectListener(this);
         this.object = object;
         heading.setText(object.getName());
         bodyContent.setWidget(getBodyWidget(object));
@@ -54,21 +50,6 @@ public abstract class ObjectWidget<OBJECT extends ProxyObject<?, ?, ?, ?, ?>> ex
 
     protected void setMessage(AlertType type, String message) {
         bodyContent.setWidget(new Alert(message, type));
-    }
-
-    @Override
-    public void renamed(ProxyPrimaryObject<?, ?, ?, ?, ?> primaryObject, String oldName, String newName) {
-        heading.setText(newName);
-    }
-
-    @Override
-    public void error(ProxyPrimaryObject<?, ?, ?, ?, ?> primaryObject, String error) {
-
-    }
-
-    @Override
-    public void running(ProxyPrimaryObject<?, ?, ?, ?, ?> primaryObject, boolean running) {
-
     }
 
     @UiHandler("settings")
@@ -83,4 +64,8 @@ public abstract class ObjectWidget<OBJECT extends ProxyObject<?, ?, ?, ?, ?>> ex
     protected abstract IsWidget getBodyWidget(OBJECT object);
 
     protected abstract IsWidget getSettingsWidget(OBJECT object);
+
+    protected void updateName(String newName) {
+        heading.setText(newName);
+    }
 }

@@ -4,17 +4,16 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
-import com.intuso.housemate.api.object.ChildOverview;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.object.proxy.AvailableChildrenListener;
-import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.AvailableChildrenListener;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.ChildOverview;
+import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
 import com.intuso.housemate.web.client.bootstrap.widget.NestedTable;
 import com.intuso.housemate.web.client.event.SelectedIdsChangedEvent;
 import com.intuso.housemate.web.client.handler.HasSelectedIdsChangedHandlers;
 import com.intuso.housemate.web.client.handler.SelectedIdsChangedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,13 +29,13 @@ public abstract class NestedList<DATA extends HousemateData<?>, OBJECT extends P
 
     private boolean headerAdded = false;
     private GWTProxyList<DATA, OBJECT> list;
-    private List<String> filteredIds = null;
+    private Set<String> filteredIds = null;
     private boolean includeFiltered = true;
 
     private final Map<String, RowNum> rowNums = Maps.newHashMap();
     private boolean showIfEmpty = true;
 
-    public void filter(List<String> filteredIds, boolean includeFiltered) {
+    public void filter(Set<String> filteredIds, boolean includeFiltered) {
         this.filteredIds = filteredIds;
         this.includeFiltered = includeFiltered;
     }

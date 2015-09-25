@@ -6,7 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.api.object.type.TypeData;
+import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyDevice;
@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class PowerControl
         extends GWTProxyFeature
-        implements com.intuso.housemate.api.object.device.feature.PowerControl<GWTProxyCommand> {
+        implements com.intuso.housemate.object.v1_0.api.feature.PowerControl<GWTProxyCommand> {
 
     public PowerControl(GWTProxyDevice device) {
         super(device);
@@ -26,17 +26,17 @@ public class PowerControl
 
     @Override
     public GWTProxyCommand getOnCommand() {
-        return device.getCommands() != null ? device.getCommands().get(ON_COMMAND) : null;
+        return device.getCommands() != null ? device.getCommands().get("on") : null;
     }
 
     @Override
     public GWTProxyCommand getOffCommand() {
-        return device.getCommands() != null ? device.getCommands().get(OFF_COMMAND) : null;
+        return device.getCommands() != null ? device.getCommands().get("off") : null;
     }
 
     @Override
     public Set<String> getCommandIds() {
-        return Sets.newHashSet(ON_COMMAND, OFF_COMMAND);
+        return Sets.newHashSet("on", "off");
     }
 
     @Override

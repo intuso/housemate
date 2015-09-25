@@ -10,11 +10,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.intuso.housemate.api.object.ChildOverview;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.object.proxy.AvailableChildrenListener;
-import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.AvailableChildrenListener;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.ChildOverview;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.web.client.handler.HasObjectSelectedHandlers;
 import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectListener;
@@ -116,7 +116,7 @@ public class Node extends Composite implements HasObjectSelectedHandlers,
                         object.addChildListener(Node.this, true, false);
                         object.addAvailableChildrenListener(Node.this, true);
                     }
-                }, new HousemateObject.TreeLoadInfo(childOverview.getId())));
+                }, new RemoteObject.TreeLoadInfo(childOverview.getId())));
             }
         }
         expanded = show;
@@ -180,12 +180,12 @@ public class Node extends Composite implements HasObjectSelectedHandlers,
     }
 
     @Override
-    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectAdded(String ancestorPath, BaseObject<?, ?, ?> ancestor) {
         // do nothing
     }
 
     @Override
-    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?, ?> ancestor) {
+    public void ancestorObjectRemoved(String ancestorPath, BaseObject<?, ?, ?> ancestor) {
         // do nothing
     }
 

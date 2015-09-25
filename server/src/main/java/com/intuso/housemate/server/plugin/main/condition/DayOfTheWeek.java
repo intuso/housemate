@@ -3,14 +3,13 @@ package com.intuso.housemate.server.plugin.main.condition;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.object.real.RealCondition;
-import com.intuso.housemate.object.real.RealProperty;
-import com.intuso.housemate.object.real.factory.condition.RealConditionOwner;
-import com.intuso.housemate.object.real.impl.type.Day;
-import com.intuso.housemate.object.real.impl.type.DaysType;
-import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.RealCondition;
+import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionOwner;
+import com.intuso.housemate.client.real.api.internal.impl.type.Day;
+import com.intuso.housemate.client.real.api.internal.impl.type.DaysType;
+import com.intuso.housemate.comms.api.internal.payload.ConditionData;
+import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -56,7 +55,7 @@ public class DayOfTheWeek extends RealCondition {
                         ListenersFactory listenersFactory,
                         @Assisted ConditionData data,
                         @Assisted RealConditionOwner owner,
-                        DaysType daysType) throws HousemateException {
+                        DaysType daysType) {
 		super(log, listenersFactory, "day-of-the-week", data, owner);
         days = new RealProperty<>(log, listenersFactory, DAYS_FIELD, DAYS_FIELD, "The days that satisfy the condition",
                 daysType, Lists.<Day>newArrayList());

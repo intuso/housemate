@@ -1,6 +1,5 @@
 package com.intuso.housemate.web.client.bootstrap.widget.application.instance;
 
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
 import com.intuso.housemate.web.client.bootstrap.extensions.CommandToggleSwitch;
 import com.intuso.housemate.web.client.object.GWTProxyApplicationInstance;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
@@ -28,7 +27,7 @@ public class AccessWidget extends CommandToggleSwitch {
 
     @Override
     protected boolean isTrue() {
-        return applicationInstance.getStatus() == ApplicationInstanceStatus.Allowed;
+        return applicationInstance.getStatus() == com.intuso.housemate.object.v1_0.api.ApplicationInstance.Status.Allowed;
     }
 
     @Override

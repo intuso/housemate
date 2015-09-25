@@ -5,15 +5,15 @@ import android.nfc.NfcAdapter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.comms.ServerConnectionStatus;
-import com.intuso.housemate.api.comms.access.ApplicationDetails;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.command.CommandPerformListener;
-import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.simple.ProxyClientHelper;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
+import com.intuso.housemate.comms.v1_0.api.ClientRoot;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.object.v1_0.api.Application;
+import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
+import com.intuso.housemate.object.v1_0.api.Command;
 import com.intuso.housemate.platform.android.app.HousemateService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
@@ -46,7 +46,7 @@ public class NFCService extends HousemateService {
         return result;
     }
 
-    private class CommandPerformer implements RootListener<AndroidProxyRoot>, LoadManager.Callback, CommandPerformListener<AndroidProxyCommand> {
+    private class CommandPerformer implements ClientRoot.Listener<AndroidProxyRoot>, LoadManager.Callback, Command.PerformListener<AndroidProxyCommand> {
 
         private final String objectPath;
         private final ProxyClientHelper<AndroidProxyRoot> clientHelper;
@@ -70,13 +70,13 @@ public class NFCService extends HousemateService {
         }
 
         @Override
-        public void applicationStatusChanged(AndroidProxyRoot root, ApplicationStatus applicationStatus) {
+        public void applicationStatusChanged(AndroidProxyRoot root, Application.Status applicationStatus) {
             // do nothing
         }
 
         @Override
-        public void applicationInstanceStatusChanged(AndroidProxyRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
-            if(applicationInstanceStatus == ApplicationInstanceStatus.Pending) {
+        public void applicationInstanceStatusChanged(AndroidProxyRoot root, ApplicationInstance.Status applicationInstanceStatus) {
+            if(applicationInstanceStatus == ApplicationInstance.Status.Pending) {
                 message("Please grant access to the application", false);
                 finished();
             }
@@ -100,7 +100,7 @@ public class NFCService extends HousemateService {
 
         @Override
         public void succeeded() {
-            final HousemateObject<?, ?, ?, ?> object = clientHelper.getRoot().getObject(objectPath.substring(1).split("/"));
+            final RemoteObject<?, ?, ?, ?> object = clientHelper.getRoot().getObject(objectPath.substring(1).split("/"));
             if (object == null) {
                 message("Scanned tag's path does not exist", false);
                 finished();

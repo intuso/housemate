@@ -1,21 +1,21 @@
 package com.intuso.housemate.server.plugin.main.type.constant;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.api.HousemateRuntimeException;
-import com.intuso.housemate.api.object.list.ListListener;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealOption;
-import com.intuso.housemate.object.real.RealSubType;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.RealChoiceType;
+import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealOption;
+import com.intuso.housemate.client.real.api.internal.RealSubType;
+import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.impl.type.RealChoiceType;
+import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import com.intuso.housemate.comms.api.internal.payload.TypeData;
+import com.intuso.housemate.object.api.internal.List;
+import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
  */
-public class ConstantType extends RealChoiceType<ConstantInstance<Object>> implements ListListener<RealType<?, ?, ?>> {
+public class ConstantType extends RealChoiceType<ConstantInstance<Object>> implements List.Listener<RealType<?, ?, ?>> {
 
     public final static String ID = "constant";
     public final static String NAME = "Constant";
@@ -39,7 +39,7 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
 
     @Override
     public TypeInstance serialise(ConstantInstance<Object> o) {
-        throw new HousemateRuntimeException("Cannot serialise a constant");
+        throw new HousemateCommsException("Cannot serialise a constant");
     }
 
     @Override

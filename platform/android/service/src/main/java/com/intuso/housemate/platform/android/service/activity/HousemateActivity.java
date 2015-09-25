@@ -13,13 +13,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-import com.intuso.housemate.api.comms.*;
-import com.intuso.housemate.api.object.root.RootListener;
+import com.intuso.housemate.comms.v1_0.api.ClientRoot;
+import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.RouterRoot;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.object.v1_0.api.Application;
+import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.platform.android.service.R;
 import com.intuso.housemate.platform.android.service.service.ConnectionService;
 import com.intuso.utilities.listener.ListenerRegistration;
 
-public class HousemateActivity extends Activity implements ServiceConnection, RootListener<RouterRoot> {
+public class HousemateActivity extends Activity implements ServiceConnection, ClientRoot.Listener<RouterRoot> {
 
     private ListenerRegistration routerRegistration;
     private boolean bound = false;
@@ -102,7 +106,7 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
     }
 
     @Override
-    public void applicationStatusChanged(RouterRoot root, final ApplicationStatus applicationStatus) {
+    public void applicationStatusChanged(RouterRoot root, final Application.Status applicationStatus) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -112,7 +116,7 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
     }
 
     @Override
-    public void applicationInstanceStatusChanged(RouterRoot root, final ApplicationInstanceStatus applicationInstanceStatus) {
+    public void applicationInstanceStatusChanged(RouterRoot root, final ApplicationInstance.Status applicationInstanceStatus) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

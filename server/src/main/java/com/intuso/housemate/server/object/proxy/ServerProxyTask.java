@@ -1,28 +1,22 @@
 package com.intuso.housemate.server.object.proxy;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.api.object.task.Task;
-import com.intuso.housemate.api.object.task.TaskData;
-import com.intuso.housemate.api.object.task.TaskListener;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.BooleanType;
-import com.intuso.housemate.object.real.impl.type.StringType;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.PropertyData;
+import com.intuso.housemate.comms.api.internal.payload.TaskData;
+import com.intuso.housemate.object.api.internal.Task;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-
-import java.util.List;
+import com.intuso.utilities.object.ObjectFactory;
 
 public class ServerProxyTask
         extends ServerProxyObject<
-            TaskData,
-            HousemateData<?>,
+        TaskData,
+        HousemateData<?>,
             ServerProxyObject<?, ?, ?, ?, ?>,
         ServerProxyTask,
-            TaskListener<? super ServerProxyTask>>
+            Task.Listener<? super ServerProxyTask>>
         implements Task<
                     ServerProxyCommand,
                     ServerProxyValue,
@@ -37,21 +31,21 @@ public class ServerProxyTask
 
     /**
      * @param log {@inheritDoc}
-     * @param injector {@inheritDoc}
+     * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyTask(Log log, ListenersFactory listenersFactory, Injector injector, @Assisted TaskData data) {
-        super(log, listenersFactory, injector, data);
+    public ServerProxyTask(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted TaskData data) {
+        super(log, listenersFactory, objectFactory, data);
     }
 
     @Override
     protected void getChildObjects() {
         super.getChildObjects();
-        remove = (ServerProxyCommand) getChild(REMOVE_ID);
-        error = (ServerProxyValue) getChild(ERROR_ID);
-        executing = (ServerProxyValue) getChild(EXECUTING_ID);
-        properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(PROPERTIES_ID);
+        remove = (ServerProxyCommand) getChild(TaskData.REMOVE_ID);
+        error = (ServerProxyValue) getChild(TaskData.ERROR_ID);
+        executing = (ServerProxyValue) getChild(TaskData.EXECUTING_ID);
+        properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(TaskData.PROPERTIES_ID);
     }
 
     @Override
@@ -60,20 +54,8 @@ public class ServerProxyTask
     }
 
     @Override
-    public String getError() {
-        List<String> errors = RealType.deserialiseAll(StringType.SERIALISER, error.getTypeInstances());
-        return errors != null && errors.size() > 0 ? errors.get(0) : null;
-    }
-
-    @Override
     public ServerProxyValue getExecutingValue() {
         return executing;
-    }
-
-    @Override
-    public boolean isExecuting() {
-        List<Boolean> isExecutings = RealType.deserialiseAll(BooleanType.SERIALISER, executing.getTypeInstances());
-        return isExecutings != null && isExecutings.size() > 0 && isExecutings.get(0) != null ? isExecutings.get(0) : false;
     }
 
     @Override
@@ -89,6 +71,6 @@ public class ServerProxyTask
     @Override
     protected void copyValues(HousemateData<?> data) {
         if(data instanceof TaskData)
-            getProperties().copyValues(data.getChildData(PROPERTIES_ID));
+            getProperties().copyValues(data.getChildData(TaskData.PROPERTIES_ID));
     }
 }

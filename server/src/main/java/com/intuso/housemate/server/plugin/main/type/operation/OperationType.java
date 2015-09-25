@@ -4,16 +4,16 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealSubType;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.RealCompoundType;
-import com.intuso.housemate.plugin.api.Operator;
-import com.intuso.housemate.plugin.host.PluginListener;
+import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealSubType;
+import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.impl.type.RealCompoundType;
+import com.intuso.housemate.comms.api.internal.payload.TypeData;
+import com.intuso.housemate.object.api.internal.TypeInstance;
+import com.intuso.housemate.object.api.internal.TypeInstances;
+import com.intuso.housemate.object.api.internal.TypeSerialiser;
+import com.intuso.housemate.plugin.api.internal.Operator;
+import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
@@ -48,7 +48,7 @@ public class OperationType extends RealCompoundType<Operation> {
                          RealList<TypeData<?>, RealType<?, ?, ?>> types, TypeSerialiser<Operation> serialiser) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.serialiser = serialiser;
-        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.OperationType>(log, listenersFactory,
+        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.internal.OperationType>(log, listenersFactory,
                 OPERATION_TYPE_ID, OPERATION_TYPE_NAME, OPERATION_TYPE_DESCRIPTION, OperationTypeType.ID, types));
         getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
                 VALUE_0_DESCRIPTION, ValueSourceType.ID, types));
@@ -69,14 +69,14 @@ public class OperationType extends RealCompoundType<Operation> {
     public final static class Serialiser implements TypeSerialiser<Operation>, PluginListener {
 
         private final Log log;
-        private final TypeSerialiser<com.intuso.housemate.plugin.api.OperationType> operationTypeSerialiser;
+        private final TypeSerialiser<com.intuso.housemate.plugin.api.internal.OperationType> operationTypeSerialiser;
         private final TypeSerialiser<ValueSource> sourceTypeSerialiser;
-        private final Map<com.intuso.housemate.plugin.api.OperationType, Map<String, Operator<?, ?>>> operators = Maps.newHashMap();
+        private final Map<com.intuso.housemate.plugin.api.internal.OperationType, Map<String, Operator<?, ?>>> operators = Maps.newHashMap();
 
         @Inject
         public Serialiser(Log log,
                           PluginManager pluginManager,
-                          TypeSerialiser<com.intuso.housemate.plugin.api.OperationType> operationTypeSerialiser,
+                          TypeSerialiser<com.intuso.housemate.plugin.api.internal.OperationType> operationTypeSerialiser,
                           TypeSerialiser<ValueSource> sourceTypeSerialiser) {
             this.log = log;
             this.operationTypeSerialiser = operationTypeSerialiser;
@@ -107,7 +107,7 @@ public class OperationType extends RealCompoundType<Operation> {
             ValueSource value1 = null;
             if(instance.getChildValues().getChildren().get(VALUE_1_ID) != null && instance.getChildValues().getChildren().get(VALUE_1_ID).getElements().size() != 0)
                 value1 = sourceTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(VALUE_1_ID).getElements().get(0));
-            com.intuso.housemate.plugin.api.OperationType operationType = operationTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(OPERATION_TYPE_ID).getElements().get(0));
+            com.intuso.housemate.plugin.api.internal.OperationType operationType = operationTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(OPERATION_TYPE_ID).getElements().get(0));
             return new Operation(operationType, operators.get(operationType), value0, value1);
         }
 

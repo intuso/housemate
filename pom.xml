@@ -19,15 +19,20 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <junit.version>4.8.1</junit.version>
-        <guava.version>15.0</guava.version>
-        <guice.version>3.0</guice.version>
-        <intuso.utils.version>1.1.0-SNAPSHOT</intuso.utils.version>
+        <guava.version>16.0.1</guava.version>
+        <guice.version>4.0</guice.version>
+        <intuso.utilities.version>1.1.0-SNAPSHOT</intuso.utilities.version>
+        <intuso.housemate.object.version>1.0.0-SNAPSHOT</intuso.housemate.object.version>
+        <intuso.housemate.comms.version>1.0.0-SNAPSHOT</intuso.housemate.comms.version>
+        <intuso.housemate.client.version>1.0.0-SNAPSHOT</intuso.housemate.client.version>
+        <intuso.housemate.plugin.version>1.0.0-SNAPSHOT</intuso.housemate.plugin.version>
+        <intuso.housemate.persistence.version>1.0.0-SNAPSHOT</intuso.housemate.persistence.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${project.build.sourceEncoding}</project.reporting.outputEncoding>
     </properties>
 
     <modules>
-        <module>api</module>
+        <module>client</module>
         <module>comms</module>
         <module>extension</module>
         <module>object</module>
@@ -35,7 +40,6 @@
         <module>persistence</module>
         <module>platform</module>
         <module>plugin</module>
-        <module>sample</module>
         <module>server</module>
         <module>web</module>
     </modules>

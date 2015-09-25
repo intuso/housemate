@@ -12,19 +12,19 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.comms.ServerConnectionStatus;
-import com.intuso.housemate.api.comms.access.ApplicationDetails;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.server.Server;
+import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
+import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
+import com.intuso.housemate.comms.v1_0.api.ClientRoot;
+import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.handler.WidgetHandler;
-import com.intuso.housemate.object.proxy.LoadManager;
-import com.intuso.housemate.object.proxy.ProxyRoot;
-import com.intuso.housemate.object.proxy.simple.ProxyClientHelper;
+import com.intuso.housemate.object.v1_0.api.Application;
+import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.platform.android.app.HousemateService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
 
@@ -125,7 +125,7 @@ public class WidgetService extends HousemateService {
                 getRouter())
                 .applicationDetails(APPLICATION_DETAILS)
                 .component(WidgetService.class.getName())
-                .load(ProxyRoot.SERVERS_ID, HousemateObject.EVERYTHING, Server.DEVICES_ID)
+                .load(ProxyRoot.SERVERS_ID, RemoteObject.EVERYTHING, ServerData.DEVICES_ID)
                 .callback(new LoadManager.Callback() {
                               @Override
                               public void failed(List<String> errors) {
@@ -137,19 +137,19 @@ public class WidgetService extends HousemateService {
                                   updateStatus();
                               }
                           });
-        clientHelper.getRoot().addObjectListener(new RootListener<AndroidProxyRoot>() {
+        clientHelper.getRoot().addObjectListener(new ClientRoot.Listener<AndroidProxyRoot>() {
             @Override
             public void serverConnectionStatusChanged(AndroidProxyRoot root, ServerConnectionStatus serverConnectionStatus) {
                 updateStatus();
             }
 
             @Override
-            public void applicationStatusChanged(AndroidProxyRoot root, ApplicationStatus applicationStatus) {
+            public void applicationStatusChanged(AndroidProxyRoot root, Application.Status applicationStatus) {
                 updateStatus();
             }
 
             @Override
-            public void applicationInstanceStatusChanged(AndroidProxyRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
+            public void applicationInstanceStatusChanged(AndroidProxyRoot root, ApplicationInstance.Status applicationInstanceStatus) {
                 updateStatus();
             }
 
@@ -249,9 +249,9 @@ public class WidgetService extends HousemateService {
             status = Status.NO_NETWORK;
         else if (getRouter().getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && getRouter().getServerConnectionStatus() != ServerConnectionStatus.DisconnectedTemporarily)
             status = Status.NOT_CONNECTED;
-        else if (getRoot().getApplicationInstanceStatus() != ApplicationInstanceStatus.Allowed) {
+        else if (getRoot().getApplicationInstanceStatus() != ApplicationInstance.Status.Allowed) {
             status = Status.NOT_ALLOWED;
-            new HousemateException("Widget service access not allowed").printStackTrace();
+            new HousemateCommsException("Widget service access not allowed").printStackTrace();
         } else if (getRoot().getServers() == null)
             status = Status.NOT_LOADED;
         else

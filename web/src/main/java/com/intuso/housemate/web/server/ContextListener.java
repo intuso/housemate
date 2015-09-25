@@ -4,15 +4,19 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
-import com.intuso.housemate.api.comms.*;
-import com.intuso.housemate.api.comms.access.ApplicationDetails;
-import com.intuso.housemate.api.object.root.RootListener;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.comms.serialiser.javabin.ioc.JavabinSerialiserClientModule;
-import com.intuso.housemate.comms.transport.socket.client.ioc.SocketClientModule;
-import com.intuso.housemate.persistence.api.Persistence;
+import com.intuso.housemate.comms.v1_0.api.ClientRoot;
+import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.RouterRoot;
+import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.serialiser.javabin.ioc.JavabinSerialiserClientModule;
+import com.intuso.housemate.comms.v1_0.transport.socket.client.ioc.SocketClientModule;
+import com.intuso.housemate.object.v1_0.api.Application;
+import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
+import com.intuso.housemate.object.v1_0.api.TypeInstance;
+import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.persistence.flatfile.ioc.FlatFilePersistenceModule;
+import com.intuso.housemate.persistence.v1_0.api.Persistence;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.platform.pc.ioc.PCClientModule;
 import com.intuso.utilities.listener.Listener;
@@ -77,7 +81,7 @@ public class ContextListener extends GuiceServletContextListener {
         checkDefaultUser(log, persistence);
 
         // will be null if started in dev mode, in which case the server is run separately
-        router.addObjectListener(new RootListener<RouterRoot>() {
+        router.addObjectListener(new ClientRoot.Listener<RouterRoot>() {
 
             private boolean needsRegistering = true;
 
@@ -94,12 +98,12 @@ public class ContextListener extends GuiceServletContextListener {
             }
 
             @Override
-            public void applicationStatusChanged(RouterRoot root, ApplicationStatus applicationStatus) {
+            public void applicationStatusChanged(RouterRoot root, Application.Status applicationStatus) {
                 log.d("Application status: " + applicationStatus);
             }
 
             @Override
-            public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstanceStatus applicationInstanceStatus) {
+            public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstance.Status applicationInstanceStatus) {
                 log.d("Application instance status: " + applicationInstanceStatus);
             }
 

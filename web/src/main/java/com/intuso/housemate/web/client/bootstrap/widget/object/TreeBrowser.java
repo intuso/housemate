@@ -7,8 +7,7 @@ import com.google.gwt.user.cellview.client.CellTree;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
-import com.intuso.housemate.api.object.HousemateObject;
-import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,9 +39,9 @@ public class TreeBrowser extends CellTree {
             List<ProxyObject<?, ?, ?, ?, ?>> children = Lists.newArrayList();
             for(ProxyObject<?, ?, ?, ?, ?> child : ((ProxyObject<?, ?, ?, ?, ?>)value).getChildren())
                 children.add(child);
-            Collections.sort(children, new Comparator<HousemateObject<?, ?, ?, ?>>() {
+            Collections.sort(children, new Comparator<ProxyObject<?, ?, ?, ?, ?>>() {
                 @Override
-                public int compare(HousemateObject<?, ?, ?, ?> o1, HousemateObject<?, ?, ?, ?> o2) {
+                public int compare(ProxyObject<?, ?, ?, ?, ?> o1, ProxyObject<?, ?, ?, ?, ?> o2) {
                     return o1.getName().compareTo(o2.getName());
                 }
             });
@@ -54,7 +53,7 @@ public class TreeBrowser extends CellTree {
 
         @Override
         public boolean isLeaf(Object value) {
-            return !(value instanceof HousemateObject) || ((HousemateObject)value).getChildren().size() == 0;
+            return !(value instanceof ProxyObject) || ((ProxyObject)value).getChildren().size() == 0;
         }
     }
 

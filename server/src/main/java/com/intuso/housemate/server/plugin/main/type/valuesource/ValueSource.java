@@ -1,6 +1,7 @@
 package com.intuso.housemate.server.plugin.main.type.valuesource;
 
-import com.intuso.housemate.api.object.value.Value;
+import com.intuso.housemate.object.api.internal.TypeInstances;
+import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -30,5 +31,5 @@ public abstract class ValueSource {
         return result;
     }
 
-    public abstract Value<?, ?> getValue();
+    public abstract Value<TypeInstances, ?> getValue();
 }

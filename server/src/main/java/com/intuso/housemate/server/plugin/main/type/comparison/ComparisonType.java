@@ -4,16 +4,16 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.type.TypeInstance;
-import com.intuso.housemate.api.object.type.TypeInstances;
-import com.intuso.housemate.api.object.type.TypeSerialiser;
-import com.intuso.housemate.object.real.RealList;
-import com.intuso.housemate.object.real.RealSubType;
-import com.intuso.housemate.object.real.RealType;
-import com.intuso.housemate.object.real.impl.type.RealCompoundType;
-import com.intuso.housemate.plugin.api.Comparator;
-import com.intuso.housemate.plugin.host.PluginListener;
+import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealSubType;
+import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.impl.type.RealCompoundType;
+import com.intuso.housemate.comms.api.internal.payload.TypeData;
+import com.intuso.housemate.object.api.internal.TypeInstance;
+import com.intuso.housemate.object.api.internal.TypeInstances;
+import com.intuso.housemate.object.api.internal.TypeSerialiser;
+import com.intuso.housemate.plugin.api.internal.Comparator;
+import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
@@ -42,23 +42,23 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     public final static String VALUE_1_DESCRIPTION = "The second value to compare";
 
     private final Log log;
-    private final TypeSerialiser<com.intuso.housemate.plugin.api.ComparisonType> comparisonTypeSerialiser;
+    private final TypeSerialiser<com.intuso.housemate.plugin.api.internal.ComparisonType> comparisonTypeSerialiser;
     private final TypeSerialiser<ValueSource> sourceTypeSerialiser;
 
-    private final Map<com.intuso.housemate.plugin.api.ComparisonType, Map<String, Comparator<?>>> comparators = Maps.newHashMap();
+    private final Map<com.intuso.housemate.plugin.api.internal.ComparisonType, Map<String, Comparator<?>>> comparators = Maps.newHashMap();
 
     @Inject
     public ComparisonType(Log log,
                           ListenersFactory listenersFactory,
                           RealList<TypeData<?>, RealType<?, ?, ?>> types,
-                          TypeSerialiser<com.intuso.housemate.plugin.api.ComparisonType> comparisonTypeSerialiser,
+                          TypeSerialiser<com.intuso.housemate.plugin.api.internal.ComparisonType> comparisonTypeSerialiser,
                           TypeSerialiser<ValueSource> sourceTypeSerialiser,
                           PluginManager pluginManager) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.log = log;
         this.comparisonTypeSerialiser = comparisonTypeSerialiser;
         this.sourceTypeSerialiser = sourceTypeSerialiser;
-        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.ComparisonType>(log, listenersFactory, COMPARISON_TYPE_ID,
+        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.internal.ComparisonType>(log, listenersFactory, COMPARISON_TYPE_ID,
                 COMPARISON_TYPE_NAME, COMPARISON_TYPE_DESCRIPTION, ComparisonTypeType.ID, types));
         getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
                 VALUE_0_DESCRIPTION, ValueSourceType.ID, types));
@@ -90,7 +90,7 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
         ValueSource value1 = null;
         if(instance.getChildValues().getChildren().get(VALUE_1_ID) != null && instance.getChildValues().getChildren().get(VALUE_1_ID).getElements().size() != 0)
             value1 = sourceTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(VALUE_1_ID).getElements().get(0));
-        com.intuso.housemate.plugin.api.ComparisonType comparisonType = comparisonTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(COMPARISON_TYPE_ID).getElements().get(0));
+        com.intuso.housemate.plugin.api.internal.ComparisonType comparisonType = comparisonTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(COMPARISON_TYPE_ID).getElements().get(0));
         return new Comparison(comparisonType, comparators.get(comparisonType), value0, value1);
     }
 

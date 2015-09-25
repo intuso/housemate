@@ -6,18 +6,17 @@ import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
-import com.intuso.housemate.object.real.RealHardware;
-import com.intuso.housemate.object.real.annotations.AnnotationProcessor;
-import com.intuso.housemate.object.real.annotations.Property;
-import com.intuso.housemate.object.real.factory.device.RealDeviceFactory;
-import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.RealHardware;
+import com.intuso.housemate.client.v1_0.real.api.annotations.AnnotationProcessor;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
+import com.intuso.housemate.client.v1_0.real.api.factory.device.RealDeviceFactory;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.comms.v1_0.api.payload.HardwareData;
 import com.intuso.housemate.plugin.rfxcom.lighting1.Lighting1ARCAppliance;
 import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2ACAppliance;
 import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2HomeEasyEUAppliance;
 import com.intuso.housemate.plugin.rfxcom.temperaturesensor.*;
+import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -230,7 +229,7 @@ public class RFXtrx433Hardware extends RealHardware {
                 else
                     appliance.setOff();
                 getRealRoot().addDevice(appliance);
-            } catch (HousemateException e) {
+            } catch (Throwable t) {
                 getLog().e("Failed to auto-create Lighting1 ARC device " + houseId + "/" + (int)unitCode);
             }
         }
@@ -254,7 +253,7 @@ public class RFXtrx433Hardware extends RealHardware {
                 else
                     appliance.setOff();
                 getRealRoot().addDevice(appliance);
-            } catch (HousemateException e) {
+            } catch (Throwable t) {
                 getLog().e("Failed to auto-create Lighting2 AC device " + houseId + "/" + (int)unitCode);
             }
         }
@@ -278,7 +277,7 @@ public class RFXtrx433Hardware extends RealHardware {
                 else
                     appliance.setOff();
                 getRealRoot().addDevice(appliance);
-            } catch (HousemateException e) {
+            } catch (Throwable t) {
                 getLog().e("Failed to auto-create Lighting2 HomeEasy EU device " + houseId + "/" + (int)unitCode);
             }
         }
@@ -296,9 +295,9 @@ public class RFXtrx433Hardware extends RealHardware {
                 Temperature1Sensor sensor = temperature1Factory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 sensor.setSensorId(sensorId);
                 annotationProcessor.process(getRealRoot().getTypes(), sensor);
-                sensor.values.setTemperature(temperature);
+                sensor.deviceValues.setTemperature(temperature);
                 getRealRoot().addDevice(sensor);
-            } catch (HousemateException e) {
+            } catch (Throwable t) {
                 getLog().e("Failed to auto-create Temperature1 device " + sensorId);
             }
         }
@@ -316,9 +315,9 @@ public class RFXtrx433Hardware extends RealHardware {
                 Temperature2Sensor sensor = temperature2Factory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 sensor.setSensorId(sensorId);
                 annotationProcessor.process(getRealRoot().getTypes(), sensor);
-                sensor.values.setTemperature(temperature);
+                sensor.deviceValues.setTemperature(temperature);
                 getRealRoot().addDevice(sensor);
-            } catch (HousemateException e) {
+            } catch (Throwable t) {
                 getLog().e("Failed to auto-create Temperature2 device " + sensorId);
             }
         }
@@ -336,9 +335,9 @@ public class RFXtrx433Hardware extends RealHardware {
                 Temperature3Sensor sensor = temperature3Factory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 sensor.setSensorId(sensorId);
                 annotationProcessor.process(getRealRoot().getTypes(), sensor);
-                sensor.values.setTemperature(temperature);
+                sensor.deviceValues.setTemperature(temperature);
                 getRealRoot().addDevice(sensor);
-            } catch (HousemateException e) {
+            } catch (Throwable t) {
                 getLog().e("Failed to auto-create Temperature3 device " + sensorId);
             }
         }
@@ -356,9 +355,9 @@ public class RFXtrx433Hardware extends RealHardware {
                 Temperature4Sensor sensor = temperature4Factory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 sensor.setSensorId(sensorId);
                 annotationProcessor.process(getRealRoot().getTypes(), sensor);
-                sensor.values.setTemperature(temperature);
+                sensor.deviceValues.setTemperature(temperature);
                 getRealRoot().addDevice(sensor);
-            } catch (HousemateException e) {
+            } catch (Throwable t) {
                 getLog().e("Failed to auto-create Temperature4 device " + sensorId);
             }
         }
@@ -376,9 +375,9 @@ public class RFXtrx433Hardware extends RealHardware {
                 Temperature5Sensor sensor = temperature5Factory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
                 sensor.setSensorId(sensorId);
                 annotationProcessor.process(getRealRoot().getTypes(), sensor);
-                sensor.values.setTemperature(temperature);
+                sensor.deviceValues.setTemperature(temperature);
                 getRealRoot().addDevice(sensor);
-            } catch (HousemateException e) {
+            } catch (Throwable t) {
                 getLog().e("Failed to auto-create Temperature5 device " + sensorId);
             }
         }

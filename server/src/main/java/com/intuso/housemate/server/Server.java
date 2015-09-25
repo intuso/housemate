@@ -2,7 +2,7 @@ package com.intuso.housemate.server;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.intuso.housemate.api.comms.access.ApplicationDetails;
+import com.intuso.housemate.comms.api.internal.access.ApplicationDetails;
 import com.intuso.housemate.plugin.host.PluginManager;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.object.bridge.RootBridge;
@@ -21,6 +21,7 @@ public class Server {
 
     public final static String INSTANCE_ID = UUID.randomUUID().toString();
     public final static ApplicationDetails INTERNAL_APPLICATION_DETAILS = new ApplicationDetails("local", "Local", "Local");
+    public final static com.intuso.housemate.comms.api.internal.access.ApplicationDetails INTERNAL_APPLICATION_DETAILS_V1_0 = new com.intuso.housemate.comms.api.internal.access.ApplicationDetails("local", "Local", "Local");
 
     public final static String SERVER_NAME = "server.name";
 

@@ -4,19 +4,20 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.comms.ApplicationInstanceStatus;
-import com.intuso.housemate.api.comms.ApplicationStatus;
-import com.intuso.housemate.api.comms.access.ApplicationRegistration;
-import com.intuso.housemate.api.comms.message.StringPayload;
-import com.intuso.housemate.api.object.root.Root;
-import com.intuso.housemate.api.object.value.ValueListener;
-import com.intuso.housemate.object.real.RealApplication;
-import com.intuso.housemate.object.real.RealApplicationInstance;
-import com.intuso.housemate.object.real.RealRoot;
-import com.intuso.housemate.object.real.RealValue;
-import com.intuso.housemate.object.real.impl.type.ApplicationInstanceStatusType;
-import com.intuso.housemate.object.real.impl.type.ApplicationStatusType;
+import com.intuso.housemate.client.real.api.internal.RealApplication;
+import com.intuso.housemate.client.real.api.internal.RealApplicationInstance;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
+import com.intuso.housemate.client.real.api.internal.RealValue;
+import com.intuso.housemate.client.real.api.internal.impl.type.ApplicationInstanceStatusType;
+import com.intuso.housemate.client.real.api.internal.impl.type.ApplicationStatusType;
+import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
+import com.intuso.housemate.comms.api.internal.payload.ApplicationData;
+import com.intuso.housemate.comms.api.internal.payload.ApplicationInstanceData;
+import com.intuso.housemate.comms.api.internal.payload.RootData;
+import com.intuso.housemate.comms.api.internal.payload.StringPayload;
+import com.intuso.housemate.object.api.internal.Application;
+import com.intuso.housemate.object.api.internal.ApplicationInstance;
+import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.housemate.server.Server;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -72,8 +73,7 @@ public class AccessManager {
                 instanceId = UUID.randomUUID().toString();
                 RealApplicationInstance applicationInstance =
                         new RealApplicationInstance(log, listenersFactory, instanceId,
-                                injector.getInstance(ApplicationInstanceStatusType.class),
-                                application.getStatus());
+                                injector.getInstance(ApplicationInstanceStatusType.class));
                 application.getApplicationInstances().add(applicationInstance);
                 applicationInstance.getStatusValue().setTypedValues(getInitialStatus(application));
             }
@@ -92,16 +92,16 @@ public class AccessManager {
         if(client.getClientInstance().isInternal()) {
 
             try {
-                client.sendMessage(new String[]{""}, Root.SERVER_INSTANCE_ID_TYPE, new StringPayload(Server.INSTANCE_ID));
-                client.sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(client.getClientInstance().getApplicationInstanceId()));
-                client.sendMessage(new String[]{""}, Root.APPLICATION_STATUS_TYPE, ApplicationStatus.AllowInstances);
-                client.sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, ApplicationInstanceStatus.Allowed);
-            } catch (HousemateException e) {
-                log.e("Failed to tell application instance about statuses", e);
+                client.sendMessage(new String[]{""}, RootData.SERVER_INSTANCE_ID_TYPE, new StringPayload(Server.INSTANCE_ID));
+                client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(client.getClientInstance().getApplicationInstanceId()));
+                client.sendMessage(new String[]{""}, RootData.APPLICATION_STATUS_TYPE, new ApplicationData.StatusPayload(Application.Status.AllowInstances));
+                client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_STATUS_TYPE, new ApplicationInstanceData.StatusPayload(ApplicationInstance.Status.Allowed));
+            } catch (Throwable t) {
+                log.e("Failed to tell application instance about statuses", t);
             }
 
             // ensure the client belongs to the application instance
-            client.setApplicationAndInstanceStatus(ApplicationStatus.AllowInstances, ApplicationInstanceStatus.Allowed);
+            client.setApplicationAndInstanceStatus(Application.Status.AllowInstances, ApplicationInstance.Status.Allowed);
 
         } else {
             RealApplication application = realRoot.getApplications().get(client.getClientInstance().getApplicationDetails().getApplicationId());
@@ -109,16 +109,16 @@ public class AccessManager {
 
             // tell the client what access etc it has
             try {
-                client.sendMessage(new String[]{""}, Root.SERVER_INSTANCE_ID_TYPE, new StringPayload(Server.INSTANCE_ID));
-                client.sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(client.getClientInstance().getApplicationInstanceId()));
-                client.sendMessage(new String[]{""}, Root.APPLICATION_STATUS_TYPE, application.getStatus());
-                client.sendMessage(new String[]{""}, Root.APPLICATION_INSTANCE_STATUS_TYPE, applicationInstance.getStatus());
-            } catch (HousemateException e) {
-                log.e("Failed to tell application instance about statuses", e);
+                client.sendMessage(new String[]{""}, RootData.SERVER_INSTANCE_ID_TYPE, new StringPayload(Server.INSTANCE_ID));
+                client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(client.getClientInstance().getApplicationInstanceId()));
+                client.sendMessage(new String[]{""}, RootData.APPLICATION_STATUS_TYPE, new ApplicationData.StatusPayload(application.getStatusValue().getTypedValue()));
+                client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_STATUS_TYPE, new ApplicationInstanceData.StatusPayload(applicationInstance.getStatusValue().getTypedValue()));
+            } catch (Throwable t) {
+                log.e("Failed to tell application instance about statuses", t);
             }
 
             // ensure the client belongs to the application instance
-            client.setApplicationAndInstanceStatus(application.getStatus(), applicationInstance.getStatus());
+            client.setApplicationAndInstanceStatus(application.getStatusValue().getTypedValue(), applicationInstance.getStatusValue().getTypedValue());
             statusListeners.put(client, new StatusListener(client, application, applicationInstance));
         }
     }
@@ -126,30 +126,30 @@ public class AccessManager {
     private final static Set<String> allowedAllApps = Sets.newHashSet(
             "com.intuso.housemate.web.server",
             "com.intuso.housemate.web.client");
-    private ApplicationStatus getInitialStatus(String appId) {
-        return allowedAllApps.contains(appId) ? ApplicationStatus.AllowInstances : ApplicationStatus.SomeInstances;
+    private Application.Status getInitialStatus(String appId) {
+        return allowedAllApps.contains(appId) ? Application.Status.AllowInstances : Application.Status.SomeInstances;
     }
 
-    private ApplicationInstanceStatus getInitialStatus(RealApplication application) {
-        switch (application.getStatus()) {
+    private ApplicationInstance.Status getInitialStatus(RealApplication application) {
+        switch (application.getStatusValue().getTypedValue()) {
             case AllowInstances:
-                return ApplicationInstanceStatus.Allowed;
+                return ApplicationInstance.Status.Allowed;
             case SomeInstances:
-                return ApplicationInstanceStatus.Pending;
+                return ApplicationInstance.Status.Pending;
             case RejectInstances:
-                return ApplicationInstanceStatus.Rejected;
+                return ApplicationInstance.Status.Rejected;
             case Expired:
-                return ApplicationInstanceStatus.Expired;
+                return ApplicationInstance.Status.Expired;
             default:
-                return ApplicationInstanceStatus.Rejected;
+                return ApplicationInstance.Status.Rejected;
         }
     }
 
-    private class StatusListener implements ValueListener<RealValue<?>> {
+    private class StatusListener implements Value.Listener<RealValue<?>> {
 
         private final RemoteClient client;
-        private final RealValue<ApplicationStatus> applicationStatus;
-        private final RealValue<ApplicationInstanceStatus> applicationInstanceStatus;
+        private final RealValue<Application.Status> applicationStatus;
+        private final RealValue<ApplicationInstance.Status> applicationInstanceStatus;
 
 
         private StatusListener(RemoteClient client, RealApplication application, RealApplicationInstance applicationInstance) {

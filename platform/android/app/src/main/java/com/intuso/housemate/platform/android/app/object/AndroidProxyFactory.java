@@ -1,28 +1,11 @@
 package com.intuso.housemate.platform.android.app.object;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.HousemateObjectFactory;
-import com.intuso.housemate.api.object.application.ApplicationData;
-import com.intuso.housemate.api.object.application.instance.ApplicationInstanceData;
-import com.intuso.housemate.api.object.automation.AutomationData;
-import com.intuso.housemate.api.object.command.CommandData;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.api.object.device.DeviceData;
-import com.intuso.housemate.api.object.hardware.HardwareData;
-import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.option.OptionData;
-import com.intuso.housemate.api.object.parameter.ParameterData;
-import com.intuso.housemate.api.object.property.PropertyData;
-import com.intuso.housemate.api.object.server.ServerData;
-import com.intuso.housemate.api.object.subtype.SubTypeData;
-import com.intuso.housemate.api.object.task.TaskData;
-import com.intuso.housemate.api.object.type.TypeData;
-import com.intuso.housemate.api.object.user.UserData;
-import com.intuso.housemate.api.object.value.ValueData;
-import com.intuso.housemate.object.proxy.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.payload.*;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.object.ObjectFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,7 +14,7 @@ import com.intuso.utilities.log.Log;
  * Time: 18:47
  * To change this template use File | Settings | File Templates.
  */
-public class AndroidProxyFactory implements HousemateObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> {
+public class AndroidProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> {
 
     private final Log log;
     private final ListenersFactory listenersFactory;

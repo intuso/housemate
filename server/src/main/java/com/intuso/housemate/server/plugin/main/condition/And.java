@@ -2,13 +2,12 @@ package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.api.HousemateException;
-import com.intuso.housemate.api.object.condition.ConditionData;
-import com.intuso.housemate.object.real.RealCondition;
-import com.intuso.housemate.object.real.RealConditionNonLeaf;
-import com.intuso.housemate.object.real.factory.condition.AddConditionCommand;
-import com.intuso.housemate.object.real.factory.condition.RealConditionOwner;
-import com.intuso.housemate.plugin.api.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.RealCondition;
+import com.intuso.housemate.client.real.api.internal.RealConditionNonLeaf;
+import com.intuso.housemate.client.real.api.internal.factory.condition.AddConditionCommand;
+import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionOwner;
+import com.intuso.housemate.comms.api.internal.payload.ConditionData;
+import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -27,7 +26,7 @@ public class And extends RealConditionNonLeaf {
                ListenersFactory listenersFactory,
                AddConditionCommand.Factory addConditionCommandFactory,
                @Assisted ConditionData data,
-               @Assisted RealConditionOwner owner) throws HousemateException {
+               @Assisted RealConditionOwner owner) {
 		super(log, listenersFactory, "and", addConditionCommandFactory, data, owner);
     }
 	

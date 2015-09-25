@@ -1,11 +1,10 @@
 package com.intuso.housemate.server.object.bridge;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.api.object.BaseHousemateObject;
-import com.intuso.housemate.api.object.HousemateData;
-import com.intuso.housemate.api.object.list.List;
-import com.intuso.housemate.api.object.list.ListData;
-import com.intuso.housemate.api.object.list.ListListener;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.ListData;
+import com.intuso.housemate.object.api.internal.BaseHousemateObject;
+import com.intuso.housemate.object.api.internal.List;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -31,7 +30,7 @@ public class ConvertingListBridge<
     @Override
     protected java.util.List<ListenerRegistration> registerListeners() {
         java.util.List<ListenerRegistration> result = super.registerListeners();
-        result.add(list.addObjectListener(new ListListener<OWR>() {
+        result.add(list.addObjectListener(new List.Listener<OWR>() {
             @Override
             public void elementAdded(OWR element) {
                 addChild(converter.apply(element));
