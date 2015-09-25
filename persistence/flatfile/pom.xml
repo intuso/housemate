@@ -16,8 +16,8 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-persistence-1-0-api</artifactId>
-            <version>${intuso.housemate.persistence.version}</version>
+            <artifactId>housemate-persistence-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

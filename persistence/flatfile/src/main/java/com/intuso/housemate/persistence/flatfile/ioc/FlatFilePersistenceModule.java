@@ -2,8 +2,8 @@ package com.intuso.housemate.persistence.flatfile.ioc;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.housemate.persistence.flatfile.FlatFilePersistence;
-import com.intuso.housemate.persistence.v1_0.api.Persistence;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**

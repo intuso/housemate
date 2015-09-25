@@ -5,12 +5,12 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.intuso.housemate.object.v1_0.api.TypeInstance;
-import com.intuso.housemate.object.v1_0.api.TypeInstanceMap;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
-import com.intuso.housemate.persistence.v1_0.api.DetailsNotFoundException;
-import com.intuso.housemate.persistence.v1_0.api.HousematePersistenceException;
-import com.intuso.housemate.persistence.v1_0.api.Persistence;
+import com.intuso.housemate.object.api.internal.TypeInstance;
+import com.intuso.housemate.object.api.internal.TypeInstanceMap;
+import com.intuso.housemate.object.api.internal.TypeInstances;
+import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
+import com.intuso.housemate.persistence.api.internal.HousematePersistenceException;
+import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
