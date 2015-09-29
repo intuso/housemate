@@ -15,8 +15,8 @@ import com.intuso.housemate.object.v1_0.api.Application;
 import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.object.v1_0.api.TypeInstance;
 import com.intuso.housemate.object.v1_0.api.TypeInstances;
-import com.intuso.housemate.persistence.flatfile.ioc.FlatFilePersistenceModule;
 import com.intuso.housemate.persistence.v1_0.api.Persistence;
+import com.intuso.housemate.persistence.v1_0.filesystem.ioc.FileSystemPersistenceModule;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.platform.pc.ioc.PCClientModule;
 import com.intuso.utilities.listener.Listener;
@@ -61,7 +61,7 @@ public class ContextListener extends GuiceServletContextListener {
                 new PCClientModule(defaultProperties, properties, "web-server.log"),
                 new JavabinSerialiserClientModule(),
                 new SocketClientModule(defaultProperties),
-                new FlatFilePersistenceModule(defaultProperties));
+                new FileSystemPersistenceModule(defaultProperties));
     }
 
     @Override

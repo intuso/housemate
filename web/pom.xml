@@ -73,8 +73,8 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-persistence-flatfile</artifactId>
-            <version>${project.version}</version>
+            <artifactId>housemate-persistence-1-0-filesystem</artifactId>
+            <version>${intuso.housemate.persistence.version}</version>
         </dependency>
 
         <!-- Sources deps for gwt to compile -->

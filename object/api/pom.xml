@@ -14,10 +14,26 @@
     <description>Housemate Object API</description>
 
     <dependencies>
+
+        <!-- 1,0 API -->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-object-1-0-api</artifactId>
+            <version>${intuso.housemate.object.version}</version>
+        </dependency>
+
+        <!-- Internal API dependencies -->
         <dependency>
             <groupId>com.intuso.utilities</groupId>
             <artifactId>utilities-listener</artifactId>
             <version>${intuso.utilities.version}</version>
+        </dependency>
+
+        <!-- Guice -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice.version}</version>
         </dependency>
     </dependencies>
 

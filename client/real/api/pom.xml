@@ -14,12 +14,22 @@
     <description>Housemate Client Real API</description>
 
     <dependencies>
+
+        <!-- Versioned APIs -->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-client-1-0-real-api</artifactId>
+            <version>${intuso.housemate.client.version}</version>
+        </dependency>
+
+        <!-- Internal API dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>housemate-comms-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
+        <!-- Guice -->
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>

@@ -14,10 +14,26 @@
     <description>Persistence API for the Housemate framework</description>
 
     <dependencies>
+
+        <!-- 1.0 API -->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-persistence-1-0-api</artifactId>
+            <version>${intuso.housemate.persistence.version}</version>
+        </dependency>
+
+        <!-- Internal API dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>housemate-object-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <!-- Guice -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice.version}</version>
         </dependency>
     </dependencies>
 

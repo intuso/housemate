@@ -15,6 +15,13 @@
 
     <dependencies>
 
+        <!-- 1.0 API-->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-comms-1-0-api</artifactId>
+            <version>${intuso.housemate.comms.version}</version>
+        </dependency>
+
         <!-- Object API -->
         <dependency>
             <groupId>com.intuso.housemate</groupId>

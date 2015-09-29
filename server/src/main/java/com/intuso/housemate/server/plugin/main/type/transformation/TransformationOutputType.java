@@ -12,7 +12,7 @@ import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.Transformer;
-import com.intuso.housemate.plugin.host.PluginManager;
+import com.intuso.housemate.plugin.manager.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 

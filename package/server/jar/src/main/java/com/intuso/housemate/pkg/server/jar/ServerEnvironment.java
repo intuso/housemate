@@ -7,7 +7,7 @@ import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.pkg.server.jar.ioc.JarServerModule;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.api.internal.PluginModule;
-import com.intuso.housemate.plugin.host.PluginManager;
+import com.intuso.housemate.plugin.manager.PluginManager;
 import com.intuso.housemate.server.object.real.FactoryPluginListener;
 import com.intuso.housemate.server.object.real.persist.RealObjectWatcher;
 import com.intuso.housemate.web.server.ContextListener;
@@ -187,8 +187,8 @@ public class ServerEnvironment {
 
     private class PluginFileFilter implements FileFilter {
         @Override
-        public boolean accept(File pathname) {
-            return pathname.isFile() && pathname.getName().endsWith(".jar");
+        public boolean accept(File file) {
+            return file.isFile() && file.getName().endsWith(".jar");
         }
     }
 

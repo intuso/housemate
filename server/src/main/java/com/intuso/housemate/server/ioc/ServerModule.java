@@ -5,10 +5,12 @@ import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.api.internal.ioc.RealObjectModule;
+import com.intuso.housemate.comms.api.bridge.ioc.CommsAPIBridgeModule;
 import com.intuso.housemate.comms.api.internal.Router;
+import com.intuso.housemate.object.api.bridge.ioc.ObjectAPIBridgeModule;
 import com.intuso.housemate.object.api.internal.ObjectRoot;
 import com.intuso.housemate.object.api.internal.Root;
-import com.intuso.housemate.plugin.host.ioc.PluginHostModule;
+import com.intuso.housemate.plugin.manager.ioc.PluginHostModule;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.comms.RemoteClientManager;
@@ -29,6 +31,11 @@ public class ServerModule extends AbstractModule {
     @Override
     protected void configure() {
 
+        // install api bridge modules
+        install(new ObjectAPIBridgeModule());
+        install(new CommsAPIBridgeModule());
+
+        // install plugin modules
         install(new RealObjectModule());
         install(new PluginHostModule());
 

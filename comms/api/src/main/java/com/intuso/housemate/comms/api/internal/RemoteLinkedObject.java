@@ -559,7 +559,7 @@ public abstract class RemoteLinkedObject<
             return new LoadFinished(loaderName, errors);
         }
 
-        private LoadFinished(String loaderId, List<String> errors) {
+        public LoadFinished(String loaderId, List<String> errors) {
             this.loaderId = loaderId;
             this.errors = errors;
         }

@@ -31,7 +31,7 @@
 					</descriptorRefs>
 					<archive>
                         <manifestEntries>
-                            <Housemate-Plugin>com.intuso.housemate.plugin.tvremote.ioc.TVRemotePluginModule</Housemate-Plugin>
+                            <Housemate-Plugin>com.intuso.housemate.plugin.tvremote.ioc.TVRemoteAnnotatedPluginModule</Housemate-Plugin>
                         </manifestEntries>
 					</archive>
 				</configuration>

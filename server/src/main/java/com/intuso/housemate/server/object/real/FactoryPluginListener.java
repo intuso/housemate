@@ -14,7 +14,7 @@ import com.intuso.housemate.client.real.api.internal.factory.task.RealTaskFactor
 import com.intuso.housemate.client.real.api.internal.factory.task.TaskFactoryType;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
-import com.intuso.housemate.plugin.host.PluginManager;
+import com.intuso.housemate.plugin.manager.PluginManager;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;

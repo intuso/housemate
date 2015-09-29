@@ -14,7 +14,7 @@ import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.Operator;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
-import com.intuso.housemate.plugin.host.PluginManager;
+import com.intuso.housemate.plugin.manager.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 import com.intuso.utilities.listener.ListenersFactory;

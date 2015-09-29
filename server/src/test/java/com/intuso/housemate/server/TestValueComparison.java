@@ -15,7 +15,7 @@ import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
 import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.plugin.api.internal.*;
-import com.intuso.housemate.plugin.host.PluginManager;
+import com.intuso.housemate.plugin.manager.PluginManager;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.ioc.ServerModule;
 import com.intuso.housemate.server.object.bridge.RootBridge;
