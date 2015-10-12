@@ -26,7 +26,7 @@ public class AndroidProxyRoot extends ProxyRoot<
      * @param log    {@inheritDoc}
      * @param router The router to connect through
      */
-    public AndroidProxyRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router) {
+    public AndroidProxyRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router) {
         super(log, listenersFactory, properties, router);
         this.factory = new AndroidProxyFactory(log, listenersFactory);
     }

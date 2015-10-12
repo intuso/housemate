@@ -15,9 +15,9 @@ import com.google.common.collect.Sets;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
 import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
-import com.intuso.housemate.comms.v1_0.api.ClientRoot;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
 import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
@@ -137,11 +137,18 @@ public class WidgetService extends HousemateService {
                                   updateStatus();
                               }
                           });
-        clientHelper.getRoot().addObjectListener(new ClientRoot.Listener<AndroidProxyRoot>() {
+        clientHelper.getRouter().addListener(new Router.Listener<Router>() {
             @Override
-            public void serverConnectionStatusChanged(AndroidProxyRoot root, ServerConnectionStatus serverConnectionStatus) {
+            public void serverConnectionStatusChanged(Router router, ServerConnectionStatus serverConnectionStatus) {
                 updateStatus();
             }
+
+            @Override
+            public void newServerInstance(Router router, String serverId) {
+                // do nothing
+            }
+        });
+        clientHelper.getRoot().addObjectListener(new ProxyRoot.Listener<AndroidProxyRoot>() {
 
             @Override
             public void applicationStatusChanged(AndroidProxyRoot root, Application.Status applicationStatus) {
@@ -155,11 +162,6 @@ public class WidgetService extends HousemateService {
 
             @Override
             public void newApplicationInstance(AndroidProxyRoot root, String instanceId) {
-                // do nothing
-            }
-
-            @Override
-            public void newServerInstance(AndroidProxyRoot root, String serverId) {
                 // do nothing
             }
         });

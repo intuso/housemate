@@ -22,7 +22,7 @@ public class AppService extends Service implements ServiceConnection {
     private final Messenger messenger;
 
     private Log log;
-    private Router router;
+    private Router<?> router;
 
     public AppService() {
         this.messenger = new Messenger(new MessageHandler());

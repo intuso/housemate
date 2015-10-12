@@ -1,6 +1,6 @@
 package com.intuso.housemate.plugin.api.internal;
 
-import com.intuso.housemate.client.real.api.internal.RealHardware;
+import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,11 +12,11 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Hardwares {
+public @interface HardwareDrivers {
 
     /**
      * The list of the device factories the plugin provides
      * @return the list of the device factories the plugin provides
      */
-    Class<? extends RealHardware>[] value();
+    Class<? extends HardwareDriver>[] value();
 }

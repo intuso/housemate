@@ -24,7 +24,7 @@ public class GWTProxyRoot extends ProxyRoot<
                         ListenersFactory listenersFactory,
                         PropertyRepository properties,
                         GWTGinjector injector,
-                        Router router) {
+                        Router<?> router) {
         super(log, listenersFactory, properties, router);
         this.injector = injector;
     }

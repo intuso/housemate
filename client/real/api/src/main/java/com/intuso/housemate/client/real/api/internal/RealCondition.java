@@ -1,76 +1,107 @@
 package com.intuso.housemate.client.real.api.internal;
 
 import com.google.common.collect.Lists;
-import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionOwner;
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
+import com.intuso.housemate.client.real.api.internal.factory.condition.AddConditionCommand;
+import com.intuso.housemate.client.real.api.internal.factory.condition.ConditionFactoryType;
 import com.intuso.housemate.client.real.api.internal.impl.type.BooleanType;
 import com.intuso.housemate.client.real.api.internal.impl.type.StringType;
-import com.intuso.housemate.comms.api.internal.ChildOverview;
 import com.intuso.housemate.comms.api.internal.payload.ConditionData;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.PropertyData;
 import com.intuso.housemate.object.api.internal.Condition;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
+import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-public abstract class RealCondition
+public final class RealCondition<DRIVER extends ConditionDriver>
         extends RealObject<ConditionData, HousemateData<?>, RealObject<?, ?, ?, ?>,
-                    Condition.Listener<? super RealCondition>>
-        implements Condition<RealCommand, RealValue<String>, RealValue<Boolean>,
-            RealList<PropertyData, RealProperty<?>>, RealCommand, RealCondition,
-            RealList<ConditionData, RealCondition>>,
-        RealConditionOwner {
-
-    private final String type;
+        Condition.Listener<? super RealCondition<DRIVER>>>
+        implements Condition<RealCommand,
+        RealValue<String>,
+        RealProperty<ConditionDriver.Factory<DRIVER>>,
+        RealValue<Boolean>,
+        RealValue<Boolean>,
+        RealList<PropertyData, RealProperty<?>>, RealCommand, RealCondition<?>,
+        RealList<ConditionData, RealCondition<?>>,
+        RealCondition<DRIVER>>,
+        AddConditionCommand.Callback,
+        Condition.Listener<RealCondition<?>> {
 
     private RealCommand removeCommand;
     private RealValue<String> errorValue;
+    private final RealProperty<ConditionDriver.Factory<DRIVER>> driverProperty;
+    private RealValue<Boolean> driverLoadedValue;
     private RealValue<Boolean> satisfiedValue;
     private RealList<PropertyData, RealProperty<?>> propertyList;
-    private RealList<ConditionData, RealCondition> conditions;
+    private final RealList<ConditionData, RealCondition<?>> children;
+    private final RealCommand addConditionCommand;
+
+    private final Map<String, Boolean> childSatisfied = Maps.newHashMap();
+    private final Map<String, ListenerRegistration> childListenerRegistrations = Maps.newHashMap();
+
+    private DRIVER driver;
 
     /**
      * @param log {@inheritDoc}
      * @param data the condition's data
-     * @param properties the condition's properties
      */
-    public RealCondition(Log log, ListenersFactory listenersFactory, String type, ConditionData data, RealConditionOwner owner,
-                         RealProperty<?>... properties) {
-        this(log, listenersFactory, type, data, owner, Arrays.asList(properties));
-    }
-
-    /**
-     * @param log {@inheritDoc}
-     * @param data the condition's data
-     * @param properties the condition's properties
-     */
-    public RealCondition(final Log log, ListenersFactory listenersFactory, String type, ConditionData data,
-                         final RealConditionOwner owner, List<RealProperty<?>> properties) {
+    @Inject
+    public RealCondition(final Log log,
+                         ListenersFactory listenersFactory,
+                         ConditionFactoryType driverFactoryType,
+                         AddConditionCommand.Factory addConditionCommandFactory,
+                         @Assisted ConditionData data,
+                         @Assisted final RemovedListener removedListener) {
         super(log, listenersFactory, data);
-        this.type = type;
         removeCommand = new RealCommand(log, listenersFactory, ConditionData.REMOVE_ID, ConditionData.REMOVE_ID, "Remove the condition", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
-                owner.removeCondition(RealCondition.this);
+                removedListener.conditionRemoved(RealCondition.this);
             }
         };
         errorValue = new RealValue<>(log, listenersFactory, ConditionData.ERROR_ID, ConditionData.ERROR_ID, "The current error", new StringType(log, listenersFactory), (List)null);
+        driverProperty = (RealProperty<ConditionDriver.Factory<DRIVER>>) new RealProperty(log, listenersFactory, "driver", "Driver", "The condition's driver", driverFactoryType);
+        driverLoadedValue = BooleanType.createValue(log, listenersFactory, ConditionData.DRIVER_LOADED_ID, ConditionData.DRIVER_LOADED_ID, "Whether the task's driver is loaded or not", false);
         satisfiedValue = new RealValue<>(log, listenersFactory, ConditionData.SATISFIED_ID, ConditionData.SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(log, listenersFactory), false);
-        propertyList = new RealList<>(log, listenersFactory, ConditionData.PROPERTIES_ID, ConditionData.PROPERTIES_ID, "The condition's properties", properties);
-        conditions = new RealList<>(log, listenersFactory, ConditionData.CONDITIONS_ID, ConditionData.CONDITIONS_ID, "The condition's sub-conditions");
+        propertyList = new RealList<>(log, listenersFactory, ConditionData.PROPERTIES_ID, ConditionData.PROPERTIES_ID, "The condition's properties");
+        children = new RealList<>(log, listenersFactory, ConditionData.CONDITIONS_ID, "Conditions", "Child conditions");
+        addConditionCommand = addConditionCommandFactory.create(ConditionData.ADD_CONDITION_ID, ConditionData.ADD_CONDITION_ID, "Add condition", this, new RemovedListener() {
+            @Override
+            public void conditionRemoved(RealCondition condition) {
+                children.remove(condition.getId());
+            }
+        });
         // add a command to add automations to the automation list
         addChild(removeCommand);
         addChild(errorValue);
+        addChild(driverProperty);
+        addChild(driverLoadedValue);
         addChild(satisfiedValue);
         addChild(propertyList);
-        addChild(conditions);
+        addChild(children);
+        addChild(addConditionCommand);
     }
 
-    public String getType() {
-        return type;
+    public DRIVER getDriver() {
+        return driver;
+    }
+
+    @Override
+    public RealList<ConditionData, RealCondition<?>> getConditions() {
+        return children;
+    }
+
+    @Override
+    public RealCommand getAddConditionCommand() {
+        return addConditionCommand;
     }
 
     @Override
@@ -84,18 +115,22 @@ public abstract class RealCondition
     }
 
     @Override
-    public RealList<ConditionData, RealCondition> getConditions() {
-        return conditions;
-    }
-
-    @Override
-    public RealCommand getAddConditionCommand() {
-        return null;
-    }
-
-    @Override
     public RealValue<String> getErrorValue() {
         return errorValue;
+    }
+
+    @Override
+    public RealProperty<ConditionDriver.Factory<DRIVER>> getDriverProperty() {
+        return driverProperty;
+    }
+
+    @Override
+    public RealValue<Boolean> getDriverLoadedValue() {
+        return driverLoadedValue;
+    }
+
+    public boolean isDriverLoaded() {
+        return driverLoadedValue.getTypedValue() != null ? driverLoadedValue.getTypedValue() : false;
     }
 
     @Override
@@ -103,23 +138,8 @@ public abstract class RealCondition
         return satisfiedValue;
     }
 
-    public boolean isSatisfied() {
+    public boolean getChildSatisfied() {
         return satisfiedValue.getTypedValue() != null ? satisfiedValue.getTypedValue() : false;
-    }
-
-    @Override
-    public ChildOverview getAddConditionCommandDetails() {
-        return new ChildOverview(ConditionData.ADD_CONDITION_ID, ConditionData.ADD_CONDITION_ID, "Add condition");
-    }
-
-    @Override
-    public void addCondition(RealCondition condition) {
-        conditions.add(condition);
-    }
-
-    @Override
-    public void removeCondition(RealCondition condition) {
-        conditions.remove(condition.getId());
     }
 
     /**
@@ -137,21 +157,56 @@ public abstract class RealCondition
      * @param satisfied
      */
     protected void conditionSatisfied(boolean satisfied) {
-        if(satisfied != isSatisfied()) {
+        if(satisfied != getChildSatisfied()) {
             getSatisfiedValue().setTypedValues(satisfied);
-            for(Condition.Listener<? super RealCondition> listener : getObjectListeners())
+            for(Condition.Listener<? super RealCondition<DRIVER>> listener : getObjectListeners())
                 listener.conditionSatisfied(this, satisfied);
         }
     }
 
-    /**
-     * Starts the condition
-     */
-    public abstract void start();
+    public final void start() {
+        for(RealCondition child : children) {
+            child.start();
+            childListenerRegistrations.put(child.getId(), child.addObjectListener(this));
+            childSatisfied.put(child.getId(), child.getChildSatisfied());
+        }
+        // todo, call driver
+    }
 
-    /**
-     * Stops the condition
-     */
-    public abstract void stop();
 
+    public final void stop() {
+        for(String id : childSatisfied.keySet())
+            childListenerRegistrations.get(id).removeListener();
+        for(RealCondition child : children)
+            child.stop();
+        // todo, call driver
+    }
+
+    @Override
+    public void addCondition(RealCondition condition) {
+        children.add(condition);
+    }
+
+    @Override
+    public void conditionSatisfied(RealCondition condition, boolean satisfied) {
+        // todo call driver
+    }
+
+    @Override
+    public void driverLoaded(RealCondition usesDriver, boolean loaded) {
+        // todo figure out what to do here
+    }
+
+    @Override
+    public void error(RealCondition failable, String error) {
+        // todo ignore this because it's from a child? or put this condition in error too
+    }
+
+    public interface RemovedListener {
+        void conditionRemoved(RealCondition condition);
+    }
+
+    public interface Factory {
+        RealCondition<?> create(ConditionData data, RemovedListener removedListener);
+    }
 }

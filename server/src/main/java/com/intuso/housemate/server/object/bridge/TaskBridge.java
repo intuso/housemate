@@ -20,7 +20,9 @@ public class TaskBridge
             Task.Listener<? super TaskBridge>>
         implements Task<
             CommandBridge,
-            ValueBridge,
+        ValueBridge,
+        ValueBridge,
+        PropertyBridge,
             ValueBridge,
         ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge>,
             TaskBridge> {
@@ -28,18 +30,24 @@ public class TaskBridge
     private CommandBridge removeCommand;
     private ValueBridge executingValue;
     private ValueBridge errorValue;
+    private PropertyBridge driverProperty;
+    private ValueBridge driverLoadedValue;
     private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
-    public TaskBridge(Log log, ListenersFactory listenersFactory, Task<?, ?, ?, ?, ?> task) {
+    public TaskBridge(Log log, ListenersFactory listenersFactory, Task<?, ?, ?, ?, ?, ?, ?> task) {
         super(log, listenersFactory, new TaskData(task.getId(), task.getName(), task.getDescription()));
         removeCommand = new CommandBridge(log, listenersFactory, task.getRemoveCommand());
         executingValue = new ValueBridge(log, listenersFactory, task.getExecutingValue());
         errorValue = new ValueBridge(log, listenersFactory, task.getErrorValue());
+        driverProperty = new PropertyBridge(log, listenersFactory, task.getDriverProperty());
+        driverLoadedValue = new ValueBridge(log, listenersFactory, task.getDriverLoadedValue());
         propertyList = new ConvertingListBridge<>(log, listenersFactory, task.getProperties(),
                 new PropertyBridge.Converter(log, listenersFactory));
         addChild(removeCommand);
         addChild(executingValue);
         addChild(errorValue);
+        addChild(driverProperty);
+        addChild(driverLoadedValue);
         addChild(propertyList);
     }
 
@@ -54,6 +62,16 @@ public class TaskBridge
     }
 
     @Override
+    public PropertyBridge getDriverProperty() {
+        return driverProperty;
+    }
+
+    @Override
+    public ValueBridge getDriverLoadedValue() {
+        return driverLoadedValue;
+    }
+
+    @Override
     public ValueBridge getExecutingValue() {
         return executingValue;
     }
@@ -63,7 +81,7 @@ public class TaskBridge
         return propertyList;
     }
 
-    public static class Converter implements Function<Task<?, ?, ?, ?, ?>, TaskBridge> {
+    public static class Converter implements Function<Task<?, ?, ?, ?, ?, ?, ?>, TaskBridge> {
 
         private final Log log;
         private final ListenersFactory listenersFactory;
@@ -74,7 +92,7 @@ public class TaskBridge
         }
 
         @Override
-        public TaskBridge apply(Task<?, ?, ?, ?, ?> command) {
+        public TaskBridge apply(Task<?, ?, ?, ?, ?, ?, ?> command) {
             return new TaskBridge(log, listenersFactory, command);
         }
     }

@@ -4,14 +4,14 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
 import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyCommand;
 import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyDevice;
 import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyRoot;
 import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyServer;
-import com.intuso.housemate.comms.v1_0.api.ClientRoot;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.housemate.object.v1_0.api.Application;
@@ -35,7 +35,7 @@ import java.util.List;
 @Path("/contextual")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ContextualResource implements ClientRoot.Listener<SimpleProxyRoot>, Command.PerformListener<SimpleProxyCommand> {
+public class ContextualResource implements ProxyRoot.Listener<SimpleProxyRoot>, Command.PerformListener<SimpleProxyCommand> {
 
     // TODO hack until figure out why session doesn't work
     private static SimpleProxyRoot ROOT;
@@ -132,11 +132,6 @@ public class ContextualResource implements ClientRoot.Listener<SimpleProxyRoot>,
     }
 
     @Override
-    public void serverConnectionStatusChanged(SimpleProxyRoot root, ServerConnectionStatus serverConnectionStatus) {
-        // todo let the client know?
-    }
-
-    @Override
     public void applicationStatusChanged(SimpleProxyRoot root, Application.Status applicationStatus) {
         // todo let the client know?
     }
@@ -154,18 +149,13 @@ public class ContextualResource implements ClientRoot.Listener<SimpleProxyRoot>,
                 public void succeeded() {
                     // TODO, anything?
                 }
-            }, new RemoteObject.TreeLoadInfo("devices",
-                    new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
+            }, new TreeLoadInfo("devices",
+                    new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
         }
     }
 
     @Override
     public void newApplicationInstance(SimpleProxyRoot root, String instanceId) {
-        // TODO let the client know somehow
-    }
-
-    @Override
-    public void newServerInstance(SimpleProxyRoot root, String serverId) {
         // TODO let the client know somehow
     }
 

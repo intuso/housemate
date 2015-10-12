@@ -1,21 +1,17 @@
 package com.intuso.housemate.server.plugin.main.condition;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.RealCondition;
-import com.intuso.housemate.client.real.api.internal.RealProperty;
-import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionOwner;
+import com.intuso.housemate.client.real.api.internal.annotations.Property;
+import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.impl.type.Day;
-import com.intuso.housemate.client.real.api.internal.impl.type.DaysType;
-import com.intuso.housemate.comms.api.internal.payload.ConditionData;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
-import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Condition which is true iff the current day of the week matches
@@ -23,7 +19,7 @@ import java.util.Map;
  *
  */
 @TypeInfo(id = "day-of-the-week", name = "Day of the Week", description = "Condition that is true on certain days of the week")
-public class DayOfTheWeek extends RealCondition {
+public class DayOfTheWeek implements ConditionDriver {
 
     private final Map<Day, Integer> DAY_MAP = new HashMap<Day, Integer>() {
         {
@@ -36,15 +32,17 @@ public class DayOfTheWeek extends RealCondition {
             put(Day.Sunday, Calendar.SUNDAY);
         }
     };
-
-    public static final String DAYS_FIELD = "days";
     
 	/**
 	 * The days that the condition is satisfied for. Left-most bit isn't used, next one is sunday,
 	 * then monday etc. Right-most bit is saturday
 	 */
-	private final RealProperty<Day> days;
-	
+    @Property(id = "days", name = "Days", description = "The days that satisfy the condition", typeId = "days")
+	private Set<Day> days;
+
+    private final Log log;
+    private final ConditionDriver.Callback callback;
+    
 	/**
 	 * thread to monitor the day of the week
 	 */
@@ -52,14 +50,14 @@ public class DayOfTheWeek extends RealCondition {
 
     @Inject
 	public DayOfTheWeek(Log log,
-                        ListenersFactory listenersFactory,
-                        @Assisted ConditionData data,
-                        @Assisted RealConditionOwner owner,
-                        DaysType daysType) {
-		super(log, listenersFactory, "day-of-the-week", data, owner);
-        days = new RealProperty<>(log, listenersFactory, DAYS_FIELD, DAYS_FIELD, "The days that satisfy the condition",
-                daysType, Lists.<Day>newArrayList());
-        getProperties().add(days);
+                        @Assisted ConditionDriver.Callback callback) {
+		this.log = log;
+        this.callback = callback;
+    }
+
+    @Override
+    public boolean hasChildConditions() {
+        return false;
     }
 
 	/**
@@ -69,19 +67,19 @@ public class DayOfTheWeek extends RealCondition {
 	private final boolean doesTodaySatisfy() {
         int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 		boolean result = false;
-        for(Day day : days.getTypedValues())
+        for(Day day : days)
             result |= DAY_MAP.get(day) == currentDay;
-		getLog().d("Current day of the week is " + Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + " (1 is Sunday). Condition is " + (result ? "" : "un") + "satisfied");
+		log.d("Current day of the week is " + Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + " (1 is Sunday). Condition is " + (result ? "" : "un") + "satisfied");
 		return result;
 	}
 	
 	@Override
 	public void start() {
 		// start monitoring the day of the week
-        getLog().d("Condition satisfied when day is " + days.getTypedValue());
+        log.d("Condition satisfied when day is " + days);
 		monitor = new DayMonitorThread();
 		monitor.start();
-		conditionSatisfied(doesTodaySatisfy());
+		callback.conditionSatisfied(doesTodaySatisfy());
 	}
 	
 	@Override
@@ -107,16 +105,16 @@ public class DayOfTheWeek extends RealCondition {
                 while(!isInterrupted()) {
 
                     // wait until the next day starts
-                    getLog().d("Waiting until midnight");
-                    TimeOfTheDay.waitUntilNext(TimeOfTheDay.DAY_START, getLog());
+                    log.d("Waiting until midnight");
+                    TimeOfTheDay.waitUntilNext(TimeOfTheDay.DAY_START, log);
 
-                    getLog().d("Past midnight, checking if current day is in set");
+                    log.d("Past midnight, checking if current day is in set");
 
                     // check if this condition is now satisfied or not
-                    conditionSatisfied(doesTodaySatisfy());
+                    callback.conditionSatisfied(doesTodaySatisfy());
                 }
             } catch(InterruptedException e) {
-                getLog().w("DayMonitor thread interrupted");
+                log.w("DayMonitor thread interrupted");
             }
 		}
 	}

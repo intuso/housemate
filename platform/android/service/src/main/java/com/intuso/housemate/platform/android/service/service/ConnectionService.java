@@ -3,16 +3,11 @@ package com.intuso.housemate.platform.android.service.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import com.intuso.housemate.comms.v1_0.api.ClientRoot;
 import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.RouterRoot;
-import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
 import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
 import com.intuso.housemate.comms.v1_0.serialiser.javabin.JavabinSerialiser;
 import com.intuso.housemate.comms.v1_0.transport.socket.client.SocketClient;
 import com.intuso.housemate.comms.v1_0.transport.socket.client.ioc.SocketClientModule;
-import com.intuso.housemate.object.v1_0.api.Application;
-import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.platform.android.common.AndroidLogWriter;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.listener.Listener;
@@ -29,8 +24,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ConnectionService extends Service {
 
     private final static String LOG_LEVEL = "log.level";
-    private final static ApplicationDetails APPLICATION_DETAILS =
-            new ApplicationDetails(ConnectionService.class.getPackage().getName(), "Android Service", "Android Service");
 
     public final static String NETWORK_AVAILABLE_ACTION = "networkAvailable";
     public final static String NETWORK_AVAILABLE = "networkAvailable";
@@ -79,37 +72,18 @@ public class ConnectionService extends Service {
         log.d("Connection Service created");
 
         // listen on the router root object, then connect the router
-        routerListenerRegistration = router.addObjectListener(new ClientRoot.Listener<RouterRoot>() {
-            private boolean needsRegistering = true;
+        routerListenerRegistration = router.addListener(new Router.Listener<Router>() {
 
             @Override
-            public void serverConnectionStatusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus) {
+            public void serverConnectionStatusChanged(Router root, ServerConnectionStatus serverConnectionStatus) {
                 log.d("Server connection status: " + serverConnectionStatus);
                 if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
-                    needsRegistering = true;
                     router.connect();
-                } else if((serverConnectionStatus == ServerConnectionStatus.ConnectedToServer || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily) && needsRegistering) {
-                    needsRegistering = false;
-                    router.register(APPLICATION_DETAILS, ConnectionService.class.getName());
                 }
             }
 
             @Override
-            public void applicationStatusChanged(RouterRoot root, Application.Status applicationStatus) {
-
-            }
-
-            @Override
-            public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstance.Status applicationInstanceStatus) {
-            }
-
-            @Override
-            public void newApplicationInstance(RouterRoot root, String instanceId) {
-                // do nothing
-            }
-
-            @Override
-            public void newServerInstance(RouterRoot root, String serverId) {
+            public void newServerInstance(Router root, String serverId) {
                 // do nothing
             }
         });
@@ -142,7 +116,7 @@ public class ConnectionService extends Service {
             return log;
         }
 
-        public Router getRouter() {
+        public Router<?> getRouter() {
             return router;
         }
     }

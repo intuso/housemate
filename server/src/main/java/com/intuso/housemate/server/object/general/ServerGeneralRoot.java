@@ -1,10 +1,13 @@
 package com.intuso.housemate.server.object.general;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.intuso.housemate.comms.api.internal.ClientConnection;
 import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.RemoteLinkedObject;
+import com.intuso.housemate.comms.api.internal.Router;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.NoPayload;
@@ -16,13 +19,20 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  */
 public class ServerGeneralRoot
         extends RemoteLinkedObject<RootData, HousemateData<?>, RemoteLinkedObject<?, ?, ?, ?>, Root.Listener<? super ServerGeneralRoot>>
         implements Root<Root.Listener<? super ServerGeneralRoot>, ServerGeneralRoot>, Message.Receiver<Message.Payload> {
+
+    public final static Set<String> TYPES = Collections.unmodifiableSet(Sets.newHashSet(
+            ApplicationRegistration.APPLICATION_REGISTRATION_TYPE,
+            ApplicationRegistration.APPLICATION_UNREGISTRATION_TYPE,
+            Router.ROUTER_CONNECTED));
 
     private final Injector injector;
     private final AccessManager accessManager;
@@ -48,7 +58,7 @@ public class ServerGeneralRoot
             public void messageReceived(Message<ClientPayload<ApplicationRegistration>> message) {
                 getLog().d("Access request received");
                 // get the client for the request
-                ClientInstance clientInstance = accessManager.getClientInstance(message.getRoute(), message.getPayload().getOriginal());
+                ClientInstance clientInstance = accessManager.getClientApplicationInstance(message.getRoute(), message.getPayload().getOriginal());
                 RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(clientInstance, message.getRoute());
                 accessManager.initialiseClient(client);
             }
@@ -60,7 +70,18 @@ public class ServerGeneralRoot
                 injector.getInstance(RemoteClientManager.class).clientUnregistered(message.getRoute());
             }
         }));
-        result.add(addMessageListener(RootData.CONNECTION_LOST_TYPE, new Message.Receiver<ClientPayload<StringPayload>>() {
+        result.add(addMessageListener(Router.ROUTER_CONNECTED, new Message.Receiver<ClientPayload<StringPayload>>() {
+            @Override
+            public void messageReceived(Message<ClientPayload<StringPayload>> message) {
+                String routerId = message.getPayload().getOriginal().getValue();
+                getLog().d("Router connected, id = " + routerId);
+                // process the request
+                ClientInstance clientInstance = accessManager.getClientRouterInstance(message.getRoute(), message.getPayload().getOriginal().getValue());
+                RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(clientInstance, message.getRoute());
+                accessManager.initialiseClient(client);
+            }
+        }));
+        result.add(addMessageListener(ClientConnection.UNKNOWN_CLIENT_ID, new Message.Receiver<ClientPayload<StringPayload>>() {
             @Override
             public void messageReceived(Message<ClientPayload<StringPayload>> message) {
                 // process the request

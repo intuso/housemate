@@ -34,7 +34,7 @@ public interface Command<
         /**
          * Notifies that a command has been started
          * @param command the command that was started
-         * @param userId the user that started the command
+         * @param userId the id of the user who started the command
          */
         void commandStarted(COMMAND command, String userId);
 

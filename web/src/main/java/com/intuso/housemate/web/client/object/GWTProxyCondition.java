@@ -14,7 +14,9 @@ import com.intuso.utilities.log.Log;
 /**
  */
 public class GWTProxyCondition extends ProxyCondition<
-            GWTProxyCommand, GWTProxyValue,
+            GWTProxyCommand,
+        GWTProxyValue,
+        GWTProxyProperty,
             GWTProxyList<PropertyData, GWTProxyProperty>,
             GWTProxyCondition, GWTProxyList<ConditionData, GWTProxyCondition>> {
 

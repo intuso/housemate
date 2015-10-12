@@ -13,17 +13,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-import com.intuso.housemate.comms.v1_0.api.ClientRoot;
 import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.RouterRoot;
 import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
-import com.intuso.housemate.object.v1_0.api.Application;
-import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.platform.android.service.R;
 import com.intuso.housemate.platform.android.service.service.ConnectionService;
 import com.intuso.utilities.listener.ListenerRegistration;
 
-public class HousemateActivity extends Activity implements ServiceConnection, ClientRoot.Listener<RouterRoot> {
+public class HousemateActivity extends Activity implements ServiceConnection, Router.Listener<Router> {
 
     private ListenerRegistration routerRegistration;
     private boolean bound = false;
@@ -81,11 +77,9 @@ public class HousemateActivity extends Activity implements ServiceConnection, Cl
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         bound = true;
-        Router router = ((ConnectionService.Binder)binder).getRouter();
-        routerRegistration = router.addObjectListener(this);
+        Router<?> router = ((ConnectionService.Binder)binder).getRouter();
+        routerRegistration = router.addListener(this);
         serverConnectionStatusChanged(null, router.getServerConnectionStatus());
-        applicationStatusChanged(null, router.getApplicationStatus());
-        applicationInstanceStatusChanged(null, router.getApplicationInstanceStatus());
     }
 
     @Override
@@ -96,7 +90,7 @@ public class HousemateActivity extends Activity implements ServiceConnection, Cl
     }
 
     @Override
-    public void serverConnectionStatusChanged(RouterRoot root, final ServerConnectionStatus serverConnectionStatus) {
+    public void serverConnectionStatusChanged(Router router, final ServerConnectionStatus serverConnectionStatus) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -106,32 +100,7 @@ public class HousemateActivity extends Activity implements ServiceConnection, Cl
     }
 
     @Override
-    public void applicationStatusChanged(RouterRoot root, final Application.Status applicationStatus) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView) findViewById(R.id.application_status)).setText("Application Status: " + applicationStatus);
-            }
-        });
-    }
-
-    @Override
-    public void applicationInstanceStatusChanged(RouterRoot root, final ApplicationInstance.Status applicationInstanceStatus) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView) findViewById(R.id.application_instance_status)).setText("Application Instance Status: " + applicationInstanceStatus);
-            }
-        });
-    }
-
-    @Override
-    public void newApplicationInstance(RouterRoot root, String instanceId) {
-        // do nothing
-    }
-
-    @Override
-    public void newServerInstance(RouterRoot root, String serverId) {
+    public void newServerInstance(Router root, String serverId) {
         // do nothing
     }
 }

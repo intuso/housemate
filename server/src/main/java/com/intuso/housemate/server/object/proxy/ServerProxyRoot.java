@@ -6,6 +6,7 @@ import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.comms.api.internal.payload.*;
 import com.intuso.housemate.object.api.internal.*;
+import com.intuso.housemate.server.comms.ClientInstance;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.housemate.server.comms.RemoteClient;
 import com.intuso.housemate.server.comms.RemoteClientListener;
@@ -144,7 +145,8 @@ public class ServerProxyRoot
     public final void setClient(RemoteClient client) {
         if(this.client != null)
             throw new HousemateCommsException("This object already has a client");
-        else if(client.getClientInstance().getClientType() != ApplicationRegistration.ClientType.Real)
+        else if(!(client.getClientInstance() instanceof ClientInstance.Application)
+                || ((ClientInstance.Application) client.getClientInstance()).getClientType() != ApplicationRegistration.ClientType.Real)
             throw new HousemateCommsException("Client is not of type " + ApplicationRegistration.ClientType.Real);
         if(clientListenerRegistration != null)
             clientListenerRegistration.removeListener();

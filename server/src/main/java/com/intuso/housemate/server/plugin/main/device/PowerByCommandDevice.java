@@ -1,19 +1,14 @@
 package com.intuso.housemate.server.plugin.main.device;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.client.real.api.internal.annotations.Property;
+import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.client.real.api.internal.impl.device.StatefulPoweredDevice;
-import com.intuso.housemate.client.real.api.internal.impl.type.StringType;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
-import com.intuso.housemate.comms.api.internal.payload.DeviceData;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
-import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Device that allows On/Off functionality by performing a system command.
@@ -21,27 +16,20 @@ import java.util.List;
 @TypeInfo(id = "power-by-command", name = "Power By Command", description = "Device which runs a configured command to turn things on and off")
 public final class PowerByCommandDevice extends StatefulPoweredDevice {
 
-    private final RealProperty<String> onCommandProperty;
-    private final RealProperty<String> offCommandProperty;
+    @Property(id = "on-command", name = "On Command", description = "The command to turn the device on", typeId = "string")
+    private String onCommandProperty;
+
+    @Property(id = "off-command", name = "Off Command", description = "The command to turn the device off", typeId = "string")
+    private String offCommandProperty;
 
     @Inject
-	public PowerByCommandDevice(Log log, ListenersFactory listenersFactory, @Assisted DeviceData data) {
-		super(log, listenersFactory, "power-by-command", data);
-        onCommandProperty = StringType.createProperty(getLog(), listenersFactory, "on-command", "On Command", "The command to turn the device on", null);
-        offCommandProperty = StringType.createProperty(getLog(), listenersFactory, "off-command", "Off Command", "The command to turn the device off", null);
-        List<String> propertyIds = data.getCustomPropertyIds() == null ? Lists.<String>newArrayList() : Lists.newArrayList(data.getCustomPropertyIds());
-        propertyIds.add(onCommandProperty.getId());
-        propertyIds.add(offCommandProperty.getId());
-        data.setCustomPropertyIds(propertyIds);
-        getProperties().add(onCommandProperty);
-        getProperties().add(offCommandProperty);
-	}
+	public PowerByCommandDevice(@Assisted DeviceDriver.Callback callback) {}
 
     /**
 	 * Turn the device on
 	 */
     public void turnOn() {
-        String command = onCommandProperty.getTypedValue();
+        String command = onCommandProperty;
         if(command != null) {
             try {
                 Runtime.getRuntime().exec(command);
@@ -57,7 +45,7 @@ public final class PowerByCommandDevice extends StatefulPoweredDevice {
 	 * Turn the device off
 	 */
     public void turnOff() {
-        String command = offCommandProperty.getTypedValue();
+        String command = offCommandProperty;
         if(command != null) {
             try {
                 Runtime.getRuntime().exec(command);

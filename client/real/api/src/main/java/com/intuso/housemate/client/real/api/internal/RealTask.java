@@ -1,7 +1,10 @@
 package com.intuso.housemate.client.real.api.internal;
 
 import com.google.common.collect.Lists;
-import com.intuso.housemate.client.real.api.internal.factory.task.RealTaskOwner;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
+import com.intuso.housemate.client.real.api.internal.factory.task.TaskFactoryType;
 import com.intuso.housemate.client.real.api.internal.impl.type.BooleanType;
 import com.intuso.housemate.client.real.api.internal.impl.type.StringType;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
@@ -14,60 +17,61 @@ import com.intuso.utilities.log.Log;
 
 import java.util.List;
 
-public abstract class RealTask
+public final class RealTask<DRIVER extends TaskDriver>
         extends RealObject<
         TaskData,
         HousemateData<?>,
-            RealObject<?, ?, ?, ?>,
-            Task.Listener<? super RealTask>>
+        RealObject<?, ?, ?, ?>,
+        Task.Listener<? super RealTask<DRIVER>>>
         implements Task<
-            RealCommand,
-            RealValue<Boolean>,
-            RealValue<String>,
-            RealList<PropertyData, RealProperty<?>>, RealTask> {
-
-    private final String type;
+        RealCommand,
+        RealValue<Boolean>,
+        RealValue<String>,
+        RealProperty<TaskDriver.Factory<DRIVER>>,
+        RealValue<Boolean>,
+        RealList<PropertyData, RealProperty<?>>, RealTask<DRIVER>> {
 
     private RealCommand removeCommand;
     private RealValue<String> errorValue;
+    private final RealProperty<TaskDriver.Factory<DRIVER>> driverProperty;
+    private RealValue<Boolean> driverLoadedValue;
     private RealValue<Boolean> executingValue;
     private RealList<PropertyData, RealProperty<?>> propertyList;
 
-    /**
-     * @param log {@inheritDoc}
-     * @param data the task's data
-     */
-    public RealTask(Log log, ListenersFactory listenersFactory, String type, TaskData data,
-                    RealTaskOwner owner, RealProperty<?>... properties) {
-        this(log, listenersFactory, type, data, owner, Lists.newArrayList(properties));
-    }
+    private DRIVER driver;
 
     /**
      * @param log {@inheritDoc}
      * @param data the object's data
-     * @param properties the task's properties
      */
-    public RealTask(Log log, ListenersFactory listenersFactory, String type, TaskData data,
-                    final RealTaskOwner owner, List<RealProperty<?>> properties) {
+    @Inject
+    public RealTask(Log log,
+                    ListenersFactory listenersFactory,
+                    TaskFactoryType driverFactoryType,
+                    @Assisted TaskData data,
+                    @Assisted final RemovedListener removedListener) {
         super(log, listenersFactory, data);
-        this.type = type;
         removeCommand = new RealCommand(log, listenersFactory, TaskData.REMOVE_ID, TaskData.REMOVE_ID, "Remove the task", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
-                owner.removeTask(RealTask.this);
+                removedListener.taskRemoved(RealTask.this);
             }
         };
         errorValue = new RealValue<>(log, listenersFactory, TaskData.ERROR_ID, TaskData.ERROR_ID, "The current error", new StringType(log, listenersFactory), (List)null);
+        driverProperty = (RealProperty<TaskDriver.Factory<DRIVER>>) new RealProperty(log, listenersFactory, "driver", "Driver", "The task's driver", driverFactoryType);
+        driverLoadedValue = BooleanType.createValue(log, listenersFactory, TaskData.DRIVER_LOADED_ID, TaskData.DRIVER_LOADED_ID, "Whether the task's driver is loaded or not", false);
         executingValue = new RealValue<>(log, listenersFactory, TaskData.EXECUTING_ID, TaskData.EXECUTING_ID, "Whether the task is executing", new BooleanType(log, listenersFactory), false);
-        propertyList = new RealList<>(log, listenersFactory, TaskData.PROPERTIES_ID, TaskData.PROPERTIES_ID, "The task's properties", properties);
+        propertyList = new RealList<>(log, listenersFactory, TaskData.PROPERTIES_ID, TaskData.PROPERTIES_ID, "The task's properties");
         addChild(removeCommand);
         addChild(errorValue);
+        addChild(driverProperty);
+        addChild(driverLoadedValue);
         addChild(executingValue);
         addChild(propertyList);
     }
 
-    public String getType() {
-        return type;
+    public DRIVER getDriver() {
+        return driver;
     }
 
     @Override
@@ -83,6 +87,20 @@ public abstract class RealTask
     @Override
     public RealValue<String> getErrorValue() {
         return errorValue;
+    }
+
+    @Override
+    public RealProperty<TaskDriver.Factory<DRIVER>> getDriverProperty() {
+        return driverProperty;
+    }
+
+    @Override
+    public RealValue<Boolean> getDriverLoadedValue() {
+        return driverLoadedValue;
+    }
+
+    public boolean isDriverLoaded() {
+        return driverLoadedValue.getTypedValue() != null ? driverLoadedValue.getTypedValue() : false;
     }
 
     @Override
@@ -109,7 +127,7 @@ public abstract class RealTask
     private void taskExecuting(boolean executing) {
         if(executing != isExecuting()) {
             getExecutingValue().setTypedValues(executing);
-            for(Task.Listener<? super RealTask> listener : getObjectListeners())
+            for(Task.Listener<? super RealTask<DRIVER>> listener : getObjectListeners())
                 listener.taskExecuting(this, executing);
         }
     }
@@ -127,5 +145,15 @@ public abstract class RealTask
     /**
      * Does the actual task execution
      */
-    protected abstract void execute();
+    protected void execute() {
+        // todo, call driver
+    }
+
+    public interface RemovedListener {
+        void taskRemoved(RealTask task);
+    }
+
+    public interface Factory {
+        RealTask<?> create(TaskData data, RemovedListener removedListener);
+    }
 }

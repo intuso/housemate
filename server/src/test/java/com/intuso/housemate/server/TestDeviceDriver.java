@@ -2,25 +2,28 @@ package com.intuso.housemate.server;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.RealDevice;
 import com.intuso.housemate.client.real.api.internal.annotations.Value;
 import com.intuso.housemate.client.real.api.internal.annotations.Values;
-import com.intuso.housemate.comms.api.internal.payload.DeviceData;
-import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 
 /**
  */
-public class TestDevice extends RealDevice {
+public class TestDeviceDriver implements DeviceDriver {
 
     @Values
     public MyValues values;
 
     @Inject
-    public TestDevice(Log log,
-                      ListenersFactory listenersFactory,
-                      @Assisted DeviceData data) {
-        super(log, listenersFactory, "test", data);
+    public TestDeviceDriver(@Assisted DeviceDriver.Callback callback) {}
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void stop() {
+
     }
 
     public interface MyValues {

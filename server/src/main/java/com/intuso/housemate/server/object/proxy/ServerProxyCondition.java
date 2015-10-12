@@ -14,21 +14,26 @@ public class ServerProxyCondition
         extends ServerProxyObject<
         ConditionData,
         HousemateData<?>,
-            ServerProxyObject<?, ?, ?, ?, ?>,
-            ServerProxyCondition,
-            Condition.Listener<? super ServerProxyCondition>>
+        ServerProxyObject<?, ?, ?, ?, ?>,
+        ServerProxyCondition,
+        Condition.Listener<? super ServerProxyCondition>>
         implements Condition<
-                    ServerProxyCommand,
-                    ServerProxyValue,
-                    ServerProxyValue,
-                    ServerProxyList<PropertyData, ServerProxyProperty>,
-                    ServerProxyCommand,
-                    ServerProxyCondition,
-                    ServerProxyList<ConditionData, ServerProxyCondition>> {
+        ServerProxyCommand,
+        ServerProxyValue,
+        ServerProxyProperty,
+        ServerProxyValue,
+        ServerProxyValue,
+        ServerProxyList<PropertyData, ServerProxyProperty>,
+        ServerProxyCommand,
+        ServerProxyCondition,
+        ServerProxyList<ConditionData, ServerProxyCondition>,
+        ServerProxyCondition> {
 
     private ServerProxyCommand remove;
     private ServerProxyValue error;
     private ServerProxyValue satisfied;
+    private ServerProxyProperty driverProperty;
+    private ServerProxyValue driverLoaded;
     private ServerProxyList<PropertyData, ServerProxyProperty> properties;
     private ServerProxyCommand addCondition;
     private ServerProxyList<ConditionData, ServerProxyCondition> conditions;
@@ -49,6 +54,8 @@ public class ServerProxyCondition
         remove = (ServerProxyCommand) getChild(ConditionData.REMOVE_ID);
         error = (ServerProxyValue) getChild(ConditionData.ERROR_ID);
         satisfied = (ServerProxyValue) getChild(ConditionData.SATISFIED_ID);
+        driverProperty = (ServerProxyProperty) getChild(ConditionData.DRIVER_ID);
+        driverLoaded = (ServerProxyValue) getChild(ConditionData.DRIVER_LOADED_ID);
         properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(ConditionData.PROPERTIES_ID);
         addCondition = (ServerProxyCommand) getChild(ConditionData.ADD_CONDITION_ID);
         conditions = (ServerProxyList<ConditionData, ServerProxyCondition>) getChild(ConditionData.CONDITIONS_ID);
@@ -67,6 +74,16 @@ public class ServerProxyCondition
     @Override
     public ServerProxyValue getSatisfiedValue() {
         return satisfied;
+    }
+
+    @Override
+    public ServerProxyProperty getDriverProperty() {
+        return driverProperty;
+    }
+
+    @Override
+    public ServerProxyValue getDriverLoadedValue() {
+        return driverLoaded;
     }
 
     @Override

@@ -6,22 +6,25 @@ package com.intuso.housemate.object.api.internal;
  * @param <PROPERTIES> the type of the properties list
  * @param <ADD_COMMAND> the type of the add command
  * @param <CONDITION> the type of the condition
- * @param <CONDITIONS> the type of the conditions list
+ * @param <CHILD_CONDITIONS> the type of the conditions list
  */
-public interface Condition<
-            REMOVE_COMMAND extends Command<?, ?, ?, ?>,
-            ERROR_VALUE extends Value<?, ?>,
-            SATISFIED_VALUE extends Value<?, ?>,
-            PROPERTIES extends List<? extends Property<?, ?, ?>>,
-            ADD_COMMAND extends Command<?, ?, ?, ?>,
-            CONDITION extends Condition<REMOVE_COMMAND, ERROR_VALUE, SATISFIED_VALUE, PROPERTIES, ADD_COMMAND, CONDITION, CONDITIONS>,
-            CONDITIONS extends List<? extends CONDITION>>
+public interface Condition<REMOVE_COMMAND extends Command<?, ?, ?, ?>,
+        ERROR_VALUE extends Value<?, ?>,
+        DRIVER_PROPERTY extends Property<?, ?, ?>,
+        DRIVER_LOADED_VALUE extends Value<?, ?>,
+        SATISFIED_VALUE extends Value<?, ?>,
+        PROPERTIES extends List<? extends Property<?, ?, ?>>,
+        ADD_COMMAND extends Command<?, ?, ?, ?>,
+        CHILD_CONDITION extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>,
+        CHILD_CONDITIONS extends List<? extends CHILD_CONDITION>,
+        CONDITION extends Condition<REMOVE_COMMAND, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, SATISFIED_VALUE, PROPERTIES, ADD_COMMAND, CHILD_CONDITION, CHILD_CONDITIONS, CONDITION>>
         extends BaseHousemateObject<Condition.Listener<? super CONDITION>>,
-            Property.Container<PROPERTIES>,
-            Removeable<REMOVE_COMMAND>,
-            Failable<ERROR_VALUE> {
+        Property.Container<PROPERTIES>,
+        Removeable<REMOVE_COMMAND>,
+        Failable<ERROR_VALUE>,
+        UsesDriver<DRIVER_PROPERTY, DRIVER_LOADED_VALUE> {
 
-    CONDITIONS getConditions();
+    CHILD_CONDITIONS getConditions();
 
     /**
      * Gets the add condition command
@@ -39,7 +42,9 @@ public interface Condition<
      *
      * Listener interface for options
      */
-    interface Listener<CONDITION extends Condition<?, ?, ?, ?, ?, ?, ?>> extends ObjectListener {
+    interface Listener<CONDITION extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> extends ObjectListener,
+            Failable.Listener<CONDITION>,
+            UsesDriver.Listener<CONDITION> {
 
         /**
          * Notifies that a condition has become (un)satisfied
@@ -47,20 +52,13 @@ public interface Condition<
          * @param satisfied true if the condition is now satisfied
          */
         void conditionSatisfied(CONDITION condition, boolean satisfied);
-
-        /**
-         * Notifies that a condition is in error (or not)
-         * @param condition the condition that is in error (or not)
-         * @param error description of the error or null if not in error
-         */
-        void conditionError(CONDITION condition, String error);
     }
 
     /**
      *
      * Interface to show that the implementing object has a list of conditions
      */
-    interface Container<CONDITIONS extends List<? extends Condition<?, ?, ?, ?, ?, ?, ?>>> {
+    interface Container<CONDITIONS extends List<? extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the conditions list

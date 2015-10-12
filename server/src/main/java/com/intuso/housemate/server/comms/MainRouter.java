@@ -4,17 +4,15 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.intuso.housemate.client.real.api.internal.RealRoot;
+import com.intuso.housemate.comms.api.internal.BaseRouter;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.Message;
-import com.intuso.housemate.comms.api.internal.Router;
-import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
 import com.intuso.housemate.plugin.api.internal.ExternalClientRouter;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.properties.api.PropertyRepository;
 
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -22,19 +20,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * The main router for the whole app. All comms routers attach to this
  */
-public final class MainRouter extends Router {
+public final class MainRouter extends BaseRouter<MainRouter> {
 
     private final Injector injector;
     private Set<ExternalClientRouter> externalClientRouters;
 
-    private final LinkedBlockingQueue<Message<Message.Payload>> incomingMessages = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<Message<?>> incomingMessages = new LinkedBlockingQueue<>();
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
     @Inject
-    public MainRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector) {
-        super(log, listenersFactory, properties);
+    public MainRouter(Log log, ListenersFactory listenersFactory, Injector injector) {
+        super(log, listenersFactory, ServerConnectionStatus.ConnectedToServer);
         this.injector = injector;
-        setServerConnectionStatus(ServerConnectionStatus.ConnectedToServer);
     }
 	
 	/**
@@ -42,11 +39,8 @@ public final class MainRouter extends Router {
 	 */
     public final void start() {
 
-        // register the main router. This will cause the connection manager to send a message (put a it on our queue)
-        // so we then need to get it and process it to finish the registration. We need this to block so it happens
-        // before we create the external client routers so do this before starting the normal thread
-        register(Server.INTERNAL_APPLICATION_DETAILS, MainRouter.class.getName());
-        processMessage(incomingMessages.poll());
+        connectionEstablished();
+
         // start processing all the messages
         messageProcessor.start();
 
@@ -61,7 +55,6 @@ public final class MainRouter extends Router {
         for(ExternalClientRouter externalClientRouter : externalClientRouters) {
             try {
                 externalClientRouter.start();
-                externalClientRouter.register(Server.INTERNAL_APPLICATION_DETAILS_V1_0, externalClientRouter.getClass().getName());
             } catch(Throwable t) {
                 throw new HousemateCommsException("Could not start external client router", t);
             }
@@ -87,7 +80,7 @@ public final class MainRouter extends Router {
     }
 
     @Override
-    public void sendMessage(Message message) {
+    public void sendMessage(Message<?> message) {
         incomingMessages.add(message);
     }
 
@@ -110,11 +103,12 @@ public final class MainRouter extends Router {
         messageReceived(message);
 	}
 
-    private void processMessage(Message<Message.Payload> message) {
+    @Override
+    protected void sendMessageNow(Message<?> message) {
         getLog().d("Message received " + message.toString());
         try {
             RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(message.getRoute());
-            Message.Receiver<Message.Payload> receiver = getReceiver(client, message);
+            Message.Receiver receiver = getReceiver(client, message);
             // wrap payload in new payload in which we can put the client's id
             message = new Message<Message.Payload>(message.getPath(), message.getType(),
                     new ClientPayload<>(client, message.getPayload()), message.getRoute());
@@ -126,9 +120,7 @@ public final class MainRouter extends Router {
 
     private Message.Receiver<Message.Payload> getReceiver(RemoteClient client, Message<?> message) {
         // intercept certain messages
-        if(message.getPath().length == 1 &&
-                (message.getType().equals(ApplicationRegistration.APPLICATION_REGISTRATION_TYPE)
-                    || message.getType().equals(ApplicationRegistration.APPLICATION_UNREGISTRATION_TYPE)))
+        if(message.getPath().length == 1 && ServerGeneralRoot.TYPES.contains(message.getType()))
             return injector.getInstance(ServerGeneralRoot.class);
         // otherwise send it to the route for the client
         if(client == null)
@@ -143,7 +135,7 @@ public final class MainRouter extends Router {
         @Override
         public void run() {
 
-            Message<Message.Payload> message;
+            Message<?> message;
 
             /**
              * While we shouldn't stop
@@ -156,7 +148,7 @@ public final class MainRouter extends Router {
                 } catch(InterruptedException e) {
                     break;
                 }
-                processMessage(message);
+                sendMessageNow(message);
             }
         }
     };

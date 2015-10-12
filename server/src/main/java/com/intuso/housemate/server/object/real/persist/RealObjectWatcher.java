@@ -6,17 +6,12 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.client.real.api.internal.annotations.AnnotationProcessor;
-import com.intuso.housemate.client.real.api.internal.factory.automation.RealAutomationFactory;
 import com.intuso.housemate.client.real.api.internal.factory.device.DeviceFactoryType;
-import com.intuso.housemate.client.real.api.internal.factory.device.RealDeviceFactory;
 import com.intuso.housemate.client.real.api.internal.factory.hardware.HardwareFactoryType;
-import com.intuso.housemate.client.real.api.internal.factory.hardware.RealHardwareFactory;
-import com.intuso.housemate.client.real.api.internal.factory.user.RealUserFactory;
 import com.intuso.housemate.client.real.api.internal.impl.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.client.real.api.internal.impl.type.ApplicationStatusType;
 import com.intuso.housemate.comms.api.internal.payload.*;
 import com.intuso.housemate.object.api.internal.Command;
-import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.internal.Persistence;
@@ -47,15 +42,17 @@ public class RealObjectWatcher {
     private final HardwareListWatcher hardwareListWatcher;
     private final UserListWatcher userListWatcher;
 
-    private final RealAutomationFactory realAutomationFactory;
+    private final RealAutomation.Factory automationFactory;
     private final DeviceFactoryType deviceFactoryType;
+    private final RealDevice.Factory deviceFactory;
     private final HardwareFactoryType hardwareFactoryType;
-    private final RealUserFactory realUserFactory;
+    private final RealHardware.Factory hardwareFactory;
+    private final RealUser.Factory userFactory;
 
     private final AnnotationProcessor annotationProcessor;
 
     @Inject
-    public RealObjectWatcher(Log log, ListenersFactory listenersFactory, Injector injector, RealRoot root, Persistence persistence, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, DeviceListWatcher deviceListWatcher, HardwareListWatcher hardwareListWatcher, UserListWatcher userListWatcher, RealAutomationFactory realAutomationFactory, DeviceFactoryType deviceFactoryType, HardwareFactoryType hardwareFactoryType, RealUserFactory realUserFactory, AnnotationProcessor annotationProcessor) {
+    public RealObjectWatcher(Log log, ListenersFactory listenersFactory, Injector injector, RealRoot root, Persistence persistence, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, DeviceListWatcher deviceListWatcher, HardwareListWatcher hardwareListWatcher, UserListWatcher userListWatcher, RealAutomation.Factory automationFactory, DeviceFactoryType deviceFactoryType, RealDevice.Factory deviceFactory, HardwareFactoryType hardwareFactoryType, RealHardware.Factory hardwareFactory, RealUser.Factory userFactory, AnnotationProcessor annotationProcessor) {
         this.log = log;
         this.listenersFactory = listenersFactory;
         this.injector = injector;
@@ -66,10 +63,12 @@ public class RealObjectWatcher {
         this.deviceListWatcher = deviceListWatcher;
         this.hardwareListWatcher = hardwareListWatcher;
         this.userListWatcher = userListWatcher;
-        this.realAutomationFactory = realAutomationFactory;
+        this.automationFactory = automationFactory;
         this.deviceFactoryType = deviceFactoryType;
+        this.deviceFactory = deviceFactory;
         this.hardwareFactoryType = hardwareFactoryType;
-        this.realUserFactory = realUserFactory;
+        this.hardwareFactory = hardwareFactory;
+        this.userFactory = userFactory;
         this.annotationProcessor = annotationProcessor;
     }
 
@@ -163,7 +162,7 @@ public class RealObjectWatcher {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    RealAutomation automation = realAutomationFactory.create(
+                    RealAutomation automation = automationFactory.create(
                             new AutomationData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
                             root);
                     // automation is not yet initialised so we cannot use it's path to load conditions etc. Instead,
@@ -200,7 +199,7 @@ public class RealObjectWatcher {
         }
     }
 
-    private void loadConditions(java.util.List<String> path, RealList<ConditionData, RealCondition> conditions, RealCommand command) {
+    private void loadConditions(java.util.List<String> path, RealList<ConditionData, RealCondition<?>> conditions, RealCommand command) {
         try {
             for(String conditionName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
@@ -221,30 +220,16 @@ public class RealObjectWatcher {
     }
 
     private void loadDevices() {
-        RealList<DeviceData, RealDevice> devices = root.getDevices();
+        RealList<DeviceData, RealDevice<?>> devices = root.getDevices();
         List<String> path = Lists.newArrayList(devices.getPath());
         try {
             for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    if(!details.getChildren().containsKey("type"))
-                        log.e("No type found for persisted device " + key);
-                    else if(details.getChildren().get("type").getElements().size() != 1)
-                        log.e("Type for persisted device " + key + " does not have a single value");
-                    else {
-                        TypeInstance type = details.getChildren().get("type").getElements().get(0);
-                        RealDeviceFactory realDeviceFactory = deviceFactoryType.deserialise(type);
-                        if(realDeviceFactory == null) {
-                            log.e("Could not find factory for device type " + type.getValue());
-                        } else {
-                            RealDevice device = realDeviceFactory.create(
-                                    new DeviceData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
-                                    root);
-                            annotationProcessor.process(root.getTypes(), device);
-                            devices.add(device);
-                        }
-                    }
+                    devices.add(deviceFactory.create(
+                            new DeviceData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
+                            root));
                 } catch(Throwable t) {
                     log.e("Failed to load device", t);
                 } finally {
@@ -259,30 +244,16 @@ public class RealObjectWatcher {
     }
 
     private void loadHardwares() {
-        RealList<HardwareData, RealHardware> hardwares = root.getHardwares();
+        RealList<HardwareData, RealHardware<?>> hardwares = root.getHardwares();
         List<String> path = Lists.newArrayList(hardwares.getPath());
         try {
             for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    if(!details.getChildren().containsKey("type"))
-                        log.e("No type found for persisted hardware " + key);
-                    else if(details.getChildren().get("type").getElements().size() != 1)
-                        log.e("Type for persisted hardware " + key + " does not have a single value");
-                    else {
-                        TypeInstance type = details.getChildren().get("type").getElements().get(0);
-                        RealHardwareFactory realHardwareFactory = hardwareFactoryType.deserialise(type);
-                        if(realHardwareFactory == null) {
-                            log.e("Could not find factory for hardware type " + type.getValue());
-                        } else {
-                            RealHardware hardware = realHardwareFactory.create(
-                                    new HardwareData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
-                                    root);
-                            annotationProcessor.process(root.getTypes(), hardware);
-                            hardwares.add(hardware);
-                        }
-                    }
+                    hardwares.add(hardwareFactory.create(
+                            new HardwareData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
+                            root));
                 } catch(Throwable t) {
                     log.e("Failed to load hardware", t);
                 } finally {
@@ -296,7 +267,7 @@ public class RealObjectWatcher {
         }
     }
 
-    private void loadTasks(java.util.List<String> path, RealList<TaskData, RealTask> tasks, RealCommand command) {
+    private void loadTasks(java.util.List<String> path, RealList<TaskData, RealTask<?>> tasks, RealCommand command) {
         try {
             for(String taskName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
@@ -324,7 +295,7 @@ public class RealObjectWatcher {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    RealUser user = realUserFactory.create(
+                    RealUser user = userFactory.create(
                             new UserData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
                             root);
                     users.add(user);
@@ -338,7 +309,7 @@ public class RealObjectWatcher {
             log.e("Failed to get names of existing users", t);
         }
         if(users.getChildren().size() == 0)
-            users.add(realUserFactory.create(new UserData("admin", "admin", "Default admin user"), root));
+            users.add(userFactory.create(new UserData("admin", "admin", "Default admin user"), root));
     }
 
     private class CommandPerformListener implements Command.PerformListener<Command<?, ?, ?, ?>> {

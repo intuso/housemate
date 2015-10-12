@@ -1,6 +1,7 @@
 package com.intuso.housemate.client.real.api.internal.factory.condition;
 
 import com.google.inject.Inject;
+import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.factory.FactoryType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -8,7 +9,7 @@ import com.intuso.utilities.log.Log;
 /**
  * Created by tomc on 19/03/15.
  */
-public class ConditionFactoryType extends FactoryType<RealConditionFactory<?>> {
+public class ConditionFactoryType extends FactoryType<ConditionDriver.Factory<?>> {
 
     public final static String TYPE_ID = "condition-factory";
     public final static String TYPE_NAME = "Condition Factory";

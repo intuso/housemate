@@ -2,6 +2,7 @@ package com.intuso.housemate.web.server.service;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
+import com.google.inject.Key;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.comms.v1_0.api.Message;
 import com.intuso.housemate.comms.v1_0.api.Router;
@@ -50,7 +51,7 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
     }
 
     @Override
-    public void sendMessageToServer(Message<Message.Payload> message) throws NotConnectedException {
+    public void sendMessageToServer(Message<?> message) throws NotConnectedException {
         getEndpoint().sendMessage(message);
     }
 
@@ -90,7 +91,7 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
         // don't care if it didn't exist
         } catch (NotConnectedException e) {}
         this.getThreadLocalRequest().getSession().setAttribute(ATT_NAME,
-                new GWTClientEndpoint(ContextListener.INJECTOR.getInstance(Router.class)));
+                new GWTClientEndpoint(ContextListener.INJECTOR.getInstance(new Key<Router<?>>() {})));
     }
 
     private void removeEndpoint() {

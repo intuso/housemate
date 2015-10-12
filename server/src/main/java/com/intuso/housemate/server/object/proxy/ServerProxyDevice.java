@@ -16,18 +16,20 @@ import java.util.List;
 public class ServerProxyDevice
         extends ServerProxyObject<DeviceData, HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>, ServerProxyDevice, Device.Listener<? super ServerProxyDevice>>
         implements Device<
-            ServerProxyCommand,
-            ServerProxyCommand,
-            ServerProxyCommand,
-            ServerProxyCommand,
-            ServerProxyList<CommandData, ServerProxyCommand>,
-            ServerProxyValue,
-            ServerProxyValue,
-            ServerProxyValue,
-            ServerProxyList<ValueData, ServerProxyValue>,
-            ServerProxyProperty,
-            ServerProxyList<PropertyData, ServerProxyProperty>,
-            ServerProxyDevice> {
+        ServerProxyCommand,
+        ServerProxyCommand,
+        ServerProxyCommand,
+        ServerProxyCommand,
+        ServerProxyList<CommandData, ServerProxyCommand>,
+        ServerProxyValue,
+        ServerProxyValue,
+        ServerProxyProperty,
+        ServerProxyValue,
+        ServerProxyValue,
+        ServerProxyList<ValueData, ServerProxyValue>,
+        ServerProxyProperty,
+        ServerProxyList<PropertyData, ServerProxyProperty>,
+        ServerProxyDevice> {
 
     private ServerProxyCommand rename;
     private ServerProxyCommand remove;
@@ -35,6 +37,8 @@ public class ServerProxyDevice
     private ServerProxyCommand start;
     private ServerProxyCommand stop;
     private ServerProxyValue error;
+    private ServerProxyProperty driverProperty;
+    private ServerProxyValue driverLoaded;
     private ServerProxyList<CommandData, ServerProxyCommand> commands;
     private ServerProxyList<ValueData, ServerProxyValue> values;
     private ServerProxyList<PropertyData, ServerProxyProperty> properties;
@@ -57,6 +61,8 @@ public class ServerProxyDevice
         start = (ServerProxyCommand) getChild(DeviceData.START_ID);
         stop = (ServerProxyCommand) getChild(DeviceData.STOP_ID);
         error = (ServerProxyValue) getChild(DeviceData.ERROR_ID);
+        driverProperty = (ServerProxyProperty) getChild(DeviceData.DRIVER_ID);
+        driverLoaded = (ServerProxyValue) getChild(DeviceData.DRIVER_LOADED_ID);
         commands = (ServerProxyList<CommandData, ServerProxyCommand>) getChild(DeviceData.COMMANDS_ID);
         values = (ServerProxyList<ValueData, ServerProxyValue>) getChild(DeviceData.VALUES_ID);
         properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(DeviceData.PROPERTIES_ID);
@@ -90,6 +96,16 @@ public class ServerProxyDevice
     @Override
     public ServerProxyValue getErrorValue() {
         return error;
+    }
+
+    @Override
+    public ServerProxyProperty getDriverProperty() {
+        return driverProperty;
+    }
+
+    @Override
+    public ServerProxyValue getDriverLoadedValue() {
+        return driverLoaded;
     }
 
     @Override

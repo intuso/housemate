@@ -4,13 +4,13 @@ import com.google.common.collect.Sets;
 import com.google.inject.*;
 import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
+import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
+import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
+import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.real.api.internal.factory.condition.ConditionFactoryType;
-import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionFactory;
 import com.intuso.housemate.client.real.api.internal.factory.device.DeviceFactoryType;
-import com.intuso.housemate.client.real.api.internal.factory.device.RealDeviceFactory;
 import com.intuso.housemate.client.real.api.internal.factory.hardware.HardwareFactoryType;
-import com.intuso.housemate.client.real.api.internal.factory.hardware.RealHardwareFactory;
-import com.intuso.housemate.client.real.api.internal.factory.task.RealTaskFactory;
 import com.intuso.housemate.client.real.api.internal.factory.task.TaskFactoryType;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
@@ -76,8 +76,8 @@ public class FactoryPluginListener implements PluginListener {
     }
 
     private void addHardwareFactories(Injector pluginInjector) {
-        Set<Entry<RealHardwareFactory<?>>> factoryEntries = getEntries(pluginInjector, RealHardwareFactory.class);
-        for(Entry<RealHardwareFactory<?>> factoryEntry : factoryEntries) {
+        Set<Entry<HardwareDriver.Factory<?>>> factoryEntries = getEntries(pluginInjector, HardwareDriver.Factory.class);
+        for(Entry<HardwareDriver.Factory<?>> factoryEntry : factoryEntries) {
             log.d("Adding new hardware factory for type " + factoryEntry.getTypeInfo().id());
             hardwareFactoryType.addFactory(factoryEntry.getTypeInfo().id(),
                     factoryEntry.getTypeInfo().name(), factoryEntry.getTypeInfo().description(),
@@ -86,14 +86,14 @@ public class FactoryPluginListener implements PluginListener {
     }
     
     private void removeHardwareFactories(Injector pluginInjector) {
-        Set<Entry<RealHardwareFactory<?>>> factoryEntries = getEntries(pluginInjector, RealHardwareFactory.class);
-        for(Entry<RealHardwareFactory<?>> factoryEntry : factoryEntries)
+        Set<Entry<HardwareDriver.Factory<?>>> factoryEntries = getEntries(pluginInjector, HardwareDriver.Factory.class);
+        for(Entry<HardwareDriver.Factory<?>> factoryEntry : factoryEntries)
             hardwareFactoryType.removeFactory(factoryEntry.getTypeInfo().id());
     }
 
     private void addDeviceFactories(Injector pluginInjector) {
-        Set<Entry<RealDeviceFactory<?>>> factoryEntries = getEntries(pluginInjector, RealDeviceFactory.class);
-        for(Entry<RealDeviceFactory<?>> factoryEntry : factoryEntries) {
+        Set<Entry<DeviceDriver.Factory<?>>> factoryEntries = getEntries(pluginInjector, DeviceDriver.Factory.class);
+        for(Entry<DeviceDriver.Factory<?>> factoryEntry : factoryEntries) {
             log.d("Adding new device factory for type " + factoryEntry.getTypeInfo().id());
             deviceFactoryType.addFactory(factoryEntry.getTypeInfo().id(),
                     factoryEntry.getTypeInfo().name(), factoryEntry.getTypeInfo().description(),
@@ -102,14 +102,14 @@ public class FactoryPluginListener implements PluginListener {
     }
 
     private void removeDeviceFactories(Injector pluginInjector) {
-        Set<Entry<RealDeviceFactory<?>>> factoryEntries = getEntries(pluginInjector, RealDeviceFactory.class);
-        for(Entry<RealDeviceFactory<?>> factoryEntry : factoryEntries)
+        Set<Entry<DeviceDriver.Factory<?>>> factoryEntries = getEntries(pluginInjector, DeviceDriver.Factory.class);
+        for(Entry<DeviceDriver.Factory<?>> factoryEntry : factoryEntries)
             deviceFactoryType.removeFactory(factoryEntry.getTypeInfo().id());
     }
 
     private void addConditionFactories(Injector pluginInjector) {
-        Set<Entry<RealConditionFactory<?>>> factoryEntries = getEntries(pluginInjector, RealConditionFactory.class);
-        for(Entry<RealConditionFactory<?>> factoryEntry : factoryEntries) {
+        Set<Entry<ConditionDriver.Factory<?>>> factoryEntries = getEntries(pluginInjector, ConditionDriver.Factory.class);
+        for(Entry<ConditionDriver.Factory<?>> factoryEntry : factoryEntries) {
             log.d("Adding new condition factory for type " + factoryEntry.getTypeInfo().id());
             conditionFactoryType.addFactory(factoryEntry.getTypeInfo().id(),
                     factoryEntry.getTypeInfo().name(), factoryEntry.getTypeInfo().description(),
@@ -118,14 +118,14 @@ public class FactoryPluginListener implements PluginListener {
     }
 
     private void removeConditionFactories(Injector pluginInjector) {
-        Set<Entry<RealConditionFactory<?>>> factoryEntries = getEntries(pluginInjector, RealConditionFactory.class);
-        for(Entry<RealConditionFactory<?>> factoryEntry : factoryEntries)
+        Set<Entry<ConditionDriver.Factory<?>>> factoryEntries = getEntries(pluginInjector, ConditionDriver.Factory.class);
+        for(Entry<ConditionDriver.Factory<?>> factoryEntry : factoryEntries)
             conditionFactoryType.removeFactory(factoryEntry.getTypeInfo().id());
     }
 
     private void addTaskFactories(Injector pluginInjector) {
-        Set<Entry<RealTaskFactory<?>>> factoryEntries = getEntries(pluginInjector, RealTaskFactory.class);
-        for(Entry<RealTaskFactory<?>> factoryEntry : factoryEntries) {
+        Set<Entry<TaskDriver.Factory<?>>> factoryEntries = getEntries(pluginInjector, TaskDriver.Factory.class);
+        for(Entry<TaskDriver.Factory<?>> factoryEntry : factoryEntries) {
             log.d("Adding new task factory for type " + factoryEntry.getTypeInfo().id());
             taskFactoryType.addFactory(factoryEntry.getTypeInfo().id(),
                     factoryEntry.getTypeInfo().name(), factoryEntry.getTypeInfo().description(),
@@ -134,8 +134,8 @@ public class FactoryPluginListener implements PluginListener {
     }
 
     private void removeTaskFactories(Injector pluginInjector) {
-        Set<Entry<RealTaskFactory<?>>> factoryEntries = getEntries(pluginInjector, RealTaskFactory.class);
-        for(Entry<RealTaskFactory<?>> factoryEntry : factoryEntries)
+        Set<Entry<TaskDriver.Factory<?>>> factoryEntries = getEntries(pluginInjector, TaskDriver.Factory.class);
+        for(Entry<TaskDriver.Factory<?>> factoryEntry : factoryEntries)
             taskFactoryType.removeFactory(factoryEntry.getTypeInfo().id());
     }
     

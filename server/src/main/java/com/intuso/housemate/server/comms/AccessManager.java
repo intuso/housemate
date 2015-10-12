@@ -10,6 +10,7 @@ import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.api.internal.RealValue;
 import com.intuso.housemate.client.real.api.internal.impl.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.client.real.api.internal.impl.type.ApplicationStatusType;
+import com.intuso.housemate.comms.api.internal.Router;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.comms.api.internal.payload.ApplicationData;
 import com.intuso.housemate.comms.api.internal.payload.ApplicationInstanceData;
@@ -50,11 +51,11 @@ public class AccessManager {
         this.realRoot = realRoot;
     }
 
-    public ClientInstance getClientInstance(List<String> route, ApplicationRegistration registration) {
+    public ClientInstance getClientApplicationInstance(List<String> route, ApplicationRegistration registration) {
 
         // get the application
         if(isInternalRegistration(route, registration)) {
-            return new ClientInstance(true, Server.INTERNAL_APPLICATION_DETAILS, registration.getComponent(), registration.getComponent(), registration.getType());
+            return new ClientInstance.Application(true, Server.INTERNAL_APPLICATION_DETAILS, registration.getComponent(), registration.getComponent(), registration.getType());
         } else {
             String appId = registration.getApplicationDetails().getApplicationId();
             RealApplication application = realRoot.getApplications().get(appId);
@@ -69,7 +70,7 @@ public class AccessManager {
             String instanceId = registration.getApplicationInstanceId();
             // if there was no instance id or no app instance for that id, create a new id (don't want client choosing it)
             // and a new instance for the id
-            if (instanceId == null || application.getApplicationInstances().get(instanceId) == null) {
+            if (instanceId == null || instanceId.length() == 0 || application.getApplicationInstances().get(instanceId) == null) {
                 instanceId = UUID.randomUUID().toString();
                 RealApplicationInstance applicationInstance =
                         new RealApplicationInstance(log, listenersFactory, instanceId,
@@ -78,8 +79,15 @@ public class AccessManager {
                 applicationInstance.getStatusValue().setTypedValues(getInitialStatus(application));
             }
 
-            return new ClientInstance(false, registration.getApplicationDetails(), instanceId, registration.getComponent(), registration.getType());
+            return new ClientInstance.Application(false, registration.getApplicationDetails(), instanceId, registration.getComponent(), registration.getType());
         }
+    }
+
+    public ClientInstance getClientRouterInstance(List<String> route, String routerId) {
+
+        if (routerId == null || routerId.length() == 0)
+            routerId = UUID.randomUUID().toString();
+        return new ClientInstance.Router(isInternalRegistration(route), routerId);
     }
 
     private boolean isInternalRegistration(List<String> route, ApplicationRegistration registration) {
@@ -87,39 +95,50 @@ public class AccessManager {
                 && (route.size() == 0 || route.size() == 1);
     }
 
+    private boolean isInternalRegistration(List<String> route) {
+        return route.size() == 0 || route.size() == 1;
+    }
+
     public void initialiseClient(RemoteClient client) {
 
-        if(client.getClientInstance().isInternal()) {
+        if(client.getClientInstance() instanceof ClientInstance.Application) {
 
-            try {
-                client.sendMessage(new String[]{""}, RootData.SERVER_INSTANCE_ID_TYPE, new StringPayload(Server.INSTANCE_ID));
-                client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(client.getClientInstance().getApplicationInstanceId()));
-                client.sendMessage(new String[]{""}, RootData.APPLICATION_STATUS_TYPE, new ApplicationData.StatusPayload(Application.Status.AllowInstances));
-                client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_STATUS_TYPE, new ApplicationInstanceData.StatusPayload(ApplicationInstance.Status.Allowed));
-            } catch (Throwable t) {
-                log.e("Failed to tell application instance about statuses", t);
+            ClientInstance.Application clientApplicationInstance = (ClientInstance.Application) client.getClientInstance();
+
+            if (client.getClientInstance().isInternal()) {
+
+                try {
+                    client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(clientApplicationInstance.getApplicationInstanceId()));
+                    client.sendMessage(new String[]{""}, RootData.APPLICATION_STATUS_TYPE, new ApplicationData.StatusPayload(Application.Status.AllowInstances));
+                    client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_STATUS_TYPE, new ApplicationInstanceData.StatusPayload(ApplicationInstance.Status.Allowed));
+                } catch (Throwable t) {
+                    log.e("Failed to tell application instance about statuses", t);
+                }
+
+                // ensure the client belongs to the application instance
+                client.setApplicationAndInstanceStatus(Application.Status.AllowInstances, ApplicationInstance.Status.Allowed);
+
+            } else {
+
+                RealApplication application = realRoot.getApplications().get(clientApplicationInstance.getApplicationDetails().getApplicationId());
+                RealApplicationInstance applicationInstance = application.getApplicationInstances().get(clientApplicationInstance.getApplicationInstanceId());
+
+                // tell the client what access etc it has
+                try {
+                    client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(clientApplicationInstance.getApplicationInstanceId()));
+                    client.sendMessage(new String[]{""}, RootData.APPLICATION_STATUS_TYPE, new ApplicationData.StatusPayload(application.getStatusValue().getTypedValue()));
+                    client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_STATUS_TYPE, new ApplicationInstanceData.StatusPayload(applicationInstance.getStatusValue().getTypedValue()));
+                } catch (Throwable t) {
+                    log.e("Failed to tell application instance about statuses", t);
+                }
+
+                // ensure the client belongs to the application instance
+                client.setApplicationAndInstanceStatus(application.getStatusValue().getTypedValue(), applicationInstance.getStatusValue().getTypedValue());
+                statusListeners.put(client, new StatusListener(client, application, applicationInstance));
             }
-
-            // ensure the client belongs to the application instance
-            client.setApplicationAndInstanceStatus(Application.Status.AllowInstances, ApplicationInstance.Status.Allowed);
-
-        } else {
-            RealApplication application = realRoot.getApplications().get(client.getClientInstance().getApplicationDetails().getApplicationId());
-            RealApplicationInstance applicationInstance = application.getApplicationInstances().get(client.getClientInstance().getApplicationInstanceId());
-
-            // tell the client what access etc it has
-            try {
-                client.sendMessage(new String[]{""}, RootData.SERVER_INSTANCE_ID_TYPE, new StringPayload(Server.INSTANCE_ID));
-                client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_ID_TYPE, new StringPayload(client.getClientInstance().getApplicationInstanceId()));
-                client.sendMessage(new String[]{""}, RootData.APPLICATION_STATUS_TYPE, new ApplicationData.StatusPayload(application.getStatusValue().getTypedValue()));
-                client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_STATUS_TYPE, new ApplicationInstanceData.StatusPayload(applicationInstance.getStatusValue().getTypedValue()));
-            } catch (Throwable t) {
-                log.e("Failed to tell application instance about statuses", t);
-            }
-
-            // ensure the client belongs to the application instance
-            client.setApplicationAndInstanceStatus(application.getStatusValue().getTypedValue(), applicationInstance.getStatusValue().getTypedValue());
-            statusListeners.put(client, new StatusListener(client, application, applicationInstance));
+        } else if(client.getClientInstance() instanceof ClientInstance.Router) {
+            ClientInstance.Router clientRouterInstance = (ClientInstance.Router) client.getClientInstance();
+            client.sendMessage(new String[]{""}, Router.ROUTER_ID, new StringPayload(clientRouterInstance.getRouterId()));
         }
     }
 

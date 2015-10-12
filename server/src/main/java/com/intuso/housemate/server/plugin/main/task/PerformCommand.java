@@ -3,25 +3,24 @@ package com.intuso.housemate.server.plugin.main.task;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.RealProperty;
-import com.intuso.housemate.client.real.api.internal.RealTask;
-import com.intuso.housemate.client.real.api.internal.factory.task.RealTaskOwner;
+import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.real.api.internal.impl.type.RealObjectType;
-import com.intuso.housemate.comms.api.internal.payload.TaskData;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-
-import java.util.List;
 
 /**
  */
 @TypeInfo(id = "perform-command", name = "Perform Command", description = "Perform a command in the system")
-public class PerformCommand extends RealTask implements ObjectLifecycleListener {
+public class PerformCommand implements TaskDriver, ObjectLifecycleListener {
 
-    private final RealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> commandPath;
+    private RealObjectType.Reference<BaseHousemateObject<?>> commandPath;
+
+    private final Log log;
+    private final ObjectRoot objectRoot;
+    private final TaskDriver.Callback callback;
+    
     private Command<TypeInstanceMap, ?, ?, ?> command;
     private ListenerRegistration commandLifecycleListenerRegistration = null;
 
@@ -38,55 +37,43 @@ public class PerformCommand extends RealTask implements ObjectLifecycleListener 
 
         @Override
         public void commandFailed(Command<?, ?, ?, ?> command, String error) {
-            setError("Failed to perform command: " + error);
+            callback.setError("Failed to perform command: " + error);
         }
     };
 
     @Inject
     public PerformCommand(Log log,
-                          ListenersFactory listenersFactory,
-                          @Assisted TaskData data,
-                          @Assisted RealTaskOwner owner,
-                          ObjectRoot<?, ?> root, RealObjectType<BaseHousemateObject<?>> realObjectType) {
-        super(log, listenersFactory, "perform-command", data, owner);
-        commandPath = new RealProperty<>(log, listenersFactory,
-                "command-path", "Command Path", "The path to the command to perform", realObjectType, (List)null);
-        getProperties().add(commandPath);
-        addPropertyListener(root);
+                          ObjectRoot objectRoot,
+                          @Assisted TaskDriver.Callback callback) {
+        this.log = log;
+        this.objectRoot = objectRoot;
+        this.callback = callback;
+        String[] path = commandPath != null ? commandPath.getPath() : null;
+        if(path != null)
+            commandLifecycleListenerRegistration = this.objectRoot.addObjectLifecycleListener(path, PerformCommand.this);
     }
 
-    private void addPropertyListener(final ObjectRoot<?, ?> root) {
-        commandPath.addObjectListener(new Property.Listener<RealProperty<RealObjectType.Reference<BaseHousemateObject<?>>>>() {
-
-            @Override
-            public void valueChanging(RealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> value) {
-                if(commandLifecycleListenerRegistration != null)
-                    commandLifecycleListenerRegistration.removeListener();
-            }
-
-            @Override
-            public void valueChanged(RealProperty<RealObjectType.Reference<BaseHousemateObject<?>>> property) {
-                String[] path = property.getTypedValue().getPath();
-                commandLifecycleListenerRegistration = root.addObjectLifecycleListener(path, PerformCommand.this);
-                BaseHousemateObject<?> object = root.getObject(path);
-                if(object == null)
-                    setError("Cannot find an object at path " + Joiner.on("/").join(path));
-                else {
-                    objectCreated(path, object);
-                }
-            }
-        });
-        String[] path = commandPath.getTypedValue() != null ? commandPath.getTypedValue().getPath() : null;
-        if(path != null)
-            commandLifecycleListenerRegistration = root.addObjectLifecycleListener(path, PerformCommand.this);
+    @com.intuso.housemate.client.real.api.internal.annotations.Property(id = "command-path", name = "Command Path", description = "The path to the command to perform", typeId = "object")
+    public void setCommandPath(RealObjectType.Reference<BaseHousemateObject<?>> commandPath) {
+        if(commandLifecycleListenerRegistration != null)
+            commandLifecycleListenerRegistration.removeListener();
+        this.commandPath = commandPath;
+        String[] path = commandPath.getPath();
+        commandLifecycleListenerRegistration = objectRoot.addObjectLifecycleListener(path, PerformCommand.this);
+        BaseHousemateObject<?> object = objectRoot.getObject(path);
+        if(object == null)
+            callback.setError("Cannot find an object at path " + Joiner.on("/").join(path));
+        else {
+            objectCreated(path, object);
+        }
     }
 
     @Override
     public void objectCreated(String[] path, BaseHousemateObject<?> object) {
         if(!(object instanceof Command))
-            setError("Object at path " + Joiner.on("/").join(commandPath.getTypedValue().getPath()) + " is not a command");
+            callback.setError("Object at path " + Joiner.on("/").join(commandPath.getPath()) + " is not a command");
         else {
-            setError(null);
+            callback.setError(null);
             command = (Command<TypeInstanceMap, ?, ?, ?>)object;
         }
     }
@@ -94,15 +81,15 @@ public class PerformCommand extends RealTask implements ObjectLifecycleListener 
     @Override
     public void objectRemoved(String[] path, BaseHousemateObject<?> object) {
         command = null;
-        setError("Cannot find an object at path " + Joiner.on("/").join(commandPath.getTypedValue().getPath()));
+        callback.setError("Cannot find an object at path " + Joiner.on("/").join(commandPath.getPath()));
     }
 
     @Override
     public void execute() {
         if(command != null) {
-            getLog().w("Executing " + Joiner.on("/").join(commandPath.getTypedValue().getPath()));
+            log.w("Executing " + Joiner.on("/").join(commandPath.getPath()));
             command.perform(new TypeInstanceMap(), listener);
         } else
-            getLog().w("Cannot execute task, no command at " + Joiner.on("/").join(commandPath.getTypedValue().getPath()));
+            log.w("Cannot execute task, no command at " + Joiner.on("/").join(commandPath.getPath()));
     }
 }

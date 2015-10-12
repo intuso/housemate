@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.comms.v1_0.api.payload.*;
 import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.web.client.event.UserInputEvent;
@@ -46,7 +47,7 @@ public interface TypeInput extends IsWidget, HasUserInputHandlers {
                         if (loadedType != null)
                             lazyLoaded.setWidget(_create(types, types.get(typeId), typeInstances));
                     }
-                }, new RemoteObject.TreeLoadInfo(typeId, new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
+                }, new TreeLoadInfo(typeId, new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
                 return lazyLoaded;
             }
         }

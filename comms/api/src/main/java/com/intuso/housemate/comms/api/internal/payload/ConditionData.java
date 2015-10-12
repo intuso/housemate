@@ -10,6 +10,8 @@ public final class ConditionData extends HousemateData<HousemateData<?>> {
     public final static String REMOVE_ID = "remove";
     public final static String SATISFIED_ID = "satisfied";
     public final static String ERROR_ID = "error";
+    public final static String DRIVER_ID = "driver";
+    public final static String DRIVER_LOADED_ID = "driver-loaded";
     public final static String PROPERTIES_ID = "properties";
     public final static String CONDITIONS_ID = "conditions";
     public final static String ADD_CONDITION_ID = "add-condition";
@@ -31,8 +33,6 @@ public final class ConditionData extends HousemateData<HousemateData<?>> {
             return false;
         ConditionData other = (ConditionData)o;
         if(!other.getChildData(PROPERTIES_ID).equals(getChildData(PROPERTIES_ID)))
-            return false;
-        if(!other.getChildData(CONDITIONS_ID).equals(getChildData(CONDITIONS_ID)))
             return false;
         return true;
     }

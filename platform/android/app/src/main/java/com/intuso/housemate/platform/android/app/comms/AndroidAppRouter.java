@@ -9,16 +9,15 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.RemoteException;
 import com.google.inject.Inject;
+import com.intuso.housemate.comms.v1_0.api.BaseRouter;
+import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.comms.v1_0.api.Message;
-import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
 import com.intuso.housemate.platform.android.common.JsonMessage;
 import com.intuso.housemate.platform.android.common.MessageCodes;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.properties.api.PropertyRepository;
 
-import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -28,7 +27,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Time: 21:00
  * To change this template use File | Settings | File Templates.
  */
-public class AndroidAppRouter extends Router implements ServiceConnection {
+public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements ServiceConnection {
 
     private final static Intent SERVER_INTENT = new Intent("com.intuso.housemate.service");
 
@@ -46,8 +45,8 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     private ServerConnectionStatus lastStatus;
 
     @Inject
-    public AndroidAppRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Context context) {
-        super(log, listenersFactory, properties);
+    public AndroidAppRouter(Log log, ListenersFactory listenersFactory, Context context) {
+        super(log, listenersFactory);
         this.context = context;
         this.receiver = new Messenger(new MessageHandler());
         this.outputQueue = new LinkedBlockingQueue<>();
@@ -75,6 +74,18 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
         shouldBeConnected = false;
 
         checkConnection();
+    }
+
+    @Override
+    public void sendMessageNow(Message message) {
+        try {
+            android.os.Message msg = android.os.Message.obtain(null, MessageCodes.SEND_MESSAGE);
+            msg.getData().putString("id", id);
+            msg.getData().putParcelable("message", new JsonMessage(message));
+            sender.send(msg);
+        } catch (RemoteException e) {
+            throw new HousemateCommsException("Failed to send message to Housemate service");
+        }
     }
 
     @Override
@@ -137,7 +148,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
 
         // set the connection status, and check if we should reconnect
         lastStatus = getServerConnectionStatus();
-        setServerConnectionStatus(shouldBeConnected ? ServerConnectionStatus.DisconnectedTemporarily : ServerConnectionStatus.DisconnectedPermanently);
+        connectionLost(shouldBeConnected);
     }
 
     @Override
@@ -162,8 +173,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
     private class BindThread extends Thread {
         @Override
         public void run() {
-            if(getServerConnectionStatus() != ServerConnectionStatus.DisconnectedTemporarily)
-                setServerConnectionStatus(ServerConnectionStatus.Connecting);
+            connecting();
             while(!isInterrupted() && sender == null) {
                 context.startService(SERVER_INTENT);
                 context.bindService(SERVER_INTENT, AndroidAppRouter.this, Context.BIND_AUTO_CREATE);
@@ -228,10 +238,7 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                         registerThread = null;
                     }
                     messageSender = new MessageSender();
-                    if(getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily && lastStatus != null)
-                        setServerConnectionStatus(lastStatus);
-                    else
-                        setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
+                    connectionEstablished();
                     // start the sender thread
                     messageSender.start();
                     id = msg.getData().getString("id");
@@ -262,11 +269,11 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
                     // get the next message
                     message = outputQueue.take();
                     getLog().d("App Router: Sending message " + message.toString());
-                    sendMessage(message);
+                    sendMessageNow(message);
                 } catch(InterruptedException e) {
                     break;
-                } catch(IOException e) {
-                    getLog().e("App Router: Error sending message to client", e);
+                } catch(HousemateCommsException e) {
+                    getLog().e("App Router: Failed to send queued message to client", e);
                     _disconnect();
                     checkConnection();
                     break;
@@ -274,17 +281,6 @@ public class AndroidAppRouter extends Router implements ServiceConnection {
             }
 
             getLog().d("App Router: Stopped message sender");
-        }
-
-        private void sendMessage(Message<?> message) throws IOException {
-            try {
-                android.os.Message msg = android.os.Message.obtain(null, MessageCodes.SEND_MESSAGE);
-                msg.getData().putString("id", id);
-                msg.getData().putParcelable("message", new JsonMessage(message));
-                sender.send(msg);
-            } catch (RemoteException e) {
-                throw new IOException("Failed to send message to Housemate service");
-            }
         }
     }
 }

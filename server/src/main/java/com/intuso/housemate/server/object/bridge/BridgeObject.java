@@ -3,15 +3,13 @@ package com.intuso.housemate.server.object.bridge;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.intuso.housemate.comms.api.internal.ChildOverview;
-import com.intuso.housemate.comms.api.internal.HousemateCommsException;
-import com.intuso.housemate.comms.api.internal.Message;
-import com.intuso.housemate.comms.api.internal.RemoteLinkedObject;
+import com.intuso.housemate.comms.api.internal.*;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.NoPayload;
 import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.housemate.object.api.internal.ApplicationInstance;
+import com.intuso.housemate.server.comms.ClientInstance;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.housemate.server.comms.RemoteClient;
 import com.intuso.housemate.server.comms.RemoteClientListener;
@@ -50,11 +48,13 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
             @Override
             public void messageReceived(Message<ClientPayload<NoPayload>> message) {
                 RemoteClient client = message.getPayload().getClient();
-                if(client.getClientInstance().getClientType() != ApplicationRegistration.ClientType.Proxy) {
+                if(client.getClientInstance() instanceof ClientInstance.Application
+                        && ((ClientInstance.Application)client.getClientInstance()).getClientType() == ApplicationRegistration.ClientType.Proxy)
+                    sendMessage(CHILD_OVERVIEWS_RESPONSE, new ChildOverviews(getChildOverviewsForClient(client)), client);
+                else {
                     getLog().e("Client requesting an object is not of type " + ApplicationRegistration.ClientType.Proxy);
                     sendMessage(CHILD_OVERVIEWS_RESPONSE, new ChildOverviews("Connection type is not " + ApplicationRegistration.ClientType.Proxy.name()), client);
-                } else
-                    sendMessage(CHILD_OVERVIEWS_RESPONSE, new ChildOverviews(getChildOverviewsForClient(client)), client);
+                }
             }
         }));
         result.add(addMessageListener(LOAD_REQUEST, new Message.Receiver<ClientPayload<LoadRequest>>() {
@@ -62,10 +62,8 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
             public void messageReceived(Message<ClientPayload<LoadRequest>> message) {
                 RemoteClient client = message.getPayload().getClient();
                 String loaderId = message.getPayload().getOriginal().getLoaderId();
-                if(client.getClientInstance().getClientType() != ApplicationRegistration.ClientType.Proxy) {
-                    getLog().e("Client requesting an object is not of type " + ApplicationRegistration.ClientType.Proxy);
-                    sendMessage(LOAD_FINISHED, LoadFinished.forErrors(loaderId, "Connection type is not " + ApplicationRegistration.ClientType.Proxy.name()), client);
-                } else {
+                if(client.getClientInstance() instanceof ClientInstance.Application
+                        && ((ClientInstance.Application)client.getClientInstance()).getClientType() == ApplicationRegistration.ClientType.Proxy) {
                     List<String> errors = Lists.newArrayList();
                     for(TreeLoadInfo treeLoadInfo : message.getPayload().getOriginal().getTreeLoadInfos()) {
                         if (treeLoadInfo.getId().equals(RemoteLinkedObject.EVERYTHING_RECURSIVE)
@@ -86,6 +84,9 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
                         sendMessage(LOAD_FINISHED, LoadFinished.forErrors(loaderId, errors), client);
                     else
                         sendMessage(LOAD_FINISHED, LoadFinished.forSuccess(loaderId), client);
+                } else {
+                    getLog().e("Client requesting an object is not of type " + ApplicationRegistration.ClientType.Proxy);
+                    sendMessage(LOAD_FINISHED, LoadFinished.forErrors(loaderId, "Connection type is not " + ApplicationRegistration.ClientType.Proxy.name()), client);
                 }
             }
         }));

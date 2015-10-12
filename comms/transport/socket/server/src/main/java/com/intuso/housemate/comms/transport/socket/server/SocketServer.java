@@ -14,7 +14,7 @@ import java.net.Socket;
 
 /**
  */
-public class SocketServer extends ExternalClientRouter {
+public class SocketServer extends ExternalClientRouter<SocketServer> {
 
     public final static String PORT = "socket.server.port";
 
@@ -32,8 +32,8 @@ public class SocketServer extends ExternalClientRouter {
     private final V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory;
 
     @Inject
-    public SocketServer(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router, V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory) {
-        super(log, listenersFactory, properties, router);
+    public SocketServer(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router, V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory) {
+        super(log, listenersFactory, router);
         this.properties = properties;
         this.v1_0SocketClientHandlerFactory = v1_0SocketClientHandlerFactory;
     }

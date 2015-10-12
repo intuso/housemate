@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.comms.v1_0.api.ChildOverview;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.comms.v1_0.api.payload.HardwareData;
 import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
@@ -41,7 +42,7 @@ public class Hardware extends ObjectWidget<GWTProxyHardware> {
                     loading(false);
                     setObject(hardwares.get(childOverview.getId()));
                 }
-            }, new RemoteObject.TreeLoadInfo(childOverview.getId(), new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
+            }, new TreeLoadInfo(childOverview.getId(), new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
         }
     }
     

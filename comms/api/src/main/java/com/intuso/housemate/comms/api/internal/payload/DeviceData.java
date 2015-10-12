@@ -12,15 +12,16 @@ public final class DeviceData extends HousemateData<HousemateData<?>> {
 
     private static final long serialVersionUID = -1L;
 
-    public final static String CONNECTED_ID = "connected";
-    public final static String ERROR_ID = "error";
     public final static String RENAME_ID = "rename";
-    public final static String NAME_ID = "name";
     public final static String NEW_NAME = "new-name";
-    public final static String RUNNING_ID = "running";
+    public final static String NAME_ID = "name";
+    public final static String REMOVE_ID = "remove";
     public final static String START_ID = "start";
     public final static String STOP_ID = "stop";
-    public final static String REMOVE_ID = "remove";
+    public final static String RUNNING_ID = "running";
+    public final static String ERROR_ID = "error";
+    public final static String DRIVER_ID = "driver";
+    public final static String DRIVER_LOADED_ID = "driver-loaded";
     public final static String COMMANDS_ID = "commands";
     public final static String VALUES_ID = "values";
     public final static String PROPERTIES_ID = "properties";

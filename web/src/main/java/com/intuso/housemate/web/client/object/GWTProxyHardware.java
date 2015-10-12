@@ -14,6 +14,9 @@ import com.intuso.utilities.log.Log;
 /**
  */
 public class GWTProxyHardware extends ProxyHardware<
+            GWTProxyCommand,
+            GWTProxyValue,
+        GWTProxyProperty,
             GWTProxyList<PropertyData, GWTProxyProperty>,
             GWTProxyHardware> {
 

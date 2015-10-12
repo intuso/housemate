@@ -6,6 +6,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.client.real.api.internal.annotations.AnnotationProcessor;
+import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.client.real.api.internal.factory.condition.AddConditionCommand;
 import com.intuso.housemate.client.real.api.internal.impl.type.DoubleType;
 import com.intuso.housemate.client.real.api.internal.impl.type.IntegerType;
@@ -154,9 +155,10 @@ public class TestValueComparison {
                         // do nothing
                     }
                 });
-        ValueComparison vc = makeValueComparison("locations", ComparisonType.Simple.Equals, valueOne, valueTwo);
+        RealCondition<ValueComparison> vc = makeValueComparison("locations", ComparisonType.Simple.Equals, valueOne, valueTwo);
         assertEquals(vc.getErrorValue().getTypedValue(), "Second value is not available");
-        TestDevice device = new TestDevice(log, listenersFactory, new DeviceData("device", "Device", "Device"));
+        RealDevice<TestDeviceDriver> device = (RealDevice<TestDeviceDriver>) injector.getInstance(RealDevice.Factory.class).create(new DeviceData("device", "Device", "Device"), null);
+        device.getDriverProperty().setTypedValues(injector.getInstance(new Key<DeviceDriver.Factory<TestDeviceDriver>>() {}));
         injector.getInstance(AnnotationProcessor.class).process(
                 injector.getInstance(new Key<RealList<TypeData<?>, RealType<?, ?, ?>>>() {}),
                 device);
@@ -165,7 +167,7 @@ public class TestValueComparison {
             lock.wait(1000);
         }
         lr.removeListener();
-        device.values.doubleValue(0.0);
+        device.getDriver().values.doubleValue(0.0);
         assertNull(vc.getErrorValue().getTypedValue());
         assertSatisfied(vc, false);
         ValueBridge value = injector.getInstance(RootBridge.class).getServers().get("local-Internal Client").getDevices().get("device").getValues().get("dv");
@@ -182,7 +184,7 @@ public class TestValueComparison {
                 }
             }
         });
-        device.values.doubleValue(5.0);
+        device.getDriver().values.doubleValue(5.0);
         synchronized (lock) {
             lock.wait(1000);
         }
@@ -196,18 +198,18 @@ public class TestValueComparison {
         assertSatisfied(makeValueComparison(id, operator, sourceOne, sourceTwo), satisfied);
     }
 
-    private void assertSatisfied(ValueComparison valueComparison, boolean satisfied) {
-        assertEquals(satisfied, valueComparison.isSatisfied());
+    private void assertSatisfied(RealCondition<ValueComparison> valueComparison, boolean satisfied) {
+        assertEquals(satisfied, valueComparison.getSatisfiedValue().getTypedValue());
     }
 
-    private ValueComparison makeValueComparison(String id, ComparisonType operator, ValueSource sourceOne, ValueSource sourceTwo) {
+    private RealCondition<ValueComparison> makeValueComparison(String id, ComparisonType operator, ValueSource sourceOne, ValueSource sourceTwo) {
         TypeInstanceMap conditionValues = new TypeInstanceMap();
         conditionValues.getChildren().put(AddConditionCommand.TYPE_PARAMETER_ID, new TypeInstances(new TypeInstance("value-comparison")));
         conditionValues.getChildren().put(AddConditionCommand.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance(id)));
         conditionValues.getChildren().put(AddConditionCommand.DESCRIPTION_PARAMETER_ID, new TypeInstances(new TypeInstance(id)));
         automation.getAddConditionCommand().perform(conditionValues);
-        ValueComparison valueComparison = (ValueComparison) automation.getConditions().get(id);
-        RealProperty<Comparison> comparisonProperty = (RealProperty<Comparison>) valueComparison.getProperties().get(ValueComparison.COMPARISON_ID);
+        RealCondition<ValueComparison> valueComparison = (RealCondition<ValueComparison>) automation.getConditions().get(id);
+        RealProperty<Comparison> comparisonProperty = (RealProperty<Comparison>) valueComparison.getProperties().get("comparison");
         Comparison comparison = new Comparison(operator, COMPARISONS_BY_TYPE.get(operator), sourceOne, sourceTwo);
         comparisonProperty.setTypedValues(comparison);
         valueComparison.start();

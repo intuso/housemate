@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.comms.v1_0.api.ChildOverview;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
@@ -41,7 +42,7 @@ public class Device extends ObjectWidget<GWTProxyDevice> implements com.intuso.h
                     loading(false);
                     setObject(devices.get(childOverview.getId()));
                 }
-            }, new RemoteObject.TreeLoadInfo(childOverview.getId(), new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
+            }, new TreeLoadInfo(childOverview.getId(), new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
         }
     }
 
@@ -68,6 +69,11 @@ public class Device extends ObjectWidget<GWTProxyDevice> implements com.intuso.h
 
     @Override
     public void error(GWTProxyDevice device, String error) {
+
+    }
+
+    @Override
+    public void driverLoaded(GWTProxyDevice usesDriver, boolean loaded) {
 
     }
 

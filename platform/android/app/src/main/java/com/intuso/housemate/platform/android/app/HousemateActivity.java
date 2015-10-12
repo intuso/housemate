@@ -26,7 +26,7 @@ public abstract class HousemateActivity extends Activity {
     private Log log;
     private ListenersFactory listenersFactory;
     private PropertyRepository properties;
-    private Router router;
+    private Router<?> router;
 
     @Override
     protected void onStart() {
@@ -39,7 +39,7 @@ public abstract class HousemateActivity extends Activity {
             }
         };
         properties = new SharedPreferencesPropertyRepository(listenersFactory, getApplicationContext());
-        router = new AndroidAppRouter(log, listenersFactory, properties, getApplicationContext());
+        router = new AndroidAppRouter(log, listenersFactory, getApplicationContext());
     }
 
     @Override

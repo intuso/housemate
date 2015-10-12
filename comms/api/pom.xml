@@ -42,6 +42,18 @@
             <artifactId>utilities-object</artifactId>
             <version>${intuso.utilities.version}</version>
         </dependency>
+
+        <!-- Guice -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+            <version>${guice.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

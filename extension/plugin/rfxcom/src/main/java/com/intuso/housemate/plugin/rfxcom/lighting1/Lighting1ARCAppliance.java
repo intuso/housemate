@@ -2,11 +2,9 @@ package com.intuso.housemate.plugin.rfxcom.lighting1;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
 import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
-import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 
 /**
  * Housemate device that controls a USB relay
@@ -16,10 +14,8 @@ import com.intuso.utilities.log.Log;
 public class Lighting1ARCAppliance extends Lighting1Appliance {
 
 	@Inject
-	public Lighting1ARCAppliance(Log log,
-                                 ListenersFactory listenersFactory,
-                                 @Assisted DeviceData data) {
-		super(log, listenersFactory, "rfxcom-lighting1-arc", data);
+	public Lighting1ARCAppliance(@Assisted RealDevice device) {
+		super(device);
 	}
 
     public com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance createAppliance(byte houseId, byte unitCode) {

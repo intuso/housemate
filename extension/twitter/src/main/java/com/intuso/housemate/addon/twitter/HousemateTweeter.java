@@ -3,12 +3,14 @@ package com.intuso.housemate.addon.twitter;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
 import com.intuso.housemate.client.v1_0.proxy.simple.*;
-import com.intuso.housemate.comms.v1_0.api.ClientRoot;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
 import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
 import com.intuso.housemate.object.v1_0.api.*;
@@ -89,33 +91,7 @@ public class HousemateTweeter {
 
 		// setup the housemate stuff
         final SimpleProxyRoot root = injector.getInstance(SimpleProxyRoot.class);
-        root.addObjectListener(new ClientRoot.Listener<SimpleProxyRoot>() {
-
-            @Override
-            public void serverConnectionStatusChanged(SimpleProxyRoot root, ServerConnectionStatus serverConnectionStatus) {
-                switch (serverConnectionStatus) {
-                    case DisconnectedPermanently:
-                        log.d("Disconnected permanently from server");
-                        tweet("Disconnected permanently from server");
-                        return;
-                    case DisconnectedTemporarily:
-                        log.d("Disconnected temporarily from server");
-                        tweet("Disconnected temporarily from server");
-                        return;
-                    case Connecting:
-                        log.d("Connected to server");
-                        tweet("Connected to server");
-                        return;
-                    case ConnectedToRouter:
-                        log.d("Connected to router");
-                        tweet("Connected to router");
-                        return;
-                    case ConnectedToServer:
-                        log.d("Connected to server");
-                        tweet("Connected to server");
-                        // don't return in this case, let it drop through to handle the other status(es)
-                }
-            }
+        root.addObjectListener(new ProxyRoot.Listener<SimpleProxyRoot>() {
 
             @Override
             public void applicationStatusChanged(SimpleProxyRoot root, Application.Status applicationStatus) {}
@@ -156,7 +132,7 @@ public class HousemateTweeter {
                             public void succeeded() {
                                 root.getServers().addObjectListener(serverListListener, true);
                             }
-                        }, new RemoteObject.TreeLoadInfo(ProxyRoot.SERVERS_ID, new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
+                        }, new TreeLoadInfo(ProxyRoot.SERVERS_ID, new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
                         break;
                 }
             }
@@ -165,9 +141,36 @@ public class HousemateTweeter {
             public void newApplicationInstance(SimpleProxyRoot root, String instanceId) {
                 // do nothing
             }
+        });
+        Router<?> router = injector.getInstance(new Key<Router<?>>() {});
+        router.addListener(new Router.Listener<Router>() {
+            @Override
+            public void serverConnectionStatusChanged(Router clientConnection, ServerConnectionStatus serverConnectionStatus) {
+                switch (serverConnectionStatus) {
+                    case DisconnectedPermanently:
+                        log.d("Disconnected permanently from server");
+                        tweet("Disconnected permanently from server");
+                        return;
+                    case DisconnectedTemporarily:
+                        log.d("Disconnected temporarily from server");
+                        tweet("Disconnected temporarily from server");
+                        return;
+                    case Connecting:
+                        log.d("Connected to server");
+                        tweet("Connected to server");
+                        return;
+                    case ConnectedToRouter:
+                        log.d("Connected to router");
+                        tweet("Connected to router");
+                        return;
+                    case ConnectedToServer:
+                        log.d("Connected to server");
+                        tweet("Connected to server");
+                }
+            }
 
             @Override
-            public void newServerInstance(SimpleProxyRoot root, String serverId) {
+            public void newServerInstance(Router clientConnection, String serverId) {
                 log.d("Server instance changed");
                 tweet("Server instance changed");
                 root.register(applicationDetails, HousemateTweeter.class.getName());
@@ -298,6 +301,11 @@ public class HousemateTweeter {
         @Override
         public void error(SimpleProxyDevice device, String description) {
             tweet("\"" + device.getName() + "\" device " + (description == null ? "not " : "") + "in error" + (description == null ? "" : ": " + description));
+        }
+
+        @Override
+        public void driverLoaded(SimpleProxyDevice device, boolean loaded) {
+            tweet("\"" + device.getName() + "\" device's driver is " + (loaded ? "" : "not ") + "loaded");
         }
 
         @Override

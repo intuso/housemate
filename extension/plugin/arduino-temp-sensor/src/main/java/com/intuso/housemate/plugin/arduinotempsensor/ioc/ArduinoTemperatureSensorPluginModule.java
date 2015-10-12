@@ -8,7 +8,7 @@ import com.intuso.housemate.plugin.arduinotempsensor.ArduinoIndicator;
 import com.intuso.housemate.plugin.arduinotempsensor.ArduinoTemperatureSensor;
 import com.intuso.housemate.plugin.arduinotempsensor.SerialPortWrapper;
 import com.intuso.housemate.plugin.v1_0.api.AnnotatedPluginModule;
-import com.intuso.housemate.plugin.v1_0.api.Devices;
+import com.intuso.housemate.plugin.v1_0.api.DeviceDrivers;
 import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
@@ -17,16 +17,16 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @TypeInfo(id = "com.intuso.housemate.plugin.arduino-temp-sensor", name = "Arduino Temperature Sensor plugin", description = "Plugin for temperature sensing using an Arduino")
-@Devices({ArduinoTemperatureSensor.class,
+@DeviceDrivers({ArduinoTemperatureSensor.class,
         ArduinoIndicator.class})
-public class ArduinoTemperatureSensorAnnotatedPluginModule extends AnnotatedPluginModule {
+public class ArduinoTemperatureSensorPluginModule extends AnnotatedPluginModule {
 
     private final static List<Pattern> PATTERNS = Lists.newArrayList(
             Pattern.compile(".*ttyACM.*")
     );
 
     @Inject
-    public ArduinoTemperatureSensorAnnotatedPluginModule(Log log) {
+    public ArduinoTemperatureSensorPluginModule(Log log) {
         super(log);
     }
 

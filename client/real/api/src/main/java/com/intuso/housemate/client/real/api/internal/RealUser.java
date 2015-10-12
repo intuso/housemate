@@ -3,7 +3,6 @@ package com.intuso.housemate.client.real.api.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.factory.user.RealUserOwner;
 import com.intuso.housemate.client.real.api.internal.impl.type.Email;
 import com.intuso.housemate.client.real.api.internal.impl.type.EmailType;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
@@ -25,13 +24,15 @@ public class RealUser
      * @param data the object's data
      */
     @Inject
-    public RealUser(final Log log, ListenersFactory listenersFactory,
-                    @Assisted UserData data, @Assisted final RealUserOwner owner) {
+    public RealUser(final Log log,
+                    ListenersFactory listenersFactory,
+                    @Assisted UserData data,
+                    @Assisted final RemovedListener removedListener) {
         super(log, listenersFactory, data);
         this.remove = new RealCommand(log, listenersFactory, UserData.REMOVE_ID, UserData.REMOVE_ID, "Remove the user", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
-                owner.removeUser(RealUser.this);
+                removedListener.userRemoved(RealUser.this);
             }
         };
         this.emailProperty = new RealProperty<>(log, listenersFactory, UserData.EMAIL_ID, UserData.EMAIL_ID, "The user's email address", new EmailType(log, listenersFactory), (Email)null);
@@ -49,4 +50,11 @@ public class RealUser
         return emailProperty;
     }
 
+    public interface RemovedListener {
+        void userRemoved(RealUser user);
+    }
+
+    public interface Factory {
+        RealUser create(UserData data, RemovedListener removedListener);
+    }
 }

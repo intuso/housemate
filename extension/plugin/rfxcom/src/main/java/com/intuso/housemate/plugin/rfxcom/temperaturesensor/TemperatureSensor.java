@@ -1,20 +1,17 @@
 package com.intuso.housemate.plugin.rfxcom.temperaturesensor;
 
-import com.google.common.collect.Lists;
 import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Values;
-import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 
 /**
  * Housemate device that receives temperature updates from a sensor
  *
  */
-public abstract class TemperatureSensor extends RealDevice {
+public abstract class TemperatureSensor implements DeviceDriver {
 
 	private com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensor sensor;
     private ListenerRegistration listenerRegistration;
@@ -23,23 +20,20 @@ public abstract class TemperatureSensor extends RealDevice {
     @Values
     public DeviceValues deviceValues;
 
-	public TemperatureSensor(Log log,
-                             ListenersFactory listenersFactory,
-                             String type,
-                             DeviceData data) {
-		super(log, listenersFactory, type, data);
-        getData().setCustomPropertyIds(Lists.newArrayList("sensor-id"));
-        getData().setCustomValueIds(Lists.newArrayList("temperature"));
+    private final RealDevice device;
+
+	public TemperatureSensor(RealDevice device) {
+		this.device = device;
 	}
 
     public void propertyChanged() {
         // check the port value is a positive number
         if(sensorId < 0 || sensorId > 0xFFFF) {
-            getErrorValue().setTypedValues("Id must be between 0 and " + 0xFFFF);
+            device.getErrorValue().setTypedValues("Id must be between 0 and " + 0xFFFF);
             return;
         }
 
-        getErrorValue().setTypedValues((String) null);
+        device.getErrorValue().setTypedValues((String) null);
 
         if(listenerRegistration != null) {
             listenerRegistration.removeListener();
@@ -68,12 +62,12 @@ public abstract class TemperatureSensor extends RealDevice {
     }
 	
 	@Override
-	protected void start() {
+	public void start() {
 		propertyChanged();
 	}
 
 	@Override
-	protected void stop() {
+	public void stop() {
 		sensor = null;
 	}
 

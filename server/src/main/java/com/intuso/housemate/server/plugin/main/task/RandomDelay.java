@@ -2,15 +2,10 @@ package com.intuso.housemate.server.plugin.main.task;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.RealProperty;
-import com.intuso.housemate.client.real.api.internal.RealTask;
-import com.intuso.housemate.client.real.api.internal.factory.task.RealTaskOwner;
-import com.intuso.housemate.client.real.api.internal.impl.type.IntegerType;
+import com.intuso.housemate.client.real.api.internal.annotations.Property;
+import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.real.api.internal.impl.type.TimeUnit;
-import com.intuso.housemate.client.real.api.internal.impl.type.TimeUnitType;
-import com.intuso.housemate.comms.api.internal.payload.TaskData;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
-import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -19,17 +14,21 @@ import com.intuso.utilities.log.Log;
  */
 
 @TypeInfo(id = "random-delay", name = "Random Delay", description = "Wait for a random amount of time")
-public class RandomDelay extends RealTask {
+public class RandomDelay implements TaskDriver {
 
     /**
      * The time unit that the quantity is specified in
      */
-    private final RealProperty<TimeUnit> unit;
+    @Property(id = "unit", name = "Unit", description = "the unit of time to wait for", typeId = "time-unit")
+    private TimeUnit unit = TimeUnit.MINUTES;
 
     /**
      * The quantity of time to wait which, combined with the unit, gives the time to wait
      */
-    private final RealProperty<Integer> maxAmount;
+    @Property(id = "max-amount", name = "Max amount", description = "the maximum amount of time to wait", typeId = "integer")
+    private Integer maxAmount = 1;
+
+    private final Log log;
 
     /**
      * Create a new delay task
@@ -37,25 +36,16 @@ public class RandomDelay extends RealTask {
      */
     @Inject
     public RandomDelay(Log log,
-                       ListenersFactory listenersFactory,
-                       @Assisted TaskData data,
-                       @Assisted RealTaskOwner owner,
-                       TimeUnitType timeUnitType, IntegerType integerType) {
-        super(log, listenersFactory, "random-delay", data, owner);
-        unit = new RealProperty<>(log, listenersFactory, "unit", "Unit", "the unit of time to wait for",
-                timeUnitType, TimeUnit.MINUTES);
-        maxAmount = new RealProperty<>(log, listenersFactory, "amount", "Amount", "the amount of time to wait",
-                integerType, 1);
-        getProperties().add(unit);
-        getProperties().add(maxAmount);
+                 @Assisted TaskDriver.Callback callback) {
+        this.log = log;
     }
 
     @Override
     public final void execute() {
-        long delay = maxAmount.getTypedValue() * unit.getTypedValue().getFactor();
+        long delay = maxAmount * unit.getFactor();
         long actual_delay = (long)(delay * Math.random());
-        getLog().d("Executing random delay of up to " + maxAmount + " " + unit + " which is " + delay + " milliseconds");
-        getLog().d("Delaying for " + actual_delay + " milliseconds");
+        log.d("Executing random delay of up to " + maxAmount + " " + unit + " which is " + delay + " milliseconds");
+        log.d("Delaying for " + actual_delay + " milliseconds");
 
         // work out when we should stop
         long end_time = System.currentTimeMillis() + actual_delay;
@@ -64,7 +54,7 @@ public class RandomDelay extends RealTask {
         while(System.currentTimeMillis() < end_time) {
             try {
                 // wait a max of 10 minutes
-                getLog().d("Waiting for " + Math.min(end_time - System.currentTimeMillis(), 600000) + " milliseconds");
+                log.d("Waiting for " + Math.min(end_time - System.currentTimeMillis(), 600000) + " milliseconds");
                 Thread.sleep(Math.min(end_time - System.currentTimeMillis(), 600000));
             } catch(InterruptedException e) {
                 // if interrupted then return
@@ -72,6 +62,6 @@ public class RandomDelay extends RealTask {
             }
         }
 
-        getLog().d("Executed delay");
+        log.d("Executed delay");
     }
 }

@@ -3,18 +3,16 @@ package com.intuso.housemate.web.client.comms;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
+import com.intuso.housemate.comms.v1_0.api.BaseRouter;
 import com.intuso.housemate.comms.v1_0.api.Message;
-import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
 import com.intuso.housemate.web.client.NotConnectedException;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-import com.intuso.utilities.properties.api.PropertyRepository;
 
 /**
  */
-public class GWTRouter extends Router {
+public class GWTRouter extends BaseRouter<GWTRouter> {
 
     private AsyncCallback<Void> sendCallback = new AsyncCallback<Void>() {
         @Override
@@ -23,8 +21,8 @@ public class GWTRouter extends Router {
                 Window.alert("Connection timed out due to inactivity, reconnecting");
             else
                 Window.alert("Reconnecting because of unknown error sending a message: " + throwable.getMessage());
-            setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
             getLog().e("Failed to send message", throwable);
+            disconnect();
         }
 
         @Override
@@ -40,7 +38,8 @@ public class GWTRouter extends Router {
                 Window.alert("Connection timed out due to inactivity, reconnecting");
             else
                 Window.alert("Reconnecting because of unknown error getting messages: " + throwable.getMessage());
-            setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
+            getLog().e("Failed to receive message", throwable);
+            disconnect();
         }
 
         @Override
@@ -66,23 +65,24 @@ public class GWTRouter extends Router {
      * Create a new comms instance
      */
     @Inject
-    public GWTRouter(Log log, ListenersFactory listenersFactory, PropertyRepository properties, CommsServiceAsync commsService) {
-        super(log, listenersFactory, properties);
+    public GWTRouter(Log log, ListenersFactory listenersFactory, CommsServiceAsync commsService) {
+        super(log, listenersFactory);
         this.commsService = commsService;
     }
 
     @Override
     public void connect() {
-        setServerConnectionStatus(ServerConnectionStatus.Connecting);
+        connecting();
         commsService.connectClient(new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable throwable) {
-                setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
+                getLog().e("Failed to connect", throwable);
+                disconnect();
             }
 
             @Override
             public void onSuccess(Void aVoid) {
-                setServerConnectionStatus(ServerConnectionStatus.ConnectedToRouter);
+                connectionEstablished();
                 // start getting messages
                 requestMessages();
             }
@@ -91,11 +91,11 @@ public class GWTRouter extends Router {
 
     @Override
     public void disconnect() {
-        setServerConnectionStatus(ServerConnectionStatus.DisconnectedPermanently);
+        connectionLost(false);
         commsService.disconnectClient(new AsyncCallback<Void>() {
             @Override
-            public void onFailure(Throwable caught) {
-                // do nothing
+            public void onFailure(Throwable throwable) {
+                getLog().e("Failed to disconnect", throwable);
             }
 
             @Override
@@ -106,9 +106,14 @@ public class GWTRouter extends Router {
     }
 
     @Override
-    public void sendMessage(Message message) {
+    protected void sendMessageNow(Message<?> message) {
         getLog().d("Sending message " + message.toString());
         commsService.sendMessageToServer(message, sendCallback);
+    }
+
+    @Override
+    public void sendMessage(Message message) {
+        sendMessageNow(message);
     }
 
     private void requestMessages() {

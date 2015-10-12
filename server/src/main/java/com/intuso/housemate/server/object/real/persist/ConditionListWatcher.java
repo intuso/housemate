@@ -27,13 +27,15 @@ public class ConditionListWatcher implements List.Listener<RealCondition> {
 
     private final Log log;
     private final Persistence persistence;
+    private final ValueBaseWatcher valueBaseWatcher;
     private final PropertyListWatcher propertyListWatcher;
     private ConditionListWatcher conditionListWatcher; // cannot init this in constructor as we'll get inifite recursion
 
     @Inject
-    public ConditionListWatcher(Log log, Persistence persistence, PropertyListWatcher propertyListWatcher) {
+    public ConditionListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher) {
         this.log = log;
         this.persistence = persistence;
+        this.valueBaseWatcher = valueBaseWatcher;
         this.propertyListWatcher = propertyListWatcher;
     }
 
@@ -44,16 +46,15 @@ public class ConditionListWatcher implements List.Listener<RealCondition> {
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(condition.getId())));
         toSave.getChildren().put("name", new TypeInstances(new TypeInstance(condition.getName())));
         toSave.getChildren().put("description", new TypeInstances(new TypeInstance(condition.getDescription())));
-        toSave.getChildren().put("type", new TypeInstances(new TypeInstance(condition.getType())));
         try {
             persistence.saveValues(condition.getPath(), toSave);
         } catch (Throwable t) {
             log.e("Failed to save new automation values", t);
         }
-
+        listeners.put(condition, valueBaseWatcher.watch(condition.getDriverProperty()));
         listeners.put(condition, condition.getProperties().addObjectListener(propertyListWatcher, true));
         if(conditionListWatcher == null)
-            conditionListWatcher = new ConditionListWatcher(log, persistence, propertyListWatcher);
+            conditionListWatcher = new ConditionListWatcher(log, persistence, valueBaseWatcher, propertyListWatcher);
         listeners.put(condition, condition.getConditions().addObjectListener(conditionListWatcher, true));
     }
 

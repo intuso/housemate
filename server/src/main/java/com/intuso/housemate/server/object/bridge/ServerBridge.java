@@ -14,8 +14,8 @@ public class ServerBridge
         implements Server<
                 ConvertingListBridge<ApplicationData, Application<?, ?, ?, ?, ?>, ApplicationBridge>,
                 ConvertingListBridge<AutomationData, Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge>,
-                ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>,
-                ConvertingListBridge<HardwareData, Hardware<?, ?>, HardwareBridge>,
+                ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>,
+                ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge>,
                 ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge>,
                 ConvertingListBridge<UserData, User<?, ?>, UserBridge>,
                     CommandBridge,
@@ -23,8 +23,8 @@ public class ServerBridge
 
     private final ConvertingListBridge<ApplicationData, Application<?, ?, ?, ?, ?>, ApplicationBridge> applications;
     private final ConvertingListBridge<AutomationData, Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> automations;
-    private final ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> devices;
-    private final ConvertingListBridge<HardwareData, Hardware<?, ?>, HardwareBridge> hardwares;
+    private final ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> devices;
+    private final ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge> hardwares;
     private final ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge> types;
     private final ConvertingListBridge<UserData, User<?, ?>, UserBridge> users;
     private final CommandBridge addAutomation;
@@ -35,17 +35,17 @@ public class ServerBridge
     private final CommandBridge renameCommand;
 
     public ServerBridge(Log log, ListenersFactory listenersFactory, ServerProxyRoot proxyRoot, final Persistence persistence) {
-        super(log, listenersFactory, makeData(log, proxyRoot.getClient().getClientInstance(), persistence));
+        super(log, listenersFactory, makeData(log, (ClientInstance.Application) proxyRoot.getClient().getClientInstance(), persistence));
         applications = new ConvertingListBridge<ApplicationData, Application<?, ?, ?, ?, ?>, ApplicationBridge>(
                 log, listenersFactory, proxyRoot.getApplications(),
                 new ApplicationBridge.Converter(log, listenersFactory));
         automations = new ConvertingListBridge<AutomationData, Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge>(
                 log, listenersFactory, proxyRoot.getAutomations(),
                 new AutomationBridge.Converter(log, listenersFactory));
-        devices = new ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>(
+        devices = new ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>(
                 log, listenersFactory, proxyRoot.getDevices(),
                 new DeviceBridge.Converter(log, listenersFactory));
-        hardwares = new ConvertingListBridge<HardwareData, Hardware<?, ?>, HardwareBridge>(
+        hardwares = new ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge>(
                 log, listenersFactory, proxyRoot.getHardwares(),
                 new HardwareBridge.Converter(log, listenersFactory));
         types = new ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge>(
@@ -94,7 +94,7 @@ public class ServerBridge
         addChild(addUser);
     }
 
-    private static ServerData makeData(Log log, ClientInstance instance, Persistence persistence) {
+    private static ServerData makeData(Log log, ClientInstance.Application instance, Persistence persistence) {
 
         String id = instance.getApplicationDetails().getApplicationId() + "-" + instance.getApplicationInstanceId();
         String name = null;
@@ -122,12 +122,12 @@ public class ServerBridge
     }
 
     @Override
-    public ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> getDevices() {
+    public ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> getDevices() {
         return devices;
     }
 
     @Override
-    public ConvertingListBridge<HardwareData, Hardware<?, ?>, HardwareBridge> getHardwares() {
+    public ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge> getHardwares() {
         return hardwares;
     }
 

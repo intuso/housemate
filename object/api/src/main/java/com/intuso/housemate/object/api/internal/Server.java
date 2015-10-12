@@ -2,23 +2,22 @@ package com.intuso.housemate.object.api.internal;
 
 /**
  */
-public interface Server<
-            APPLICATIONS extends List<? extends Application<?, ?, ?, ?, ?>>,
-            AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
-            DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
-            HARDWARES extends List<? extends Hardware<?, ?>>,
-            TYPES extends List<? extends Type>,
-            USERS extends List<? extends User<?, ?>>,
-            COMMAND extends Command<?, ?, ?, ?>,
-            SERVER extends Server>
+public interface Server<APPLICATIONS extends List<? extends Application<?, ?, ?, ?, ?>>,
+        AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
+        DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
+        HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>>,
+        TYPES extends List<? extends Type>,
+        USERS extends List<? extends User<?, ?>>,
+        COMMAND extends Command<?, ?, ?, ?>,
+        SERVER extends Server>
         extends BaseHousemateObject<Server.Listener<? super SERVER>>,
         Type.Container<TYPES>,
-            Hardware.Container<HARDWARES>,
-            Device.Container<DEVICES>,
-            Automation.Container<AUTOMATIONS>,
-            Application.Container<APPLICATIONS>,
+        Hardware.Container<HARDWARES>,
+        Device.Container<DEVICES>,
+        Automation.Container<AUTOMATIONS>,
+        Application.Container<APPLICATIONS>,
         User.Container<USERS>,
-            Renameable<COMMAND> {
+        Renameable<COMMAND> {
 
     COMMAND getAddAutomationCommand();
     COMMAND getAddDeviceCommand();

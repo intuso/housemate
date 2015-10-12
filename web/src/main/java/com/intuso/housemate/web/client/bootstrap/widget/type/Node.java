@@ -14,7 +14,7 @@ import com.intuso.housemate.client.v1_0.proxy.api.AvailableChildrenListener;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
 import com.intuso.housemate.comms.v1_0.api.ChildOverview;
-import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.web.client.handler.HasObjectSelectedHandlers;
 import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectListener;
@@ -116,7 +116,7 @@ public class Node extends Composite implements HasObjectSelectedHandlers,
                         object.addChildListener(Node.this, true, false);
                         object.addAvailableChildrenListener(Node.this, true);
                     }
-                }, new RemoteObject.TreeLoadInfo(childOverview.getId())));
+                }, new TreeLoadInfo(childOverview.getId())));
             }
         }
         expanded = show;

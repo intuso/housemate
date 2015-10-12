@@ -25,7 +25,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
  * Time: 09:22
  * To change this template use File | Settings | File Templates.
  */
-public class RestServer extends ExternalClientRouter {
+public class RestServer extends ExternalClientRouter<RestServer> {
 
     public final static String PORT = "rest.server.port";
 
@@ -33,8 +33,8 @@ public class RestServer extends ExternalClientRouter {
     private final Server server;
 
     @Inject
-    public RestServer(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector, Router router) {
-        super(log, listenersFactory, properties, router);
+    public RestServer(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector, Router<?> router) {
+        super(log, listenersFactory, router);
 
         this.injector = injector.createChildInjector(new SimpleProxyModule());
 

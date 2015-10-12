@@ -1,6 +1,7 @@
 package com.intuso.housemate.server.ioc;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.intuso.housemate.client.real.api.internal.RealRoot;
@@ -52,8 +53,9 @@ public class ServerModule extends AbstractModule {
         bind(MainRouter.class).in(Scopes.SINGLETON);
 
         // bind implementations
+        bind(ObjectRoot.class).to(RootBridge.class);
         bind(RealRoot.class).to(ServerRealRoot.class);
-        bind(Router.class).to(MainRouter.class);
-        bind(new TypeLiteral<Root<?, ?>>() {}).to(RootBridge.class);
+        bind(new Key<Router<?>>() {}).to(MainRouter.class);
+        bind(new Key<Root<?, ?>>() {}).to(RootBridge.class);
     }
 }

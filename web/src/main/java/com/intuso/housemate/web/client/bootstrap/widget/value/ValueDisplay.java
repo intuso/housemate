@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.comms.v1_0.api.payload.SimpleTypeData;
 import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.object.v1_0.api.Value;
@@ -46,7 +47,7 @@ public interface ValueDisplay extends IsWidget, Value.Listener<GWTProxyValue> {
                         if (loadedType != null)
                             panel.setWidget(create(value, loadedType));
                     }
-                }, new RemoteObject.TreeLoadInfo(value.getTypeId(), new RemoteObject.TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
+                }, new TreeLoadInfo(value.getTypeId(), new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE))));
                 return panel;
             }
         }

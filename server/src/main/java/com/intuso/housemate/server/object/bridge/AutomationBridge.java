@@ -16,19 +16,19 @@ import java.util.List;
 public class AutomationBridge
         extends BridgeObject<AutomationData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, AutomationBridge, Automation.Listener<? super AutomationBridge>>
         implements Automation<CommandBridge, CommandBridge, CommandBridge, CommandBridge, ValueBridge, ValueBridge,
-            ConditionBridge,ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge>, TaskBridge,
-        ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge>, AutomationBridge> {
+            ConditionBridge,ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ConditionBridge>, TaskBridge,
+        ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?, ?, ?>, TaskBridge>, AutomationBridge> {
 
-    private Automation<?, ?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?, ?>, ?, ?> automation;
+    private Automation<?, ?, ?, ?, ?, ?, ? extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?, ? extends Task<?, ?, ?, ?, ?, ?, ?>, ?, ?> automation;
     private CommandBridge renameCommand;
     private CommandBridge removeCommand;
     private ValueBridge runningValue;
     private CommandBridge startCommand;
     private CommandBridge stopCommand;
     private ValueBridge errorValue;
-    private ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
-    private ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> satisfiedTaskList;
-    private ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> unsatisfiedTaskList;
+    private ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
+    private ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?, ?, ?>, TaskBridge> satisfiedTaskList;
+    private ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?, ?, ?>, TaskBridge> unsatisfiedTaskList;
     private CommandBridge addCondition;
     private CommandBridge addSatisfiedTask;
     private CommandBridge addUnsatisfiedTask;
@@ -44,11 +44,11 @@ public class AutomationBridge
         stopCommand = new CommandBridge(log, listenersFactory, automation.getStopCommand());
         errorValue = new ValueBridge(log, listenersFactory, automation.getErrorValue());
         conditionList = new ConvertingListBridge<>(log, listenersFactory,
-                (com.intuso.housemate.object.api.internal.List<? extends Condition<?, ?, ?, ?, ?, ?, ?>>) automation.getConditions(), new ConditionBridge.Converter(log, listenersFactory));
+                (com.intuso.housemate.object.api.internal.List<? extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>) automation.getConditions(), new ConditionBridge.Converter(log, listenersFactory));
         satisfiedTaskList = new ConvertingListBridge<>(log, listenersFactory,
-                (com.intuso.housemate.object.api.internal.List<? extends Task<?, ?, ?, ?, ?>>) automation.getSatisfiedTasks(), new TaskBridge.Converter(log, listenersFactory));
+                (com.intuso.housemate.object.api.internal.List<? extends Task<?, ?, ?, ?, ?, ?, ?>>) automation.getSatisfiedTasks(), new TaskBridge.Converter(log, listenersFactory));
         unsatisfiedTaskList = new ConvertingListBridge<>(log, listenersFactory,
-                (com.intuso.housemate.object.api.internal.List<? extends Task<?, ?, ?, ?, ?>>) automation.getUnsatisfiedTasks(), new TaskBridge.Converter(log, listenersFactory));
+                (com.intuso.housemate.object.api.internal.List<? extends Task<?, ?, ?, ?, ?, ?, ?>>) automation.getUnsatisfiedTasks(), new TaskBridge.Converter(log, listenersFactory));
         addCondition = new CommandBridge(log, listenersFactory, automation.getAddConditionCommand());
         addSatisfiedTask = new CommandBridge(log, listenersFactory, automation.getAddSatisifedTaskCommand());
         addUnsatisfiedTask = new CommandBridge(log, listenersFactory, automation.getAddUnsatisifedTaskCommand());
@@ -143,17 +143,17 @@ public class AutomationBridge
     }
 
     @Override
-    public ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> getUnsatisfiedTasks() {
+    public ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?, ?, ?>, TaskBridge> getUnsatisfiedTasks() {
         return unsatisfiedTaskList;
     }
 
     @Override
-    public ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?>, TaskBridge> getSatisfiedTasks() {
+    public ConvertingListBridge<TaskData, Task<?, ?, ?, ?, ?, ?, ?>, TaskBridge> getSatisfiedTasks() {
         return satisfiedTaskList;
     }
 
     @Override
-    public ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
+    public ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ConditionBridge> getConditions() {
         return conditionList;
     }
 

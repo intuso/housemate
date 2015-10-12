@@ -101,17 +101,17 @@ import com.intuso.utilities.log.Log;
         FromString.ToDouble.class,
         FromString.ToBoolean.class,
         FromString.ToInteger.class})
-@Devices({PowerByCommandDevice.class})
-@Conditions({And.class,
+@DeviceDrivers({PowerByCommandDevice.class})
+@ConditionDrivers({And.class,
         Or.class,
         Not.class,
         DayOfTheWeek.class,
         TimeOfTheDay.class,
         ValueComparison.class})
-@Tasks({Delay.class,
+@TaskDrivers({Delay.class,
         RandomDelay.class,
         PerformCommand.class})
-public class MainPluginModule extends PluginModule {
+public class MainPluginModule extends AnnotatedPluginModule {
 
     @Inject
     public MainPluginModule(Log log) {

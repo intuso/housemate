@@ -3,14 +3,10 @@ package com.intuso.housemate.client.real.api.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.factory.automation.RealAutomationOwner;
 import com.intuso.housemate.client.real.api.internal.factory.condition.AddConditionCommand;
-import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionOwner;
 import com.intuso.housemate.client.real.api.internal.factory.task.AddTaskCommand;
-import com.intuso.housemate.client.real.api.internal.factory.task.RealTaskOwner;
 import com.intuso.housemate.client.real.api.internal.impl.type.BooleanType;
 import com.intuso.housemate.client.real.api.internal.impl.type.StringType;
-import com.intuso.housemate.comms.api.internal.ChildOverview;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.payload.*;
 import com.intuso.housemate.object.api.internal.Automation;
@@ -25,13 +21,14 @@ public class RealAutomation
         AutomationData,
         HousemateData<?>,
         RealObject<?, ?, ?, ?>,
-            Automation.Listener<? super RealAutomation>>
+        Automation.Listener<? super RealAutomation>>
         implements Automation<
-            RealCommand, RealCommand, RealCommand, RealCommand,
-            RealValue<Boolean>, RealValue<String>, RealCondition, RealList<ConditionData, RealCondition>,
-            RealTask, RealList<TaskData, RealTask>, RealAutomation>,
-            Condition.Listener<RealCondition>,
-        RealConditionOwner {
+        RealCommand, RealCommand, RealCommand, RealCommand,
+        RealValue<Boolean>, RealValue<String>, RealCondition<?>, RealList<ConditionData, RealCondition<?>>,
+        RealTask<?>, RealList<TaskData, RealTask<?>>, RealAutomation>,
+        Condition.Listener<RealCondition<?>>,
+        RealCondition.RemovedListener,
+        AddConditionCommand.Callback {
 
     private final RealCommand rename;
     private final RealCommand remove;
@@ -39,47 +36,43 @@ public class RealAutomation
     private final RealCommand start;
     private final RealCommand stop;
     private final RealValue<String> error;
-    private final RealList<ConditionData, RealCondition> conditions;
-    private final RealList<TaskData, RealTask> satisfiedTasks;
-    private final RealList<TaskData, RealTask> unsatisfiedTasks;
+    private final RealList<ConditionData, RealCondition<?>> conditions;
+    private final RealList<TaskData, RealTask<?>> satisfiedTasks;
+    private final RealList<TaskData, RealTask<?>> unsatisfiedTasks;
     private final RealCommand addConditionCommand;
     private final RealCommand addSatisfiedTaskCommand;
     private final RealCommand addUnsatisfiedTaskCommand;
 
-    private final RealAutomationOwner owner;
+    private final RemovedListener removedListener;
 
-    private final RealTaskOwner satisfiedTaskOwner = new RealTaskOwner() {
-
-        @Override
-        public ChildOverview getAddTaskCommandDetails() {
-            return new ChildOverview(AutomationData.ADD_SATISFIED_TASK_ID, AutomationData.ADD_SATISFIED_TASK_ID, "Add satisfied task");
-        }
+    private final AddTaskCommand.Callback addSatisfiedTaskCallback = new AddTaskCommand.Callback() {
 
         @Override
         public void addTask(RealTask task) {
             satisfiedTasks.add(task);
         }
+    };
+
+    private final RealTask.RemovedListener satisfiedTaskRemovedListener = new RealTask.RemovedListener() {
 
         @Override
-        public void removeTask(RealTask task) {
+        public void taskRemoved(RealTask task) {
             satisfiedTasks.remove(task.getId());
         }
     };
 
-    private final RealTaskOwner unsatisfiedTaskOwner = new RealTaskOwner() {
-
-        @Override
-        public ChildOverview getAddTaskCommandDetails() {
-            return new ChildOverview(AutomationData.ADD_UNSATISFIED_TASK_ID, AutomationData.ADD_UNSATISFIED_TASK_ID, "Add unsatisfied task");
-        }
+    private final AddTaskCommand.Callback addUnsatisfiedTaskCallback = new AddTaskCommand.Callback() {
 
         @Override
         public void addTask(RealTask task) {
             unsatisfiedTasks.add(task);
         }
+    };
+
+    private final RealTask.RemovedListener unsatisfiedTaskRemovedListener = new RealTask.RemovedListener() {
 
         @Override
-        public void removeTask(RealTask task) {
+        public void taskRemoved(RealTask task) {
             unsatisfiedTasks.remove(task.getId());
         }
     };
@@ -87,11 +80,14 @@ public class RealAutomation
     private ListenerRegistration conditionListenerRegistration;
 
     @Inject
-    public RealAutomation(final Log log, ListenersFactory listenersFactory,
-                          AddConditionCommand.Factory addConditionCommandFactory, AddTaskCommand.Factory addTaskCommandFactory,
-                          @Assisted AutomationData data, @Assisted RealAutomationOwner owner) {
+    public RealAutomation(final Log log,
+                          ListenersFactory listenersFactory,
+                          AddConditionCommand.Factory addConditionCommandFactory,
+                          AddTaskCommand.Factory addTaskCommandFactory,
+                          @Assisted AutomationData data,
+                          @Assisted RemovedListener removedListener) {
         super(log, listenersFactory, data);
-        this.owner = owner;
+        this.removedListener = removedListener;
         this.rename = new RealCommand(log, listenersFactory, AutomationData.RENAME_ID, AutomationData.RENAME_ID, "Rename the automation", Lists.<RealParameter<?>>newArrayList(StringType.createParameter(log, listenersFactory, AutomationData.NAME_ID, AutomationData.NAME_ID, "The new name"))) {
             @Override
             public void perform(TypeInstanceMap values) {
@@ -137,9 +133,9 @@ public class RealAutomation
         this.conditions = new RealList<>(log, listenersFactory, AutomationData.CONDITIONS_ID, AutomationData.CONDITIONS_ID, "The automation's conditions");
         this.satisfiedTasks = new RealList<>(log, listenersFactory, AutomationData.SATISFIED_TASKS_ID, AutomationData.SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         this.unsatisfiedTasks = new RealList<>(log, listenersFactory, AutomationData.UNSATISFIED_TASKS_ID, AutomationData.UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
-        addConditionCommand = addConditionCommandFactory.create(this);
-        addSatisfiedTaskCommand = addTaskCommandFactory.create(satisfiedTaskOwner);
-        addUnsatisfiedTaskCommand = addTaskCommandFactory.create(unsatisfiedTaskOwner);
+        addConditionCommand = addConditionCommandFactory.create(AutomationData.ADD_CONDITION_ID, AutomationData.ADD_CONDITION_ID, "Add condition", this, this);
+        addSatisfiedTaskCommand = addTaskCommandFactory.create(AutomationData.ADD_SATISFIED_TASK_ID, AutomationData.ADD_SATISFIED_TASK_ID, "Add satisfied task", addSatisfiedTaskCallback, satisfiedTaskRemovedListener);
+        addUnsatisfiedTaskCommand = addTaskCommandFactory.create(AutomationData.ADD_UNSATISFIED_TASK_ID, AutomationData.ADD_UNSATISFIED_TASK_ID, "Add unsatisfied task", addUnsatisfiedTaskCallback, unsatisfiedTaskRemovedListener);
         addChild(this.rename);
         addChild(this.remove);
         addChild(this.running);
@@ -189,16 +185,16 @@ public class RealAutomation
     }
 
     protected void remove() {
-        owner.removeAutomation(this);
+        removedListener.automationRemoved(this);
     }
 
     @Override
-    public RealList<TaskData, RealTask> getSatisfiedTasks() {
+    public RealList<TaskData, RealTask<?>> getSatisfiedTasks() {
         return satisfiedTasks;
     }
 
     @Override
-    public RealList<TaskData, RealTask> getUnsatisfiedTasks() {
+    public RealList<TaskData, RealTask<?>> getUnsatisfiedTasks() {
         return unsatisfiedTasks;
     }
 
@@ -218,12 +214,17 @@ public class RealAutomation
     }
 
     @Override
-    public RealList<ConditionData, RealCondition> getConditions() {
+    public RealList<ConditionData, RealCondition<?>> getConditions() {
         return conditions;
     }
 
     @Override
-    public void conditionError(RealCondition condition, String error) {
+    public void error(RealCondition condition, String error) {
+        // do nothing for now
+    }
+
+    @Override
+    public void driverLoaded(RealCondition usesDriver, boolean loaded) {
         // do nothing for now
     }
 
@@ -240,29 +241,16 @@ public class RealAutomation
     }
 
     @Override
-    public ChildOverview getAddConditionCommandDetails() {
-        return new ChildOverview(AutomationData.ADD_CONDITION_ID, AutomationData.ADD_CONDITION_ID, "Add condition");
-    }
-
-    @Override
     public void addCondition(RealCondition condition) {
         conditions.add(condition);
     }
 
     @Override
-    public void removeCondition(RealCondition condition) {
+    public void conditionRemoved(RealCondition condition) {
         conditions.remove(condition.getId());
     }
 
-    public RealTaskOwner getSatisfiedTaskOwner() {
-        return satisfiedTaskOwner;
-    }
-
-    public RealTaskOwner getUnsatisfiedTaskOwner() {
-        return unsatisfiedTaskOwner;
-    }
-
-     protected final void _start() {
+    protected final void _start() {
         try {
             start();
         } catch (Throwable t) {
@@ -283,7 +271,7 @@ public class RealAutomation
             RealCondition condition = conditions.iterator().next();
             condition.start();
             conditionListenerRegistration = condition.addObjectListener(this);
-            conditionSatisfied(condition, condition.isSatisfied());
+            conditionSatisfied(condition, condition.getChildSatisfied());
         }
     }
 
@@ -296,4 +284,11 @@ public class RealAutomation
         }
     }
 
+    public interface RemovedListener {
+        void automationRemoved(RealAutomation automation);
+    }
+
+    public interface Factory {
+        RealAutomation create(AutomationData data, RemovedListener removedListener);
+    }
 }

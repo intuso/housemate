@@ -4,21 +4,16 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.factory.automation.AddAutomationCommand;
-import com.intuso.housemate.client.real.api.internal.factory.automation.RealAutomationOwner;
 import com.intuso.housemate.client.real.api.internal.factory.condition.ConditionFactoryType;
 import com.intuso.housemate.client.real.api.internal.factory.device.AddDeviceCommand;
 import com.intuso.housemate.client.real.api.internal.factory.device.DeviceFactoryType;
-import com.intuso.housemate.client.real.api.internal.factory.device.RealDeviceOwner;
 import com.intuso.housemate.client.real.api.internal.factory.hardware.AddHardwareCommand;
 import com.intuso.housemate.client.real.api.internal.factory.hardware.HardwareFactoryType;
-import com.intuso.housemate.client.real.api.internal.factory.hardware.RealHardwareOwner;
 import com.intuso.housemate.client.real.api.internal.factory.task.TaskFactoryType;
 import com.intuso.housemate.client.real.api.internal.factory.user.AddUserCommand;
-import com.intuso.housemate.client.real.api.internal.factory.user.RealUserOwner;
 import com.intuso.housemate.comms.api.internal.*;
 import com.intuso.housemate.comms.api.internal.access.ApplicationDetails;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
-import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
 import com.intuso.housemate.comms.api.internal.payload.*;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -32,16 +27,25 @@ import java.util.List;
 import java.util.Map;
 
 public class RealRoot
-        extends RealObject<RootData, HousemateData<?>, RealObject<?, ? extends HousemateData<?>, ?, ?>, ClientRoot.Listener<? super RealRoot>>
-        implements ClientRoot<ClientRoot.Listener<? super RealRoot>, RealRoot>,
-        ObjectRoot<ClientRoot.Listener<? super RealRoot>, RealRoot>,
+        extends RealObject<RootData, HousemateData<?>, RealObject<?, ? extends HousemateData<?>, ?, ?>, RealRoot.Listener>
+        implements Root<RealRoot.Listener, RealRoot>,
+        RequiresAccess,
+        Message.Sender,
+        ObjectRoot<RealRoot.Listener, RealRoot>,
         Application.Container<RealList<ApplicationData, RealApplication>>,
         Automation.Container<RealList<AutomationData, RealAutomation>>,
-        Device.Container<RealList<DeviceData, RealDevice>>,
-        Hardware.Container<RealList<HardwareData, RealHardware>>,
+        Device.Container<RealList<DeviceData, RealDevice<?>>>,
+        Hardware.Container<RealList<HardwareData, RealHardware<?>>>,
         Type.Container<RealList<TypeData<?>, RealType<?, ?, ?>>>,
         User.Container<RealList<UserData, RealUser>>,
-        RealHardwareOwner, RealDeviceOwner, RealAutomationOwner, RealUserOwner {
+        RealHardware.RemovedListener,
+        AddHardwareCommand.Callback,
+        RealDevice.RemovedListener,
+        AddDeviceCommand.Callback,
+        RealAutomation.RemovedListener,
+        AddAutomationCommand.Callback,
+        RealUser.RemovedListener,
+        AddUserCommand.Callback {
 
     public final static String SEND_INITIAL_DATA = "send-initial-data";
     public final static String INITIAL_DATA = "initial-data";
@@ -61,8 +65,8 @@ public class RealRoot
 
     private final RealList<ApplicationData, RealApplication> applications;
     private final RealList<AutomationData, RealAutomation> automations;
-    private final RealList<DeviceData, RealDevice> devices;
-    private final RealList<HardwareData, RealHardware> hardwares;
+    private final RealList<DeviceData, RealDevice<?>> devices;
+    private final RealList<HardwareData, RealHardware<?>> hardwares;
     private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
     private final RealList<UserData, RealUser> users;
 
@@ -72,7 +76,7 @@ public class RealRoot
     private final RealCommand addUserCommand;
 
     private final Router.Registration routerRegistration;
-    private final ConnectionManager connectionManager;
+    private final AccessManager accessManager;
 
     @Inject
     public RealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
@@ -90,15 +94,20 @@ public class RealRoot
         this.types = types;
         this.users = new RealList<>(log, listenersFactory, USERS_ID, "Users", "Users");
 
-        this.addAutomationCommand = addAutomationCommandFactory.create(this);
-        this.addDeviceCommand = addDeviceCommandFactory.create(this);
-        this.addHardwareCommand = addHardwareCommandFactory.create(this);
-        this.addUserCommand = addUserCommandFactory.create(this);
+        this.addAutomationCommand = addAutomationCommandFactory.create(ADD_HARDWARE_ID, ADD_HARDWARE_ID, "Add hardware", this, this);
+        this.addDeviceCommand = addDeviceCommandFactory.create(ADD_DEVICE_ID, ADD_DEVICE_ID, "Add a device", this, this);
+        this.addHardwareCommand = addHardwareCommandFactory.create(ADD_AUTOMATION_ID, ADD_AUTOMATION_ID, "Add an automation", this, this);
+        this.addUserCommand = addUserCommandFactory.create(ADD_USER_ID, ADD_USER_ID, "Add a user", this, this);
 
-        this.connectionManager = new ConnectionManager(listenersFactory, properties, ApplicationRegistration.ClientType.Real, this);
+        this.accessManager = new AccessManager(listenersFactory, properties, ApplicationRegistration.ClientType.Real, this);
 
         // need to do this once the connection manager is created and once the object is init'ed so the path is not null
-        this.routerRegistration = router.registerReceiver(this);
+        this.routerRegistration = router.registerReceiver(new Message.Receiver<Message.Payload>() {
+            @Override
+            public void messageReceived(Message<Message.Payload> message) {
+                distributeMessage(message);
+            }
+        });
 
         addChild(applications);
         addChild(automations);
@@ -122,22 +131,22 @@ public class RealRoot
 
     @Override
     public Application.Status getApplicationStatus() {
-        return connectionManager.getApplicationStatus();
+        return accessManager.getApplicationStatus();
     }
 
     @Override
     public ApplicationInstance.Status getApplicationInstanceStatus() {
-        return connectionManager.getApplicationInstanceStatus();
+        return accessManager.getApplicationInstanceStatus();
     }
 
     @Override
     public void register(ApplicationDetails applicationDetails, String component) {
-        connectionManager.register(applicationDetails, component);
+        accessManager.register(applicationDetails, component);
     }
 
     @Override
     public void unregister() {
-        connectionManager.unregister();
+        accessManager.unregister();
     }
 
     @Override
@@ -157,73 +166,44 @@ public class RealRoot
     }
 
     @Override
-    public void messageReceived(Message<Message.Payload> message) {
-        distributeMessage(message);
-    }
-
-    @Override
     protected List<ListenerRegistration> registerListeners() {
         final List<ListenerRegistration> result = super.registerListeners();
-        result.add(connectionManager.addStatusChangeListener(new ConnectionListener() {
+        result.add(accessManager.addStatusChangeListener(new RequiresAccess.Listener<AccessManager>() {
 
             @Override
-            public void serverConnectionStatusChanged(ServerConnectionStatus serverConnectionStatus) {
-                for(ClientRoot.Listener<? super RealRoot> listener : getObjectListeners())
-                    listener.serverConnectionStatusChanged(RealRoot.this, serverConnectionStatus);
-            }
-
-            @Override
-            public void applicationStatusChanged(Application.Status applicationStatus) {
-                for(ClientRoot.Listener<? super RealRoot> listener : getObjectListeners())
+            public void applicationStatusChanged(AccessManager accessManager, Application.Status applicationStatus) {
+                for (Listener listener : getObjectListeners())
                     listener.applicationStatusChanged(RealRoot.this, applicationStatus);
             }
 
             @Override
-            public void applicationInstanceStatusChanged(ApplicationInstance.Status applicationInstanceStatus) {
-                for(ClientRoot.Listener<? super RealRoot> listener : getObjectListeners())
+            public void applicationInstanceStatusChanged(AccessManager accessManager, ApplicationInstance.Status applicationInstanceStatus) {
+                for (Listener listener : getObjectListeners())
                     listener.applicationInstanceStatusChanged(RealRoot.this, applicationInstanceStatus);
             }
 
             @Override
-            public void newApplicationInstance(String instanceId) {
-                for (ClientRoot.Listener<? super RealRoot> listener : getObjectListeners())
+            public void newApplicationInstance(AccessManager accessManager, String instanceId) {
+                for (Listener listener : getObjectListeners())
                     listener.newApplicationInstance(RealRoot.this, instanceId);
-            }
-
-            @Override
-            public void newServerInstance(String serverId) {
-                for (ClientRoot.Listener<? super RealRoot> listener : getObjectListeners())
-                    listener.newServerInstance(RealRoot.this, serverId);
-            }
-        }));
-        result.add(addMessageListener(RootData.SERVER_INSTANCE_ID_TYPE, new Message.Receiver<StringPayload>() {
-            @Override
-            public void messageReceived(Message<StringPayload> message) {
-                connectionManager.setServerInstanceId(message.getPayload().getValue());
             }
         }));
         result.add(addMessageListener(RootData.APPLICATION_INSTANCE_ID_TYPE, new Message.Receiver<StringPayload>() {
             @Override
             public void messageReceived(Message<StringPayload> message) {
-                connectionManager.setApplicationInstanceId(message.getPayload().getValue());
-            }
-        }));
-        result.add(addMessageListener(RootData.SERVER_CONNECTION_STATUS_TYPE, new Message.Receiver<ServerConnectionStatus>() {
-            @Override
-            public void messageReceived(Message<ServerConnectionStatus> message) {
-                connectionManager.setServerConnectionStatus(message.getPayload());
+                accessManager.setApplicationInstanceId(message.getPayload().getValue());
             }
         }));
         result.add(addMessageListener(RootData.APPLICATION_STATUS_TYPE, new Message.Receiver<ApplicationData.StatusPayload>() {
             @Override
             public void messageReceived(Message<ApplicationData.StatusPayload> message) {
-                connectionManager.setApplicationStatus(message.getPayload().getStatus());
+                accessManager.setApplicationStatus(message.getPayload().getStatus());
             }
         }));
         result.add(addMessageListener(RootData.APPLICATION_INSTANCE_STATUS_TYPE, new Message.Receiver<ApplicationInstanceData.StatusPayload>() {
             @Override
             public void messageReceived(Message<ApplicationInstanceData.StatusPayload> message) {
-                connectionManager.setApplicationInstanceStatus(message.getPayload().getStatus());
+                accessManager.setApplicationInstanceStatus(message.getPayload().getStatus());
             }
         }));
         result.add(addMessageListener(SEND_INITIAL_DATA, new Message.Receiver<NoPayload>() {
@@ -249,13 +229,8 @@ public class RealRoot
     }
 
     @Override
-    public RealList<HardwareData, RealHardware> getHardwares() {
+    public RealList<HardwareData, RealHardware<?>> getHardwares() {
         return hardwares;
-    }
-
-    @Override
-    public ChildOverview getAddHardwareCommandDetails() {
-        return new ChildOverview(ADD_HARDWARE_ID, ADD_HARDWARE_ID, "Add hardware");
     }
 
     public RealCommand getAddHardwareCommand() {
@@ -268,18 +243,13 @@ public class RealRoot
     }
 
     @Override
-    public final void removeHardware(RealHardware realHardware) {
+    public final void hardwareRemoved(RealHardware realHardware) {
         hardwares.remove(realHardware.getId());
     }
 
     @Override
-    public final RealList<DeviceData, RealDevice> getDevices() {
+    public final RealList<DeviceData, RealDevice<?>> getDevices() {
         return devices;
-    }
-
-    @Override
-    public ChildOverview getAddDeviceCommandDetails() {
-        return new ChildOverview(ADD_DEVICE_ID, ADD_DEVICE_ID, "Add a device");
     }
 
     public RealCommand getAddDeviceCommand() {
@@ -292,18 +262,13 @@ public class RealRoot
     }
 
     @Override
-    public final void removeDevice(RealDevice realDevice) {
+    public final void deviceRemoved(RealDevice realDevice) {
         devices.remove(realDevice.getId());
     }
 
     @Override
     public RealList<AutomationData, RealAutomation> getAutomations() {
         return automations;
-    }
-
-    @Override
-    public ChildOverview getAddAutomationCommandDetails() {
-        return new ChildOverview(ADD_AUTOMATION_ID, ADD_AUTOMATION_ID, "Add an automation");
     }
 
     public RealCommand getAddAutomationCommand() {
@@ -316,7 +281,7 @@ public class RealRoot
     }
 
     @Override
-    public final void removeAutomation(RealAutomation realAutomation) {
+    public final void automationRemoved(RealAutomation realAutomation) {
         automations.remove(realAutomation.getId());
     }
 
@@ -330,11 +295,6 @@ public class RealRoot
         return users;
     }
 
-    @Override
-    public ChildOverview getAddUserCommandDetails() {
-        return new ChildOverview(ADD_USER_ID, ADD_USER_ID, "Add a user");
-    }
-
     public RealCommand getAddUserCommand() {
         return addUserCommand;
     }
@@ -345,7 +305,7 @@ public class RealRoot
     }
 
     @Override
-    public final void removeUser(RealUser realUser) {
+    public final void userRemoved(RealUser realUser) {
         users.remove(realUser.getId());
     }
 
@@ -410,4 +370,6 @@ public class RealRoot
         }
         return listeners.addListener(listener);
     }
+
+    public interface Listener extends Root.Listener<RealRoot>, RequiresAccess.Listener<RealRoot> {}
 }

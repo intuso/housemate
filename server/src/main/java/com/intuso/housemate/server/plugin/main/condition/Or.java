@@ -2,13 +2,8 @@ package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.RealCondition;
-import com.intuso.housemate.client.real.api.internal.RealConditionNonLeaf;
-import com.intuso.housemate.client.real.api.internal.factory.condition.AddConditionCommand;
-import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionOwner;
-import com.intuso.housemate.comms.api.internal.payload.ConditionData;
+import com.intuso.housemate.client.real.api.internal.driver.LogicCondition;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
-import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Collection;
@@ -19,15 +14,14 @@ import java.util.Map;
  *
  */
 @TypeInfo(id = "or", name = "Or", description = "True if any child condition is true")
-public class Or extends RealConditionNonLeaf {
+public class Or extends LogicCondition {
+
+    private final Log log;
 
     @Inject
-	public Or(Log log,
-              ListenersFactory listenersFactory,
-              AddConditionCommand.Factory addConditionCommandFactory,
-              @Assisted ConditionData data,
-              @Assisted RealConditionOwner owner) {
-		super(log, listenersFactory, "or", addConditionCommandFactory, data, owner);
+    public Or(Log log, @Assisted Callback conditionCallback) {
+        super(conditionCallback);
+        this.log = log;
     }
 
     /**
@@ -35,7 +29,7 @@ public class Or extends RealConditionNonLeaf {
      * @return true iff at least one of the sub-conditions is satisfied
      */
     @Override
-    protected final boolean checkIfSatisfied(Map<RealCondition, Boolean> satisfiedMap) {
+    protected final boolean checkIfSatisfied(Map<String, Boolean> satisfiedMap) {
         // get all the satisfied values
         Collection<Boolean> satisfied = satisfiedMap.values();
 
@@ -43,13 +37,13 @@ public class Or extends RealConditionNonLeaf {
         for(Boolean b : satisfied) {
             // if one is true, we're true
             if(b) {
-                getLog().d("One sub-condition is satisfied");
+                log.d("One sub-condition is satisfied");
                 return true;
             }
         }
 
         // we only get here if they were all false
-        getLog().d("All sub-conditions are unsatisfied");
+        log.d("All sub-conditions are unsatisfied");
         return false;
     }
 }

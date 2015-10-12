@@ -14,19 +14,23 @@ public class ServerProxyTask
         extends ServerProxyObject<
         TaskData,
         HousemateData<?>,
-            ServerProxyObject<?, ?, ?, ?, ?>,
+        ServerProxyObject<?, ?, ?, ?, ?>,
         ServerProxyTask,
-            Task.Listener<? super ServerProxyTask>>
+        Task.Listener<? super ServerProxyTask>>
         implements Task<
-                    ServerProxyCommand,
-                    ServerProxyValue,
-                    ServerProxyValue,
-                    ServerProxyList<PropertyData, ServerProxyProperty>,
-                    ServerProxyTask> {
+        ServerProxyCommand,
+        ServerProxyValue,
+        ServerProxyValue,
+        ServerProxyProperty,
+        ServerProxyValue,
+        ServerProxyList<PropertyData, ServerProxyProperty>,
+        ServerProxyTask> {
 
     private ServerProxyCommand remove;
     private ServerProxyValue error;
     private ServerProxyValue executing;
+    private ServerProxyProperty driverProperty;
+    private ServerProxyValue driverLoaded;
     private ServerProxyList<PropertyData, ServerProxyProperty> properties;
 
     /**
@@ -45,6 +49,8 @@ public class ServerProxyTask
         remove = (ServerProxyCommand) getChild(TaskData.REMOVE_ID);
         error = (ServerProxyValue) getChild(TaskData.ERROR_ID);
         executing = (ServerProxyValue) getChild(TaskData.EXECUTING_ID);
+        driverProperty = (ServerProxyProperty) getChild(TaskData.DRIVER_ID);
+        driverLoaded = (ServerProxyValue) getChild(TaskData.DRIVER_LOADED_ID);
         properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(TaskData.PROPERTIES_ID);
     }
 
@@ -56,6 +62,16 @@ public class ServerProxyTask
     @Override
     public ServerProxyValue getExecutingValue() {
         return executing;
+    }
+
+    @Override
+    public ServerProxyProperty getDriverProperty() {
+        return driverProperty;
+    }
+
+    @Override
+    public ServerProxyValue getDriverLoadedValue() {
+        return driverLoaded;
     }
 
     @Override

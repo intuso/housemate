@@ -34,7 +34,7 @@ public class ServerRealRoot extends RealRoot {
     private boolean initialDataSent = false;
 
     @Inject
-    public ServerRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
+    public ServerRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router,
                           RealList<TypeData<?>, RealType<?, ?, ?>> types,
                           AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory,
                           AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory,
@@ -60,11 +60,6 @@ public class ServerRealRoot extends RealRoot {
     @Override
     public void register(ApplicationDetails applicationDetails, String component) {
         super.register(applicationDetails, component);
-    }
-
-    @Override
-    public void messageReceived(Message<Message.Payload> message) {
-        distributeMessage(message);
     }
 
     @Override

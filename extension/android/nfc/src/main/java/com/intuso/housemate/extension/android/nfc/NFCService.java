@@ -6,11 +6,10 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
 import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
-import com.intuso.housemate.comms.v1_0.api.ClientRoot;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
 import com.intuso.housemate.object.v1_0.api.Application;
 import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.object.v1_0.api.Command;
@@ -46,7 +45,7 @@ public class NFCService extends HousemateService {
         return result;
     }
 
-    private class CommandPerformer implements ClientRoot.Listener<AndroidProxyRoot>, LoadManager.Callback, Command.PerformListener<AndroidProxyCommand> {
+    private class CommandPerformer implements ProxyRoot.Listener<AndroidProxyRoot>, LoadManager.Callback, Command.PerformListener<AndroidProxyCommand> {
 
         private final String objectPath;
         private final ProxyClientHelper<AndroidProxyRoot> clientHelper;
@@ -65,11 +64,6 @@ public class NFCService extends HousemateService {
         }
 
         @Override
-        public void serverConnectionStatusChanged(AndroidProxyRoot root, ServerConnectionStatus serverConnectionStatus) {
-            // do nothing
-        }
-
-        @Override
         public void applicationStatusChanged(AndroidProxyRoot root, Application.Status applicationStatus) {
             // do nothing
         }
@@ -84,11 +78,6 @@ public class NFCService extends HousemateService {
 
         @Override
         public void newApplicationInstance(AndroidProxyRoot root, String instanceId) {
-            // do nothing
-        }
-
-        @Override
-        public void newServerInstance(AndroidProxyRoot root, String serverId) {
             // do nothing
         }
 

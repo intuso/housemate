@@ -2,15 +2,10 @@ package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.RealCondition;
-import com.intuso.housemate.client.real.api.internal.RealProperty;
-import com.intuso.housemate.client.real.api.internal.factory.condition.RealConditionOwner;
+import com.intuso.housemate.client.real.api.internal.annotations.Property;
+import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.impl.type.Time;
-import com.intuso.housemate.client.real.api.internal.impl.type.TimeType;
-import com.intuso.housemate.comms.api.internal.HousemateCommsException;
-import com.intuso.housemate.comms.api.internal.payload.ConditionData;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
-import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Calendar;
@@ -20,10 +15,7 @@ import java.util.Calendar;
  *
  */
 @TypeInfo(id = "time-of-the-day", name = "Time of the Day", description = "Condition that is true for certain parts of the day")
-public class TimeOfTheDay extends RealCondition {
-
-    public final static String BEFORE_FIELD = "before";
-    public final static String AFTER_FIELD = "after";
+public class TimeOfTheDay implements ConditionDriver {
     
 	/**
 	 * Start of the day = midnight = 00:00:00.000
@@ -43,12 +35,17 @@ public class TimeOfTheDay extends RealCondition {
     /**
      * String version of the time that, once passed, makes the condition unsatisfied. Default is the start of the day
      */
-    private final RealProperty<Time> before;
+	@Property(id = "before", name = "Before", description = "The condition is satisfied when the current time is before this time", typeId = "time")
+    private Time before;
 
     /**
      * String version of the time that, until reached, makes the condition unsatisfied
      */
-    private final RealProperty<Time> after;
+	@Property(id = "after", name = "After", description = "The condition is satisfied when the current time is after this time", typeId = "time")
+    private Time after;
+
+	private final Log log;
+	private final ConditionDriver.Callback callback;
 
 	/**
 	 * thread that runs to tell listener when condition is (un)satisfied
@@ -57,30 +54,24 @@ public class TimeOfTheDay extends RealCondition {
 
     @Inject
 	public TimeOfTheDay(Log log,
-                        ListenersFactory listenersFactory,
-                        @Assisted ConditionData data,
-                        @Assisted RealConditionOwner owner,
-                        TimeType timeType) {
-		super(log, listenersFactory, "time-of-the-day", data, owner);
-        before = new RealProperty<>(log, listenersFactory, BEFORE_FIELD, BEFORE_FIELD, "The condition is satisfied when the current time is before this time",
-                timeType, DAY_END);
-        after = new RealProperty<>(log, listenersFactory, AFTER_FIELD, AFTER_FIELD, "The condition is satisfied when the current time is after this time",
-                timeType, DAY_END);
-        getProperties().add(before);
-        getProperties().add(after);
+                        @Assisted ConditionDriver.Callback callback) {
+		this.log = log;
+		this.callback = callback;
     }
-	
-	/**
+
+    @Override
+    public boolean hasChildConditions() {
+        return false;
+    }
+
+    /**
 	 * Check if the current time of day satisfies the condition
 	 * @return true iff current time is after after and before before
 	 */
 	protected final boolean doesNowSatisfy() {
 		Time cur_time = getTime();
 
-        Time after = this.after.getTypedValue();
-        Time before = this.before.getTypedValue();
-		
-		// if the after time is before the before time then return true if current time is between them
+        // if the after time is before the before time then return true if current time is between them
 		if(after.compareTo(before) <= 0)
 			return (cur_time.compareTo(after) >= 0 && cur_time.compareTo(before) <= 0);
 		
@@ -89,78 +80,10 @@ public class TimeOfTheDay extends RealCondition {
 	}
 	
 	/**
-	 * parse a time string. The format is hh:mm:ss.mmm where only hh has to be given
-	 * @param in the time string
-	 * @return a long representing the number of milliseconds from 00:00:00.000 until the time
-	 */
-	private long parseTime(String in) {
-		String time = in.trim();
-		int index = time.indexOf(":");
-		short hours = 0, minutes = 0, seconds = 0, millis = 0;
-		
-		// if the first colon exists
-		if(index > 0) {
-			// hours = the integer up until the first colon
-			hours = Short.parseShort(time.substring(0, index));
-			
-			// remove the hours part from the string
-			time = time.substring(index + 1);
-			
-			// find the next colon
-			index = time.indexOf(":");
-			
-			// if the next colon exists
-			if(index > 0) {
-				// read the minutes and seconds split by the colon
-				minutes = Short.parseShort(time.substring(0, index));
-				
-				// remove the minutes part from the string
-				time = time.substring(index + 1);
-				
-				// find a .
-				index = time.indexOf(".");
-				
-				// if a dot exists
-				if(index > 0) {
-					// read the seconds and millis part of the time string
-					seconds = Short.parseShort(time.substring(0, index));
-					millis = Short.parseShort(time.substring(index + 1));
-				// if the dot doesn't exist
-				} else
-					seconds = Short.parseShort(time);
-			// if the second colon doesn't exist
-			} else
-				minutes = Short.parseShort(time);
-		// if the first colon doesn't exist
-		} else
-			hours = Short.parseShort(time);
-		
-		// verify the time components
-		if(hours < 0 || hours > 23) {
-			getLog().e("Invalid hours value in time \"" + in + "\". Must be between 0 and 23 inclusive");
-			throw new HousemateCommsException("Invalid hours value in time \"" + in + "\". Must be between 0 and 23 inclusive");
-		} else if(minutes < 0 || minutes > 59) {
-			getLog().e("Invalid minutes value in time \"" + in + "\". Must be between 0 and 59 inclusive");
-			throw new HousemateCommsException("Invalid minutes value in time \"" + in + "\". Must be between 0 and 59 inclusive");
-		} else if(seconds < 0 || seconds > 59) {
-			getLog().e("Invalid seconds value in time \"" + in + "\". Must be between 0 and 59 inclusive");
-			throw new HousemateCommsException("Invalid seconds value in time \"" + in + "\". Must be between 0 and 59 inclusive");
-		} else if(millis < 0 || millis > 999) {
-			getLog().e("Invalid milliseconds value in time \"" + in + "\". Must be between 0 and 999 inclusive");
-			throw new HousemateCommsException("Invalid milliseconds value in time \"" + in + "\". Must be between 0 and 999 inclusive");
-		// time is correct
-		} else {
-			long result = (hours * 3600000) + (minutes * 60000) + (seconds * 1000) + millis;
-			getLog().d(in + " in milliseconds after midnight is " + result);
-			return result;
-		}
-	}
-	
-	/**
 	 * get the current time since midnight as a long
 	 * @return the number of milliseconds from midnight until now
 	 */
-	private static final Time getTime() {
+	private static Time getTime() {
 		Calendar c = Calendar.getInstance();
 		return new Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND));
 	}
@@ -170,7 +93,7 @@ public class TimeOfTheDay extends RealCondition {
 	 * @param time the time to wait until
 	 * @param log log to use
 	 */
-	protected static final void waitUntilNext(Time time, Log log) throws InterruptedException {
+	protected static void waitUntilNext(Time time, Log log) throws InterruptedException {
 		
 		log.d("Waiting until current time of day in milliseconds since midnight is " + time);
 		
@@ -213,7 +136,7 @@ public class TimeOfTheDay extends RealCondition {
 		// start monitoring the time of the day
 		monitor = new TimeMonitorThread();
 		monitor.start();
-		conditionSatisfied(doesNowSatisfy());
+		callback.conditionSatisfied(doesNowSatisfy());
 	}
 	
 	@Override
@@ -240,33 +163,33 @@ public class TimeOfTheDay extends RealCondition {
                 if(doesNowSatisfy()) {
 
                     // wait until unsatisfied so that loop works properly
-                    getLog().d("Waiting for condition to become unsatisfied");
-                    waitUntilNext(before.getTypedValue(), getLog());
-                    conditionSatisfied(false);
+                    log.d("Waiting for condition to become unsatisfied");
+                    waitUntilNext(before, log);
+					callback.conditionSatisfied(false);
                 }
 
                 // loop until thread is stopped
-                getLog().d("Entering time monitor loop");
+                log.d("Entering time monitor loop");
                 while(!isInterrupted()) {
 
                     // wait until we next go past the after time
-                    getLog().d("Waiting until time of the day goes past the after time");
-                    waitUntilNext(after.getTypedValue(), getLog());
-                    getLog().d("Time of the day is after the after time");
+                    log.d("Waiting until time of the day goes past the after time");
+                    waitUntilNext(after, log);
+                    log.d("Time of the day is after the after time");
 
                     // condition is now satisfied
-                    conditionSatisfied(true);
+					callback.conditionSatisfied(true);
 
                     // wait until we next go past the before time
-                    getLog().d("Waiting until time of the day goes past the before time");
-                    waitUntilNext(before.getTypedValue(), getLog());
-                    getLog().d("Time of the day is after the before time");
+                    log.d("Waiting until time of the day goes past the before time");
+                    waitUntilNext(before, log);
+                    log.d("Time of the day is after the before time");
 
                     // condition is now unsatisfied
-                    conditionSatisfied(false);
+					callback.conditionSatisfied(false);
                 }
             } catch(InterruptedException e) {
-                getLog().w("TimeMonitor thread interrupted");
+                log.w("TimeMonitor thread interrupted");
             }
 		}
 	}

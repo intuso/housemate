@@ -13,8 +13,7 @@ import com.intuso.utilities.log.Log;
 /**
  * Created by tomc on 03/02/15.
  */
-public class DeviceListener
-        implements Device.Listener<RealDevice> {
+public class DeviceListener implements Device.Listener<RealDevice<?>> {
 
     private final Log log;
     private final Persistence persistence;
@@ -44,6 +43,11 @@ public class DeviceListener
 
     @Override
     public void running(RealDevice primaryObject, boolean running) {
+
+    }
+
+    @Override
+    public void driverLoaded(RealDevice usesDriver, boolean loaded) {
 
     }
 }

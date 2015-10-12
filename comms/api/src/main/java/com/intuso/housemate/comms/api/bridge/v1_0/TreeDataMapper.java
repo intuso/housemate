@@ -3,7 +3,7 @@ package com.intuso.housemate.comms.api.bridge.v1_0;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.comms.api.internal.ChildOverview;
-import com.intuso.housemate.comms.api.internal.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.TreeData;
 
 /**
  * Created by tomc on 28/09/15.
@@ -19,11 +19,11 @@ public class TreeDataMapper {
         this.dataMapper = dataMapper;
     }
 
-    public RemoteObject.TreeData map(com.intuso.housemate.comms.v1_0.api.RemoteObject.TreeData treeData) {
+    public com.intuso.housemate.comms.api.internal.TreeData map(TreeData treeData) {
         if(treeData == null)
             return null;
-        RemoteObject.TreeData result = new RemoteObject.TreeData(treeData.getId(), dataMapper.map(treeData.getData()),
-                Maps.<String, RemoteObject.TreeData>newHashMap(), Maps.<String, ChildOverview>newHashMap());
+        com.intuso.housemate.comms.api.internal.TreeData result = new com.intuso.housemate.comms.api.internal.TreeData(treeData.getId(), dataMapper.map(treeData.getData()),
+                Maps.<String, com.intuso.housemate.comms.api.internal.TreeData>newHashMap(), Maps.<String, ChildOverview>newHashMap());
         for(String key : treeData.getChildren().keySet())
             result.getChildren().put(key, map(treeData.getChildren().get(key)));
         for(String key : treeData.getChildOverviews().keySet())
@@ -31,11 +31,11 @@ public class TreeDataMapper {
         return result;
     }
 
-    public com.intuso.housemate.comms.v1_0.api.RemoteObject.TreeData map(RemoteObject.TreeData treeData) {
+    public TreeData map(com.intuso.housemate.comms.api.internal.TreeData treeData) {
         if(treeData == null)
             return null;
-        com.intuso.housemate.comms.v1_0.api.RemoteObject.TreeData result = new com.intuso.housemate.comms.v1_0.api.RemoteObject.TreeData(treeData.getId(), dataMapper.map(treeData.getData()),
-                Maps.<String, com.intuso.housemate.comms.v1_0.api.RemoteObject.TreeData>newHashMap(), Maps.<String, com.intuso.housemate.comms.v1_0.api.ChildOverview>newHashMap());
+        TreeData result = new TreeData(treeData.getId(), dataMapper.map(treeData.getData()),
+                Maps.<String, TreeData>newHashMap(), Maps.<String, com.intuso.housemate.comms.v1_0.api.ChildOverview>newHashMap());
         for(String key : treeData.getChildren().keySet())
             result.getChildren().put(key, map(treeData.getChildren().get(key)));
         for(String key : treeData.getChildOverviews().keySet())

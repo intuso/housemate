@@ -6,16 +6,18 @@ package com.intuso.housemate.object.api.internal;
  * @param <PROPERTIES> the type of the properties list
  * @param <TASK> the type of the task
  */
-public interface Task<
-            REMOVE_COMMAND extends Command<?, ?, ?, ?>,
-            EXECUTING_VALUE extends Value<?, ?>,
-            ERROR_VALUE extends Value<?, ?>,
-            PROPERTIES extends List<? extends Property<?, ?, ?>>,
-            TASK extends Task<REMOVE_COMMAND, EXECUTING_VALUE, ERROR_VALUE, PROPERTIES, TASK>>
+public interface Task<REMOVE_COMMAND extends Command<?, ?, ?, ?>,
+        EXECUTING_VALUE extends Value<?, ?>,
+        ERROR_VALUE extends Value<?, ?>,
+        DRIVER_PROPERTY extends Property<?, ?, ?>,
+        DRIVER_LOADED_VALUE extends Value<?, ?>,
+        PROPERTIES extends List<? extends Property<?, ?, ?>>,
+        TASK extends Task<REMOVE_COMMAND, EXECUTING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, PROPERTIES, TASK>>
         extends BaseHousemateObject<Task.Listener<? super TASK>>,
         Property.Container<PROPERTIES>,
         Removeable<REMOVE_COMMAND>,
-        Failable<ERROR_VALUE> {
+        Failable<ERROR_VALUE>,
+        UsesDriver<DRIVER_PROPERTY, DRIVER_LOADED_VALUE> {
 
     /**
      * Gets the executing value object
@@ -27,29 +29,23 @@ public interface Task<
      *
      * Listener interface for tasks
      */
-    interface Listener<T extends Task<?, ?, ?, ?, ?>>
-            extends ObjectListener {
+    interface Listener<TASK extends Task<?, ?, ?, ?, ?, ?, ?>> extends ObjectListener,
+            Failable.Listener<TASK>,
+            UsesDriver.Listener<TASK> {
 
         /**
          * Notifies that a task starts/stops executing
          * @param task the task that has started/stopped execution
          * @param executing true if the task is now executing
          */
-        void taskExecuting(T task, boolean executing);
-
-        /**
-         * Notifies that a task is in error (or not)
-         * @param task the task that is in error (or not)
-         * @param error the description of the error or null if not in error
-         */
-        void taskError(T task, String error);
+        void taskExecuting(TASK task, boolean executing);
     }
 
     /**
      *
      * Interface to show that the implementing object has a list of tasks
      */
-    interface Container<TASKS extends List<? extends Task<?, ?, ?, ?, ?>>> {
+    interface Container<TASKS extends List<? extends Task<?, ?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the task list

@@ -5,7 +5,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.Message;
-import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.comms.api.internal.payload.ApplicationData;
 import com.intuso.housemate.comms.api.internal.payload.ApplicationInstanceData;
 import com.intuso.housemate.comms.api.internal.payload.RootData;
@@ -40,6 +39,7 @@ public class RemoteClient {
     public RemoteClient(Log log, ClientInstance clientInstance, Message.Receiver<Message.Payload> receiver, MainRouter comms) {
         this.log= log;
         this.clientInstance = clientInstance;
+        this.applicationInstanceAllowed = clientInstance instanceof ClientInstance.Router;
         this.receiver = receiver;
         this.comms = comms;
     }
@@ -59,10 +59,8 @@ public class RemoteClient {
     public void sendMessage(String[] path, String type, Message.Payload payload) {
         if(!applicationInstanceAllowed
                 && !(path.length == 1
-                    && (type.equals(RootData.SERVER_CONNECTION_STATUS_TYPE)
-                        || type.equals(RootData.APPLICATION_STATUS_TYPE)
+                    && (type.equals(RootData.APPLICATION_STATUS_TYPE)
                         || type.equals(RootData.APPLICATION_INSTANCE_STATUS_TYPE)
-                        || type.equals(RootData.SERVER_INSTANCE_ID_TYPE)
                         || type.equals(RootData.APPLICATION_INSTANCE_ID_TYPE))))
             throw new HousemateCommsException("Remote client is not allowed access");
         else if(route == null)
@@ -84,7 +82,8 @@ public class RemoteClient {
         } catch(Throwable t) {
             log.e("Failed to send message to client", t);
         }
-        this.applicationInstanceAllowed = applicationInstanceStatus == ApplicationInstance.Status.Allowed;
+        this.applicationInstanceAllowed = clientInstance instanceof ClientInstance.Router
+                || applicationInstanceStatus == ApplicationInstance.Status.Allowed;
         for(RemoteClientListener listener : listeners)
             listener.statusChanged(applicationStatus, applicationInstanceStatus);
         while(messageQueue.size() > 0) {
@@ -174,8 +173,8 @@ public class RemoteClient {
         } else {
             if(!current.children.containsKey(client.getRoute().get(currentIndex)))
                 throw new HousemateCommsException("No client with access at index " + currentIndex + " of route " + Arrays.toString(client.getRoute().toArray()));
-            else if(current.children.get(client.getRoute().get(currentIndex)).getClientInstance().getClientType() != ApplicationRegistration.ClientType.Router)
-                throw new HousemateCommsException("Client at index " + currentIndex + " of route " + Arrays.toString(client.getRoute().toArray()) + " is not of type " + ApplicationRegistration.ClientType.Router.name());
+            else if(!(current.children.get(client.getRoute().get(currentIndex)).getClientInstance() instanceof ClientInstance.Router))
+                throw new HousemateCommsException("Client at index " + currentIndex + " of route " + Arrays.toString(client.getRoute().toArray()) + " is not a router");
             addClient(current, current.children.get(client.getRoute().get(currentIndex)), currentIndex + 1, client);
         }
     }
@@ -193,23 +192,6 @@ public class RemoteClient {
         // else if the next key exists then recurse
         else if(current.children.containsKey(route.get(currentIndex)))
             return getClient(current.children.get(route.get(currentIndex)), currentIndex + 1, route);
-
-        else
-            return null;
-    }
-
-    public String getRouter(List<String> route) {
-        return getRouter(this, 0, route);
-    }
-
-    private static String getRouter(RemoteClient current, int currentIndex, List<String> route) {
-
-        // if at or past the end, return null
-        if(route.size() <= currentIndex)
-            return null;
-
-        else if(current.children.containsKey(route.get(currentIndex)))
-            return getRouter(current.children.get(route.get(currentIndex)), currentIndex + 1, route);
 
         else
             return null;

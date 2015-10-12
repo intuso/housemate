@@ -3,16 +3,12 @@ package com.intuso.housemate.web.server;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Key;
 import com.google.inject.servlet.GuiceServletContextListener;
-import com.intuso.housemate.comms.v1_0.api.ClientRoot;
 import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.RouterRoot;
-import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
 import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
 import com.intuso.housemate.comms.v1_0.serialiser.javabin.ioc.JavabinSerialiserClientModule;
 import com.intuso.housemate.comms.v1_0.transport.socket.client.ioc.SocketClientModule;
-import com.intuso.housemate.object.v1_0.api.Application;
-import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.object.v1_0.api.TypeInstance;
 import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.persistence.v1_0.api.Persistence;
@@ -33,9 +29,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  */
 public class ContextListener extends GuiceServletContextListener {
-
-    private final static ApplicationDetails APPLICATION_DETAILS = new ApplicationDetails(ContextListener.class.getPackage().getName(), "Housemate Web Interface Server", "Housemate Web Interface Server");
-    private final static String COMPONENT = "UI-Server";
 
     public static Injector INJECTOR;
 
@@ -75,45 +68,23 @@ public class ContextListener extends GuiceServletContextListener {
         super.contextInitialized(servletContextEvent);
 
         final Log log = INJECTOR.getInstance(Log.class);
-        final Router router = INJECTOR.getInstance(Router.class);
+        final Router<?> router = INJECTOR.getInstance(new Key<Router<?>>() {});
         Persistence persistence = INJECTOR.getInstance(Persistence.class);
 
         checkDefaultUser(log, persistence);
 
         // will be null if started in dev mode, in which case the server is run separately
-        router.addObjectListener(new ClientRoot.Listener<RouterRoot>() {
-
-            private boolean needsRegistering = true;
+        router.addListener(new Router.Listener<Router>() {
 
             @Override
-            public void serverConnectionStatusChanged(RouterRoot root, ServerConnectionStatus serverConnectionStatus) {
+            public void serverConnectionStatusChanged(Router router, ServerConnectionStatus serverConnectionStatus) {
                 log.d("Server connection status: " + serverConnectionStatus);
-                if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
-                    needsRegistering = true;
+                if (serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently)
                     router.connect();
-                } else if((serverConnectionStatus == ServerConnectionStatus.ConnectedToServer || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily) && needsRegistering) {
-                    needsRegistering = false;
-                    router.register(APPLICATION_DETAILS, COMPONENT);
-                }
             }
 
             @Override
-            public void applicationStatusChanged(RouterRoot root, Application.Status applicationStatus) {
-                log.d("Application status: " + applicationStatus);
-            }
-
-            @Override
-            public void applicationInstanceStatusChanged(RouterRoot root, ApplicationInstance.Status applicationInstanceStatus) {
-                log.d("Application instance status: " + applicationInstanceStatus);
-            }
-
-            @Override
-            public void newApplicationInstance(RouterRoot root, String instanceId) {
-                log.d("Application instance changed");
-            }
-
-            @Override
-            public void newServerInstance(RouterRoot root, String serverId) {
+            public void newServerInstance(Router root, String serverId) {
                 log.d("Server instance changed");
             }
         });
@@ -123,7 +94,7 @@ public class ContextListener extends GuiceServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        INJECTOR.getInstance(Router.class).disconnect();
+        INJECTOR.getInstance(new Key<Router<?>>() {}).disconnect();
         super.contextDestroyed(servletContextEvent);
     }
 

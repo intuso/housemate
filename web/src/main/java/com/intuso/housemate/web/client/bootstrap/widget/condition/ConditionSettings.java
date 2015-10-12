@@ -6,7 +6,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.web.client.bootstrap.widget.list.AddButton;
 import com.intuso.housemate.web.client.bootstrap.widget.object.Control;
 import com.intuso.housemate.web.client.bootstrap.widget.property.PropertyList;
 import com.intuso.housemate.web.client.object.GWTProxyCondition;
@@ -31,11 +30,11 @@ public class ConditionSettings extends Composite {
     public ConditionSettings(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCondition condition) {
         control = new Control(types, condition);
         initWidget(ourUiBinder.createAndBindUi(this));
-        if(condition.getConditions() != null) {
+        /*if(condition.getConditions() != null) {
             childConditions.setList(condition.getConditions());
             if(condition.getAddConditionCommand() != null)
                 childConditions.setHeaderWidget(new AddButton(types, condition.getAddConditionCommand()));
-        } else
+        } else*/
             childConditions.setVisible(false);
         propertyList.setTypes(types);
         propertyList.setList(condition.getProperties());

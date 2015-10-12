@@ -76,7 +76,7 @@ public class MainModule extends AbstractGinModule {
         bind(PropertyRepository.class).to(GWTPropertyRepository.class).in(Singleton.class);
         bind(Log.class).to(GWTLog.class).in(Singleton.class);
         bind(GWTRouter.class).in(Singleton.class);
-        bind(Router.class).to(GWTRouter.class);
+        bind(new Key<Router<?>>() {}).to(GWTRouter.class);
         bind(new Key<ProxyFeatureFactory<GWTProxyFeature, GWTProxyDevice>>() {}).to(GWTProxyFeatureFactory.class);
         bind(RegexMatcher.Factory.class).to(GWTRegexMatcherFactory.class);
         bind(ListenersFactory.class).to(GWTListenersFactory.class);

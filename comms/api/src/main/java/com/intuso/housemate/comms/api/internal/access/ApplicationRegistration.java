@@ -76,7 +76,6 @@ public final class ApplicationRegistration implements Message.Payload {
      * Enumeration of all the types of client connections
     */
     public static enum ClientType {
-        Router,
         Real,
         Proxy
     }

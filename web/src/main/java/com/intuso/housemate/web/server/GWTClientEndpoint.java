@@ -17,7 +17,7 @@ public class GWTClientEndpoint implements Message.Receiver, Message.Sender {
     private long lastRequest = Long.MAX_VALUE;
     private final Router.Registration registration;
 
-    public GWTClientEndpoint(Router router) {
+    public GWTClientEndpoint(Router<?> router) {
         this.registration = router.registerReceiver(this);
     }
 

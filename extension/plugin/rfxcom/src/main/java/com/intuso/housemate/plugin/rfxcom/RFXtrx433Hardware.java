@@ -6,19 +6,18 @@ import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.v1_0.real.api.RealHardware;
-import com.intuso.housemate.client.v1_0.real.api.annotations.AnnotationProcessor;
+import com.intuso.housemate.client.v1_0.real.api.RealDevice;
+import com.intuso.housemate.client.v1_0.real.api.RealRoot;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
-import com.intuso.housemate.client.v1_0.real.api.factory.device.RealDeviceFactory;
+import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
+import com.intuso.housemate.client.v1_0.real.api.driver.HardwareDriver;
 import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
-import com.intuso.housemate.comms.v1_0.api.payload.HardwareData;
 import com.intuso.housemate.plugin.rfxcom.lighting1.Lighting1ARCAppliance;
 import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2ACAppliance;
 import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2HomeEasyEUAppliance;
 import com.intuso.housemate.plugin.rfxcom.temperaturesensor.*;
 import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.RFXtrx;
 import com.rfxcom.rfxtrx.util.lighting1.Lighting1;
@@ -38,88 +37,93 @@ import java.util.regex.Pattern;
  * Created by tomc on 16/03/15.
  */
 @TypeInfo(id = "rfxtrx433", name = "RFXtr433", description = "RFXCom 433MHz Transceiver")
-public class RFXtrx433Hardware extends RealHardware {
+public class RFXtrx433Hardware implements HardwareDriver {
 
     public static RFXtrx433Hardware INSTANCE;
 
     private final RFXtrx rfxtrx;
 
+    private final RealDevice.Factory deviceFactory;
+
     // lighting1 arc stuff
     private final Lighting1 lighting1ARC;
     private ListenerRegistration messageListenerLighting1ARC;
     private final SetMultimap<Byte, Byte> knownLighting1ARC = HashMultimap.create();
-    private final RealDeviceFactory<Lighting1ARCAppliance> lighting1ARCFactory;
+    private final DeviceDriver.Factory<Lighting1ARCAppliance> lighting1ARCFactory;
     private final CallbackLighting1ARC callbackLighting1ARC = new CallbackLighting1ARC();
 
     // lighting2 ac stuff
     private final Lighting2 lighting2UK;
     private ListenerRegistration messageListenerLighting2AC;
     private final SetMultimap<Integer, Byte> knownLighting2AC = HashMultimap.create();
-    private final RealDeviceFactory<Lighting2ACAppliance> lighting2ACFactory;
+    private final DeviceDriver.Factory<Lighting2ACAppliance> lighting2ACFactory;
     private final CallbackLighting2AC callbackLighting2AC = new CallbackLighting2AC();
 
     // lighting2 home easy eu stuff
     private final Lighting2 lighting2HomeEasyEU;
     private ListenerRegistration messageListenerLighting2HomeEasyEU;
     private final SetMultimap<Integer, Byte> knownLighting2HomeEasyEU = HashMultimap.create();
-    private final RealDeviceFactory<Lighting2HomeEasyEUAppliance> lighting2HomeEasyEUFactory;
+    private final DeviceDriver.Factory<Lighting2HomeEasyEUAppliance> lighting2HomeEasyEUFactory;
     private final CallbackLighting2HomeEasyEU callbackLighting2HomeEasyEU = new CallbackLighting2HomeEasyEU();
 
     // temperature sensor 1 stuff
     private final TemperatureSensors temperature1;
     private ListenerRegistration messageListenerTemperature1;
     private final Set<Integer> knownTemperature1 = Sets.newHashSet();
-    private final RealDeviceFactory<Temperature1Sensor> temperature1Factory;
+    private final DeviceDriver.Factory<Temperature1Sensor> temperature1Factory;
     private final CallbackTemperature1 callbackTemperature1 = new CallbackTemperature1();
 
     // temperature sensor 2 stuff
     private final TemperatureSensors temperature2;
     private ListenerRegistration messageListenerTemperature2;
     private final Set<Integer> knownTemperature2 = Sets.newHashSet();
-    private final RealDeviceFactory<Temperature2Sensor> temperature2Factory;
+    private final DeviceDriver.Factory<Temperature2Sensor> temperature2Factory;
     private final CallbackTemperature2 callbackTemperature2 = new CallbackTemperature2();
 
     // temperature sensor 3 stuff
     private final TemperatureSensors temperature3;
     private ListenerRegistration messageListenerTemperature3;
     private final Set<Integer> knownTemperature3 = Sets.newHashSet();
-    private final RealDeviceFactory<Temperature3Sensor> temperature3Factory;
+    private final DeviceDriver.Factory<Temperature3Sensor> temperature3Factory;
     private final CallbackTemperature3 callbackTemperature3 = new CallbackTemperature3();
 
     // temperature sensor 4 stuff
     private final TemperatureSensors temperature4;
     private ListenerRegistration messageListenerTemperature4;
     private final Set<Integer> knownTemperature4 = Sets.newHashSet();
-    private final RealDeviceFactory<Temperature4Sensor> temperature4Factory;
+    private final DeviceDriver.Factory<Temperature4Sensor> temperature4Factory;
     private final CallbackTemperature4 callbackTemperature4 = new CallbackTemperature4();
 
     // temperature sensor 5 stuff
     private final TemperatureSensors temperature5;
     private ListenerRegistration messageListenerTemperature5;
     private final Set<Integer> knownTemperature5 = Sets.newHashSet();
-    private final RealDeviceFactory<Temperature5Sensor> temperature5Factory;
+    private final DeviceDriver.Factory<Temperature5Sensor> temperature5Factory;
     private final CallbackTemperature5 callbackTemperature5 = new CallbackTemperature5();
-
-    private final AnnotationProcessor annotationProcessor;
 
     private String pattern;
     private boolean create;
+    
+    private final RealRoot realRoot;
+    private final Log log;
 
     @Inject
-    public RFXtrx433Hardware(Log log, ListenersFactory listenersFactory, @Assisted HardwareData data,
-                             RealDeviceFactory<Lighting1ARCAppliance> lighting1ARCFactory,
-                             RealDeviceFactory<Lighting2ACAppliance> lighting2ACFactory,
-                             RealDeviceFactory<Lighting2HomeEasyEUAppliance> lighting2HomeEasyEUFactory,
-                             RealDeviceFactory<Temperature1Sensor> temperature1Factory,
-                             RealDeviceFactory<Temperature2Sensor> temperature2Factory,
-                             RealDeviceFactory<Temperature3Sensor> temperature3Factory,
-                             RealDeviceFactory<Temperature4Sensor> temperature4Factory,
-                             RealDeviceFactory<Temperature5Sensor> temperature5Factory,
-                             AnnotationProcessor annotationProcessor) {
-        super(log, listenersFactory, "rfxtrx433", data);
+    public RFXtrx433Hardware(RealRoot realRoot, Log log,
+                             RealDevice.Factory deviceFactory, DeviceDriver.Factory<Lighting1ARCAppliance> lighting1ARCFactory,
+                             DeviceDriver.Factory<Lighting2ACAppliance> lighting2ACFactory,
+                             DeviceDriver.Factory<Lighting2HomeEasyEUAppliance> lighting2HomeEasyEUFactory,
+                             DeviceDriver.Factory<Temperature1Sensor> temperature1Factory,
+                             DeviceDriver.Factory<Temperature2Sensor> temperature2Factory,
+                             DeviceDriver.Factory<Temperature3Sensor> temperature3Factory,
+                             DeviceDriver.Factory<Temperature4Sensor> temperature4Factory,
+                             DeviceDriver.Factory<Temperature5Sensor> temperature5Factory,
+                             @Assisted HardwareDriver.Callback callback) {
+
+        this.realRoot = realRoot;
+        this.log = log;
+        this.deviceFactory = deviceFactory;
 
         INSTANCE = this;
-        this.annotationProcessor = annotationProcessor;
 
         // injected factories
         this.lighting1ARCFactory = lighting1ARCFactory;
@@ -132,7 +136,7 @@ public class RFXtrx433Hardware extends RealHardware {
         this.temperature5Factory = temperature5Factory;
 
         // setup the connection to the USB device
-        rfxtrx = new RFXtrx(getLog(), Lists.<Pattern>newArrayList());
+        rfxtrx = new RFXtrx(log, Lists.<Pattern>newArrayList());
 
         // create the wrappers
         lighting1ARC = Lighting1.forARC(rfxtrx);
@@ -211,6 +215,16 @@ public class RFXtrx433Hardware extends RealHardware {
         return create;
     }
 
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
     public Lighting1Appliance makeLighting1ARC(byte houseId, byte unitCode) {
         knownLighting1ARC.put(houseId, unitCode);
         return new Lighting1Appliance(new Lighting1House(lighting1ARC, houseId), unitCode);
@@ -220,17 +234,20 @@ public class RFXtrx433Hardware extends RealHardware {
         if(!knownLighting1ARC.containsEntry(houseId, unitCode)) {
             try {
                 String name = "Lighting1 ARC " + houseId + "/" + (int)unitCode;
-                Lighting1ARCAppliance appliance = lighting1ARCFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
-                appliance.setHouseId(houseId);
-                appliance.setUnitCode(unitCode);
-                annotationProcessor.process(getRealRoot().getTypes(), appliance);
-                if(on)
-                    appliance.setOn();
-                else
-                    appliance.setOff();
-                getRealRoot().addDevice(appliance);
+                RealDevice<Lighting1ARCAppliance> device = (RealDevice<Lighting1ARCAppliance>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), realRoot);
+                device.getDriverProperty().setTypedValues(lighting1ARCFactory);
+                if(device.isDriverLoaded()) {
+                    Lighting1ARCAppliance appliance = device.getDriver();
+                    appliance.setHouseId(houseId);
+                    appliance.setUnitCode(unitCode);
+                    if(on)
+                        appliance.setOn();
+                    else
+                        appliance.setOff();
+                    realRoot.addDevice(device);
+                }
             } catch (Throwable t) {
-                getLog().e("Failed to auto-create Lighting1 ARC device " + houseId + "/" + (int)unitCode);
+                log.e("Failed to auto-create Lighting1 ARC device " + houseId + "/" + (int) unitCode);
             }
         }
     }
@@ -244,17 +261,20 @@ public class RFXtrx433Hardware extends RealHardware {
         if(!knownLighting2AC.containsEntry(houseId, unitCode)) {
             try {
                 String name = "Lighting2 AC " + houseId + "/" + (int)unitCode;
-                Lighting2ACAppliance appliance = lighting2ACFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
-                appliance.setHouseId(houseId);
-                appliance.setUnitCode(unitCode);
-                annotationProcessor.process(getRealRoot().getTypes(), appliance);
-                if(on)
-                    appliance.setOn();
-                else
-                    appliance.setOff();
-                getRealRoot().addDevice(appliance);
+                RealDevice<Lighting2ACAppliance> device = (RealDevice<Lighting2ACAppliance>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), realRoot);
+                device.getDriverProperty().setTypedValues(lighting2ACFactory);
+                if(device.isDriverLoaded()) {
+                    Lighting2ACAppliance appliance = device.getDriver();
+                    appliance.setHouseId(houseId);
+                    appliance.setUnitCode(unitCode);
+                    if (on)
+                        appliance.setOn();
+                    else
+                        appliance.setOff();
+                    realRoot.addDevice(device);
+                }
             } catch (Throwable t) {
-                getLog().e("Failed to auto-create Lighting2 AC device " + houseId + "/" + (int)unitCode);
+                log.e("Failed to auto-create Lighting2 AC device " + houseId + "/" + (int) unitCode);
             }
         }
     }
@@ -268,17 +288,20 @@ public class RFXtrx433Hardware extends RealHardware {
         if(!knownLighting2HomeEasyEU.containsEntry(houseId, unitCode)) {
             try {
                 String name = "Lighting2 HomeEasy EU " + houseId + "/" + (int)unitCode;
-                Lighting2HomeEasyEUAppliance appliance = lighting2HomeEasyEUFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
-                appliance.setHouseId(houseId);
-                appliance.setUnitCode(unitCode);
-                annotationProcessor.process(getRealRoot().getTypes(), appliance);
-                if(on)
-                    appliance.setOn();
-                else
-                    appliance.setOff();
-                getRealRoot().addDevice(appliance);
+                RealDevice<Lighting2HomeEasyEUAppliance> device = (RealDevice<Lighting2HomeEasyEUAppliance>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), realRoot);
+                device.getDriverProperty().setTypedValues(lighting2HomeEasyEUFactory);
+                if(device.isDriverLoaded()) {
+                    Lighting2HomeEasyEUAppliance appliance = device.getDriver();
+                    appliance.setHouseId(houseId);
+                    appliance.setUnitCode(unitCode);
+                    if (on)
+                        appliance.setOn();
+                    else
+                        appliance.setOff();
+                    realRoot.addDevice(device);
+                }
             } catch (Throwable t) {
-                getLog().e("Failed to auto-create Lighting2 HomeEasy EU device " + houseId + "/" + (int)unitCode);
+                log.e("Failed to auto-create Lighting2 HomeEasy EU device " + houseId + "/" + (int) unitCode);
             }
         }
     }
@@ -292,13 +315,16 @@ public class RFXtrx433Hardware extends RealHardware {
         if(!knownTemperature1.contains(sensorId)) {
             try {
                 String name = "Temperature 1 " + sensorId;
-                Temperature1Sensor sensor = temperature1Factory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
-                sensor.setSensorId(sensorId);
-                annotationProcessor.process(getRealRoot().getTypes(), sensor);
-                sensor.deviceValues.setTemperature(temperature);
-                getRealRoot().addDevice(sensor);
+                RealDevice<Temperature1Sensor> device = (RealDevice<Temperature1Sensor>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), realRoot);
+                device.getDriverProperty().setTypedValues(temperature1Factory);
+                if(device.isDriverLoaded()) {
+                    Temperature1Sensor sensor = device.getDriver();
+                    sensor.setSensorId(sensorId);
+                    sensor.deviceValues.setTemperature(temperature);
+                    realRoot.addDevice(device);
+                }
             } catch (Throwable t) {
-                getLog().e("Failed to auto-create Temperature1 device " + sensorId);
+                log.e("Failed to auto-create Temperature1 device " + sensorId);
             }
         }
     }
@@ -312,13 +338,16 @@ public class RFXtrx433Hardware extends RealHardware {
         if(!knownTemperature2.contains(sensorId)) {
             try {
                 String name = "Temperature 2 " + sensorId;
-                Temperature2Sensor sensor = temperature2Factory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
-                sensor.setSensorId(sensorId);
-                annotationProcessor.process(getRealRoot().getTypes(), sensor);
-                sensor.deviceValues.setTemperature(temperature);
-                getRealRoot().addDevice(sensor);
+                RealDevice<Temperature2Sensor> device = (RealDevice<Temperature2Sensor>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), realRoot);
+                device.getDriverProperty().setTypedValues(temperature2Factory);
+                if(device.isDriverLoaded()) {
+                    Temperature2Sensor sensor = device.getDriver();
+                    sensor.setSensorId(sensorId);
+                    sensor.deviceValues.setTemperature(temperature);
+                    realRoot.addDevice(device);
+                }
             } catch (Throwable t) {
-                getLog().e("Failed to auto-create Temperature2 device " + sensorId);
+                log.e("Failed to auto-create Temperature2 device " + sensorId);
             }
         }
     }
@@ -332,13 +361,16 @@ public class RFXtrx433Hardware extends RealHardware {
         if(!knownTemperature3.contains(sensorId)) {
             try {
                 String name = "Temperature 3 " + sensorId;
-                Temperature3Sensor sensor = temperature3Factory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
-                sensor.setSensorId(sensorId);
-                annotationProcessor.process(getRealRoot().getTypes(), sensor);
-                sensor.deviceValues.setTemperature(temperature);
-                getRealRoot().addDevice(sensor);
+                RealDevice<Temperature3Sensor> device = (RealDevice<Temperature3Sensor>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), realRoot);
+                device.getDriverProperty().setTypedValues(temperature3Factory);
+                if(device.isDriverLoaded()) {
+                    Temperature3Sensor sensor = device.getDriver();
+                    sensor.setSensorId(sensorId);
+                    sensor.deviceValues.setTemperature(temperature);
+                    realRoot.addDevice(device);
+                }
             } catch (Throwable t) {
-                getLog().e("Failed to auto-create Temperature3 device " + sensorId);
+                log.e("Failed to auto-create Temperature3 device " + sensorId);
             }
         }
     }
@@ -352,13 +384,16 @@ public class RFXtrx433Hardware extends RealHardware {
         if(!knownTemperature4.contains(sensorId)) {
             try {
                 String name = "Temperature 4 " + sensorId;
-                Temperature4Sensor sensor = temperature4Factory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
-                sensor.setSensorId(sensorId);
-                annotationProcessor.process(getRealRoot().getTypes(), sensor);
-                sensor.deviceValues.setTemperature(temperature);
-                getRealRoot().addDevice(sensor);
+                RealDevice<Temperature4Sensor> device = (RealDevice<Temperature4Sensor>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), realRoot);
+                device.getDriverProperty().setTypedValues(temperature4Factory);
+                if(device.isDriverLoaded()) {
+                    Temperature4Sensor sensor = device.getDriver();
+                    sensor.setSensorId(sensorId);
+                    sensor.deviceValues.setTemperature(temperature);
+                    realRoot.addDevice(device);
+                }
             } catch (Throwable t) {
-                getLog().e("Failed to auto-create Temperature4 device " + sensorId);
+                log.e("Failed to auto-create Temperature4 device " + sensorId);
             }
         }
     }
@@ -372,13 +407,16 @@ public class RFXtrx433Hardware extends RealHardware {
         if(!knownTemperature5.contains(sensorId)) {
             try {
                 String name = "Temperature 5 " + sensorId;
-                Temperature5Sensor sensor = temperature5Factory.create(new DeviceData(UUID.randomUUID().toString(), name, name), getRealRoot());
-                sensor.setSensorId(sensorId);
-                annotationProcessor.process(getRealRoot().getTypes(), sensor);
-                sensor.deviceValues.setTemperature(temperature);
-                getRealRoot().addDevice(sensor);
+                RealDevice<Temperature5Sensor> device = (RealDevice<Temperature5Sensor>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), realRoot);
+                device.getDriverProperty().setTypedValues(temperature5Factory);
+                if(device.isDriverLoaded()) {
+                    Temperature5Sensor sensor = device.getDriver();
+                    sensor.setSensorId(sensorId);
+                    sensor.deviceValues.setTemperature(temperature);
+                    realRoot.addDevice(device);
+                }
             } catch (Throwable t) {
-                getLog().e("Failed to auto-create Temperature5 device " + sensorId);
+                log.e("Failed to auto-create Temperature5 device " + sensorId);
             }
         }
     }

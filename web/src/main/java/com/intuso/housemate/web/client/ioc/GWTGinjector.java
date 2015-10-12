@@ -32,7 +32,7 @@ public interface GWTGinjector extends Ginjector {
     // general things
     EventBus getEventBus();
     LoginManager getLoginManager();
-    Router getRouter();
+    Router<?> getRouter();
     GWTProxyRoot getProxyRoot();
     ObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> getObjectFactory();
     ProxyFeatureFactory<GWTProxyFeature, GWTProxyDevice> getFeatureFactory();

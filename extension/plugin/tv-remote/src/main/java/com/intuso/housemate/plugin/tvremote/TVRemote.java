@@ -1,6 +1,5 @@
 package com.intuso.housemate.plugin.tvremote;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.RealDevice;
@@ -8,27 +7,26 @@ import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.device.feature.RealPlaybackControl;
 import com.intuso.housemate.client.v1_0.real.api.device.feature.RealPowerControl;
 import com.intuso.housemate.client.v1_0.real.api.device.feature.RealVolumeControl;
+import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
-import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
-import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
 
 @TypeInfo(id = "tv-remote", name = "TV Remote", description = "TV Remote")
-public class TVRemote extends RealDevice implements RealPowerControl, RealPlaybackControl, RealVolumeControl {
+public class TVRemote implements DeviceDriver, RealPowerControl, RealPlaybackControl, RealVolumeControl {
 
     @Property(id = "remote-name", name = "Remote Name", description = "The name of the remote you want to use", typeId = "string")
     public String remoteName;
 
     @Inject
-    public TVRemote(Log log,
-                    ListenersFactory listenersFactory,
-                    @Assisted DeviceData data) {
-        super(log, listenersFactory, "tv-remote", data);
-        getData().setCustomPropertyIds(Lists.newArrayList("remote-name"));
-    }
+    public TVRemote(@Assisted RealDevice device) {}
+
+    @Override
+    public void start() {}
+
+    @Override
+    public void stop() {}
 
     @Override
     public void turnOn() {

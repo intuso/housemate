@@ -13,12 +13,12 @@ public interface ObjectLifecycleListener extends Listener {
      * @param path the path of the new object
      * @param object the object
      */
-    public void objectCreated(String[] path, BaseHousemateObject<?> object);
+    void objectCreated(String[] path, BaseHousemateObject<?> object);
 
     /**
      * Notifies that an object has been removed
      * @param path the path of the removed object
      * @param object the object
      */
-    public void objectRemoved(String[] path, BaseHousemateObject<?> object);
+    void objectRemoved(String[] path, BaseHousemateObject<?> object);
 }

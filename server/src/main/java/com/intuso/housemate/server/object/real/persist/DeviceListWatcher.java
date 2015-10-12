@@ -50,13 +50,12 @@ public class DeviceListWatcher implements List.Listener<RealDevice> {
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(device.getId())));
         toSave.getChildren().put("name", new TypeInstances(new TypeInstance(device.getName())));
         toSave.getChildren().put("description", new TypeInstances(new TypeInstance(device.getDescription())));
-        toSave.getChildren().put("type", new TypeInstances(new TypeInstance(device.getType())));
         try {
             persistence.saveValues(device.getPath(), toSave);
         } catch (Throwable t) {
             log.e("Failed to save new device values", t);
         }
-
+        listeners.put(device, valueBaseWatcher.watch(device.getDriverProperty()));
         listeners.put(device, device.addObjectListener(deviceListener));
         listeners.put(device, valueBaseWatcher.watch(device.getRunningValue()));
         listeners.put(device, device.getProperties().addObjectListener(propertyListWatcher, true));

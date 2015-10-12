@@ -2,7 +2,7 @@ package com.intuso.housemate.extension.android.widget.handler;
 
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.client.v1_0.proxy.api.device.feature.FeatureLoadedListener;
-import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.object.v1_0.api.Device;
 import com.intuso.housemate.object.v1_0.api.feature.StatefulPowerControl;
@@ -139,7 +139,7 @@ public abstract class WidgetHandler<FEATURE extends Device.Feature> {
                         status = Status.NO_DEVICE;
                     updateWidget();
                 }
-            }, RemoteObject.TreeLoadInfo.create(deviceId)));
+            }, TreeLoadInfo.create(deviceId)));
         }
     }
 

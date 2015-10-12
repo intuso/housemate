@@ -34,16 +34,16 @@ public class AnnotationProcessor {
     }
 
     public void process(RealList<TypeData<?>, RealType<?, ?, ?>> types, RealObject<?, ?, ?, ?> object) {
-        if(object instanceof com.intuso.housemate.object.api.internal.Command.Container)
+        if(object instanceof com.intuso.housemate.object.v1_0.api.Command.Container)
             parseCommands(types, object, ((com.intuso.housemate.object.api.internal.Command.Container<RealList<CommandData, RealCommand>>)object).getCommands());
-        if(object instanceof com.intuso.housemate.object.api.internal.Property.Container)
+        if(object instanceof com.intuso.housemate.object.v1_0.api.Property.Container)
             parseProperties(types, object, ((com.intuso.housemate.object.api.internal.Property.Container<RealList<PropertyData, RealProperty<?>>>) object).getProperties());
-        if(object instanceof com.intuso.housemate.object.api.internal.Value.Container)
+        if(object instanceof com.intuso.housemate.object.v1_0.api.Value.Container)
             parseValues(types, object, ((com.intuso.housemate.object.api.internal.Value.Container<RealList<ValueData, RealValue<?>>>) object).getValues());
         if(object instanceof RealDevice)
             parseFeatures((RealDevice) object, (Class<? extends RealDevice>) object.getClass());
     }
-    
+
     private void parseCommands(RealList<TypeData<?>, RealType<?, ?, ?>> types, RealObject<?, ?, ?, ?> object, RealList<CommandData, RealCommand> commands) {
         for(Map.Entry<Method, Command> commandMethod : getAnnotatedMethods(object.getClass(), Command.class).entrySet())
             commands.add(new CommandImpl(object.getLog(), listenersFactory,
@@ -55,10 +55,10 @@ public class AnnotationProcessor {
         List<RealParameter<?>> result = Lists.newArrayList();
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         for(int a = 0; a < parameterAnnotations.length; a++) {
-            com.intuso.housemate.client.real.api.internal.annotations.Parameter parameterAnnotation = getAnnotation(parameterAnnotations[a], com.intuso.housemate.client.real.api.internal.annotations.Parameter.class);
+            Parameter parameterAnnotation = getAnnotation(parameterAnnotations[a], Parameter.class);
             if(parameterAnnotation == null)
                 throw new HousemateCommsException("Parameter " + a + " of command method " + method.getName()
-                        + " is not annotated with " + com.intuso.housemate.client.real.api.internal.annotations.Parameter.class.getName());
+                        + " is not annotated with " + Parameter.class.getName());
             if(types.get(parameterAnnotation.typeId()) == null)
                 throw new HousemateCommsException(parameterAnnotation.typeId() + " type does not exist");
             result.add(new RealParameter(log, listenersFactory, parameterAnnotation.id(),
@@ -128,14 +128,14 @@ public class AnnotationProcessor {
                 return isGetter.invoke(object);
             } catch(NoSuchMethodException e) { // do nothing
             } catch(InvocationTargetException|IllegalAccessException e) {
-                log.e("Problem getting proeprty initial value using isGetter " + isGetterName + " of " + object.getClass().getName());
+                log.e("Problem getting property initial value using isGetter " + isGetterName + " of " + object.getClass().getName());
             }
         }
         log.w("No initial value or getter found for " + Property.class.getSimpleName() + " method " + methodName + " of " + object.getClass().getName());
         return null;
     }
 
-    private void parseFeatures(RealDevice device, Class<? extends RealDevice> deviceClass) {
+    private void parseFeatures(RealDevice<?> device, Class<? extends RealDevice> deviceClass) {
         for(Class<?> interfaceClass : deviceClass.getInterfaces())
             if(RealFeature.class.isAssignableFrom(interfaceClass))
                 addFeatureId(device, interfaceClass);
@@ -143,7 +143,7 @@ public class AnnotationProcessor {
             parseFeatures(device, (Class<? extends RealDevice>) deviceClass.getSuperclass());
     }
 
-    private void addFeatureId(RealDevice device, Class<?> featureClass) {
+    private void addFeatureId(RealDevice<?> device, Class<?> featureClass) {
         FeatureId featureId = featureClass.getAnnotation(FeatureId.class);
         if(featureId != null) {
             List<String> featureIds = device.getFeatureIds() == null ? Lists.<String>newArrayList() : Lists.newArrayList(device.getFeatureIds());
@@ -198,7 +198,7 @@ public class AnnotationProcessor {
     }
 
     private <A extends Annotation> void getAnnotatedMethods(Class<?> objectClass, Class<A> annotationClass,
-                                            Map<Method, A> methods) {
+                                                            Map<Method, A> methods) {
         for(Method method : objectClass.getDeclaredMethods())
             if(method.getAnnotation(annotationClass) != null)
                 methods.put(method, method.getAnnotation(annotationClass));
@@ -215,14 +215,14 @@ public class AnnotationProcessor {
     }
 
     private <A extends Annotation> void getAnnotatedFields(Class<?> objectClass, Class<A> annotationClass,
-                                                            Map<Field, A> fields) {
+                                                           Map<Field, A> fields) {
         for(Field field : objectClass.getDeclaredFields())
             if(field.getAnnotation(annotationClass) != null)
                 fields.put(field, field.getAnnotation(annotationClass));
         if(objectClass.getSuperclass() != null)
             getAnnotatedFields(objectClass.getSuperclass(), annotationClass, fields);
     }
-    
+
     private <A extends Annotation> A getAnnotation(Annotation[] annotations, Class<A> annotationClass) {
         for(Annotation annotation : annotations)
             if(annotation.annotationType().equals(annotationClass))

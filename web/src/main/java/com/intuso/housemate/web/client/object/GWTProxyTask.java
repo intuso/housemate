@@ -16,6 +16,7 @@ import com.intuso.utilities.log.Log;
 public class GWTProxyTask extends ProxyTask<
             GWTProxyCommand,
             GWTProxyValue,
+        GWTProxyProperty,
             GWTProxyList<PropertyData, GWTProxyProperty>,
         GWTProxyTask> {
 

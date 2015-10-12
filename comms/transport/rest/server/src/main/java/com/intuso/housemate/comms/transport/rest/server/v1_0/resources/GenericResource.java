@@ -27,7 +27,7 @@ public class GenericResource {
     private final Router router;
 
     @Inject
-    public GenericResource(Router router) {
+    public GenericResource(Router<?> router) {
         this.router = router;
     }
 

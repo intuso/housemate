@@ -27,13 +27,17 @@ public class HardwareListWatcher implements List.Listener<RealHardware> {
 
     private final Log log;
     private final Persistence persistence;
+    private final ValueBaseWatcher valueBaseWatcher;
     private final PropertyListWatcher propertyListWatcher;
+    private final HardwareListener hardwareListener;
 
     @Inject
-    public HardwareListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher) {
+    public HardwareListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher, HardwareListener hardwareListener) {
         this.log = log;
         this.persistence = persistence;
+        this.valueBaseWatcher = valueBaseWatcher;
         this.propertyListWatcher = propertyListWatcher;
+        this.hardwareListener = hardwareListener;
     }
 
     @Override
@@ -43,13 +47,14 @@ public class HardwareListWatcher implements List.Listener<RealHardware> {
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(hardware.getId())));
         toSave.getChildren().put("name", new TypeInstances(new TypeInstance(hardware.getName())));
         toSave.getChildren().put("description", new TypeInstances(new TypeInstance(hardware.getDescription())));
-        toSave.getChildren().put("type", new TypeInstances(new TypeInstance(hardware.getType())));
         try {
             persistence.saveValues(hardware.getPath(), toSave);
         } catch (Throwable t) {
             log.e("Failed to save new hardware values", t);
         }
-
+        listeners.put(hardware, valueBaseWatcher.watch(hardware.getDriverProperty()));
+        listeners.put(hardware, hardware.addObjectListener(hardwareListener));
+        listeners.put(hardware, valueBaseWatcher.watch(hardware.getRunningValue()));
         listeners.put(hardware, hardware.getProperties().addObjectListener(propertyListWatcher, true));
     }
 

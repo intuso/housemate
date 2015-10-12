@@ -9,7 +9,7 @@ import com.intuso.housemate.object.api.internal.feature.StatefulPowerControl;
  */
 @FeatureId(StatefulPowerControl.ID)
 public interface RealStatefulPowerControl extends RealPowerControl {
-    public interface Values {
+    interface Values {
 
         /**
          * Callback to set the current power status of the device

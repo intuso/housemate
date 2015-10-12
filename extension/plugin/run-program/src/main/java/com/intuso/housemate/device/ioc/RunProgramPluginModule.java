@@ -1,9 +1,9 @@
 package com.intuso.housemate.device.ioc;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.device.RunProgramDevice;
+import com.intuso.housemate.device.RunProgramDeviceDriver;
 import com.intuso.housemate.plugin.v1_0.api.AnnotatedPluginModule;
-import com.intuso.housemate.plugin.v1_0.api.Devices;
+import com.intuso.housemate.plugin.v1_0.api.DeviceDrivers;
 import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.log.Log;
 
@@ -15,11 +15,11 @@ import com.intuso.utilities.log.Log;
  * To change this template use File | Settings | File Templates.
  */
 @TypeInfo(id = "com.intuso.housemate.plugin.run-program", name = "Run Program Plugin", description = "Plugin for devices that run command line commands")
-@Devices(RunProgramDevice.class)
-public class RunProgramAnnotatedPluginModule extends AnnotatedPluginModule {
+@DeviceDrivers(RunProgramDeviceDriver.class)
+public class RunProgramPluginModule extends AnnotatedPluginModule {
 
     @Inject
-    public RunProgramAnnotatedPluginModule(Log log) {
+    public RunProgramPluginModule(Log log) {
         super(log);
     }
 }

@@ -1,13 +1,10 @@
 package com.intuso.housemate.plugin.rfxcom.lighting2;
 
-import com.google.common.collect.Lists;
+import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.impl.device.StatefulPoweredDevice;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
-import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
 
@@ -22,28 +19,26 @@ public abstract class Lighting2Appliance extends StatefulPoweredDevice {
     private int houseId = 0;
     private int unitCode = 1;
 
-	public Lighting2Appliance(Log log,
-                              ListenersFactory listenersFactory,
-                              String type,
-                              DeviceData data) {
-		super(log, listenersFactory, type, data);
-        getData().setCustomPropertyIds(Lists.newArrayList("house-id", "unit-id"));
-	}
+    private final RealDevice device;
+
+    public Lighting2Appliance(RealDevice device) {
+        this.device = device;;
+    }
 
     public void propertyChanged() {
         // check the port value is a positive number
         if(houseId < 0 || houseId > 0x03FFFFFF) {
-            getErrorValue().setTypedValues("House id must be between 0 and " + 0x03FFFFFF);
+            device.getErrorValue().setTypedValues("House id must be between 0 and " + 0x03FFFFFF);
             return;
         }
 			
 		// check the relay value is a number between 1 and 8
 		if(unitCode < 1 || unitCode > 16) {
-            getErrorValue().setTypedValues("Unitcode must be between 1 and 16 (inclusive)");
+            device.getErrorValue().setTypedValues("Unitcode must be between 1 and 16 (inclusive)");
             return;
         }
 
-        getErrorValue().setTypedValues((String)null);
+        device.getErrorValue().setTypedValues((String)null);
 
         if(listenerRegistration != null) {
             listenerRegistration.removeListener();
@@ -111,12 +106,12 @@ public abstract class Lighting2Appliance extends StatefulPoweredDevice {
 	}
 	
 	@Override
-	protected void start() {
+    public void start() {
 		propertyChanged();
 	}
 
 	@Override
-	protected void stop() {
+    public void stop() {
 		lighting2Appliance = null;
 	}
 }

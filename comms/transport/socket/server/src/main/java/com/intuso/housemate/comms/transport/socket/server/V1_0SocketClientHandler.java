@@ -54,7 +54,7 @@ public final class V1_0SocketClientHandler implements Message.Receiver<Message.P
 	 */
     @Inject
 	public V1_0SocketClientHandler(Log log,
-                                   Router router,
+                                   Router<?> router,
                                    Set<Serialiser.Factory> serialiserFactories,
                                    @Assisted Socket socket) {
         super();
@@ -74,7 +74,7 @@ public final class V1_0SocketClientHandler implements Message.Receiver<Message.P
 			throw new HousemateCommsException("Could not set socket keepalive to true. Closing connection");
 		}
 		try {
-			this.socket.setSoTimeout(60000);
+			this.socket.setSoTimeout(0);
 		} catch (SocketException e1) {
 			this.log.e("Could not set read timeout on socket. Closing connection");
 			throw new HousemateCommsException("Could not set read timeout on socket. Closing connection from");
@@ -209,7 +209,7 @@ public final class V1_0SocketClientHandler implements Message.Receiver<Message.P
 				
 				log.d("Closed connection");
 
-                routerRegistration.connectionLost();
+                routerRegistration.unregister();
 			}
 		}.start();
 	}

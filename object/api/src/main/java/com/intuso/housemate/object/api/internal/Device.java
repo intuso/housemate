@@ -14,25 +14,27 @@ package com.intuso.housemate.object.api.internal;
  * @param <PROPERTIES> the type of the properties list
  * @param <DEVICE> the type of the device
  */
-public interface Device<
-        RENAME_COMMAND extends Command<?, ?, ?, ?>,
+public interface Device<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         REMOVE_COMMAND extends Command<?, ?, ?, ?>,
         START_STOP_COMMAND extends Command<?, ?, ?, ?>,
         COMMAND extends Command<?, ?, ?, ?>,
         COMMANDS extends List<? extends COMMAND>,
         RUNNING_VALUE extends Value<?, ?>,
         ERROR_VALUE extends Value<?, ?>,
+        DRIVER_PROPERTY extends Property<?, ?, ?>,
+        DRIVER_LOADED_VALUE extends Value<?, ?>,
         VALUE extends Value<?, ?>,
         VALUES extends List<? extends VALUE>,
         PROPERTY extends Property<?, ?, ?>,
         PROPERTIES extends List<? extends PROPERTY>,
-        DEVICE extends Device<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, COMMAND, COMMANDS, RUNNING_VALUE, ERROR_VALUE, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE>>
+        DEVICE extends Device<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, COMMAND, COMMANDS, RUNNING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE>>
         extends
         BaseHousemateObject<Device.Listener<? super DEVICE>>,
         Renameable<RENAME_COMMAND>,
-        com.intuso.housemate.object.api.internal.Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
+        Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
         Failable<ERROR_VALUE>,
         Removeable<REMOVE_COMMAND>,
+        UsesDriver<DRIVER_PROPERTY, DRIVER_LOADED_VALUE>,
         Command.Container<COMMANDS>,
         Value.Container<VALUES>,
         Property.Container<PROPERTIES> {
@@ -65,17 +67,17 @@ public interface Device<
      *
      * Listener interface for devices
      */
-    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>
-            extends ObjectListener,
+    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> extends ObjectListener,
             Failable.Listener<DEVICE>,
             Renameable.Listener<DEVICE>,
-            com.intuso.housemate.object.api.internal.Runnable.Listener<DEVICE> {}
+            Runnable.Listener<DEVICE>,
+            UsesDriver.Listener<DEVICE> {}
 
     /**
      *
      * Interface to show that the implementing object has a list of devices
      */
-    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
+    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the devices list

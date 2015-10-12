@@ -15,8 +15,11 @@ import com.intuso.utilities.log.Log;
  * Time: 09:28
  * To change this template use File | Settings | File Templates.
  */
-public class AndroidProxyCondition extends ProxyCondition<AndroidProxyCommand, AndroidProxyValue,
-        AndroidProxyList<PropertyData, AndroidProxyProperty>, AndroidProxyCondition,
+public class AndroidProxyCondition extends ProxyCondition<AndroidProxyCommand,
+        AndroidProxyValue,
+        AndroidProxyProperty,
+        AndroidProxyList<PropertyData, AndroidProxyProperty>,
+        AndroidProxyCondition,
         AndroidProxyList<ConditionData, AndroidProxyCondition>> {
 
     private final AndroidProxyFactory factory;

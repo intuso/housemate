@@ -1,25 +1,16 @@
 package com.intuso.housemate.client.real.api.internal.impl.device;
 
-import com.intuso.housemate.client.real.api.internal.RealDevice;
 import com.intuso.housemate.client.real.api.internal.device.feature.RealStatefulPowerControl;
-import com.intuso.housemate.comms.api.internal.payload.DeviceData;
-import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 
 /**
  * Device sub class for all devices that allow simple On/Off functionality. Can be extended again to
  * add extra commands/values and to define any properties the device needs
  */
-public abstract class StatefulPoweredDevice
-        extends RealDevice
-        implements RealStatefulPowerControl {
+public abstract class StatefulPoweredDevice implements DeviceDriver, RealStatefulPowerControl {
 
-    @com.intuso.housemate.client.real.api.internal.annotations.Values
+    @com.intuso.housemate.client.v1_0.real.api.annotations.Values
     public Values values;
-
-	public StatefulPoweredDevice(Log log, ListenersFactory listenersFactory, String type, DeviceData data) {
-		super(log, listenersFactory, type, data);
-	}
 
     /**
      * Sets the device to be on
@@ -34,4 +25,10 @@ public abstract class StatefulPoweredDevice
     public final void setOff() {
         values.isOn(false);
     }
+
+    @Override
+    public void start() {}
+
+    @Override
+    public void stop() {}
 }

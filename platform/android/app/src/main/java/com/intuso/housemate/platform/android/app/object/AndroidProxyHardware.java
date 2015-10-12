@@ -16,7 +16,11 @@ import com.intuso.utilities.log.Log;
  * To change this template use File | Settings | File Templates.
  */
 public class AndroidProxyHardware extends ProxyHardware<
-        AndroidProxyList<PropertyData, AndroidProxyProperty>, AndroidProxyHardware> {
+        AndroidProxyCommand,
+        AndroidProxyValue,
+        AndroidProxyProperty,
+        AndroidProxyList<PropertyData, AndroidProxyProperty>,
+        AndroidProxyHardware> {
 
     private final AndroidProxyFactory factory;
 

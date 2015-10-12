@@ -11,6 +11,8 @@ public final class TaskData extends HousemateData<HousemateData<?>> {
     public final static String REMOVE_ID = "remove";
     public final static String EXECUTING_ID = "executing";
     public final static String ERROR_ID = "error";
+    public final static String DRIVER_ID = "driver";
+    public final static String DRIVER_LOADED_ID = "driver-loaded";
     public final static String PROPERTIES_ID = "properties";
 
     public TaskData() {}

@@ -27,12 +27,14 @@ public class TaskListWatcher implements List.Listener<RealTask> {
 
     private final Log log;
     private final Persistence persistence;
+    private final ValueBaseWatcher valueBaseWatcher;
     private final PropertyListWatcher propertyListWatcher;
 
     @Inject
-    public TaskListWatcher(Log log, Persistence persistence, PropertyListWatcher propertyListWatcher) {
+    public TaskListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher) {
         this.log = log;
         this.persistence = persistence;
+        this.valueBaseWatcher = valueBaseWatcher;
         this.propertyListWatcher = propertyListWatcher;
     }
 
@@ -43,13 +45,12 @@ public class TaskListWatcher implements List.Listener<RealTask> {
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(task.getId())));
         toSave.getChildren().put("name", new TypeInstances(new TypeInstance(task.getName())));
         toSave.getChildren().put("description", new TypeInstances(new TypeInstance(task.getDescription())));
-        toSave.getChildren().put("type", new TypeInstances(new TypeInstance(task.getType())));
         try {
             persistence.saveValues(task.getPath(), toSave);
         } catch (Throwable t) {
             log.e("Failed to save new automation values", t);
         }
-
+        listeners.put(task, valueBaseWatcher.watch(task.getDriverProperty()));
         listeners.put(task, task.getProperties().addObjectListener(propertyListWatcher, true));
     }
 

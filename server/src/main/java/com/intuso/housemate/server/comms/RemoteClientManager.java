@@ -7,7 +7,6 @@ import com.google.inject.Injector;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
-import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
@@ -17,7 +16,6 @@ import com.intuso.utilities.log.Log;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  */
@@ -32,14 +30,13 @@ public class RemoteClientManager {
     private final Map<ClientInstance, RemoteClient> clients = Maps.newHashMap();
 
     @Inject
-    public RemoteClientManager(Log log, Injector injector, ServerGeneralRoot generalRoot, RootBridge bridgeRoot,
-                               MainRouter mainRouter) {
+    public RemoteClientManager(Log log, Injector injector, ServerGeneralRoot generalRoot, RootBridge bridgeRoot, MainRouter mainRouter) {
         this.log = log;
         this.injector = injector;
         this.generalRoot = generalRoot;
         this.bridgeRoot = bridgeRoot;
         rootClient = new RemoteClient(log,
-                new ClientInstance(true, Server.INTERNAL_APPLICATION_DETAILS, UUID.randomUUID().toString(), "root", ApplicationRegistration.ClientType.Router),
+                new ClientInstance.Router(true, ""),
                 generalRoot, mainRouter);
         rootClient.setBaseRoute(Lists.<String>newArrayList());
     }
@@ -63,12 +60,13 @@ public class RemoteClientManager {
             }
 
             return client;
-        } else {
+        } else if(clientInstance instanceof ClientInstance.Application) {
+            ClientInstance.Application applicationInstance = (ClientInstance.Application) clientInstance;
             // try and add the client. If this fails, it's because one of the intermediate clients isn't allowed access
             // in which case it shouldn't have allowed this message through. We shouldn't reply to prevent misuse
             try {
                 Message.Receiver<Message.Payload> receiver;
-                switch(clientInstance.getClientType()) {
+                switch(applicationInstance.getClientType()) {
                     case Real: // the server proxy objects are for remote real objects
                         receiver = injector.createChildInjector(new ServerProxyModule()).getInstance(ServerProxyRoot.class);
                         break;
@@ -80,17 +78,33 @@ public class RemoteClientManager {
                         break;
                 }
                 client = addClient(receiver, clientInstance, route);
-                if(clientInstance.getClientType() == ApplicationRegistration.ClientType.Real)
+                if(applicationInstance.getClientType() == ApplicationRegistration.ClientType.Real)
                     ((ServerProxyRoot) receiver).setClient(client);
                 clients.put(clientInstance, client);
                 client.setBaseRoute(route);
                 return client;
             } catch(Throwable t) {
                 log.e("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
-                log.d("Maybe one of the intermediate clients isn't connected or isn't of type " + ApplicationRegistration.ClientType.Router);
+                log.d("Maybe one of the intermediate clients isn't connected or isn't a router");
                 throw new HousemateCommsException("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
             }
-        }
+        } else if(clientInstance instanceof ClientInstance.Router) {
+            ClientInstance.Router routerInstance = (ClientInstance.Router) clientInstance;
+            // try and add the client. If this fails, it's because one of the intermediate clients isn't allowed access
+            // in which case it shouldn't have allowed this message through. We shouldn't reply to prevent misuse
+            try {
+                Message.Receiver<Message.Payload> receiver = generalRoot;
+                client = addClient(receiver, clientInstance, route);
+                clients.put(clientInstance, client);
+                client.setBaseRoute(route);
+                return client;
+            } catch(Throwable t) {
+                log.e("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
+                log.d("Maybe one of the intermediate clients isn't connected or isn't a router");
+                throw new HousemateCommsException("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
+            }
+        } else
+            throw new HousemateCommsException("Unknown client instance type " + clientInstance.getClass().getName());
     }
 
     private RemoteClient addClient(Message.Receiver<Message.Payload> receiver, ClientInstance clientInstance, List<String> route) {
