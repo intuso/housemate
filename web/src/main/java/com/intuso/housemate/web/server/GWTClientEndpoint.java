@@ -1,7 +1,10 @@
 package com.intuso.housemate.web.server;
 
+import com.intuso.housemate.comms.v1_0.api.ClientConnection;
 import com.intuso.housemate.comms.v1_0.api.Message;
 import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  */
-public class GWTClientEndpoint implements Message.Receiver, Message.Sender {
+public class GWTClientEndpoint implements Router.Receiver, Message.Sender {
     
     private final LinkedBlockingQueue<Message> q = new LinkedBlockingQueue<>();
     private long timeout;
@@ -27,6 +30,16 @@ public class GWTClientEndpoint implements Message.Receiver, Message.Sender {
             disconnect();
         else
             q.add(message);
+    }
+
+    @Override
+    public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
+        messageReceived(new Message(new String[]{}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
+    }
+
+    @Override
+    public void newServerInstance(ClientConnection clientConnection, String serverId) {
+        messageReceived(new Message(new String[] {}, ClientConnection.SERVER_INSTANCE_ID_TYPE, new StringPayload(serverId)));
     }
 
     public void disconnect() {

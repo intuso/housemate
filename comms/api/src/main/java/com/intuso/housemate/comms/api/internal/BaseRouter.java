@@ -26,10 +26,9 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
     private final Map<String, Message.Receiver<?>> receivers = new ConcurrentHashMap<>();
 
     private String routerId;
-    private String serverInstanceId;
     private ServerConnectionStatus routerServerConnectionStatus = null;
     private ServerConnectionStatus serverConnectionStatus;
-    private ServerConnectionStatus registrationServerConnectionStatus;
+    private ServerConnectionStatus listenerToldServerConnectionStatus;
 
     /**
      * @param log the log
@@ -50,22 +49,6 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
         this.listeners = listenersFactory.create();
         this.routerServerConnectionStatus = routerServerConnectionStatus;
         this.messageDistributor = new MessageDistributor(listenersFactory);
-        messageDistributor.registerReceiver(ClientConnection.SERVER_INSTANCE_ID_TYPE, new Message.Receiver<StringPayload>() {
-            @Override
-            public void messageReceived(Message<StringPayload> message) {
-                if(!serverInstanceId.equals(message.getPayload().getValue())) {
-                    serverInstanceId = message.getPayload().getValue();
-                    for(ClientConnection.Listener<? super ROUTER> listener : listeners)
-                        listener.newServerInstance(getThis(), serverInstanceId);
-                }
-            }
-        });
-        messageDistributor.registerReceiver(ClientConnection.SERVER_CONNECTION_STATUS_TYPE, new Message.Receiver<ServerConnectionStatus>() {
-            @Override
-            public void messageReceived(Message<ServerConnectionStatus> message) {
-                setServerConnectionStatus(message.getPayload(), serverConnectionStatus);
-            }
-        });
         messageDistributor.registerReceiver(Router.ROUTER_ID, new Message.Receiver<StringPayload>() {
             @Override
             public void messageReceived(Message<StringPayload> message) {
@@ -87,6 +70,18 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
         return log;
     }
 
+    protected final Listeners<ClientConnection.Listener<? super ROUTER>> getListeners() {
+        return listeners;
+    }
+
+    protected ListenerRegistration registerRouterReceiver(String type, Message.Receiver<?> receiver) {
+        return messageDistributor.registerReceiver(type, receiver);
+    }
+
+    protected void setRouterServerConnectionStatus(ServerConnectionStatus routerServerConnectionStatus) {
+        setServerConnectionStatus(routerServerConnectionStatus, serverConnectionStatus);
+    }
+
     public ServerConnectionStatus getServerConnectionStatus() {
         return serverConnectionStatus;
     }
@@ -103,19 +98,10 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
     }
 
     private synchronized void tellRegistrations(ServerConnectionStatus status) {
-        if(registrationServerConnectionStatus != status) {
-            registrationServerConnectionStatus = status;
+        if(listenerToldServerConnectionStatus != status) {
+            listenerToldServerConnectionStatus = status;
             for(ClientConnection.Listener<? super ROUTER> listener : listeners)
                 listener.serverConnectionStatusChanged(getThis(), status);
-            Message<ServerConnectionStatus> message = new Message<>(new String[]{""},
-                    ClientConnection.SERVER_CONNECTION_STATUS_TYPE, status);
-            for (Message.Receiver receiver : receivers.values()) {
-                try {
-                    receiver.messageReceived(message);
-                } catch (Throwable t) {
-                    log.e("Failed to notify client of new router status", t);
-                }
-            }
         }
     }
 
@@ -134,13 +120,13 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
      * @param receiver the client's receiver implementation
      * @return a router registration that the client can use to send messages
      */
-    public synchronized final Registration registerReceiver(Message.Receiver<Message.Payload> receiver) {
+    public synchronized final Registration registerReceiver(Receiver<ROUTER> receiver) {
         String clientId = "" + nextId.incrementAndGet();
         receivers.put(clientId, receiver);
         try {
-            receiver.messageReceived(new Message<Message.Payload>(new String[] {""}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
+            receiver.serverConnectionStatusChanged(getThis(), serverConnectionStatus);
         } catch(HousemateCommsException e) {
-            log.e("Failed to tell new client " + clientId + " the current router status");
+            log.e("Failed to tell new client " + clientId + " the current router status", e);
         }
         return new RegistrationImpl(clientId);
     }
@@ -177,8 +163,8 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
             getLog().d("Router re-registering");
             sendMessageNow(new Message<>(AccessManager.ROOT_PATH, Router.ROUTER_CONNECTED, new StringPayload(routerId)));
         } else {
-            setServerConnectionStatus(routerServerConnectionStatus, ServerConnectionStatus.ConnectedToRouter);
             sendMessageNow(new Message<>(AccessManager.ROOT_PATH, Router.ROUTER_CONNECTED, new StringPayload(null)));
+            setServerConnectionStatus(routerServerConnectionStatus, ServerConnectionStatus.ConnectedToRouter);
         }
     }
 

@@ -1,8 +1,10 @@
 package com.intuso.housemate.plugin.api.internal;
 
 import com.intuso.housemate.comms.api.internal.BaseRouter;
+import com.intuso.housemate.comms.api.internal.ClientConnection;
 import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.Router;
+import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -15,7 +17,7 @@ import com.intuso.utilities.log.Log;
  */
 public abstract class ExternalClientRouter<ROUTER extends ExternalClientRouter<?>> extends BaseRouter<ROUTER> {
 
-    private final Router router;
+    private final Router<?> router;
     private Router.Registration routerRegistration;
 
     /**
@@ -49,7 +51,22 @@ public abstract class ExternalClientRouter<ROUTER extends ExternalClientRouter<?
     }
 
     public void start() {
-        this.routerRegistration = router.registerReceiver(this);
+        this.routerRegistration = router.registerReceiver(new Receiver() {
+            @Override
+            public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
+                // do nothing
+            }
+
+            @Override
+            public void newServerInstance(ClientConnection clientConnection, String serverId) {
+                // do nothing
+            }
+
+            @Override
+            public void messageReceived(Message message) {
+                ExternalClientRouter.this.messageReceived(message);
+            }
+        });
         _start();
         connectionEstablished();
     }

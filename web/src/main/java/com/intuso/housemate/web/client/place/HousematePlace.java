@@ -22,7 +22,7 @@ public abstract class HousematePlace extends Place {
     }
 
     protected static String namesToString(Collection<String> names) {
-        return Joiner.on(NAMES_SEPARATOR).join(names);
+        return names == null ? "" : Joiner.on(NAMES_SEPARATOR).join(names);
     }
 
     protected static List<String> stringToNames(String names) {

@@ -27,9 +27,11 @@ public interface Router<ROUTER extends Router> extends ClientConnection, Message
      * @param receiver the client's receiver implementation
      * @return a router registration that the client can use to send messages
      */
-    Registration registerReceiver(Message.Receiver<Message.Payload> receiver);
+    Registration registerReceiver(Receiver<ROUTER> receiver);
 
     interface Listener<ROUTER extends Router> extends ClientConnection.Listener<ROUTER> {}
+
+    interface Receiver<ROUTER extends Router> extends Message.Receiver<Message.Payload>, Listener<ROUTER> {}
 
     /**
      * Used by clients to send messages to the server

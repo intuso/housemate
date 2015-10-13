@@ -41,8 +41,8 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
     private final LinkedBlockingQueue<Message> outputQueue;
     private boolean registered = false;
 
+    private String serverInstanceId;
     private boolean shouldBeConnected = false;
-    private ServerConnectionStatus lastStatus;
 
     @Inject
     public AndroidAppRouter(Log log, ListenersFactory listenersFactory, Context context) {
@@ -147,7 +147,6 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
         getLog().d("App Router: Disconnected");
 
         // set the connection status, and check if we should reconnect
-        lastStatus = getServerConnectionStatus();
         connectionLost(shouldBeConnected);
     }
 

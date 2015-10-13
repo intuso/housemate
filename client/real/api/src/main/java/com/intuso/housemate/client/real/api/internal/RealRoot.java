@@ -14,6 +14,7 @@ import com.intuso.housemate.client.real.api.internal.factory.user.AddUserCommand
 import com.intuso.housemate.comms.api.internal.*;
 import com.intuso.housemate.comms.api.internal.access.ApplicationDetails;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
+import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
 import com.intuso.housemate.comms.api.internal.payload.*;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -79,7 +80,7 @@ public class RealRoot
     private final AccessManager accessManager;
 
     @Inject
-    public RealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router router,
+    public RealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router,
                     RealList<TypeData<?>, RealType<?, ?, ?>> types,
                     AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory,
                     AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory,
@@ -101,14 +102,6 @@ public class RealRoot
 
         this.accessManager = new AccessManager(listenersFactory, properties, ApplicationRegistration.ClientType.Real, this);
 
-        // need to do this once the connection manager is created and once the object is init'ed so the path is not null
-        this.routerRegistration = router.registerReceiver(new Message.Receiver<Message.Payload>() {
-            @Override
-            public void messageReceived(Message<Message.Payload> message) {
-                distributeMessage(message);
-            }
-        });
-
         addChild(applications);
         addChild(automations);
         addChild(devices);
@@ -127,6 +120,24 @@ public class RealRoot
         addType(taskFactoryType);
 
         init(null);
+
+        // need to do this once the connection manager is created and once the object is init'ed so the path is not null
+        this.routerRegistration = router.registerReceiver(new Router.Receiver() {
+            @Override
+            public void messageReceived(Message message) {
+                distributeMessage(message);
+            }
+
+            @Override
+            public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
+
+            }
+
+            @Override
+            public void newServerInstance(ClientConnection clientConnection, String serverId) {
+
+            }
+        });
     }
 
     @Override

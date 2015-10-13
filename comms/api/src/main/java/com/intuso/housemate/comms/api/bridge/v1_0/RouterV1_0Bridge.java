@@ -37,8 +37,8 @@ public class RouterV1_0Bridge implements Router<RouterV1_0Bridge> {
     }
 
     @Override
-    public Registration registerReceiver(Message.Receiver<Message.Payload> receiver) {
-        return new RegistrationBridge(router.registerReceiver(receiverBridgeReverseFactory.create(receiver)));
+    public Registration registerReceiver(Receiver<RouterV1_0Bridge> receiver) {
+        return new RegistrationBridge(router.registerReceiver(receiverBridgeReverseFactory.create(this, receiver)));
     }
 
     @Override

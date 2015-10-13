@@ -3,9 +3,12 @@ package com.intuso.housemate.comms.transport.socket.server;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.comms.v1_0.api.ClientConnection;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.comms.v1_0.api.Message;
 import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 import com.intuso.housemate.comms.v1_0.serialiser.api.Serialiser;
 import com.intuso.utilities.log.Log;
 
@@ -22,7 +25,7 @@ import java.util.Set;
  * this class
  *
  */
-public final class V1_0SocketClientHandler implements Message.Receiver<Message.Payload> {
+public final class V1_0SocketClientHandler implements Router.Receiver {
 
     public interface Factory {
         V1_0SocketClientHandler create(Socket socket);
@@ -166,6 +169,16 @@ public final class V1_0SocketClientHandler implements Message.Receiver<Message.P
     public void messageReceived(Message message) {
         log.d("Sending message " + message);
         _sendMessage(message);
+    }
+
+    @Override
+    public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
+        _sendMessage(new Message(new String[] {}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
+    }
+
+    @Override
+    public void newServerInstance(ClientConnection clientConnection, String serverId) {
+        _sendMessage(new Message(new String[] {}, ClientConnection.SERVER_INSTANCE_ID_TYPE, new StringPayload(serverId)));
     }
 
     private synchronized void _sendMessage(Message message) {

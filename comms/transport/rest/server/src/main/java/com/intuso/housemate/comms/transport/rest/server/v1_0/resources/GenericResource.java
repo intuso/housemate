@@ -1,9 +1,12 @@
 package com.intuso.housemate.comms.transport.rest.server.v1_0.resources;
 
 import com.google.inject.Inject;
+import com.intuso.housemate.comms.v1_0.api.ClientConnection;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.comms.v1_0.api.Message;
 import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -60,17 +63,27 @@ public class GenericResource {
         return (MessageCache)request.getAttribute("cache");
     }
 
-    private class MessageCache implements Message.Receiver<Message.Payload> {
+    private class MessageCache implements Router.Receiver {
 
         private LinkedBlockingQueue<Message<Message.Payload>> cache = new LinkedBlockingQueue<>();
 
         @Override
-        public synchronized void messageReceived(Message<Message.Payload> message) {
+        public synchronized void messageReceived(Message message) {
             try {
                 cache.put(message);
             } catch (InterruptedException e) {
                 throw new HousemateCommsException("Failed to cache message for client");
             }
+        }
+
+        @Override
+        public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
+            messageReceived(new Message(new String[]{}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
+        }
+
+        @Override
+        public void newServerInstance(ClientConnection clientConnection, String serverId) {
+            messageReceived(new Message(new String[]{}, ClientConnection.SERVER_INSTANCE_ID_TYPE, new StringPayload(serverId)));
         }
 
         private Message<Message.Payload> getMessage() {

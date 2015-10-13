@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.*;
 import com.google.common.collect.Maps;
+import com.intuso.housemate.comms.v1_0.api.ClientConnection;
 import com.intuso.housemate.comms.v1_0.api.Message;
 import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 import com.intuso.housemate.platform.android.common.JsonMessage;
 import com.intuso.housemate.platform.android.common.MessageCodes;
 import com.intuso.utilities.log.Log;
@@ -133,7 +136,7 @@ public class AppService extends Service implements ServiceConnection {
         }
     }
 
-    private class ClientReceiver implements Message.Receiver<Message.Payload> {
+    private class ClientReceiver implements Router.Receiver {
 
         private final String id;
         private final Messenger clientReceiver;
@@ -144,7 +147,7 @@ public class AppService extends Service implements ServiceConnection {
         }
 
         @Override
-        public void messageReceived(Message<Message.Payload> message) {
+        public void messageReceived(Message message) {
             try {
                 android.os.Message msg = android.os.Message.obtain(null, MessageCodes.SEND_MESSAGE);
                 msg.getData().putParcelable("message", new JsonMessage(message));
@@ -157,6 +160,16 @@ public class AppService extends Service implements ServiceConnection {
             } catch(Throwable t) {
                 log.e("Problem sending message to client", t);
             }
+        }
+
+        @Override
+        public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
+            messageReceived(new Message(new String[]{}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
+        }
+
+        @Override
+        public void newServerInstance(ClientConnection clientConnection, String serverId) {
+            messageReceived(new Message(new String[] {}, ClientConnection.SERVER_INSTANCE_ID_TYPE, new StringPayload(serverId)));
         }
     }
 }

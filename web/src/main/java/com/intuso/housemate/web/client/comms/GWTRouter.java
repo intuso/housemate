@@ -4,7 +4,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.intuso.housemate.comms.v1_0.api.BaseRouter;
+import com.intuso.housemate.comms.v1_0.api.ClientConnection;
 import com.intuso.housemate.comms.v1_0.api.Message;
+import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 import com.intuso.housemate.web.client.NotConnectedException;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -61,6 +64,8 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
 
     private final CommsServiceAsync commsService;
 
+    private String serverInstanceId;
+
     /**
      * Create a new comms instance
      */
@@ -68,6 +73,22 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
     public GWTRouter(Log log, ListenersFactory listenersFactory, CommsServiceAsync commsService) {
         super(log, listenersFactory);
         this.commsService = commsService;
+        registerRouterReceiver(ClientConnection.SERVER_INSTANCE_ID_TYPE, new Message.Receiver<StringPayload>() {
+            @Override
+            public void messageReceived(Message<StringPayload> message) {
+                if (!serverInstanceId.equals(message.getPayload().getValue())) {
+                    serverInstanceId = message.getPayload().getValue();
+                    for (ClientConnection.Listener<? super GWTRouter> listener : getListeners())
+                        listener.newServerInstance(getThis(), serverInstanceId);
+                }
+            }
+        });
+        registerRouterReceiver(ClientConnection.SERVER_CONNECTION_STATUS_TYPE, new Message.Receiver<ServerConnectionStatus>() {
+            @Override
+            public void messageReceived(Message<ServerConnectionStatus> message) {
+                setRouterServerConnectionStatus(message.getPayload());
+            }
+        });
     }
 
     @Override
