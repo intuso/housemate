@@ -43,18 +43,20 @@ public class MessageMapper {
     public <PAYLOAD extends Message.Payload> Message<PAYLOAD> map(com.intuso.housemate.comms.v1_0.api.Message<?> message) {
         if(message == null)
             return null;
-        return new Message<>(message.getPath(), message.getType(), this.<PAYLOAD>map(message.getPayload()), message.getRoute());
+        return new Message<>(message.getSequenceId(), message.getPath(), message.getType(), this.<PAYLOAD>map(message.getPayload()), Lists.newArrayList(message.getRoute()));
     }
 
     public <PAYLOAD extends com.intuso.housemate.comms.v1_0.api.Message.Payload> com.intuso.housemate.comms.v1_0.api.Message<PAYLOAD> map(Message<?> message) {
         if(message == null)
             return null;
-        return new com.intuso.housemate.comms.v1_0.api.Message<>(message.getPath(), message.getType(), this.<PAYLOAD>map(message.getPayload()), message.getRoute());
+        return new com.intuso.housemate.comms.v1_0.api.Message<>(message.getSequenceId(), message.getPath(), message.getType(), this.<PAYLOAD>map(message.getPayload()), message.getRoute());
     }
 
     public <PAYLOAD extends Message.Payload> PAYLOAD map(com.intuso.housemate.comms.v1_0.api.Message.Payload payload) {
         if(payload == null)
             return null;
+        else if(payload instanceof com.intuso.housemate.comms.v1_0.api.Message.ReceivedPayload)
+            return (PAYLOAD) new Message.ReceivedPayload(((com.intuso.housemate.comms.v1_0.api.Message.ReceivedPayload) payload).getSequenceId());
         else if(payload instanceof com.intuso.housemate.comms.v1_0.api.payload.HousemateData)
             return (PAYLOAD) dataMapper.map((com.intuso.housemate.comms.v1_0.api.payload.HousemateData<?>) payload);
         else if(payload instanceof com.intuso.housemate.comms.v1_0.api.payload.NoPayload)
@@ -111,6 +113,8 @@ public class MessageMapper {
     public <PAYLOAD extends com.intuso.housemate.comms.v1_0.api.Message.Payload> PAYLOAD map(Message.Payload payload) {
         if(payload == null)
             return null;
+        else if(payload instanceof Message.ReceivedPayload)
+            return (PAYLOAD) new com.intuso.housemate.comms.v1_0.api.Message.ReceivedPayload(((Message.ReceivedPayload) payload).getSequenceId());
         else if(payload instanceof HousemateData)
             return (PAYLOAD) dataMapper.map((HousemateData<?>) payload);
         else if(payload instanceof NoPayload)

@@ -12,7 +12,10 @@ import java.util.List;
  *
  */
 public class Message<T extends Message.Payload> implements Serializable {
-	
+
+    public final static String RECEIVED_TYPE = "received";
+
+    private Long sequenceId;
 	private String[] path;
     private String type;
     private List<String> route;
@@ -34,6 +37,10 @@ public class Message<T extends Message.Payload> implements Serializable {
 		this(path, type, payload, null);
 	}
 
+    public Message(Long sequenceId, String path[], String type, T payload) {
+        this(sequenceId, path, type, payload, null);
+    }
+
     /**
      * Creates a new message
      * @param path the path to the object the message is for
@@ -42,11 +49,24 @@ public class Message<T extends Message.Payload> implements Serializable {
      * @param route the route of the client the message should be sent to
      */
     public Message(String path[], String type, T payload, List<String> route) {
+        this(null, path, type, payload, route);
+    }
+
+    public Message(Long sequenceId, String path[], String type, T payload, List<String> route) {
+        this.sequenceId = sequenceId;
         this.path = new String[path.length];
         System.arraycopy(path, 0, this.path, 0, path.length);
         this.type = type;
         this.payload = payload;
-        this.route = route != null ? new ArrayList<>(route) : new ArrayList<String>();
+        this.route = route != null ? route : new ArrayList<String>();
+    }
+
+    public Long getSequenceId() {
+        return sequenceId;
+    }
+
+    public void setSequenceId(Long sequenceId) {
+        this.sequenceId = sequenceId;
     }
 
     /**
@@ -74,7 +94,7 @@ public class Message<T extends Message.Payload> implements Serializable {
     }
 
     public void setRoute(List<String> route) {
-        this.route = route == null || route instanceof Serializable ? route : new ArrayList<>(route);
+        this.route = route;
     }
 
     /**
@@ -115,7 +135,7 @@ public class Message<T extends Message.Payload> implements Serializable {
 
     @Override
     public String toString() {
-        return "{ route: " + Arrays.toString(route.toArray()) + ", path: " + Arrays.toString(path) + ", type: " + type + ", payload: " + (payload == null ? "null" : payload.toString()) + "}";
+        return "{ " + (sequenceId != null ? ("seq: " + sequenceId + " ") : "") + "route: " + Arrays.toString(route.toArray()) + ", path: " + Arrays.toString(path) + ", type: " + type + ", payload: " + (payload == null ? "null" : payload.toString()) + "}";
     }
 
     public void ensureSerialisable() {
@@ -129,6 +149,28 @@ public class Message<T extends Message.Payload> implements Serializable {
      */
     public interface Payload extends Serializable {
         void ensureSerialisable();
+    }
+
+    public static class ReceivedPayload implements Payload {
+
+        private Long sequenceId;
+
+        public ReceivedPayload() {}
+
+        public ReceivedPayload(Long sequenceId) {
+            this.sequenceId = sequenceId;
+        }
+
+        public Long getSequenceId() {
+            return sequenceId;
+        }
+
+        public void setSequenceId(Long sequenceId) {
+            this.sequenceId = sequenceId;
+        }
+
+        @Override
+        public void ensureSerialisable() {}
     }
 
     /**

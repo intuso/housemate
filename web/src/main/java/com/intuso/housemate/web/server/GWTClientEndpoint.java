@@ -34,12 +34,12 @@ public class GWTClientEndpoint implements Router.Receiver, Message.Sender {
 
     @Override
     public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
-        messageReceived(new Message(new String[]{}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
+        messageReceived(new Message(new String[]{""}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
     }
 
     @Override
     public void newServerInstance(ClientConnection clientConnection, String serverId) {
-        messageReceived(new Message(new String[] {}, ClientConnection.SERVER_INSTANCE_ID_TYPE, new StringPayload(serverId)));
+        messageReceived(new Message(new String[] {""}, ClientConnection.SERVER_INSTANCE_ID_TYPE, new StringPayload(serverId)));
     }
 
     public void disconnect() {

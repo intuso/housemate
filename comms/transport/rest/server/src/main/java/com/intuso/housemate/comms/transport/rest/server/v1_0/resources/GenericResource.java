@@ -1,10 +1,7 @@
 package com.intuso.housemate.comms.transport.rest.server.v1_0.resources;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.comms.v1_0.api.ClientConnection;
-import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
-import com.intuso.housemate.comms.v1_0.api.Message;
-import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.*;
 import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 
@@ -54,7 +51,9 @@ public class GenericResource {
         if(request.getAttribute("registration") == null) {
             MessageCache cache = new MessageCache();
             request.setAttribute("cache", cache);
-            request.setAttribute("registration", router.registerReceiver(cache));
+            Router.Registration registration = router.registerReceiver(cache);
+            request.setAttribute("registration", registration);
+            cache.setRegistration(registration);
         }
         return (Router.Registration) request.getAttribute("registration");
     }
@@ -65,25 +64,38 @@ public class GenericResource {
 
     private class MessageCache implements Router.Receiver {
 
-        private LinkedBlockingQueue<Message<Message.Payload>> cache = new LinkedBlockingQueue<>();
+        private Router.Registration registration;
+        private final LinkedBlockingQueue<Message<Message.Payload>> cache = new LinkedBlockingQueue<>();
+        private final MessageSequencer messageSequencer = new MessageSequencer(new Message.Receiver<Message.Payload>() {
+            @Override
+            public void messageReceived(Message<Message.Payload> message) {
+                try {
+                    cache.put(message);
+                } catch (InterruptedException e) {
+                    throw new HousemateCommsException("Failed to cache message for client");
+                }
+            }
+        });
+
+        public void setRegistration(Router.Registration registration) {
+            this.registration = registration;
+        }
 
         @Override
         public synchronized void messageReceived(Message message) {
-            try {
-                cache.put(message);
-            } catch (InterruptedException e) {
-                throw new HousemateCommsException("Failed to cache message for client");
-            }
+            messageSequencer.messageReceived(message);
+            if(message.getSequenceId() != null)
+                registration.sendMessage(new Message<Message.Payload>(new String[] {""}, Message.RECEIVED_TYPE, new Message.ReceivedPayload(message.getSequenceId())));
         }
 
         @Override
         public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
-            messageReceived(new Message(new String[]{}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
+            messageReceived(new Message(new String[] {""}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
         }
 
         @Override
         public void newServerInstance(ClientConnection clientConnection, String serverId) {
-            messageReceived(new Message(new String[]{}, ClientConnection.SERVER_INSTANCE_ID_TYPE, new StringPayload(serverId)));
+            messageReceived(new Message(new String[] {""}, ClientConnection.SERVER_INSTANCE_ID_TYPE, new StringPayload(serverId)));
         }
 
         private Message<Message.Payload> getMessage() {

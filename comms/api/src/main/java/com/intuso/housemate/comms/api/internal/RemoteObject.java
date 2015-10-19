@@ -129,13 +129,13 @@ public abstract class RemoteObject<
      * @param message the message to distribute
      * @throws HousemateCommsException if the message could not be distributed, or an error was thrown when processing it
      */
-    public final void distributeMessage(Message<?> message) throws HousemateCommsException {
+    public final void distributeMessage(Message<Message.Payload> message) throws HousemateCommsException {
         if(path == null) {
             getLog().e("Cannot receive message when not a registered object");
             return;
         }
         if(message.getPath().length == path.length)
-            messageDistributor.distribute(message);
+            messageDistributor.messageReceived(message);
         else if(message.getPath().length > path.length) {
             String childName = message.getPath()[path.length];
             RemoteObject<?, ?, ?, ?> child = getChild(childName);

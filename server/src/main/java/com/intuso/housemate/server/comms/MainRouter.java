@@ -94,8 +94,7 @@ public final class MainRouter extends BaseRouter<MainRouter> {
         throw new HousemateCommsException("The main router cannot be disconnected");
     }
 
-    public void sendMessageToClient(String[] path, String type, Message.Payload payload, RemoteClient client) {
-        Message<?> message = new Message<>(path, type, payload, client.getRoute());
+    public void sendMessageToClient(Message<Message.Payload> message) {
         getLog().d("Sending message " + message.toString());
         // to send a message we tell the outgoing root it is received. Any listeners on the outgoing root
         // will get it. These listeners are all created from the clientHandle and just put messages
@@ -123,8 +122,10 @@ public final class MainRouter extends BaseRouter<MainRouter> {
         if(message.getPath().length == 1 && ServerGeneralRoot.TYPES.contains(message.getType()))
             return injector.getInstance(ServerGeneralRoot.class);
         // otherwise send it to the route for the client
-        if(client == null)
+        else if(client == null)
             throw new UnknownClientRouteException(message.getRoute());
+        else if(RemoteClient.TYPES.contains(message.getType()))
+            return client;
         else if(!client.isApplicationInstanceAllowed())
             throw new ApplicationInstanceNotAllowedException(client);
         else

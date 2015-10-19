@@ -1,10 +1,9 @@
 package com.intuso.housemate.server.comms;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
+import com.google.common.collect.*;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.Message;
+import com.intuso.housemate.comms.api.internal.MessageDistributor;
 import com.intuso.housemate.comms.api.internal.payload.ApplicationData;
 import com.intuso.housemate.comms.api.internal.payload.ApplicationInstanceData;
 import com.intuso.housemate.comms.api.internal.payload.RootData;
@@ -12,36 +11,49 @@ import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Local representation of a remote client. Internal objects should use this to send messages to the client
  */
-public class RemoteClient {
+public class RemoteClient implements Message.Receiver<Message.Payload> {
+
+    public final static Set<String> TYPES = Collections.unmodifiableSet(Sets.newHashSet(
+            Message.RECEIVED_TYPE));
 
     private final Log log;
+    private final ListenersFactory listenersFactory;
     private final ClientInstance clientInstance;
     private final Message.Receiver<Message.Payload> receiver;
     private final MainRouter comms;
     private final BiMap<String, RemoteClient> children = HashBiMap.create();
     private final Listeners<RemoteClientListener> listeners = new Listeners<>(new CopyOnWriteArrayList<RemoteClientListener>());
+    private final MessageDistributor messageDistributor;
+    private final Map<Long, MessageTask> messageCache = Maps.newConcurrentMap();
+
     private RemoteClient parent;
     private List<String> route = null;
-    private List<Message<?>> messageQueue = new CopyOnWriteArrayList<>();
     private boolean applicationInstanceAllowed = false;
+    private long nextSequenceId = 0;
 
-    public RemoteClient(Log log, ClientInstance clientInstance, Message.Receiver<Message.Payload> receiver, MainRouter comms) {
-        this.log= log;
+    public RemoteClient(Log log, ListenersFactory listenersFactory, ClientInstance clientInstance, Message.Receiver<Message.Payload> receiver, MainRouter comms) {
+        this.log = log;
+        this.listenersFactory = listenersFactory;
         this.clientInstance = clientInstance;
         this.applicationInstanceAllowed = clientInstance instanceof ClientInstance.Router;
         this.receiver = receiver;
         this.comms = comms;
+        this.messageDistributor = new MessageDistributor(listenersFactory);
+        messageDistributor.registerReceiver(Message.RECEIVED_TYPE, new Message.Receiver<Message.ReceivedPayload>() {
+            @Override
+            public void messageReceived(Message<Message.ReceivedPayload> message) {
+                messageCache.remove(message.getPayload().getSequenceId());
+            }
+        });
     }
 
     private void setParent(RemoteClient parent) {
@@ -56,22 +68,25 @@ public class RemoteClient {
         return clientInstance;
     }
 
-    public void sendMessage(String[] path, String type, Message.Payload payload) {
+    public synchronized void sendMessage(String[] path, String type, Message.Payload payload) {
         if(!applicationInstanceAllowed
                 && !(path.length == 1
                     && (type.equals(RootData.APPLICATION_STATUS_TYPE)
                         || type.equals(RootData.APPLICATION_INSTANCE_STATUS_TYPE)
                         || type.equals(RootData.APPLICATION_INSTANCE_ID_TYPE))))
             throw new HousemateCommsException("Remote client is not allowed access");
-        else if(route == null)
-            messageQueue.add(new Message<>(path, type, payload));
         else {
-            try {
-                comms.sendMessageToClient(path, type, payload, this);
-            } catch(Throwable e) {
-                messageQueue.add(new Message<>(path, type, payload));
-            }
+            Message<Message.Payload> message = new Message<>(nextSequenceId++, path, type, payload);
+            MessageTask task = new MessageTask(message);
+            messageCache.put(message.getSequenceId(), task);
+            if(route != null)
+                task.trySend();
         }
+    }
+
+    @Override
+    public void messageReceived(Message<Message.Payload> message) {
+
     }
 
     public void setApplicationAndInstanceStatus(Application.Status applicationStatus, ApplicationInstance.Status applicationInstanceStatus) {
@@ -86,15 +101,6 @@ public class RemoteClient {
                 || applicationInstanceStatus == ApplicationInstance.Status.Allowed;
         for(RemoteClientListener listener : listeners)
             listener.statusChanged(applicationStatus, applicationInstanceStatus);
-        while(messageQueue.size() > 0) {
-            try {
-                Message message = messageQueue.get(0);
-                comms.sendMessageToClient(message.getPath(), message.getType(), message.getPayload(), this);
-                messageQueue.remove(0);
-            } catch(Throwable t) {
-                break;
-            }
-        }
     }
 
     public ListenerRegistration addListener(RemoteClientListener listener) {
@@ -102,7 +108,7 @@ public class RemoteClient {
     }
 
     public RemoteClient addClient(List<String> route, Message.Receiver<Message.Payload> receiver, ClientInstance clientInstance) {
-        RemoteClient client = new RemoteClient(log, clientInstance, receiver, comms);
+        RemoteClient client = new RemoteClient(log, listenersFactory, clientInstance, receiver, comms);
         client.setBaseRoute(route);
         addClient(client);
         return client;
@@ -141,6 +147,8 @@ public class RemoteClient {
 
     public void setBaseRoute(List<String> route) {
         this.route = route;
+        for(MessageTask task : messageCache.values())
+            task.trySend();
         for(Map.Entry<String, RemoteClient> entry : children.entrySet()) {
             List<String> childRoute = Lists.newArrayList(route);
             childRoute.add(entry.getKey());
@@ -209,5 +217,21 @@ public class RemoteClient {
 
     public boolean isApplicationInstanceAllowed() {
         return applicationInstanceAllowed;
+    }
+
+    private class MessageTask {
+
+        private final Message<Message.Payload> message;
+        private long triedAt = 0;
+
+        private MessageTask(Message<Message.Payload> message) {
+            this.message = message;
+        }
+
+        public void trySend() {
+            triedAt = System.currentTimeMillis();
+            message.setRoute(Lists.newArrayList(route));
+            comms.sendMessageToClient(message);
+        }
     }
 }

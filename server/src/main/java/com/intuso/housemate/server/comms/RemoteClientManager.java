@@ -11,6 +11,7 @@ import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.housemate.server.object.proxy.ioc.ServerProxyModule;
+import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Arrays;
@@ -30,14 +31,12 @@ public class RemoteClientManager {
     private final Map<ClientInstance, RemoteClient> clients = Maps.newHashMap();
 
     @Inject
-    public RemoteClientManager(Log log, Injector injector, ServerGeneralRoot generalRoot, RootBridge bridgeRoot, MainRouter mainRouter) {
+    public RemoteClientManager(Log log, ListenersFactory listenersFactory, Injector injector, ServerGeneralRoot generalRoot, RootBridge bridgeRoot, MainRouter mainRouter) {
         this.log = log;
         this.injector = injector;
         this.generalRoot = generalRoot;
         this.bridgeRoot = bridgeRoot;
-        rootClient = new RemoteClient(log,
-                new ClientInstance.Router(true, ""),
-                generalRoot, mainRouter);
+        rootClient = new RemoteClient(log, listenersFactory, new ClientInstance.Router(true, ""), generalRoot, mainRouter);
         rootClient.setBaseRoute(Lists.<String>newArrayList());
     }
 

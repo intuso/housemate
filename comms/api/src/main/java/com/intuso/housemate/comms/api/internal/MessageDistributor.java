@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Created by tomc on 05/10/15.
  */
-public class MessageDistributor {
+public class MessageDistributor implements Message.Receiver<Message.Payload> {
 
     private final ListenersFactory listenersFactory;
     private final Map<String, Listeners<Message.Receiver<?>>> messageListeners = new HashMap<>();
@@ -29,7 +29,7 @@ public class MessageDistributor {
         return listeners.addListener(receiver);
     }
 
-    public void distribute(Message<?> message) {
+    public void messageReceived(Message<Message.Payload> message) {
         Listeners<Message.Receiver<?>> listeners = messageListeners.get(message.getType());
         if(listeners == null)
             throw new HousemateCommsException("No listeners known for type \"" + message.getType() + "\" for object " + Arrays.toString(message.getPath()));

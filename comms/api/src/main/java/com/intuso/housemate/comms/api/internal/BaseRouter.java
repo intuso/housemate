@@ -23,6 +23,7 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
     private final AtomicInteger nextId = new AtomicInteger(-1);
     private final Listeners<ClientConnection.Listener<? super ROUTER>> listeners;
     private final MessageDistributor messageDistributor;
+    private final MessageSequencer messageSequencer;
     private final Map<String, Message.Receiver<?>> receivers = new ConcurrentHashMap<>();
 
     private String routerId;
@@ -49,6 +50,7 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
         this.listeners = listenersFactory.create();
         this.routerServerConnectionStatus = routerServerConnectionStatus;
         this.messageDistributor = new MessageDistributor(listenersFactory);
+        this.messageSequencer = new MessageSequencer(messageDistributor);
         messageDistributor.registerReceiver(Router.ROUTER_ID, new Message.Receiver<StringPayload>() {
             @Override
             public void messageReceived(Message<StringPayload> message) {
@@ -138,11 +140,13 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
 
         // if no key then it's intended for this router's root object
         if(key == null) {
-            messageDistributor.distribute(message);
+            if(message.getSequenceId() != null)
+                sendMessage(new Message<Message.Payload>(new String[] {""}, Message.RECEIVED_TYPE, new Message.ReceivedPayload(message.getSequenceId())));
+            messageSequencer.messageReceived(message);
         } else {
             Message.Receiver receiver = receivers.get(key);
             if(receiver == null)
-                sendMessage(new Message<Message.Payload>(new String[]{}, ClientConnection.UNKNOWN_CLIENT_ID, new StringPayload(key)));
+                sendMessage(new Message<Message.Payload>(new String[] {""}, ClientConnection.UNKNOWN_CLIENT_ID, new StringPayload(key)));
             else {
                 try {
                     receiver.messageReceived(message);

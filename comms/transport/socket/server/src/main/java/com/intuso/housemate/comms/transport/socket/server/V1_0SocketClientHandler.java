@@ -173,12 +173,12 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
 
     @Override
     public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
-        _sendMessage(new Message(new String[] {}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
+        _sendMessage(new Message(new String[] {""}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
     }
 
     @Override
     public void newServerInstance(ClientConnection clientConnection, String serverId) {
-        _sendMessage(new Message(new String[] {}, ClientConnection.SERVER_INSTANCE_ID_TYPE, new StringPayload(serverId)));
+        _sendMessage(new Message(new String[] {""}, ClientConnection.SERVER_INSTANCE_ID_TYPE, new StringPayload(serverId)));
     }
 
     private synchronized void _sendMessage(Message message) {
