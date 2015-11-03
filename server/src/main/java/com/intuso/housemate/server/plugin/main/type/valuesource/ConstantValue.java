@@ -12,7 +12,7 @@ public class ConstantValue extends ValueSource {
 
     private final ConstantInstance value;
 
-    public <O> ConstantValue(ListenersFactory listenersFactory, RealType<?, ?, O> type, TypeInstances newValue) {
+    public <O> ConstantValue(ListenersFactory listenersFactory, RealType<O> type, TypeInstances newValue) {
         super(listenersFactory);
         value = new ConstantInstance<>(listenersFactory, type, newValue);
     }

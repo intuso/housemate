@@ -4,7 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.RealAutomation;
-import com.intuso.housemate.client.real.api.internal.impl.type.BooleanType;
+import com.intuso.housemate.client.real.impl.internal.type.BooleanType;
 import com.intuso.housemate.object.api.internal.List;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;

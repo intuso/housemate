@@ -4,8 +4,9 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.client.real.api.internal.RealOption;
-import com.intuso.housemate.client.real.api.internal.impl.type.RealChoiceType;
+import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
+import com.intuso.housemate.client.real.impl.internal.type.RealChoiceType;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.OperationType;
@@ -51,9 +52,11 @@ public class OperationTypeType extends RealChoiceType<OperationType> implements 
     @Override
     public void pluginAdded(Injector pluginInjector) {
         for(Operator<?, ?> operator : pluginInjector.getInstance(new Key<Set<Operator<?, ?>>>() {}))
-            if(getOptions().getChild(operator.getOperationType().getId()) == null)
-                getOptions().add(new RealOption(getLog(), listenersFactory,
-                        operator.getOperationType().getId(), operator.getOperationType().getName(), operator.getOperationType().getDescription()));
+            if(getOptions().get(operator.getOperationType().getId()) == null) {
+                RealOptionImpl option = new RealOptionImpl(getLog(), listenersFactory,
+                        operator.getOperationType().getId(), operator.getOperationType().getName(), operator.getOperationType().getDescription());
+                ((RealList<RealOptionImpl>)getOptions()).add(option);
+            }
     }
 
     @Override

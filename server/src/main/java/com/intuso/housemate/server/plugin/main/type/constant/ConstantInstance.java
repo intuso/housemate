@@ -16,11 +16,11 @@ import com.intuso.utilities.listener.ListenersFactory;
 */
 public class ConstantInstance<O> implements Value<TypeInstances, ConstantInstance<O>> {
 
-    private final RealType<?, ?, O> type;
+    private final RealType<O> type;
     private final TypeInstances values;
     private final Listeners<Value.Listener<? super ConstantInstance<O>>> listeners;
 
-    public ConstantInstance(ListenersFactory listenersFactory, RealType<?, ?, O> type, TypeInstances values) {
+    public ConstantInstance(ListenersFactory listenersFactory, RealType<O> type, TypeInstances values) {
         listeners = listenersFactory.create();
         this.type = type;
         this.values = values;

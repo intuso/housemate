@@ -4,10 +4,10 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.client.real.api.internal.RealList;
-import com.intuso.housemate.client.real.api.internal.RealSubType;
-import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.housemate.client.real.api.internal.impl.type.RealCompoundType;
+import com.intuso.housemate.client.real.impl.internal.RealListImpl;
+import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
+import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
+import com.intuso.housemate.client.real.impl.internal.type.RealCompoundType;
 import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeInstances;
@@ -45,14 +45,14 @@ public class OperationType extends RealCompoundType<Operation> {
 
     @Inject
     public OperationType(Log log, ListenersFactory listenersFactory,
-                         RealList<TypeData<?>, RealType<?, ?, ?>> types, TypeSerialiser<Operation> serialiser) {
+                         RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types, TypeSerialiser<Operation> serialiser) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.serialiser = serialiser;
-        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.internal.OperationType>(log, listenersFactory,
+        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory,
                 OPERATION_TYPE_ID, OPERATION_TYPE_NAME, OPERATION_TYPE_DESCRIPTION, OperationTypeType.ID, types));
-        getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
+        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
                 VALUE_0_DESCRIPTION, ValueSourceType.ID, types));
-        getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
+        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
                 VALUE_1_DESCRIPTION, ValueSourceType.ID, types));
     }
 

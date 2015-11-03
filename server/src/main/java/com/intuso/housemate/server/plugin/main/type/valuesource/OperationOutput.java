@@ -2,7 +2,6 @@ package com.intuso.housemate.server.plugin.main.type.valuesource;
 
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.housemate.plugin.api.internal.Operator;
@@ -16,11 +15,11 @@ public class OperationOutput extends ValueSource implements ValueAvailableListen
 
     private final Log log;
     private final ListenersFactory listenersFactory;
-    private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
+    private final RealList<RealType<?>> types;
     private final Operation operation;
     private ComputedValue value;
 
-    public OperationOutput(Log log, ListenersFactory listenersFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types, Operation operation) {
+    public OperationOutput(Log log, ListenersFactory listenersFactory, RealList<RealType<?>> types, Operation operation) {
         super(listenersFactory);
         this.log = log;
         this.listenersFactory = listenersFactory;
@@ -49,9 +48,9 @@ public class OperationOutput extends ValueSource implements ValueAvailableListen
         }
 
         if(firstValue.getTypeId().equals(secondValue.getTypeId())) {
-            RealType<?, ?, Object> inputType = (RealType<?, ?, Object>) types.get(firstValue.getTypeId());
+            RealType<Object> inputType = (RealType<Object>) types.get(firstValue.getTypeId());
             Operator<Object, Object> operator = (Operator<Object, Object>) operation.getOperatorsByType().get(inputType.getId());
-            RealType<?, ?, Object> outputType = (RealType<?, ?, Object>) types.get(operator.getOutputTypeId());
+            RealType<Object> outputType = (RealType<Object>) types.get(operator.getOutputTypeId());
             try {
                 Object result = operator.apply(inputType.deserialise(firstValue.getValue().getElements().get(0)), inputType.deserialise(secondValue.getValue().getElements().get(0)));
                 if(value != null && !value.getTypeId().equals(outputType.getId())) {

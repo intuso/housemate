@@ -16,11 +16,11 @@
     <dependencies>
 
         <!-- Versioned APIs -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>housemate-client-1-0-real-api</artifactId>
             <version>${intuso.housemate.client.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!-- Internal API dependencies -->
         <dependency>

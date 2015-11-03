@@ -21,7 +21,7 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class HardwareListWatcher implements List.Listener<RealHardware> {
+public class HardwareListWatcher implements List.Listener<RealHardware<?>> {
 
     private final Multimap<RealHardware, ListenerRegistration> listeners = HashMultimap.create();
 
@@ -41,7 +41,7 @@ public class HardwareListWatcher implements List.Listener<RealHardware> {
     }
 
     @Override
-    public void elementAdded(RealHardware hardware) {
+    public void elementAdded(RealHardware<?> hardware) {
 
         TypeInstanceMap toSave = new TypeInstanceMap();
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(hardware.getId())));
@@ -59,7 +59,7 @@ public class HardwareListWatcher implements List.Listener<RealHardware> {
     }
 
     @Override
-    public void elementRemoved(RealHardware hardware) {
+    public void elementRemoved(RealHardware<?> hardware) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(hardware);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

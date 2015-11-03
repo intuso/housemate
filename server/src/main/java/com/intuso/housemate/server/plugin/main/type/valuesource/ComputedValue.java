@@ -16,11 +16,11 @@ import com.intuso.utilities.listener.ListenersFactory;
  */
 public class ComputedValue implements Value<TypeInstances, ComputedValue> {
 
-    private final RealType<?, ?, ?> type;
+    private final RealType<?> type;
     private TypeInstances typeInstances;
     private Listeners<Value.Listener<? super ComputedValue>> listeners;
 
-    public ComputedValue(ListenersFactory listenersFactory, RealType<?, ?, ?> type) {
+    public ComputedValue(ListenersFactory listenersFactory, RealType<?> type) {
         this.type = type;
         this.listeners = listenersFactory.create();
     }

@@ -7,7 +7,7 @@ public interface Server<APPLICATIONS extends List<? extends Application<?, ?, ?,
         DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
         HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>>,
         TYPES extends List<? extends Type>,
-        USERS extends List<? extends User<?, ?>>,
+        USERS extends List<? extends User<?, ?, ?>>,
         COMMAND extends Command<?, ?, ?, ?>,
         SERVER extends Server>
         extends BaseHousemateObject<Server.Listener<? super SERVER>>,

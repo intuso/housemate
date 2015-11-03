@@ -2,7 +2,6 @@ package com.intuso.housemate.plugin.tvremote;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.device.feature.RealPlaybackControl;
 import com.intuso.housemate.client.v1_0.real.api.device.feature.RealPowerControl;
@@ -20,7 +19,7 @@ public class TVRemote implements DeviceDriver, RealPowerControl, RealPlaybackCon
     public String remoteName;
 
     @Inject
-    public TVRemote(@Assisted RealDevice device) {}
+    public TVRemote(@Assisted DeviceDriver.Callback driverCallback) {}
 
     @Override
     public void start() {}

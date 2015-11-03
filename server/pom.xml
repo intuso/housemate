@@ -36,6 +36,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>housemate-client-real-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>housemate-plugin-host</artifactId>
             <version>${project.version}</version>
         </dependency>

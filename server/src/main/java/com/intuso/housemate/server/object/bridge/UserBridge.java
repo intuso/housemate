@@ -10,8 +10,8 @@ import com.intuso.utilities.log.Log;
 /**
  */
 public class UserBridge
-        extends BridgeObject<UserData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, UserBridge, User.Listener>
-        implements User<CommandBridge, PropertyBridge> {
+        extends BridgeObject<UserData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>, UserBridge, User.Listener<? super UserBridge>>
+        implements User<CommandBridge, PropertyBridge, UserBridge> {
 
     private final CommandBridge removeCommand;
     private final PropertyBridge emailProperty;
@@ -34,7 +34,7 @@ public class UserBridge
         return emailProperty;
     }
 
-    public final static class Converter implements Function<User<?, ?>, UserBridge> {
+    public final static class Converter implements Function<User<?, ?, ?>, UserBridge> {
 
         private final Log log;
         private final ListenersFactory listenersFactory;
@@ -45,7 +45,7 @@ public class UserBridge
         }
 
         @Override
-        public UserBridge apply(User<?, ?> user) {
+        public UserBridge apply(User<?, ?, ?> user) {
             return new UserBridge(log, listenersFactory, user);
         }
     }

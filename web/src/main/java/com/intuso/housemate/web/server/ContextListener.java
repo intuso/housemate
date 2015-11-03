@@ -88,7 +88,7 @@ public class ContextListener extends GuiceServletContextListener {
                 log.d("Server instance changed");
             }
         });
-        if(router.getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && router.getServerConnectionStatus() != ServerConnectionStatus.DisconnectedTemporarily)
+        if(router.getServerConnectionStatus() == ServerConnectionStatus.DisconnectedPermanently)
             router.connect();
     }
 

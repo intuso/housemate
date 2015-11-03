@@ -11,20 +11,13 @@ import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
-import com.intuso.utilities.log.Log;
 
 import java.lang.reflect.Type;
 
 /**
  * Base class for all plugins that wish to use annotations to describe the provided features
  */
-public abstract class AnnotatedPluginModule extends AbstractModule implements PluginModule {
-
-    private final Log log;
-
-    public AnnotatedPluginModule(Log log) {
-        this.log = log;
-    }
+public abstract class AnnotatedPluginModule extends AbstractModule {
 
     public void configure() {
 
@@ -32,7 +25,7 @@ public abstract class AnnotatedPluginModule extends AbstractModule implements Pl
         bind(ClassLoader.class).toInstance(getClass().getClassLoader());
 
         // configure all the things a plugin can provide
-        configureTypes(Multibinder.newSetBinder(binder(), new TypeLiteral<RealType<?, ?, ?>>() {}));
+        configureTypes(Multibinder.newSetBinder(binder(), new TypeLiteral<RealType<?>>() {}));
         configureComparators(Multibinder.newSetBinder(binder(), new TypeLiteral<Comparator<?>>() {}));
         configureOperators(Multibinder.newSetBinder(binder(), new TypeLiteral<Operator<?, ?>>() {}));
         configureTransformers(Multibinder.newSetBinder(binder(), new TypeLiteral<Transformer<?, ?>>() {}));
@@ -48,10 +41,10 @@ public abstract class AnnotatedPluginModule extends AbstractModule implements Pl
         return getClass().getAnnotation(TypeInfo.class);
     }
 
-    public void configureTypes(Multibinder<RealType<?, ?, ?>> typeBindings) {
+    public void configureTypes(Multibinder<RealType<?>> typeBindings) {
         Types types = getClass().getAnnotation(Types.class);
         if(types != null)
-            for(Class<? extends RealType<?, ?, ?>> typeClass : types.value())
+            for(Class<? extends RealType<?>> typeClass : types.value())
                 typeBindings.addBinding().to(typeClass);
     }
 

@@ -2,7 +2,6 @@ package com.intuso.housemate.server.plugin.main.type.valuesource;
 
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.housemate.plugin.api.internal.Transformer;
@@ -16,11 +15,11 @@ public class TransformationOutput extends ValueSource implements ValueAvailableL
 
     private final Log log;
     private final ListenersFactory listenersFactory;
-    private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
+    private final RealList<RealType<?>> types;
     private final Transformation transformation;
     private ComputedValue value;
 
-    public TransformationOutput(Log log, ListenersFactory listenersFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types, Transformation transformation) {
+    public TransformationOutput(Log log, ListenersFactory listenersFactory, RealList<RealType<?>> types, Transformation transformation) {
         super(listenersFactory);
         this.log = log;
         this.listenersFactory = listenersFactory;
@@ -46,9 +45,9 @@ public class TransformationOutput extends ValueSource implements ValueAvailableL
             return;
         }
 
-        RealType<?, ?, Object> inputType = (RealType<?, ?, Object>) types.get(inputValue.getTypeId());
+        RealType<Object> inputType = (RealType<Object>) types.get(inputValue.getTypeId());
         Transformer<Object, Object> transformer = (Transformer<Object, Object>) transformation.getTransformersByType().get(inputType.getId());
-        RealType<?, ?, Object> outputType = (RealType<?, ?, Object>) types.get(transformer.getOutputTypeId());
+        RealType<Object> outputType = (RealType<Object>) types.get(transformer.getOutputTypeId());
         try {
             Object result = transformer.apply(inputType.deserialise(inputValue.getValue().getElements().get(0)));
             if(value != null && !value.getTypeId().equals(outputType.getId())) {

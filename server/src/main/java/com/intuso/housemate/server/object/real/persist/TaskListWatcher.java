@@ -21,7 +21,7 @@ import java.util.Collection;
 * Time: 19:25
 * To change this template use File | Settings | File Templates.
 */
-public class TaskListWatcher implements List.Listener<RealTask> {
+public class TaskListWatcher implements List.Listener<RealTask<?>> {
 
     private final Multimap<RealTask, ListenerRegistration> listeners = HashMultimap.create();
 
@@ -39,7 +39,7 @@ public class TaskListWatcher implements List.Listener<RealTask> {
     }
 
     @Override
-    public void elementAdded(RealTask task) {
+    public void elementAdded(RealTask<?> task) {
 
         TypeInstanceMap toSave = new TypeInstanceMap();
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(task.getId())));
@@ -55,7 +55,7 @@ public class TaskListWatcher implements List.Listener<RealTask> {
     }
 
     @Override
-    public void elementRemoved(RealTask task) {
+    public void elementRemoved(RealTask<?> task) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(task);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

@@ -2,7 +2,6 @@ package com.intuso.housemate.device;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Command;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
@@ -34,7 +33,7 @@ public class RunProgramDeviceDriver implements DeviceDriver {
 
     @Inject
     public RunProgramDeviceDriver(Log log,
-                                  @Assisted RealDevice device) {
+                                  @Assisted DeviceDriver.Callback driverCallback) {
         this.log = log;
     }
 

@@ -1,8 +1,8 @@
 package com.intuso.housemate.plugin.rfxcom.lighting1;
 
-import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
-import com.intuso.housemate.client.v1_0.real.api.impl.device.StatefulPoweredDevice;
+import com.intuso.housemate.client.v1_0.real.api.device.feature.RealStatefulPowerControl;
+import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -12,33 +12,36 @@ import java.io.IOException;
  * Housemate device that controls a HomeEasy Appliance
  *
  */
-public abstract class Lighting1Appliance extends StatefulPoweredDevice {
+public abstract class Lighting1Appliance implements DeviceDriver, RealStatefulPowerControl {
 
 	private com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance lighting1Appliance;
     private ListenerRegistration listenerRegistration;
     private int houseId = 0;
     private int unitCode = 1;
 
-    private final RealDevice device;
+    private final DeviceDriver.Callback driverCallback;
 
-    protected Lighting1Appliance(RealDevice device) {
-        this.device = device;
+    @com.intuso.housemate.client.v1_0.real.api.annotations.Values
+    protected Values values;
+
+    protected Lighting1Appliance(DeviceDriver.Callback driverCallback) {
+        this.driverCallback = driverCallback;
     }
 
     public void propertyChanged() {
         // check the port value is a positive number
         if(houseId < 0x41 || houseId > 0x50) {
-            device.getErrorValue().setTypedValues("House id must be between " + 0x41 + " and " + 0x50);
+            driverCallback.setError("House id must be between " + 0x41 + " and " + 0x50);
             return;
         }
 			
 		// check the relay value is a number between 1 and 8
 		if(unitCode < 1 || unitCode > 16) {
-            device.getErrorValue().setTypedValues("Unitcode must be between 1 and 16 (inclusive)");
+            driverCallback.setError("Unitcode must be between 1 and 16 (inclusive)");
             return;
         }
 
-        device.getErrorValue().setTypedValues((String)null);
+        driverCallback.setError(null);
 
         if(listenerRegistration != null) {
             listenerRegistration.removeListener();
@@ -49,12 +52,12 @@ public abstract class Lighting1Appliance extends StatefulPoweredDevice {
 
             @Override
             public void turnedOn(com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance a) {
-                setOn();
+                values.isOn(true);
             }
 
             @Override
             public void turnedOff(com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance a) {
-                setOff();
+                values.isOn(false);
             }
         });
 	}
@@ -87,7 +90,7 @@ public abstract class Lighting1Appliance extends StatefulPoweredDevice {
             throw new HousemateCommsException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting1Appliance.turnOn();
-            setOn();
+            values.isOn(true);
 		} catch (IOException e) {
 			throw new HousemateCommsException("Could not turn appliance on", e);
 		}
@@ -99,11 +102,16 @@ public abstract class Lighting1Appliance extends StatefulPoweredDevice {
             throw new HousemateCommsException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting1Appliance.turnOff();
-            setOff();
+            values.isOn(false);
 		} catch (IOException e) {
 			throw new HousemateCommsException("Could not turn appliance off", e);
 		}
 	}
+
+    @Override
+    public void setOn(boolean on) {
+        values.isOn(on);
+    }
 	
 	@Override
 	public void start() {

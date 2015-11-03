@@ -29,11 +29,6 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<archive>
-                        <manifestEntries>
-                            <Housemate-Plugin>com.intuso.housemate.plugin.tvremote.ioc.TVRemotePluginModule</Housemate-Plugin>
-                        </manifestEntries>
-					</archive>
 				</configuration>
 				<executions>
 					<execution>

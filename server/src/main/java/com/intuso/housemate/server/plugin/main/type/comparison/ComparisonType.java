@@ -4,10 +4,10 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.client.real.api.internal.RealList;
-import com.intuso.housemate.client.real.api.internal.RealSubType;
-import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.housemate.client.real.api.internal.impl.type.RealCompoundType;
+import com.intuso.housemate.client.real.impl.internal.RealListImpl;
+import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
+import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
+import com.intuso.housemate.client.real.impl.internal.type.RealCompoundType;
 import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeInstances;
@@ -50,7 +50,7 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     @Inject
     public ComparisonType(Log log,
                           ListenersFactory listenersFactory,
-                          RealList<TypeData<?>, RealType<?, ?, ?>> types,
+                          RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types,
                           TypeSerialiser<com.intuso.housemate.plugin.api.internal.ComparisonType> comparisonTypeSerialiser,
                           TypeSerialiser<ValueSource> sourceTypeSerialiser,
                           PluginManager pluginManager) {
@@ -58,11 +58,11 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
         this.log = log;
         this.comparisonTypeSerialiser = comparisonTypeSerialiser;
         this.sourceTypeSerialiser = sourceTypeSerialiser;
-        getSubTypes().add(new RealSubType<com.intuso.housemate.plugin.api.internal.ComparisonType>(log, listenersFactory, COMPARISON_TYPE_ID,
+        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, COMPARISON_TYPE_ID,
                 COMPARISON_TYPE_NAME, COMPARISON_TYPE_DESCRIPTION, ComparisonTypeType.ID, types));
-        getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
+        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
                 VALUE_0_DESCRIPTION, ValueSourceType.ID, types));
-        getSubTypes().add(new RealSubType<ValueSource>(log, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
+        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
                 VALUE_1_DESCRIPTION, ValueSourceType.ID, types));
         pluginManager.addPluginListener(this, true);
     }

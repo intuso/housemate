@@ -1,6 +1,5 @@
 package com.intuso.housemate.plugin.rfxcom.temperaturesensor;
 
-import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Values;
@@ -20,20 +19,20 @@ public abstract class TemperatureSensor implements DeviceDriver {
     @Values
     public DeviceValues deviceValues;
 
-    private final RealDevice device;
+    private final DeviceDriver.Callback driverCallback;
 
-	public TemperatureSensor(RealDevice device) {
-		this.device = device;
+	public TemperatureSensor(DeviceDriver.Callback driverCallback) {
+		this.driverCallback = driverCallback;
 	}
 
     public void propertyChanged() {
         // check the port value is a positive number
         if(sensorId < 0 || sensorId > 0xFFFF) {
-            device.getErrorValue().setTypedValues("Id must be between 0 and " + 0xFFFF);
+            driverCallback.setError("Id must be between 0 and " + 0xFFFF);
             return;
         }
 
-        device.getErrorValue().setTypedValues((String) null);
+        driverCallback.setError(null);
 
         if(listenerRegistration != null) {
             listenerRegistration.removeListener();

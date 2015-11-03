@@ -1,11 +1,9 @@
 package com.intuso.housemate.device.ioc;
 
-import com.google.inject.Inject;
 import com.intuso.housemate.device.RunProgramDeviceDriver;
 import com.intuso.housemate.plugin.v1_0.api.AnnotatedPluginModule;
 import com.intuso.housemate.plugin.v1_0.api.DeviceDrivers;
 import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
-import com.intuso.utilities.log.Log;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,10 +14,4 @@ import com.intuso.utilities.log.Log;
  */
 @TypeInfo(id = "com.intuso.housemate.plugin.run-program", name = "Run Program Plugin", description = "Plugin for devices that run command line commands")
 @DeviceDrivers(RunProgramDeviceDriver.class)
-public class RunProgramPluginModule extends AnnotatedPluginModule {
-
-    @Inject
-    public RunProgramPluginModule(Log log) {
-        super(log);
-    }
-}
+public class RunProgramPluginModule extends AnnotatedPluginModule {}

@@ -5,15 +5,15 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.intuso.housemate.client.real.api.internal.*;
-import com.intuso.housemate.client.real.api.internal.annotations.AnnotationProcessor;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
-import com.intuso.housemate.client.real.api.internal.factory.condition.AddConditionCommand;
-import com.intuso.housemate.client.real.api.internal.impl.type.DoubleType;
-import com.intuso.housemate.client.real.api.internal.impl.type.IntegerType;
-import com.intuso.housemate.client.real.api.internal.impl.type.RealObjectType;
+import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
+import com.intuso.housemate.client.real.impl.internal.factory.FactoryType;
+import com.intuso.housemate.client.real.impl.internal.factory.condition.AddConditionCommand;
+import com.intuso.housemate.client.real.impl.internal.type.DoubleType;
+import com.intuso.housemate.client.real.impl.internal.type.IntegerType;
+import com.intuso.housemate.client.real.impl.internal.type.RealObjectType;
 import com.intuso.housemate.comms.api.internal.payload.DeviceData;
 import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
-import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.plugin.api.internal.*;
 import com.intuso.housemate.plugin.manager.PluginManager;
@@ -83,7 +83,7 @@ public class TestValueComparison {
         injector.getInstance(FactoryPluginListener.class);
 //        need to get local client too? something not adding plugins types to main type list
         // add the main plugin module
-        injector.getInstance(PluginManager.class).addPlugin(MainPluginModule.class);
+        injector.getInstance(PluginManager.class).addPlugin(injector.createChildInjector(new MainPluginModule()));
         log = injector.getInstance(Log.class);
         RealRoot root = injector.getInstance(RealRoot.class);
         TypeInstanceMap automationValues = new TypeInstanceMap();
@@ -95,7 +95,7 @@ public class TestValueComparison {
 
     @Test
     public void testTwoConstantsEqualsTrue() {
-        RealType<?, ?, ?> integerType = new IntegerType(log, listenersFactory);
+        RealType<?> integerType = new IntegerType(log, listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         assertValueComparisonSatisfied("constant-true", ComparisonType.Simple.Equals, valueOne, valueTwo, true);
@@ -103,7 +103,7 @@ public class TestValueComparison {
 
     @Test
     public void testTwoConstantsEqualsFalse() {
-        RealType<?, ?, ?> integerType = new IntegerType(log, listenersFactory);
+        RealType<?> integerType = new IntegerType(log, listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("2")));
         assertValueComparisonSatisfied("constant-false", ComparisonType.Simple.Equals, valueOne, valueTwo, false);
@@ -113,11 +113,11 @@ public class TestValueComparison {
     public void testLocationSources() throws InterruptedException {
         final Object lock = new Object();
 
-        RealList<TypeData<?>, RealType<?, ?, ?>> types = injector.getInstance(new Key<RealList<TypeData<?>, RealType<?, ?, ?>>>() {});
+        RealList<RealType<?>> types = injector.getInstance(new Key<RealList<RealType<?>>>() {});
 
         // create value one as (((double) 2) + 3.0)
-        RealType<?, ?, ?> integerType = new IntegerType(log, listenersFactory);
-        RealType<?, ?, ?> doubleType = new DoubleType(log, listenersFactory);
+        RealTypeImpl<?, ?, ?> integerType = new IntegerType(log, listenersFactory);
+        RealTypeImpl<?, ?, ?> doubleType = new DoubleType(log, listenersFactory);
         ConstantValue intTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("2")));
         ConstantValue doubleThree = new ConstantValue(listenersFactory, doubleType, new TypeInstances(new TypeInstance("3.0")));
 
@@ -158,10 +158,7 @@ public class TestValueComparison {
         RealCondition<ValueComparison> vc = makeValueComparison("locations", ComparisonType.Simple.Equals, valueOne, valueTwo);
         assertEquals(vc.getErrorValue().getTypedValue(), "Second value is not available");
         RealDevice<TestDeviceDriver> device = (RealDevice<TestDeviceDriver>) injector.getInstance(RealDevice.Factory.class).create(new DeviceData("device", "Device", "Device"), null);
-        device.getDriverProperty().setTypedValues(injector.getInstance(new Key<DeviceDriver.Factory<TestDeviceDriver>>() {}));
-        injector.getInstance(AnnotationProcessor.class).process(
-                injector.getInstance(new Key<RealList<TypeData<?>, RealType<?, ?, ?>>>() {}),
-                device);
+        device.getDriverProperty().setTypedValues(injector.getInstance(new Key<FactoryType.Entry<DeviceDriver.Factory<TestDeviceDriver>>>() {}));
         injector.getInstance(RealRoot.class).addDevice(device);
         synchronized (lock) {
             lock.wait(1000);

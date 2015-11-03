@@ -15,10 +15,11 @@ public class ServerProxyUser
         HousemateData<?>,
             ServerProxyObject<?, ?, ?, ?, ?>,
             ServerProxyUser,
-            User.Listener>
+            User.Listener<? super ServerProxyUser>>
         implements User<
             ServerProxyCommand,
-            ServerProxyProperty> {
+            ServerProxyProperty,
+            ServerProxyUser> {
 
     private ServerProxyCommand remove;
     private ServerProxyProperty email;

@@ -4,12 +4,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.intuso.housemate.client.real.api.internal.RealApplication;
-import com.intuso.housemate.client.real.api.internal.RealApplicationInstance;
-import com.intuso.housemate.client.real.api.internal.RealRoot;
-import com.intuso.housemate.client.real.api.internal.RealValue;
-import com.intuso.housemate.client.real.api.internal.impl.type.ApplicationInstanceStatusType;
-import com.intuso.housemate.client.real.api.internal.impl.type.ApplicationStatusType;
+import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.impl.internal.RealApplicationImpl;
+import com.intuso.housemate.client.real.impl.internal.RealApplicationInstanceImpl;
+import com.intuso.housemate.client.real.impl.internal.type.ApplicationInstanceStatusType;
+import com.intuso.housemate.client.real.impl.internal.type.ApplicationStatusType;
 import com.intuso.housemate.comms.api.internal.Router;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.comms.api.internal.payload.ApplicationData;
@@ -60,9 +59,9 @@ public class AccessManager {
             String appId = registration.getApplicationDetails().getApplicationId();
             RealApplication application = realRoot.getApplications().get(appId);
             if (application == null) {
-                application = new RealApplication(log, listenersFactory, registration.getApplicationDetails(),
+                application = new RealApplicationImpl(log, listenersFactory, registration.getApplicationDetails(),
                         injector.getInstance(ApplicationStatusType.class));
-                realRoot.getApplications().add(application);
+                ((RealList<RealApplication>)realRoot.getApplications()).add(application);
                 application.setStatus(getInitialStatus(appId));
             }
 
@@ -73,9 +72,9 @@ public class AccessManager {
             if (instanceId == null || instanceId.length() == 0 || application.getApplicationInstances().get(instanceId) == null) {
                 instanceId = UUID.randomUUID().toString();
                 RealApplicationInstance applicationInstance =
-                        new RealApplicationInstance(log, listenersFactory, instanceId,
+                        new RealApplicationInstanceImpl(log, listenersFactory, instanceId,
                                 injector.getInstance(ApplicationInstanceStatusType.class));
-                application.getApplicationInstances().add(applicationInstance);
+                ((RealList<RealApplicationInstance>)application.getApplicationInstances()).add(applicationInstance);
                 applicationInstance.getStatusValue().setTypedValues(getInitialStatus(application));
             }
 

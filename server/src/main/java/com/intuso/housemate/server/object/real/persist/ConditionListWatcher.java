@@ -21,7 +21,7 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class ConditionListWatcher implements List.Listener<RealCondition> {
+public class ConditionListWatcher implements List.Listener<RealCondition<?>> {
 
     private final Multimap<RealCondition, ListenerRegistration> listeners = HashMultimap.create();
 
@@ -40,7 +40,7 @@ public class ConditionListWatcher implements List.Listener<RealCondition> {
     }
 
     @Override
-    public void elementAdded(RealCondition condition) {
+    public void elementAdded(RealCondition<?> condition) {
 
         TypeInstanceMap toSave = new TypeInstanceMap();
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(condition.getId())));
@@ -59,7 +59,7 @@ public class ConditionListWatcher implements List.Listener<RealCondition> {
     }
 
     @Override
-    public void elementRemoved(RealCondition condition) {
+    public void elementRemoved(RealCondition<?> condition) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(condition);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

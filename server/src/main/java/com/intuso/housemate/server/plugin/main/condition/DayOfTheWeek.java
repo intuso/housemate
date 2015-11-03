@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.client.real.api.internal.impl.type.Day;
+import com.intuso.housemate.client.real.api.internal.type.Day;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.utilities.log.Log;
 

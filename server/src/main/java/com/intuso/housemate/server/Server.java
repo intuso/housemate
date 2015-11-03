@@ -41,7 +41,7 @@ public class Server {
         injector.getInstance(RootBridge.class);
 
         // add the default plugin
-        injector.getInstance(PluginManager.class).addPlugin(MainPluginModule.class);
+        injector.getInstance(PluginManager.class).addPlugin(injector.createChildInjector(new MainPluginModule()));
     }
 
     public final void acceptClients() {

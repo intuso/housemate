@@ -6,7 +6,6 @@ import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.housemate.plugin.api.internal.Comparator;
@@ -34,12 +33,12 @@ public class ValueComparison implements ConditionDriver {
     private Value<TypeInstances, ?> secondValue = null;
 
     private final Log log;
-    private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
+    private final RealList<RealType<?>> types;
     private final ConditionDriver.Callback callback;
 
     @Inject
 	public ValueComparison(Log log,
-                           RealList<TypeData<?>, RealType<?, ?, ?>> types,
+                           RealList<RealType<?>> types,
                            @Assisted ConditionDriver.Callback callback) {
         this.log = log;
         this.types = types;
@@ -110,7 +109,7 @@ public class ValueComparison implements ConditionDriver {
         else if(comparison.getComparatorsByType().get(firstValue.getTypeId()) == null)
             callback.setError("No comparator for operator " + comparison.getComparisonType().getName() + " and value type " + firstValue.getTypeId());
         else {
-            RealType<?, ?, ?> type = types.get(firstValue.getTypeId());
+            RealType<?> type = types.get(firstValue.getTypeId());
             if(type == null)
                 callback.setError("No type found for id " + firstValue.getTypeId());
             else {

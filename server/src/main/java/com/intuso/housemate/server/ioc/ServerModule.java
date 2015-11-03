@@ -5,7 +5,7 @@ import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.intuso.housemate.client.real.api.internal.RealRoot;
-import com.intuso.housemate.client.real.api.internal.ioc.RealObjectModule;
+import com.intuso.housemate.client.real.impl.internal.ioc.RealObjectModule;
 import com.intuso.housemate.comms.api.bridge.ioc.CommsAPIBridgeModule;
 import com.intuso.housemate.comms.api.internal.Router;
 import com.intuso.housemate.object.api.bridge.ioc.ObjectAPIBridgeModule;

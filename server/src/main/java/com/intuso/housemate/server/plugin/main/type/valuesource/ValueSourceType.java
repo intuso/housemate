@@ -2,11 +2,13 @@ package com.intuso.housemate.server.plugin.main.type.valuesource;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.RealList;
-import com.intuso.housemate.client.real.api.internal.RealOption;
-import com.intuso.housemate.client.real.api.internal.RealSubType;
 import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.housemate.client.real.api.internal.impl.type.RealChoiceType;
-import com.intuso.housemate.client.real.api.internal.impl.type.RealObjectType;
+import com.intuso.housemate.client.real.impl.internal.RealListImpl;
+import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
+import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
+import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
+import com.intuso.housemate.client.real.impl.internal.type.RealChoiceType;
+import com.intuso.housemate.client.real.impl.internal.type.RealObjectType;
 import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.server.object.bridge.RootBridge;
@@ -50,25 +52,25 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
 
     @Inject
     public ValueSourceType(Log log, ListenersFactory listenersFactory, TypeSerialiser<ValueSource> serialiser,
-                           RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+                           RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1, createOptions(log, listenersFactory, types));
         this.serialiser = serialiser;
     }
 
-    private static List<RealOption> createOptions(Log log, ListenersFactory listenersFactory, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+    private static List<RealOptionImpl> createOptions(Log log, ListenersFactory listenersFactory, RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types) {
         return Arrays.asList(
-                new RealOption(log, listenersFactory, CONSTANT_ID, CONSTANT_NAME,
-                        CONSTANT_DESCRIPTION, Arrays.<RealSubType<?>>asList(
-                                new RealSubType<ConstantInstance<Object>>(log, listenersFactory, "type", "Type", "Type of the value", ConstantType.ID, types))),
-                new RealOption(log, listenersFactory, LOCATION_ID, LOCATION_NAME,
-                        LOCATION_DESCRIPTION, Arrays.<RealSubType<?>>asList(
-                                new RealSubType<RealObjectType.Reference<Value<?, ?>>>(log, listenersFactory, "path", "Path", "Path to the value", RealObjectType.ID, types))),
-                new RealOption(log, listenersFactory, OPERATION_ID, OPERATION_NAME,
-                        OPERATION_DESCRIPTION, Arrays.<RealSubType<?>>asList(
-                                new RealSubType<Operation>(log, listenersFactory, "operation", "Operation", "The operation to do", OperationType.ID, types))),
-                new RealOption(log, listenersFactory, TRANSFORMATION_ID, TRANSFORMATION_NAME,
-                        TRANSFORMATION_DESCRIPTION, Arrays.<RealSubType<?>>asList(
-                                new RealSubType<Transformation>(log, listenersFactory, "path", "Path", "Path to the value", TransformationType.ID, types))));
+                new RealOptionImpl(log, listenersFactory, CONSTANT_ID, CONSTANT_NAME,
+                        CONSTANT_DESCRIPTION,
+                        new RealSubTypeImpl<ConstantInstance<Object>>(log, listenersFactory, "type", "Type", "Type of the value", ConstantType.ID, types)),
+                new RealOptionImpl(log, listenersFactory, LOCATION_ID, LOCATION_NAME,
+                        LOCATION_DESCRIPTION,
+                        new RealSubTypeImpl<RealObjectType.Reference<Value<?, ?>>>(log, listenersFactory, "path", "Path", "Path to the value", RealObjectType.ID, types)),
+                new RealOptionImpl(log, listenersFactory, OPERATION_ID, OPERATION_NAME,
+                        OPERATION_DESCRIPTION,
+                        new RealSubTypeImpl<Operation>(log, listenersFactory, "operation", "Operation", "The operation to do", OperationType.ID, types)),
+                new RealOptionImpl(log, listenersFactory, TRANSFORMATION_ID, TRANSFORMATION_NAME,
+                        TRANSFORMATION_DESCRIPTION,
+                        new RealSubTypeImpl<Transformation>(log, listenersFactory, "path", "Path", "Path to the value", TransformationType.ID, types)));
     }
 
     @Override
@@ -89,13 +91,13 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
         private final TypeSerialiser<Operation> operationSerialiser;
         private final TypeSerialiser<Transformation> transformationSerialiser;
         private final RootBridge root;
-        private final RealList<TypeData<?>, RealType<?, ?, ?>> types;
+        private final RealList<RealType<?>> types;
 
         @Inject
         public Serialiser(Log log, ListenersFactory listenersFactory,
                           TypeSerialiser<RealObjectType.Reference<?>> realObjectTypeSerialiser,
                           TypeSerialiser<Operation> operationSerialiser, TypeSerialiser<Transformation> transformationSerialiser,
-                          RootBridge root, RealList<TypeData<?>, RealType<?, ?, ?>> types) {
+                          RootBridge root, RealList<RealType<?>> types) {
             this.log = log;
             this.listenersFactory = listenersFactory;
             this.realObjectTypeSerialiser = realObjectTypeSerialiser;
@@ -142,7 +144,7 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
                     log.w("Cannot deserialise constant, type id is null");
                     return null;
                 }
-                RealType<?, ?, ?> type = types.get(typeId);
+                RealType<?> type = types.get(typeId);
                 if(type == null) {
                     log.w("Cannot deserialise constant, no type for id " + typeId);
                     return null;

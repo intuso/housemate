@@ -4,7 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
-import com.intuso.housemate.client.real.api.internal.impl.type.BooleanType;
+import com.intuso.housemate.client.real.impl.internal.type.BooleanType;
 import com.intuso.housemate.object.api.internal.List;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
@@ -24,7 +24,7 @@ import java.util.Collection;
 * Time: 19:24
 * To change this template use File | Settings | File Templates.
 */
-public class DeviceListWatcher implements List.Listener<RealDevice> {
+public class DeviceListWatcher implements List.Listener<RealDevice<?>> {
 
     private final Multimap<RealDevice, ListenerRegistration> listeners = HashMultimap.create();
 
@@ -44,7 +44,7 @@ public class DeviceListWatcher implements List.Listener<RealDevice> {
     }
 
     @Override
-    public void elementAdded(RealDevice device) {
+    public void elementAdded(RealDevice<?> device) {
 
         TypeInstanceMap toSave = new TypeInstanceMap();
         toSave.getChildren().put("id", new TypeInstances(new TypeInstance(device.getId())));
@@ -72,7 +72,7 @@ public class DeviceListWatcher implements List.Listener<RealDevice> {
     }
 
     @Override
-    public void elementRemoved(RealDevice device) {
+    public void elementRemoved(RealDevice<?> device) {
         Collection<ListenerRegistration> registrations = listeners.removeAll(device);
         if(registrations != null)
             for(ListenerRegistration registration : registrations)

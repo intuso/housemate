@@ -1,12 +1,13 @@
 package com.intuso.housemate.pkg.server.jar;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.pkg.server.jar.ioc.JarServerModule;
 import com.intuso.housemate.platform.pc.Properties;
-import com.intuso.housemate.plugin.api.internal.PluginModule;
 import com.intuso.housemate.plugin.manager.PluginManager;
 import com.intuso.housemate.server.object.real.FactoryPluginListener;
 import com.intuso.housemate.server.object.real.persist.RealObjectWatcher;
@@ -31,12 +32,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 /**
  * Platform implementation for a server. Works the same was as the PC implementation in terms of getting properties
@@ -50,7 +49,9 @@ public class ServerEnvironment {
     public final static String RUN_WEBAPP = "webapp.run";
     public final static String WEBAPP_PORT = "webapp.port";
 
-	/**
+    private final Map<String, String> pluginIds = Maps.newHashMap();
+
+    /**
 	 * Create a environment instance
 	 * @param args the command line args that the server was run with
 	 */
@@ -114,8 +115,11 @@ public class ServerEnvironment {
         else {
             log.d("Loading plugins from " + pluginDirectory.getAbsolutePath());
             for(File pluginFile : pluginDirectory.listFiles(new PluginFileFilter())) {
-                for(Class<? extends PluginModule> pluginModuleClass : getPluginModuleClasses(pluginFile, log))
-                    pluginManager.addPlugin(pluginModuleClass);
+                try {
+                    pluginIds.put(pluginFile.getAbsolutePath(), pluginManager.addPlugin(createPluginInjector(injector, pluginFile, log)));
+                } catch(Throwable t) {
+                    log.w("Failed to add plugin for file " + pluginFile.getAbsolutePath(), t);
+                }
             }
         }
     }
@@ -125,34 +129,15 @@ public class ServerEnvironment {
         //CommPortIdentifier.getPortIdentifiers();
     }
 
-    private List<Class<? extends PluginModule>> getPluginModuleClasses(File file, Log log) {
+    private Injector createPluginInjector(Injector injector, File file, Log log) {
+        return injector.createChildInjector(getPluginModules(file, log));
+    }
+
+    private List<Module> getPluginModules(File file, Log log) {
         log.d("Loading plugins from " + file.getAbsolutePath());
         try {
-            ClassLoader cl = new URLClassLoader(new URL[] {file.toURI().toURL()}, PluginModule.class.getClassLoader());
-            Enumeration<URL> urls = cl.getResources("META-INF/MANIFEST.MF");
-            List<Class<? extends PluginModule>> result = Lists.newArrayList();
-            while(urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                Manifest mf = new Manifest(url.openStream());
-                for(Map.Entry<Object, Object> attrEntry : mf.getMainAttributes().entrySet()) {
-                    try {
-                        result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl, log));
-                    } catch(Throwable t) {
-                        log.e("Failed to load plugin descriptor", t);
-                    }
-                }
-                for(Map.Entry<String, Attributes> mfEntry : mf.getEntries().entrySet()) {
-                    Attributes attrs = mfEntry.getValue();
-                    for(Map.Entry<Object, Object> attrEntry : attrs.entrySet()) {
-                        try {
-                            result.addAll(processManifestAttribute(url, attrEntry.getKey(), attrEntry.getValue(), cl, log));
-                        } catch(Throwable t) {
-                            log.e("Failed to load plugin descriptor", t);
-                        }
-                    }
-                }
-            }
-            return result;
+            ClassLoader cl = new URLClassLoader(new URL[] {file.toURI().toURL()}, getClass().getClassLoader());
+            return Lists.newArrayList(ServiceLoader.load(Module.class, cl));
         } catch(MalformedURLException e) {
             log.e("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not get URL for file");
             return Lists.newArrayList();
@@ -160,29 +145,6 @@ public class ServerEnvironment {
             log.e("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not load mainifest file");
             return Lists.newArrayList();
         }
-    }
-
-    private List<Class<? extends PluginModule>> processManifestAttribute(URL url, Object key, Object value, ClassLoader cl, Log log) {
-        List<Class<? extends PluginModule>> result = Lists.newArrayList();
-        if(key != null && key.toString().equals(PluginModule.MANIFEST_ATTRIBUTE)
-                && value instanceof String) {
-            log.d("Found " + PluginModule.MANIFEST_ATTRIBUTE + " attribute in "+ url.toExternalForm());
-            String[] classNames = ((String)value).split(",");
-            for(String className : classNames) {
-                try {
-                    log.d("Loading plugin class " + className);
-                    Class<?> clazz = Class.forName(className, true, cl);
-                    if(PluginModule.class.isAssignableFrom(clazz)) {
-                        log.d("Successfully loaded plugin class " + className);
-                        result.add((Class<? extends PluginModule>) clazz);
-                    } else
-                        throw new HousemateCommsException(clazz.getName() + " is not assignable to " + PluginModule.class.getName());
-                } catch(ClassNotFoundException e) {
-                    throw new HousemateCommsException("Could not load plugin module class " + className + " from " + url.toExternalForm(), e);
-                }
-            }
-        }
-        return result;
     }
 
     private class PluginFileFilter implements FileFilter {

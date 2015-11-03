@@ -17,7 +17,7 @@ public class ServerBridge
                 ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>,
                 ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge>,
                 ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge>,
-                ConvertingListBridge<UserData, User<?, ?>, UserBridge>,
+                ConvertingListBridge<UserData, User<?, ?, ?>, UserBridge>,
                     CommandBridge,
         ServerBridge> {
 
@@ -26,7 +26,7 @@ public class ServerBridge
     private final ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> devices;
     private final ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge> hardwares;
     private final ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge> types;
-    private final ConvertingListBridge<UserData, User<?, ?>, UserBridge> users;
+    private final ConvertingListBridge<UserData, User<?, ?, ?>, UserBridge> users;
     private final CommandBridge addAutomation;
     private final CommandBridge addDevice;
     private final CommandBridge addHardware;
@@ -51,7 +51,7 @@ public class ServerBridge
         types = new ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge>(
                 log, listenersFactory, proxyRoot.getTypes(),
                 new TypeBridge.Converter(log, listenersFactory));
-        users = new ConvertingListBridge<UserData, User<?, ?>, UserBridge>(
+        users = new ConvertingListBridge<UserData, User<?, ?, ?>, UserBridge>(
                 log, listenersFactory, proxyRoot.getUsers(),
                 new UserBridge.Converter(log, listenersFactory));
 
@@ -137,7 +137,7 @@ public class ServerBridge
     }
 
     @Override
-    public ConvertingListBridge<UserData, User<?, ?>, UserBridge> getUsers() {
+    public ConvertingListBridge<UserData, User<?, ?, ?>, UserBridge> getUsers() {
         return users;
     }
 

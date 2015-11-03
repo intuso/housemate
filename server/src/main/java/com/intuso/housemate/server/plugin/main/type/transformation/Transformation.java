@@ -10,17 +10,17 @@ import java.util.Map;
  */
 public class Transformation {
 
-    private final RealType<?, ?, ?> outputType;
+    private final RealType<?> outputType;
     private final Map<String, Transformer<?, ?>> transformersByType;
     private final ValueSource valueSource;
 
-    public Transformation(RealType<?, ?, ?> outputType, Map<String, Transformer<?, ?>> transformersByType, ValueSource valueSource) {
+    public Transformation(RealType<?> outputType, Map<String, Transformer<?, ?>> transformersByType, ValueSource valueSource) {
         this.outputType = outputType;
         this.transformersByType = transformersByType;
         this.valueSource = valueSource;
     }
 
-    public RealType<?, ?, ?> getOutputType() {
+    public RealType<?> getOutputType() {
         return outputType;
     }
 

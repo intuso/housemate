@@ -1,6 +1,6 @@
 package com.intuso.housemate.server.plugin.main.type.valuesource;
 
-import com.intuso.housemate.client.real.api.internal.impl.type.RealObjectType;
+import com.intuso.housemate.client.real.impl.internal.type.RealObjectType;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.server.object.bridge.ValueBridge;
 import com.intuso.utilities.listener.ListenerRegistration;

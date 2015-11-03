@@ -1,7 +1,6 @@
 package com.intuso.housemate.plugin.arduinotempsensor.ioc;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.intuso.housemate.plugin.arduinotempsensor.ArduinoIndicator;
@@ -24,11 +23,6 @@ public class ArduinoTemperatureSensorPluginModule extends AnnotatedPluginModule 
     private final static List<Pattern> PATTERNS = Lists.newArrayList(
             Pattern.compile(".*ttyACM.*")
     );
-
-    @Inject
-    public ArduinoTemperatureSensorPluginModule(Log log) {
-        super(log);
-    }
 
     @Provides
     @Singleton

@@ -4,7 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
-import com.intuso.housemate.client.real.api.internal.impl.type.RealObjectType;
+import com.intuso.housemate.client.real.impl.internal.type.RealObjectType;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.utilities.listener.ListenerRegistration;

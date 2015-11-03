@@ -3,8 +3,10 @@ package com.intuso.housemate.object.api.internal;
 /**
  * @param <REMOVE_COMMAND> the type of the remove command
  */
-public interface User<REMOVE_COMMAND extends Command<?, ?, ?, ?>, PROPERTY extends Property<?, ?, ?>>
-        extends BaseHousemateObject<User.Listener>, Removeable<REMOVE_COMMAND> {
+public interface User<REMOVE_COMMAND extends Command<?, ?, ?, ?>,
+        PROPERTY extends Property<?, ?, ?>,
+        USER extends User<REMOVE_COMMAND, PROPERTY, USER>>
+        extends BaseHousemateObject<User.Listener<? super USER>>, Removeable<REMOVE_COMMAND> {
 
     PROPERTY getEmailProperty();
 
@@ -12,13 +14,13 @@ public interface User<REMOVE_COMMAND extends Command<?, ?, ?, ?>, PROPERTY exten
      *
      * Listener interface for users
      */
-    interface Listener<USER extends User<?, ?>> extends ObjectListener {}
+    interface Listener<USER extends User<?, ?, ?>> extends ObjectListener {}
 
     /**
      *
      * Interface to show that the implementing object has a list of users
      */
-    interface Container<USERS extends List<? extends User<?, ?>>> {
+    interface Container<USERS extends List<? extends User<?, ?, ?>>> {
 
         /**
          * Gets the user list

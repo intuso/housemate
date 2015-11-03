@@ -3,7 +3,7 @@ package com.intuso.housemate.server.plugin.main.condition;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.client.real.api.internal.driver.LogicCondition;
+import com.intuso.housemate.client.real.impl.internal.driver.LogicCondition;
 import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.utilities.log.Log;
 

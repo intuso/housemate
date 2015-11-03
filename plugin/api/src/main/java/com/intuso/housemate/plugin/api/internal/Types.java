@@ -8,15 +8,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to list the types that a plugin provides
+ * Annotation to list the task factories that the plugin provides
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Types {
 
     /**
-     * The list of classes of the types that the plugin provides
-     * @return the list of classes of the types that the plugin provides
+     * The list of the task factories the plugin provides
+     * @return the list of the task factories the plugin provides
      */
-    Class<? extends RealType<?, ?, ?>>[] value();
+    Class<? extends RealType<?>>[] value();
 }

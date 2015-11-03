@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.rfxcom.lighting1;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.v1_0.real.api.RealDevice;
+import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
 import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 
@@ -14,8 +14,8 @@ import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 public class Lighting1ARCAppliance extends Lighting1Appliance {
 
 	@Inject
-	public Lighting1ARCAppliance(@Assisted RealDevice device) {
-		super(device);
+	public Lighting1ARCAppliance(@Assisted DeviceDriver.Callback driverCallback) {
+		super(driverCallback);
 	}
 
     public com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance createAppliance(byte houseId, byte unitCode) {

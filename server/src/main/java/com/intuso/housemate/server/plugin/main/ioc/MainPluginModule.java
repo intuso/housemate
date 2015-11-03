@@ -1,12 +1,11 @@
 package com.intuso.housemate.server.plugin.main.ioc;
 
-import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.housemate.client.real.api.internal.impl.type.*;
+import com.intuso.housemate.client.real.impl.internal.type.*;
 import com.intuso.housemate.object.api.internal.BaseHousemateObject;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.*;
@@ -36,7 +35,6 @@ import com.intuso.housemate.server.plugin.main.type.transformation.Transformatio
 import com.intuso.housemate.server.plugin.main.type.transformation.TransformationType;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
-import com.intuso.utilities.log.Log;
 
 /**
  */
@@ -113,11 +111,6 @@ import com.intuso.utilities.log.Log;
         PerformCommand.class})
 public class MainPluginModule extends AnnotatedPluginModule {
 
-    @Inject
-    public MainPluginModule(Log log) {
-        super(log);
-    }
-
     @Override
     public void configure() {
 
@@ -138,13 +131,13 @@ public class MainPluginModule extends AnnotatedPluginModule {
         bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.internal.ComparisonType>>() {}).to(ComparisonTypeType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.internal.OperationType>>() {}).to(OperationTypeType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<Operation>>() {}).to(OperationType.Serialiser.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<TypeSerialiser<RealType<?, ?, ?>>>() {}).to(TransformationOutputType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<RealType<?>>>() {}).to(TransformationOutputType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<Transformation>>() {}).to(TransformationType.Serialiser.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<RealObjectType.Reference<?>>>() {}).to(new Key<RealObjectType.Serialiser<?>>() {}).in(Scopes.SINGLETON);
     }
 
     @Override
-    public void configureTypes(Multibinder<RealType<?, ?, ?>> typeBindings) {
+    public void configureTypes(Multibinder<RealType<?>> typeBindings) {
         super.configureTypes(typeBindings);
         typeBindings.addBinding().to(new Key<RealObjectType<BaseHousemateObject<?>>>() {});
     }
