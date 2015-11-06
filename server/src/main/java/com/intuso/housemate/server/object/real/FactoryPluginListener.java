@@ -70,8 +70,8 @@ public class FactoryPluginListener implements PluginListener {
 
     private void removeTypes(Injector pluginInjector) {
         for(RealType<?> type : pluginInjector.getInstance(new Key<Set<RealType<?>>>() {})) {
-            log.d("Adding type " + type.getId());
-            root.removeType(type.getId());
+            log.d("Removing type " + type.getId());
+            root.removeType(type);
         }
     }
 

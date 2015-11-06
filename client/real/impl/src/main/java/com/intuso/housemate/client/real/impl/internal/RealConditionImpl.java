@@ -14,7 +14,6 @@ import com.intuso.housemate.client.real.impl.internal.type.BooleanType;
 import com.intuso.housemate.client.real.impl.internal.type.StringType;
 import com.intuso.housemate.comms.api.internal.payload.ConditionData;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
-import com.intuso.housemate.comms.api.internal.payload.PropertyData;
 import com.intuso.housemate.object.api.internal.Condition;
 import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
@@ -38,8 +37,8 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
     private final RealPropertyImpl<PluginResource<ConditionDriver.Factory<DRIVER>>> driverProperty;
     private RealValueImpl<Boolean> driverLoadedValue;
     private RealValueImpl<Boolean> satisfiedValue;
-    private RealListImpl<PropertyData, RealPropertyImpl<?>> properties;
-    private final RealListImpl<ConditionData, RealConditionImpl<?>> children;
+    private RealList<RealProperty<?>> properties;
+    private final RealList<RealCondition<?>> children;
     private final RealCommandImpl addConditionCommand;
 
     private final Map<String, Boolean> childSatisfied = Maps.newHashMap();
@@ -58,24 +57,24 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
                              ConditionFactoryType driverFactoryType,
                              AddConditionCommand.Factory addConditionCommandFactory,
                              @Assisted ConditionData data,
-                             @Assisted final RemovedListener removedListener) {
+                             @Assisted final RemoveCallback removeCallback) {
         super(log, listenersFactory, data);
         this.annotationProcessor = annotationProcessor;
         removeCommand = new RealCommandImpl(log, listenersFactory, ConditionData.REMOVE_ID, ConditionData.REMOVE_ID, "Remove the condition", Lists.<RealParameterImpl<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
-                removedListener.conditionRemoved(RealConditionImpl.this);
+                removeCallback.removeCondition(RealConditionImpl.this);
             }
         };
         errorValue = new RealValueImpl<>(log, listenersFactory, ConditionData.ERROR_ID, ConditionData.ERROR_ID, "The current error", new StringType(log, listenersFactory), (List)null);
         driverProperty = (RealPropertyImpl<PluginResource<ConditionDriver.Factory<DRIVER>>>) new RealPropertyImpl(log, listenersFactory, "driver", "Driver", "The condition's driver", driverFactoryType);
         driverLoadedValue = BooleanType.createValue(log, listenersFactory, ConditionData.DRIVER_LOADED_ID, ConditionData.DRIVER_LOADED_ID, "Whether the task's driver is loaded or not", false);
         satisfiedValue = new RealValueImpl<>(log, listenersFactory, ConditionData.SATISFIED_ID, ConditionData.SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(log, listenersFactory), false);
-        properties = new RealListImpl<>(log, listenersFactory, ConditionData.PROPERTIES_ID, ConditionData.PROPERTIES_ID, "The condition's properties");
-        children = new RealListImpl<>(log, listenersFactory, ConditionData.CONDITIONS_ID, "Conditions", "Child conditions");
-        addConditionCommand = addConditionCommandFactory.create(ConditionData.ADD_CONDITION_ID, ConditionData.ADD_CONDITION_ID, "Add condition", this, new RemovedListener() {
+        properties = (RealList)new RealListImpl<>(log, listenersFactory, ConditionData.PROPERTIES_ID, ConditionData.PROPERTIES_ID, "The condition's properties");
+        children = (RealList)new RealListImpl<>(log, listenersFactory, ConditionData.CONDITIONS_ID, "Conditions", "Child conditions");
+        addConditionCommand = addConditionCommandFactory.create(ConditionData.ADD_CONDITION_ID, ConditionData.ADD_CONDITION_ID, "Add condition", this, new RemoveCallback() {
             @Override
-            public void conditionRemoved(RealCondition condition) {
+            public void removeCondition(RealCondition condition) {
                 children.remove(condition.getId());
             }
         });
@@ -85,8 +84,8 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
         addChild(driverProperty);
         addChild(driverLoadedValue);
         addChild(satisfiedValue);
-        addChild(properties);
-        addChild(children);
+        addChild((RealListImpl)properties);
+        addChild((RealListImpl)children);
         addChild(addConditionCommand);
         driverProperty.addObjectListener(new Property.Listener<RealProperty<PluginResource<ConditionDriver.Factory<DRIVER>>>>() {
             @Override
@@ -119,7 +118,7 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
             driverLoadedValue.setTypedValues(false);
             errorValue.setTypedValues("Driver not loaded");
             driver = null;
-            for (RealProperty<?> property : Lists.newArrayList(properties.getChildren()))
+            for (RealProperty<?> property : Lists.newArrayList(properties))
                 properties.remove(property.getId());
         }
     }
@@ -129,7 +128,7 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
     }
 
     @Override
-    public RealList<? extends RealCondition<?>> getConditions() {
+    public RealList<RealCondition<?>> getConditions() {
         return children;
     }
 
@@ -144,7 +143,7 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
     }
 
     @Override
-    public RealList<? extends RealProperty<?>> getProperties() {
+    public RealList<RealProperty<?>> getProperties() {
         return properties;
     }
 

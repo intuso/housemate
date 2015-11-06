@@ -32,7 +32,7 @@ public class AddHardwareCommand extends RealCommandImpl {
     private final HardwareFactoryType hardwareFactoryType;
     private final Callback callback;
     private final RealHardware.Factory hardwareFactory;
-    private final RealHardware.RemovedListener removedListener;
+    private final RealHardware.RemoveCallback removeCallback;
 
     @Inject
     protected AddHardwareCommand(Log log,
@@ -44,7 +44,7 @@ public class AddHardwareCommand extends RealCommandImpl {
                                  @Assisted("name") String name,
                                  @Assisted("description") String description,
                                  @Assisted Callback callback,
-                                 @Assisted RealHardware.RemovedListener removedListener) {
+                                 @Assisted RealHardware.RemoveCallback removeCallback) {
         super(log, listenersFactory, id, name, description,
                 new RealParameterImpl<>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
                 new RealParameterImpl<>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
@@ -52,7 +52,7 @@ public class AddHardwareCommand extends RealCommandImpl {
         this.hardwareFactoryType = hardwareFactoryType;
         this.callback = callback;
         this.hardwareFactory = hardwareFactory;
-        this.removedListener = removedListener;
+        this.removeCallback = removeCallback;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AddHardwareCommand extends RealCommandImpl {
         TypeInstances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateCommsException("No description specified");
-        RealHardware<?> hardware = hardwareFactory.create(new HardwareData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removedListener);
+        RealHardware<?> hardware = hardwareFactory.create(new HardwareData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
         callback.addHardware(hardware);
         TypeInstances hardwareType = values.getChildren().get(TYPE_PARAMETER_ID);
         if(hardwareType != null && hardwareType.getFirstValue() != null)
@@ -79,6 +79,6 @@ public class AddHardwareCommand extends RealCommandImpl {
                                   @Assisted("name") String name,
                                   @Assisted("description") String description,
                                   Callback callback,
-                                  RealHardware.RemovedListener removedListener);
+                                  RealHardware.RemoveCallback removeCallback);
     }
 }

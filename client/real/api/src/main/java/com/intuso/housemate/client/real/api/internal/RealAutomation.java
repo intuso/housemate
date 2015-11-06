@@ -12,20 +12,24 @@ public interface RealAutomation
                 RealValue<Boolean>,
                 RealValue<String>,
                 RealCondition<?>,
-                RealList<? extends RealCondition<?>>,
+                RealList<RealCondition<?>>,
                 RealTask<?>,
-                RealList<? extends RealTask<?>>,
+                RealList<RealTask<?>>,
                 RealAutomation>,
         Condition.Listener<RealCondition<?>>,
-        RealCondition.RemovedListener {
+        RealCondition.Container {
 
     boolean isRunning();
 
-    interface RemovedListener {
-        void automationRemoved(RealAutomation automation);
+    interface Container extends Automation.Container<RealList<RealAutomation>>, RemoveCallback {
+        void addAutomation(RealAutomation automation);
+    }
+
+    interface RemoveCallback {
+        void removeAutomation(RealAutomation automation);
     }
 
     interface Factory {
-        RealAutomation create(AutomationData data, RemovedListener removedListener);
+        RealAutomation create(AutomationData data, RemoveCallback removeCallback);
     }
 }

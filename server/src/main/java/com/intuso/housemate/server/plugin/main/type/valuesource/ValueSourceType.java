@@ -3,13 +3,10 @@ package com.intuso.housemate.server.plugin.main.type.valuesource;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.housemate.client.real.impl.internal.RealListImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
-import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.type.RealChoiceType;
 import com.intuso.housemate.client.real.impl.internal.type.RealObjectType;
-import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.plugin.main.type.constant.ConstantInstance;
@@ -52,12 +49,12 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
 
     @Inject
     public ValueSourceType(Log log, ListenersFactory listenersFactory, TypeSerialiser<ValueSource> serialiser,
-                           RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types) {
+                           RealList<RealType<?>> types) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1, createOptions(log, listenersFactory, types));
         this.serialiser = serialiser;
     }
 
-    private static List<RealOptionImpl> createOptions(Log log, ListenersFactory listenersFactory, RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types) {
+    private static List<RealOptionImpl> createOptions(Log log, ListenersFactory listenersFactory, RealList<RealType<?>> types) {
         return Arrays.asList(
                 new RealOptionImpl(log, listenersFactory, CONSTANT_ID, CONSTANT_NAME,
                         CONSTANT_DESCRIPTION,

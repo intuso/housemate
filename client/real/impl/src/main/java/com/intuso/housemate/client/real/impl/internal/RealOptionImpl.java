@@ -15,10 +15,10 @@ import java.util.List;
 
 public class RealOptionImpl
         extends RealObject<OptionData, ListData<SubTypeData>,
-            RealListImpl<SubTypeData, RealSubTypeImpl<?>>, Option.Listener<? super RealOption>>
+        RealListImpl<SubTypeData, RealSubTypeImpl<?>>, Option.Listener<? super RealOption>>
         implements RealOption {
 
-    private final RealListImpl<SubTypeData, RealSubTypeImpl<?>> subTypes;
+    private final RealList<RealSubType<?>> subTypes;
 
     /**
      * @param log {@inheritDoc}
@@ -42,13 +42,13 @@ public class RealOptionImpl
      */
     public RealOptionImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, List<RealSubTypeImpl<?>> subTypes) {
         super(log, listenersFactory, new OptionData(id, name,  description));
-        this.subTypes = new RealListImpl<>(log, listenersFactory, OptionData.SUB_TYPES_ID,
+        this.subTypes = (RealList)new RealListImpl<>(log, listenersFactory, OptionData.SUB_TYPES_ID,
                 "Sub Types", "The sub types of this option", subTypes);
-        addChild(this.subTypes);
+        addChild((RealListImpl)this.subTypes);
     }
 
     @Override
-    public final RealList<? extends RealSubType<?>> getSubTypes() {
+    public final RealList<RealSubType<?>> getSubTypes() {
         return subTypes;
     }
 }

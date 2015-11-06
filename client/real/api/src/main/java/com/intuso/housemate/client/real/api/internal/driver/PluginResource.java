@@ -12,7 +12,7 @@ public interface PluginResource<RESOURCE> {
     ListenerRegistration addListener(Listener<RESOURCE> listener);
 
     interface Listener<RESOURCE> extends com.intuso.utilities.listener.Listener {
-        void resourceAvailable(RESOURCE factory);
+        void resourceAvailable(RESOURCE resource);
         void resourceUnavailable();
     }
 }

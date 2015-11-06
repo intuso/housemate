@@ -4,15 +4,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
+import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.api.internal.RealValue;
 import com.intuso.housemate.client.real.api.internal.annotations.*;
-import com.intuso.housemate.client.real.api.internal.annotations.Parameter;
 import com.intuso.housemate.client.real.api.internal.device.feature.RealFeature;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.payload.CommandData;
 import com.intuso.housemate.comms.api.internal.payload.PropertyData;
-import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.comms.api.internal.payload.ValueData;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -30,10 +30,10 @@ public class AnnotationProcessor {
 
     private final Log log;
     private final ListenersFactory listenersFactory;
-    private final RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types;
+    private final RealList<RealType<?>> types;
 
     @Inject
-    public AnnotationProcessor(Log log, ListenersFactory listenersFactory, RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types) {
+    public AnnotationProcessor(Log log, ListenersFactory listenersFactory, RealList<RealType<?>> types) {
         this.log = log;
         this.listenersFactory = listenersFactory;
         this.types = types;

@@ -1,10 +1,10 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.api.internal.RealSubType;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
 import com.intuso.housemate.comms.api.internal.payload.SubTypeData;
-import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.SubType;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
@@ -16,7 +16,7 @@ public class RealSubTypeImpl<O>
         extends RealObject<SubTypeData, NoChildrenData, RealObject<NoChildrenData, ? ,?, ?>, SubType.Listener<? super RealSubType<O>>>
         implements RealSubType<O> {
 
-    private final RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types;
+    private final RealList<RealType<?>> types;
 
     /**
      * @param log {@inheritDoc}
@@ -27,7 +27,7 @@ public class RealSubTypeImpl<O>
      * @param types the types in the system
      */
     public RealSubTypeImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, String typeId,
-                           RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types) {
+                           RealList<RealType<?>> types) {
         super(log, listenersFactory, new SubTypeData(id, name, description, typeId));
         this.types = types;
     }

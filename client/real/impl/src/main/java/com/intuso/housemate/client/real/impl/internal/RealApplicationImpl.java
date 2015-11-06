@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.comms.api.internal.access.ApplicationDetails;
 import com.intuso.housemate.comms.api.internal.payload.ApplicationData;
-import com.intuso.housemate.comms.api.internal.payload.ApplicationInstanceData;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
@@ -15,7 +14,7 @@ public class RealApplicationImpl
         extends RealObject<ApplicationData, HousemateData<?>, RealObject<?, ? ,?, ?>, Application.Listener<? super RealApplication>>
         implements RealApplication {
 
-    private final RealListImpl<ApplicationInstanceData, RealApplicationInstanceImpl> applicationInstances;
+    private final RealList<RealApplicationInstance> applicationInstances;
     private final RealCommandImpl allowCommand;
     private final RealCommandImpl someCommand;
     private final RealCommandImpl rejectCommand;
@@ -33,7 +32,7 @@ public class RealApplicationImpl
     public RealApplicationImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description,
                                RealType<Status> applicationStatusType) {
         super(log, listenersFactory, new ApplicationData(id, name, description));
-        this.applicationInstances = new RealListImpl<>(
+        this.applicationInstances = (RealList)new RealListImpl<>(
                 log, listenersFactory, ApplicationData.APPLICATION_INSTANCES_ID, ApplicationData.APPLICATION_INSTANCES_ID, "The application's instances");
         allowCommand = new RealCommandImpl(log, listenersFactory, ApplicationData.ALLOW_COMMAND_ID, ApplicationData.ALLOW_COMMAND_ID, "Allow access to all the application instances",
                 Lists.<RealParameterImpl<?>>newArrayList()) {
@@ -58,7 +57,7 @@ public class RealApplicationImpl
         };
         statusValue = new RealValueImpl<>(log, listenersFactory, ApplicationData.STATUS_VALUE_ID, ApplicationData.STATUS_VALUE_ID,
                 "The status of the application instances", applicationStatusType, (Status)null);
-        addChild(applicationInstances);
+        addChild((RealListImpl)applicationInstances);
         addChild(allowCommand);
         addChild(someCommand);
         addChild(rejectCommand);
@@ -75,8 +74,18 @@ public class RealApplicationImpl
     }
 
     @Override
-    public RealList<? extends RealApplicationInstance> getApplicationInstances() {
+    public RealList<RealApplicationInstance> getApplicationInstances() {
         return applicationInstances;
+    }
+
+    @Override
+    public void addApplicationInstance(RealApplicationInstance applicationInstance) {
+        applicationInstances.add((RealApplicationInstanceImpl) applicationInstance);
+    }
+
+    @Override
+    public void removeApplicationInstance(RealApplicationInstance applicationInstance) {
+        applicationInstances.remove(applicationInstance.getId());
     }
 
     @Override

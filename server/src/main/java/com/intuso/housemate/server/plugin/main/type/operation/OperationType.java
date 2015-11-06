@@ -4,11 +4,10 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.client.real.impl.internal.RealListImpl;
+import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
-import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.type.RealCompoundType;
-import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
@@ -45,7 +44,7 @@ public class OperationType extends RealCompoundType<Operation> {
 
     @Inject
     public OperationType(Log log, ListenersFactory listenersFactory,
-                         RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types, TypeSerialiser<Operation> serialiser) {
+                         RealList<RealType<?>> types, TypeSerialiser<Operation> serialiser) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.serialiser = serialiser;
         getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory,

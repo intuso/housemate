@@ -3,13 +3,10 @@ package com.intuso.housemate.server.plugin.main.type.constant;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.housemate.client.real.impl.internal.RealListImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
-import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.type.RealChoiceType;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
-import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.object.api.internal.List;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -29,10 +26,10 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
 
     private final ListenersFactory listenersFactory;
 
-    private final RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types;
+    private final RealList<RealType<?>> types;
 
     @Inject
-    public ConstantType(Log log, ListenersFactory listenersFactory, RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types) {
+    public ConstantType(Log log, ListenersFactory listenersFactory, RealList<RealType<?>> types) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.listenersFactory = listenersFactory;
         this.types = types;

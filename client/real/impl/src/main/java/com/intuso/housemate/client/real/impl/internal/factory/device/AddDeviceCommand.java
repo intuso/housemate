@@ -32,7 +32,7 @@ public class AddDeviceCommand extends RealCommandImpl {
     private final DeviceFactoryType deviceFactoryType;
     private final Callback callback;
     private final RealDevice.Factory deviceFactory;
-    private final RealDevice.RemovedListener removedListener;
+    private final RealDevice.RemoveCallback removeCallback;
 
     @Inject
     protected AddDeviceCommand(Log log,
@@ -44,7 +44,7 @@ public class AddDeviceCommand extends RealCommandImpl {
                                @Assisted("name") String name,
                                @Assisted("description") String description,
                                @Assisted Callback callback,
-                               @Assisted RealDevice.RemovedListener removedListener) {
+                               @Assisted RealDevice.RemoveCallback removeCallback) {
         super(log, listenersFactory, id, name, description,
                 new RealParameterImpl<>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
                 new RealParameterImpl<>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
@@ -52,7 +52,7 @@ public class AddDeviceCommand extends RealCommandImpl {
         this.deviceFactoryType = deviceFactoryType;
         this.callback = callback;
         this.deviceFactory = deviceFactory;
-        this.removedListener = removedListener;
+        this.removeCallback = removeCallback;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AddDeviceCommand extends RealCommandImpl {
         TypeInstances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateCommsException("No description specified");
-        RealDevice<?> device = deviceFactory.create(new DeviceData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removedListener);
+        RealDevice<?> device = deviceFactory.create(new DeviceData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
         callback.addDevice(device);
         TypeInstances deviceType = values.getChildren().get(TYPE_PARAMETER_ID);
         if(deviceType != null && deviceType.getFirstValue() != null)
@@ -79,6 +79,6 @@ public class AddDeviceCommand extends RealCommandImpl {
                                 @Assisted("name") String name,
                                 @Assisted("description") String description,
                                 Callback callback,
-                                RealDevice.RemovedListener removedListener);
+                                RealDevice.RemoveCallback removeCallback);
     }
 }

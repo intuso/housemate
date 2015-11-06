@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.client.real.impl.internal.factory.automation.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.factory.condition.ConditionFactoryType;
 import com.intuso.housemate.client.real.impl.internal.factory.device.AddDeviceCommand;
@@ -20,7 +21,6 @@ import com.intuso.housemate.comms.api.internal.payload.*;
 import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.housemate.object.api.internal.ObjectLifecycleListener;
-import com.intuso.housemate.object.api.internal.Root;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -55,12 +55,14 @@ public class RealRootImpl
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = Maps.newHashMap();
 
-    private final RealListImpl<ApplicationData, RealApplicationImpl> applications;
-    private final RealListImpl<AutomationData, RealAutomationImpl> automations;
-    private final RealListImpl<DeviceData, RealDeviceImpl<?>> devices;
-    private final RealListImpl<HardwareData, RealHardwareImpl<?>> hardwares;
-    private final RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types;
-    private final RealListImpl<UserData, RealUserImpl> users;
+    private final RealList<RealApplication> applications;
+    private final RealList<RealAutomation> automations;
+    private final RealList<RealDevice<?>> devices;
+    private final RealList<RealHardware<?>> hardwares;
+    private final RealList<RealType<?>> types;
+    private final RealList<RealUser> users;
+    private final RealDevice.Factory deviceFactory;
+
 
     private final RealCommandImpl addAutomationCommand;
     private final RealCommandImpl addDeviceCommand;
@@ -79,19 +81,21 @@ public class RealRootImpl
 
     @Inject
     public RealRootImpl(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router,
-                        RealListImpl<TypeData<?>, RealTypeImpl<?, ?, ?>> types,
+                        RealList<RealType<?>> types,
                         AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory,
                         AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory,
                         ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType,
-                        HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType) {
+                        HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType, RealDevice.Factory deviceFactory) {
         super(log, listenersFactory, new RootData());
 
-        this.applications = new RealListImpl<>(log, listenersFactory, APPLICATIONS_ID, "Applications", "Applications");
-        this.automations = new RealListImpl<>(log, listenersFactory, AUTOMATIONS_ID, "Automations", "Automations");
-        this.devices = new RealListImpl<>(log, listenersFactory, DEVICES_ID, "Devices", "Devices");
-        this.hardwares = new RealListImpl<>(log, listenersFactory, HARDWARES_ID, "Hardware", "Hardware");
+        this.applications = (RealList)new RealListImpl<>(log, listenersFactory, APPLICATIONS_ID, "Applications", "Applications");
+        this.automations = (RealList)new RealListImpl<>(log, listenersFactory, AUTOMATIONS_ID, "Automations", "Automations");
+        this.devices = (RealList)new RealListImpl<>(log, listenersFactory, DEVICES_ID, "Devices", "Devices");
+        this.hardwares = (RealList)new RealListImpl<>(log, listenersFactory, HARDWARES_ID, "Hardware", "Hardware");
         this.types = types;
-        this.users = new RealListImpl<>(log, listenersFactory, USERS_ID, "Users", "Users");
+        this.users = (RealList)new RealListImpl<>(log, listenersFactory, USERS_ID, "Users", "Users");
+
+        this.deviceFactory = deviceFactory;
 
         this.addAutomationCommand = addAutomationCommandFactory.create(ADD_HARDWARE_ID, ADD_HARDWARE_ID, "Add hardware", this, this);
         this.addDeviceCommand = addDeviceCommandFactory.create(ADD_DEVICE_ID, ADD_DEVICE_ID, "Add a device", this, this);
@@ -120,12 +124,12 @@ public class RealRootImpl
             }
         });
 
-        addChild(applications);
-        addChild(automations);
-        addChild(devices);
-        addChild(hardwares);
-        addChild(types);
-        addChild(users);
+        addChild((RealListImpl)applications);
+        addChild((RealListImpl)automations);
+        addChild((RealListImpl)devices);
+        addChild((RealListImpl)hardwares);
+        addChild((RealListImpl)types);
+        addChild((RealListImpl)users);
 
         addChild(addAutomationCommand);
         addChild(addDeviceCommand);
@@ -167,7 +171,7 @@ public class RealRootImpl
             routerRegistration.sendMessage(message);
     }
 
-    public boolean checkCanSendMessage(Message<?> message) {
+    protected boolean checkCanSendMessage(Message<?> message) {
         if(getApplicationInstanceStatus() != ApplicationInstance.Status.Allowed
                 && !(message.getPath().length == 1 &&
                 (message.getType().equals(ApplicationRegistration.APPLICATION_REGISTRATION_TYPE)
@@ -217,33 +221,36 @@ public class RealRootImpl
                 accessManager.setApplicationInstanceStatus(message.getPayload().getStatus());
             }
         }));
-        result.add(addMessageListener(SEND_INITIAL_DATA, new Message.Receiver<NoPayload>() {
+        result.add(addMessageListener(SEND_INITIAL_DATA, new Message.Receiver<Message.Payload>() {
             @Override
-            public void messageReceived(Message<NoPayload> message) {
-                sendMessage(INITIAL_DATA, getData());
+            public void messageReceived(Message<Message.Payload> message) {
+                RealRootImpl.this.sendMessage(INITIAL_DATA, getData());
             }
         }));
         return result;
     }
 
     @Override
-    public final RealList<? extends RealType<?>> getTypes() {
+    public final RealList<RealType<?>> getTypes() {
         return types;
     }
 
+    @Override
     public final void addType(RealType<?> type) {
-        types.add((RealTypeImpl<?, ?, ?>)type);
-    }
-
-    public final void removeType(String name) {
-        types.remove(name);
+        types.add(type);
     }
 
     @Override
-    public RealList<? extends RealHardware<?>> getHardwares() {
+    public final void removeType(RealType<?> type) {
+        types.remove(type.getId());
+    }
+
+    @Override
+    public RealList<RealHardware<?>> getHardwares() {
         return hardwares;
     }
 
+    @Override
     public RealCommand getAddHardwareCommand() {
         return addHardwareCommand;
     }
@@ -254,22 +261,25 @@ public class RealRootImpl
     }
 
     @Override
-    public void removeHardware(String id) {
-        hardwares.remove(id);
+    public final void removeHardware(RealHardware realHardware) {
+        hardwares.remove(realHardware.getId());
     }
 
     @Override
-    public final void hardwareRemoved(RealHardware realHardware) {
-        removeHardware(realHardware.getId());
-    }
-
-    @Override
-    public final RealList<? extends RealDevice<?>> getDevices() {
+    public final RealList<RealDevice<?>> getDevices() {
         return devices;
     }
 
+    @Override
     public RealCommand getAddDeviceCommand() {
         return addDeviceCommand;
+    }
+
+    @Override
+    public <DRIVER extends DeviceDriver> RealDevice<DRIVER> createAndAddDevice(DeviceData data) {
+        RealDevice<?> device = deviceFactory.create(data, this);
+        addDevice(device);
+        return (RealDevice<DRIVER>) device;
     }
 
     @Override
@@ -278,66 +288,63 @@ public class RealRootImpl
     }
 
     @Override
-    public void removeDevice(String id) {
-        devices.remove(id);
+    public final void removeDevice(RealDevice realDevice) {
+        devices.remove(realDevice.getId());
     }
 
     @Override
-    public final void deviceRemoved(RealDevice realDevice) {
-        removeDevice(realDevice.getId());
-    }
-
-    @Override
-    public RealList<? extends RealAutomation> getAutomations() {
+    public RealList<RealAutomation> getAutomations() {
         return automations;
     }
 
+    @Override
     public RealCommand getAddAutomationCommand() {
         return addAutomationCommand;
     }
 
     @Override
     public final void addAutomation(RealAutomation automation) {
-        automations.add((RealAutomationImpl) automation);
+        automations.add(automation);
     }
 
     @Override
-    public void removeAutomation(String id) {
-        automations.remove(id);
+    public final void removeAutomation(RealAutomation realAutomation) {
+        automations.remove(realAutomation.getId());
     }
 
     @Override
-    public final void automationRemoved(RealAutomation realAutomation) {
-        removeAutomation(realAutomation.getId());
-    }
-
-    @Override
-    public RealList<? extends RealApplication> getApplications() {
+    public RealList<RealApplication> getApplications() {
         return applications;
     }
 
     @Override
-    public RealList<? extends RealUser> getUsers() {
+    public void addApplication(RealApplication application) {
+        applications.add(application);
+    }
+
+    @Override
+    public void removeApplication(RealApplication application) {
+        applications.remove(application.getId());
+    }
+
+    @Override
+    public RealList<RealUser> getUsers() {
         return users;
     }
 
+    @Override
     public RealCommand getAddUserCommand() {
         return addUserCommand;
     }
 
     @Override
     public final void addUser(RealUser user) {
-        users.add((RealUserImpl) user);
+        users.add(user);
     }
 
     @Override
-    public void removeUser(String id) {
-        users.remove(id);
-    }
-
-    @Override
-    public final void userRemoved(RealUser realUser) {
-        removeUser(realUser.getId());
+    public void removeUser(RealUser user) {
+        users.remove(user.getId());
     }
 
     @Override
@@ -392,6 +399,7 @@ public class RealRootImpl
             objectRemoved(path + PATH_SEPARATOR + child.getId(), child);
     }
 
+    @Override
     public final ListenerRegistration addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener) {
         String path = Joiner.on(PATH_SEPARATOR).join(ancestorPath);
         Listeners<ObjectLifecycleListener> listeners = objectLifecycleListeners.get(path);
@@ -401,6 +409,4 @@ public class RealRootImpl
         }
         return listeners.addListener(listener);
     }
-
-    public interface Listener extends Root.Listener<RealRootImpl>, RequiresAccess.Listener<RealRootImpl> {}
 }

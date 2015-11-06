@@ -13,7 +13,6 @@ import com.intuso.housemate.client.real.impl.internal.type.StringType;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.payload.HardwareData;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
-import com.intuso.housemate.comms.api.internal.payload.PropertyData;
 import com.intuso.housemate.comms.api.internal.payload.StringPayload;
 import com.intuso.housemate.object.api.internal.Hardware;
 import com.intuso.housemate.object.api.internal.Property;
@@ -40,9 +39,9 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
     private final RealValueImpl<String> errorValue;
     private final RealPropertyImpl<PluginResource<HardwareDriver.Factory<DRIVER>>> driverProperty;
     private final RealValueImpl<Boolean> driverLoadedValue;
-    private final RealListImpl<PropertyData, RealPropertyImpl<?>> properties;
+    private final RealList<RealProperty<?>> properties;
 
-    private final RemovedListener removedListener;
+    private final RemoveCallback removeCallback;
 
     private DRIVER driver;
 
@@ -57,10 +56,10 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
                             AnnotationProcessor annotationProcessor,
                             HardwareFactoryType driverFactoryType,
                             @Assisted HardwareData data,
-                            @Assisted RemovedListener removedListener) {
+                            @Assisted RemoveCallback removeCallback) {
         super(log, listenersFactory, data);
         this.annotationProcessor = annotationProcessor;
-        this.removedListener = removedListener;
+        this.removeCallback = removeCallback;
         this.renameCommand = new RealCommandImpl(log, listenersFactory, HardwareData.RENAME_ID, HardwareData.RENAME_ID, "Rename the hardware", Lists.<RealParameterImpl<?>>newArrayList(StringType.createParameter(log, listenersFactory, HardwareData.NAME_ID, HardwareData.NAME_ID, "The new name"))) {
             @Override
             public void perform(TypeInstanceMap values) {
@@ -105,7 +104,7 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
         this.errorValue = StringType.createValue(log, listenersFactory, HardwareData.ERROR_ID, HardwareData.ERROR_ID, "Current error for the hardware", null);
         this.driverProperty = (RealPropertyImpl<PluginResource<HardwareDriver.Factory<DRIVER>>>) new RealPropertyImpl(log, listenersFactory, "driver", "Driver", "The hardware's driver", driverFactoryType);
         this.driverLoadedValue = BooleanType.createValue(log, listenersFactory, HardwareData.DRIVER_LOADED_ID, HardwareData.DRIVER_LOADED_ID, "Whether the hardware's driver is loaded or not", false);
-        this.properties = new RealListImpl<>(log, listenersFactory, HardwareData.PROPERTIES_ID, HardwareData.PROPERTIES_ID, PROPERTIES_DESCRIPTION);
+        this.properties = (RealList)new RealListImpl<>(log, listenersFactory, HardwareData.PROPERTIES_ID, HardwareData.PROPERTIES_ID, PROPERTIES_DESCRIPTION);
         addChild(renameCommand);
         addChild(removeCommand);
         addChild(runningValue);
@@ -114,7 +113,7 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
         addChild(errorValue);
         addChild(driverProperty);
         addChild(driverLoadedValue);
-        addChild(properties);
+        addChild((RealListImpl)properties);
         driverProperty.addObjectListener(new Property.Listener<RealProperty<PluginResource<HardwareDriver.Factory<DRIVER>>>>() {
             @Override
             public void valueChanging(RealProperty<PluginResource<HardwareDriver.Factory<DRIVER>>> factoryRealProperty) {
@@ -148,7 +147,7 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
             driverLoadedValue.setTypedValues(false);
             errorValue.setTypedValues("Driver not loaded");
             driver = null;
-            for (RealProperty<?> property : Lists.newArrayList(properties.getChildren()))
+            for (RealProperty<?> property : Lists.newArrayList(properties))
                 properties.remove(property.getId());
         }
     }
@@ -206,11 +205,11 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
     }
 
     protected final void remove() {
-        removedListener.hardwareRemoved(this);
+        removeCallback.removeHardware(this);
     }
 
     @Override
-    public final RealList<? extends RealProperty<?>> getProperties() {
+    public final RealList<RealProperty<?>> getProperties() {
         return properties;
     }
 

@@ -30,12 +30,12 @@ public class RealUserImpl
     public RealUserImpl(final Log log,
                         ListenersFactory listenersFactory,
                         @Assisted UserData data,
-                        @Assisted final RemovedListener removedListener) {
+                        @Assisted final RemoveCallback removeCallback) {
         super(log, listenersFactory, data);
         this.remove = new RealCommandImpl(log, listenersFactory, UserData.REMOVE_ID, UserData.REMOVE_ID, "Remove the user", Lists.<RealParameterImpl<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
-                removedListener.userRemoved(RealUserImpl.this);
+                removeCallback.removeUser(RealUserImpl.this);
             }
         };
         this.emailProperty = new RealPropertyImpl<>(log, listenersFactory, UserData.EMAIL_ID, UserData.EMAIL_ID, "The user's email address", new EmailType(log, listenersFactory), (Email)null);

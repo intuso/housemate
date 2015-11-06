@@ -11,7 +11,6 @@ import com.intuso.housemate.client.real.impl.internal.factory.task.TaskFactoryTy
 import com.intuso.housemate.client.real.impl.internal.type.BooleanType;
 import com.intuso.housemate.client.real.impl.internal.type.StringType;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
-import com.intuso.housemate.comms.api.internal.payload.PropertyData;
 import com.intuso.housemate.comms.api.internal.payload.TaskData;
 import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.housemate.object.api.internal.Task;
@@ -34,7 +33,7 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
     private final RealPropertyImpl<PluginResource<TaskDriver.Factory<DRIVER>>> driverProperty;
     private RealValueImpl<Boolean> driverLoadedValue;
     private RealValueImpl<Boolean> executingValue;
-    private RealListImpl<PropertyData, RealPropertyImpl<?>> properties;
+    private RealList<RealProperty<?>> properties;
 
     private final AnnotationProcessor annotationProcessor;
 
@@ -50,26 +49,26 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
                         AnnotationProcessor annotationProcessor,
                         TaskFactoryType driverFactoryType,
                         @Assisted TaskData data,
-                        @Assisted final RemovedListener removedListener) {
+                        @Assisted final RemoveCallback removeCallback) {
         super(log, listenersFactory, data);
         this.annotationProcessor = annotationProcessor;
         removeCommand = new RealCommandImpl(log, listenersFactory, TaskData.REMOVE_ID, TaskData.REMOVE_ID, "Remove the task", Lists.<RealParameterImpl<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
-                removedListener.taskRemoved(RealTaskImpl.this);
+                removeCallback.removeTask(RealTaskImpl.this);
             }
         };
         errorValue = new RealValueImpl<>(log, listenersFactory, TaskData.ERROR_ID, TaskData.ERROR_ID, "The current error", new StringType(log, listenersFactory), (List)null);
         driverProperty = (RealPropertyImpl<PluginResource<TaskDriver.Factory<DRIVER>>>) new RealPropertyImpl(log, listenersFactory, "driver", "Driver", "The task's driver", driverFactoryType);
         driverLoadedValue = BooleanType.createValue(log, listenersFactory, TaskData.DRIVER_LOADED_ID, TaskData.DRIVER_LOADED_ID, "Whether the task's driver is loaded or not", false);
         executingValue = new RealValueImpl<>(log, listenersFactory, TaskData.EXECUTING_ID, TaskData.EXECUTING_ID, "Whether the task is executing", new BooleanType(log, listenersFactory), false);
-        properties = new RealListImpl<>(log, listenersFactory, TaskData.PROPERTIES_ID, TaskData.PROPERTIES_ID, "The task's properties");
+        properties = (RealList)new RealListImpl<>(log, listenersFactory, TaskData.PROPERTIES_ID, TaskData.PROPERTIES_ID, "The task's properties");
         addChild(removeCommand);
         addChild(errorValue);
         addChild(driverProperty);
         addChild(driverLoadedValue);
         addChild(executingValue);
-        addChild(properties);
+        addChild((RealListImpl)properties);
         driverProperty.addObjectListener(new Property.Listener<RealProperty<PluginResource<TaskDriver.Factory<DRIVER>>>>() {
             @Override
             public void valueChanging(RealProperty<PluginResource<TaskDriver.Factory<DRIVER>>> factoryRealProperty) {
@@ -116,7 +115,7 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
     }
 
     @Override
-    public RealList<? extends RealProperty<?>> getProperties() {
+    public RealList<RealProperty<?>> getProperties() {
         return properties;
     }
 

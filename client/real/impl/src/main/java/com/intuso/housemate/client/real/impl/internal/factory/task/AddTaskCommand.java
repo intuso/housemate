@@ -32,7 +32,7 @@ public class AddTaskCommand extends RealCommandImpl {
     private final TaskFactoryType taskFactoryType;
     private final Callback callback;
     private final RealTask.Factory taskFactory;
-    private final RealTask.RemovedListener removedListener;
+    private final RealTask.RemoveCallback removeCallback;
 
     @Inject
     protected AddTaskCommand(Log log,
@@ -44,7 +44,7 @@ public class AddTaskCommand extends RealCommandImpl {
                              @Assisted("name") String name,
                              @Assisted("description") String description,
                              @Assisted Callback callback,
-                             @Assisted RealTask.RemovedListener removedListener) {
+                             @Assisted RealTask.RemoveCallback removeCallback) {
         super(log, listenersFactory, id, name, description,
                 new RealParameterImpl<>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
                 new RealParameterImpl<>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
@@ -52,7 +52,7 @@ public class AddTaskCommand extends RealCommandImpl {
         this.taskFactoryType = taskFactoryType;
         this.callback = callback;
         this.taskFactory = taskFactory;
-        this.removedListener = removedListener;
+        this.removeCallback = removeCallback;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AddTaskCommand extends RealCommandImpl {
         TypeInstances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateCommsException("No description specified");
-        RealTask<?> task = taskFactory.create(new TaskData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removedListener);
+        RealTask<?> task = taskFactory.create(new TaskData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
         callback.addTask(task);
         TypeInstances taskType = values.getChildren().get(TYPE_PARAMETER_ID);
         if(taskType != null && taskType.getFirstValue() != null)
@@ -79,6 +79,6 @@ public class AddTaskCommand extends RealCommandImpl {
                               @Assisted("name") String name,
                               @Assisted("description") String description,
                               Callback callback,
-                              RealTask.RemovedListener removedListener);
+                              RealTask.RemoveCallback removeCallback);
     }
 }

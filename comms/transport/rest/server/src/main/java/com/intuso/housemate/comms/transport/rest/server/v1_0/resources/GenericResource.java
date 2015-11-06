@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 @Consumes(MediaType.APPLICATION_JSON)
 public class GenericResource {
 
-    private final Router router;
+    private final Router<?> router;
 
     @Inject
     public GenericResource(Router<?> router) {

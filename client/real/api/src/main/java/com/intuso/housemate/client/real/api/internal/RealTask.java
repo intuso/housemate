@@ -12,7 +12,7 @@ public interface RealTask<DRIVER extends TaskDriver>
                 RealValue<String>,
                 RealProperty<PluginResource<TaskDriver.Factory<DRIVER>>>,
                 RealValue<Boolean>,
-                RealList<? extends RealProperty<?>>, RealTask<DRIVER>>,TaskDriver.Callback {
+                RealList<RealProperty<?>>, RealTask<DRIVER>>,TaskDriver.Callback {
 
     DRIVER getDriver();
 
@@ -25,11 +25,15 @@ public interface RealTask<DRIVER extends TaskDriver>
      */
     void executeTask();
 
-    interface RemovedListener {
-        void taskRemoved(RealTask task);
+    interface Container extends Task.Container<RealList<RealTask<?>>>, RemoveCallback {
+        void addTask(RealTask<?> task);
+    }
+
+    interface RemoveCallback {
+        void removeTask(RealTask<?> task);
     }
 
     interface Factory {
-        RealTask<?> create(TaskData data, RemovedListener removedListener);
+        RealTask<?> create(TaskData data, RemoveCallback removeCallback);
     }
 }

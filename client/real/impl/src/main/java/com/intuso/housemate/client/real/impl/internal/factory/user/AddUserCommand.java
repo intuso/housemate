@@ -27,7 +27,7 @@ public class AddUserCommand extends RealCommandImpl {
 
     private final Callback callback;
     private final RealUser.Factory userFactory;
-    private final RealUser.RemovedListener removedListener;
+    private final RealUser.RemoveCallback removeCallback;
 
     @Inject
     protected AddUserCommand(Log log,
@@ -38,13 +38,13 @@ public class AddUserCommand extends RealCommandImpl {
                              @Assisted("name") String name,
                              @Assisted("description") String description,
                              @Assisted Callback callback,
-                             @Assisted RealUser.RemovedListener removedListener) {
+                             @Assisted RealUser.RemoveCallback removeCallback) {
         super(log, listenersFactory, id, name, description,
                 new RealParameterImpl<>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
                 new RealParameterImpl<>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType));
         this.callback = callback;
         this.userFactory = userFactory;
-        this.removedListener = removedListener;
+        this.removeCallback = removeCallback;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class AddUserCommand extends RealCommandImpl {
         TypeInstances name = values.getChildren().get(NAME_PARAMETER_ID);
         if(name == null || name.getFirstValue() == null)
             throw new HousemateCommsException("No name specified");
-        callback.addUser(userFactory.create(new UserData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removedListener));
+        callback.addUser(userFactory.create(new UserData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback));
     }
 
     public interface Callback {
@@ -67,6 +67,6 @@ public class AddUserCommand extends RealCommandImpl {
                               @Assisted("name") String name,
                               @Assisted("description") String description,
                               Callback callback,
-                              RealUser.RemovedListener removedListener);
+                              RealUser.RemoveCallback removeCallback);
     }
 }

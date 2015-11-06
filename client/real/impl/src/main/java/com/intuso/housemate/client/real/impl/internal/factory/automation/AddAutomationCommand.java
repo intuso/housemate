@@ -27,7 +27,7 @@ public class AddAutomationCommand extends RealCommandImpl {
     
     private final Callback callback;
     private final RealAutomation.Factory automationFactory;
-    private final RealAutomation.RemovedListener removedListener;
+    private final RealAutomation.RemoveCallback removeCallback;
 
     @Inject
     protected AddAutomationCommand(Log log,
@@ -38,13 +38,13 @@ public class AddAutomationCommand extends RealCommandImpl {
                                    @Assisted("name") String name,
                                    @Assisted("description") String description,
                                    @Assisted Callback callback,
-                                   @Assisted RealAutomation.RemovedListener removedListener) {
+                                   @Assisted RealAutomation.RemoveCallback removeCallback) {
         super(log, listenersFactory, id, name, description,
                 new RealParameterImpl<>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
                 new RealParameterImpl<>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType));
         this.callback = callback;
         this.automationFactory = automationFactory;
-        this.removedListener = removedListener;
+        this.removeCallback = removeCallback;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class AddAutomationCommand extends RealCommandImpl {
         TypeInstances name = values.getChildren().get(NAME_PARAMETER_ID);
         if(name == null || name.getFirstValue() == null)
             throw new HousemateCommsException("No name specified");
-        callback.addAutomation(automationFactory.create(new AutomationData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removedListener));
+        callback.addAutomation(automationFactory.create(new AutomationData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback));
     }
 
     public interface Callback {
@@ -67,6 +67,6 @@ public class AddAutomationCommand extends RealCommandImpl {
                                     @Assisted("name") String name,
                                     @Assisted("description") String description,
                                     Callback callback,
-                                    RealAutomation.RemovedListener removedListener);
+                                    RealAutomation.RemoveCallback removeCallback);
     }
 }

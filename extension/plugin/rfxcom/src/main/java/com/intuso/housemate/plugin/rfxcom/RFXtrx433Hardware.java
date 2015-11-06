@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.RealCommand;
 import com.intuso.housemate.client.v1_0.real.api.RealDevice;
-import com.intuso.housemate.client.v1_0.real.api.RealRoot;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.driver.HardwareDriver;
 import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
@@ -47,9 +46,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
     private final Log log;
     private final RFXtrx rfxtrx;
 
-    private final RealDevice.Factory deviceFactory;
-    private final RealRoot realRoot;
-    private final RealDevice.RemovedListener deviceRemovedListener;
+    private final RealDevice.Container deviceContainer;
 
     // lighting1 arc stuff
     private final Lighting1 lighting1ARC;
@@ -104,15 +101,11 @@ public class RFXtrx433Hardware implements HardwareDriver {
 
     @Inject
     public RFXtrx433Hardware(Log log,
-                             RealDevice.Factory deviceFactory,
-                             RealRoot realRoot,
-                             RealDevice.RemovedListener deviceRemovedListener,
+                             RealDevice.Container deviceContainer,
                              @Assisted Callback callback) {
 
-        this.realRoot = realRoot;
         this.log = log;
-        this.deviceFactory = deviceFactory;
-        this.deviceRemovedListener = deviceRemovedListener;
+        this.deviceContainer = deviceContainer;
 
         INSTANCE = this;
 
@@ -215,7 +208,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
         if(!knownLighting1ARC.containsEntry(houseId, unitCode)) {
             try {
                 String name = "Lighting1 ARC " + houseId + "/" + (int)unitCode;
-                final RealDevice<Lighting1ARCAppliance> device = (RealDevice<Lighting1ARCAppliance>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), deviceRemovedListener);
+                final RealDevice<Lighting1ARCAppliance> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
                 device.getDriverProperty().set(new TypeInstances(new TypeInstance(Lighting1ARCAppliance.class.getName())), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
@@ -223,11 +216,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Lighting1ARCAppliance appliance = device.getDriver();
                             appliance.setHouseId(houseId);
                             appliance.setUnitCode(unitCode);
-                            if(on)
-                                appliance.setOn(true);
-                            else
-                                appliance.setOn(false);
-                            realRoot.addDevice(device);
+                            appliance.setOn(on);
                         }
                     }
 
@@ -256,7 +245,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
         if(!knownLighting2AC.containsEntry(houseId, unitCode)) {
             try {
                 String name = "Lighting2 AC " + houseId + "/" + (int)unitCode;
-                final RealDevice<Lighting2ACAppliance> device = (RealDevice<Lighting2ACAppliance>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), deviceRemovedListener);
+                final RealDevice<Lighting2ACAppliance> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
                 device.getDriverProperty().set(new TypeInstances(new TypeInstance(Lighting2ACAppliance.class.getName())), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
@@ -264,11 +253,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Lighting2ACAppliance appliance = device.getDriver();
                             appliance.setHouseId(houseId);
                             appliance.setUnitCode(unitCode);
-                            if (on)
-                                appliance.setOn(true);
-                            else
-                                appliance.setOn(false);
-                            realRoot.addDevice(device);
+                            appliance.setOn(on);
                         }
                     }
 
@@ -297,7 +282,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
         if(!knownLighting2HomeEasyEU.containsEntry(houseId, unitCode)) {
             try {
                 String name = "Lighting2 HomeEasy EU " + houseId + "/" + (int)unitCode;
-                final RealDevice<Lighting2HomeEasyEUAppliance> device = (RealDevice<Lighting2HomeEasyEUAppliance>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), deviceRemovedListener);
+                final RealDevice<Lighting2HomeEasyEUAppliance> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
                 device.getDriverProperty().set(new TypeInstances(new TypeInstance(Lighting2HomeEasyEUAppliance.class.getName())), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
@@ -305,11 +290,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Lighting2HomeEasyEUAppliance appliance = device.getDriver();
                             appliance.setHouseId(houseId);
                             appliance.setUnitCode(unitCode);
-                            if (on)
-                                appliance.setOn(true);
-                            else
-                                appliance.setOn(false);
-                            realRoot.addDevice(device);
+                            appliance.setOn(on);
                         }
                     }
 
@@ -338,7 +319,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
         if(!knownTemperature1.contains(sensorId)) {
             try {
                 String name = "Temperature 1 " + sensorId;
-                final RealDevice<Temperature1Sensor> device = (RealDevice<Temperature1Sensor>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), deviceRemovedListener);
+                final RealDevice<Temperature1Sensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
                 device.getDriverProperty().set(new TypeInstances(new TypeInstance(Temperature1Sensor.class.getName())), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
@@ -346,7 +327,6 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Temperature1Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
                             sensor.deviceValues.setTemperature(temperature);
-                            realRoot.addDevice(device);
                         }
                     }
 
@@ -375,7 +355,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
         if(!knownTemperature2.contains(sensorId)) {
             try {
                 String name = "Temperature 2 " + sensorId;
-                final RealDevice<Temperature2Sensor> device = (RealDevice<Temperature2Sensor>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), deviceRemovedListener);
+                final RealDevice<Temperature2Sensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
                 device.getDriverProperty().set(new TypeInstances(new TypeInstance(Temperature2Sensor.class.getName())), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
@@ -383,7 +363,6 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Temperature2Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
                             sensor.deviceValues.setTemperature(temperature);
-                            realRoot.addDevice(device);
                         }
                     }
 
@@ -412,7 +391,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
         if(!knownTemperature3.contains(sensorId)) {
             try {
                 String name = "Temperature 3 " + sensorId;
-                final RealDevice<Temperature3Sensor> device = (RealDevice<Temperature3Sensor>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), deviceRemovedListener);
+                final RealDevice<Temperature3Sensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
                 device.getDriverProperty().set(new TypeInstances(new TypeInstance(Temperature3Sensor.class.getName())), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
@@ -420,7 +399,6 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Temperature3Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
                             sensor.deviceValues.setTemperature(temperature);
-                            realRoot.addDevice(device);
                         }
                     }
 
@@ -449,7 +427,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
         if(!knownTemperature4.contains(sensorId)) {
             try {
                 String name = "Temperature 4 " + sensorId;
-                final RealDevice<Temperature4Sensor> device = (RealDevice<Temperature4Sensor>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), deviceRemovedListener);
+                final RealDevice<Temperature4Sensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
                 device.getDriverProperty().set(new TypeInstances(new TypeInstance(Temperature4Sensor.class.getName())), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
@@ -457,7 +435,6 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Temperature4Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
                             sensor.deviceValues.setTemperature(temperature);
-                            realRoot.addDevice(device);
                         }
                     }
 
@@ -486,7 +463,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
         if(!knownTemperature5.contains(sensorId)) {
             try {
                 String name = "Temperature 5 " + sensorId;
-                final RealDevice<Temperature5Sensor> device = (RealDevice<Temperature5Sensor>) deviceFactory.create(new DeviceData(UUID.randomUUID().toString(), name, name), deviceRemovedListener);
+                final RealDevice<Temperature5Sensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
                 device.getDriverProperty().set(new TypeInstances(new TypeInstance(Temperature5Sensor.class.getName())), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
@@ -494,7 +471,6 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Temperature5Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
                             sensor.deviceValues.setTemperature(temperature);
-                            realRoot.addDevice(device);
                         }
                     }
 

@@ -32,7 +32,7 @@ public class AddConditionCommand extends RealCommandImpl {
     private final Callback callback;
     private final ConditionFactoryType conditionFactoryType;
     private final RealCondition.Factory conditionFactory;
-    private final RealCondition.RemovedListener removedListener;
+    private final RealCondition.RemoveCallback removeCallback;
 
     @Inject
     protected AddConditionCommand(Log log,
@@ -44,7 +44,7 @@ public class AddConditionCommand extends RealCommandImpl {
                                   @Assisted("name") String name,
                                   @Assisted("description") String description,
                                   @Assisted Callback callback,
-                                  @Assisted RealCondition.RemovedListener removedListener) {
+                                  @Assisted RealCondition.RemoveCallback removeCallback) {
         super(log, listenersFactory, id, name, description,
                 new RealParameterImpl<>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
                 new RealParameterImpl<>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
@@ -52,7 +52,7 @@ public class AddConditionCommand extends RealCommandImpl {
         this.callback = callback;
         this.conditionFactoryType = conditionFactoryType;
         this.conditionFactory = conditionFactory;
-        this.removedListener = removedListener;
+        this.removeCallback = removeCallback;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AddConditionCommand extends RealCommandImpl {
         TypeInstances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateCommsException("No description specified");
-        RealCondition<?> condition = conditionFactory.create(new ConditionData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removedListener);
+        RealCondition<?> condition = conditionFactory.create(new ConditionData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
         callback.addCondition(condition);
         TypeInstances conditionType = values.getChildren().get(TYPE_PARAMETER_ID);
         if(conditionType != null && conditionType.getFirstValue() != null)
@@ -79,6 +79,6 @@ public class AddConditionCommand extends RealCommandImpl {
                                    @Assisted("name") String name,
                                    @Assisted("description") String description,
                                    Callback callback,
-                                   RealCondition.RemovedListener removedListener);
+                                   RealCondition.RemoveCallback removeCallback);
     }
 }

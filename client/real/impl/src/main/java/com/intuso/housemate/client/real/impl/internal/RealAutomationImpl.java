@@ -9,7 +9,9 @@ import com.intuso.housemate.client.real.impl.internal.factory.task.AddTaskComman
 import com.intuso.housemate.client.real.impl.internal.type.BooleanType;
 import com.intuso.housemate.client.real.impl.internal.type.StringType;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
-import com.intuso.housemate.comms.api.internal.payload.*;
+import com.intuso.housemate.comms.api.internal.payload.AutomationData;
+import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.api.internal.payload.StringPayload;
 import com.intuso.housemate.object.api.internal.Automation;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -20,10 +22,10 @@ public class RealAutomationImpl
         extends RealObject<
         AutomationData,
         HousemateData<?>,
-            RealObject<?, ?, ?, ?>,
-            Automation.Listener<? super RealAutomation>>
+        RealObject<?, ?, ?, ?>,
+        Automation.Listener<? super RealAutomation>>
         implements RealAutomation,
-            AddConditionCommand.Callback {
+        AddConditionCommand.Callback {
 
     private final RealCommandImpl rename;
     private final RealCommandImpl remove;
@@ -31,14 +33,14 @@ public class RealAutomationImpl
     private final RealCommandImpl start;
     private final RealCommandImpl stop;
     private final RealValueImpl<String> error;
-    private final RealListImpl<ConditionData, RealConditionImpl<?>> conditions;
-    private final RealListImpl<TaskData, RealTaskImpl<?>> satisfiedTasks;
-    private final RealListImpl<TaskData, RealTaskImpl<?>> unsatisfiedTasks;
+    private final RealList<RealCondition<?>> conditions;
+    private final RealList<RealTask<?>> satisfiedTasks;
+    private final RealList<RealTask<?>> unsatisfiedTasks;
     private final RealCommandImpl addConditionCommand;
     private final RealCommandImpl addSatisfiedTaskCommand;
     private final RealCommandImpl addUnsatisfiedTaskCommand;
 
-    private final RemovedListener removedListener;
+    private final RemoveCallback removeCallback;
 
     private final AddTaskCommand.Callback addSatisfiedTaskCallback = new AddTaskCommand.Callback() {
 
@@ -48,10 +50,10 @@ public class RealAutomationImpl
         }
     };
 
-    private final RealTask.RemovedListener satisfiedTaskRemovedListener = new RealTask.RemovedListener() {
+    private final RealTask.RemoveCallback satisfiedTaskRemoveCallback = new RealTask.RemoveCallback() {
 
         @Override
-        public void taskRemoved(RealTask task) {
+        public void removeTask(RealTask task) {
             satisfiedTasks.remove(task.getId());
         }
     };
@@ -64,10 +66,10 @@ public class RealAutomationImpl
         }
     };
 
-    private final RealTask.RemovedListener unsatisfiedTaskRemovedListener = new RealTask.RemovedListener() {
+    private final RealTask.RemoveCallback unsatisfiedTaskRemoveCallback = new RealTask.RemoveCallback() {
 
         @Override
-        public void taskRemoved(RealTask task) {
+        public void removeTask(RealTask task) {
             unsatisfiedTasks.remove(task.getId());
         }
     };
@@ -80,9 +82,9 @@ public class RealAutomationImpl
                               AddConditionCommand.Factory addConditionCommandFactory,
                               AddTaskCommand.Factory addTaskCommandFactory,
                               @Assisted AutomationData data,
-                              @Assisted RemovedListener removedListener) {
+                              @Assisted RemoveCallback removeCallback) {
         super(log, listenersFactory, data);
-        this.removedListener = removedListener;
+        this.removeCallback = removeCallback;
         this.rename = new RealCommandImpl(log, listenersFactory, AutomationData.RENAME_ID, AutomationData.RENAME_ID, "Rename the automation", Lists.<RealParameterImpl<?>>newArrayList(StringType.createParameter(log, listenersFactory, AutomationData.NAME_ID, AutomationData.NAME_ID, "The new name"))) {
             @Override
             public void perform(TypeInstanceMap values) {
@@ -125,21 +127,21 @@ public class RealAutomationImpl
             }
         };
         this.error = StringType.createValue(log, listenersFactory, AutomationData.ERROR_ID, AutomationData.ERROR_ID, "Current error for the automation", null);
-        this.conditions = new RealListImpl<>(log, listenersFactory, AutomationData.CONDITIONS_ID, AutomationData.CONDITIONS_ID, "The automation's conditions");
-        this.satisfiedTasks = new RealListImpl<>(log, listenersFactory, AutomationData.SATISFIED_TASKS_ID, AutomationData.SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
-        this.unsatisfiedTasks = new RealListImpl<>(log, listenersFactory, AutomationData.UNSATISFIED_TASKS_ID, AutomationData.UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.conditions = (RealList)new RealListImpl<>(log, listenersFactory, AutomationData.CONDITIONS_ID, AutomationData.CONDITIONS_ID, "The automation's conditions");
+        this.satisfiedTasks = (RealList)new RealListImpl<>(log, listenersFactory, AutomationData.SATISFIED_TASKS_ID, AutomationData.SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.unsatisfiedTasks = (RealList)new RealListImpl<>(log, listenersFactory, AutomationData.UNSATISFIED_TASKS_ID, AutomationData.UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         addConditionCommand = addConditionCommandFactory.create(AutomationData.ADD_CONDITION_ID, AutomationData.ADD_CONDITION_ID, "Add condition", this, this);
-        addSatisfiedTaskCommand = addTaskCommandFactory.create(AutomationData.ADD_SATISFIED_TASK_ID, AutomationData.ADD_SATISFIED_TASK_ID, "Add satisfied task", addSatisfiedTaskCallback, satisfiedTaskRemovedListener);
-        addUnsatisfiedTaskCommand = addTaskCommandFactory.create(AutomationData.ADD_UNSATISFIED_TASK_ID, AutomationData.ADD_UNSATISFIED_TASK_ID, "Add unsatisfied task", addUnsatisfiedTaskCallback, unsatisfiedTaskRemovedListener);
+        addSatisfiedTaskCommand = addTaskCommandFactory.create(AutomationData.ADD_SATISFIED_TASK_ID, AutomationData.ADD_SATISFIED_TASK_ID, "Add satisfied task", addSatisfiedTaskCallback, satisfiedTaskRemoveCallback);
+        addUnsatisfiedTaskCommand = addTaskCommandFactory.create(AutomationData.ADD_UNSATISFIED_TASK_ID, AutomationData.ADD_UNSATISFIED_TASK_ID, "Add unsatisfied task", addUnsatisfiedTaskCallback, unsatisfiedTaskRemoveCallback);
         addChild(this.rename);
         addChild(this.remove);
         addChild(this.running);
         addChild(this.start);
         addChild(this.stop);
         addChild(this.error);
-        addChild(conditions);
-        addChild(satisfiedTasks);
-        addChild(unsatisfiedTasks);
+        addChild((RealListImpl)conditions);
+        addChild((RealListImpl)satisfiedTasks);
+        addChild((RealListImpl)unsatisfiedTasks);
         addChild(addConditionCommand);
         addChild(addSatisfiedTaskCommand);
         addChild(addUnsatisfiedTaskCommand);
@@ -180,16 +182,16 @@ public class RealAutomationImpl
     }
 
     private void remove() {
-        removedListener.automationRemoved(this);
+        removeCallback.removeAutomation(this);
     }
 
     @Override
-    public RealList<? extends RealTask<?>> getSatisfiedTasks() {
+    public RealList<RealTask<?>> getSatisfiedTasks() {
         return satisfiedTasks;
     }
 
     @Override
-    public RealList<? extends RealTask<?>> getUnsatisfiedTasks() {
+    public RealList<RealTask<?>> getUnsatisfiedTasks() {
         return unsatisfiedTasks;
     }
 
@@ -206,11 +208,6 @@ public class RealAutomationImpl
     @Override
     public RealCommand getAddUnsatisifedTaskCommand() {
         return addUnsatisfiedTaskCommand;
-    }
-
-    @Override
-    public RealList<? extends RealCondition<?>> getConditions() {
-        return conditions;
     }
 
     @Override
@@ -236,12 +233,17 @@ public class RealAutomationImpl
     }
 
     @Override
+    public RealList<RealCondition<?>> getConditions() {
+        return conditions;
+    }
+
+    @Override
     public void addCondition(RealCondition condition) {
         conditions.add((RealConditionImpl<?>) condition);
     }
 
     @Override
-    public void conditionRemoved(RealCondition condition) {
+    public void removeCondition(RealCondition condition) {
         conditions.remove(condition.getId());
     }
 
