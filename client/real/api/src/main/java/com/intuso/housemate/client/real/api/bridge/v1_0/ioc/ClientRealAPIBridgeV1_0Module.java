@@ -17,8 +17,12 @@ public class ClientRealAPIBridgeV1_0Module extends AbstractModule {
         bind(RealDevice.Container.class).to(RealDeviceBridgeReverse.Container.class);
 
         // setup assisted inject factories
+        install(new FactoryModuleBuilder().build(ConditionDriverFactoryBridge.Factory.class));
+        install(new FactoryModuleBuilder().build(ConditionDriverFactoryBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(DeviceDriverFactoryBridge.Factory.class));
         install(new FactoryModuleBuilder().build(DeviceDriverFactoryBridgeReverse.Factory.class));
+        install(new FactoryModuleBuilder().build(HardwareDriverFactoryBridge.Factory.class));
+        install(new FactoryModuleBuilder().build(HardwareDriverFactoryBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(RealCommandBridge.Factory.class));
         install(new FactoryModuleBuilder().build(RealCommandBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(RealDeviceBridge.Factory.class));
@@ -29,5 +33,7 @@ public class ClientRealAPIBridgeV1_0Module extends AbstractModule {
         install(new FactoryModuleBuilder().build(RealTypeBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(RealValueBridge.Factory.class));
         install(new FactoryModuleBuilder().build(RealValueBridgeReverse.Factory.class));
+        install(new FactoryModuleBuilder().build(TaskDriverFactoryBridge.Factory.class));
+        install(new FactoryModuleBuilder().build(TaskDriverFactoryBridgeReverse.Factory.class));
     }
 }

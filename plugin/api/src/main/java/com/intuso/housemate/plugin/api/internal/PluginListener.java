@@ -6,6 +6,6 @@ import com.intuso.utilities.listener.Listener;
 /**
  */
 public interface PluginListener extends Listener {
-    public void pluginAdded(Injector pluginInjector);
-    public void pluginRemoved(Injector pluginInjector);
+    void pluginAdded(Injector pluginInjector);
+    void pluginRemoved(Injector pluginInjector);
 }
