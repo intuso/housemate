@@ -4,12 +4,14 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.impl.internal.factory.condition.AddConditionCommand;
 import com.intuso.housemate.client.real.impl.internal.factory.task.AddTaskCommand;
 import com.intuso.housemate.client.real.impl.internal.type.BooleanType;
 import com.intuso.housemate.client.real.impl.internal.type.StringType;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.payload.AutomationData;
+import com.intuso.housemate.comms.api.internal.payload.ConditionData;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.StringPayload;
 import com.intuso.housemate.object.api.internal.Automation;
@@ -39,6 +41,8 @@ public class RealAutomationImpl
     private final RealCommandImpl addConditionCommand;
     private final RealCommandImpl addSatisfiedTaskCommand;
     private final RealCommandImpl addUnsatisfiedTaskCommand;
+
+    private final RealCondition.Factory conditionFactory;
 
     private final RemoveCallback removeCallback;
 
@@ -81,9 +85,11 @@ public class RealAutomationImpl
                               ListenersFactory listenersFactory,
                               AddConditionCommand.Factory addConditionCommandFactory,
                               AddTaskCommand.Factory addTaskCommandFactory,
+                              RealCondition.Factory conditionFactory,
                               @Assisted AutomationData data,
                               @Assisted RemoveCallback removeCallback) {
         super(log, listenersFactory, data);
+        this.conditionFactory = conditionFactory;
         this.removeCallback = removeCallback;
         this.rename = new RealCommandImpl(log, listenersFactory, AutomationData.RENAME_ID, AutomationData.RENAME_ID, "Rename the automation", Lists.<RealParameterImpl<?>>newArrayList(StringType.createParameter(log, listenersFactory, AutomationData.NAME_ID, AutomationData.NAME_ID, "The new name"))) {
             @Override
@@ -235,6 +241,13 @@ public class RealAutomationImpl
     @Override
     public RealList<RealCondition<?>> getConditions() {
         return conditions;
+    }
+
+    @Override
+    public <DRIVER extends ConditionDriver> RealCondition<DRIVER> createAndAddCondition(ConditionData data) {
+        RealCondition<?> condition = conditionFactory.create(data, this);
+        addCondition(condition);
+        return (RealCondition<DRIVER>) condition;
     }
 
     @Override

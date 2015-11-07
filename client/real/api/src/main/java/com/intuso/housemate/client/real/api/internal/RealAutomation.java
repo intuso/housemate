@@ -22,6 +22,7 @@ public interface RealAutomation
     boolean isRunning();
 
     interface Container extends Automation.Container<RealList<RealAutomation>>, RemoveCallback {
+        RealAutomation createAndAddAutomation(AutomationData data);
         void addAutomation(RealAutomation automation);
     }
 

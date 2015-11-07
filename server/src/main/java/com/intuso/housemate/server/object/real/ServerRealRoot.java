@@ -1,9 +1,7 @@
 package com.intuso.housemate.server.object.real;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.client.real.api.internal.RealDevice;
-import com.intuso.housemate.client.real.api.internal.RealList;
-import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.client.real.impl.internal.RealRootImpl;
 import com.intuso.housemate.client.real.impl.internal.factory.automation.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.factory.condition.ConditionFactoryType;
@@ -32,15 +30,27 @@ public class ServerRealRoot extends RealRootImpl {
     private boolean initialDataSent = false;
 
     @Inject
-    public ServerRealRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router,
+    public ServerRealRoot(Log log,
+                          ListenersFactory listenersFactory,
+                          PropertyRepository properties,
+                          Router<?> router,
                           RealList<RealType<?>> types,
-                          AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory,
-                          AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory,
-                          ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType,
-                          HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType, RealDevice.Factory deviceFactory) {
+                          AddHardwareCommand.Factory addHardwareCommandFactory,
+                          AddDeviceCommand.Factory addDeviceCommandFactory,
+                          AddAutomationCommand.Factory addAutomationCommandFactory,
+                          AddUserCommand.Factory addUserCommandFactory,
+                          ConditionFactoryType conditionFactoryType,
+                          DeviceFactoryType deviceFactoryType,
+                          HardwareFactoryType hardwareFactoryType,
+                          TaskFactoryType taskFactoryType,
+                          RealAutomation.Factory automationFactory,
+                          RealDevice.Factory deviceFactory,
+                          RealHardware.Factory hardwareFactory,
+                          RealUser.Factory userFactory) {
         super(log, listenersFactory, properties, router, types,
                 addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory,
-                conditionFactoryType, deviceFactoryType, hardwareFactoryType, taskFactoryType, deviceFactory);
+                conditionFactoryType, deviceFactoryType, hardwareFactoryType, taskFactoryType, automationFactory,
+                deviceFactory, hardwareFactory, userFactory);
     }
 
     @Override

@@ -26,6 +26,7 @@ public interface RealTask<DRIVER extends TaskDriver>
     void executeTask();
 
     interface Container extends Task.Container<RealList<RealTask<?>>>, RemoveCallback {
+        <DRIVER extends TaskDriver> RealTask<DRIVER> createAndAddTask(TaskData data);
         void addTask(RealTask<?> task);
     }
 

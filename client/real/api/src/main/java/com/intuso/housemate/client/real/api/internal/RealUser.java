@@ -8,6 +8,7 @@ public interface RealUser
         extends User<RealCommand, RealProperty<Email>, RealUser> {
 
     interface Container extends User.Container<RealList<RealUser>>, RemoveCallback {
+        RealUser createAndAddUser(UserData data);
         void addUser(RealUser user);
     }
 

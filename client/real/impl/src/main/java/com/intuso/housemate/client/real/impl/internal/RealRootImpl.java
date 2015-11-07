@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
+import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.real.impl.internal.factory.automation.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.factory.condition.ConditionFactoryType;
 import com.intuso.housemate.client.real.impl.internal.factory.device.AddDeviceCommand;
@@ -61,8 +62,11 @@ public class RealRootImpl
     private final RealList<RealHardware<?>> hardwares;
     private final RealList<RealType<?>> types;
     private final RealList<RealUser> users;
-    private final RealDevice.Factory deviceFactory;
 
+    private final RealAutomation.Factory automationFactory;
+    private final RealDevice.Factory deviceFactory;
+    private final RealHardware.Factory hardwareFactory;
+    private final RealUser.Factory userFactory;
 
     private final RealCommandImpl addAutomationCommand;
     private final RealCommandImpl addDeviceCommand;
@@ -80,12 +84,23 @@ public class RealRootImpl
     });
 
     @Inject
-    public RealRootImpl(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router,
+    public RealRootImpl(Log log,
+                        ListenersFactory listenersFactory,
+                        PropertyRepository properties,
+                        Router<?> router,
                         RealList<RealType<?>> types,
-                        AddHardwareCommand.Factory addHardwareCommandFactory, AddDeviceCommand.Factory addDeviceCommandFactory,
-                        AddAutomationCommand.Factory addAutomationCommandFactory, AddUserCommand.Factory addUserCommandFactory,
-                        ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType,
-                        HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType, RealDevice.Factory deviceFactory) {
+                        AddHardwareCommand.Factory addHardwareCommandFactory,
+                        AddDeviceCommand.Factory addDeviceCommandFactory,
+                        AddAutomationCommand.Factory addAutomationCommandFactory,
+                        AddUserCommand.Factory addUserCommandFactory,
+                        ConditionFactoryType conditionFactoryType,
+                        DeviceFactoryType deviceFactoryType,
+                        HardwareFactoryType hardwareFactoryType,
+                        TaskFactoryType taskFactoryType,
+                        RealAutomation.Factory automationFactory,
+                        RealDevice.Factory deviceFactory,
+                        RealHardware.Factory hardwareFactory,
+                        RealUser.Factory userFactory) {
         super(log, listenersFactory, new RootData());
 
         this.applications = (RealList)new RealListImpl<>(log, listenersFactory, APPLICATIONS_ID, "Applications", "Applications");
@@ -95,7 +110,10 @@ public class RealRootImpl
         this.types = types;
         this.users = (RealList)new RealListImpl<>(log, listenersFactory, USERS_ID, "Users", "Users");
 
+        this.automationFactory = automationFactory;
         this.deviceFactory = deviceFactory;
+        this.hardwareFactory = hardwareFactory;
+        this.userFactory = userFactory;
 
         this.addAutomationCommand = addAutomationCommandFactory.create(ADD_HARDWARE_ID, ADD_HARDWARE_ID, "Add hardware", this, this);
         this.addDeviceCommand = addDeviceCommandFactory.create(ADD_DEVICE_ID, ADD_DEVICE_ID, "Add a device", this, this);
@@ -256,6 +274,13 @@ public class RealRootImpl
     }
 
     @Override
+    public <DRIVER extends HardwareDriver> RealHardware<DRIVER> createAndAddHardware(HardwareData data) {
+        RealHardware<?> hardware = hardwareFactory.create(data, this);
+        addHardware(hardware);
+        return (RealHardware<DRIVER>) hardware;
+    }
+
+    @Override
     public final void addHardware(RealHardware hardware) {
         hardwares.add((RealHardwareImpl<?>) hardware);
     }
@@ -303,6 +328,13 @@ public class RealRootImpl
     }
 
     @Override
+    public RealAutomation createAndAddAutomation(AutomationData data) {
+        RealAutomation automation = automationFactory.create(data, this);
+        addAutomation(automation);
+        return automation;
+    }
+
+    @Override
     public final void addAutomation(RealAutomation automation) {
         automations.add(automation);
     }
@@ -335,6 +367,13 @@ public class RealRootImpl
     @Override
     public RealCommand getAddUserCommand() {
         return addUserCommand;
+    }
+
+    @Override
+    public RealUser createAndAddUser(UserData data) {
+        RealUser user = userFactory.create(data, this);
+        addUser(user);
+        return user;
     }
 
     @Override

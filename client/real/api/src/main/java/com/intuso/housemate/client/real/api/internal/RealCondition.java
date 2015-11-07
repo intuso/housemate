@@ -43,6 +43,7 @@ public interface RealCondition<DRIVER extends ConditionDriver>
     void stop();
 
     interface Container extends Condition.Container<RealList<RealCondition<?>>>, RemoveCallback {
+        <DRIVER extends ConditionDriver> RealCondition<DRIVER> createAndAddCondition(ConditionData data);
         void addCondition(RealCondition<?> condition);
     }
 

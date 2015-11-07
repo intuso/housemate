@@ -27,6 +27,7 @@ public interface RealHardware<DRIVER extends HardwareDriver>
     boolean isRunning();
 
     interface Container extends Hardware.Container<RealList<RealHardware<?>>>, RemoveCallback {
+        <DRIVER extends HardwareDriver> RealHardware<DRIVER> createAndAddHardware(HardwareData data);
         void addHardware(RealHardware<?> hardware);
     }
 
