@@ -1,8 +1,7 @@
 package com.intuso.housemate.server.plugin.main.comparator;
 
 import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
-import com.intuso.housemate.plugin.api.internal.Comparator;
-import com.intuso.housemate.plugin.api.internal.ComparisonType;
+import com.intuso.housemate.plugin.api.internal.CommonComparators;
 
 /**
  */
@@ -10,12 +9,7 @@ public class BooleanComparators {
 
     private BooleanComparators() {}
 
-    public static class Equals implements Comparator<Boolean> {
-
-        @Override
-        public ComparisonType getComparisonType() {
-            return ComparisonType.Simple.Equals;
-        }
+    public static class Equal implements CommonComparators.Equal<Boolean> {
 
         @Override
         public String getTypeId() {

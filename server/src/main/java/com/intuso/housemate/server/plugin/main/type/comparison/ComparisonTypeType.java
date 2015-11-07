@@ -8,91 +8,61 @@ import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.type.RealChoiceType;
 import com.intuso.housemate.object.api.internal.TypeInstance;
-import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.Comparator;
-import com.intuso.housemate.plugin.api.internal.ComparisonType;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
+import com.intuso.housemate.plugin.api.internal.PluginResource;
+import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.housemate.plugin.manager.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  */
-public class ComparisonTypeType extends RealChoiceType<ComparisonType> implements PluginListener {
+public class ComparisonTypeType extends RealChoiceType<TypeInfo> implements PluginListener {
 
     public final static String ID = "comparison-type";
     public final static String NAME = "Comparison Type";
     public final static String DESCRIPTION = "Type for comparing values";
 
+    private final Map<String, TypeInfo> types = Maps.newHashMap();
+
     private final ListenersFactory listenersFactory;
 
-    private final TypeSerialiser<ComparisonType> serialiser;
-
     @Inject
-    public ComparisonTypeType(Log log, ListenersFactory listenersFactory, TypeSerialiser<ComparisonType> serialiser, PluginManager pluginManager) {
+    public ComparisonTypeType(Log log, ListenersFactory listenersFactory,
+                              PluginManager pluginManager) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.listenersFactory = listenersFactory;
-        this.serialiser = serialiser;
         pluginManager.addPluginListener(this, true);
     }
 
     @Override
-    public TypeInstance serialise(ComparisonType type) {
-        return serialiser.serialise(type);
+    public TypeInstance serialise(TypeInfo type) {
+        return type != null ? new TypeInstance(type.id()) : null;
     }
 
     @Override
-    public ComparisonType deserialise(TypeInstance instance) {
-        return serialiser.deserialise(instance);
+    public TypeInfo deserialise(TypeInstance instance) {
+        return instance != null ? types.get(instance.getValue()) : null;
     }
 
     @Override
     public void pluginAdded(Injector pluginInjector) {
-        for(Comparator<?> comparator : pluginInjector.getInstance(new Key<Set<Comparator<?>>>() {}))
-            if(getOptions().get(comparator.getComparisonType().getId()) == null) {
+        for(PluginResource<? extends Comparator<?>> comparatorResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends Comparator<?>>>>() {})) {
+            TypeInfo typeInfo = comparatorResource.getTypeInfo();
+            if (types.get(typeInfo.id()) == null) {
+                types.put(typeInfo.id(), typeInfo);
                 RealOptionImpl option = new RealOptionImpl(getLog(), listenersFactory,
-                        comparator.getComparisonType().getId(), comparator.getComparisonType().getName(), comparator.getComparisonType().getDescription());
-                ((RealList<RealOptionImpl>)getOptions()).add(option);
+                        typeInfo.id(), typeInfo.name(), typeInfo.description());
+                ((RealList<RealOptionImpl>) getOptions()).add(option);
             }
+        }
     }
 
     @Override
     public void pluginRemoved(Injector pluginInjector) {
         // todo remove them, not so easy as there might be many values for one key
-    }
-
-    public final static class Serialiser implements TypeSerialiser<ComparisonType>, PluginListener {
-
-        private final Map<String, ComparisonType> types = Maps.newHashMap();
-
-        @Inject
-        public Serialiser(PluginManager pluginManager) {
-            pluginManager.addPluginListener(this, true);
-        }
-
-        @Override
-        public TypeInstance serialise(ComparisonType type) {
-            return type != null ? new TypeInstance(type.getId()) : null;
-        }
-
-        @Override
-        public ComparisonType deserialise(TypeInstance instance) {
-            return instance != null ? types.get(instance.getValue()) : null;
-        }
-
-        @Override
-        public void pluginAdded(Injector pluginInjector) {
-            for(Comparator<?> comparator : pluginInjector.getInstance(new Key<Set<Comparator<?>>>() {}))
-                if(types.get(comparator.getComparisonType().getId()) == null)
-                    types.put(comparator.getComparisonType().getId(), comparator.getComparisonType());
-        }
-
-        @Override
-        public void pluginRemoved(Injector pluginInjector) {
-            // todo remove them, not so easy as there might be many values for one key
-        }
     }
 }

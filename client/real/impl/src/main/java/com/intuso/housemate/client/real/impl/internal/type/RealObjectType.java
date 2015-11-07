@@ -142,4 +142,17 @@ public class RealObjectType<O extends BaseHousemateObject<?>>
             return new Reference(path, (O) RemoteObject.getChild((RemoteObject) root, path, 1));
         }
     }
+
+    public static class Base extends RealObjectType<BaseHousemateObject<?>> {
+
+        /**
+         * @param log              the log
+         * @param listenersFactory
+         * @param root             the root to get the object from
+         */
+        @Inject
+        public Base(Log log, ListenersFactory listenersFactory, Root<?, ?> root) {
+            super(log, listenersFactory, root);
+        }
+    }
 }

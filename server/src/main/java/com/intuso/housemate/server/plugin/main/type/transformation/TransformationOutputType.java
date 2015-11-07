@@ -8,14 +8,11 @@ import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.type.RealChoiceType;
 import com.intuso.housemate.object.api.internal.TypeInstance;
-import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.Transformer;
 import com.intuso.housemate.plugin.manager.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
-
-import java.util.Set;
 
 /**
  */
@@ -27,29 +24,33 @@ public class TransformationOutputType extends RealChoiceType<RealType<?>> implem
 
     private final ListenersFactory listenersFactory;
 
-    private final TypeSerialiser<RealType<?>> serialiser;
+    private final RealList<RealType<?>> types;
 
     @Inject
-    public TransformationOutputType(final Log log, ListenersFactory listenersFactory, TypeSerialiser<RealType<?>> serialiser, PluginManager pluginManager) {
+    public TransformationOutputType(final Log log,
+                                    ListenersFactory listenersFactory,
+                                    RealList<RealType<?>> types,
+                                    PluginManager pluginManager) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.listenersFactory = listenersFactory;
-        this.serialiser = serialiser;
+        this.types = types;
         pluginManager.addPluginListener(this, true);
     }
 
     @Override
-    public TypeInstance serialise(RealType<?> o) {
-        return serialiser.serialise(o);
+    public TypeInstance serialise(RealType<?> type) {
+        return type != null ? new TypeInstance(type.getId()) : null;
     }
 
     @Override
     public RealType<?> deserialise(TypeInstance instance) {
-        return serialiser.deserialise(instance);
+        String typeId = instance != null ? instance.getValue() : null;
+        return typeId != null ? types.get(typeId) : null;
     }
 
     @Override
     public void pluginAdded(Injector pluginInjector) {
-        for(Transformer<?, ?> transformer : pluginInjector.getInstance(new Key<Set<Transformer<?, ?>>>() {}))
+        for(Transformer<?, ?> transformer : pluginInjector.getInstance(new Key<Iterable<? extends Transformer<?, ?>>>() {}))
             if(getOptions().get(transformer.getOutputTypeId()) == null) {
                 RealOptionImpl option = new RealOptionImpl(getLog(), listenersFactory,
                         transformer.getOutputTypeId(), transformer.getOutputTypeId(), transformer.getOutputTypeId());
@@ -60,26 +61,5 @@ public class TransformationOutputType extends RealChoiceType<RealType<?>> implem
     @Override
     public void pluginRemoved(Injector pluginInjector) {
         // todo remove them, not so easy as there might be many values for one key
-    }
-
-    public final static class Serialiser implements TypeSerialiser<RealType<?>> {
-
-        private final RealList<RealType<?>> types;
-
-        @Inject
-        public Serialiser(RealList<RealType<?>> types) {
-            this.types = types;
-        }
-
-        @Override
-        public TypeInstance serialise(RealType<?> type) {
-            return type != null ? new TypeInstance(type.getId()) : null;
-        }
-
-        @Override
-        public RealType<?> deserialise(TypeInstance instance) {
-            String typeId = instance != null ? instance.getValue() : null;
-            return typeId != null ? types.get(typeId) : null;
-        }
     }
 }

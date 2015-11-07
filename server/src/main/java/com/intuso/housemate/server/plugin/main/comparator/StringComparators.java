@@ -1,8 +1,7 @@
 package com.intuso.housemate.server.plugin.main.comparator;
 
 import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
-import com.intuso.housemate.plugin.api.internal.Comparator;
-import com.intuso.housemate.plugin.api.internal.ComparisonType;
+import com.intuso.housemate.plugin.api.internal.CommonComparators;
 
 /**
  */
@@ -10,12 +9,7 @@ public class StringComparators {
 
     private StringComparators() {}
 
-    public static class Equals implements Comparator<String> {
-
-        @Override
-        public ComparisonType getComparisonType() {
-            return ComparisonType.Simple.Equals;
-        }
+    public static class Equal implements CommonComparators.Equal<String> {
 
         @Override
         public String getTypeId() {
@@ -28,12 +22,7 @@ public class StringComparators {
         }
     }
     
-    public static class GreaterThan implements Comparator<String> {
-
-        @Override
-        public ComparisonType getComparisonType() {
-            return ComparisonType.Simple.GreaterThan;
-        }
+    public static class GreaterThan implements CommonComparators.GreaterThan<String> {
 
         @Override
         public String getTypeId() {
@@ -46,12 +35,7 @@ public class StringComparators {
         }
     }
     
-    public static class GreaterThanOrEqual implements Comparator<String> {
-
-        @Override
-        public ComparisonType getComparisonType() {
-            return ComparisonType.Simple.GreaterThanOrEqual;
-        }
+    public static class GreaterThanOrEqual implements CommonComparators.GreaterThanOrEqual<String> {
 
         @Override
         public String getTypeId() {
@@ -64,12 +48,7 @@ public class StringComparators {
         }
     }
     
-    public static class LessThan implements Comparator<String> {
-
-        @Override
-        public ComparisonType getComparisonType() {
-            return ComparisonType.Simple.LessThan;
-        }
+    public static class LessThan implements CommonComparators.LessThan<String> {
 
         @Override
         public String getTypeId() {
@@ -82,12 +61,7 @@ public class StringComparators {
         }
     }
     
-    public static class LessThanOrEqual implements Comparator<String> {
-
-        @Override
-        public ComparisonType getComparisonType() {
-            return ComparisonType.Simple.LessThanOrEqual;
-        }
+    public static class LessThanOrEqual implements CommonComparators.LessThanOrEqual<String> {
 
         @Override
         public String getTypeId() {

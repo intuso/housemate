@@ -1,17 +1,17 @@
 package com.intuso.housemate.plugin.api.internal;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
+import com.google.inject.*;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
@@ -20,19 +20,8 @@ import java.lang.reflect.Type;
 public abstract class AnnotatedPluginModule extends AbstractModule {
 
     public void configure() {
-
         // configure the classloader to be this plugin's class' classloader
         bind(ClassLoader.class).toInstance(getClass().getClassLoader());
-
-        // configure all the things a plugin can provide
-        configureTypes(Multibinder.newSetBinder(binder(), new TypeLiteral<RealType<?>>() {}));
-        configureComparators(Multibinder.newSetBinder(binder(), new TypeLiteral<Comparator<?>>() {}));
-        configureOperators(Multibinder.newSetBinder(binder(), new TypeLiteral<Operator<?, ?>>() {}));
-        configureTransformers(Multibinder.newSetBinder(binder(), new TypeLiteral<Transformer<?, ?>>() {}));
-        configureHardwareFactories(Multibinder.newSetBinder(binder(), new TypeLiteral<HardwareDriver.Factory<?>>() {}));
-        configureDeviceFactories(Multibinder.newSetBinder(binder(), new TypeLiteral<DeviceDriver.Factory<?>>() {}));
-        configureConditionFactories(Multibinder.newSetBinder(binder(), new TypeLiteral<ConditionDriver.Factory<?>>() {}));
-        configureTaskFactories(Multibinder.newSetBinder(binder(), new TypeLiteral<TaskDriver.Factory<?>>() {}));
     }
 
     @Provides
@@ -41,87 +30,145 @@ public abstract class AnnotatedPluginModule extends AbstractModule {
         return getClass().getAnnotation(TypeInfo.class);
     }
 
-    public void configureTypes(Multibinder<RealType<?>> typeBindings) {
+    @Provides
+    @Singleton
+    public Iterable<? extends RealType<?>> getTypes(Injector injector) {
         Types types = getClass().getAnnotation(Types.class);
-        if(types != null)
-            for(Class<? extends RealType<?>> typeClass : types.value())
-                typeBindings.addBinding().to(typeClass);
+        if(types == null)
+            return Lists.newArrayList();
+        return FluentIterable.from(Lists.newArrayList(types.value()))
+                .transform(this.<RealType<?>>makeInstance(injector))
+                .toList();
     }
 
-    public void configureComparators(Multibinder<Comparator<?>> comparatorBindings) {
+    @Provides
+    @Singleton
+    public Iterable<PluginResource<? extends Comparator<?>>> getComparators(Injector injector) {
         Comparators comparators = getClass().getAnnotation(Comparators.class);
-        if(comparators != null)
-            for(Class<? extends Comparator<?>> comparatorsClass : comparators.value())
-                comparatorBindings.addBinding().to(comparatorsClass);
+        if(comparators == null)
+            return Lists.newArrayList();
+        return FluentIterable.from(Lists.newArrayList(comparators.value()))
+                .transform(this.<Comparator<?>>asResource(injector))
+                .toList();
     }
 
-    public void configureOperators(Multibinder<Operator<?, ?>> operatorBindings) {
+    @Provides
+    @Singleton
+    public Iterable<PluginResource<? extends Operator<?, ?>>> getOperators(Injector injector) {
         Operators operators = getClass().getAnnotation(Operators.class);
-        if(operators != null)
-            for(Class<? extends Operator<?, ?>> operatorClass : operators.value())
-                operatorBindings.addBinding().to(operatorClass);
+        if(operators == null)
+            return Lists.newArrayList();
+        return FluentIterable.from(Lists.newArrayList(operators.value()))
+                .transform(this.<Operator<?, ?>>asResource(injector))
+                .toList();
     }
 
-    public void configureTransformers(Multibinder<Transformer<?, ?>> transformerBindings) {
+    @Provides
+    @Singleton
+    public Iterable<? extends Transformer<?, ?>> getTransformers(Injector injector) {
         Transformers transformers = getClass().getAnnotation(Transformers.class);
-        if(transformers != null)
-            for(Class<? extends Transformer<?, ?>> transformerClass : transformers.value())
-                transformerBindings.addBinding().to(transformerClass);
+        if(transformers == null)
+            return Lists.newArrayList();
+        return FluentIterable.from(Lists.newArrayList(transformers.value()))
+                .transform(this.<Transformer<?, ?>>makeInstance(injector))
+                .toList();
     }
 
-    public void configureHardwareFactories(Multibinder<HardwareDriver.Factory<?>> hardwareFactoryBindings) {
-        HardwareDrivers hardwareDrivers = getClass().getAnnotation(HardwareDrivers.class);
-        if(hardwareDrivers != null) {
-            for(Class<? extends HardwareDriver> driverClass : hardwareDrivers.value()) {
-                // add the factory to the multibinding
-                Type type = com.google.inject.util.Types.newParameterizedTypeWithOwner(HardwareDriver.class, HardwareDriver.Factory.class, driverClass);
-                TypeLiteral<HardwareDriver.Factory<?>> typeLiteral = (TypeLiteral<HardwareDriver.Factory<?>>) TypeLiteral.get(type);
-                hardwareFactoryBindings.addBinding().to(typeLiteral);
-                // provide a factory impl using assisted inject
-                install(new FactoryModuleBuilder().build(typeLiteral));
-            }
-        }
-    }
-
-    public void configureDeviceFactories(Multibinder<DeviceDriver.Factory<?>> deviceFactoryBindings) {
-        DeviceDrivers deviceDrivers = getClass().getAnnotation(DeviceDrivers.class);
-        if(deviceDrivers != null) {
-            for(Class<? extends DeviceDriver> driverClass : deviceDrivers.value()) {
-                // add the factory to the multibinding
-                Type type = com.google.inject.util.Types.newParameterizedTypeWithOwner(DeviceDriver.class, DeviceDriver.Factory.class, driverClass);
-                TypeLiteral<DeviceDriver.Factory<?>> typeLiteral = (TypeLiteral<DeviceDriver.Factory<?>>) TypeLiteral.get(type);
-                deviceFactoryBindings.addBinding().to(typeLiteral);
-                // provide a factory impl using assisted inject
-                install(new FactoryModuleBuilder().build(typeLiteral));
-            }
-        }
-    }
-
-    public void configureConditionFactories(Multibinder<ConditionDriver.Factory<?>> conditionFactoryBindings) {
+    @Provides
+    @Singleton
+    public Iterable<PluginResource<? extends ConditionDriver.Factory<?>>> getConditionFactories(Injector injector) {
         ConditionDrivers conditionDrivers = getClass().getAnnotation(ConditionDrivers.class);
-        if(conditionDrivers != null) {
-            for(Class<? extends ConditionDriver> driverClass : conditionDrivers.value()) {
-                // add the factory to the multibinding
-                Type type = com.google.inject.util.Types.newParameterizedTypeWithOwner(ConditionDriver.class, ConditionDriver.Factory.class, driverClass);
-                TypeLiteral<ConditionDriver.Factory<?>> typeLiteral = (TypeLiteral<ConditionDriver.Factory<?>>) TypeLiteral.get(type);
-                conditionFactoryBindings.addBinding().to(typeLiteral);
-                // provide a factory impl using assisted inject
-                install(new FactoryModuleBuilder().build(typeLiteral));
-            }
-        }
+        if(conditionDrivers == null)
+            return Lists.newArrayList();
+        return FluentIterable.from(Lists.newArrayList(conditionDrivers.value()))
+                .transform(this.<ConditionDriver, ConditionDriver.Factory, ConditionDriver.Factory<?>>asFactoryResource(ConditionDriver.class, ConditionDriver.Factory.class, injector))
+                .toList();
     }
 
-    public void configureTaskFactories(Multibinder<TaskDriver.Factory<?>> taskFactoryBindings) {
+    @Provides
+    @Singleton
+    public Iterable<PluginResource<? extends DeviceDriver.Factory<?>>> getDeviceFactories(Injector injector) {
+        DeviceDrivers deviceDrivers = getClass().getAnnotation(DeviceDrivers.class);
+        if(deviceDrivers == null)
+            return Lists.newArrayList();
+        return FluentIterable.from(Lists.newArrayList(deviceDrivers.value()))
+                .transform(this.<DeviceDriver, DeviceDriver.Factory, DeviceDriver.Factory<?>>asFactoryResource(DeviceDriver.class, DeviceDriver.Factory.class, injector))
+                .toList();
+    }
+
+    @Provides
+    @Singleton
+    public Iterable<PluginResource<? extends HardwareDriver.Factory<?>>> getHardwareFactories(Injector injector) {
+        HardwareDrivers hardwareDrivers = getClass().getAnnotation(HardwareDrivers.class);
+        if(hardwareDrivers == null)
+            return Lists.newArrayList();
+        return FluentIterable.from(Lists.newArrayList(hardwareDrivers.value()))
+                .transform(this.<HardwareDriver, HardwareDriver.Factory, HardwareDriver.Factory<?>>asFactoryResource(HardwareDriver.class, HardwareDriver.Factory.class, injector))
+                .toList();
+    }
+
+    @Provides
+    @Singleton
+    public Iterable<PluginResource<? extends TaskDriver.Factory<?>>> getTaskFactories(Injector injector) {
         TaskDrivers taskDrivers = getClass().getAnnotation(TaskDrivers.class);
-        if(taskDrivers != null) {
-            for(Class<? extends TaskDriver> driverClass : taskDrivers.value()) {
-                // add the factory to the multibinding
-                Type type = com.google.inject.util.Types.newParameterizedTypeWithOwner(TaskDriver.class, TaskDriver.Factory.class, driverClass);
-                TypeLiteral<TaskDriver.Factory<?>> typeLiteral = (TypeLiteral<TaskDriver.Factory<?>>) TypeLiteral.get(type);
-                taskFactoryBindings.addBinding().to(typeLiteral);
-                // provide a factory impl using assisted inject
-                install(new FactoryModuleBuilder().build(typeLiteral));
+        if(taskDrivers == null)
+            return Lists.newArrayList();
+        return FluentIterable.from(Lists.newArrayList(taskDrivers.value()))
+                .transform(this.<TaskDriver, TaskDriver.Factory, TaskDriver.Factory<?>>asFactoryResource(TaskDriver.class, TaskDriver.Factory.class, injector))
+                .toList();
+    }
+
+    private <O> Function<Class<? extends O>, O> makeInstance(final Injector injector) {
+        return new Function<Class<? extends O>, O>() {
+            @Override
+            public O apply(Class<? extends O> aClass) {
+                return injector.getInstance(aClass);
             }
+        };
+    }
+
+    private <O> Function<Class<? extends O>, PluginResource<? extends O>> asResource(final Injector injector) {
+        return new Function<Class<? extends O>, PluginResource<? extends O>>() {
+            @Override
+            public PluginResource<? extends O> apply(Class<? extends O> resourceInstanceClass) {
+                return new PluginResourceImpl<>(
+                        getClassAnnotation(resourceInstanceClass, TypeInfo.class),
+                        injector.getInstance(resourceInstanceClass));
+            }
+        };
+    }
+
+    private <RESOURCE, FACTORY_RAW, FACTORY_GENERIC> Function<Class<? extends RESOURCE>, PluginResource<? extends FACTORY_GENERIC>>
+    asFactoryResource(final Class<RESOURCE> resourceClass, final Class<FACTORY_RAW> factoryClass, final Injector injector) {
+        return new Function<Class<? extends RESOURCE>, PluginResource<? extends FACTORY_GENERIC>>() {
+            @Override
+            public PluginResource<? extends FACTORY_GENERIC> apply(Class<? extends RESOURCE> resourceInstanceClass) {
+
+                // setup the generic type/typeliteral etc
+                Type type = com.google.inject.util.Types.newParameterizedTypeWithOwner(resourceClass, factoryClass, resourceInstanceClass);
+                TypeLiteral<FACTORY_GENERIC> typeLiteral = (TypeLiteral<FACTORY_GENERIC>) TypeLiteral.get(type);
+
+                return new PluginResourceImpl<>(
+                        getClassAnnotation(resourceInstanceClass, TypeInfo.class),
+                        injector.createChildInjector(new FactoryModuleBuilder().build(typeLiteral)).getInstance(Key.get(typeLiteral)));
+            }
+        };
+    }
+
+    private <ANNOTATION extends Annotation> ANNOTATION getClassAnnotation(Class<?> annotatedClass, Class<ANNOTATION> annotationClass) {
+        ANNOTATION result = annotatedClass.getAnnotation(annotationClass);
+        if(result != null)
+            return result;
+        if(annotatedClass.getSuperclass() != null) {
+            result = getClassAnnotation(annotatedClass.getSuperclass(), annotationClass);
+            if(result != null)
+                return result;
         }
+        for(Class<?> implementedInterface : annotatedClass.getInterfaces()) {
+            result = getClassAnnotation(implementedInterface, annotationClass);
+            if(result != null)
+                return result;
+        }
+        return null;
     }
 }

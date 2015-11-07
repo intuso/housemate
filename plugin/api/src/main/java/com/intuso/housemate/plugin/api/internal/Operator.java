@@ -7,12 +7,6 @@ package com.intuso.housemate.plugin.api.internal;
 public interface Operator<I, O> {
 
     /**
-     * Gets the type of the operation
-     * @return the type of the operation
-     */
-    public OperationType getOperationType();
-
-    /**
      * Gets the type id for the input values
      * @return the type id of the input values
      */

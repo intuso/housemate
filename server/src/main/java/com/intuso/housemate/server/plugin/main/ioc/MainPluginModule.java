@@ -3,10 +3,8 @@ package com.intuso.housemate.server.plugin.main.ioc;
 import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
-import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.impl.internal.type.*;
-import com.intuso.housemate.object.api.internal.BaseHousemateObject;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.*;
 import com.intuso.housemate.server.plugin.main.comparator.BooleanComparators;
@@ -24,6 +22,7 @@ import com.intuso.housemate.server.plugin.main.transformer.FromBoolean;
 import com.intuso.housemate.server.plugin.main.transformer.FromDouble;
 import com.intuso.housemate.server.plugin.main.transformer.FromInteger;
 import com.intuso.housemate.server.plugin.main.transformer.FromString;
+import com.intuso.housemate.server.plugin.main.type.comparison.Comparison;
 import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonType;
 import com.intuso.housemate.server.plugin.main.type.comparison.ComparisonTypeType;
 import com.intuso.housemate.server.plugin.main.type.constant.ConstantType;
@@ -51,6 +50,7 @@ import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
         StringType.class,
         TimeType.class,
         TimeUnitType.class,
+        RealObjectType.Base.class,
         ConstantType.class,
         ValueSourceType.class,
         ComparisonTypeType.class,
@@ -59,34 +59,34 @@ import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
         OperationType.class,
         TransformationOutputType.class,
         TransformationType.class})
-@Comparators({StringComparators.Equals.class,
+@Comparators({StringComparators.Equal.class,
         StringComparators.GreaterThan.class,
         StringComparators.GreaterThanOrEqual.class,
         StringComparators.LessThan.class,
         StringComparators.LessThanOrEqual.class,
-        BooleanComparators.Equals.class,
-        IntegerComparators.Equals.class,
+        BooleanComparators.Equal.class,
+        IntegerComparators.Equal.class,
         IntegerComparators.GreaterThan.class,
         IntegerComparators.GreaterThanOrEqual.class,
         IntegerComparators.LessThan.class,
         IntegerComparators.LessThanOrEqual.class,
-        DoubleComparators.Equals.class,
+        DoubleComparators.Equal.class,
         DoubleComparators.GreaterThan.class,
         DoubleComparators.GreaterThanOrEqual.class,
         DoubleComparators.LessThan.class,
         DoubleComparators.LessThanOrEqual.class})
 @Operators({IntegerOperators.Divide.class,
-        IntegerOperators.Max.class,
-        IntegerOperators.Min.class,
-        IntegerOperators.Minus.class,
-        IntegerOperators.Plus.class,
-        IntegerOperators.Times.class,
+        IntegerOperators.Maximum.class,
+        IntegerOperators.Minimum.class,
+        IntegerOperators.Subtract.class,
+        IntegerOperators.Add.class,
+        IntegerOperators.Multiply.class,
         DoubleOperators.Divide.class,
-        DoubleOperators.Max.class,
-        DoubleOperators.Min.class,
-        DoubleOperators.Minus.class,
-        DoubleOperators.Plus.class,
-        DoubleOperators.Times.class})
+        DoubleOperators.Maximum.class,
+        DoubleOperators.Minimum.class,
+        DoubleOperators.Subtract.class,
+        DoubleOperators.Add.class,
+        DoubleOperators.Multiply.class})
 @Transformers({FromBoolean.ToDouble.class,
         FromBoolean.ToInteger.class,
         FromBoolean.ToString.class,
@@ -128,17 +128,12 @@ public class MainPluginModule extends AnnotatedPluginModule {
 
         // bind implementations
         bind(new TypeLiteral<TypeSerialiser<ValueSource>>() {}).to(ValueSourceType.Serialiser.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.internal.ComparisonType>>() {}).to(ComparisonTypeType.Serialiser.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<TypeSerialiser<com.intuso.housemate.plugin.api.internal.OperationType>>() {}).to(OperationTypeType.Serialiser.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<TypeSerialiser<Operation>>() {}).to(OperationType.Serialiser.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<TypeSerialiser<RealType<?>>>() {}).to(TransformationOutputType.Serialiser.class).in(Scopes.SINGLETON);
-        bind(new TypeLiteral<TypeSerialiser<Transformation>>() {}).to(TransformationType.Serialiser.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<TypeInfo>>() {}).annotatedWith(Comparator.class).to(ComparisonTypeType.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<TypeInfo>>() {}).annotatedWith(Operator.class).to(OperationTypeType.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<Comparison>>() {}).to(ComparisonType.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<Operation>>() {}).to(OperationType.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<RealType<?>>>() {}).to(TransformationOutputType.class).in(Scopes.SINGLETON);
+        bind(new TypeLiteral<TypeSerialiser<Transformation>>() {}).to(TransformationType.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<TypeSerialiser<RealObjectType.Reference<?>>>() {}).to(new Key<RealObjectType.Serialiser<?>>() {}).in(Scopes.SINGLETON);
-    }
-
-    @Override
-    public void configureTypes(Multibinder<RealType<?>> typeBindings) {
-        super.configureTypes(typeBindings);
-        typeBindings.addBinding().to(new Key<RealObjectType<BaseHousemateObject<?>>>() {});
     }
 }

@@ -62,14 +62,14 @@ public class FactoryPluginListener implements PluginListener {
     }
 
     private void addTypes(Injector pluginInjector) {
-        for(RealType<?> type : pluginInjector.getInstance(new Key<Set<RealType<?>>>() {})) {
+        for(RealType<?> type : pluginInjector.getInstance(new Key<Iterable<? extends RealType<?>>>() {})) {
             log.d("Adding type " + type.getId());
             root.addType(type);
         }
     }
 
     private void removeTypes(Injector pluginInjector) {
-        for(RealType<?> type : pluginInjector.getInstance(new Key<Set<RealType<?>>>() {})) {
+        for(RealType<?> type : pluginInjector.getInstance(new Key<Iterable<? extends RealType<?>>>() {})) {
             log.d("Removing type " + type.getId());
             root.removeType(type);
         }

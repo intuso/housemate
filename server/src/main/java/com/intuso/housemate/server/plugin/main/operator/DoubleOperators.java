@@ -1,8 +1,7 @@
 package com.intuso.housemate.server.plugin.main.operator;
 
 import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
-import com.intuso.housemate.plugin.api.internal.OperationType;
-import com.intuso.housemate.plugin.api.internal.Operator;
+import com.intuso.housemate.plugin.api.internal.CommonOperators;
 
 /**
  */
@@ -14,12 +13,7 @@ public class DoubleOperators {
         return doubleObject == null ? 0 : doubleObject;
     }
     
-    public static class Plus implements Operator<Double, Double> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Plus;
-        }
+    public static class Add implements CommonOperators.Add<Double, Double> {
 
         @Override
         public String getInputTypeId() {
@@ -37,12 +31,7 @@ public class DoubleOperators {
         }
     }
 
-    public static class Minus implements Operator<Double, Double> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Minus;
-        }
+    public static class Subtract implements CommonOperators.Subtract<Double, Double> {
 
         @Override
         public String getInputTypeId() {
@@ -60,12 +49,7 @@ public class DoubleOperators {
         }
     }
 
-    public static class Times implements Operator<Double, Double> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Times;
-        }
+    public static class Multiply implements CommonOperators.Multiply<Double, Double> {
 
         @Override
         public String getInputTypeId() {
@@ -83,12 +67,7 @@ public class DoubleOperators {
         }
     }
 
-    public static class Divide implements Operator<Double, Double> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Divide;
-        }
+    public static class Divide implements CommonOperators.Divide<Double, Double> {
 
         @Override
         public String getInputTypeId() {
@@ -106,12 +85,7 @@ public class DoubleOperators {
         }
     }
 
-    public static class Max implements Operator<Double, Double> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Max;
-        }
+    public static class Maximum implements CommonOperators.Maximum<Double, Double> {
 
         @Override
         public String getInputTypeId() {
@@ -129,12 +103,7 @@ public class DoubleOperators {
         }
     }
 
-    public static class Min implements Operator<Double, Double> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Min;
-        }
+    public static class Minimum implements CommonOperators.Minimum<Double, Double> {
 
         @Override
         public String getInputTypeId() {

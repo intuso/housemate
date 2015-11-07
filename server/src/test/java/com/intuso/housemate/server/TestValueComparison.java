@@ -52,11 +52,11 @@ import static org.junit.Assert.assertEquals;
  */
 public class TestValueComparison {
 
-    private final static Map<ComparisonType, Map<String, Comparator<?>>> COMPARISONS_BY_TYPE = Maps.newHashMap();
+    private final static Map<String, Map<String, Comparator<?>>> COMPARISONS_BY_TYPE = Maps.newHashMap();
     static {
-        COMPARISONS_BY_TYPE.put(ComparisonType.Simple.Equals, Maps.<String, Comparator<?>>newHashMap());
-        COMPARISONS_BY_TYPE.get(ComparisonType.Simple.Equals).put(SimpleTypeData.Type.Integer.getId(), new IntegerComparators.Equals());
-        COMPARISONS_BY_TYPE.get(ComparisonType.Simple.Equals).put(SimpleTypeData.Type.Double.getId(), new DoubleComparators.Equals());
+        COMPARISONS_BY_TYPE.put(CommonComparators.Equal.class.getAnnotation(TypeInfo.class).id(), Maps.<String, Comparator<?>>newHashMap());
+        COMPARISONS_BY_TYPE.get(CommonComparators.Equal.class.getAnnotation(TypeInfo.class).id()).put(SimpleTypeData.Type.Integer.getId(), new IntegerComparators.Equal());
+        COMPARISONS_BY_TYPE.get(CommonComparators.Equal.class.getAnnotation(TypeInfo.class).id()).put(SimpleTypeData.Type.Double.getId(), new DoubleComparators.Equal());
     }
     
     private static Injector injector;
@@ -98,7 +98,7 @@ public class TestValueComparison {
         RealType<?> integerType = new IntegerType(log, listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
-        assertValueComparisonSatisfied("constant-true", ComparisonType.Simple.Equals, valueOne, valueTwo, true);
+        assertValueComparisonSatisfied("constant-true", CommonComparators.Equal.class.getAnnotation(TypeInfo.class), valueOne, valueTwo, true);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class TestValueComparison {
         RealType<?> integerType = new IntegerType(log, listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("2")));
-        assertValueComparisonSatisfied("constant-false", ComparisonType.Simple.Equals, valueOne, valueTwo, false);
+        assertValueComparisonSatisfied("constant-false", CommonComparators.Equal.class.getAnnotation(TypeInfo.class), valueOne, valueTwo, false);
     }
 
     @Test
@@ -130,9 +130,9 @@ public class TestValueComparison {
                     }
                 }, intTwo));
         OperationOutput valueOne = new OperationOutput(log, listenersFactory, types,
-                new Operation(OperationType.Simple.Plus, new HashMap<String, Operator<?, ?>>() {
+                new Operation(CommonOperators.Add.class.getAnnotation(TypeInfo.class), new HashMap<String, Operator<?, ?>>() {
                     {
-                        put(SimpleTypeData.Type.Double.getId(), new DoubleOperators.Plus());
+                        put(SimpleTypeData.Type.Double.getId(), new DoubleOperators.Add());
                     }
                 }, doubleTwo, doubleThree));
 
@@ -155,7 +155,7 @@ public class TestValueComparison {
                         // do nothing
                     }
                 });
-        RealCondition<ValueComparison> vc = makeValueComparison("locations", ComparisonType.Simple.Equals, valueOne, valueTwo);
+        RealCondition<ValueComparison> vc = makeValueComparison("locations", CommonComparators.Equal.class.getAnnotation(TypeInfo.class), valueOne, valueTwo);
         assertEquals(vc.getErrorValue().getTypedValue(), "Second value is not available");
         RealDevice<TestDeviceDriver> device = (RealDevice<TestDeviceDriver>) injector.getInstance(RealDevice.Factory.class).create(new DeviceData("device", "Device", "Device"), null);
         device.getDriverProperty().setTypedValues(injector.getInstance(new Key<FactoryType.Entry<DeviceDriver.Factory<TestDeviceDriver>>>() {}));
@@ -190,16 +190,16 @@ public class TestValueComparison {
         assertSatisfied(vc, true);
     }
 
-    private void assertValueComparisonSatisfied(String id, ComparisonType operator, ValueSource sourceOne,
+    private void assertValueComparisonSatisfied(String id, TypeInfo typeInfo, ValueSource sourceOne,
                                                 ValueSource sourceTwo, boolean satisfied) {
-        assertSatisfied(makeValueComparison(id, operator, sourceOne, sourceTwo), satisfied);
+        assertSatisfied(makeValueComparison(id, typeInfo, sourceOne, sourceTwo), satisfied);
     }
 
     private void assertSatisfied(RealCondition<ValueComparison> valueComparison, boolean satisfied) {
         assertEquals(satisfied, valueComparison.getSatisfiedValue().getTypedValue());
     }
 
-    private RealCondition<ValueComparison> makeValueComparison(String id, ComparisonType operator, ValueSource sourceOne, ValueSource sourceTwo) {
+    private RealCondition<ValueComparison> makeValueComparison(String id, TypeInfo typeInfo, ValueSource sourceOne, ValueSource sourceTwo) {
         TypeInstanceMap conditionValues = new TypeInstanceMap();
         conditionValues.getChildren().put(AddConditionCommand.TYPE_PARAMETER_ID, new TypeInstances(new TypeInstance("value-comparison")));
         conditionValues.getChildren().put(AddConditionCommand.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance(id)));
@@ -207,7 +207,7 @@ public class TestValueComparison {
         automation.getAddConditionCommand().perform(conditionValues);
         RealCondition<ValueComparison> valueComparison = (RealCondition<ValueComparison>) automation.getConditions().get(id);
         RealProperty<Comparison> comparisonProperty = (RealProperty<Comparison>) valueComparison.getProperties().get("comparison");
-        Comparison comparison = new Comparison(operator, COMPARISONS_BY_TYPE.get(operator), sourceOne, sourceTwo);
+        Comparison comparison = new Comparison(typeInfo, COMPARISONS_BY_TYPE.get(typeInfo.id()), sourceOne, sourceTwo);
         comparisonProperty.setTypedValues(comparison);
         valueComparison.start();
         return valueComparison;

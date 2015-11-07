@@ -1,8 +1,7 @@
 package com.intuso.housemate.server.plugin.main.operator;
 
 import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
-import com.intuso.housemate.plugin.api.internal.OperationType;
-import com.intuso.housemate.plugin.api.internal.Operator;
+import com.intuso.housemate.plugin.api.internal.CommonOperators;
 
 /**
  */
@@ -14,12 +13,7 @@ public class IntegerOperators {
         return integer == null ? 0 : integer;
     }
 
-    public static class Plus implements Operator<Integer, Integer> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Plus;
-        }
+    public static class Add implements CommonOperators.Add<Integer, Integer> {
 
         @Override
         public String getInputTypeId() {
@@ -37,12 +31,7 @@ public class IntegerOperators {
         }
     }
 
-    public static class Minus implements Operator<Integer, Integer> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Minus;
-        }
+    public static class Subtract implements CommonOperators.Subtract<Integer, Integer> {
 
         @Override
         public String getInputTypeId() {
@@ -60,12 +49,7 @@ public class IntegerOperators {
         }
     }
 
-    public static class Times implements Operator<Integer, Integer> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Times;
-        }
+    public static class Multiply implements CommonOperators.Multiply<Integer, Integer> {
 
         @Override
         public String getInputTypeId() {
@@ -83,12 +67,7 @@ public class IntegerOperators {
         }
     }
 
-    public static class Divide implements Operator<Integer, Integer> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Divide;
-        }
+    public static class Divide implements CommonOperators.Divide<Integer, Integer> {
 
         @Override
         public String getInputTypeId() {
@@ -106,12 +85,7 @@ public class IntegerOperators {
         }
     }
 
-    public static class Max implements Operator<Integer, Integer> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Max;
-        }
+    public static class Maximum implements CommonOperators.Maximum<Integer, Integer> {
 
         @Override
         public String getInputTypeId() {
@@ -129,12 +103,7 @@ public class IntegerOperators {
         }
     }
 
-    public static class Min implements Operator<Integer, Integer> {
-
-        @Override
-        public OperationType getOperationType() {
-            return OperationType.Simple.Min;
-        }
+    public static class Minimum implements CommonOperators.Minimum<Integer, Integer> {
 
         @Override
         public String getInputTypeId() {

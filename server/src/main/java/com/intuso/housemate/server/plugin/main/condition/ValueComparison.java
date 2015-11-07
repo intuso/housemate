@@ -90,10 +90,10 @@ public class ValueComparison implements ConditionDriver {
     private void compare() {
         if(comparison == null)
             callback.setError("No comparison available");
-        else if(comparison.getComparisonType().getId() == null)
+        else if(comparison.getTypeInfo() == null)
             callback.setError("No operator defined");
         else if(comparison.getComparatorsByType() == null)
-            callback.setError("No comparators available for operator " + comparison.getComparisonType().getId());
+            callback.setError("No comparators available for operator " + comparison.getTypeInfo().id());
         else if(firstValue == null && secondValue == null)
             callback.setError("Neither value is available");
         else if(firstValue == null)
@@ -107,7 +107,7 @@ public class ValueComparison implements ConditionDriver {
         else if(!firstValue.getTypeId().equals(secondValue.getTypeId()))
             callback.setError("The two values have different types (" + firstValue.getTypeId() + "," + secondValue.getTypeId() + ")");
         else if(comparison.getComparatorsByType().get(firstValue.getTypeId()) == null)
-            callback.setError("No comparator for operator " + comparison.getComparisonType().getName() + " and value type " + firstValue.getTypeId());
+            callback.setError("No comparator for operator " + comparison.getTypeInfo().id() + " and value type " + firstValue.getTypeId());
         else {
             RealType<?> type = types.get(firstValue.getTypeId());
             if(type == null)

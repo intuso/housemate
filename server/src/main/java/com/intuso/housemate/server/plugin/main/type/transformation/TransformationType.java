@@ -20,11 +20,10 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  */
-public class TransformationType extends RealCompoundType<Transformation> {
+public class TransformationType extends RealCompoundType<Transformation> implements PluginListener {
 
     public final static String ID = "transformation";
     public final static String NAME = "Transformation";
@@ -38,14 +37,21 @@ public class TransformationType extends RealCompoundType<Transformation> {
     public final static String VALUE_NAME = "Value";
     public final static String VALUE_DESCRIPTION = "The value";
 
-    private final TypeSerialiser<Transformation> serialiser;
+    private final TypeSerialiser<RealType<?>> outputTypeSerialiser;
+    private final TypeSerialiser<ValueSource> sourceTypeSerialiser;
+    private final Map<String, Map<String, Transformer<?, ?>>> transformers = Maps.newHashMap();
 
     @Inject
-    public TransformationType(final Log log, ListenersFactory listenersFactory,
-                              TypeSerialiser<Transformation> serialiser,
+    public TransformationType(final Log log,
+                              ListenersFactory listenersFactory,
+                              PluginManager pluginManager,
+                              TypeSerialiser<RealType<?>> outputTypeSerialiser,
+                              TypeSerialiser<ValueSource> sourceTypeSerialiser,
                               RealList<RealType<?>> types) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
-        this.serialiser = serialiser;
+        this.outputTypeSerialiser = outputTypeSerialiser;
+        this.sourceTypeSerialiser = sourceTypeSerialiser;
+        pluginManager.addPluginListener(this, true);
         getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, OUTPUT_TYPE_ID, OUTPUT_TYPE_NAME,
                 OUTPUT_TYPE_DESCRIPTION, TransformationOutputType.ID, types));
         getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, VALUE_ID, VALUE_NAME,
@@ -53,69 +59,40 @@ public class TransformationType extends RealCompoundType<Transformation> {
     }
 
     @Override
-    public TypeInstance serialise(Transformation o) {
-        return serialiser.serialise(o);
+    public TypeInstance serialise(Transformation transformationInstance) {
+        if(transformationInstance == null)
+            return null;
+        TypeInstance result = new TypeInstance();
+        result.getChildValues().getChildren().put(OUTPUT_TYPE_ID, new TypeInstances(outputTypeSerialiser.serialise(transformationInstance.getOutputType())));
+        result.getChildValues().getChildren().put(VALUE_ID, new TypeInstances(sourceTypeSerialiser.serialise(transformationInstance.getValueSource())));
+        return result;
     }
 
     @Override
     public Transformation deserialise(TypeInstance instance) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        RealType<?> outputType = null;
+        if(instance.getChildValues().getChildren().get(OUTPUT_TYPE_ID) != null && instance.getChildValues().getChildren().get(OUTPUT_TYPE_ID).getElements().size() != 0)
+            outputType = outputTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(OUTPUT_TYPE_ID).getElements().get(0));
+        ValueSource valueSource = null;
+        if(instance.getChildValues().getChildren().get(VALUE_ID) != null && instance.getChildValues().getChildren().get(VALUE_ID).getElements().size() != 0)
+            valueSource = sourceTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(VALUE_ID).getElements().get(0));
+        return new Transformation(outputType, transformers.get(outputType.getId()), valueSource);
     }
 
-    public final static class Serialiser implements TypeSerialiser<Transformation>, PluginListener {
-
-        private final Log log;
-        private final TypeSerialiser<RealType<?>> outputTypeSerialiser;
-        private final TypeSerialiser<ValueSource> sourceTypeSerialiser;
-        private final Map<String, Map<String, Transformer<?, ?>>> transformers = Maps.newHashMap();
-
-        @Inject
-        public Serialiser(final Log log,
-                          PluginManager pluginManager,
-                          TypeSerialiser<RealType<?>> outputTypeSerialiser,
-                          TypeSerialiser<ValueSource> sourceTypeSerialiser) {
-            this.log = log;
-            this.outputTypeSerialiser = outputTypeSerialiser;
-            this.sourceTypeSerialiser = sourceTypeSerialiser;
-            pluginManager.addPluginListener(this, true);
-        }
-
-        @Override
-        public TypeInstance serialise(Transformation transformationInstance) {
-            if(transformationInstance == null)
-                return null;
-            TypeInstance result = new TypeInstance();
-            result.getChildValues().getChildren().put(OUTPUT_TYPE_ID, new TypeInstances(outputTypeSerialiser.serialise(transformationInstance.getOutputType())));
-            result.getChildValues().getChildren().put(VALUE_ID, new TypeInstances(sourceTypeSerialiser.serialise(transformationInstance.getValueSource())));
-            return result;
-        }
-
-        @Override
-        public Transformation deserialise(TypeInstance instance) {
-            RealType<?> outputType = null;
-            if(instance.getChildValues().getChildren().get(OUTPUT_TYPE_ID) != null && instance.getChildValues().getChildren().get(OUTPUT_TYPE_ID).getElements().size() != 0)
-                outputType = outputTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(OUTPUT_TYPE_ID).getElements().get(0));
-            ValueSource valueSource = null;
-            if(instance.getChildValues().getChildren().get(VALUE_ID) != null && instance.getChildValues().getChildren().get(VALUE_ID).getElements().size() != 0)
-                valueSource = sourceTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(VALUE_ID).getElements().get(0));
-            return new Transformation(outputType, transformers.get(outputType.getId()), valueSource);
-        }
-
-        @Override
-        public void pluginAdded(Injector pluginInjector) {
-            for(Transformer<?, ?> transformer : pluginInjector.getInstance(new Key<Set<Transformer<?, ?>>>() {})) {
-                Map<String, Transformer<?, ?>> transformersByType = transformers.get(transformer.getOutputTypeId());
-                if(transformersByType == null) {
-                    transformersByType = Maps.newHashMap();
-                    transformers.put(transformer.getOutputTypeId(), transformersByType);
-                }
-                transformersByType.put(transformer.getInputTypeId(), transformer);
+    @Override
+    public void pluginAdded(Injector pluginInjector) {
+        for(Transformer<?, ?> transformer : pluginInjector.getInstance(new Key<Iterable<? extends Transformer<?, ?>>>() {})) {
+            Map<String, Transformer<?, ?>> transformersByType = transformers.get(transformer.getOutputTypeId());
+            if(transformersByType == null) {
+                transformersByType = Maps.newHashMap();
+                transformers.put(transformer.getOutputTypeId(), transformersByType);
             }
+            transformersByType.put(transformer.getInputTypeId(), transformer);
         }
+    }
 
-        @Override
-        public void pluginRemoved(Injector pluginInjector) {
-            // todo remove them
-        }
+    @Override
+    public void pluginRemoved(Injector pluginInjector) {
+        // todo remove them
     }
 }

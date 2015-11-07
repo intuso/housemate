@@ -13,6 +13,8 @@ import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.Comparator;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
+import com.intuso.housemate.plugin.api.internal.PluginResource;
+import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.housemate.plugin.manager.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
@@ -20,7 +22,6 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  */
@@ -41,16 +42,16 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     public final static String VALUE_1_DESCRIPTION = "The second value to compare";
 
     private final Log log;
-    private final TypeSerialiser<com.intuso.housemate.plugin.api.internal.ComparisonType> comparisonTypeSerialiser;
+    private final TypeSerialiser<TypeInfo> comparisonTypeSerialiser;
     private final TypeSerialiser<ValueSource> sourceTypeSerialiser;
 
-    private final Map<com.intuso.housemate.plugin.api.internal.ComparisonType, Map<String, Comparator<?>>> comparators = Maps.newHashMap();
+    private final Map<String, Map<String, Comparator<?>>> comparators = Maps.newHashMap();
 
     @Inject
     public ComparisonType(Log log,
                           ListenersFactory listenersFactory,
                           RealList<RealType<?>> types,
-                          TypeSerialiser<com.intuso.housemate.plugin.api.internal.ComparisonType> comparisonTypeSerialiser,
+                          @com.intuso.housemate.server.plugin.main.ioc.Comparator TypeSerialiser<TypeInfo> comparisonTypeSerialiser,
                           TypeSerialiser<ValueSource> sourceTypeSerialiser,
                           PluginManager pluginManager) {
         super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
@@ -71,7 +72,7 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
         if(comparisonInstance == null)
             return null;
         TypeInstance result = new TypeInstance();
-        result.getChildValues().getChildren().put(COMPARISON_TYPE_ID, new TypeInstances(comparisonTypeSerialiser.serialise(comparisonInstance.getComparisonType())));
+        result.getChildValues().getChildren().put(COMPARISON_TYPE_ID, new TypeInstances(comparisonTypeSerialiser.serialise(comparisonInstance.getTypeInfo())));
         result.getChildValues().getChildren().put(VALUE_0_ID, new TypeInstances(sourceTypeSerialiser.serialise(comparisonInstance.getFirstValueSource())));
         result.getChildValues().getChildren().put(VALUE_1_ID, new TypeInstances(sourceTypeSerialiser.serialise(comparisonInstance.getSecondValueSource())));
         return result;
@@ -89,18 +90,19 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
         ValueSource value1 = null;
         if(instance.getChildValues().getChildren().get(VALUE_1_ID) != null && instance.getChildValues().getChildren().get(VALUE_1_ID).getElements().size() != 0)
             value1 = sourceTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(VALUE_1_ID).getElements().get(0));
-        com.intuso.housemate.plugin.api.internal.ComparisonType comparisonType = comparisonTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(COMPARISON_TYPE_ID).getElements().get(0));
-        return new Comparison(comparisonType, comparators.get(comparisonType), value0, value1);
+        TypeInfo comparisonTypeInfo = comparisonTypeSerialiser.deserialise(instance.getChildValues().getChildren().get(COMPARISON_TYPE_ID).getElements().get(0));
+        return new Comparison(comparisonTypeInfo, comparators.get(comparisonTypeInfo), value0, value1);
     }
 
     @Override
     public void pluginAdded(Injector pluginInjector) {
-        for(Comparator<?> comparator : pluginInjector.getInstance(new Key<Set<Comparator<?>>>() {})) {
-            Map<String, Comparator<?>> comparatorsByType = comparators.get(comparator.getComparisonType());
+        for(PluginResource<? extends Comparator<?>> comparatorResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends Comparator<?>>>>() {})) {
+            Map<String, Comparator<?>> comparatorsByType = comparators.get(comparatorResource.getTypeInfo().id());
             if(comparatorsByType == null) {
                 comparatorsByType = Maps.newHashMap();
-                comparators.put(comparator.getComparisonType(), comparatorsByType);
+                comparators.put(comparatorResource.getTypeInfo().id(), comparatorsByType);
             }
+            Comparator<?> comparator = comparatorResource.getResource();
             comparatorsByType.put(comparator.getTypeId(), comparator);
         }
     }

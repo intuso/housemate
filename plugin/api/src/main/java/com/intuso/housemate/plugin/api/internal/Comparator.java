@@ -6,12 +6,6 @@ package com.intuso.housemate.plugin.api.internal;
 public interface Comparator<O> {
 
     /**
-     * Gets the operator for the comparison
-     * @return the operator for the comparison
-     */
-    public ComparisonType getComparisonType();
-
-    /**
      * Gets the type id that the comparison is performed on
      * @return the type that the comparison is performed on
      */
