@@ -1,6 +1,6 @@
 package com.intuso.housemate.comms.api.internal;
 
-import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.api.internal.access.ConnectionStatus;
 import com.intuso.housemate.comms.api.internal.payload.StringPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -27,35 +27,24 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
     private final Map<String, Message.Receiver<?>> receivers = new ConcurrentHashMap<>();
 
     private String routerId;
-    private ServerConnectionStatus routerServerConnectionStatus = null;
-    private ServerConnectionStatus serverConnectionStatus;
-    private ServerConnectionStatus listenerToldServerConnectionStatus;
+    private ConnectionStatus routerConnectionStatus = null;
+    private ConnectionStatus serverConnectionStatus = ConnectionStatus.DisconnectedPermanently;
+    private ConnectionStatus listenerToldConnectionStatus;
 
     /**
      * @param log the log
      * @param listenersFactory
-     *
      */
     public BaseRouter(final Log log, ListenersFactory listenersFactory) {
-        this(log, listenersFactory, null);
-    }
-
-    /**
-     * @param log the log
-     * @param listenersFactory
-     * @param routerServerConnectionStatus
-     */
-    public BaseRouter(final Log log, ListenersFactory listenersFactory, ServerConnectionStatus routerServerConnectionStatus) {
         this.log = log;
         this.listeners = listenersFactory.create();
-        this.routerServerConnectionStatus = routerServerConnectionStatus;
         this.messageDistributor = new MessageDistributor(listenersFactory);
         this.messageSequencer = new MessageSequencer(messageDistributor);
         messageDistributor.registerReceiver(Router.ROUTER_ID, new Message.Receiver<StringPayload>() {
             @Override
             public void messageReceived(Message<StringPayload> message) {
                 routerId = message.getPayload().getValue();
-                setServerConnectionStatus(BaseRouter.this.routerServerConnectionStatus, ServerConnectionStatus.ConnectedToServer);
+                setConnectionStatuses(ConnectionStatus.ConnectedToServer, ConnectionStatus.ConnectedToServer);
             }
         });
     }
@@ -80,28 +69,32 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
         return messageDistributor.registerReceiver(type, receiver);
     }
 
-    protected void setRouterServerConnectionStatus(ServerConnectionStatus routerServerConnectionStatus) {
-        setServerConnectionStatus(routerServerConnectionStatus, serverConnectionStatus);
+    protected void setServerConnectionStatus(ConnectionStatus serverConnectionStatus) {
+        setConnectionStatuses(routerConnectionStatus, serverConnectionStatus);
     }
 
-    public ServerConnectionStatus getServerConnectionStatus() {
+    protected void setRouterConnectionStatus(ConnectionStatus routerConnectionStatus) {
+        setConnectionStatuses(routerConnectionStatus, serverConnectionStatus);
+    }
+
+    public ConnectionStatus getServerConnectionStatus() {
         return serverConnectionStatus;
     }
 
-    private synchronized void setServerConnectionStatus(ServerConnectionStatus routerServerConnectionStatus, ServerConnectionStatus serverConnectionStatus) {
-        this.routerServerConnectionStatus = routerServerConnectionStatus;
-        this.serverConnectionStatus = serverConnectionStatus;
-        if (routerServerConnectionStatus == ServerConnectionStatus.ConnectedToServer)
-            tellRegistrations(serverConnectionStatus);
-        else if(routerServerConnectionStatus == null)
-            tellRegistrations(ServerConnectionStatus.DisconnectedPermanently);
+    private synchronized void setConnectionStatuses(ConnectionStatus routerConnectionStatus, ConnectionStatus connectionStatus) {
+        this.routerConnectionStatus = routerConnectionStatus;
+        this.serverConnectionStatus = connectionStatus;
+        if (routerConnectionStatus == ConnectionStatus.ConnectedToServer)
+            tellRegistrations(connectionStatus);
+        else if(connectionStatus == ConnectionStatus.ConnectedToServer || connectionStatus == ConnectionStatus.DisconnectedTemporarily)
+            tellRegistrations(ConnectionStatus.DisconnectedTemporarily);
         else
-            tellRegistrations(ServerConnectionStatus.DisconnectedTemporarily);
+            tellRegistrations(ConnectionStatus.DisconnectedPermanently);
     }
 
-    private synchronized void tellRegistrations(ServerConnectionStatus status) {
-        if(listenerToldServerConnectionStatus != status) {
-            listenerToldServerConnectionStatus = status;
+    private synchronized void tellRegistrations(ConnectionStatus status) {
+        if(listenerToldConnectionStatus != status) {
+            listenerToldConnectionStatus = status;
             for(ClientConnection.Listener<? super ROUTER> listener : listeners)
                 listener.serverConnectionStatusChanged(getThis(), status);
         }
@@ -159,7 +152,7 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
 
     protected void connecting() {
         if(routerId != null)
-            setServerConnectionStatus(routerServerConnectionStatus, ServerConnectionStatus.Connecting);
+            setServerConnectionStatus(ConnectionStatus.Connecting);
     }
 
     protected void connectionEstablished() {
@@ -168,17 +161,17 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
             sendMessageNow(new Message<>(AccessManager.ROOT_PATH, Router.ROUTER_CONNECTED, new StringPayload(routerId)));
         } else {
             sendMessageNow(new Message<>(AccessManager.ROOT_PATH, Router.ROUTER_CONNECTED, new StringPayload(null)));
-            setServerConnectionStatus(routerServerConnectionStatus, ServerConnectionStatus.ConnectedToRouter);
+            setServerConnectionStatus(ConnectionStatus.ConnectedToRouter);
         }
     }
 
     protected void connectionLost(boolean temporary) {
         // set the connection status
         if(temporary) {
-            setServerConnectionStatus(routerServerConnectionStatus, ServerConnectionStatus.DisconnectedTemporarily);
+            setServerConnectionStatus(ConnectionStatus.DisconnectedTemporarily);
         } else {
-            setServerConnectionStatus(routerServerConnectionStatus, ServerConnectionStatus.DisconnectedPermanently);
-            routerServerConnectionStatus = null;
+            setServerConnectionStatus(ConnectionStatus.DisconnectedPermanently);
+            routerConnectionStatus = null;
             routerId = null;
         }
     }

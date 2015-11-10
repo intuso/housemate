@@ -1,6 +1,6 @@
 package com.intuso.housemate.comms.api.internal;
 
-import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.api.internal.access.ConnectionStatus;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -13,7 +13,7 @@ public interface Router<ROUTER extends Router> extends ClientConnection, Message
     String ROUTER_CONNECTED = "router-connected";
     String ROUTER_ID = "router-id";
 
-    ServerConnectionStatus getServerConnectionStatus();
+    ConnectionStatus getServerConnectionStatus();
 
     /**
      * Adds a listener to the root object

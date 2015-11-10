@@ -12,7 +12,7 @@ import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.object.v1_0.api.*;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
@@ -145,8 +145,8 @@ public class HousemateTweeter {
         Router<?> router = injector.getInstance(new Key<Router<?>>() {});
         router.addListener(new Router.Listener<Router>() {
             @Override
-            public void serverConnectionStatusChanged(Router clientConnection, ServerConnectionStatus serverConnectionStatus) {
-                switch (serverConnectionStatus) {
+            public void serverConnectionStatusChanged(Router clientConnection, ConnectionStatus connectionStatus) {
+                switch (connectionStatus) {
                     case DisconnectedPermanently:
                         log.d("Disconnected permanently from server");
                         tweet("Disconnected permanently from server");

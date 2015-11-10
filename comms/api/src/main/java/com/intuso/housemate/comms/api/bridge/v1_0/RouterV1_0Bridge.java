@@ -3,7 +3,7 @@ package com.intuso.housemate.comms.api.bridge.v1_0;
 import com.google.inject.Inject;
 import com.intuso.housemate.comms.v1_0.api.Message;
 import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -12,23 +12,23 @@ import com.intuso.utilities.listener.ListenerRegistration;
 public class RouterV1_0Bridge implements Router<RouterV1_0Bridge> {
 
     private final MessageMapper messageMapper;
-    private final ServerConnectionStatusMapper serverConnectionStatusMapper;
+    private final ConnectionStatusMapper connectionStatusMapper;
     private final ReceiverBridgeReverse.Factory receiverBridgeReverseFactory;
     private final com.intuso.housemate.comms.api.internal.Router<?> router;
     private final RouterListenerBridgeReverse.Factory routerListenerBridgeReverseFactory;
 
     @Inject
-    public RouterV1_0Bridge(MessageMapper messageMapper, ServerConnectionStatusMapper serverConnectionStatusMapper, ReceiverBridgeReverse.Factory receiverBridgeReverseFactory, com.intuso.housemate.comms.api.internal.Router<?> router, RouterListenerBridgeReverse.Factory routerListenerBridgeReverseFactory) {
+    public RouterV1_0Bridge(MessageMapper messageMapper, ConnectionStatusMapper connectionStatusMapper, ReceiverBridgeReverse.Factory receiverBridgeReverseFactory, com.intuso.housemate.comms.api.internal.Router<?> router, RouterListenerBridgeReverse.Factory routerListenerBridgeReverseFactory) {
         this.messageMapper = messageMapper;
-        this.serverConnectionStatusMapper = serverConnectionStatusMapper;
+        this.connectionStatusMapper = connectionStatusMapper;
         this.receiverBridgeReverseFactory = receiverBridgeReverseFactory;
         this.router = router;
         this.routerListenerBridgeReverseFactory = routerListenerBridgeReverseFactory;
     }
 
     @Override
-    public ServerConnectionStatus getServerConnectionStatus() {
-        return serverConnectionStatusMapper.map(router.getServerConnectionStatus());
+    public ConnectionStatus getServerConnectionStatus() {
+        return connectionStatusMapper.map(router.getServerConnectionStatus());
     }
 
     @Override

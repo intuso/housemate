@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.Router;
-import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.api.internal.access.ConnectionStatus;
 
 /**
  * Created by tomc on 02/10/15.
@@ -30,8 +30,8 @@ public class ReceiverBridgeReverse<ROUTER extends Router<?>> implements Router.R
     }
 
     @Override
-    public void serverConnectionStatusChanged(ROUTER router, ServerConnectionStatus serverConnectionStatus) {
-        receiver.serverConnectionStatusChanged(this.router, com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus.valueOf(serverConnectionStatus.name()));
+    public void serverConnectionStatusChanged(ROUTER router, ConnectionStatus connectionStatus) {
+        receiver.serverConnectionStatusChanged(this.router, com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus.valueOf(connectionStatus.name()));
     }
 
     @Override

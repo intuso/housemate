@@ -6,7 +6,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.serialiser.javabin.ioc.JavabinSerialiserClientModule;
 import com.intuso.housemate.comms.v1_0.transport.socket.client.ioc.SocketClientModule;
 import com.intuso.housemate.object.v1_0.api.TypeInstance;
@@ -31,6 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ContextListener extends GuiceServletContextListener {
 
     public static Injector INJECTOR;
+    private boolean connectedRouter;
 
     public ContextListener() {
         this(createInjector());
@@ -77,10 +78,12 @@ public class ContextListener extends GuiceServletContextListener {
         router.addListener(new Router.Listener<Router>() {
 
             @Override
-            public void serverConnectionStatusChanged(Router router, ServerConnectionStatus serverConnectionStatus) {
-                log.d("Server connection status: " + serverConnectionStatus);
-                if (serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently)
+            public void serverConnectionStatusChanged(Router router, ConnectionStatus connectionStatus) {
+                log.d("Server connection status: " + connectionStatus);
+                if (connectionStatus == ConnectionStatus.DisconnectedPermanently) {
+                    connectedRouter = true;
                     router.connect();
+                }
             }
 
             @Override
@@ -88,13 +91,16 @@ public class ContextListener extends GuiceServletContextListener {
                 log.d("Server instance changed");
             }
         });
-        if(router.getServerConnectionStatus() == ServerConnectionStatus.DisconnectedPermanently)
+        if(router.getServerConnectionStatus() == ConnectionStatus.DisconnectedPermanently) {
+            connectedRouter = true;
             router.connect();
+        }
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        INJECTOR.getInstance(new Key<Router<?>>() {}).disconnect();
+        if(connectedRouter)
+            INJECTOR.getInstance(new Key<Router<?>>() {}).disconnect();
         super.contextDestroyed(servletContextEvent);
     }
 

@@ -14,7 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.platform.android.service.R;
 import com.intuso.housemate.platform.android.service.service.ConnectionService;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -90,11 +90,11 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
     }
 
     @Override
-    public void serverConnectionStatusChanged(Router router, final ServerConnectionStatus serverConnectionStatus) {
+    public void serverConnectionStatusChanged(Router router, final ConnectionStatus connectionStatus) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((TextView) findViewById(R.id.server_connection_status)).setText("Server Connection Status: " + serverConnectionStatus);
+                ((TextView) findViewById(R.id.server_connection_status)).setText("Server Connection Status: " + connectionStatus);
             }
         });
     }

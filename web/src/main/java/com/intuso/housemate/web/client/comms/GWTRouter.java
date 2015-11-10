@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.comms.v1_0.api.BaseRouter;
 import com.intuso.housemate.comms.v1_0.api.ClientConnection;
 import com.intuso.housemate.comms.v1_0.api.Message;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 import com.intuso.housemate.web.client.NotConnectedException;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
@@ -83,10 +83,10 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
                 }
             }
         });
-        registerRouterReceiver(ClientConnection.SERVER_CONNECTION_STATUS_TYPE, new Message.Receiver<ServerConnectionStatus>() {
+        registerRouterReceiver(ClientConnection.SERVER_CONNECTION_STATUS_TYPE, new Message.Receiver<ConnectionStatus>() {
             @Override
-            public void messageReceived(Message<ServerConnectionStatus> message) {
-                setRouterServerConnectionStatus(message.getPayload());
+            public void messageReceived(Message<ConnectionStatus> message) {
+                setRouterConnectionStatus(message.getPayload());
             }
         });
     }

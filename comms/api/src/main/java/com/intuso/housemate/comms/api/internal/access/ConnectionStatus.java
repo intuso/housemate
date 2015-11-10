@@ -5,7 +5,7 @@ import com.intuso.housemate.comms.api.internal.Message;
 /**
  * Enum of possible connection statuses for a router
  */
-public enum ServerConnectionStatus implements Message.Payload {
+public enum ConnectionStatus implements Message.Payload {
     DisconnectedPermanently,
     DisconnectedTemporarily,
     Connecting,

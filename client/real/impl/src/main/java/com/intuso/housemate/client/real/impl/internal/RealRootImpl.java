@@ -17,7 +17,7 @@ import com.intuso.housemate.client.real.impl.internal.factory.user.AddUserComman
 import com.intuso.housemate.comms.api.internal.*;
 import com.intuso.housemate.comms.api.internal.access.ApplicationDetails;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
-import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.api.internal.access.ConnectionStatus;
 import com.intuso.housemate.comms.api.internal.payload.*;
 import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.housemate.object.api.internal.ApplicationInstance;
@@ -132,7 +132,7 @@ public class RealRootImpl
             }
 
             @Override
-            public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
+            public void serverConnectionStatusChanged(ClientConnection clientConnection, ConnectionStatus connectionStatus) {
 
             }
 

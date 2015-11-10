@@ -12,7 +12,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.comms.v1_0.api.BaseRouter;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.comms.v1_0.api.Message;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.platform.android.common.JsonMessage;
 import com.intuso.housemate.platform.android.common.MessageCodes;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -189,8 +189,8 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
         @Override
         public void run() {
             while(!isInterrupted()
-                    && (getServerConnectionStatus() == ServerConnectionStatus.Connecting
-                            || getServerConnectionStatus() == ServerConnectionStatus.DisconnectedTemporarily)) {
+                    && (getServerConnectionStatus() == ConnectionStatus.Connecting
+                            || getServerConnectionStatus() == ConnectionStatus.DisconnectedTemporarily)) {
                 try {
                     getLog().d("App Router: Creating server registration");
                     if(id == null) {

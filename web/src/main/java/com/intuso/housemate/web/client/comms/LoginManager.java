@@ -4,7 +4,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.event.CredentialsSubmittedEvent;
 import com.intuso.housemate.web.client.handler.CredentialsSubmittedHandler;
@@ -42,9 +42,9 @@ public class LoginManager implements CredentialsSubmittedHandler, Router.Listene
     }
 
     @Override
-    public void serverConnectionStatusChanged(Router root, ServerConnectionStatus serverConnectionStatus) {
-        boolean connectedToServer = serverConnectionStatus == ServerConnectionStatus.ConnectedToServer
-                || serverConnectionStatus == ServerConnectionStatus.DisconnectedTemporarily;
+    public void serverConnectionStatusChanged(Router root, ConnectionStatus connectionStatus) {
+        boolean connectedToServer = connectionStatus == ConnectionStatus.ConnectedToServer
+                || connectionStatus == ConnectionStatus.DisconnectedTemporarily;
         if(this.connectedToServer != connectedToServer) {
             this.connectedToServer = connectedToServer;
             if(connectedToServer)

@@ -7,7 +7,7 @@ import com.intuso.housemate.comms.v1_0.api.ClientConnection;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.comms.v1_0.api.Message;
 import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 import com.intuso.housemate.comms.v1_0.serialiser.api.Serialiser;
 import com.intuso.utilities.log.Log;
@@ -172,8 +172,8 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
     }
 
     @Override
-    public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
-        _sendMessage(new Message(new String[] {""}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
+    public void serverConnectionStatusChanged(ClientConnection clientConnection, ConnectionStatus connectionStatus) {
+        _sendMessage(new Message(new String[] {""}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, connectionStatus));
     }
 
     @Override

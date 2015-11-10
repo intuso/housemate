@@ -7,7 +7,6 @@ import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.comms.api.internal.BaseRouter;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.Message;
-import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
 import com.intuso.housemate.plugin.api.internal.ExternalClientRouter;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
@@ -30,7 +29,7 @@ public final class MainRouter extends BaseRouter<MainRouter> {
 
     @Inject
     public MainRouter(Log log, ListenersFactory listenersFactory, Injector injector) {
-        super(log, listenersFactory, ServerConnectionStatus.ConnectedToServer);
+        super(log, listenersFactory);
         this.injector = injector;
     }
 	

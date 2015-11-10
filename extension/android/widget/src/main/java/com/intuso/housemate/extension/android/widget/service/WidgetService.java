@@ -19,7 +19,7 @@ import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.handler.WidgetHandler;
@@ -145,7 +145,7 @@ public class WidgetService extends HousemateService {
                           });
         clientHelper.getRouter().addListener(new Router.Listener<Router>() {
             @Override
-            public void serverConnectionStatusChanged(Router router, ServerConnectionStatus serverConnectionStatus) {
+            public void serverConnectionStatusChanged(Router router, ConnectionStatus connectionStatus) {
                 updateStatus();
             }
 
@@ -255,7 +255,7 @@ public class WidgetService extends HousemateService {
         Status oldStatus = status;
         if (!networkAvailable)
             status = Status.NO_NETWORK;
-        else if (getRouter().getServerConnectionStatus() != ServerConnectionStatus.ConnectedToServer && getRouter().getServerConnectionStatus() != ServerConnectionStatus.DisconnectedTemporarily)
+        else if (getRouter().getServerConnectionStatus() != ConnectionStatus.ConnectedToServer && getRouter().getServerConnectionStatus() != ConnectionStatus.DisconnectedTemporarily)
             status = Status.NOT_CONNECTED;
         else if (getRoot().getApplicationInstanceStatus() != ApplicationInstance.Status.Allowed) {
             status = Status.NOT_ALLOWED;

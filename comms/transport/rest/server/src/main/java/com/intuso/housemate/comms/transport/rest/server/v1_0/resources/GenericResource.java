@@ -2,7 +2,7 @@ package com.intuso.housemate.comms.transport.rest.server.v1_0.resources;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.comms.v1_0.api.*;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 
 import javax.servlet.http.HttpServletRequest;
@@ -89,8 +89,8 @@ public class GenericResource {
         }
 
         @Override
-        public void serverConnectionStatusChanged(ClientConnection clientConnection, ServerConnectionStatus serverConnectionStatus) {
-            messageReceived(new Message(new String[] {""}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, serverConnectionStatus));
+        public void serverConnectionStatusChanged(ClientConnection clientConnection, ConnectionStatus connectionStatus) {
+            messageReceived(new Message(new String[] {""}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, connectionStatus));
         }
 
         @Override

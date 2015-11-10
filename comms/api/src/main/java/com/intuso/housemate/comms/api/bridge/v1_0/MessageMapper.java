@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.intuso.housemate.comms.api.internal.*;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
-import com.intuso.housemate.comms.api.internal.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.api.internal.access.ConnectionStatus;
 import com.intuso.housemate.comms.api.internal.payload.*;
 import com.intuso.housemate.object.api.bridge.v1_0.*;
 
@@ -14,7 +14,7 @@ import com.intuso.housemate.object.api.bridge.v1_0.*;
 public class MessageMapper {
 
     private final ApplicationDetailsMapper applicationDetailsMapper;
-    private final ServerConnectionStatusMapper serverConnectionStatusMapper;
+    private final ConnectionStatusMapper connectionStatusMapper;
     private final ApplicationStatusMapper applicationStatusMapper;
     private final ApplicationInstanceStatusMapper applicationInstanceStatusMapper;
     private final ChildOverviewMapper childOverviewMapper;
@@ -26,9 +26,9 @@ public class MessageMapper {
     private final TypeInstanceMapMapper typeInstanceMapMapper;
 
     @Inject
-    public MessageMapper(ApplicationDetailsMapper applicationDetailsMapper, ServerConnectionStatusMapper serverConnectionStatusMapper, ApplicationStatusMapper applicationStatusMapper, ApplicationInstanceStatusMapper applicationInstanceStatusMapper, ChildOverviewMapper childOverviewMapper, DataMapper dataMapper, TreeDataMapper treeDataMapper, TreeLoadInfoMapper treeLoadInfoMapper, TypeInstanceMapper typeInstanceMapper, TypeInstancesMapper typeInstancesMapper, TypeInstanceMapMapper typeInstanceMapMapper) {
+    public MessageMapper(ApplicationDetailsMapper applicationDetailsMapper, ConnectionStatusMapper connectionStatusMapper, ApplicationStatusMapper applicationStatusMapper, ApplicationInstanceStatusMapper applicationInstanceStatusMapper, ChildOverviewMapper childOverviewMapper, DataMapper dataMapper, TreeDataMapper treeDataMapper, TreeLoadInfoMapper treeLoadInfoMapper, TypeInstanceMapper typeInstanceMapper, TypeInstancesMapper typeInstancesMapper, TypeInstanceMapMapper typeInstanceMapMapper) {
         this.applicationDetailsMapper = applicationDetailsMapper;
-        this.serverConnectionStatusMapper = serverConnectionStatusMapper;
+        this.connectionStatusMapper = connectionStatusMapper;
         this.applicationStatusMapper = applicationStatusMapper;
         this.applicationInstanceStatusMapper = applicationInstanceStatusMapper;
         this.childOverviewMapper = childOverviewMapper;
@@ -91,8 +91,8 @@ public class MessageMapper {
         } else if(payload instanceof com.intuso.housemate.comms.v1_0.api.payload.CommandData.FailedPayload) {
             com.intuso.housemate.comms.v1_0.api.payload.CommandData.FailedPayload failedPayload = (com.intuso.housemate.comms.v1_0.api.payload.CommandData.FailedPayload) payload;
             return (PAYLOAD) new CommandData.FailedPayload(failedPayload.getOpId(), failedPayload.getCause());
-        } else if(payload instanceof com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus)
-            return (PAYLOAD) serverConnectionStatusMapper.map((com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus) payload);
+        } else if(payload instanceof com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus)
+            return (PAYLOAD) connectionStatusMapper.map((com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus) payload);
         else if(payload instanceof com.intuso.housemate.comms.v1_0.api.payload.ApplicationData.StatusPayload)
             return (PAYLOAD) new ApplicationData.StatusPayload(applicationStatusMapper.map(((com.intuso.housemate.comms.v1_0.api.payload.ApplicationData.StatusPayload) payload).getStatus()));
         else if(payload instanceof com.intuso.housemate.comms.v1_0.api.payload.ApplicationInstanceData.StatusPayload)
@@ -149,8 +149,8 @@ public class MessageMapper {
         } else if(payload instanceof CommandData.FailedPayload) {
             CommandData.FailedPayload failedPayload = (CommandData.FailedPayload) payload;
             return (PAYLOAD) new com.intuso.housemate.comms.v1_0.api.payload.CommandData.FailedPayload(failedPayload.getOpId(), failedPayload.getCause());
-        } else if(payload instanceof ServerConnectionStatus)
-            return (PAYLOAD) serverConnectionStatusMapper.map((ServerConnectionStatus) payload);
+        } else if(payload instanceof ConnectionStatus)
+            return (PAYLOAD) connectionStatusMapper.map((ConnectionStatus) payload);
         else if(payload instanceof ApplicationData.StatusPayload)
             return (PAYLOAD) new com.intuso.housemate.comms.v1_0.api.payload.ApplicationData.StatusPayload(applicationStatusMapper.map(((ApplicationData.StatusPayload) payload).getStatus()));
         else if(payload instanceof ApplicationInstanceData.StatusPayload)

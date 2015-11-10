@@ -13,7 +13,7 @@ import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.housemate.object.v1_0.api.Application;
 import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
@@ -36,8 +36,8 @@ public class Housemate implements EntryPoint {
     private final Router.Listener<Router> routerRootListener = new Router.Listener<Router>() {
 
         @Override
-        public void serverConnectionStatusChanged(Router root, ServerConnectionStatus serverConnectionStatus) {
-            if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
+        public void serverConnectionStatusChanged(Router root, ConnectionStatus connectionStatus) {
+            if(connectionStatus == ConnectionStatus.DisconnectedPermanently) {
                 resetContent();
                 INJECTOR.getRouter().connect();
             }
@@ -61,18 +61,18 @@ public class Housemate implements EntryPoint {
             if (applicationInstanceStatus == ApplicationInstance.Status.Allowed) {
                 INJECTOR.getProxyRoot().clearLoadedObjects();
                 INJECTOR.getProxyRoot().loadChildOverviews();
-                TreeLoadInfo clientLoadInfo = new TreeLoadInfo("*");
-                clientLoadInfo.getChildren().put(ServerData.APPLICATIONS_ID, new TreeLoadInfo(ServerData.APPLICATIONS_ID));
-                clientLoadInfo.getChildren().put(ServerData.AUTOMATIONS_ID, new TreeLoadInfo(ServerData.AUTOMATIONS_ID));
-                clientLoadInfo.getChildren().put(ServerData.DEVICES_ID, new TreeLoadInfo(ServerData.DEVICES_ID));
-                clientLoadInfo.getChildren().put(ServerData.HARDWARES_ID, new TreeLoadInfo(ServerData.HARDWARES_ID));
-                clientLoadInfo.getChildren().put(ServerData.TYPES_ID, new TreeLoadInfo(ServerData.TYPES_ID));
-                clientLoadInfo.getChildren().put(ServerData.USERS_ID, new TreeLoadInfo(ServerData.USERS_ID));
-                clientLoadInfo.getChildren().put(ServerData.ADD_AUTOMATION_ID, new TreeLoadInfo(ServerData.ADD_AUTOMATION_ID, new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE)));
-                clientLoadInfo.getChildren().put(ServerData.ADD_DEVICE_ID, new TreeLoadInfo(ServerData.ADD_DEVICE_ID, new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE)));
-                clientLoadInfo.getChildren().put(ServerData.ADD_HARDWARE_ID, new TreeLoadInfo(ServerData.ADD_HARDWARE_ID, new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE)));
-                clientLoadInfo.getChildren().put(ServerData.ADD_USER_ID, new TreeLoadInfo(ServerData.ADD_USER_ID, new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE)));
-                TreeLoadInfo clientsLoadInfo = new TreeLoadInfo(ProxyRoot.SERVERS_ID, clientLoadInfo);
+                TreeLoadInfo serverLoadInfo = new TreeLoadInfo("*");
+                serverLoadInfo.getChildren().put(ServerData.APPLICATIONS_ID, new TreeLoadInfo(ServerData.APPLICATIONS_ID));
+                serverLoadInfo.getChildren().put(ServerData.AUTOMATIONS_ID, new TreeLoadInfo(ServerData.AUTOMATIONS_ID));
+                serverLoadInfo.getChildren().put(ServerData.DEVICES_ID, new TreeLoadInfo(ServerData.DEVICES_ID));
+                serverLoadInfo.getChildren().put(ServerData.HARDWARES_ID, new TreeLoadInfo(ServerData.HARDWARES_ID));
+                serverLoadInfo.getChildren().put(ServerData.TYPES_ID, new TreeLoadInfo(ServerData.TYPES_ID));
+                serverLoadInfo.getChildren().put(ServerData.USERS_ID, new TreeLoadInfo(ServerData.USERS_ID));
+                serverLoadInfo.getChildren().put(ServerData.ADD_AUTOMATION_ID, new TreeLoadInfo(ServerData.ADD_AUTOMATION_ID, new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE)));
+                serverLoadInfo.getChildren().put(ServerData.ADD_DEVICE_ID, new TreeLoadInfo(ServerData.ADD_DEVICE_ID, new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE)));
+                serverLoadInfo.getChildren().put(ServerData.ADD_HARDWARE_ID, new TreeLoadInfo(ServerData.ADD_HARDWARE_ID, new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE)));
+                serverLoadInfo.getChildren().put(ServerData.ADD_USER_ID, new TreeLoadInfo(ServerData.ADD_USER_ID, new TreeLoadInfo(RemoteObject.EVERYTHING_RECURSIVE)));
+                TreeLoadInfo serversLoadInfo = new TreeLoadInfo(ProxyRoot.SERVERS_ID, serverLoadInfo);
                 INJECTOR.getProxyRoot().load(new LoadManager(new LoadManager.Callback() {
                     @Override
                     public void failed(List<String> errors) {
@@ -90,7 +90,7 @@ public class Housemate implements EntryPoint {
                             place = new DevicesPlace();
                         INJECTOR.getPlaceController().goTo(place);
                     }
-                }, Lists.newArrayList(clientsLoadInfo)));
+                }, Lists.newArrayList(serversLoadInfo)));
             }
         }
 

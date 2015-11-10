@@ -4,7 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ServerConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.serialiser.javabin.JavabinSerialiser;
 import com.intuso.housemate.comms.v1_0.transport.socket.client.SocketClient;
 import com.intuso.housemate.comms.v1_0.transport.socket.client.ioc.SocketClientModule;
@@ -75,9 +75,9 @@ public class ConnectionService extends Service {
         routerListenerRegistration = router.addListener(new Router.Listener<Router>() {
 
             @Override
-            public void serverConnectionStatusChanged(Router root, ServerConnectionStatus serverConnectionStatus) {
-                log.d("Server connection status: " + serverConnectionStatus);
-                if(serverConnectionStatus == ServerConnectionStatus.DisconnectedPermanently) {
+            public void serverConnectionStatusChanged(Router root, ConnectionStatus connectionStatus) {
+                log.d("Server connection status: " + connectionStatus);
+                if(connectionStatus == ConnectionStatus.DisconnectedPermanently) {
                     router.connect();
                 }
             }
