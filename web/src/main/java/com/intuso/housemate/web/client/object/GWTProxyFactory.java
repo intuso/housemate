@@ -22,6 +22,7 @@ public class GWTProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObj
     private final ObjectFactory<CommandData, GWTProxyCommand> commandFactory;
     private final ObjectFactory<ConditionData, GWTProxyCondition> conditionFactory;
     private final ObjectFactory<DeviceData, GWTProxyDevice> deviceFactory;
+    private final ObjectFactory<FeatureData, GWTProxyFeature> featureFactory;
     private final ObjectFactory<HardwareData, GWTProxyHardware> hardwareFactory;
     private final ObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory;
     private final ObjectFactory<OptionData, GWTProxyOption> optionFactory;
@@ -42,6 +43,7 @@ public class GWTProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObj
                            ObjectFactory<CommandData, GWTProxyCommand> commandFactory,
                            ObjectFactory<ConditionData, GWTProxyCondition> conditionFactory,
                            ObjectFactory<DeviceData, GWTProxyDevice> deviceFactory,
+                           ObjectFactory<FeatureData, GWTProxyFeature> featureFactory,
                            ObjectFactory<HardwareData, GWTProxyHardware> hardwareFactory,
                            ObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>> listFactory,
                            ObjectFactory<OptionData, GWTProxyOption> optionFactory,
@@ -60,6 +62,7 @@ public class GWTProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObj
         this.commandFactory = commandFactory;
         this.conditionFactory = conditionFactory;
         this.deviceFactory = deviceFactory;
+        this.featureFactory = featureFactory;
         this.hardwareFactory = hardwareFactory;
         this.listFactory = listFactory;
         this.optionFactory = optionFactory;
@@ -91,6 +94,8 @@ public class GWTProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObj
             return taskFactory.create((TaskData) data);
         else if(data instanceof DeviceData)
             return deviceFactory.create((DeviceData) data);
+        else if(data instanceof FeatureData)
+            return featureFactory.create((FeatureData) data);
         else if(data instanceof HardwareData)
             return hardwareFactory.create((HardwareData) data);
         else if(data instanceof ListData)

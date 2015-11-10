@@ -12,15 +12,15 @@ import java.util.Map;
  */
 public class ValuesInvocationHandler implements InvocationHandler {
 
-    private final Map<Method, RealValue<Object>> values;
+    private final Map<Method, RealValue<?>> values;
 
-    public ValuesInvocationHandler(Map<Method, RealValue<Object>> values) {
+    public ValuesInvocationHandler(Map<Method, RealValue<?>> values) {
         this.values = values;
     }
 
     @Override
     public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
-        RealValue<Object> value = values.get(method);
+        RealValue<?> value = values.get(method);
         if(value == null)
             throw new HousemateCommsException("Could not find value instance for annotated method " + method.getName());
         value.setTypedValues(objects[0]);

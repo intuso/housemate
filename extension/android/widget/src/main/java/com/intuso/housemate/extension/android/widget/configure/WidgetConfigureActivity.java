@@ -11,15 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
+import com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl;
 import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
-import com.intuso.housemate.object.v1_0.api.feature.StatefulPowerControl;
 import com.intuso.housemate.platform.android.app.HousemateActivity;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
@@ -137,7 +136,7 @@ public class WidgetConfigureActivity
 
         @Override
         public void elementAdded(AndroidProxyDevice device) {
-            if(Sets.newHashSet(device.getFeatureIds()).contains(featureId))
+            if(device.getFeatures().get(featureId) != null)
                 listAdapter.add(new DeviceInfo(client, device));
         }
 

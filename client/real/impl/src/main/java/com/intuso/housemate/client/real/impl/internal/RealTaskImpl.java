@@ -52,7 +52,7 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
                         @Assisted final RemoveCallback removeCallback) {
         super(log, listenersFactory, data);
         this.annotationProcessor = annotationProcessor;
-        removeCommand = new RealCommandImpl(log, listenersFactory, TaskData.REMOVE_ID, TaskData.REMOVE_ID, "Remove the task", Lists.<RealParameterImpl<?>>newArrayList()) {
+        removeCommand = new RealCommandImpl(log, listenersFactory, TaskData.REMOVE_ID, TaskData.REMOVE_ID, "Remove the task", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 removeCallback.removeTask(RealTaskImpl.this);
@@ -88,7 +88,7 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
             PluginResource<TaskDriver.Factory<DRIVER>> driverFactory = driverProperty.getTypedValue();
             if(driverFactory != null) {
                 driver = driverFactory.getResource().create(this);
-                annotationProcessor.process(this, driver);
+                annotationProcessor.process(driver, this);
                 errorValue.setTypedValues((String) null);
                 driverLoadedValue.setTypedValues(false);
             }

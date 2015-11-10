@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.api.internal.RealValue;
 import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
@@ -27,8 +29,13 @@ public class RealValueImpl<O> extends RealValueBaseImpl<ValueData, NoChildrenDat
      * @param type the type of the value's value
      * @param values the value's initial values
      */
-    public RealValueImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description,
-                         RealType<O> type, O... values) {
+    public RealValueImpl(Log log,
+                         ListenersFactory listenersFactory,
+                         String id,
+                         String name,
+                         String description,
+                         RealType<O> type,
+                         O... values) {
         this(log, listenersFactory, id, name, description, type, Arrays.asList(values));
     }
 
@@ -41,8 +48,14 @@ public class RealValueImpl<O> extends RealValueBaseImpl<ValueData, NoChildrenDat
      * @param type the type of the value's value
      * @param values the value's initial values
      */
-    public RealValueImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description,
-                         RealType<O> type, List<O> values) {
+    @Inject
+    public RealValueImpl(Log log,
+                         ListenersFactory listenersFactory,
+                         @Assisted("id") String id,
+                         @Assisted("name") String name,
+                         @Assisted("description") String description,
+                         @Assisted RealType<O> type,
+                         @Assisted List<O> values) {
         super(log, listenersFactory, new ValueData(id, name, description, type.getId(), RealTypeImpl.serialiseAll(type, values)), type);
     }
 }

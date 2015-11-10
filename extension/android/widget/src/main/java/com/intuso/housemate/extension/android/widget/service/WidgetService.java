@@ -27,6 +27,7 @@ import com.intuso.housemate.object.v1_0.api.Application;
 import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.platform.android.app.HousemateService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
+import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureFactory;
 
 import java.util.List;
 
@@ -73,6 +74,7 @@ public class WidgetService extends HousemateService {
     private final Binder binder = new Binder();
 
     private final HashBiMap<Integer, WidgetHandler<?>> widgetHandlers = HashBiMap.create();
+    private final AndroidProxyFeatureFactory proxyFeatureFactory;
 
     private ProxyClientHelper<AndroidProxyRoot> clientHelper;
     private AppWidgetManager appWidgetManager;
@@ -95,6 +97,10 @@ public class WidgetService extends HousemateService {
         intent.setAction(DELETE_WIDGETS_ACTION);
         intent.putExtra(WIDGET_ID, widgetIds);
         context.startService(intent);
+    }
+
+    public WidgetService() {
+        this.proxyFeatureFactory = new AndroidProxyFeatureFactory();
     }
 
     public synchronized PendingIntent makePendingIntent(WidgetHandler widgetHandler, String action) {
@@ -239,7 +245,7 @@ public class WidgetService extends HousemateService {
                 String clientId = intent.getStringExtra(CLIENT_ID);
                 String deviceId = intent.getStringExtra(DEVICE_ID);
                 String featureId = intent.getStringExtra(FEATURE_ID);
-                addWidgetHandler(widgetId, WidgetHandler.createFeatureWidget(WidgetService.this, clientId, deviceId, featureId), true);
+                addWidgetHandler(widgetId, WidgetHandler.createFeatureWidget(WidgetService.this, proxyFeatureFactory, clientId, deviceId, featureId), true);
             }
         }
         return START_STICKY;
@@ -286,6 +292,6 @@ public class WidgetService extends HousemateService {
         String[] parts = value.split(PROPERTY_VALUE_DELIMITER);
         if(parts.length != 3)
             return null;
-        return WidgetHandler.createFeatureWidget(this, parts[0], parts[1], parts[2]);
+        return WidgetHandler.createFeatureWidget(this, proxyFeatureFactory, parts[0], parts[1], parts[2]);
     }
 }

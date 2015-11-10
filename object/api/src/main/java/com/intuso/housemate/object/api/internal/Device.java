@@ -6,28 +6,18 @@ package com.intuso.housemate.object.api.internal;
  * @param <START_STOP_COMMAND> the type of the command for stopping or starting
  * @param <RUNNING_VALUE> the type of the running value
  * @param <ERROR_VALUE> the type of the error value
- * @param <COMMAND> the type of the commands
- * @param <COMMANDS> the type of the commands list
- * @param <VALUE> the type of the values
- * @param <VALUES> the type of the values list
- * @param <PROPERTY> the type of the properties
- * @param <PROPERTIES> the type of the properties list
  * @param <DEVICE> the type of the device
  */
 public interface Device<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         REMOVE_COMMAND extends Command<?, ?, ?, ?>,
         START_STOP_COMMAND extends Command<?, ?, ?, ?>,
-        COMMAND extends Command<?, ?, ?, ?>,
-        COMMANDS extends List<? extends COMMAND>,
         RUNNING_VALUE extends Value<?, ?>,
         ERROR_VALUE extends Value<?, ?>,
         DRIVER_PROPERTY extends Property<?, ?, ?>,
         DRIVER_LOADED_VALUE extends Value<?, ?>,
-        VALUE extends Value<?, ?>,
-        VALUES extends List<? extends VALUE>,
-        PROPERTY extends Property<?, ?, ?>,
-        PROPERTIES extends List<? extends PROPERTY>,
-        DEVICE extends Device<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, COMMAND, COMMANDS, RUNNING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICE>>
+        PROPERTIES extends List<? extends Property<?, ?, ?>>,
+        FEATURES extends List<? extends Feature<?, ?, ?>>,
+        DEVICE extends Device<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, PROPERTIES, FEATURES, DEVICE>>
         extends
         BaseHousemateObject<Device.Listener<? super DEVICE>>,
         Renameable<RENAME_COMMAND>,
@@ -35,39 +25,14 @@ public interface Device<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         Failable<ERROR_VALUE>,
         Removeable<REMOVE_COMMAND>,
         UsesDriver<DRIVER_PROPERTY, DRIVER_LOADED_VALUE>,
-        Command.Container<COMMANDS>,
-        Value.Container<VALUES>,
-        Property.Container<PROPERTIES> {
-
-    /**
-     * Get the ids of all the device's features
-     * @return the ids of all the device's features
-     */
-    java.util.List<String> getFeatureIds();
-
-    /**
-     * Get the ids of all the commands that do not belong to features
-     * @return the ids of all the commands that do not belong to features
-     */
-    java.util.List<String> getCustomCommandIds();
-
-    /**
-     * Get the ids of all the values that do not belong to features
-     * @return the ids of all the values that do not belong to features
-     */
-    java.util.List<String> getCustomValueIds();
-
-    /**
-     * Get the ids of all the properties that do not belong to features
-     * @return the ids of all the properties that do not belong to features
-     */
-    java.util.List<String> getCustomPropertyIds();
+        Property.Container<PROPERTIES>,
+        Feature.Container<FEATURES> {
 
     /**
      *
      * Listener interface for devices
      */
-    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> extends ObjectListener,
+    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> extends ObjectListener,
             Failable.Listener<DEVICE>,
             Renameable.Listener<DEVICE>,
             Runnable.Listener<DEVICE>,
@@ -77,7 +42,7 @@ public interface Device<RENAME_COMMAND extends Command<?, ?, ?, ?>,
      *
      * Interface to show that the implementing object has a list of devices
      */
-    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
+    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the devices list
@@ -85,9 +50,4 @@ public interface Device<RENAME_COMMAND extends Command<?, ?, ?, ?>,
          */
         DEVICES getDevices();
     }
-
-    /**
-     * Base interface for all device features
-     */
-    interface Feature {}
 }

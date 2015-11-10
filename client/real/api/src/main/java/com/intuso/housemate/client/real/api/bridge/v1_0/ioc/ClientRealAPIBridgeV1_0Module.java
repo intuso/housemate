@@ -27,6 +27,8 @@ public class ClientRealAPIBridgeV1_0Module extends AbstractModule {
         install(new FactoryModuleBuilder().build(RealCommandBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(RealDeviceBridge.Factory.class));
         install(new FactoryModuleBuilder().build(RealDeviceBridgeReverse.Factory.class));
+        install(new FactoryModuleBuilder().build(RealFeatureBridge.Factory.class));
+        install(new FactoryModuleBuilder().build(RealFeatureBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(RealPropertyBridge.Factory.class));
         install(new FactoryModuleBuilder().build(RealPropertyBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(RealTypeBridge.Factory.class));

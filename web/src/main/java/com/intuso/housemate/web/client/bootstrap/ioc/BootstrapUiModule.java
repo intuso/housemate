@@ -2,10 +2,8 @@ package com.intuso.housemate.web.client.bootstrap.ioc;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
-import com.intuso.housemate.web.client.bootstrap.BootstrapFeatureFactory;
 import com.intuso.housemate.web.client.bootstrap.view.*;
 import com.intuso.housemate.web.client.bootstrap.widget.login.LoginModal;
-import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFactory;
 import com.intuso.housemate.web.client.ui.view.LoginView;
 
 /**
@@ -19,9 +17,6 @@ public class BootstrapUiModule extends AbstractGinModule {
 
     @Override
     protected void configure() {
-
-        // housemate resources
-        bind(GWTProxyFeatureFactory.class).to(BootstrapFeatureFactory.class).in(Singleton.class);
     
         // ui
         bind(LoginView.class).to(LoginModal.class).in(Singleton.class);

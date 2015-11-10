@@ -2,7 +2,10 @@ package com.intuso.housemate.platform.android.app.object;
 
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyDevice;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
-import com.intuso.housemate.comms.v1_0.api.payload.*;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.comms.v1_0.api.payload.FeatureData;
+import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
+import com.intuso.housemate.comms.v1_0.api.payload.PropertyData;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
@@ -14,10 +17,12 @@ import com.intuso.utilities.log.Log;
  * To change this template use File | Settings | File Templates.
  */
 public class AndroidProxyDevice extends ProxyDevice<
-        AndroidProxyCommand, AndroidProxyList<CommandData, AndroidProxyCommand>,
-        AndroidProxyValue, AndroidProxyList<ValueData, AndroidProxyValue>,
-        AndroidProxyProperty, AndroidProxyList<PropertyData, AndroidProxyProperty>,
-        AndroidProxyFeature, AndroidProxyDevice> {
+        AndroidProxyCommand,
+        AndroidProxyProperty,
+        AndroidProxyValue,
+        AndroidProxyList<PropertyData, AndroidProxyProperty>,
+        AndroidProxyList<FeatureData, AndroidProxyFeature>,
+        AndroidProxyDevice> {
 
     private final AndroidProxyFactory factory;
 
@@ -34,10 +39,5 @@ public class AndroidProxyDevice extends ProxyDevice<
     @Override
     protected ProxyObject<?, ?, ?, ?, ?> createChildInstance(HousemateData<?> data) {
         return factory.create(data);
-    }
-
-    @Override
-    public <F extends AndroidProxyFeature> F getFeature(String featureId) {
-        return factory.createFeature(this, featureId);
     }
 }

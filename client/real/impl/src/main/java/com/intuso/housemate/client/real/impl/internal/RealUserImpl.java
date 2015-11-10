@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
+import com.intuso.housemate.client.real.api.internal.RealParameter;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
 import com.intuso.housemate.client.real.api.internal.RealUser;
 import com.intuso.housemate.client.real.api.internal.type.Email;
@@ -32,7 +33,7 @@ public class RealUserImpl
                         @Assisted UserData data,
                         @Assisted final RemoveCallback removeCallback) {
         super(log, listenersFactory, data);
-        this.remove = new RealCommandImpl(log, listenersFactory, UserData.REMOVE_ID, UserData.REMOVE_ID, "Remove the user", Lists.<RealParameterImpl<?>>newArrayList()) {
+        this.remove = new RealCommandImpl(log, listenersFactory, UserData.REMOVE_ID, UserData.REMOVE_ID, "Remove the user", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 removeCallback.removeUser(RealUserImpl.this);

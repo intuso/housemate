@@ -13,16 +13,12 @@ public interface RealDevice<DRIVER extends DeviceDriver>
         RealCommand,
         RealCommand,
         RealCommand,
-        RealCommand,
-        RealList<RealCommand>,
         RealValue<Boolean>,
         RealValue<String>,
         RealProperty<PluginResource<DeviceDriver.Factory<DRIVER>>>,
         RealValue<Boolean>,
-        RealValue<?>,
-        RealList<RealValue<?>>,
-        RealProperty<?>,
         RealList<RealProperty<?>>,
+        RealList<RealFeature>,
         RealDevice<DRIVER>>, DeviceDriver.Callback {
 
     DRIVER getDriver();

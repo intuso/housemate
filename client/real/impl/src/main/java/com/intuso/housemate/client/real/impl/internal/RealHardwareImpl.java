@@ -60,7 +60,7 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
         super(log, listenersFactory, data);
         this.annotationProcessor = annotationProcessor;
         this.removeCallback = removeCallback;
-        this.renameCommand = new RealCommandImpl(log, listenersFactory, HardwareData.RENAME_ID, HardwareData.RENAME_ID, "Rename the hardware", Lists.<RealParameterImpl<?>>newArrayList(StringType.createParameter(log, listenersFactory, HardwareData.NAME_ID, HardwareData.NAME_ID, "The new name"))) {
+        this.renameCommand = new RealCommandImpl(log, listenersFactory, HardwareData.RENAME_ID, HardwareData.RENAME_ID, "Rename the hardware", Lists.<RealParameter<?>>newArrayList(StringType.createParameter(log, listenersFactory, HardwareData.NAME_ID, HardwareData.NAME_ID, "The new name"))) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(values != null && values.getChildren().containsKey(HardwareData.NAME_ID)) {
@@ -74,7 +74,7 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
                 }
             }
         };
-        this.removeCommand = new RealCommandImpl(log, listenersFactory, HardwareData.REMOVE_ID, HardwareData.REMOVE_ID, "Remove the hardware", Lists.<RealParameterImpl<?>>newArrayList()) {
+        this.removeCommand = new RealCommandImpl(log, listenersFactory, HardwareData.REMOVE_ID, HardwareData.REMOVE_ID, "Remove the hardware", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(isRunning())
@@ -83,7 +83,7 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
             }
         };
         this.runningValue = BooleanType.createValue(log, listenersFactory, HardwareData.RUNNING_ID, HardwareData.RUNNING_ID, "Whether the hardware is running or not", false);
-        this.startCommand = new RealCommandImpl(log, listenersFactory, HardwareData.START_ID, HardwareData.START_ID, "Start the hardware", Lists.<RealParameterImpl<?>>newArrayList()) {
+        this.startCommand = new RealCommandImpl(log, listenersFactory, HardwareData.START_ID, HardwareData.START_ID, "Start the hardware", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(!isRunning()) {
@@ -92,7 +92,7 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
                 }
             }
         };
-        this.stopCommand = new RealCommandImpl(log, listenersFactory, HardwareData.STOP_ID, HardwareData.STOP_ID, "Stop the hardware", Lists.<RealParameterImpl<?>>newArrayList()) {
+        this.stopCommand = new RealCommandImpl(log, listenersFactory, HardwareData.STOP_ID, HardwareData.STOP_ID, "Stop the hardware", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(isRunning()) {
@@ -133,7 +133,7 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
             PluginResource<HardwareDriver.Factory<DRIVER>> driverFactory = driverProperty.getTypedValue();
             if(driverFactory != null) {
                 driver = driverFactory.getResource().create(this);
-                annotationProcessor.process(this, driver);
+                annotationProcessor.process(driver, this);
                 errorValue.setTypedValues((String) null);
                 driverLoadedValue.setTypedValues(false);
                 _start();

@@ -18,7 +18,6 @@ public class AndroidProxyFactory implements ObjectFactory<HousemateData<?>, Prox
 
     private final Log log;
     private final ListenersFactory listenersFactory;
-    private final AndroidProxyFeatureFactory featureFactory = new AndroidProxyFeatureFactory();
 
     @Inject
     public AndroidProxyFactory(Log log, ListenersFactory listenersFactory) {
@@ -44,6 +43,8 @@ public class AndroidProxyFactory implements ObjectFactory<HousemateData<?>, Prox
             return createTask((TaskData) data);
         else if(data instanceof DeviceData)
             return createDevice((DeviceData) data);
+        else if(data instanceof FeatureData)
+            return createFeature((FeatureData) data);
         else if(data instanceof HardwareData)
             return createHardware((HardwareData) data);
         else if(data instanceof ListData)
@@ -102,6 +103,10 @@ public class AndroidProxyFactory implements ObjectFactory<HousemateData<?>, Prox
         return new AndroidProxyDevice(log, listenersFactory, data, this);
     }
 
+    public AndroidProxyFeature createFeature(FeatureData data) {
+        return new AndroidProxyFeature(log, listenersFactory, data, this);
+    }
+
     public <CHILD_DATA extends HousemateData<?>, CHILD extends ProxyObject<CHILD_DATA, ?, ?, ?, ?>>
                 AndroidProxyList<CHILD_DATA, CHILD> createList(ListData<CHILD_DATA> data) {
         return new AndroidProxyList<>(log, listenersFactory, data, this);
@@ -133,9 +138,5 @@ public class AndroidProxyFactory implements ObjectFactory<HousemateData<?>, Prox
 
     public AndroidProxyType createType(TypeData<HousemateData<?>> data) {
         return new AndroidProxyType(log, listenersFactory, data, this);
-    }
-
-    public <F extends AndroidProxyFeature> F createFeature(AndroidProxyDevice androidProxyDevice, String featureId) {
-        return featureFactory.getFeature(featureId, androidProxyDevice);
     }
 }

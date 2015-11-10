@@ -4,7 +4,7 @@ package com.intuso.housemate.object.api.internal;
  */
 public interface Server<APPLICATIONS extends List<? extends Application<?, ?, ?, ?, ?>>,
         AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
-        DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
+        DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>,
         HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>>,
         TYPES extends List<? extends Type>,
         USERS extends List<? extends User<?, ?, ?>>,

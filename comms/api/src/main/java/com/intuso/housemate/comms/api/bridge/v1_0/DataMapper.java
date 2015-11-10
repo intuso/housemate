@@ -40,7 +40,10 @@ public class DataMapper {
             return mapChildren(data, new ConditionData(conditionData.getId(), conditionData.getName(), conditionData.getDescription()));
         } else if (data instanceof com.intuso.housemate.comms.v1_0.api.payload.DeviceData)
             return map((com.intuso.housemate.comms.v1_0.api.payload.DeviceData) data);
-        else if (data instanceof com.intuso.housemate.comms.v1_0.api.payload.HardwareData) {
+        else if (data instanceof com.intuso.housemate.comms.v1_0.api.payload.FeatureData) {
+            com.intuso.housemate.comms.v1_0.api.payload.FeatureData featureData = (com.intuso.housemate.comms.v1_0.api.payload.FeatureData) data;
+            return mapChildren(data, new FeatureData(featureData.getId(), featureData.getName(), featureData.getDescription()));
+        } else if (data instanceof com.intuso.housemate.comms.v1_0.api.payload.HardwareData) {
             com.intuso.housemate.comms.v1_0.api.payload.HardwareData hardwareData = (com.intuso.housemate.comms.v1_0.api.payload.HardwareData) data;
             return mapChildren(data, new HardwareData(hardwareData.getId(), hardwareData.getName(), hardwareData.getDescription()));
         } else if (data instanceof com.intuso.housemate.comms.v1_0.api.payload.ListData) {
@@ -92,7 +95,7 @@ public class DataMapper {
     }
 
     public DeviceData map(com.intuso.housemate.comms.v1_0.api.payload.DeviceData deviceData) {
-        return mapChildren(deviceData, new DeviceData(deviceData.getId(), deviceData.getName(), deviceData.getDescription(), deviceData.getFeatureIds(), deviceData.getCustomCommandIds(), deviceData.getCustomValueIds(), deviceData.getCustomPropertyIds()));
+        return mapChildren(deviceData, new DeviceData(deviceData.getId(), deviceData.getName(), deviceData.getDescription()));
     }
 
     private <DATA extends HousemateData> DATA mapChildren(com.intuso.housemate.comms.v1_0.api.payload.HousemateData<?> oldData, DATA newData) {
@@ -124,7 +127,10 @@ public class DataMapper {
             return mapChildren(data, new com.intuso.housemate.comms.v1_0.api.payload.ConditionData(conditionData.getId(), conditionData.getName(), conditionData.getDescription()));
         } else if (data instanceof DeviceData)
             return map((DeviceData) data);
-        else if (data instanceof HardwareData) {
+        else if (data instanceof FeatureData) {
+            FeatureData featureData = (FeatureData) data;
+            return mapChildren(data, new com.intuso.housemate.comms.v1_0.api.payload.FeatureData(featureData.getId(), featureData.getName(), featureData.getDescription()));
+        } else if (data instanceof HardwareData) {
             HardwareData hardwareData = (HardwareData) data;
             return mapChildren(data, new com.intuso.housemate.comms.v1_0.api.payload.HardwareData(hardwareData.getId(), hardwareData.getName(), hardwareData.getDescription()));
         } else if (data instanceof ListData) {
@@ -176,7 +182,7 @@ public class DataMapper {
     }
 
     public com.intuso.housemate.comms.v1_0.api.payload.DeviceData map(DeviceData deviceData) {
-        return mapChildren(deviceData, new com.intuso.housemate.comms.v1_0.api.payload.DeviceData(deviceData.getId(), deviceData.getName(), deviceData.getDescription(), deviceData.getFeatureIds(), deviceData.getCustomCommandIds(), deviceData.getCustomValueIds(), deviceData.getCustomPropertyIds()));
+        return mapChildren(deviceData, new com.intuso.housemate.comms.v1_0.api.payload.DeviceData(deviceData.getId(), deviceData.getName(), deviceData.getDescription()));
     }
 
     private <DATA extends com.intuso.housemate.comms.v1_0.api.payload.HousemateData> DATA mapChildren(HousemateData<?> oldData, DATA newData) {

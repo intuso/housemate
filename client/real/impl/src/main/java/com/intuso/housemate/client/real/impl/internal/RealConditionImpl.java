@@ -60,7 +60,7 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
                              @Assisted final RemoveCallback removeCallback) {
         super(log, listenersFactory, data);
         this.annotationProcessor = annotationProcessor;
-        removeCommand = new RealCommandImpl(log, listenersFactory, ConditionData.REMOVE_ID, ConditionData.REMOVE_ID, "Remove the condition", Lists.<RealParameterImpl<?>>newArrayList()) {
+        removeCommand = new RealCommandImpl(log, listenersFactory, ConditionData.REMOVE_ID, ConditionData.REMOVE_ID, "Remove the condition", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 removeCallback.removeCondition(RealConditionImpl.this);
@@ -106,7 +106,7 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
             PluginResource<ConditionDriver.Factory<DRIVER>> driverFactoryEntry = driverProperty.getTypedValue();
             if(driverFactoryEntry != null) {
                 driver = driverFactoryEntry.getResource().create(this);
-                annotationProcessor.process(this, driver);
+                annotationProcessor.process(driver, this);
                 errorValue.setTypedValues((String) null);
                 driverLoadedValue.setTypedValues(false);
             }

@@ -19,16 +19,12 @@ public class ServerProxyDevice
         ServerProxyCommand,
         ServerProxyCommand,
         ServerProxyCommand,
-        ServerProxyCommand,
-        ServerProxyList<CommandData, ServerProxyCommand>,
         ServerProxyValue,
         ServerProxyValue,
         ServerProxyProperty,
         ServerProxyValue,
-        ServerProxyValue,
-        ServerProxyList<ValueData, ServerProxyValue>,
-        ServerProxyProperty,
         ServerProxyList<PropertyData, ServerProxyProperty>,
+        ServerProxyList<FeatureData, ServerProxyFeature>,
         ServerProxyDevice> {
 
     private ServerProxyCommand rename;
@@ -39,9 +35,8 @@ public class ServerProxyDevice
     private ServerProxyValue error;
     private ServerProxyProperty driverProperty;
     private ServerProxyValue driverLoaded;
-    private ServerProxyList<CommandData, ServerProxyCommand> commands;
-    private ServerProxyList<ValueData, ServerProxyValue> values;
     private ServerProxyList<PropertyData, ServerProxyProperty> properties;
+    private ServerProxyList<FeatureData, ServerProxyFeature> features;
 
     /**
      * @param log {@inheritDoc}
@@ -63,9 +58,8 @@ public class ServerProxyDevice
         error = (ServerProxyValue) getChild(DeviceData.ERROR_ID);
         driverProperty = (ServerProxyProperty) getChild(DeviceData.DRIVER_ID);
         driverLoaded = (ServerProxyValue) getChild(DeviceData.DRIVER_LOADED_ID);
-        commands = (ServerProxyList<CommandData, ServerProxyCommand>) getChild(DeviceData.COMMANDS_ID);
-        values = (ServerProxyList<ValueData, ServerProxyValue>) getChild(DeviceData.VALUES_ID);
         properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(DeviceData.PROPERTIES_ID);
+        features = (ServerProxyList<FeatureData, ServerProxyFeature>) getChild(FeatureData.VALUES_ID);
     }
 
     @Override
@@ -125,38 +119,13 @@ public class ServerProxyDevice
     }
 
     @Override
-    public ServerProxyList<CommandData, ServerProxyCommand> getCommands() {
-        return commands;
-    }
-
-    @Override
-    public ServerProxyList<ValueData, ServerProxyValue> getValues() {
-        return values;
-    }
-
-    @Override
     public ServerProxyList<PropertyData, ServerProxyProperty> getProperties() {
         return properties;
     }
 
     @Override
-    public final List<String> getFeatureIds() {
-        return getData().getFeatureIds();
-    }
-
-    @Override
-    public final List<String> getCustomCommandIds() {
-        return getData().getCustomCommandIds();
-    }
-
-    @Override
-    public final List<String> getCustomValueIds() {
-        return getData().getCustomValueIds();
-    }
-
-    @Override
-    public final List<String> getCustomPropertyIds() {
-        return getData().getCustomPropertyIds();
+    public ServerProxyList<FeatureData, ServerProxyFeature> getFeatures() {
+        return features;
     }
 
     @Override

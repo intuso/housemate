@@ -14,7 +14,7 @@ public class ServerBridge
         implements Server<
                 ConvertingListBridge<ApplicationData, Application<?, ?, ?, ?, ?>, ApplicationBridge>,
                 ConvertingListBridge<AutomationData, Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge>,
-                ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>,
+                ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>,
                 ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge>,
                 ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge>,
                 ConvertingListBridge<UserData, User<?, ?, ?>, UserBridge>,
@@ -23,7 +23,7 @@ public class ServerBridge
 
     private final ConvertingListBridge<ApplicationData, Application<?, ?, ?, ?, ?>, ApplicationBridge> applications;
     private final ConvertingListBridge<AutomationData, Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> automations;
-    private final ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> devices;
+    private final ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> devices;
     private final ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge> hardwares;
     private final ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge> types;
     private final ConvertingListBridge<UserData, User<?, ?, ?>, UserBridge> users;
@@ -42,7 +42,7 @@ public class ServerBridge
         automations = new ConvertingListBridge<AutomationData, Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge>(
                 log, listenersFactory, proxyRoot.getAutomations(),
                 new AutomationBridge.Converter(log, listenersFactory));
-        devices = new ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>(
+        devices = new ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>(
                 log, listenersFactory, proxyRoot.getDevices(),
                 new DeviceBridge.Converter(log, listenersFactory));
         hardwares = new ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge>(
@@ -122,7 +122,7 @@ public class ServerBridge
     }
 
     @Override
-    public ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> getDevices() {
+    public ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> getDevices() {
         return devices;
     }
 

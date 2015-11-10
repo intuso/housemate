@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal.annotations;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
 import com.intuso.housemate.client.real.impl.internal.RealPropertyImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
@@ -13,10 +15,18 @@ import java.lang.reflect.Method;
 /**
  * Property implementation for annotated properties
  */
-public class MethodPropertyImpl extends RealPropertyImpl<Object> {
+public class MethodProperty extends RealPropertyImpl<Object> {
 
-    public MethodPropertyImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description,
-                              RealTypeImpl<?, ?, Object> type, Object value, final Method method, final Object instance) {
+    @Inject
+    public MethodProperty(Log log,
+                          ListenersFactory listenersFactory,
+                          @Assisted("id") String id,
+                          @Assisted("name") String name,
+                          @Assisted("description") String description,
+                          @Assisted RealTypeImpl<?, ?, Object> type,
+                          @Assisted("value") Object value,
+                          @Assisted final Method method,
+                          @Assisted("instance") final Object instance) {
         super(log, listenersFactory, id, name, description, type, value);
         addObjectListener(new Property.Listener<RealProperty<Object>>() {
 
@@ -34,5 +44,11 @@ public class MethodPropertyImpl extends RealPropertyImpl<Object> {
                 }
             }
         });
+    }
+
+    public interface Factory {
+        MethodProperty create(@Assisted("id") String id, @Assisted("name") String name,
+                              @Assisted("description") String description, RealTypeImpl<?, ?, Object> type,
+                              @Assisted("value") Object value, Method method, @Assisted("instance") Object instance);
     }
 }

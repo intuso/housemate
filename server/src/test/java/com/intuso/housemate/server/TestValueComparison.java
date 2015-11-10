@@ -137,7 +137,7 @@ public class TestValueComparison {
                 }, doubleTwo, doubleThree));
 
         // create second value as one from the device
-        String[] valuePath = new String[] {"", "servers", "local-Internal Client", "devices", "device", "values", "dv"};
+        String[] valuePath = new String[] {"", "servers", "local-Internal Client", "devices", "device", "features", "feature", "values", "value"};
         ValueLocation valueTwo = new ValueLocation(listenersFactory,
                 new RealObjectType.Reference<Value<TypeInstances, ?>>(valuePath),
                 injector.getInstance(RootBridge.class));
@@ -167,7 +167,7 @@ public class TestValueComparison {
         device.getDriver().values.doubleValue(0.0);
         assertNull(vc.getErrorValue().getTypedValue());
         assertSatisfied(vc, false);
-        ValueBridge value = injector.getInstance(RootBridge.class).getServers().get("local-Internal Client").getDevices().get("device").getValues().get("dv");
+        ValueBridge value = injector.getInstance(RootBridge.class).getServers().get("local-Internal Client").getDevices().get("device").getFeatures().get("feature").getValues().get("value");
         lr = value.addObjectListener(new Value.Listener<ValueBridge>() {
             @Override
             public void valueChanging(ValueBridge value) {

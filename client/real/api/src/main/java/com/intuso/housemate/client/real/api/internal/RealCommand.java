@@ -1,5 +1,6 @@
 package com.intuso.housemate.client.real.api.internal;
 
+import com.intuso.housemate.comms.api.internal.payload.CommandData;
 import com.intuso.housemate.object.api.internal.Command;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 
@@ -13,4 +14,8 @@ public interface RealCommand
      * @param values the values of the parameters to use
      */
     void perform(TypeInstanceMap values);
+
+    interface Factory {
+        RealCommand create(CommandData data);
+    }
 }

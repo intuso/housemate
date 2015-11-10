@@ -21,11 +21,11 @@ import java.util.List;
  */
 public interface TypeInput extends IsWidget, HasUserInputHandlers {
 
-    public TypeInstances getTypeInstances();
+    TypeInstances getTypeInstances();
 
-    public final static Factory FACTORY = new Factory();
+    Factory FACTORY = new Factory();
 
-    public final class Factory {
+    final class Factory {
 
         private Factory() {}
 
@@ -83,7 +83,7 @@ public interface TypeInput extends IsWidget, HasUserInputHandlers {
         }
     }
 
-    public static class LazyLoaded extends SimplePanel implements TypeInput, UserInputHandler {
+    class LazyLoaded extends SimplePanel implements TypeInput, UserInputHandler {
 
         private final TypeInstances typeInstances;
 

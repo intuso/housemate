@@ -12,7 +12,6 @@ import com.google.inject.Key;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
-import com.intuso.housemate.client.v1_0.proxy.api.device.feature.ProxyFeatureFactory;
 import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.payload.*;
 import com.intuso.housemate.object.v1_0.api.RegexMatcher;
@@ -24,8 +23,6 @@ import com.intuso.housemate.web.client.activity.HousemateActivityMapper;
 import com.intuso.housemate.web.client.comms.GWTRouter;
 import com.intuso.housemate.web.client.comms.LoginManager;
 import com.intuso.housemate.web.client.object.*;
-import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeature;
-import com.intuso.housemate.web.client.object.device.feature.GWTProxyFeatureFactory;
 import com.intuso.housemate.web.client.place.HousematePlaceController;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryHandler;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryMapper;
@@ -58,6 +55,7 @@ public class MainModule extends AbstractGinModule {
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<CommandData, GWTProxyCommand>>() {}));
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<ConditionData, GWTProxyCondition>>() {}));
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<DeviceData, GWTProxyDevice>>() {}));
+        install(new GinFactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<FeatureData, GWTProxyFeature>>() {}));
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<HardwareData, GWTProxyHardware>>() {}));
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<ListData<HousemateData<?>>, GWTProxyList<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>>>>() {}));
         install(new GinFactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<OptionData, GWTProxyOption>>() {}));
@@ -77,7 +75,6 @@ public class MainModule extends AbstractGinModule {
         bind(Log.class).to(GWTLog.class).in(Singleton.class);
         bind(GWTRouter.class).in(Singleton.class);
         bind(new Key<Router<?>>() {}).to(GWTRouter.class);
-        bind(new Key<ProxyFeatureFactory<GWTProxyFeature, GWTProxyDevice>>() {}).to(GWTProxyFeatureFactory.class);
         bind(RegexMatcher.Factory.class).to(GWTRegexMatcherFactory.class);
         bind(ListenersFactory.class).to(GWTListenersFactory.class);
     }

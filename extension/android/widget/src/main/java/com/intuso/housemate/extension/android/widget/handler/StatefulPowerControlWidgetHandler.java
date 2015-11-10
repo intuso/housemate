@@ -2,13 +2,15 @@ package com.intuso.housemate.extension.android.widget.handler;
 
 import android.widget.RemoteViews;
 import android.widget.Toast;
+import com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.object.v1_0.api.Command;
 import com.intuso.housemate.object.v1_0.api.Value;
-import com.intuso.housemate.object.v1_0.api.feature.StatefulPowerControl;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyValue;
+import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureFactory;
+import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureImpl;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -19,13 +21,13 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * To change this template use File | Settings | File Templates.
  */
 public class StatefulPowerControlWidgetHandler
-        extends WidgetHandler<StatefulPowerControl<AndroidProxyCommand, AndroidProxyValue>>
+        extends WidgetHandler<AndroidProxyFeatureImpl.StatefulPowerControl>
         implements Command.PerformListener<AndroidProxyCommand> {
 
     private ListenerRegistration listenerRegistration;
 
-    public StatefulPowerControlWidgetHandler(WidgetService widgetService, String clientId, String deviceId) {
-        super(widgetService, clientId, deviceId);
+    public StatefulPowerControlWidgetHandler(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String clientId, String deviceId) {
+        super(widgetService, proxyFeatureFactory, clientId, deviceId);
     }
 
     @Override
@@ -91,12 +93,6 @@ public class StatefulPowerControlWidgetHandler
                         break;
                     case NO_FEATURE:
                         views.setTextViewText(R.id.device_label, "Not a powered device");
-                        break;
-                    case FEATURE_NOT_LOADED:
-                        views.setTextViewText(R.id.device_label, "Loading feature");
-                        break;
-                    case FEATURE_LOAD_FAILED:
-                        views.setTextViewText(R.id.device_label, "Load feature failed");
                         break;
                     case READY:
                         views.setTextViewText(R.id.device_label, getDevice().getName());

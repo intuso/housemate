@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal.annotations;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
 import com.intuso.housemate.client.real.impl.internal.RealPropertyImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
@@ -12,10 +14,18 @@ import java.lang.reflect.Field;
 /**
  * Property implementation for annotated properties
  */
-public class FieldPropertyImpl extends RealPropertyImpl<Object> {
+public class FieldProperty extends RealPropertyImpl<Object> {
 
-    public FieldPropertyImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description,
-                             RealTypeImpl<?, ?, Object> type, Object value, final Field field, final Object instance) {
+    @Inject
+    public FieldProperty(Log log,
+                         ListenersFactory listenersFactory,
+                         @Assisted("id") String id,
+                         @Assisted("name") String name,
+                         @Assisted("description") String description,
+                         @Assisted RealTypeImpl<?, ?, Object> type,
+                         @Assisted("value") Object value,
+                         @Assisted final Field field,
+                         @Assisted("instance") final Object instance) {
         super(log, listenersFactory, id, name, description, type, value);
         addObjectListener(new Property.Listener<RealProperty<Object>>() {
 
@@ -33,5 +43,11 @@ public class FieldPropertyImpl extends RealPropertyImpl<Object> {
                 }
             }
         });
+    }
+
+    public interface Factory {
+        FieldProperty create(@Assisted("id") String id, @Assisted("name") String name,
+                                 @Assisted("description") String description, RealTypeImpl<?, ?, Object> type,
+                                 @Assisted("value") Object value,  Field field, @Assisted("instance") Object instance);
     }
 }

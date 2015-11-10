@@ -275,8 +275,7 @@ public class HousemateTweeter {
         public void elementAdded(SimpleProxyDevice device) {
             java.util.List<ListenerRegistration> registrations = new ArrayList<>();
             listeners.put(device, registrations);
-            registrations.add(device.getCommands().addObjectListener(new CommandListListener(device, registrations), true));
-            registrations.add(device.getValues().addObjectListener(new ValueListListener(device, registrations), true));
+            registrations.add(device.getFeatures().addObjectListener(new FeatureListListener(device, registrations), true));
             registrations.add(device.getProperties().addObjectListener(new PropertyListListener(device, registrations), true));
             registrations.add(device.addObjectListener(deviceListener));
             tweet("\"" + device.getName() + "\" device added");
@@ -314,15 +313,38 @@ public class HousemateTweeter {
         }
     };
 
+    private class FeatureListListener implements com.intuso.housemate.object.v1_0.api.List.Listener<SimpleProxyFeature> {
+
+        private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
+        private final SimpleProxyDevice device;
+
+        private FeatureListListener(SimpleProxyDevice device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+            this.deviceListenerRegistrations = deviceListenerRegistrations;
+            this.device = device;
+        }
+
+        @Override
+        public void elementAdded(SimpleProxyFeature feature) {
+            feature.getCommands().addObjectListener(new CommandListListener(device, feature, deviceListenerRegistrations));
+            feature.getValues().addObjectListener(new ValueListListener(device, feature, deviceListenerRegistrations));
+            tweet("\"" + feature.getName() + "\" feature added");
+        }
+
+        @Override
+        public void elementRemoved(SimpleProxyFeature feature) {
+            tweet("\"" + feature.getName() + "\" feature removed");
+        }
+    };
+
     private class CommandListListener implements com.intuso.housemate.object.v1_0.api.List.Listener<SimpleProxyCommand> {
 
         private final Map<SimpleProxyCommand, ListenerRegistration> commandListenerRegistrations = Maps.newHashMap();
         private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
         private final CommandListener listener;
 
-        private CommandListListener(SimpleProxyDevice device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+        private CommandListListener(SimpleProxyDevice device, SimpleProxyFeature feature, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
-            listener = new CommandListener(device);
+            listener = new CommandListener(device, feature);
         }
 
         @Override
@@ -342,29 +364,31 @@ public class HousemateTweeter {
     private class CommandListener implements Command.Listener<SimpleProxyCommand> {
 
         private final SimpleProxyDevice device;
+        private final SimpleProxyFeature feature;
 
-        private CommandListener(SimpleProxyDevice device) {
+        private CommandListener(SimpleProxyDevice device, SimpleProxyFeature feature) {
             this.device = device;
+            this.feature = feature;
         }
 
         @Override
         public void commandEnabled(SimpleProxyCommand command, boolean enabled) {
-            tweet("\"" + device.getName() + "\" command \"" + command.getName() + (enabled ? "\" enabled" : "\" disabled"));
+            tweet("\"" + device.getName() + "\" feature \"" + feature.getName() + "\" command \"" + command.getName() + (enabled ? "\" enabled" : "\" disabled"));
         }
 
         @Override
         public void commandStarted(SimpleProxyCommand command, String user) {
-            tweet("\"" + device.getName() + "\" command \"" + command.getName() + "\" started by " + user);
+            tweet("\"" + device.getName() + "\" feature \"" + feature.getName() + "\" command \"" + command.getName() + "\" started by " + user);
         }
 
         @Override
         public void commandFinished(SimpleProxyCommand command) {
-            tweet("\"" + device.getName() + "\" command \"" + command.getName() + "\" finished");
+            tweet("\"" + device.getName() + "\" feature \"" + feature.getName() + "\" command \"" + command.getName() + "\" finished");
         }
 
         @Override
         public void commandFailed(SimpleProxyCommand command, String reason) {
-            tweet("\"" + device.getName() + "\" command \"" + command.getName() + "\" failed: " + reason);
+            tweet("\"" + device.getName() + "\" feature \"" + feature.getName() + "\" command \"" + command.getName() + "\" failed: " + reason);
         }
     }
 
@@ -374,9 +398,9 @@ public class HousemateTweeter {
         private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
         private final ValueListener listener;
 
-        private ValueListListener(SimpleProxyDevice device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+        private ValueListListener(SimpleProxyDevice device, SimpleProxyFeature feature, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
-            listener = new ValueListener(device);
+            listener = new ValueListener(device, feature);
         }
 
         @Override
@@ -396,9 +420,11 @@ public class HousemateTweeter {
     private class ValueListener implements Value.Listener<SimpleProxyValue> {
 
         private final SimpleProxyDevice device;
+        private final SimpleProxyFeature feature;
 
-        private ValueListener(SimpleProxyDevice device) {
+        private ValueListener(SimpleProxyDevice device, SimpleProxyFeature feature) {
             this.device = device;
+            this.feature = feature;
         }
 
         @Override
@@ -408,7 +434,7 @@ public class HousemateTweeter {
 
         @Override
         public void valueChanged(SimpleProxyValue value) {
-            tweet("\"" + device.getName() + "\" value \"" + value.getId() + "\" is \"" + value.getValue() + "\"");
+            tweet("\"" + device.getName() + "\" feature \"" + feature.getName() + "\" value \"" + value.getName() + "\" is \"" + value.getValue() + "\"");
         }
     }
 
@@ -452,7 +478,7 @@ public class HousemateTweeter {
 
         @Override
         public void valueChanged(SimpleProxyProperty property) {
-            tweet("\"" + device.getName() + "\" property \"" + property.getId() + "\" is now set to \"" + property.getValue() + "\"");
+            tweet("\"" + device.getName() + "\" property \"" + property.getName() + "\" is now set to \"" + property.getValue() + "\"");
         }
     }
 }

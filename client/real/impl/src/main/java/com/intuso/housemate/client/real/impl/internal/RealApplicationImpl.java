@@ -35,21 +35,21 @@ public class RealApplicationImpl
         this.applicationInstances = (RealList)new RealListImpl<>(
                 log, listenersFactory, ApplicationData.APPLICATION_INSTANCES_ID, ApplicationData.APPLICATION_INSTANCES_ID, "The application's instances");
         allowCommand = new RealCommandImpl(log, listenersFactory, ApplicationData.ALLOW_COMMAND_ID, ApplicationData.ALLOW_COMMAND_ID, "Allow access to all the application instances",
-                Lists.<RealParameterImpl<?>>newArrayList()) {
+                Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 setStatus(Status.AllowInstances);
             }
         };
         someCommand = new RealCommandImpl(log, listenersFactory, ApplicationData.SOME_COMMAND_ID, ApplicationData.SOME_COMMAND_ID, "Allow access to some of the application instances",
-                Lists.<RealParameterImpl<?>>newArrayList()) {
+                Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 setStatus(Status.SomeInstances);
             }
         };
         rejectCommand = new RealCommandImpl(log, listenersFactory, ApplicationData.REJECT_COMMAND_ID, ApplicationData.REJECT_COMMAND_ID, "Reject access to all the application instances",
-                Lists.<RealParameterImpl<?>>newArrayList()) {
+                Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 setStatus(Status.RejectInstances);

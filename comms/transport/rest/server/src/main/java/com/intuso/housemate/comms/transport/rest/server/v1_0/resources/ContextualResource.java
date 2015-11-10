@@ -5,14 +5,12 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
-import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyCommand;
-import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyDevice;
-import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyRoot;
-import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyServer;
+import com.intuso.housemate.client.v1_0.proxy.simple.*;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
 import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.comms.v1_0.api.payload.FeatureData;
 import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.housemate.object.v1_0.api.Application;
 import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
@@ -110,18 +108,51 @@ public class ContextualResource implements ProxyRoot.Listener<SimpleProxyRoot>, 
         return device != null ? device.getData() : null;
     }
 
+    @Path("clients/{clientId}/devices/{deviceId}/features")
+    @GET
+    public java.util.List<FeatureData> getFeatures(@Context HttpServletRequest request,
+                                                 @PathParam("clientId") String clientId,
+                                                 @PathParam("deviceId") String deviceId) {
+        java.util.List<FeatureData> result = Lists.newArrayList();
+        SimpleProxyDevice device = getRoot(request).getServers().get(clientId).getDevices().get(deviceId);
+        if(device != null) {
+            for (SimpleProxyFeature feature : device.getFeatures())
+                result.add((FeatureData) feature.getData().clone());
+        }
+        return result;
+    }
+
+    @Path("clients/{clientId}/devices/{deviceId}/features/{featureId}")
+    @GET
+    public FeatureData getFeature(@Context HttpServletRequest request,
+                                @PathParam("clientId") String clientId,
+                                @PathParam("deviceId") String deviceId,
+                                @PathParam("featureId") String featureId) {
+        SimpleProxyDevice device = getRoot(request).getServers().get(clientId).getDevices().get(deviceId);
+        if(device != null) {
+            SimpleProxyFeature feature = device.getFeatures().get(featureId);
+            if (feature != null)
+                return feature.getData();
+        }
+        return null;
+    }
+
     @Path("clients/{clientId}/devices/{deviceId}/commands/{commandId}")
     @POST
     public void performDeviceCommand(@Context HttpServletRequest request,
                                      @PathParam("clientId") String clientId,
                                      @PathParam("deviceId") String deviceId,
+                                     @PathParam("featureId") String featureId,
                                      @PathParam("commandId") String commandId,
                                      TypeInstanceMap typeInstanceMap) {
         SimpleProxyDevice device = getRoot(request).getServers().get(clientId).getDevices().get(deviceId);
         if(device != null) {
-            SimpleProxyCommand command = device.getCommands().get(commandId);
-            if(command != null) {
-                command.perform(typeInstanceMap, this);
+            SimpleProxyFeature feature = device.getFeatures().get(featureId);
+            if(feature != null) {
+                SimpleProxyCommand command = feature.getCommands().get(commandId);
+                if (command != null) {
+                    command.perform(typeInstanceMap, this);
+                }
             }
         }
     }

@@ -27,7 +27,7 @@ public abstract class RealCommandImpl
     private final static String ENABLED_DESCRIPTION = "Whether the command is enabled or not";
 
     private final RealValueImpl<Boolean> enabledValue;
-    private final RealListImpl<ParameterData, RealParameterImpl<?>> parameters;
+    private final RealList<RealParameter<?>> parameters;
 
     /**
      * @param log {@inheritDoc}
@@ -37,7 +37,7 @@ public abstract class RealCommandImpl
      * @param description the command's description
      * @param parameters the command's parameters
      */
-    protected RealCommandImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, RealParameterImpl<?>... parameters) {
+    protected RealCommandImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, RealParameter<?>... parameters) {
         this(log, listenersFactory, id, name, description, Arrays.asList(parameters));
     }
 
@@ -49,12 +49,14 @@ public abstract class RealCommandImpl
      * @param description the command's description
      * @param parameters the command's parameters
      */
-    protected RealCommandImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, List<RealParameterImpl<?>> parameters) {
+    protected RealCommandImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, List<RealParameter<?>> parameters) {
         super(log, listenersFactory, new CommandData(id, name, description));
         enabledValue = new RealValueImpl<>(log, listenersFactory, CommandData.ENABLED_ID, CommandData.ENABLED_ID, ENABLED_DESCRIPTION, new BooleanType(log, listenersFactory), true);
-        this.parameters = new RealListImpl<>(log, listenersFactory, CommandData.PARAMETERS_ID, CommandData.PARAMETERS_ID, "The parameters required by the command", parameters);
+        this.parameters = (RealList)new RealListImpl<ParameterData, RealParameterImpl<?>>(log, listenersFactory, CommandData.PARAMETERS_ID, CommandData.PARAMETERS_ID, "The parameters required by the command");
+        for(RealParameter<?> parameter : parameters)
+            this.parameters.add(parameter);
         addChild(enabledValue);
-        addChild(this.parameters);
+        addChild((RealListImpl)this.parameters);
     }
 
     @Override
@@ -91,7 +93,7 @@ public abstract class RealCommandImpl
     }
 
     @Override
-    public RealList<? extends RealParameter<?>> getParameters() {
+    public RealList<RealParameter<?>> getParameters() {
         return parameters;
     }
 

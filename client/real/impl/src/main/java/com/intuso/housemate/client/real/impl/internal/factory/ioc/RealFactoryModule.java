@@ -51,6 +51,11 @@ public class RealFactoryModule extends AbstractModule {
         bind(HardwareFactoryType.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(AddHardwareCommand.Factory.class));
 
+        // parameters
+        install(new FactoryModuleBuilder()
+                .implement(new TypeLiteral<RealParameter<?>>() {}, new TypeLiteral<RealParameterImpl<?>>() {})
+                .build(RealParameter.Factory.class));
+
         // tasks
         install(new FactoryModuleBuilder()
                 .implement(new TypeLiteral<RealTask<?>>() {}, new TypeLiteral<RealTaskImpl<?>>() {})
@@ -63,5 +68,10 @@ public class RealFactoryModule extends AbstractModule {
                 .implement(RealUser.class, RealUserImpl.class)
                 .build(RealUser.Factory.class));
         install(new FactoryModuleBuilder().build(AddUserCommand.Factory.class));
+
+        // values
+        install(new FactoryModuleBuilder()
+                .implement(new TypeLiteral<RealValue<?>>() {}, new TypeLiteral<RealValueImpl<?>>() {})
+                .build(RealValue.Factory.class));
     }
 }

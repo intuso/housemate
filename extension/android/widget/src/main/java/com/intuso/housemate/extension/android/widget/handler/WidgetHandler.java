@@ -1,14 +1,14 @@
 package com.intuso.housemate.extension.android.widget.handler;
 
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
-import com.intuso.housemate.client.v1_0.proxy.api.device.feature.FeatureLoadedListener;
+import com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl;
 import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
-import com.intuso.housemate.object.v1_0.api.Device;
-import com.intuso.housemate.object.v1_0.api.feature.StatefulPowerControl;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
+import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureFactory;
+import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureImpl;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import java.util.List;
 * Time: 19:13
 * To change this template use File | Settings | File Templates.
 */
-public abstract class WidgetHandler<FEATURE extends Device.Feature> {
+public abstract class WidgetHandler<FEATURE extends AndroidProxyFeatureImpl> {
 
     private static int LOAD_ID = 0;
 
@@ -30,12 +30,11 @@ public abstract class WidgetHandler<FEATURE extends Device.Feature> {
         NO_CLIENT,
         NO_DEVICE,
         NO_FEATURE,
-        FEATURE_NOT_LOADED,
-        FEATURE_LOAD_FAILED,
         READY
     }
 
     private final WidgetService widgetService;
+    private final AndroidProxyFeatureFactory proxyFeatureFactory;
     private final String clientId;
     private final String deviceId;
 
@@ -44,14 +43,15 @@ public abstract class WidgetHandler<FEATURE extends Device.Feature> {
     private AndroidProxyDevice device;
     private FEATURE feature;
 
-    public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, String clientId, String deviceId, String featureId) {
+    public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String clientId, String deviceId, String featureId) {
         if(featureId.equals(StatefulPowerControl.ID))
-            return new StatefulPowerControlWidgetHandler(widgetService, clientId, deviceId);
+            return new StatefulPowerControlWidgetHandler(widgetService, proxyFeatureFactory, clientId, deviceId);
         return null;
     }
 
-    WidgetHandler(WidgetService widgetService, String clientId, String deviceId) {
+    WidgetHandler(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String clientId, String deviceId) {
         this.widgetService = widgetService;
+        this.proxyFeatureFactory = proxyFeatureFactory;
         this.clientId = clientId;
         this.deviceId = deviceId;
     }
@@ -114,25 +114,12 @@ public abstract class WidgetHandler<FEATURE extends Device.Feature> {
                 public void succeeded() {
                     device = client.getDevices().get(deviceId);
                     if (device != null) {
-                        AndroidProxyFeature proxyFeature = device.getFeature(getFeatureId());
-                        feature = (FEATURE) proxyFeature;
-                        if (proxyFeature != null) {
-                            status = Status.FEATURE_NOT_LOADED;
-                            proxyFeature.load(new FeatureLoadedListener<AndroidProxyDevice, AndroidProxyFeature>() {
-
-                                @Override
-                                public void loadFailed(AndroidProxyDevice device, AndroidProxyFeature feature) {
-                                    status = Status.FEATURE_LOAD_FAILED;
-                                    updateWidget();
-                                }
-
-                                @Override
-                                public void loadFinished(AndroidProxyDevice device, AndroidProxyFeature feature) {
-                                    init();
-                                    status = Status.READY;
-                                    updateWidget();
-                                }
-                            });
+                        AndroidProxyFeature proxyFeature = device.getFeatures().get(getFeatureId());
+                        if(proxyFeature != null) {
+                            feature = proxyFeatureFactory.getFeatureAs(proxyFeature);
+                            init();
+                            status = Status.READY;
+                            updateWidget();
                         } else
                             status = Status.NO_FEATURE;
                     } else

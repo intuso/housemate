@@ -1,7 +1,9 @@
 package com.intuso.housemate.client.real.impl.internal.annotations;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.internal.RealParameter;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
-import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
@@ -15,13 +17,21 @@ import java.util.List;
 /**
  * Command implementation for annotated commands
  */
-public class CommandImpl extends RealCommandImpl {
+public class MethodCommand extends RealCommandImpl {
 
     private final Method method;
     private final Object instance;
     private final ParameterConverter parameterConverter;
 
-    protected CommandImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, List<RealParameterImpl<?>> parameters, Method method, Object instance) {
+    @Inject
+    protected MethodCommand(Log log,
+                            ListenersFactory listenersFactory,
+                            @Assisted("id") String id,
+                            @Assisted("name") String name,
+                            @Assisted("description") String description,
+                            @Assisted List<RealParameter<?>> parameters,
+                            @Assisted Method method,
+                            @Assisted Object instance) {
         super(log, listenersFactory, id, name, description, parameters);
         this.method = method;
         this.instance = instance;
@@ -39,9 +49,9 @@ public class CommandImpl extends RealCommandImpl {
 
     private final class ParameterConverter {
 
-        private final List<RealParameterImpl<?>> parameters;
+        private final List<RealParameter<?>> parameters;
 
-        private ParameterConverter(List<RealParameterImpl<?>> parameters) {
+        private ParameterConverter(List<RealParameter<?>> parameters) {
             this.parameters = parameters;
         }
 
@@ -56,5 +66,11 @@ public class CommandImpl extends RealCommandImpl {
             }
             return result;
         }
+    }
+
+    public interface Factory {
+        MethodCommand create(@Assisted("id") String id, @Assisted("name") String name,
+                             @Assisted("description") String description, List<RealParameter<?>> parameters,
+                             Method method, Object instance);
     }
 }

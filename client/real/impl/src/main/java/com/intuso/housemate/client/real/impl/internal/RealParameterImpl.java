@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealParameter;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
@@ -25,7 +27,13 @@ public class RealParameterImpl<O>
      * @param description the parameter's description
      * @param type the type of the parameter's value
      */
-    public RealParameterImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, RealType<O> type) {
+    @Inject
+    public RealParameterImpl(Log log,
+                             ListenersFactory listenersFactory,
+                             @Assisted("id") String id,
+                             @Assisted("name") String name,
+                             @Assisted("description") String description,
+                             @Assisted RealType<O> type) {
         super(log, listenersFactory, new ParameterData(id, name, description, type.getId()));
         this.type = type;
     }

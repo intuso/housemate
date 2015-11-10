@@ -10,8 +10,6 @@ import com.intuso.housemate.comms.api.bridge.v1_0.DataMapper;
 import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.utilities.listener.ListenerRegistration;
 
-import java.util.List;
-
 /**
  * Created by tomc on 03/11/15.
  */
@@ -22,6 +20,7 @@ public class RealDeviceBridgeReverse<FROM extends com.intuso.housemate.client.re
     private final CommandMapper commandMapper;
     private final ValueMapper valueMapper;
     private final PropertyMapper propertyMapper;
+    private final FeatureMapper featureMapper;
     private final PluginResourceMapper pluginResourceMapper;
     private final DeviceDriverMapper deviceDriverMapper;
     private final DeviceDriverFactoryMapper deviceDriverFactoryMapper;
@@ -32,9 +31,10 @@ public class RealDeviceBridgeReverse<FROM extends com.intuso.housemate.client.re
                                    CommandMapper commandMapper,
                                    ValueMapper valueMapper,
                                    PropertyMapper propertyMapper,
-                                   PluginResourceMapper pluginResourceMapper,
+                                   FeatureMapper featureMapper, PluginResourceMapper pluginResourceMapper,
                                    DeviceDriverMapper deviceDriverMapper,
                                    DeviceDriverFactoryMapper deviceDriverFactoryMapper) {
+        this.featureMapper = featureMapper;
         this.device = (com.intuso.housemate.client.real.api.internal.RealDevice<FROM>) device;
         this.listMapper = listMapper;
         this.commandMapper = commandMapper;
@@ -65,26 +65,6 @@ public class RealDeviceBridgeReverse<FROM extends com.intuso.housemate.client.re
     }
 
     @Override
-    public List<String> getFeatureIds() {
-        return device.getFeatureIds();
-    }
-
-    @Override
-    public List<String> getCustomCommandIds() {
-        return device.getCustomCommandIds();
-    }
-
-    @Override
-    public List<String> getCustomValueIds() {
-        return device.getCustomValueIds();
-    }
-
-    @Override
-    public List<String> getCustomPropertyIds() {
-        return device.getCustomPropertyIds();
-    }
-
-    @Override
     public String getId() {
         return device.getId();
     }
@@ -107,13 +87,6 @@ public class RealDeviceBridgeReverse<FROM extends com.intuso.housemate.client.re
     @Override
     public ListenerRegistration addObjectListener(Listener<? super RealDevice<TO>> listener) {
         return null; //todo
-    }
-
-    @Override
-    public RealList<RealCommand> getCommands() {
-        return listMapper.map(device.getCommands(),
-                commandMapper.getToV1_0Function(),
-                commandMapper.getFromV1_0Function());
     }
 
     @Override
@@ -167,17 +140,17 @@ public class RealDeviceBridgeReverse<FROM extends com.intuso.housemate.client.re
     }
 
     @Override
-    public RealList<RealValue<?>> getValues() {
-        return listMapper.map(device.getValues(),
-                valueMapper.getToV1_0Function(),
-                valueMapper.getFromV1_0Function());
-    }
-
-    @Override
     public RealList<RealProperty<?>> getProperties() {
         return listMapper.map(device.getProperties(),
                 propertyMapper.getToV1_0Function(),
                 propertyMapper.getFromV1_0Function());
+    }
+
+    @Override
+    public RealList<RealFeature> getFeatures() {
+        return listMapper.map(device.getFeatures(),
+                featureMapper.getToV1_0Function(),
+                featureMapper.getFromV1_0Function());
     }
 
     public static class Container implements RealDevice.Container {

@@ -2,12 +2,11 @@ package com.intuso.housemate.client.real.api.internal.device.feature;
 
 import com.intuso.housemate.client.real.api.internal.annotations.Command;
 import com.intuso.housemate.client.real.api.internal.annotations.FeatureId;
-import com.intuso.housemate.object.api.internal.feature.VolumeControl;
 
 /**
  * Interface to mark real devices that provide volume control
  */
-@FeatureId(VolumeControl.ID)
+@FeatureId("volume")
 public interface RealVolumeControl extends RealFeature {
 
     /**

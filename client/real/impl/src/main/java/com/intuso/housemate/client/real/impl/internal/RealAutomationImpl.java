@@ -91,7 +91,7 @@ public class RealAutomationImpl
         super(log, listenersFactory, data);
         this.conditionFactory = conditionFactory;
         this.removeCallback = removeCallback;
-        this.rename = new RealCommandImpl(log, listenersFactory, AutomationData.RENAME_ID, AutomationData.RENAME_ID, "Rename the automation", Lists.<RealParameterImpl<?>>newArrayList(StringType.createParameter(log, listenersFactory, AutomationData.NAME_ID, AutomationData.NAME_ID, "The new name"))) {
+        this.rename = new RealCommandImpl(log, listenersFactory, AutomationData.RENAME_ID, AutomationData.RENAME_ID, "Rename the automation", Lists.<RealParameter<?>>newArrayList(StringType.createParameter(log, listenersFactory, AutomationData.NAME_ID, AutomationData.NAME_ID, "The new name"))) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(values != null && values.getChildren().containsKey(AutomationData.NAME_ID)) {
@@ -105,7 +105,7 @@ public class RealAutomationImpl
                 }
             }
         };
-        this.remove = new RealCommandImpl(log, listenersFactory, AutomationData.REMOVE_ID, AutomationData.REMOVE_ID, "Remove the automation", Lists.<RealParameterImpl<?>>newArrayList()) {
+        this.remove = new RealCommandImpl(log, listenersFactory, AutomationData.REMOVE_ID, AutomationData.REMOVE_ID, "Remove the automation", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(isRunning())
@@ -114,7 +114,7 @@ public class RealAutomationImpl
             }
         };
         this.running = BooleanType.createValue(log, listenersFactory, AutomationData.RUNNING_ID, AutomationData.RUNNING_ID, "Whether the automation is running or not", false);
-        this.start = new RealCommandImpl(log, listenersFactory, AutomationData.START_ID, AutomationData.START_ID, "Start the automation", Lists.<RealParameterImpl<?>>newArrayList()) {
+        this.start = new RealCommandImpl(log, listenersFactory, AutomationData.START_ID, AutomationData.START_ID, "Start the automation", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(!isRunning()) {
@@ -123,7 +123,7 @@ public class RealAutomationImpl
                 }
             }
         };
-        this.stop = new RealCommandImpl(log, listenersFactory, AutomationData.STOP_ID, AutomationData.STOP_ID, "Stop the automation", Lists.<RealParameterImpl<?>>newArrayList()) {
+        this.stop = new RealCommandImpl(log, listenersFactory, AutomationData.STOP_ID, AutomationData.STOP_ID, "Stop the automation", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(isRunning()) {
