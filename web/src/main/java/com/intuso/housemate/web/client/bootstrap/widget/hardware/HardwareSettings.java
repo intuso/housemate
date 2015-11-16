@@ -6,7 +6,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.web.client.bootstrap.widget.object.Control;
+import com.intuso.housemate.web.client.bootstrap.widget.object.GeneralOptions;
 import com.intuso.housemate.web.client.bootstrap.widget.property.PropertyList;
 import com.intuso.housemate.web.client.object.GWTProxyHardware;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -21,12 +21,12 @@ public class HardwareSettings extends Composite {
     private static HardwareSettingsUiBinder ourUiBinder = GWT.create(HardwareSettingsUiBinder.class);
 
     @UiField(provided = true)
-    Control control;
+    GeneralOptions generalOptions;
     @UiField
     PropertyList propertyList;
 
     public HardwareSettings(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyHardware hardware) {
-        control = new Control(types, hardware);
+        generalOptions = new GeneralOptions(types, hardware);
         initWidget(ourUiBinder.createAndBindUi(this));
         propertyList.setTypes(types);
         propertyList.setList(hardware.getProperties());

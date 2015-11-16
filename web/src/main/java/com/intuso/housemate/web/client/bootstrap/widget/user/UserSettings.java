@@ -6,7 +6,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.web.client.bootstrap.widget.object.Control;
+import com.intuso.housemate.web.client.bootstrap.widget.object.GeneralOptions;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 import com.intuso.housemate.web.client.object.GWTProxyUser;
@@ -20,10 +20,10 @@ public class UserSettings extends Composite {
     private static UserUiBinder ourUiBinder = GWT.create(UserUiBinder.class);
 
     @UiField(provided = true)
-    Control control;
+    GeneralOptions generalOptions;
 
     public UserSettings(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyUser user) {
-        control = new Control(types, user);
+        generalOptions = new GeneralOptions(types, user);
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 }

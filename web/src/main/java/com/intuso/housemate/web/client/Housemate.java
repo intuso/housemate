@@ -120,6 +120,9 @@ public class Housemate implements EntryPoint {
         // connect the router. Add listeners so everything else happens automatically after
         INJECTOR.getRouter().addListener(routerRootListener);
         INJECTOR.getProxyRoot().addObjectListener(proxyRootListener);
+
+        resetContent();
+
         INJECTOR.getRouter().connect();
     }
 

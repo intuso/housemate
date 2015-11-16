@@ -49,10 +49,10 @@ public class RealRootImpl
     public final static String TYPES_ID = "types";
     public final static String DEVICES_ID = "devices";
     public final static String AUTOMATIONS_ID = "automations";
-    public final static String ADD_USER_ID = "add-user";
-    public final static String ADD_HARDWARE_ID = "add-hardware";
-    public final static String ADD_DEVICE_ID = "add-device";
     public final static String ADD_AUTOMATION_ID = "add-automation";
+    public final static String ADD_DEVICE_ID = "add-device";
+    public final static String ADD_HARDWARE_ID = "add-hardware";
+    public final static String ADD_USER_ID = "add-user";
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = Maps.newHashMap();
 
@@ -115,9 +115,9 @@ public class RealRootImpl
         this.hardwareFactory = hardwareFactory;
         this.userFactory = userFactory;
 
-        this.addAutomationCommand = addAutomationCommandFactory.create(ADD_HARDWARE_ID, ADD_HARDWARE_ID, "Add hardware", this, this);
+        this.addAutomationCommand = addAutomationCommandFactory.create(ADD_AUTOMATION_ID, ADD_AUTOMATION_ID, "Add an automation", this, this);
         this.addDeviceCommand = addDeviceCommandFactory.create(ADD_DEVICE_ID, ADD_DEVICE_ID, "Add a device", this, this);
-        this.addHardwareCommand = addHardwareCommandFactory.create(ADD_AUTOMATION_ID, ADD_AUTOMATION_ID, "Add an automation", this, this);
+        this.addHardwareCommand = addHardwareCommandFactory.create(ADD_HARDWARE_ID, ADD_HARDWARE_ID, "Add hardware", this, this);
         this.addUserCommand = addUserCommandFactory.create(ADD_USER_ID, ADD_USER_ID, "Add a user", this, this);
 
         this.accessManager = new AccessManager(listenersFactory, properties, ApplicationRegistration.ClientType.Real, this);

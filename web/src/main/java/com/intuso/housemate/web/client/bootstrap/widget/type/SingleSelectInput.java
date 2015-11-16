@@ -66,8 +66,10 @@ public class SingleSelectInput extends Composite implements TypeInput, UserInput
         // get the selected id, or if not set choose the first one
         String optionId = null;
         if(typeInstances == null || typeInstances.getElements().get(0) == null || typeInstances.getElements().get(0).getValue() == null) {
-            if(options.size() > 0)
+            if(options.size() > 0) {
                 optionId = options.iterator().next().getId();
+                onChange(null); // fake click so we can fire a set event
+            }
         } else
             optionId = typeInstances.getElements().get(0).getValue();
         if(typeInstances != null && typeInstances.getElements().get(0) != null)

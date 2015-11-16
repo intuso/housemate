@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
-        <h:object.Control ui:field="control"/>
-        <h:property.PropertyList ui:field="propertyList" header="Properties"/>
+        <h:object.GeneralOptions ui:field="generalOptions"/>
+        <h:property.PropertyList ui:field="propertyList" header="Driver Properties"/>
     </g:FlowPanel>
 </ui:UiBinder>
