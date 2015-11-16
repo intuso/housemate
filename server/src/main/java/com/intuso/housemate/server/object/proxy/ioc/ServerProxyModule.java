@@ -23,6 +23,7 @@ public class ServerProxyModule extends AbstractModule {
         install(new FactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<CommandData, ServerProxyCommand>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<ConditionData, ServerProxyCondition>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<DeviceData, ServerProxyDevice>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<FeatureData, ServerProxyFeature>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<HardwareData, ServerProxyHardware>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<ListData<HousemateData<?>>, ServerProxyList<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ObjectFactory<OptionData, ServerProxyOption>>() {}));

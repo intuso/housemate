@@ -59,7 +59,7 @@ public class ServerProxyDevice
         driverProperty = (ServerProxyProperty) getChild(DeviceData.DRIVER_ID);
         driverLoaded = (ServerProxyValue) getChild(DeviceData.DRIVER_LOADED_ID);
         properties = (ServerProxyList<PropertyData, ServerProxyProperty>) getChild(DeviceData.PROPERTIES_ID);
-        features = (ServerProxyList<FeatureData, ServerProxyFeature>) getChild(FeatureData.VALUES_ID);
+        features = (ServerProxyList<FeatureData, ServerProxyFeature>) getChild(DeviceData.FEATURES_ID);
     }
 
     @Override

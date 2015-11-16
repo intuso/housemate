@@ -84,12 +84,67 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
     private synchronized void setConnectionStatuses(ConnectionStatus routerConnectionStatus, ConnectionStatus connectionStatus) {
         this.routerConnectionStatus = routerConnectionStatus;
         this.serverConnectionStatus = connectionStatus;
-        if (routerConnectionStatus == ConnectionStatus.ConnectedToServer)
-            tellRegistrations(connectionStatus);
-        else if(connectionStatus == ConnectionStatus.ConnectedToServer || connectionStatus == ConnectionStatus.DisconnectedTemporarily)
-            tellRegistrations(ConnectionStatus.DisconnectedTemporarily);
-        else
-            tellRegistrations(ConnectionStatus.DisconnectedPermanently);
+        if(routerConnectionStatus == null) {
+            switch (serverConnectionStatus) {
+                case ConnectedToServer:
+                case ConnectedToRouter:
+                case DisconnectedTemporarily:
+                    tellRegistrations(ConnectionStatus.ConnectedToRouter);
+                    break;
+                case Connecting:
+                    tellRegistrations(ConnectionStatus.Connecting);
+                    break;
+                default:
+                    tellRegistrations(ConnectionStatus.DisconnectedPermanently);
+                    break;
+            }
+        } else {
+            switch (routerConnectionStatus) {
+                // if the next is fully connected, then this status is all that matters
+                case ConnectedToServer:
+                    tellRegistrations(serverConnectionStatus);
+                    break;
+                // if the next router is connecting or disconnected permanently, then that is our status too
+                case Connecting:
+                case DisconnectedPermanently:
+                    tellRegistrations(routerConnectionStatus);
+                    break;
+                // if the next router is disconnected temporarily, then we are too, but only if we're connected already
+                case DisconnectedTemporarily:
+                    switch (serverConnectionStatus) {
+                        case ConnectedToServer:
+                        case ConnectedToRouter:
+                        case DisconnectedTemporarily:
+                            tellRegistrations(ConnectionStatus.DisconnectedTemporarily);
+                            break;
+                        case Connecting:
+                            tellRegistrations(ConnectionStatus.Connecting);
+                            break;
+                        default:
+                            tellRegistrations(ConnectionStatus.DisconnectedPermanently);
+                            break;
+                    }
+                    break;
+                // if the next router is connected to its next router but not to the server, or no other status matches,
+                // then our status is one of ConnectedToRouter, Connecting, or DisconnectedPermanently
+                case ConnectedToRouter:
+                default:
+                    switch (serverConnectionStatus) {
+                        case ConnectedToServer:
+                        case ConnectedToRouter:
+                        case DisconnectedTemporarily:
+                            tellRegistrations(ConnectionStatus.ConnectedToRouter);
+                            break;
+                        case Connecting:
+                            tellRegistrations(ConnectionStatus.Connecting);
+                            break;
+                        default:
+                            tellRegistrations(ConnectionStatus.DisconnectedPermanently);
+                            break;
+                    }
+                    break;
+            }
+        }
     }
 
     private synchronized void tellRegistrations(ConnectionStatus status) {
@@ -160,8 +215,8 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
             getLog().d("Router re-registering");
             sendMessageNow(new Message<>(AccessManager.ROOT_PATH, Router.ROUTER_CONNECTED, new StringPayload(routerId)));
         } else {
-            sendMessageNow(new Message<>(AccessManager.ROOT_PATH, Router.ROUTER_CONNECTED, new StringPayload(null)));
             setServerConnectionStatus(ConnectionStatus.ConnectedToRouter);
+            sendMessageNow(new Message<>(AccessManager.ROOT_PATH, Router.ROUTER_CONNECTED, new StringPayload(null)));
         }
     }
 

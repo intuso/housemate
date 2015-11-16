@@ -20,6 +20,7 @@ public class ServerProxyFactory {
         private final Provider<ObjectFactory<CommandData, ServerProxyCommand>> commandFactory;
         private final Provider<ObjectFactory<ConditionData, ServerProxyCondition>> conditionFactory;
         private final Provider<ObjectFactory<DeviceData, ServerProxyDevice>> deviceFactory;
+        private final Provider<ObjectFactory<FeatureData, ServerProxyFeature>> featureFactory;
         private final Provider<ObjectFactory<HardwareData, ServerProxyHardware>> hardwareFactory;
         private final Provider<ObjectFactory<ListData<HousemateData<?>>, ServerProxyList<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>>> listFactory;
         private final Provider<ObjectFactory<OptionData, ServerProxyOption>> optionFactory;
@@ -38,6 +39,7 @@ public class ServerProxyFactory {
                 Provider<ObjectFactory<CommandData, ServerProxyCommand>> commandFactory,
                 Provider<ObjectFactory<ConditionData, ServerProxyCondition>> conditionFactory,
                 Provider<ObjectFactory<DeviceData, ServerProxyDevice>> deviceFactory,
+                Provider<ObjectFactory<FeatureData, ServerProxyFeature>> featureFactory,
                 Provider<ObjectFactory<HardwareData, ServerProxyHardware>> hardwareFactory,
                 Provider<ObjectFactory<ListData<HousemateData<?>>, ServerProxyList<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>>>> listFactory,
                 Provider<ObjectFactory<OptionData, ServerProxyOption>> optionFactory,
@@ -56,6 +58,7 @@ public class ServerProxyFactory {
             this.conditionFactory = conditionFactory;
             this.hardwareFactory = hardwareFactory;
             this.deviceFactory = deviceFactory;
+            this.featureFactory = featureFactory;
             this.listFactory = listFactory;
             this.optionFactory = optionFactory;
             this.parameterFactory = parameterFactory;
@@ -81,6 +84,8 @@ public class ServerProxyFactory {
                 return conditionFactory.get().create((ConditionData) data);
             else if(data instanceof DeviceData)
                 return deviceFactory.get().create((DeviceData) data);
+            else if(data instanceof FeatureData)
+                return featureFactory.get().create((FeatureData) data);
             else if(data instanceof HardwareData)
                 return hardwareFactory.get().create((HardwareData) data);
             else if(data instanceof ListData)

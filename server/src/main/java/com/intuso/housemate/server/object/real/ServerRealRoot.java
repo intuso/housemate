@@ -13,6 +13,7 @@ import com.intuso.housemate.client.real.impl.internal.factory.task.TaskFactoryTy
 import com.intuso.housemate.client.real.impl.internal.factory.user.AddUserCommand;
 import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.Router;
+import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.NoPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -67,13 +68,15 @@ public class ServerRealRoot extends RealRootImpl {
 
     @Override
     public void sendMessage(Message<?> message) {
-        if(message.getPayload() instanceof HousemateData)
-            ((Message)message).setPayload(((HousemateData<?>) message.getPayload()).deepClone());
-        super.sendMessage(message);
+        if(initialDataSent || message.getPayload() instanceof ApplicationRegistration || message.getType().equals(INITIAL_DATA)) {
+            if(message.getPayload() instanceof HousemateData)
+                ((Message)message).setPayload(((HousemateData<?>) message.getPayload()).deepClone());
+            super.sendMessage(message);
+        }
     }
 
     @Override
     protected boolean checkCanSendMessage(Message<?> message) {
-        return initialDataSent;
+        return true;
     }
 }
