@@ -3,9 +3,9 @@ package com.intuso.housemate.server.plugin.main.task;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.real.api.internal.type.TimeUnit;
-import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.utilities.log.Log;
 
 /**
@@ -19,13 +19,15 @@ public class RandomDelay implements TaskDriver {
     /**
      * The time unit that the quantity is specified in
      */
-    @Property(id = "unit", name = "Unit", description = "the unit of time to wait for", typeId = "time-unit")
+    @Property("time-unit")
+    @TypeInfo(id = "unit", name = "Unit", description = "the unit of time to wait for")
     private TimeUnit unit = TimeUnit.MINUTES;
 
     /**
      * The quantity of time to wait which, combined with the unit, gives the time to wait
      */
-    @Property(id = "max-amount", name = "Max amount", description = "the maximum amount of time to wait", typeId = "integer")
+    @Property("integer")
+    @TypeInfo(id = "max-amount", name = "Max amount", description = "the maximum amount of time to wait")
     private Integer maxAmount = 1;
 
     private final Log log;

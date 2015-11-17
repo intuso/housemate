@@ -3,9 +3,9 @@ package com.intuso.housemate.server.plugin.main.condition;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.type.Day;
-import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.utilities.log.Log;
 
 import java.util.Calendar;
@@ -37,7 +37,8 @@ public class DayOfTheWeek implements ConditionDriver {
 	 * The days that the condition is satisfied for. Left-most bit isn't used, next one is sunday,
 	 * then monday etc. Right-most bit is saturday
 	 */
-    @Property(id = "days", name = "Days", description = "The days that satisfy the condition", typeId = "days")
+    @Property("days")
+    @TypeInfo(id = "days", name = "Days", description = "The days that satisfy the condition")
 	private Set<Day> days;
 
     private final Log log;

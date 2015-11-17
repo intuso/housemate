@@ -5,6 +5,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.factory.FactoryType;

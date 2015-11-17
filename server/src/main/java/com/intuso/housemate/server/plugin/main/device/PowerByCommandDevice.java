@@ -3,10 +3,10 @@ package com.intuso.housemate.server.plugin.main.device;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.device.feature.RealStatefulPowerControl;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
-import com.intuso.housemate.plugin.api.internal.TypeInfo;
 
 import java.io.IOException;
 
@@ -16,10 +16,12 @@ import java.io.IOException;
 @TypeInfo(id = "power-by-command", name = "Power By Command", description = "Device which runs a configured command to turn things on and off")
 public final class PowerByCommandDevice implements DeviceDriver, RealStatefulPowerControl {
 
-    @Property(id = "on-command", name = "On Command", description = "The command to turn the device on", typeId = "string")
+    @Property("string")
+    @TypeInfo(id = "on-command", name = "On Command", description = "The command to turn the device on")
     private String onCommandProperty;
 
-    @Property(id = "off-command", name = "Off Command", description = "The command to turn the device off", typeId = "string")
+    @Property("string")
+    @TypeInfo(id = "off-command", name = "Off Command", description = "The command to turn the device off")
     private String offCommandProperty;
 
     @com.intuso.housemate.client.real.api.internal.annotations.Values

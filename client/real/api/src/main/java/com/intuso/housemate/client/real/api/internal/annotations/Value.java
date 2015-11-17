@@ -13,26 +13,8 @@ import java.lang.annotation.Target;
 public @interface Value {
 
     /**
-     * The value's id
-     * @return the value's id
-     */
-    String id();
-
-    /**
-     * The value's name
-     * @return the value's name
-     */
-    String name();
-
-    /**
-     * The value's description
-     * @return the value's description
-     */
-    String description();
-
-    /**
      * The value's type
      * @return the value's type
      */
-    String typeId();
+    String value();
 }

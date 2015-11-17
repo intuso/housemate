@@ -1,6 +1,7 @@
 package com.intuso.housemate.plugin.rfxcom.lighting1;
 
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
+import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.device.feature.RealStatefulPowerControl;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
@@ -68,7 +69,8 @@ public abstract class Lighting1Appliance implements DeviceDriver, RealStatefulPo
         return houseId;
     }
 
-    @Property(id = "house-id", name = "House ID", description = "House ID (in decimal)", typeId = "integer")
+    @Property("integer")
+    @TypeInfo(id = "house-id", name = "House ID", description = "House ID (in decimal)")
     public void setHouseId(int houseId) {
         this.houseId = houseId;
         propertyChanged();
@@ -78,7 +80,8 @@ public abstract class Lighting1Appliance implements DeviceDriver, RealStatefulPo
         return unitCode;
     }
 
-    @Property(id = "unit-id", name = "Unit ID", description = "Unit ID", typeId = "integer")
+    @Property("integer")
+    @TypeInfo(id = "unit-id", name = "Unit ID", description = "Unit ID")
     public void setUnitCode(int unitCode) {
         this.unitCode = unitCode;
         propertyChanged();

@@ -1,6 +1,7 @@
 package com.intuso.housemate.plugin.rfxcom.temperaturesensor;
 
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
+import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Values;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
@@ -54,7 +55,8 @@ public abstract class TemperatureSensor implements DeviceDriver {
         return sensorId;
     }
 
-    @Property(id = "sensor-id", name = "Sensor ID", description = "Sensor ID (in decimal)", typeId = "integer")
+    @Property("integer")
+    @TypeInfo(id = "sensor-id", name = "Sensor ID", description = "Sensor ID (in decimal)")
     public void setSensorId(int sensorId) {
         this.sensorId = sensorId;
         propertyChanged();
@@ -72,7 +74,8 @@ public abstract class TemperatureSensor implements DeviceDriver {
 
     public interface DeviceValues {
 
-        @Value(id = "temperature", name = "Temperature", description = "The current temperature", typeId = "double")
+        @Value("double")
+        @TypeInfo(id = "temperature", name = "Temperature", description = "The current temperature")
         void setTemperature(double temperature);
     }
 }

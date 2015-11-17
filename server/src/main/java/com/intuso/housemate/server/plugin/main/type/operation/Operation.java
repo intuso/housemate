@@ -1,7 +1,7 @@
 package com.intuso.housemate.server.plugin.main.type.operation;
 
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.plugin.api.internal.Operator;
-import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 
 import java.util.Map;

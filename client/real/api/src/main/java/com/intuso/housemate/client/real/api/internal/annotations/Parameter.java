@@ -15,26 +15,8 @@ import java.lang.annotation.Target;
 public @interface Parameter {
 
     /**
-     * The parameter's id
-     * @return the parameter's id
-     */
-    String id();
-
-    /**
-     * The parameter's name
-     * @return the parameter's name
-     */
-    String name();
-
-    /**
-     * The parameter's description
-     * @return the parameter's description
-     */
-    String description();
-
-    /**
      * The parameter's type
      * @return the parameter's type
      */
-    String typeId();
+    String value();
 }

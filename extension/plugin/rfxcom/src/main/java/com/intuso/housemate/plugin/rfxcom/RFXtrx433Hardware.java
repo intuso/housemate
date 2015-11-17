@@ -9,6 +9,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.RealCommand;
 import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
+import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.HardwareDriver;
 import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.housemate.object.v1_0.api.Command;
@@ -18,7 +19,6 @@ import com.intuso.housemate.plugin.rfxcom.lighting1.Lighting1ARCAppliance;
 import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2ACAppliance;
 import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2HomeEasyEUAppliance;
 import com.intuso.housemate.plugin.rfxcom.temperaturesensor.*;
-import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.RFXtrx;
@@ -128,7 +128,8 @@ public class RFXtrx433Hardware implements HardwareDriver {
         rfxtrx.openPortSafe();
     }
 
-    @Property(id = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names", typeId = "string", initialValue = ".*ttyUSB.*")
+    @Property(value = "string", initialValue = ".*ttyUSB.*")
+    @TypeInfo(id = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names")
     public void setPattern(String pattern) {
         this.pattern = pattern;
         rfxtrx.setPatterns(Lists.newArrayList(Pattern.compile(pattern)));
@@ -138,7 +139,8 @@ public class RFXtrx433Hardware implements HardwareDriver {
         return pattern;
     }
 
-    @Property(id = "create", name = "Create devices", description = "Create a new device when a command is received for it", typeId = "boolean", initialValue = "true")
+    @Property(value = "boolean", initialValue = "true")
+    @TypeInfo(id = "create", name = "Create devices", description = "Create a new device when a command is received for it")
     public void setCreate(boolean create) {
         this.create = create;
         if(messageListenerLighting1ARC != null) {

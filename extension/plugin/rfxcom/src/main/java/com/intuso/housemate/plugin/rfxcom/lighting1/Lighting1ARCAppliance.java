@@ -2,9 +2,9 @@ package com.intuso.housemate.plugin.rfxcom.lighting1;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
-import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 
 /**
  * Housemate device that controls a USB relay

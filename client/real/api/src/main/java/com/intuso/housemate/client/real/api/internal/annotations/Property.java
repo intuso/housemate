@@ -13,28 +13,10 @@ import java.lang.annotation.Target;
 public @interface Property {
 
     /**
-     * The property's id
-     * @return the property's id
-     */
-    String id();
-
-    /**
-     * The property's name
-     * @return the property's name
-     */
-    String name();
-
-    /**
-     * The property's description
-     * @return the property's description
-     */
-    String description();
-
-    /**
      * The property's type
      * @return the property's type
      */
-    String typeId();
+    String value();
 
     /**
      * The initial value of the property

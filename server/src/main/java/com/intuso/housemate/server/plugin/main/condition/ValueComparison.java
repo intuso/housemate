@@ -5,11 +5,11 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.housemate.plugin.api.internal.Comparator;
-import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.housemate.server.plugin.main.type.comparison.Comparison;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueAvailableListener;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
@@ -65,7 +65,8 @@ public class ValueComparison implements ConditionDriver {
         removeListeners();
 	}
 
-    @Property(id = "comparison", name = "Comparison", description = "Comparison", typeId = "comparison")
+    @Property("comparison")
+    @TypeInfo(id = "comparison", name = "Comparison", description = "Comparison")
     public void setComparison(Comparison comparison) {
         removeListeners();
         this.comparison = comparison;

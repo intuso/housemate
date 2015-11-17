@@ -1,12 +1,14 @@
 package com.intuso.housemate.client.real.api.internal.device.feature;
 
-import com.intuso.housemate.client.real.api.internal.annotations.FeatureId;
+import com.intuso.housemate.client.real.api.internal.annotations.Feature;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.annotations.Value;
 
 /**
  * Interface to mark real devices that provide stateful volume control
  */
-@FeatureId("volume-stateful")
+@Feature
+@TypeInfo(id = "volume-stateful", name = "Volume", description = "Volume")
 public interface RealStatefulVolumeControl extends RealVolumeControl {
 
     interface Values {
@@ -15,7 +17,8 @@ public interface RealStatefulVolumeControl extends RealVolumeControl {
          * Callback for when the current volume has changed
          * @param currentVolume the new current volume
          */
-        @Value(id = "current-volume", name = "Current Volume", description = "The device's current volume", typeId = "integer")
+        @Value("integer")
+        @TypeInfo(id = "current-volume", name = "Current Volume", description = "The device's current volume")
         void currentVolume(int currentVolume);
     }
 }

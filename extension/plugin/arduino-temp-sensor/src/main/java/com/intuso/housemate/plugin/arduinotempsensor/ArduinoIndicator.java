@@ -3,9 +3,9 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
+import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.device.feature.RealStatefulPowerControl;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
-import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.log.Log;
 
 import java.io.IOException;
@@ -17,10 +17,12 @@ public class ArduinoIndicator implements DeviceDriver, RealStatefulPowerControl 
 
     private final SerialPortWrapper serialPort;
 
-    @Property(id = "colour", name = "Colour", description = "Colour of the indicator", typeId = "string")
+    @Property("string")
+    @TypeInfo(id = "colour", name = "Colour", description = "Colour of the indicator")
     public String colour;
 
-    @Property(id = "intensity", name = "Intensity", description = "Intensity of the indicator", typeId = "integer")
+    @Property("integer")
+    @TypeInfo(id = "intensity", name = "Intensity", description = "Intensity of the indicator")
     public int intensity;
 
     private final Log log;

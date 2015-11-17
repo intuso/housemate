@@ -2,11 +2,11 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Values;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
-import com.intuso.housemate.plugin.v1_0.api.TypeInfo;
 import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
@@ -111,7 +111,8 @@ public class ArduinoTemperatureSensor implements DeviceDriver {
 
     private interface TemperatureValues {
 
-        @Value(id = "temperature", name = "Temperature", description = "Current temperature", typeId = "double")
+        @Value("double")
+        @TypeInfo(id = "temperature", name = "Temperature", description = "Current temperature")
         void setTemperature(double temperature);
     }
 }

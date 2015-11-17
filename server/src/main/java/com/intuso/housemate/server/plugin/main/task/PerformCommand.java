@@ -3,10 +3,10 @@ package com.intuso.housemate.server.plugin.main.task;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.real.impl.internal.type.RealObjectType;
 import com.intuso.housemate.object.api.internal.*;
-import com.intuso.housemate.plugin.api.internal.TypeInfo;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
@@ -53,7 +53,8 @@ public class PerformCommand implements TaskDriver, ObjectLifecycleListener {
             commandLifecycleListenerRegistration = this.objectRoot.addObjectLifecycleListener(path, PerformCommand.this);
     }
 
-    @com.intuso.housemate.client.real.api.internal.annotations.Property(id = "command-path", name = "Command Path", description = "The path to the command to perform", typeId = "object")
+    @com.intuso.housemate.client.real.api.internal.annotations.Property("object")
+    @TypeInfo(id = "command-path", name = "Command Path", description = "The path to the command to perform")
     public void setCommandPath(RealObjectType.Reference<BaseHousemateObject<?>> commandPath) {
         if(commandLifecycleListenerRegistration != null)
             commandLifecycleListenerRegistration.removeListener();

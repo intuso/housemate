@@ -11,23 +11,4 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Command {
-
-    /**
-     * The command's id
-     * @return the command's id
-     */
-    String id();
-
-    /**
-     * The command's name
-     * @return the command's name
-     */
-    String name();
-
-    /**
-     * The command's description
-     * @return the command's description
-     */
-    String description();
-}
+public @interface Command {}
