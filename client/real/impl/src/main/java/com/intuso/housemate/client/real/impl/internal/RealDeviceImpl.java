@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.bridge.v1_0.DeviceDriverBridge;
 import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.client.real.api.internal.driver.PluginResource;
@@ -141,12 +142,22 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
             PluginResource<DeviceDriver.Factory<DRIVER>> driverFactory = driverProperty.getTypedValue();
             if(driverFactory != null) {
                 driver = driverFactory.getResource().create(this);
-                annotationProcessor.process(driver, this);
+                Object originalDriver = asOriginal(driver);
+                for(RealFeature feature : annotationProcessor.findFeatures(originalDriver))
+                    features.add(feature);
+                for(RealProperty<?> property : annotationProcessor.findProperties(originalDriver))
+                    properties.add(property);
                 errorValue.setTypedValues((String) null);
                 driverLoadedValue.setTypedValues(false);
                 _start();
             }
         }
+    }
+
+    private Object asOriginal(DeviceDriver driver) {
+        if(driver instanceof DeviceDriverBridge)
+            return ((DeviceDriverBridge) driver).getDeviceDriver();
+        return driver;
     }
 
     private void uninitDriver() {
@@ -157,6 +168,8 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
             driver = null;
             for (RealFeature feature : Lists.newArrayList(features))
                 features.remove(feature.getId());
+            for(RealProperty<?> property : Lists.newArrayList(properties))
+                properties.remove(property.getId());
         }
     }
 

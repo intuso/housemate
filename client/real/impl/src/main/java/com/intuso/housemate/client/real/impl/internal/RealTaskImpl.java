@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.bridge.v1_0.TaskDriverBridge;
 import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.client.real.api.internal.driver.PluginResource;
 import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
@@ -88,11 +89,18 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
             PluginResource<TaskDriver.Factory<DRIVER>> driverFactory = driverProperty.getTypedValue();
             if(driverFactory != null) {
                 driver = driverFactory.getResource().create(this);
-                annotationProcessor.process(driver, this);
+                for(RealProperty<?> property : annotationProcessor.findProperties(asOriginal(driver)))
+                    properties.add(property);
                 errorValue.setTypedValues((String) null);
                 driverLoadedValue.setTypedValues(false);
             }
         }
+    }
+
+    private Object asOriginal(TaskDriver driver) {
+        if(driver instanceof TaskDriverBridge)
+            return ((TaskDriverBridge) driver).getTaskDriver();
+        return driver;
     }
 
     private void uninitDriver() {

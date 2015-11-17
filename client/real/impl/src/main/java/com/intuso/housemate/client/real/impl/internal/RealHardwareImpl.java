@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.bridge.v1_0.HardwareDriverBridge;
 import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.real.api.internal.driver.PluginResource;
@@ -133,12 +134,19 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
             PluginResource<HardwareDriver.Factory<DRIVER>> driverFactory = driverProperty.getTypedValue();
             if(driverFactory != null) {
                 driver = driverFactory.getResource().create(this);
-                annotationProcessor.process(driver, this);
+                for(RealProperty<?> property : annotationProcessor.findProperties(asOriginal(driver)))
+                    properties.add(property);
                 errorValue.setTypedValues((String) null);
                 driverLoadedValue.setTypedValues(false);
                 _start();
             }
         }
+    }
+
+    private Object asOriginal(HardwareDriver driver) {
+        if(driver instanceof HardwareDriverBridge)
+            return ((HardwareDriverBridge) driver).getHardwareDriver();
+        return driver;
     }
 
     private void uninitDriver() {
