@@ -1,5 +1,8 @@
 package com.intuso.housemate.platform.android.service.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,18 +17,24 @@ import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 import com.intuso.housemate.platform.android.common.JsonMessage;
 import com.intuso.housemate.platform.android.common.MessageCodes;
+import com.intuso.housemate.platform.android.service.R;
+import com.intuso.housemate.platform.android.service.activity.HousemateActivity;
+import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.log.Log;
 
 import java.util.Map;
 import java.util.UUID;
 
-public class AppService extends Service implements ServiceConnection {
+public class AppService extends Service implements ServiceConnection, Router.Listener<Router> {
+
+    private final static int NOTIFICATION_ID = AppService.class.getName().hashCode();
 
     private final Map<String, Router.Registration> clientReceivers = Maps.newHashMap();
     private final Messenger messenger;
 
     private Log log;
     private Router<?> router;
+    private ListenerRegistration routerListenerRegistration;
 
     public AppService() {
         this.messenger = new Messenger(new MessageHandler());
@@ -39,9 +48,13 @@ public class AppService extends Service implements ServiceConnection {
     @Override
     public void onCreate() {
         super.onCreate();
-        Intent intent = new Intent(this, ConnectionService.class);
-        startService(intent);
-        bindService(intent, this, Context.BIND_AUTO_CREATE);
+        startForeground(NOTIFICATION_ID, new Notification.Builder(getApplicationContext())
+                .setSmallIcon(R.drawable.icon)
+                .setContentTitle("Housemate Server Connection")
+                .setContentText("Disconnected")
+                .setPriority(Notification.PRIORITY_HIGH)
+                .build());
+        startConnectionService();
     }
 
     @Override
@@ -59,12 +72,60 @@ public class AppService extends Service implements ServiceConnection {
         ConnectionService.Binder binder = (ConnectionService.Binder) iBinder;
         log = binder.getLog();
         router = binder.getRouter();
+        serverConnectionStatusChanged(router, router.getServerConnectionStatus());
+        routerListenerRegistration = router.addListener(this);
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
+        routerListenerRegistration.removeListener();
+        serverConnectionStatusChanged(null, ConnectionStatus.DisconnectedPermanently);
         log = null;
         router = null;
+        startConnectionService();
+    }
+
+    private void startConnectionService() {
+        Intent intent = new Intent(this, ConnectionService.class);
+        startService(intent);
+        bindService(intent, this, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void serverConnectionStatusChanged(Router clientConnection, ConnectionStatus connectionStatus) {
+        Notification.Builder notification = new Notification.Builder(getApplicationContext())
+                .setSmallIcon(R.drawable.icon)
+                .setContentTitle("Housemate Server Connection");
+        switch (connectionStatus) {
+            case ConnectedToServer:
+                notification.setContentText("Connected to server")
+                    .setPriority(Notification.PRIORITY_MIN);
+                break;
+            case ConnectedToRouter:
+                notification.setContentText("Connected to router")
+                        .setPriority(Notification.PRIORITY_MIN);
+                break;
+            case Connecting:
+                notification.setContentText("Connecting to server")
+                        .setPriority(Notification.PRIORITY_MIN);
+                break;
+            case DisconnectedTemporarily:
+                notification.setContentText("Disconnected temporarily - will automatically reconnect")
+                        .setPriority(Notification.PRIORITY_MIN);
+                break;
+            case DisconnectedPermanently:
+                notification.setContentText("Disconnected. Tap here to configure the connection settings")
+                        .setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, new Intent(getApplicationContext(), HousemateActivity.class), PendingIntent.FLAG_CANCEL_CURRENT))
+                        .setPriority(Notification.PRIORITY_HIGH);
+                break;
+        }
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, notification.build());
+    }
+
+    @Override
+    public void newServerInstance(Router clientConnection, String serverId) {
+        // do nothing
     }
 
     private class MessageHandler extends Handler {

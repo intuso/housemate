@@ -15,7 +15,7 @@
 
     <properties>
         <android.sdk.path>/opt/adt/sdk</android.sdk.path>
-        <android.platform.version>4.0.1.2</android.platform.version>
+        <android.platform.version>4.1.1.4</android.platform.version>
         <android.plugin.version>3.6.0</android.plugin.version>
     </properties>
 
