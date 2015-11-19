@@ -8,6 +8,8 @@ import com.intuso.housemate.object.api.internal.TypeInstances;
 public abstract class ValueBaseData<WBL extends HousemateData<?>>
         extends HousemateData<WBL> {
 
+    private static final long serialVersionUID = -1L;
+
     public final static String VALUE_ID = "value";
     
     private String type;

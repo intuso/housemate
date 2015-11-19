@@ -4,8 +4,10 @@ package com.intuso.housemate.comms.api.internal;
  * Created by tomc on 14/09/15.
  */
 public class HousemateCommsException extends RuntimeException {
-    public HousemateCommsException() {
-    }
+
+    private static final long serialVersionUID = -1L;
+
+    public HousemateCommsException() {}
 
     public HousemateCommsException(String s) {
         super(s);

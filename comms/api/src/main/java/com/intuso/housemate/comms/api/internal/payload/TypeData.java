@@ -16,6 +16,8 @@ import java.util.HashMap;
 public abstract class TypeData<CHILD_DATA extends HousemateData<?>>
         extends HousemateData<CHILD_DATA> {
 
+    private static final long serialVersionUID = -1L;
+
     private int minValues;
     private int maxValues;
 
@@ -60,6 +62,8 @@ public abstract class TypeData<CHILD_DATA extends HousemateData<?>>
 
     public static class TypeInstancePayload implements Message.Payload {
 
+        private static final long serialVersionUID = -1L;
+
         private TypeInstance typeInstance;
 
         public TypeInstancePayload() {}
@@ -88,6 +92,8 @@ public abstract class TypeData<CHILD_DATA extends HousemateData<?>>
     }
 
     public static class TypeInstancesPayload implements Message.Payload {
+
+        private static final long serialVersionUID = -1L;
 
         private TypeInstances typeInstances;
 
@@ -121,6 +127,8 @@ public abstract class TypeData<CHILD_DATA extends HousemateData<?>>
     }
 
     public static class TypeInstanceMapPayload implements Message.Payload {
+
+        private static final long serialVersionUID = -1L;
 
         private TypeInstanceMap typeInstanceMap;
 

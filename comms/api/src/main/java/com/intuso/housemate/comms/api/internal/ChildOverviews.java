@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class ChildOverviews implements Message.Payload {
 
+    private static final long serialVersionUID = -1L;
+
     private List<ChildOverview> childOverviews;
     private String error;
 

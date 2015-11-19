@@ -27,6 +27,8 @@ public final class ApplicationInstanceData extends HousemateData<HousemateData<?
 
     public static class StatusPayload implements Message.Payload {
 
+        private static final long serialVersionUID = -1L;
+
         private ApplicationInstance.Status status;
 
         public StatusPayload() {}

@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class Message<T extends Message.Payload> implements Serializable {
 
+    private static final long serialVersionUID = -1L;
+
     public final static String RECEIVED_TYPE = "received";
 
     private Long sequenceId;
