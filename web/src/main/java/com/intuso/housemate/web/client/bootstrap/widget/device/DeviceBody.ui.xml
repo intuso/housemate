@@ -2,6 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:h='urn:import:com.intuso.housemate.web.client.bootstrap.widget'>
     <g:FlowPanel>
-        <h:NestedTable ui:field="featuresTable"/>
+        <h:feature.FeatureList ui:field="featureList"/>
     </g:FlowPanel>
 </ui:UiBinder>
