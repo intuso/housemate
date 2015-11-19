@@ -9,6 +9,7 @@ import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 
 /**
@@ -23,10 +24,11 @@ public class FieldProperty extends RealPropertyImpl<Object> {
                          @Assisted("name") String name,
                          @Assisted("description") String description,
                          @Assisted RealTypeImpl<?, ?, Object> type,
-                         @Assisted("value") Object value,
+                         @Nullable @Assisted("value") Object value,
                          @Assisted final Field field,
                          @Assisted("instance") final Object instance) {
         super(log, listenersFactory, id, name, description, type, value);
+        field.setAccessible(true);
         addObjectListener(new Property.Listener<RealProperty<Object>>() {
 
             @Override
@@ -46,8 +48,12 @@ public class FieldProperty extends RealPropertyImpl<Object> {
     }
 
     public interface Factory {
-        FieldProperty create(@Assisted("id") String id, @Assisted("name") String name,
-                                 @Assisted("description") String description, RealTypeImpl<?, ?, Object> type,
-                                 @Assisted("value") Object value,  Field field, @Assisted("instance") Object instance);
+        FieldProperty create(@Assisted("id") String id,
+                             @Assisted("name") String name,
+                             @Assisted("description") String description,
+                             RealTypeImpl<?, ?, Object> type,
+                             @Nullable @Assisted("value") Object value,
+                             Field field,
+                             @Assisted("instance") Object instance);
     }
 }

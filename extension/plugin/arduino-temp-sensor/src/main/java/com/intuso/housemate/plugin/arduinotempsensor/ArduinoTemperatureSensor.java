@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
-import com.intuso.housemate.client.v1_0.real.api.annotations.Values;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.utilities.log.Log;
@@ -28,7 +27,6 @@ public class ArduinoTemperatureSensor implements DeviceDriver {
     private BufferedReader in;
     private LineReader lineReader;
 
-    @Values
     private TemperatureValues temperatureValues;
 
     @Inject

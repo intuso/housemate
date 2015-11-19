@@ -4,16 +4,16 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
-import com.intuso.housemate.client.v1_0.real.api.device.feature.RealPlaybackControl;
-import com.intuso.housemate.client.v1_0.real.api.device.feature.RealPowerControl;
-import com.intuso.housemate.client.v1_0.real.api.device.feature.RealVolumeControl;
+import com.intuso.housemate.client.v1_0.real.api.device.feature.PlaybackControl;
+import com.intuso.housemate.client.v1_0.real.api.device.feature.PowerControl;
+import com.intuso.housemate.client.v1_0.real.api.device.feature.VolumeControl;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 
 import java.io.IOException;
 
 @TypeInfo(id = "tv-remote", name = "TV Remote", description = "TV Remote")
-public class TVRemote implements DeviceDriver, RealPowerControl, RealPlaybackControl, RealVolumeControl {
+public class TVRemote implements DeviceDriver, PowerControl, PlaybackControl, VolumeControl {
 
     @Property("string")
     @TypeInfo(id = "remote-name", name = "Remote Name", description = "The name of the remote you want to use")

@@ -10,6 +10,7 @@ import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class RealValueImpl<O> extends RealValueBaseImpl<ValueData, NoChildrenDat
                          @Assisted("name") String name,
                          @Assisted("description") String description,
                          @Assisted RealType<O> type,
-                         @Assisted List<O> values) {
+                         @Nullable @Assisted List<O> values) {
         super(log, listenersFactory, new ValueData(id, name, description, type.getId(), RealTypeImpl.serialiseAll(type, values)), type);
     }
 }

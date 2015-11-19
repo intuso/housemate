@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
 import com.intuso.housemate.client.real.api.internal.RealFeature;
 import com.intuso.housemate.client.real.api.internal.RealList;
@@ -31,8 +33,11 @@ public final class RealFeatureImpl
      * @param log {@inheritDoc}
      * @param listenersFactory
      */
-    public RealFeatureImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description) {
-        super(log, listenersFactory, new FeatureData(id, name, description));
+    @Inject
+    public RealFeatureImpl(Log log,
+                           ListenersFactory listenersFactory,
+                           @Assisted FeatureData data) {
+        super(log, listenersFactory, new FeatureData(data.getId(), data.getName(), data.getDescription()));
         this.commands = (RealList)new RealListImpl<>(log, listenersFactory, FeatureData.COMMANDS_ID, FeatureData.COMMANDS_ID, COMMANDS_DESCRIPTION);
         this.values = (RealList)new RealListImpl<>(log, listenersFactory, FeatureData.VALUES_ID, FeatureData.VALUES_ID, VALUES_DESCRIPTION);
         addChild((RealListImpl)commands);

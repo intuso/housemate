@@ -1,5 +1,6 @@
 package com.intuso.housemate.client.real.api.internal;
 
+import com.intuso.housemate.comms.api.internal.payload.FeatureData;
 import com.intuso.housemate.object.api.internal.Feature;
 
 /**
@@ -8,4 +9,9 @@ import com.intuso.housemate.object.api.internal.Feature;
 public interface RealFeature extends Feature<
         RealList<RealCommand>,
         RealList<RealValue<?>>,
-        RealFeature> {}
+        RealFeature> {
+
+    interface Factory {
+            RealFeature create(FeatureData data);
+    }
+}

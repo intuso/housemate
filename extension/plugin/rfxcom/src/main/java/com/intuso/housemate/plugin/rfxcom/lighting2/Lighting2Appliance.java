@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.rfxcom.lighting2;
 
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
-import com.intuso.housemate.client.v1_0.real.api.device.feature.RealStatefulPowerControl;
+import com.intuso.housemate.client.v1_0.real.api.device.feature.StatefulPowerControl;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -13,7 +13,7 @@ import java.io.IOException;
  * Housemate device that controls a HomeEasy Appliance
  *
  */
-public abstract class Lighting2Appliance implements DeviceDriver, RealStatefulPowerControl {
+public abstract class Lighting2Appliance implements DeviceDriver, StatefulPowerControl {
 
 	private com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance lighting2Appliance;
     private ListenerRegistration listenerRegistration;
@@ -22,8 +22,7 @@ public abstract class Lighting2Appliance implements DeviceDriver, RealStatefulPo
 
     private final DeviceDriver.Callback driverCallback;
 
-    @com.intuso.housemate.client.v1_0.real.api.annotations.Values
-    protected Values values;
+    protected PowerValues powerValues;
 
     public Lighting2Appliance(DeviceDriver.Callback driverCallback) {
         this.driverCallback = driverCallback;
@@ -53,12 +52,12 @@ public abstract class Lighting2Appliance implements DeviceDriver, RealStatefulPo
 
             @Override
             public void turnedOn(com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance a) {
-                values.isOn(true);
+                powerValues.isOn(true);
             }
 
             @Override
             public void turnedOff(com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance a) {
-                values.isOn(false);
+                powerValues.isOn(false);
             }
         });
 	}
@@ -93,7 +92,7 @@ public abstract class Lighting2Appliance implements DeviceDriver, RealStatefulPo
             throw new HousemateCommsException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting2Appliance.turnOn();
-            values.isOn(true);
+            powerValues.isOn(true);
 		} catch (IOException e) {
 			throw new HousemateCommsException("Could not turn appliance on", e);
 		}
@@ -105,18 +104,17 @@ public abstract class Lighting2Appliance implements DeviceDriver, RealStatefulPo
             throw new HousemateCommsException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting2Appliance.turnOff();
-            values.isOn(false);
+            powerValues.isOn(false);
 		} catch (IOException e) {
 			throw new HousemateCommsException("Could not turn appliance off", e);
 		}
 	}
 
-    @Override
-    public void setOn(boolean on) {
-        values.isOn(on);
+    public PowerValues getPowerValues() {
+        return powerValues;
     }
-	
-	@Override
+
+    @Override
     public void start() {
 		propertyChanged();
 	}

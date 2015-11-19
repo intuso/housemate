@@ -44,6 +44,11 @@ public class RealFactoryModule extends AbstractModule {
         bind(DeviceFactoryType.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(AddDeviceCommand.Factory.class));
 
+        // features
+        install(new FactoryModuleBuilder()
+                .implement(RealFeature.class, RealFeatureImpl.class)
+                .build(RealFeature.Factory.class));
+
         // hardwares
         install(new FactoryModuleBuilder()
                 .implement(new TypeLiteral<RealHardware<?>>() {}, new TypeLiteral<RealHardwareImpl<?>>() {})

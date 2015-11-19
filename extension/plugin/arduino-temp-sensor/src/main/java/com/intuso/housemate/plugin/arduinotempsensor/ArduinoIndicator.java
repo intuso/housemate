@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
-import com.intuso.housemate.client.v1_0.real.api.device.feature.RealStatefulPowerControl;
+import com.intuso.housemate.client.v1_0.real.api.device.feature.StatefulPowerControl;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.utilities.log.Log;
 
@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  */
 @TypeInfo(id = "arduino-indicator", name = "Arduino Indicator", description = "Arduino Indicator")
-public class ArduinoIndicator implements DeviceDriver, RealStatefulPowerControl {
+public class ArduinoIndicator implements DeviceDriver, StatefulPowerControl {
 
     private final SerialPortWrapper serialPort;
 
@@ -27,8 +27,7 @@ public class ArduinoIndicator implements DeviceDriver, RealStatefulPowerControl 
 
     private final Log log;
 
-    @com.intuso.housemate.client.v1_0.real.api.annotations.Values
-    protected Values values;
+    protected PowerValues powerValues;
 
     @Inject
     protected ArduinoIndicator(Log log,
@@ -52,7 +51,7 @@ public class ArduinoIndicator implements DeviceDriver, RealStatefulPowerControl 
     public void turnOn() {
         try {
             serialPort.writeBytes(new byte[]{colour.getBytes()[0], (byte) ('0' + intensity)});
-            values.isOn(true);
+            powerValues.isOn(true);
         } catch(IOException e) {
             log.w("Failed to send command to turn light on");
         }
@@ -62,14 +61,9 @@ public class ArduinoIndicator implements DeviceDriver, RealStatefulPowerControl 
     public void turnOff() {
         try {
             serialPort.writeBytes(new byte[]{colour.getBytes()[0], '0'});
-            values.isOn(true);
+            powerValues.isOn(true);
         } catch(IOException e) {
             log.w("Failed to send command to turn light off");
         }
-    }
-
-    @Override
-    public void setOn(boolean on) {
-        values.isOn(on);
     }
 }

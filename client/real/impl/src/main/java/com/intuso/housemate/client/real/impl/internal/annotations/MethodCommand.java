@@ -36,6 +36,7 @@ public class MethodCommand extends RealCommandImpl {
         this.method = method;
         this.instance = instance;
         parameterConverter = new ParameterConverter(parameters);
+        method.setAccessible(true);
     }
 
     @Override

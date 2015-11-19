@@ -2,8 +2,6 @@ package com.intuso.housemate.plugin.rfxcom.temperaturesensor;
 
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
-import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
-import com.intuso.housemate.client.v1_0.real.api.annotations.Values;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -11,14 +9,13 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * Housemate device that receives temperature updates from a sensor
  *
  */
-public abstract class TemperatureSensor implements DeviceDriver {
+public abstract class TemperatureSensor implements DeviceDriver, com.intuso.housemate.client.v1_0.real.api.device.feature.TemperatureSensor {
 
 	private com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensor sensor;
     private ListenerRegistration listenerRegistration;
     private int sensorId = 0;
 
-    @Values
-    public DeviceValues deviceValues;
+    public TemperatureValues temperatureValues;
 
     private final DeviceDriver.Callback driverCallback;
 
@@ -44,7 +41,7 @@ public abstract class TemperatureSensor implements DeviceDriver {
 
             @Override
             public void newTemperature(double temperature) {
-                deviceValues.setTemperature(temperature);
+                temperatureValues.setTemperature(temperature);
             }
         });
 	}
@@ -72,10 +69,4 @@ public abstract class TemperatureSensor implements DeviceDriver {
 		sensor = null;
 	}
 
-    public interface DeviceValues {
-
-        @Value("double")
-        @TypeInfo(id = "temperature", name = "Temperature", description = "The current temperature")
-        void setTemperature(double temperature);
-    }
 }

@@ -60,6 +60,7 @@ public class ServerGeneralRoot
                 // get the client for the request
                 ClientInstance clientInstance = accessManager.getClientApplicationInstance(message.getRoute(), message.getPayload().getOriginal());
                 RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(clientInstance, message.getRoute());
+                client.clearState();
                 accessManager.initialiseClient(client);
             }
         }));

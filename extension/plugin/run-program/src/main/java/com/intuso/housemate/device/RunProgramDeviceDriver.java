@@ -22,7 +22,6 @@ public class RunProgramDeviceDriver implements DeviceDriver {
     @TypeInfo(id = "command", name = "Command", description = "The command for the program")
     private String command;
 
-    @Values
     public MyValues values;
 
     private final Log log;
@@ -137,8 +136,9 @@ public class RunProgramDeviceDriver implements DeviceDriver {
             monitor.interrupt();
     }
 
+    @Values
     public interface MyValues {
-        @Value("integer")
+        @Value("boolean")
         @TypeInfo(id = "running", name = "Running", description = "True if the program is currently running")
         void setRunning(boolean running);
     }

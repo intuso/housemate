@@ -9,7 +9,7 @@ import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
  */
 @Feature
 @TypeInfo(id = "power", name = "Power", description = "Power")
-public interface RealPowerControl {
+public interface PowerControl {
 
     /**
      * Callback to turn the device on

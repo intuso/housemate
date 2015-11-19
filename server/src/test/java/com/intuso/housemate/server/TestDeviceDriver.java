@@ -12,7 +12,6 @@ import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
  */
 public class TestDeviceDriver implements DeviceDriver {
 
-    @Values
     public TestFeature.MyValues values;
 
     @Inject
@@ -31,6 +30,8 @@ public class TestDeviceDriver implements DeviceDriver {
     @Feature
     @TypeInfo(id = "feature", name = "Feature", description = "Feature")
     interface TestFeature {
+
+        @Values
         interface MyValues {
             @Value("double")
             @TypeInfo(id = "value", name = "Value", description = "Value")

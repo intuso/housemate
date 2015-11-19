@@ -218,7 +218,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Lighting1ARCAppliance appliance = device.getDriver();
                             appliance.setHouseId(houseId);
                             appliance.setUnitCode(unitCode);
-                            appliance.setOn(on);
+                            appliance.getPowerValues().isOn(on);
                         }
                     }
 
@@ -255,7 +255,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Lighting2ACAppliance appliance = device.getDriver();
                             appliance.setHouseId(houseId);
                             appliance.setUnitCode(unitCode);
-                            appliance.setOn(on);
+                            appliance.getPowerValues().isOn(on);
                         }
                     }
 
@@ -292,7 +292,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                             Lighting2HomeEasyEUAppliance appliance = device.getDriver();
                             appliance.setHouseId(houseId);
                             appliance.setUnitCode(unitCode);
-                            appliance.setOn(on);
+                            appliance.getPowerValues().isOn(on);
                         }
                     }
 
@@ -328,7 +328,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                         if(device.isDriverLoaded()) {
                             Temperature1Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
-                            sensor.deviceValues.setTemperature(temperature);
+                            sensor.temperatureValues.setTemperature(temperature);
                         }
                     }
 
@@ -364,7 +364,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                         if (device.isDriverLoaded()) {
                             Temperature2Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
-                            sensor.deviceValues.setTemperature(temperature);
+                            sensor.temperatureValues.setTemperature(temperature);
                         }
                     }
 
@@ -400,7 +400,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                         if (device.isDriverLoaded()) {
                             Temperature3Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
-                            sensor.deviceValues.setTemperature(temperature);
+                            sensor.temperatureValues.setTemperature(temperature);
                         }
                     }
 
@@ -436,7 +436,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                         if (device.isDriverLoaded()) {
                             Temperature4Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
-                            sensor.deviceValues.setTemperature(temperature);
+                            sensor.temperatureValues.setTemperature(temperature);
                         }
                     }
 
@@ -472,7 +472,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
                         if (device.isDriverLoaded()) {
                             Temperature5Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
-                            sensor.deviceValues.setTemperature(temperature);
+                            sensor.temperatureValues.setTemperature(temperature);
                         }
                     }
 

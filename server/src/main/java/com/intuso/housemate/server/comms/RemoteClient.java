@@ -48,12 +48,18 @@ public class RemoteClient implements Message.Receiver<Message.Payload> {
         this.receiver = receiver;
         this.comms = comms;
         this.messageDistributor = new MessageDistributor(listenersFactory);
-        messageDistributor.registerReceiver(Message.RECEIVED_TYPE, new Message.Receiver<Message.ReceivedPayload>() {
+        messageDistributor.registerReceiver(Message.RECEIVED_TYPE, new Message.Receiver<ClientPayload<Message.ReceivedPayload>>() {
             @Override
-            public void messageReceived(Message<Message.ReceivedPayload> message) {
-                messageCache.remove(message.getPayload().getSequenceId());
+            public void messageReceived(Message<ClientPayload<Message.ReceivedPayload>> message) {
+                messageCache.remove(message.getPayload().getOriginal().getSequenceId());
             }
         });
+    }
+
+    public void clearState() {
+        messageCache.clear();
+        applicationInstanceAllowed = false;
+        nextSequenceId = 0;
     }
 
     private void setParent(RemoteClient parent) {
@@ -86,7 +92,7 @@ public class RemoteClient implements Message.Receiver<Message.Payload> {
 
     @Override
     public void messageReceived(Message<Message.Payload> message) {
-
+        messageDistributor.messageReceived(message);
     }
 
     public void setApplicationAndInstanceStatus(Application.Status applicationStatus, ApplicationInstance.Status applicationInstanceStatus) {

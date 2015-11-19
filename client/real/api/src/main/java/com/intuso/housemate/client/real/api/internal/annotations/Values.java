@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
  * Marker for the interface containing the value functions
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 public @interface Values {}
