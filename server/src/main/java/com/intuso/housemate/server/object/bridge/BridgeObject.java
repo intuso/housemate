@@ -70,14 +70,14 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
                                 || treeLoadInfo.getId().equals(RemoteLinkedObject.EVERYTHING)) {
                             boolean recursive = treeLoadInfo.getId().equals(RemoteLinkedObject.EVERYTHING_RECURSIVE);
                             for (CHILD child : getChildren())
-                                sendRequestedDataToClient(client, child, treeLoadInfo.getChildren(), recursive);
+                                sendChildDataToClient(client, child, treeLoadInfo.getChildren(), recursive);
                         } else {
                             BridgeObject<?, ?, ?, ?, ?> child = getChild(treeLoadInfo.getId());
                             if (child == null) {
                                 getLog().w("Load request received from " + Arrays.toString(message.getRoute().toArray(new String[message.getRoute().size()])) + " for non-existant object \"" + treeLoadInfo.getId() + "\"");
                                 errors.add("Object does not exist or you do not have permission to see it");
                             } else
-                                sendRequestedDataToClient(client, child, treeLoadInfo.getChildren(), false);
+                                sendChildDataToClient(client, child, treeLoadInfo.getChildren(), false);
                         }
                     }
                     if(errors.size() > 0)
@@ -94,7 +94,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
         return result;
     }
 
-    protected void sendRequestedDataToClient(RemoteClient client, BridgeObject<?, ?, ?, ?, ?> child, Map<String, TreeLoadInfo> treeLoadInfos, boolean recursive) {
+    protected void sendChildDataToClient(RemoteClient client, BridgeObject<?, ?, ?, ?, ?> child, Map<String, TreeLoadInfo> treeLoadInfos, boolean recursive) {
         if(child == null)
             return;
         if(!child.isLoadedBy(client)) {
@@ -102,18 +102,18 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
             sendMessage(LOAD_RESPONSE, data, client);
         } else if(recursive) {
             for(BridgeObject<?, ?, ?, ?, ?> c : child.getChildren())
-                child.sendRequestedDataToClient(client, c, null, recursive);
+                child.sendChildDataToClient(client, c, null, recursive);
         } else if(treeLoadInfos != null) {
             for(Map.Entry<String, TreeLoadInfo> entry : treeLoadInfos.entrySet()) {
                 if(entry.getKey().equals(RemoteLinkedObject.EVERYTHING_RECURSIVE)
                         || entry.getKey().equals(RemoteLinkedObject.EVERYTHING)) {
                     boolean childRecursive = entry.getKey().equals(RemoteLinkedObject.EVERYTHING_RECURSIVE);
-                    for(CHILD c : getChildren())
-                        child.sendRequestedDataToClient(client, c, entry.getValue().getChildren(), childRecursive);
+                    for(BridgeObject c : child.getChildren())
+                        child.sendChildDataToClient(client, c, entry.getValue().getChildren(), childRecursive);
                 } else {
-                    CHILD c = getChild(entry.getKey());
+                    BridgeObject c = child.getChild(entry.getKey());
                     if(child != null)
-                        child.sendRequestedDataToClient(client, c, entry.getValue().getChildren(), recursive);
+                        child.sendChildDataToClient(client, c, entry.getValue().getChildren(), recursive);
                 }
             }
         }
