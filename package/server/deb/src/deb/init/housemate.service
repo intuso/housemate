@@ -2,9 +2,10 @@
 Description=Intuso Housemate
 
 [Service]
+User=hm
 Environment=HOME=/opt/intuso/housemate
-ExecStart=/bin/sudo -u hm /opt/intuso/housemate/bin/housemate start
-ExecStop=/bin/sudo -u hm /opt/intuso/housemate/bin/housemate stop
+ExecStart=/opt/intuso/housemate/bin/housemate start
+ExecStop=/opt/intuso/housemate/bin/housemate stop
 
 [Install]
 WantedBy=multi-user.target

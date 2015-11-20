@@ -3,7 +3,7 @@ Version: [[version]]
 Section: misc
 Priority: optional
 Architecture: all
-Depends: java8-sdk
+Depends: openjdk-8-jre
 Maintainer: Intuso <support@intuso.com>
 Description: Intuso Housemate Home Automation
 Homepage: http://www.intuso.com
