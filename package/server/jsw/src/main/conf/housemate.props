@@ -1,0 +1,2 @@
+conf.dir=conf
+log.file.path=logs/housemate.log

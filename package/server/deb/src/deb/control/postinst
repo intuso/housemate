@@ -1,0 +1,7 @@
+#!/bin/sh
+
+systemctl daemon-reload
+echo "Starting Intuso Housemate"
+systemctl start housemate
+
+exit 0

@@ -32,10 +32,9 @@ public class PCLogModule extends AbstractModule {
     private final static String HOUSEMATE_LOG_FILE_PATH = "log.file.path";
 
     public PCLogModule(WriteableMapPropertyRepository defaultProperties, String defaultLogName) {
-        defaultProperties.set(HOUSEMATE_LOG_STDOUT, "true");
-        defaultProperties.set(HOUSEMATE_LOG_STDOUT_LEVEL, LogLevel.ERROR.name());
+        defaultProperties.set(HOUSEMATE_LOG_STDOUT, "false");
         defaultProperties.set(HOUSEMATE_LOG_FILE, "true");
-        defaultProperties.set(HOUSEMATE_LOG_FILE_LEVEL, LogLevel.DEBUG.name());
+        defaultProperties.set(HOUSEMATE_LOG_FILE_LEVEL, LogLevel.ERROR.name());
         defaultProperties.set(HOUSEMATE_LOG_FILE_PATH, System.getProperty("user.home") + File.separator + ".housemate" + File.separator + "log" + File.separator + defaultLogName);
     }
 

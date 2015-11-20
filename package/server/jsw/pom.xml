@@ -23,6 +23,13 @@
     </dependencies>
 
 	<build>
+        <resources>
+            <resource>
+                <directory>src/main/conf</directory>
+                <targetPath>${project.build.directory}/jsw/housemate/conf</targetPath>
+            </resource>
+        </resources>
+
         <plugins>
             <!-- Wrap everything in a java service wrapper -->
             <plugin>
@@ -66,6 +73,10 @@
                         <daemon>
                             <id>housemate</id>
                             <mainClass>com.intuso.housemate.pkg.server.jar.Main</mainClass>
+                            <commandLineArguments>
+                                <commandLineArgument>-conf.dir</commandLineArgument>
+                                <commandLineArgument>conf</commandLineArgument>
+                            </commandLineArguments>
                             <platforms>
                                 <platform>jsw</platform>
                             </platforms>

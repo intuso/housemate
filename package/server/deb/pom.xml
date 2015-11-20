@@ -46,7 +46,7 @@
                                         <prefix>/opt/intuso</prefix>
                                         <user>hm</user>
                                         <group>nogroup</group>
-                                        <filemode>700</filemode>
+                                        <filemode>744</filemode>
                                     </mapper>
                                 </data>
 
