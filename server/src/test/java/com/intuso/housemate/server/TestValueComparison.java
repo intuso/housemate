@@ -138,7 +138,7 @@ public class TestValueComparison {
                 }, doubleTwo, doubleThree));
 
         // create second value as one from the device
-        String[] valuePath = new String[] {"", "servers", "local-Internal Client", "devices", "device", "features", "feature", "values", "value"};
+        String[] valuePath = new String[] {"", "servers", "server-Internal Client", "devices", "device", "features", "feature", "values", "value"};
         ValueLocation valueTwo = new ValueLocation(listenersFactory,
                 new RealObjectType.Reference<Value<TypeInstances, ?>>(valuePath),
                 injector.getInstance(RootBridge.class));
