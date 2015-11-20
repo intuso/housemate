@@ -12,8 +12,6 @@ public class HousemateActivityMapper implements ActivityMapper {
     public Activity getActivity(Place place) {
         if(place instanceof DevicesPlace)
             return new DevicesActivity((DevicesPlace)place);
-        else if(place instanceof ServersPlace)
-            return new ServersActivity((ServersPlace)place);
         else if(place instanceof AutomationsPlace)
             return new AutomationsActivity((AutomationsPlace)place);
         else if(place instanceof UsersPlace)

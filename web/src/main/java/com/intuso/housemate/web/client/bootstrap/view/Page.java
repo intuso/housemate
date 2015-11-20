@@ -37,8 +37,6 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
     @UiField
     AnchorListItem devicesButton;
     @UiField
-    AnchorListItem serversButton;
-    @UiField
     AnchorListItem automationsButton;
     @UiField
     AnchorListItem applicationsButton;
@@ -70,8 +68,6 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
         }
         if(event.getNewPlace() instanceof DevicesPlace)
             activeButton = devicesButton;
-        else if(event.getNewPlace() instanceof ServersPlace)
-            activeButton = serversButton;
         else if(event.getNewPlace() instanceof AutomationsPlace)
             activeButton = automationsButton;
         else if(event.getNewPlace() instanceof ApplicationsPlace)
@@ -93,12 +89,6 @@ public class Page extends Composite implements com.intuso.housemate.web.client.u
     public void devicesButtonClicked(ClickEvent e) {
         navbarCollapse.hide();
         placeController.goTo(new DevicesPlace());
-    }
-
-    @UiHandler("serversButton")
-    public void serversButtonClicked(ClickEvent e) {
-        navbarCollapse.hide();
-        placeController.goTo(new ServersPlace());
     }
 
     @UiHandler("automationsButton")
