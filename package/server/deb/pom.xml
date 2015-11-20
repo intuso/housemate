@@ -17,41 +17,53 @@
         <!-- Jar module -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-package-server-jar</artifactId>
+            <artifactId>housemate-package-server-jsw</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Include the other files in the debian package -->
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.3</version>
+                <artifactId>jdeb</artifactId>
+                <groupId>org.vafer</groupId>
+                <version>1.4</version>
                 <executions>
                     <execution>
-                        <id>copy-deb-resources</id>
-                        <phase>process-resources</phase>
-                        <goals><goal>copy-resources</goal></goals>
+                        <id>housemate-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jdeb</goal>
+                        </goals>
                         <configuration>
-                            <overwrite>true</overwrite>
-                            <outputDirectory>${basedir}/target/deb</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/deb</directory>
-                                </resource>
-                            </resources>
+                            <dataSet>
+                                <data>
+                                    <src>${project.basedir}/../jsw/target/housemate-package-server-jsw-${project.version}.tar.gz</src>
+                                    <type>archive</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <strip>1</strip>
+                                        <prefix>/opt/intuso</prefix>
+                                        <user>hm</user>
+                                        <group>nogroup</group>
+                                        <filemode>700</filemode>
+                                    </mapper>
+                                </data>
+
+                                <data>
+                                    <src>${basedir}/src/deb/init</src>
+                                    <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/lib/systemd/system</prefix>
+                                        <user>root</user>
+                                        <group>root</group>
+                                    </mapper>
+                                </data>
+                            </dataSet>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>net.sf.debian-maven</groupId>
-                <artifactId>debian-maven-plugin</artifactId>
-                <version>1.0.6</version>
-                <configuration>
-                    <packageName>housemate-server</packageName>
-                </configuration>
             </plugin>
         </plugins>
     </build>

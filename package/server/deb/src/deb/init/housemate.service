@@ -1,0 +1,10 @@
+[Unit]
+Description=Intuso Housemate
+
+[Service]
+Environment=HOME=/opt/intuso/housemate
+ExecStart=/bin/sudo -u hm /opt/intuso/housemate/bin/housemate start
+ExecStop=/bin/sudo -u hm /opt/intuso/housemate/bin/housemate stop
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "Stopping Intuso Housemate"
+initctl stop housemate
+
+exit 0
