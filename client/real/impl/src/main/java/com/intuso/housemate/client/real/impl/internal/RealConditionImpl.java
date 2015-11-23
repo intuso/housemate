@@ -110,7 +110,7 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
                 for(RealProperty<?> property : annotationProcessor.findProperties(asOriginal(driver)))
                     properties.add(property);
                 errorValue.setTypedValues((String) null);
-                driverLoadedValue.setTypedValues(false);
+                driverLoadedValue.setTypedValues(true);
             }
         }
     }

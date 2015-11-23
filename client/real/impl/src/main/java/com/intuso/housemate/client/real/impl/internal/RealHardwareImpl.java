@@ -137,7 +137,7 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
                 for(RealProperty<?> property : annotationProcessor.findProperties(asOriginal(driver)))
                     properties.add(property);
                 errorValue.setTypedValues((String) null);
-                driverLoadedValue.setTypedValues(false);
+                driverLoadedValue.setTypedValues(true);
                 _start();
             }
         }
