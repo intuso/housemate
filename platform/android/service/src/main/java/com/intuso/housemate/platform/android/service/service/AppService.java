@@ -48,12 +48,7 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
     @Override
     public void onCreate() {
         super.onCreate();
-        startForeground(NOTIFICATION_ID, new Notification.Builder(getApplicationContext())
-                .setSmallIcon(R.drawable.icon)
-                .setContentTitle("Housemate Server Connection")
-                .setContentText("Disconnected")
-                .setPriority(Notification.PRIORITY_HIGH)
-                .build());
+        startForeground(NOTIFICATION_ID, getNotification(ConnectionStatus.DisconnectedPermanently));
         startConnectionService();
     }
 
@@ -93,6 +88,11 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
 
     @Override
     public void serverConnectionStatusChanged(Router clientConnection, ConnectionStatus connectionStatus) {
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, getNotification(connectionStatus));
+    }
+
+    private Notification getNotification(ConnectionStatus connectionStatus) {
         Notification.Builder notification = new Notification.Builder(getApplicationContext())
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle("Housemate Server Connection");
@@ -119,8 +119,7 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
                         .setPriority(Notification.PRIORITY_HIGH);
                 break;
         }
-        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(NOTIFICATION_ID, notification.build());
+        return notification.build();
     }
 
     @Override
