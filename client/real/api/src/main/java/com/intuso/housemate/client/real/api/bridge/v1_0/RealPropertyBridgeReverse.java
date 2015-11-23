@@ -7,9 +7,11 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.RealCommand;
 import com.intuso.housemate.client.v1_0.real.api.RealProperty;
 import com.intuso.housemate.client.v1_0.real.api.RealType;
+import com.intuso.housemate.comms.api.internal.payload.PropertyData;
 import com.intuso.housemate.object.api.bridge.v1_0.TypeInstancesMapper;
 import com.intuso.housemate.object.v1_0.api.Command;
 import com.intuso.housemate.object.v1_0.api.Property;
+import com.intuso.housemate.object.v1_0.api.TypeInstanceMap;
 import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -44,8 +46,12 @@ public class RealPropertyBridgeReverse<FROM, TO> implements RealProperty<TO> {
     }
 
     @Override
-    public void set(TypeInstances value, Command.PerformListener<? super RealCommand> listener) {
-
+    public void set(final TypeInstances values, Command.PerformListener<? super RealCommand> listener) {
+        getSetCommand().perform(new TypeInstanceMap() {
+            {
+                getChildren().put(PropertyData.VALUE_ID, values);
+            }
+        }, listener);
     }
 
     @Override
