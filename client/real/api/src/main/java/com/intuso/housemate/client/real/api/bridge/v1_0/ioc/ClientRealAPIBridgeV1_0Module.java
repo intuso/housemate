@@ -13,7 +13,6 @@ public class ClientRealAPIBridgeV1_0Module extends AbstractModule {
     protected void configure() {
 
         // bind bridging implementations
-        bind(com.intuso.housemate.client.real.api.internal.RealDevice.Container.class).to(RealDeviceBridge.Container.class);
         bind(RealDevice.Container.class).to(RealDeviceBridgeReverse.Container.class);
 
         // setup assisted inject factories

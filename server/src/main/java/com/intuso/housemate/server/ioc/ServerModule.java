@@ -6,6 +6,7 @@ import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.intuso.housemate.client.real.api.bridge.v1_0.ioc.ClientRealAPIBridgeV1_0Module;
 import com.intuso.housemate.client.real.api.internal.RealRoot;
+import com.intuso.housemate.client.real.impl.internal.RealRootImpl;
 import com.intuso.housemate.client.real.impl.internal.ioc.RealObjectModule;
 import com.intuso.housemate.comms.api.bridge.ioc.CommsAPIBridgeV1_0Module;
 import com.intuso.housemate.comms.api.internal.Router;
@@ -57,6 +58,7 @@ public class ServerModule extends AbstractModule {
         // bind implementations
         bind(ObjectRoot.class).to(RootBridge.class);
         bind(RealRoot.class).to(ServerRealRoot.class);
+        bind(RealRootImpl.class).to(ServerRealRoot.class);
         bind(new Key<Router<?>>() {}).to(MainRouter.class);
         bind(new Key<Root<?, ?>>() {}).to(RootBridge.class);
     }
