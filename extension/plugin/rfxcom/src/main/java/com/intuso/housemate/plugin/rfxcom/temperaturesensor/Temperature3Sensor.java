@@ -10,7 +10,7 @@ import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
  * Housemate device that controls a USB relay
  *
  */
-@TypeInfo(id = "temperature-3", name = "Temperature3", description = "Temperature3 Sensor")
+@TypeInfo(id = "rfxcom-temperature-3", name = "Temperature3", description = "Temperature3 Sensor")
 public class Temperature3Sensor extends TemperatureSensor {
 
 	@Inject

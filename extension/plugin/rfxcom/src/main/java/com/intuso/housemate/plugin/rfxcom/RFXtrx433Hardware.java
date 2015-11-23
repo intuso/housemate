@@ -211,9 +211,14 @@ public class RFXtrx433Hardware implements HardwareDriver {
             try {
                 String name = "Lighting1 ARC " + houseId + "/" + (int)unitCode;
                 final RealDevice<Lighting1ARCAppliance> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
-                device.getDriverProperty().set(new TypeInstances(new TypeInstance(Lighting1ARCAppliance.class.getName())), new Command.PerformListener<RealCommand>() {
+                device.getDriverProperty().set(new TypeInstances(new TypeInstance("rfxcom-lighting1-arc")), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
+
+                    }
+
+                    @Override
+                    public void commandFinished(RealCommand command) {
                         if(device.isDriverLoaded()) {
                             Lighting1ARCAppliance appliance = device.getDriver();
                             appliance.setHouseId(houseId);
@@ -223,17 +228,12 @@ public class RFXtrx433Hardware implements HardwareDriver {
                     }
 
                     @Override
-                    public void commandFinished(RealCommand command) {
-
-                    }
-
-                    @Override
                     public void commandFailed(RealCommand command, String error) {
 
                     }
                 });
             } catch (Throwable t) {
-                log.e("Failed to auto-create Lighting1 ARC device " + houseId + "/" + (int) unitCode);
+                log.e("Failed to auto-create Lighting1 ARC device " + houseId + "/" + (int) unitCode, t);
             }
         }
     }
@@ -248,9 +248,14 @@ public class RFXtrx433Hardware implements HardwareDriver {
             try {
                 String name = "Lighting2 AC " + houseId + "/" + (int)unitCode;
                 final RealDevice<Lighting2ACAppliance> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
-                device.getDriverProperty().set(new TypeInstances(new TypeInstance(Lighting2ACAppliance.class.getName())), new Command.PerformListener<RealCommand>() {
+                device.getDriverProperty().set(new TypeInstances(new TypeInstance("rfxcom-lighting2-ac")), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
+
+                    }
+
+                    @Override
+                    public void commandFinished(RealCommand command) {
                         if (device.isDriverLoaded()) {
                             Lighting2ACAppliance appliance = device.getDriver();
                             appliance.setHouseId(houseId);
@@ -260,17 +265,12 @@ public class RFXtrx433Hardware implements HardwareDriver {
                     }
 
                     @Override
-                    public void commandFinished(RealCommand command) {
-
-                    }
-
-                    @Override
                     public void commandFailed(RealCommand command, String error) {
 
                     }
                 });
             } catch (Throwable t) {
-                log.e("Failed to auto-create Lighting2 AC device " + houseId + "/" + (int) unitCode);
+                log.e("Failed to auto-create Lighting2 AC device " + houseId + "/" + (int) unitCode, t);
             }
         }
     }
@@ -285,9 +285,14 @@ public class RFXtrx433Hardware implements HardwareDriver {
             try {
                 String name = "Lighting2 HomeEasy EU " + houseId + "/" + (int)unitCode;
                 final RealDevice<Lighting2HomeEasyEUAppliance> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
-                device.getDriverProperty().set(new TypeInstances(new TypeInstance(Lighting2HomeEasyEUAppliance.class.getName())), new Command.PerformListener<RealCommand>() {
+                device.getDriverProperty().set(new TypeInstances(new TypeInstance("rfxcom-lighting2-homeeasyeu")), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
+
+                    }
+
+                    @Override
+                    public void commandFinished(RealCommand command) {
                         if (device.isDriverLoaded()) {
                             Lighting2HomeEasyEUAppliance appliance = device.getDriver();
                             appliance.setHouseId(houseId);
@@ -297,17 +302,12 @@ public class RFXtrx433Hardware implements HardwareDriver {
                     }
 
                     @Override
-                    public void commandFinished(RealCommand command) {
-
-                    }
-
-                    @Override
                     public void commandFailed(RealCommand command, String error) {
 
                     }
                 });
             } catch (Throwable t) {
-                log.e("Failed to auto-create Lighting2 HomeEasy EU device " + houseId + "/" + (int) unitCode);
+                log.e("Failed to auto-create Lighting2 HomeEasy EU device " + houseId + "/" + (int) unitCode, t);
             }
         }
     }
@@ -322,9 +322,14 @@ public class RFXtrx433Hardware implements HardwareDriver {
             try {
                 String name = "Temperature 1 " + sensorId;
                 final RealDevice<Temperature1Sensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
-                device.getDriverProperty().set(new TypeInstances(new TypeInstance(Temperature1Sensor.class.getName())), new Command.PerformListener<RealCommand>() {
+                device.getDriverProperty().set(new TypeInstances(new TypeInstance("rfxcom-temperature-1")), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
+
+                    }
+
+                    @Override
+                    public void commandFinished(RealCommand command) {
                         if(device.isDriverLoaded()) {
                             Temperature1Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
@@ -333,17 +338,12 @@ public class RFXtrx433Hardware implements HardwareDriver {
                     }
 
                     @Override
-                    public void commandFinished(RealCommand command) {
-
-                    }
-
-                    @Override
                     public void commandFailed(RealCommand command, String error) {
 
                     }
                 });
             } catch (Throwable t) {
-                log.e("Failed to auto-create Temperature1 device " + sensorId);
+                log.e("Failed to auto-create Temperature1 device " + sensorId, t);
             }
         }
     }
@@ -358,9 +358,14 @@ public class RFXtrx433Hardware implements HardwareDriver {
             try {
                 String name = "Temperature 2 " + sensorId;
                 final RealDevice<Temperature2Sensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
-                device.getDriverProperty().set(new TypeInstances(new TypeInstance(Temperature2Sensor.class.getName())), new Command.PerformListener<RealCommand>() {
+                device.getDriverProperty().set(new TypeInstances(new TypeInstance("rfxcom-temperature-2")), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
+
+                    }
+
+                    @Override
+                    public void commandFinished(RealCommand command) {
                         if (device.isDriverLoaded()) {
                             Temperature2Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
@@ -369,17 +374,12 @@ public class RFXtrx433Hardware implements HardwareDriver {
                     }
 
                     @Override
-                    public void commandFinished(RealCommand command) {
-
-                    }
-
-                    @Override
                     public void commandFailed(RealCommand command, String error) {
 
                     }
                 });
             } catch (Throwable t) {
-                log.e("Failed to auto-create Temperature2 device " + sensorId);
+                log.e("Failed to auto-create Temperature2 device " + sensorId, t);
             }
         }
     }
@@ -394,9 +394,14 @@ public class RFXtrx433Hardware implements HardwareDriver {
             try {
                 String name = "Temperature 3 " + sensorId;
                 final RealDevice<Temperature3Sensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
-                device.getDriverProperty().set(new TypeInstances(new TypeInstance(Temperature3Sensor.class.getName())), new Command.PerformListener<RealCommand>() {
+                device.getDriverProperty().set(new TypeInstances(new TypeInstance("rfxcom-temperature-3")), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
+
+                    }
+
+                    @Override
+                    public void commandFinished(RealCommand command) {
                         if (device.isDriverLoaded()) {
                             Temperature3Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
@@ -405,17 +410,12 @@ public class RFXtrx433Hardware implements HardwareDriver {
                     }
 
                     @Override
-                    public void commandFinished(RealCommand command) {
-
-                    }
-
-                    @Override
                     public void commandFailed(RealCommand command, String error) {
 
                     }
                 });
             } catch (Throwable t) {
-                log.e("Failed to auto-create Temperature3 device " + sensorId);
+                log.e("Failed to auto-create Temperature3 device " + sensorId, t);
             }
         }
     }
@@ -430,9 +430,14 @@ public class RFXtrx433Hardware implements HardwareDriver {
             try {
                 String name = "Temperature 4 " + sensorId;
                 final RealDevice<Temperature4Sensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
-                device.getDriverProperty().set(new TypeInstances(new TypeInstance(Temperature4Sensor.class.getName())), new Command.PerformListener<RealCommand>() {
+                device.getDriverProperty().set(new TypeInstances(new TypeInstance("rfxcom-temperature-4")), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
+
+                    }
+
+                    @Override
+                    public void commandFinished(RealCommand command) {
                         if (device.isDriverLoaded()) {
                             Temperature4Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
@@ -441,17 +446,12 @@ public class RFXtrx433Hardware implements HardwareDriver {
                     }
 
                     @Override
-                    public void commandFinished(RealCommand command) {
-
-                    }
-
-                    @Override
                     public void commandFailed(RealCommand command, String error) {
 
                     }
                 });
             } catch (Throwable t) {
-                log.e("Failed to auto-create Temperature4 device " + sensorId);
+                log.e("Failed to auto-create Temperature4 device " + sensorId, t);
             }
         }
     }
@@ -466,9 +466,14 @@ public class RFXtrx433Hardware implements HardwareDriver {
             try {
                 String name = "Temperature 5 " + sensorId;
                 final RealDevice<Temperature5Sensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
-                device.getDriverProperty().set(new TypeInstances(new TypeInstance(Temperature5Sensor.class.getName())), new Command.PerformListener<RealCommand>() {
+                device.getDriverProperty().set(new TypeInstances(new TypeInstance("rfxcom-temperature-5")), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
+
+                    }
+
+                    @Override
+                    public void commandFinished(RealCommand command) {
                         if (device.isDriverLoaded()) {
                             Temperature5Sensor sensor = device.getDriver();
                             sensor.setSensorId(sensorId);
@@ -477,17 +482,12 @@ public class RFXtrx433Hardware implements HardwareDriver {
                     }
 
                     @Override
-                    public void commandFinished(RealCommand command) {
-
-                    }
-
-                    @Override
                     public void commandFailed(RealCommand command, String error) {
 
                     }
                 });
             } catch (Throwable t) {
-                log.e("Failed to auto-create Temperature5 device " + sensorId);
+                log.e("Failed to auto-create Temperature5 device " + sensorId, t);
             }
         }
     }
