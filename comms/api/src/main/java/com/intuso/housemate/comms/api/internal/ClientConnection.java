@@ -8,10 +8,10 @@ import com.intuso.housemate.comms.api.internal.access.ConnectionStatus;
 public interface ClientConnection {
 
     String SERVER_INSTANCE_ID_TYPE = "server-instance-id";
-    String SERVER_CONNECTION_STATUS_TYPE = "server-connection-status";
+    String NEXT_CONNECTION_STATUS_TYPE = "next-connection-status";
     String UNKNOWN_CLIENT_ID = "unknown-client-id";
 
-    ConnectionStatus getServerConnectionStatus();
+    ConnectionStatus getConnectionStatus();
 
     void connect();
     void disconnect();

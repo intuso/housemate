@@ -79,7 +79,7 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
         bound = true;
         Router<?> router = ((ConnectionService.Binder)binder).getRouter();
         routerRegistration = router.addListener(this);
-        serverConnectionStatusChanged(null, router.getServerConnectionStatus());
+        serverConnectionStatusChanged(null, router.getConnectionStatus());
     }
 
     @Override

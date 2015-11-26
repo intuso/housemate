@@ -255,7 +255,7 @@ public class WidgetService extends HousemateService {
         Status oldStatus = status;
         if (!networkAvailable)
             status = Status.NO_NETWORK;
-        else if (getRouter().getServerConnectionStatus() != ConnectionStatus.ConnectedToServer && getRouter().getServerConnectionStatus() != ConnectionStatus.DisconnectedTemporarily)
+        else if (getRouter().getConnectionStatus() != ConnectionStatus.ConnectedToServer && getRouter().getConnectionStatus() != ConnectionStatus.DisconnectedTemporarily)
             status = Status.NOT_CONNECTED;
         else if (getRoot().getApplicationInstanceStatus() != ApplicationInstance.Status.Allowed) {
             status = Status.NOT_ALLOWED;

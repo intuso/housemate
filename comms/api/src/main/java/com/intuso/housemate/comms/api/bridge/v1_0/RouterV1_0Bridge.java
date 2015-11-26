@@ -27,8 +27,18 @@ public class RouterV1_0Bridge implements Router<RouterV1_0Bridge> {
     }
 
     @Override
-    public ConnectionStatus getServerConnectionStatus() {
-        return connectionStatusMapper.map(router.getServerConnectionStatus());
+    public ConnectionStatus getConnectionStatus() {
+        return connectionStatusMapper.map(router.getConnectionStatus());
+    }
+
+    @Override
+    public ConnectionStatus getThisConnectionStatus() {
+        return connectionStatusMapper.map(router.getThisConnectionStatus());
+    }
+
+    @Override
+    public ConnectionStatus getNextConnectionStatus() {
+        return connectionStatusMapper.map(router.getNextConnectionStatus());
     }
 
     @Override

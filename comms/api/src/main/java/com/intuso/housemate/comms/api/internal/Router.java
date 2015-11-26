@@ -13,7 +13,9 @@ public interface Router<ROUTER extends Router> extends ClientConnection, Message
     String ROUTER_CONNECTED = "router-connected";
     String ROUTER_ID = "router-id";
 
-    ConnectionStatus getServerConnectionStatus();
+    ConnectionStatus getConnectionStatus();
+    ConnectionStatus getThisConnectionStatus();
+    ConnectionStatus getNextConnectionStatus();
 
     /**
      * Adds a listener to the root object

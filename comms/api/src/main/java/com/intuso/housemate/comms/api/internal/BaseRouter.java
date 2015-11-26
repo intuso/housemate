@@ -27,8 +27,10 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
     private final Map<String, Message.Receiver<?>> receivers = new ConcurrentHashMap<>();
 
     private String routerId;
-    private ConnectionStatus routerConnectionStatus = null;
-    private ConnectionStatus serverConnectionStatus = ConnectionStatus.DisconnectedPermanently;
+    private String serverInstanceId;
+    private ConnectionStatus connectionStatus = ConnectionStatus.DisconnectedPermanently;
+    private ConnectionStatus thisConnectionStatus = ConnectionStatus.DisconnectedPermanently;
+    private ConnectionStatus nextConnectionStatus = ConnectionStatus.DisconnectedPermanently;
     private ConnectionStatus listenerToldConnectionStatus;
 
     /**
@@ -45,6 +47,22 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
             public void messageReceived(Message<StringPayload> message) {
                 routerId = message.getPayload().getValue();
                 setConnectionStatuses(ConnectionStatus.ConnectedToServer, ConnectionStatus.ConnectedToServer);
+            }
+        });
+        registerRouterReceiver(ClientConnection.SERVER_INSTANCE_ID_TYPE, new Message.Receiver<StringPayload>() {
+            @Override
+            public void messageReceived(Message<StringPayload> message) {
+                if (!serverInstanceId.equals(message.getPayload().getValue())) {
+                    serverInstanceId = message.getPayload().getValue();
+                    for (ClientConnection.Listener<? super ROUTER> listener : getListeners())
+                        listener.newServerInstance(getThis(), serverInstanceId);
+                }
+            }
+        });
+        registerRouterReceiver(ClientConnection.NEXT_CONNECTION_STATUS_TYPE, new Message.Receiver<ConnectionStatus>() {
+            @Override
+            public void messageReceived(Message<ConnectionStatus> message) {
+                setNextConnectionStatus(message.getPayload());
             }
         });
     }
@@ -69,85 +87,50 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
         return messageDistributor.registerReceiver(type, receiver);
     }
 
-    protected void setServerConnectionStatus(ConnectionStatus serverConnectionStatus) {
-        setConnectionStatuses(routerConnectionStatus, serverConnectionStatus);
+    public ConnectionStatus getConnectionStatus() {
+        return connectionStatus;
     }
 
-    protected void setRouterConnectionStatus(ConnectionStatus routerConnectionStatus) {
-        setConnectionStatuses(routerConnectionStatus, serverConnectionStatus);
+    public ConnectionStatus getThisConnectionStatus() {
+        return thisConnectionStatus;
     }
 
-    public ConnectionStatus getServerConnectionStatus() {
-        return serverConnectionStatus;
+    private void setThisConnectionStatus(ConnectionStatus thisConnectionStatus) {
+        setConnectionStatuses(thisConnectionStatus, nextConnectionStatus);
     }
 
-    private synchronized void setConnectionStatuses(ConnectionStatus routerConnectionStatus, ConnectionStatus connectionStatus) {
-        this.routerConnectionStatus = routerConnectionStatus;
-        this.serverConnectionStatus = connectionStatus;
-        if(routerConnectionStatus == null) {
-            switch (serverConnectionStatus) {
-                case ConnectedToServer:
-                case ConnectedToRouter:
-                case DisconnectedTemporarily:
-                    tellRegistrations(ConnectionStatus.ConnectedToRouter);
-                    break;
-                case Connecting:
-                    tellRegistrations(ConnectionStatus.Connecting);
-                    break;
-                default:
-                    tellRegistrations(ConnectionStatus.DisconnectedPermanently);
-                    break;
-            }
-        } else {
-            switch (routerConnectionStatus) {
-                // if the next is fully connected, then this status is all that matters
-                case ConnectedToServer:
-                    tellRegistrations(serverConnectionStatus);
-                    break;
-                // if the next router is connecting or disconnected permanently, then that is our status too
-                case Connecting:
-                case DisconnectedPermanently:
-                    tellRegistrations(routerConnectionStatus);
-                    break;
-                // if the next router is disconnected temporarily, then we are too, but only if we're connected already
-                case DisconnectedTemporarily:
-                    switch (serverConnectionStatus) {
-                        case ConnectedToServer:
-                        case ConnectedToRouter:
-                        case DisconnectedTemporarily:
-                            tellRegistrations(ConnectionStatus.DisconnectedTemporarily);
-                            break;
-                        case Connecting:
-                            tellRegistrations(ConnectionStatus.Connecting);
-                            break;
-                        default:
-                            tellRegistrations(ConnectionStatus.DisconnectedPermanently);
-                            break;
-                    }
-                    break;
-                // if the next router is connected to its next router but not to the server, or no other status matches,
-                // then our status is one of ConnectedToRouter, Connecting, or DisconnectedPermanently
-                case ConnectedToRouter:
-                default:
-                    switch (serverConnectionStatus) {
-                        case ConnectedToServer:
-                        case ConnectedToRouter:
-                        case DisconnectedTemporarily:
-                            tellRegistrations(ConnectionStatus.ConnectedToRouter);
-                            break;
-                        case Connecting:
-                            tellRegistrations(ConnectionStatus.Connecting);
-                            break;
-                        default:
-                            tellRegistrations(ConnectionStatus.DisconnectedPermanently);
-                            break;
-                    }
-                    break;
-            }
+    public ConnectionStatus getNextConnectionStatus() {
+        return nextConnectionStatus;
+    }
+
+    private void setNextConnectionStatus(ConnectionStatus nextConnectionStatus) {
+        setConnectionStatuses(thisConnectionStatus, nextConnectionStatus);
+    }
+
+    private synchronized void setConnectionStatuses(ConnectionStatus thisConnectionStatus, ConnectionStatus nextConnectionStatus) {
+        if(this.thisConnectionStatus == thisConnectionStatus && this.nextConnectionStatus == nextConnectionStatus)
+            return;
+
+        this.thisConnectionStatus = thisConnectionStatus;
+        this.nextConnectionStatus = nextConnectionStatus;
+
+        switch (thisConnectionStatus) {
+            case ConnectedToServer:
+                switch (nextConnectionStatus) {
+                    case ConnectedToServer:
+                        tellRegistrations(ConnectionStatus.ConnectedToServer);
+                        break;
+                    default:
+                        tellRegistrations(ConnectionStatus.ConnectedToRouter);
+                }
+                break;
+            default:
+                tellRegistrations(thisConnectionStatus);
         }
     }
 
     private synchronized void tellRegistrations(ConnectionStatus status) {
+        connectionStatus = status;
         if(listenerToldConnectionStatus != status) {
             listenerToldConnectionStatus = status;
             for(ClientConnection.Listener<? super ROUTER> listener : listeners)
@@ -174,7 +157,7 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
         String clientId = "" + nextId.incrementAndGet();
         receivers.put(clientId, receiver);
         try {
-            receiver.serverConnectionStatusChanged(getThis(), serverConnectionStatus);
+            receiver.serverConnectionStatusChanged(getThis(), nextConnectionStatus);
         } catch(HousemateCommsException e) {
             log.e("Failed to tell new client " + clientId + " the current router status", e);
         }
@@ -206,8 +189,8 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
     }
 
     protected void connecting() {
-        if(routerId != null)
-            setServerConnectionStatus(ConnectionStatus.Connecting);
+        if(routerId == null)
+            setThisConnectionStatus(ConnectionStatus.Connecting);
     }
 
     protected void connectionEstablished() {
@@ -215,7 +198,7 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
             getLog().d("Router re-registering");
             sendMessageNow(new Message<>(AccessManager.ROOT_PATH, Router.ROUTER_CONNECTED, new StringPayload(routerId)));
         } else {
-            setServerConnectionStatus(ConnectionStatus.ConnectedToRouter);
+            setThisConnectionStatus(ConnectionStatus.ConnectedToRouter);
             sendMessageNow(new Message<>(AccessManager.ROOT_PATH, Router.ROUTER_CONNECTED, new StringPayload(null)));
         }
     }
@@ -223,10 +206,10 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
     protected void connectionLost(boolean temporary) {
         // set the connection status
         if(temporary) {
-            setServerConnectionStatus(ConnectionStatus.DisconnectedTemporarily);
+            setThisConnectionStatus(ConnectionStatus.DisconnectedTemporarily);
         } else {
-            setServerConnectionStatus(ConnectionStatus.DisconnectedPermanently);
-            routerConnectionStatus = null;
+            setThisConnectionStatus(ConnectionStatus.DisconnectedPermanently);
+            setNextConnectionStatus(null);
             routerId = null;
         }
     }

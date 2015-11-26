@@ -16,9 +16,13 @@ import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
 import com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl;
 import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
+import com.intuso.housemate.comms.v1_0.api.Router;
+import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
+import com.intuso.housemate.object.v1_0.api.Application;
+import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.platform.android.app.HousemateActivity;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
@@ -54,12 +58,47 @@ public class WidgetConfigureActivity
     protected void onStart() {
         super.onStart();
         setResult(RESULT_CANCELED); // set this now in case the user backs out of the configuration
-        setStatus("Loading devices");
+        setStatus("Connecting");
         listAdapter = new DeviceListAdapter();
         ((ListView)findViewById(R.id.device_list)).setAdapter(listAdapter);
         ((ListView)findViewById(R.id.device_list)).setOnItemClickListener(this);
         clientHelper = ProxyClientHelper.newClientHelper(getLog(),
                 new AndroidProxyRoot(getLog(), getListenersFactory(), getProperties(), getRouter()), getRouter());
+        clientHelper.getRouter().addListener(new Router.Listener<Router>() {
+            @Override
+            public void serverConnectionStatusChanged(Router clientConnection, ConnectionStatus connectionStatus) {
+                if(connectionStatus != ConnectionStatus.ConnectedToServer)
+                    setStatus("Router: " + connectionStatus);
+            }
+
+            @Override
+            public void newServerInstance(Router clientConnection, String serverId) {
+
+            }
+        });
+        clientHelper.getRoot().addObjectListener(new ProxyRoot.Listener<AndroidProxyRoot>() {
+            @Override
+            public void applicationStatusChanged(AndroidProxyRoot requiresAccess, Application.Status applicationStatus) {
+                if(clientHelper.getRouter().getConnectionStatus() == ConnectionStatus.ConnectedToServer
+                        && applicationStatus != Application.Status.AllowInstances
+                        && applicationStatus != Application.Status.SomeInstances)
+                    setStatus("Application: " + applicationStatus);
+            }
+
+            @Override
+            public void applicationInstanceStatusChanged(AndroidProxyRoot requiresAccess, ApplicationInstance.Status applicationInstanceStatus) {
+                if(clientHelper.getRouter().getConnectionStatus() == ConnectionStatus.ConnectedToServer
+                        && clientHelper.getRoot().getApplicationStatus() != Application.Status.AllowInstances
+                        && clientHelper.getRoot().getApplicationStatus() != Application.Status.SomeInstances
+                        && applicationInstanceStatus != ApplicationInstance.Status.Allowed)
+                    setStatus("Application Instance: " + applicationInstanceStatus);
+            }
+
+            @Override
+            public void newApplicationInstance(AndroidProxyRoot requiresAccess, String instanceId) {
+
+            }
+        });
         clientHelper.applicationDetails(WidgetService.APPLICATION_DETAILS)
                 .component(WidgetConfigureActivity.class.getName())
                 .load(ProxyRoot.SERVERS_ID, RemoteObject.EVERYTHING, ServerData.DEVICES_ID, RemoteObject.EVERYTHING)
@@ -69,13 +108,13 @@ public class WidgetConfigureActivity
 
     @Override
     protected void onStop() {
-        super.onStop();
         for(ListenerRegistration listenerRegistration : listenerRegistrations)
             listenerRegistration.removeListener();
         if(clientHelper != null) {
             clientHelper.stop();
             clientHelper = null;
         }
+        super.onStop();
     }
 
     @Override

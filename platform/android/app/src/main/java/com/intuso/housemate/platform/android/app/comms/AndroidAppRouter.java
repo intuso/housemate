@@ -96,12 +96,12 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
 
     public synchronized void checkConnection() {
         if(shouldBeConnected)
-            _ensureConnecte();
+            _ensureConnected();
         else
             _disconnect();
     }
 
-    private void _ensureConnecte() {
+    private void _ensureConnected() {
         if(registered || bindThread != null || registerThread != null)
             return;
 
@@ -152,13 +152,21 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
 
     @Override
     public void onServiceConnected(ComponentName className, IBinder binder) {
+
         getLog().d("App Router: Service connected");
+
         if(bindThread != null) {
+
+            getLog().d("App Router: Stopping BindThread");
+
             bindThread.interrupt();
             bindThread = null;
         }
         sender = new Messenger(binder);
         registerThread = new RegisterThread();
+
+        getLog().d("App Router: Starting RegisterThread");
+
         registerThread.start();
     }
 
@@ -172,6 +180,9 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
     private class BindThread extends Thread {
         @Override
         public void run() {
+
+            getLog().d("App Router: BindThread.start()");
+
             connecting();
             while(!isInterrupted() && sender == null) {
                 context.startService(SERVER_INTENT);
@@ -179,18 +190,26 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
+
+                    getLog().d("App Router: BindThread interrupted");
+
                     break;
                 }
             }
+
+            getLog().d("App Router: BindThread stopped");
         }
     }
 
     private class RegisterThread extends Thread {
         @Override
         public void run() {
+
+            getLog().d("App Router: RegisterThread.start()");
+
             while(!isInterrupted()
-                    && (getServerConnectionStatus() == ConnectionStatus.Connecting
-                            || getServerConnectionStatus() == ConnectionStatus.DisconnectedTemporarily)) {
+                    && (getConnectionStatus() == ConnectionStatus.Connecting
+                            || getConnectionStatus() == ConnectionStatus.DisconnectedTemporarily)) {
                 try {
                     getLog().d("App Router: Creating server registration");
                     if(id == null) {
@@ -209,9 +228,14 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
+
+                    getLog().d("App Router: RegisterThread interrupted");
+
                     break;
                 }
             }
+
+            getLog().d("App Router: RegisterThread stopped");
         }
     }
 

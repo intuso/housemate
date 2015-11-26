@@ -90,7 +90,7 @@ public class GenericResource {
 
         @Override
         public void serverConnectionStatusChanged(ClientConnection clientConnection, ConnectionStatus connectionStatus) {
-            messageReceived(new Message(new String[] {""}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, connectionStatus));
+            messageReceived(new Message(new String[] {""}, ClientConnection.NEXT_CONNECTION_STATUS_TYPE, connectionStatus));
         }
 
         @Override

@@ -67,7 +67,7 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
         ConnectionService.Binder binder = (ConnectionService.Binder) iBinder;
         log = binder.getLog();
         router = binder.getRouter();
-        serverConnectionStatusChanged(router, router.getServerConnectionStatus());
+        serverConnectionStatusChanged(router, router.getConnectionStatus());
         routerListenerRegistration = router.addListener(this);
     }
 
@@ -224,7 +224,7 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
 
         @Override
         public void serverConnectionStatusChanged(ClientConnection clientConnection, ConnectionStatus connectionStatus) {
-            messageReceived(new Message(new String[]{""}, ClientConnection.SERVER_CONNECTION_STATUS_TYPE, connectionStatus));
+            messageReceived(new Message(new String[]{""}, ClientConnection.NEXT_CONNECTION_STATUS_TYPE, connectionStatus));
         }
 
         @Override
