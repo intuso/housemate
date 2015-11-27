@@ -32,11 +32,11 @@ public class AccessWidget extends CommandToggleSwitch {
 
     @Override
     protected GWTProxyCommand getTrueCommand() {
-        return applicationInstance.getRejectCommand();
+        return applicationInstance.getAllowCommand();
     }
 
     @Override
     protected GWTProxyCommand getFalseCommand() {
-        return applicationInstance.getAllowCommand();
+        return applicationInstance.getRejectCommand();
     }
 }
