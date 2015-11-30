@@ -223,14 +223,16 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
 
     protected final void _start() {
         try {
-            // todo, call the driver
+            if(isDriverLoaded())
+                driver.start();
         } catch (Throwable t) {
             getErrorValue().setTypedValues("Could not start hardware: " + t.getMessage());
         }
     }
 
     protected final void _stop() {
-        // todo, call the driver
+        if(isDriverLoaded())
+            driver.stop();
     }
 
     @Override

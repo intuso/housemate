@@ -189,6 +189,7 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
      * Does the actual task execution
      */
     protected void execute() {
-        // todo, call driver
+        if(isDriverLoaded())
+            driver.execute();
     }
 }

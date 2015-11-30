@@ -211,7 +211,8 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
             childListenerRegistrations.put(child.getId(), child.addObjectListener(this));
             childSatisfied.put(child.getId(), child.isSatisfied());
         }
-        // todo, call driver
+        if(isDriverLoaded())
+            driver.start();
     }
 
 
@@ -220,7 +221,8 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
             childListenerRegistrations.get(id).removeListener();
         for(RealCondition child : children)
             child.stop();
-        // todo, call driver
+        if(isDriverLoaded())
+            driver.stop();
     }
 
     @Override
