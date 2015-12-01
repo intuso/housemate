@@ -5,7 +5,6 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
-import com.intuso.housemate.comms.api.internal.RemoteObject;
 import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
 import com.intuso.housemate.comms.api.internal.payload.ObjectTypeData;
 import com.intuso.housemate.object.api.internal.BaseHousemateObject;
@@ -14,6 +13,7 @@ import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.log.Log;
+import com.intuso.utilities.object.BaseObject;
 
 import java.util.List;
 
@@ -139,7 +139,7 @@ public class RealObjectType<O extends BaseHousemateObject<?>>
                 return null;
             List<String> pathList = Lists.newArrayList(SPLITTER.split(value.getValue()));
             String[] path = pathList.toArray(new String[pathList.size()]);
-            return new Reference(path, (O) RemoteObject.getChild((RemoteObject) root, path, 1));
+            return new Reference(path, (O) BaseObject.getChild((BaseObject) root, path, 1));
         }
     }
 
