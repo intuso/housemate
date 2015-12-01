@@ -8,8 +8,7 @@ import com.intuso.housemate.client.real.api.internal.annotations.Value;
 import com.intuso.housemate.client.real.api.internal.annotations.Values;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 
-/**
- */
+@TypeInfo(id = "test-device", name = "Test Device", description = "Test Device")
 public class TestDeviceDriver implements DeviceDriver {
 
     public TestFeature.MyValues values;

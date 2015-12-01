@@ -59,13 +59,15 @@ public class PerformCommand implements TaskDriver, ObjectLifecycleListener {
         if(commandLifecycleListenerRegistration != null)
             commandLifecycleListenerRegistration.removeListener();
         this.commandPath = commandPath;
-        String[] path = commandPath.getPath();
-        commandLifecycleListenerRegistration = objectRoot.addObjectLifecycleListener(path, PerformCommand.this);
-        BaseHousemateObject<?> object = objectRoot.getObject(path);
-        if(object == null)
-            callback.setError("Cannot find an object at path " + Joiner.on("/").join(path));
-        else {
-            objectCreated(path, object);
+        if(commandPath != null) {
+            String[] path = commandPath.getPath();
+            commandLifecycleListenerRegistration = objectRoot.addObjectLifecycleListener(path, PerformCommand.this);
+            BaseHousemateObject<?> object = objectRoot.findObject(path);
+            if (object == null)
+                callback.setError("Cannot find an object at path " + Joiner.on("/").join(path));
+            else {
+                objectCreated(path, object);
+            }
         }
     }
 

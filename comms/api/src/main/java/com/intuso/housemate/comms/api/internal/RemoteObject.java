@@ -29,18 +29,8 @@ public abstract class RemoteObject<
         extends BaseObject<DATA, CHILD_DATA, CHILD>
         implements BaseHousemateObject<LISTENER> {
 
-    public final static String EVERYTHING = "*";
-    public final static String EVERYTHING_RECURSIVE = "**";
-
     public final static String ADD_TYPE = "add";
     public final static String REMOVE_TYPE = "remove";
-    public final static String LOAD_REQUEST = "load-request";
-    public final static String LOAD_RESPONSE = "load-response-part";
-    public final static String LOAD_FINISHED = "load-response-finished";
-    public final static String CHILD_OVERVIEWS_REQUEST = "child-overviews-request";
-    public final static String CHILD_OVERVIEWS_RESPONSE = "child-overviews-response";
-    public final static String CHILD_ADDED = "child-added";
-    public final static String CHILD_REMOVED = "child-removed";
 
     private final Log log;
     private final ListenersFactory listenersFactory;
@@ -207,42 +197,4 @@ public abstract class RemoteObject<
             child.uninit();
         getChildren().clear();
     }
-
-    /**
-     * Gets the object at a path
-     * @param path the path to get the object from
-     * @return the object at that path, or null if none exists
-     */
-    public final RemoteObject<?, ?, ?, ?> getObject(String[] path) {
-        return getChild(this, path);
-    }
-
-    /**
-     * Gets the object at a path relative to another object
-     *
-     * @param current the object the path is relative to
-     * @param path the path to get the object from
-     * @return the object at the path relative to the other object, or null if none exists
-     */
-    public final static RemoteObject<?, ?, ?, ?> getChild(RemoteObject<?, ?, ?, ?> current, String[] path) {
-        return getChild(current, path, 0);
-    }
-
-    /**
-     * Gets the object at a path relative to another object
-     *
-     * @param current the object the path is relative to
-     * @param path the path to get the object from
-     * @param depth the current index in the path
-     * @return the object at the path relative to the other object, or null if none exists
-     */
-    public final static RemoteObject<?, ?, ?, ?> getChild(RemoteObject<?, ?, ?, ?> current, String[] path, int depth) {
-        if(depth >= path.length)
-            return current;
-        RemoteObject<?, ?, ?, ?> next = current.getChild(path[depth]);
-        if(next == null)
-            return null;
-        return getChild(next, path, depth + 1);
-    }
-
 }

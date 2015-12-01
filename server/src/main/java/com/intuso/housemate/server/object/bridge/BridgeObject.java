@@ -6,7 +6,6 @@ import com.google.common.collect.Sets;
 import com.intuso.housemate.comms.api.internal.*;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
-import com.intuso.housemate.comms.api.internal.payload.NoPayload;
 import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.housemate.server.comms.ClientInstance;
@@ -44,19 +43,6 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
     @Override
     protected List<ListenerRegistration> registerListeners() {
         List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(CHILD_OVERVIEWS_REQUEST, new Message.Receiver<ClientPayload<NoPayload>>() {
-            @Override
-            public void messageReceived(Message<ClientPayload<NoPayload>> message) {
-                RemoteClient client = message.getPayload().getClient();
-                if(client.getClientInstance() instanceof ClientInstance.Application
-                        && ((ClientInstance.Application)client.getClientInstance()).getClientType() == ApplicationRegistration.ClientType.Proxy)
-                    sendMessage(CHILD_OVERVIEWS_RESPONSE, new ChildOverviews(getChildOverviewsForClient(client)), client);
-                else {
-                    getLog().e("Client requesting an object is not of type " + ApplicationRegistration.ClientType.Proxy);
-                    sendMessage(CHILD_OVERVIEWS_RESPONSE, new ChildOverviews("Connection type is not " + ApplicationRegistration.ClientType.Proxy.name()), client);
-                }
-            }
-        }));
         result.add(addMessageListener(LOAD_REQUEST, new Message.Receiver<ClientPayload<LoadRequest>>() {
             @Override
             public void messageReceived(Message<ClientPayload<LoadRequest>> message) {

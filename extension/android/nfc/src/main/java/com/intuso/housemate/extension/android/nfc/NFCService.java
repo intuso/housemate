@@ -8,10 +8,10 @@ import android.widget.Toast;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
 import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
-import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
 import com.intuso.housemate.object.v1_0.api.Application;
 import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
+import com.intuso.housemate.object.v1_0.api.BaseHousemateObject;
 import com.intuso.housemate.object.v1_0.api.Command;
 import com.intuso.housemate.platform.android.app.HousemateService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
@@ -89,7 +89,7 @@ public class NFCService extends HousemateService {
 
         @Override
         public void succeeded() {
-            final RemoteObject<?, ?, ?, ?> object = clientHelper.getRoot().getObject(objectPath.substring(1).split("/"));
+            final BaseHousemateObject<?> object = clientHelper.getRoot().findObject(objectPath.substring(1).split("/"));
             if (object == null) {
                 message("Scanned tag's path does not exist", false);
                 finished();

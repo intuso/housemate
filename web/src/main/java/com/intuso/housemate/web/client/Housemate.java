@@ -60,7 +60,6 @@ public class Housemate implements EntryPoint {
         public void applicationInstanceStatusChanged(GWTProxyRoot root, ApplicationInstance.Status applicationInstanceStatus) {
             if (applicationInstanceStatus == ApplicationInstance.Status.Allowed) {
                 INJECTOR.getProxyRoot().clearLoadedObjects();
-                INJECTOR.getProxyRoot().loadChildOverviews();
                 TreeLoadInfo serverLoadInfo = new TreeLoadInfo("*");
                 serverLoadInfo.getChildren().put(ServerData.APPLICATIONS_ID, new TreeLoadInfo(ServerData.APPLICATIONS_ID));
                 serverLoadInfo.getChildren().put(ServerData.AUTOMATIONS_ID, new TreeLoadInfo(ServerData.AUTOMATIONS_ID));

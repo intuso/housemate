@@ -2,17 +2,22 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 
 import com.google.gwt.event.shared.GwtEvent;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.ChildOverview;
 
 /**
  */
-public class ObjectSelectedEvent<O extends ProxyObject<?, ?, ?, ?, ?>> extends GwtEvent<ObjectSelectedHandler> {
+public class ObjectSelectedEvent extends GwtEvent<ObjectSelectedHandler> {
 
     public final static Type<ObjectSelectedHandler> TYPE = new Type<>();
 
-    private final O object;
+    private final ProxyObject<?, ?, ?, ?, ?> object;
+    private final ProxyObject<?, ?, ?, ?, ?> parent;
+    private final ChildOverview childOverview;
 
-    public ObjectSelectedEvent(O object) {
+    public ObjectSelectedEvent(ProxyObject<?, ?, ?, ?, ?> object, ProxyObject<?, ?, ?, ?, ?> parent, ChildOverview childOverview) {
         this.object = object;
+        this.parent = parent;
+        this.childOverview = childOverview;
     }
 
     @Override
@@ -22,10 +27,18 @@ public class ObjectSelectedEvent<O extends ProxyObject<?, ?, ?, ?, ?>> extends G
 
     @Override
     protected void dispatch(ObjectSelectedHandler handler) {
-        handler.objectSelected(object);
+        handler.objectSelected(object, parent, childOverview);
     }
 
-    public O getObject() {
+    public ProxyObject<?, ?, ?, ?, ?> getObject() {
         return object;
+    }
+
+    public ChildOverview getChildOverview() {
+        return childOverview;
+    }
+
+    public ProxyObject<?, ?, ?, ?, ?> getParent() {
+        return parent;
     }
 }

@@ -21,6 +21,7 @@ import com.intuso.housemate.comms.api.internal.access.ConnectionStatus;
 import com.intuso.housemate.comms.api.internal.payload.*;
 import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.housemate.object.api.internal.ApplicationInstance;
+import com.intuso.housemate.object.api.internal.BaseHousemateObject;
 import com.intuso.housemate.object.api.internal.ObjectLifecycleListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -447,5 +448,10 @@ public class RealRootImpl
             objectLifecycleListeners.put(path, listeners);
         }
         return listeners.addListener(listener);
+    }
+
+    @Override
+    public BaseHousemateObject<?> findObject(String[] path) {
+        return (BaseHousemateObject<?>) getObject(path);
     }
 }

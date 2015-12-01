@@ -109,4 +109,9 @@ public class RootBridge
         }
         return listeners.addListener(listener);
     }
+
+    @Override
+    public BaseHousemateObject<?> findObject(String[] path) {
+        return (BaseHousemateObject<?>) getObject(path);
+    }
 }

@@ -7,7 +7,6 @@ import com.intuso.utilities.listener.ListenerRegistration;
  */
 public interface ObjectRoot<LISTENER extends Root.Listener<? super ROOT>,
         ROOT extends ObjectRoot<?, ?>> extends Root<LISTENER, ROOT> {
-
-    BaseHousemateObject<?> getObject(String[] path);
+    BaseHousemateObject<?> findObject(String[] path);
     ListenerRegistration addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener);
 }
