@@ -35,7 +35,7 @@ public class ObjectBrowserInput extends FlowPanel implements TypeInput, ObjectSe
         rootNode.addObjectSelectedHandler(this);
         add(rootNode);
         if(typeInstances.getFirstValue() != null)
-            rootNode.selectObject(Lists.newArrayList(typeInstances.getFirstValue().split("/")), 1);
+            rootNode.selectObject(Lists.newArrayList(typeInstances.getFirstValue().split("/")), 0);
     }
 
     @Override

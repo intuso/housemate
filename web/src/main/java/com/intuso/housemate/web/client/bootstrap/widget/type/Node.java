@@ -85,7 +85,7 @@ public class Node extends Composite implements HasObjectSelectedHandlers,
             icon.addDomHandler(new ClickHandler() {
                 @Override
                 public void onClick(ClickEvent event) {
-                    show(!expanded);
+                    show(!expanded, null);
                 }
             }, ClickEvent.getType());
         } else
@@ -94,12 +94,17 @@ public class Node extends Composite implements HasObjectSelectedHandlers,
         children.setVisible(false);
     }
 
-    private void show(boolean show) {
+    private void show(boolean show, final OnShowCallback callback) {
+        expanded = show;
+        children.setVisible(expanded);
+        icon.setType(expanded ? IconType.CHEVRON_DOWN : IconType.CHEVRON_RIGHT);
         if(show && !childrenAdded) {
             childrenAdded = true;
-            if(object != null)
+            if(object != null) {
                 object.addAvailableChildrenListener(this, true);
-            else {
+                if(callback != null)
+                    callback.shown();
+            } else {
                 parent.load(new LoadManager(new LoadManager.Callback() {
                     @Override
                     public void failed(List<String> errors) {
@@ -110,29 +115,32 @@ public class Node extends Composite implements HasObjectSelectedHandlers,
                     public void succeeded() {
                         object = parent.getChild(childOverview.getId());
                         object.addAvailableChildrenListener(Node.this, true);
+                        if(callback != null)
+                            callback.shown();
                     }
                 }, new TreeLoadInfo(childOverview.getId())));
             }
         }
-        expanded = show;
-        children.setVisible(expanded);
-        icon.setType(expanded ? IconType.CHEVRON_DOWN : IconType.CHEVRON_RIGHT);
     }
 
-    public void selectObject(List<String> path, int depth) {
+    public void selectObject(final List<String> path, final int depth) {
         if(depth >= path.size() - 1) {
             unselectAll(); // unselect all children
             addStyleName("selected");
             return;
         }
         addStyleName("selected");
-        show(true);
-        for(Map.Entry<String, Node> entry : childNodes.entrySet()) {
-            if(entry.getKey().equals(path.get(depth + 1)))
-                entry.getValue().selectObject(path, depth + 1);
-            else
-                entry.getValue().unselectAll();
-        }
+        show(true, new OnShowCallback() {
+            @Override
+            public void shown() {
+                for(Map.Entry<String, Node> entry : childNodes.entrySet()) {
+                    if(entry.getKey().equals(path.get(depth + 1)))
+                        entry.getValue().selectObject(path, depth + 1);
+                    else
+                        entry.getValue().unselectAll();
+                }
+            }
+        });
     }
 
     private void unselectAll() {
@@ -170,5 +178,9 @@ public class Node extends Composite implements HasObjectSelectedHandlers,
             children.remove(childNode);
             childListeners.get(childNode).removeHandler();
         }
+    }
+
+    public interface OnShowCallback {
+        void shown();
     }
 }
