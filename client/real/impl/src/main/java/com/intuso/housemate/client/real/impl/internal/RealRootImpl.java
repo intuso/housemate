@@ -452,6 +452,6 @@ public class RealRootImpl
 
     @Override
     public BaseHousemateObject<?> findObject(String[] path) {
-        return (BaseHousemateObject<?>) getObject(path);
+        return (BaseHousemateObject<?>) BaseObject.getChild(this, path, 1);
     }
 }
