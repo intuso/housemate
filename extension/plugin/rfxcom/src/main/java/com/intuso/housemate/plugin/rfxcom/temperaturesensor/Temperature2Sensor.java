@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
-import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
 
 /**
  * Housemate device that controls a USB relay
@@ -15,10 +14,10 @@ public class Temperature2Sensor extends TemperatureSensor {
 
 	@Inject
 	public Temperature2Sensor(@Assisted DeviceDriver.Callback driverCallback) {
-		super(driverCallback);
+		super(Temperature2Handler.INSTANCE, driverCallback);
 	}
 
     public com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensor createSensor(int sensorId) {
-        return RFXtrx433Hardware.INSTANCE.makeTemperature2(sensorId);
+        return Temperature2Handler.INSTANCE.makeSensor(sensorId);
 	}
 }

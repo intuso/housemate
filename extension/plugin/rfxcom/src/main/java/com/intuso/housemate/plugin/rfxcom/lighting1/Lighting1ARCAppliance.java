@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
-import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
 
 /**
  * Housemate device that controls a USB relay
@@ -15,10 +14,10 @@ public class Lighting1ARCAppliance extends Lighting1Appliance {
 
 	@Inject
 	public Lighting1ARCAppliance(@Assisted DeviceDriver.Callback driverCallback) {
-		super(driverCallback);
+		super(Lighting1ARCHandler.INSTANCE, driverCallback);
 	}
 
     public com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance createAppliance(byte houseId, byte unitCode) {
-        return RFXtrx433Hardware.INSTANCE.makeLighting1ARC(houseId, unitCode);
+        return Lighting1ARCHandler.INSTANCE.makeAppliance(houseId, unitCode);
     }
 }

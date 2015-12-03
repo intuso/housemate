@@ -17,9 +17,11 @@ public abstract class TemperatureSensor implements DeviceDriver, com.intuso.hous
 
     public TemperatureValues temperatureValues;
 
+    private final TemperatureHandler handler;
     private final DeviceDriver.Callback driverCallback;
 
-	public TemperatureSensor(DeviceDriver.Callback driverCallback) {
+	public TemperatureSensor(TemperatureHandler handler, DeviceDriver.Callback driverCallback) {
+        this.handler = handler;
 		this.driverCallback = driverCallback;
 	}
 
@@ -55,6 +57,7 @@ public abstract class TemperatureSensor implements DeviceDriver, com.intuso.hous
     @Property("integer")
     @TypeInfo(id = "sensor-id", name = "Sensor ID", description = "Sensor ID (in decimal)")
     public void setSensorId(int sensorId) {
+        handler.propertiesChanged(this.sensorId, sensorId);
         this.sensorId = sensorId;
         propertyChanged();
     }

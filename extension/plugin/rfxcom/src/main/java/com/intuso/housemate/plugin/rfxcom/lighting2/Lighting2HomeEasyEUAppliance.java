@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
-import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance;
 
 /**
@@ -16,10 +15,10 @@ public class Lighting2HomeEasyEUAppliance extends com.intuso.housemate.plugin.rf
 
 	@Inject
 	public Lighting2HomeEasyEUAppliance(@Assisted DeviceDriver.Callback driverCallback) {
-		super(driverCallback);
+		super(Lighting2HomeEasyEUHandler.INSTANCE, driverCallback);
 	}
 
     public Lighting2Appliance createAppliance(int houseId, byte unitCode) {
-        return RFXtrx433Hardware.INSTANCE.makeHomeEasyApplianceEU(houseId, unitCode);
+        return Lighting2HomeEasyEUHandler.INSTANCE.makeAppliance(houseId, unitCode);
 	}
 }

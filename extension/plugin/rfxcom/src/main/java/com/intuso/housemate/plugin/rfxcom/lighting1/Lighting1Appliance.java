@@ -17,14 +17,16 @@ public abstract class Lighting1Appliance implements DeviceDriver, StatefulPowerC
 
 	private com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance lighting1Appliance;
     private ListenerRegistration listenerRegistration;
-    private int houseId = 0;
-    private int unitCode = 1;
+    private byte houseId = 0;
+    private byte unitCode = 1;
 
+    private final Lighting1Handler handler;
     private final DeviceDriver.Callback driverCallback;
 
     protected PowerValues powerValues;
 
-    protected Lighting1Appliance(DeviceDriver.Callback driverCallback) {
+    protected Lighting1Appliance(Lighting1Handler handler, Callback driverCallback) {
+        this.handler = handler;
         this.driverCallback = driverCallback;
     }
 
@@ -70,7 +72,8 @@ public abstract class Lighting1Appliance implements DeviceDriver, StatefulPowerC
 
     @Property("integer")
     @TypeInfo(id = "house-id", name = "House ID", description = "House ID (in decimal)")
-    public void setHouseId(int houseId) {
+    public void setHouseId(byte houseId) {
+        handler.propertiesChanged(this.houseId, unitCode, houseId, unitCode);
         this.houseId = houseId;
         propertyChanged();
     }
@@ -81,7 +84,8 @@ public abstract class Lighting1Appliance implements DeviceDriver, StatefulPowerC
 
     @Property("integer")
     @TypeInfo(id = "unit-id", name = "Unit ID", description = "Unit ID")
-    public void setUnitCode(int unitCode) {
+    public void setUnitCode(byte unitCode) {
+        handler.propertiesChanged(houseId, this.unitCode, houseId, unitCode);
         this.unitCode = unitCode;
         propertyChanged();
     }
