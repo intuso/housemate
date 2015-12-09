@@ -11,7 +11,7 @@ import com.intuso.housemate.comms.api.internal.payload.AutomationData;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
 * Created by tomc on 19/03/15.
@@ -30,7 +30,7 @@ public class AddAutomationCommand extends RealCommandImpl {
     private final RealAutomation.RemoveCallback removeCallback;
 
     @Inject
-    protected AddAutomationCommand(Log log,
+    protected AddAutomationCommand(Logger logger,
                                    ListenersFactory listenersFactory,
                                    StringType stringType,
                                    RealAutomation.Factory automationFactory,
@@ -39,9 +39,9 @@ public class AddAutomationCommand extends RealCommandImpl {
                                    @Assisted("description") String description,
                                    @Assisted Callback callback,
                                    @Assisted RealAutomation.RemoveCallback removeCallback) {
-        super(log, listenersFactory, id, name, description,
-                new RealParameterImpl<>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType));
+        super(logger, listenersFactory, id, name, description,
+                new RealParameterImpl<>(logger, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(logger, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType));
         this.callback = callback;
         this.automationFactory = automationFactory;
         this.removeCallback = removeCallback;

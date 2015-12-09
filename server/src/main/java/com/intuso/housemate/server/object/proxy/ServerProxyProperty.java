@@ -10,8 +10,8 @@ import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 public class ServerProxyProperty
         extends ServerProxyValueBase<PropertyData, CommandData, ServerProxyCommand, Property.Listener<? super ServerProxyProperty>, ServerProxyProperty>
@@ -20,13 +20,13 @@ public class ServerProxyProperty
     private ServerProxyCommand setCommand;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyProperty(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted PropertyData data) {
-        super(log, listenersFactory, objectFactory, data);
+    public ServerProxyProperty(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted PropertyData data) {
+        super(logger, listenersFactory, objectFactory, data);
     }
 
     @Override

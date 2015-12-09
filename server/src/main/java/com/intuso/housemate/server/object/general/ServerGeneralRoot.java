@@ -17,7 +17,7 @@ import com.intuso.housemate.object.api.internal.Root;
 import com.intuso.housemate.server.comms.*;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,8 +38,8 @@ public class ServerGeneralRoot
     private final AccessManager accessManager;
 
     @Inject
-    public ServerGeneralRoot(Log log, ListenersFactory listenersFactory, Injector injector, AccessManager accessManager) {
-        super(log, listenersFactory, new RootData());
+    public ServerGeneralRoot(Logger logger, ListenersFactory listenersFactory, Injector injector, AccessManager accessManager) {
+        super(logger, listenersFactory, new RootData());
         this.injector = injector;
         this.accessManager = accessManager;
         init(null);
@@ -56,7 +56,7 @@ public class ServerGeneralRoot
         result.add(addMessageListener(ApplicationRegistration.APPLICATION_REGISTRATION_TYPE, new Message.Receiver<ClientPayload<ApplicationRegistration>>() {
             @Override
             public void messageReceived(Message<ClientPayload<ApplicationRegistration>> message) {
-                getLog().d("Access request received");
+                getLogger().debug("Access request received");
                 // get the client for the request
                 ClientInstance clientInstance = accessManager.getClientApplicationInstance(message.getRoute(), message.getPayload().getOriginal());
                 RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(clientInstance, message.getRoute());
@@ -75,7 +75,7 @@ public class ServerGeneralRoot
             @Override
             public void messageReceived(Message<ClientPayload<StringPayload>> message) {
                 String routerId = message.getPayload().getOriginal().getValue();
-                getLog().d("Router connected, id = " + routerId);
+                getLogger().debug("Router connected, id = " + routerId);
                 // process the request
                 ClientInstance clientInstance = accessManager.getClientRouterInstance(message.getRoute(), message.getPayload().getOriginal().getValue());
                 RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(clientInstance, message.getRoute());

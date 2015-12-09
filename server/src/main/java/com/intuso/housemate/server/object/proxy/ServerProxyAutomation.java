@@ -8,8 +8,8 @@ import com.intuso.housemate.object.api.internal.Automation;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -42,13 +42,13 @@ public class ServerProxyAutomation
     private ServerProxyCommand addUnsatisfiedTask;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyAutomation(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted AutomationData data) {
-        super(log, listenersFactory, objectFactory, data);
+    public ServerProxyAutomation(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted AutomationData data) {
+        super(logger, listenersFactory, objectFactory, data);
     }
 
     @Override

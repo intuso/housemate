@@ -21,6 +21,7 @@
         <junit.version>4.8.1</junit.version>
         <guava.version>16.0.1</guava.version>
         <guice.version>4.0</guice.version>
+        <slf4j.version>1.7.7</slf4j.version>
         <intuso.utilities.version>1.1.0-SNAPSHOT</intuso.utilities.version>
         <intuso.housemate.object.version>1.0.0-SNAPSHOT</intuso.housemate.object.version>
         <intuso.housemate.comms.version>1.0.0-SNAPSHOT</intuso.housemate.comms.version>

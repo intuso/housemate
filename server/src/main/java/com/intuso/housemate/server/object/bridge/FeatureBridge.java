@@ -9,7 +9,7 @@ import com.intuso.housemate.object.api.internal.Command;
 import com.intuso.housemate.object.api.internal.Feature;
 import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -24,12 +24,12 @@ public class FeatureBridge
     private ConvertingListBridge<CommandData, Command<?, ?, ?, ?>, CommandBridge> commandList;
     private ConvertingListBridge<ValueData, Value<?, ?>, ValueBridge> valueList;
 
-    public FeatureBridge(Log log, ListenersFactory listenersFactory,
+    public FeatureBridge(Logger logger, ListenersFactory listenersFactory,
                          Feature<?, ?, ?> feature) {
-        super(log, listenersFactory, new FeatureData(feature.getId(), feature.getName(), feature.getDescription()));
+        super(logger, listenersFactory, new FeatureData(feature.getId(), feature.getName(), feature.getDescription()));
         this.feature = feature;
-        commandList = new ConvertingListBridge<>(log, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Command<?, ?, ?, ?>>) feature.getCommands(), new CommandBridge.Converter(log, listenersFactory));
-        valueList = new ConvertingListBridge<>(log, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Value<?, ?>>) feature.getValues(), new ValueBridge.Converter(log, listenersFactory));
+        commandList = new ConvertingListBridge<>(logger, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Command<?, ?, ?, ?>>) feature.getCommands(), new CommandBridge.Converter(logger, listenersFactory));
+        valueList = new ConvertingListBridge<>(logger, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Value<?, ?>>) feature.getValues(), new ValueBridge.Converter(logger, listenersFactory));
         addChild(commandList);
         addChild(valueList);
     }
@@ -46,17 +46,17 @@ public class FeatureBridge
 
     public final static class Converter implements Function<Feature<?, ?, ?>, FeatureBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public FeatureBridge apply(Feature<?, ?, ?> feature) {
-            return new FeatureBridge(log, listenersFactory, feature);
+            return new FeatureBridge(logger, listenersFactory, feature);
         }
     }
 }

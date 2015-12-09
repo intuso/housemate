@@ -12,7 +12,7 @@ import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,15 +28,15 @@ public class DeviceListWatcher implements List.Listener<RealDevice<?>> {
 
     private final Multimap<RealDevice, ListenerRegistration> listeners = HashMultimap.create();
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
     private final PropertyListWatcher propertyListWatcher;
     private final DeviceListener deviceListener;
 
     @Inject
-    public DeviceListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher, DeviceListener deviceListener) {
-        this.log = log;
+    public DeviceListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher, DeviceListener deviceListener) {
+        this.logger = logger;
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
         this.propertyListWatcher = propertyListWatcher;
@@ -53,7 +53,7 @@ public class DeviceListWatcher implements List.Listener<RealDevice<?>> {
         try {
             persistence.saveValues(device.getPath(), toSave);
         } catch (Throwable t) {
-            log.e("Failed to save new device values", t);
+            logger.error("Failed to save new device values", t);
         }
         listeners.put(device, valueBaseWatcher.watch(device.getDriverProperty()));
         listeners.put(device, device.addObjectListener(deviceListener));
@@ -63,11 +63,11 @@ public class DeviceListWatcher implements List.Listener<RealDevice<?>> {
             TypeInstances instances = persistence.getTypeInstances(device.getRunningValue().getPath());
             if(instances.getElements().size() > 0 && BooleanType.SERIALISER.deserialise(instances.getElements().get(0)))
                 device.getStartCommand().perform(new TypeInstanceMap(),
-                        new CommandPerformListener(log, "Start device \"" + device.getId() + "\""));
+                        new CommandPerformListener(logger, "Start device \"" + device.getId() + "\""));
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for whether the device was previously running" + Arrays.toString(device.getPath()));
+            logger.warn("No details found for whether the device was previously running" + Arrays.toString(device.getPath()));
         } catch(Throwable t) {
-            log.e("Failed to check value for whether the device was previously running", t);
+            logger.error("Failed to check value for whether the device was previously running", t);
         }
     }
 
@@ -80,7 +80,7 @@ public class DeviceListWatcher implements List.Listener<RealDevice<?>> {
         try {
             persistence.removeValues(device.getPath());
         } catch(Throwable t) {
-            log.e("Failed to delete device properties", t);
+            logger.error("Failed to delete device properties", t);
         }
     }
 }

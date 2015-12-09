@@ -10,9 +10,9 @@ import com.intuso.housemate.client.real.impl.internal.type.RealChoiceType;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.Transformer;
-import com.intuso.housemate.plugin.manager.PluginManager;
+import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -27,11 +27,11 @@ public class TransformationOutputType extends RealChoiceType<RealType<?>> implem
     private final RealList<RealType<?>> types;
 
     @Inject
-    public TransformationOutputType(final Log log,
+    public TransformationOutputType(final Logger logger,
                                     ListenersFactory listenersFactory,
                                     RealList<RealType<?>> types,
                                     PluginManager pluginManager) {
-        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
+        super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.listenersFactory = listenersFactory;
         this.types = types;
         pluginManager.addPluginListener(this, true);
@@ -52,7 +52,7 @@ public class TransformationOutputType extends RealChoiceType<RealType<?>> implem
     public void pluginAdded(Injector pluginInjector) {
         for(Transformer<?, ?> transformer : pluginInjector.getInstance(new Key<Iterable<? extends Transformer<?, ?>>>() {}))
             if(getOptions().get(transformer.getOutputTypeId()) == null) {
-                RealOptionImpl option = new RealOptionImpl(getLog(), listenersFactory,
+                RealOptionImpl option = new RealOptionImpl(getLogger(), listenersFactory,
                         transformer.getOutputTypeId(), transformer.getOutputTypeId(), transformer.getOutputTypeId());
                 ((RealList<RealOptionImpl>)getOptions()).add(option); // todo use the actual type's name and description here
             }

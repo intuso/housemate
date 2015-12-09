@@ -3,8 +3,8 @@ package com.intuso.housemate.server.object.proxy;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.intuso.housemate.comms.api.internal.payload.*;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 /**
  * Container class for all factories for server objects that are proxies of those on a client
@@ -13,7 +13,7 @@ public class ServerProxyFactory {
 
     public static class All implements ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> {
 
-        private final Log log;
+        private final Logger logger;
         private final Provider<ObjectFactory<ApplicationData, ServerProxyApplication>> applicationFactory;
         private final Provider<ObjectFactory<ApplicationInstanceData, ServerProxyApplicationInstance>> applicationInstanceFactory;
         private final Provider<ObjectFactory<AutomationData, ServerProxyAutomation>> automationFactory;
@@ -33,7 +33,7 @@ public class ServerProxyFactory {
         private final Provider<ObjectFactory<ValueData, ServerProxyValue>> valueFactory;
 
         @Inject
-        public All(Log log, Provider<ObjectFactory<ApplicationData, ServerProxyApplication>> applicationFactory,
+        public All(Logger logger, Provider<ObjectFactory<ApplicationData, ServerProxyApplication>> applicationFactory,
                 Provider<ObjectFactory<ApplicationInstanceData, ServerProxyApplicationInstance>> applicationInstanceFactory,
                 Provider<ObjectFactory<AutomationData, ServerProxyAutomation>> automationFactory,
                 Provider<ObjectFactory<CommandData, ServerProxyCommand>> commandFactory,
@@ -50,7 +50,7 @@ public class ServerProxyFactory {
                 Provider<ObjectFactory<TypeData<HousemateData<?>>, ServerProxyType>> typeFactory,
                 Provider<ObjectFactory<UserData, ServerProxyUser>> userFactory,
                 Provider<ObjectFactory<ValueData, ServerProxyValue>> valueFactory) {
-            this.log = log;
+            this.logger = logger;
             this.applicationFactory = applicationFactory;
             this.applicationInstanceFactory = applicationInstanceFactory;
             this.automationFactory = automationFactory;
@@ -106,7 +106,7 @@ public class ServerProxyFactory {
                 return userFactory.get().create((UserData) data);
             else if(data instanceof ValueData)
                 return valueFactory.get().create((ValueData) data);
-            log.w("Don't know how to create an object from " + data.getClass().getName());
+            logger.warn("Don't know how to create an object from " + data.getClass().getName());
             return null;
         }
     }

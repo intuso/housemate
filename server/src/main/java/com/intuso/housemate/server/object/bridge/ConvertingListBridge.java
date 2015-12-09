@@ -7,7 +7,7 @@ import com.intuso.housemate.object.api.internal.BaseHousemateObject;
 import com.intuso.housemate.object.api.internal.List;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -21,8 +21,8 @@ public class ConvertingListBridge<
     private final List<? extends OWR> list;
     private final Function<? super OWR, ? extends WR> converter;
 
-    public ConvertingListBridge(Log log, ListenersFactory listenersFactory, List<? extends OWR> list, final Function<? super OWR, ? extends WR> converter) {
-        super(log, listenersFactory, new ListData<WBL>(list.getId(), list.getName(), list.getDescription()));
+    public ConvertingListBridge(Logger logger, ListenersFactory listenersFactory, List<? extends OWR> list, final Function<? super OWR, ? extends WR> converter) {
+        super(logger, listenersFactory, new ListData<WBL>(list.getId(), list.getName(), list.getDescription()));
         this.list = list;
         this.converter = converter;
     }

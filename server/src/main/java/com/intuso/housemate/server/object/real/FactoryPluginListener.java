@@ -15,15 +15,15 @@ import com.intuso.housemate.client.real.impl.internal.factory.hardware.HardwareF
 import com.intuso.housemate.client.real.impl.internal.factory.task.TaskFactoryType;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.PluginResource;
-import com.intuso.housemate.plugin.manager.PluginManager;
-import com.intuso.utilities.log.Log;
+import com.intuso.housemate.plugin.manager.internal.PluginManager;
+import org.slf4j.Logger;
 
 /**
  * Created by tomc on 19/03/15.
  */
 public class FactoryPluginListener implements PluginListener {
 
-    private final Log log;
+    private final Logger logger;
     private final RealRoot root;
     private final ConditionFactoryType conditionFactoryType;
     private final DeviceFactoryType deviceFactoryType;
@@ -31,8 +31,8 @@ public class FactoryPluginListener implements PluginListener {
     private final TaskFactoryType taskFactoryType;
 
     @Inject
-    public FactoryPluginListener(Log log, ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType, HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType, PluginManager pluginManager, RealRoot root) {
-        this.log = log;
+    public FactoryPluginListener(Logger logger, ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType, HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType, PluginManager pluginManager, RealRoot root) {
+        this.logger = logger;
         this.conditionFactoryType = conditionFactoryType;
         this.deviceFactoryType = deviceFactoryType;
         this.hardwareFactoryType = hardwareFactoryType;
@@ -61,7 +61,7 @@ public class FactoryPluginListener implements PluginListener {
 
     private void addConditionFactories(Injector pluginInjector) {
         for(PluginResource<? extends ConditionDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends ConditionDriver.Factory<?>>>>() {})) {
-            log.d("Adding new condition factory for type " + factoryResource.getTypeInfo().id());
+            logger.debug("Adding new condition factory for type " + factoryResource.getTypeInfo().id());
             conditionFactoryType.factoryAvailable(factoryResource.getTypeInfo().id(),
                     factoryResource.getTypeInfo().name(), factoryResource.getTypeInfo().description(),
                     factoryResource.getResource());
@@ -75,7 +75,7 @@ public class FactoryPluginListener implements PluginListener {
 
     private void addDeviceFactories(Injector pluginInjector) {
         for(PluginResource<? extends DeviceDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends DeviceDriver.Factory<?>>>>() {})) {
-            log.d("Adding new device factory for type " + factoryResource.getTypeInfo().id());
+            logger.debug("Adding new device factory for type " + factoryResource.getTypeInfo().id());
             deviceFactoryType.factoryAvailable(factoryResource.getTypeInfo().id(),
                     factoryResource.getTypeInfo().name(), factoryResource.getTypeInfo().description(),
                     factoryResource.getResource());
@@ -89,7 +89,7 @@ public class FactoryPluginListener implements PluginListener {
 
     private void addHardwareFactories(Injector pluginInjector) {
         for(PluginResource<? extends HardwareDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends HardwareDriver.Factory<?>>>>() {})) {
-            log.d("Adding new hardware factory for type " + factoryResource.getTypeInfo().id());
+            logger.debug("Adding new hardware factory for type " + factoryResource.getTypeInfo().id());
             hardwareFactoryType.factoryAvailable(factoryResource.getTypeInfo().id(),
                     factoryResource.getTypeInfo().name(), factoryResource.getTypeInfo().description(),
                     factoryResource.getResource());
@@ -103,7 +103,7 @@ public class FactoryPluginListener implements PluginListener {
 
     private void addTaskFactories(Injector pluginInjector) {
         for(PluginResource<? extends TaskDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends TaskDriver.Factory<?>>>>() {})) {
-            log.d("Adding new task factory for type " + factoryResource.getTypeInfo().id());
+            logger.debug("Adding new task factory for type " + factoryResource.getTypeInfo().id());
             taskFactoryType.factoryAvailable(factoryResource.getTypeInfo().id(),
                     factoryResource.getTypeInfo().name(), factoryResource.getTypeInfo().description(),
                     factoryResource.getResource());
@@ -117,14 +117,14 @@ public class FactoryPluginListener implements PluginListener {
 
     private void addTypes(Injector pluginInjector) {
         for(RealType<?> type : pluginInjector.getInstance(new Key<Iterable<? extends RealType<?>>>() {})) {
-            log.d("Adding type " + type.getId());
+            logger.debug("Adding type " + type.getId());
             root.addType(type);
         }
     }
 
     private void removeTypes(Injector pluginInjector) {
         for(RealType<?> type : pluginInjector.getInstance(new Key<Iterable<? extends RealType<?>>>() {})) {
-            log.d("Removing type " + type.getId());
+            logger.debug("Removing type " + type.getId());
             root.removeType(type);
         }
     }

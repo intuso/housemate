@@ -14,7 +14,7 @@ import com.intuso.housemate.web.client.NotConnectedException;
 import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.server.ContextListener;
 import com.intuso.housemate.web.server.GWTClientEndpoint;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -25,12 +25,12 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
 
     private final static String ATT_NAME = "endpoint";
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
 
     @Inject
     public CommsServiceImpl() {
-        this.log = ContextListener.INJECTOR.getInstance(Log.class);
+        this.logger = ContextListener.INJECTOR.getInstance(Logger.class);
         this.persistence = ContextListener.INJECTOR.getInstance(Persistence.class);
     }
 
@@ -73,7 +73,7 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
         } catch (DetailsNotFoundException e) {
             return false;
         } catch (Throwable t) {
-            log.e("Failed to check credentials", t);
+            logger.error("Failed to check credentials", t);
             return false;
         }
     }

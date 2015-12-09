@@ -2,11 +2,11 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
-import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  */
 public class SerialPortWrapper {
 
-    private final Log log;
+    private final Logger logger;
     private final List<Pattern> patterns;
     private final int baudRate;
     private final int dataBits;
@@ -29,8 +29,8 @@ public class SerialPortWrapper {
     private SerialPortEventListener eventListener;
     private int maskRxchar;
 
-    public SerialPortWrapper(Log log, List<Pattern> patterns, int baudRate, int dataBits, int stopBits, int parity, int flowControlMode) {
-        this.log = log;
+    public SerialPortWrapper(Logger logger, List<Pattern> patterns, int baudRate, int dataBits, int stopBits, int parity, int flowControlMode) {
+        this.logger = logger;
         this.patterns = patterns;
         this.baudRate = baudRate;
         this.dataBits = dataBits;
@@ -45,17 +45,17 @@ public class SerialPortWrapper {
             return;
 
         outer: for(Pattern pattern : patterns) {
-            log.d("Looking for comm ports matching " + pattern);
+            logger.debug("Looking for comm ports matching " + pattern);
             Set<String> pns = Sets.newHashSet(SerialPortList.getPortNames(pattern));
             if (pns.size() > 0) {
-                log.d("Found comm ports " + Joiner.on(",").join(pns));
+                logger.debug("Found comm ports " + Joiner.on(",").join(pns));
                 for(String pn : pns) {
-                    log.d("Trying " + pn);
+                    logger.debug("Trying " + pn);
                     try {
                         openPort(pn);
                         break outer;
                     } catch(Throwable t) {
-                        log.w("Failed to open " + pn);
+                        logger.warn("Failed to open " + pn);
                     }
                 }
             }
@@ -69,13 +69,13 @@ public class SerialPortWrapper {
             if (portName == null)
                 throw new IOException("No port name set");
 
-            log.d("Attempting to open serial port " + portName);
+            logger.debug("Attempting to open serial port " + portName);
             serialPort = new SerialPort(portName);
             serialPort.openPort();
             serialPort.setParams(baudRate, dataBits, stopBits, parity);
             serialPort.setFlowControlMode(flowControlMode);
             serialPort.addEventListener(eventListener, maskRxchar);
-            log.d("Successfully opened serial port");
+            logger.debug("Successfully opened serial port");
         } catch (SerialPortException e) {
             throw new IOException(e);
         }

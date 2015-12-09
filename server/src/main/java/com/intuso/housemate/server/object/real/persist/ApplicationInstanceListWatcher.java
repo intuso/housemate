@@ -6,7 +6,7 @@ import com.intuso.housemate.client.real.api.internal.RealApplicationInstance;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
@@ -21,13 +21,13 @@ public class ApplicationInstanceListWatcher implements List.Listener<RealApplica
 
     private final Map<ApplicationInstance, ListenerRegistration> listeners = Maps.newHashMap();
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
 
     @Inject
-    public ApplicationInstanceListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher) {
-        this.log = log;
+    public ApplicationInstanceListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher) {
+        this.logger = logger;
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
     }
@@ -41,7 +41,7 @@ public class ApplicationInstanceListWatcher implements List.Listener<RealApplica
         try {
             persistence.saveValues(applicationInstance.getPath(), toSave);
         } catch (Throwable t) {
-            log.e("Failed to save new application values", t);
+            logger.error("Failed to save new application values", t);
         }
         listeners.put(applicationInstance, valueBaseWatcher.watch(applicationInstance.getStatusValue()));
     }
@@ -54,7 +54,7 @@ public class ApplicationInstanceListWatcher implements List.Listener<RealApplica
         try {
             persistence.removeValues(applicationInstance.getPath());
         } catch(Throwable t) {
-            log.e("Failed to delete automation properties", t);
+            logger.error("Failed to delete automation properties", t);
         }
     }
 }

@@ -12,7 +12,7 @@ import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,7 +25,7 @@ public class RemoteClient implements Message.Receiver<Message.Payload> {
     public final static Set<String> TYPES = Collections.unmodifiableSet(Sets.newHashSet(
             Message.RECEIVED_TYPE));
 
-    private final Log log;
+    private final Logger logger;
     private final ListenersFactory listenersFactory;
     private final ClientInstance clientInstance;
     private final Message.Receiver<Message.Payload> receiver;
@@ -40,8 +40,8 @@ public class RemoteClient implements Message.Receiver<Message.Payload> {
     private boolean applicationInstanceAllowed = false;
     private long nextSequenceId = 0;
 
-    public RemoteClient(Log log, ListenersFactory listenersFactory, ClientInstance clientInstance, Message.Receiver<Message.Payload> receiver, MainRouter comms) {
-        this.log = log;
+    public RemoteClient(Logger logger, ListenersFactory listenersFactory, ClientInstance clientInstance, Message.Receiver<Message.Payload> receiver, MainRouter comms) {
+        this.logger = logger;
         this.listenersFactory = listenersFactory;
         this.clientInstance = clientInstance;
         this.applicationInstanceAllowed = clientInstance instanceof ClientInstance.Router;
@@ -101,7 +101,7 @@ public class RemoteClient implements Message.Receiver<Message.Payload> {
             sendMessage(new String[]{""}, RootData.APPLICATION_STATUS_TYPE, new ApplicationData.StatusPayload(applicationStatus));
             sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_STATUS_TYPE, new ApplicationInstanceData.StatusPayload(applicationInstanceStatus));
         } catch(Throwable t) {
-            log.e("Failed to send message to client", t);
+            logger.error("Failed to send message to client", t);
         }
         this.applicationInstanceAllowed = clientInstance instanceof ClientInstance.Router
                 || applicationInstanceStatus == ApplicationInstance.Status.Allowed;
@@ -114,7 +114,7 @@ public class RemoteClient implements Message.Receiver<Message.Payload> {
     }
 
     public RemoteClient addClient(List<String> route, Message.Receiver<Message.Payload> receiver, ClientInstance clientInstance) {
-        RemoteClient client = new RemoteClient(log, listenersFactory, clientInstance, receiver, comms);
+        RemoteClient client = new RemoteClient(logger, listenersFactory, clientInstance, receiver, comms);
         client.setBaseRoute(route);
         addClient(client);
         return client;

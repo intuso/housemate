@@ -8,19 +8,19 @@ import com.intuso.housemate.comms.api.internal.payload.ValueData;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 public class ServerProxyValue extends ServerProxyValueBase<ValueData, NoChildrenData,
             NoChildrenServerProxyObject, Value.Listener<? super ServerProxyValue>, ServerProxyValue>
         implements Value<TypeInstances, ServerProxyValue> {
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyValue(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted ValueData data) {
-        super(log, listenersFactory, objectFactory, data);
+    public ServerProxyValue(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted ValueData data) {
+        super(logger, listenersFactory, objectFactory, data);
     }
 }

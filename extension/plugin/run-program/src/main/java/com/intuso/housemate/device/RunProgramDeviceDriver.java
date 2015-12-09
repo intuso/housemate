@@ -5,7 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.annotations.*;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,13 +24,13 @@ public class RunProgramDeviceDriver implements DeviceDriver {
 
     public MyValues values;
 
-    private final Log log;
+    private final Logger logger;
     private Monitor monitor = null;
 
     @Inject
-    public RunProgramDeviceDriver(Log log,
+    public RunProgramDeviceDriver(Logger logger,
                                   @Assisted DeviceDriver.Callback driverCallback) {
-        this.log = log;
+        this.logger = logger;
     }
 
     @Command
@@ -74,7 +74,7 @@ public class RunProgramDeviceDriver implements DeviceDriver {
             p = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
             // TODO - put device in error?
-            log.e("Could not run check if program is running", e);
+            logger.error("Could not run check if program is running", e);
             return null;
         }
 
@@ -83,7 +83,7 @@ public class RunProgramDeviceDriver implements DeviceDriver {
             rc = p.waitFor();
         } catch (InterruptedException e) {
             // TODO - put device in error?
-            log.e("Interrupted waiting for check if program is running to complete", e);
+            logger.error("Interrupted waiting for check if program is running to complete", e);
             return null;
         }
 
@@ -96,29 +96,29 @@ public class RunProgramDeviceDriver implements DeviceDriver {
                         return new Integer(line.trim());
                     } catch(NumberFormatException e) {
                         // TODO - put device in error?
-                        log.e("Could not parse PID");
+                        logger.error("Could not parse PID");
                         return null;
                     }
                 }
                 return null;
             } catch(IOException e) {
                 // TODO - put device in error?
-                log.e("Could not read result of check if program is running", e);
+                logger.error("Could not read result of check if program is running", e);
                 return null;
             }
         }
 
         try {
-            log.e("Check if program running failed:");
+            logger.error("Check if program running failed:");
             BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             String line;
             while((line = in.readLine()) != null) {
-                log.e(" - " + line);
+                logger.error(" - " + line);
             }
             return null;
         } catch(IOException e) {
             // TODO - put device in error?
-            log.e("Check if program is running failed and could not read error", e);
+            logger.error("Check if program is running failed and could not read error", e);
             return null;
         }
     }
@@ -168,7 +168,7 @@ public class RunProgramDeviceDriver implements DeviceDriver {
                 try {
                     Thread.sleep(1000);
                 } catch(InterruptedException e) {
-                    log.d("Interrupted during loop sleep, stopping monitor thread");
+                    logger.debug("Interrupted during loop sleep, stopping monitor thread");
                     break;
                 }
             }

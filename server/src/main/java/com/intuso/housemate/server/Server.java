@@ -3,7 +3,7 @@ package com.intuso.housemate.server;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.comms.api.internal.access.ApplicationDetails;
-import com.intuso.housemate.plugin.manager.PluginManager;
+import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.housemate.server.plugin.main.ioc.MainPluginModule;

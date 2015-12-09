@@ -12,7 +12,7 @@ import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.housemate.server.object.proxy.ioc.ServerProxyModule;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class RemoteClientManager {
 
-    private final Log log;
+    private final Logger logger;
     private final Injector injector;
     private final ServerGeneralRoot generalRoot;
     private final RootBridge bridgeRoot;
@@ -31,12 +31,12 @@ public class RemoteClientManager {
     private final Map<ClientInstance, RemoteClient> clients = Maps.newHashMap();
 
     @Inject
-    public RemoteClientManager(Log log, ListenersFactory listenersFactory, Injector injector, ServerGeneralRoot generalRoot, RootBridge bridgeRoot, MainRouter mainRouter) {
-        this.log = log;
+    public RemoteClientManager(Logger logger, ListenersFactory listenersFactory, Injector injector, ServerGeneralRoot generalRoot, RootBridge bridgeRoot, MainRouter mainRouter) {
+        this.logger = logger;
         this.injector = injector;
         this.generalRoot = generalRoot;
         this.bridgeRoot = bridgeRoot;
-        rootClient = new RemoteClient(log, listenersFactory, new ClientInstance.Router(true, ""), generalRoot, mainRouter);
+        rootClient = new RemoteClient(logger, listenersFactory, new ClientInstance.Router(true, ""), generalRoot, mainRouter);
         rootClient.setBaseRoute(Lists.<String>newArrayList());
     }
 
@@ -83,8 +83,8 @@ public class RemoteClientManager {
                 client.setBaseRoute(route);
                 return client;
             } catch(Throwable t) {
-                log.e("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
-                log.d("Maybe one of the intermediate clients isn't connected or isn't a router");
+                logger.error("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
+                logger.debug("Maybe one of the intermediate clients isn't connected or isn't a router");
                 throw new HousemateCommsException("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
             }
         } else if(clientInstance instanceof ClientInstance.Router) {
@@ -98,8 +98,8 @@ public class RemoteClientManager {
                 client.setBaseRoute(route);
                 return client;
             } catch(Throwable t) {
-                log.e("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
-                log.d("Maybe one of the intermediate clients isn't connected or isn't a router");
+                logger.error("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
+                logger.debug("Maybe one of the intermediate clients isn't connected or isn't a router");
                 throw new HousemateCommsException("Failed to add client endpoint for " + Arrays.toString(route.toArray()), t);
             }
         } else

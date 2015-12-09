@@ -9,7 +9,7 @@ import com.intuso.housemate.comms.api.internal.payload.ValueData;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.ValueBase;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,13 +35,13 @@ public abstract class RealValueBaseImpl<
     private List<O> typedValues;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param data {@inheritDoc}
      * @param type the type of the value's value
      */
-    public RealValueBaseImpl(Log log, ListenersFactory listenersFactory, DATA data, RealType<O> type) {
-        super(log,listenersFactory , data);
+    public RealValueBaseImpl(Logger logger, ListenersFactory listenersFactory, DATA data, RealType<O> type) {
+        super(logger,listenersFactory , data);
         this.type = type;
         this.typedValues = RealTypeImpl.deserialiseAll(type, data.getTypeInstances());
     }

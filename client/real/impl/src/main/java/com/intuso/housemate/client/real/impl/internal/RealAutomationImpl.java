@@ -18,7 +18,7 @@ import com.intuso.housemate.object.api.internal.Automation;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 public class RealAutomationImpl
         extends RealObject<
@@ -81,17 +81,17 @@ public class RealAutomationImpl
     private ListenerRegistration conditionListenerRegistration;
 
     @Inject
-    public RealAutomationImpl(final Log log,
+    public RealAutomationImpl(final Logger logger,
                               ListenersFactory listenersFactory,
                               AddConditionCommand.Factory addConditionCommandFactory,
                               AddTaskCommand.Factory addTaskCommandFactory,
                               RealCondition.Factory conditionFactory,
                               @Assisted AutomationData data,
                               @Assisted RemoveCallback removeCallback) {
-        super(log, listenersFactory, data);
+        super(logger, listenersFactory, data);
         this.conditionFactory = conditionFactory;
         this.removeCallback = removeCallback;
-        this.rename = new RealCommandImpl(log, listenersFactory, AutomationData.RENAME_ID, AutomationData.RENAME_ID, "Rename the automation", Lists.<RealParameter<?>>newArrayList(StringType.createParameter(log, listenersFactory, AutomationData.NAME_ID, AutomationData.NAME_ID, "The new name"))) {
+        this.rename = new RealCommandImpl(logger, listenersFactory, AutomationData.RENAME_ID, AutomationData.RENAME_ID, "Rename the automation", Lists.<RealParameter<?>>newArrayList(StringType.createParameter(logger, listenersFactory, AutomationData.NAME_ID, AutomationData.NAME_ID, "The new name"))) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(values != null && values.getChildren().containsKey(AutomationData.NAME_ID)) {
@@ -105,7 +105,7 @@ public class RealAutomationImpl
                 }
             }
         };
-        this.remove = new RealCommandImpl(log, listenersFactory, AutomationData.REMOVE_ID, AutomationData.REMOVE_ID, "Remove the automation", Lists.<RealParameter<?>>newArrayList()) {
+        this.remove = new RealCommandImpl(logger, listenersFactory, AutomationData.REMOVE_ID, AutomationData.REMOVE_ID, "Remove the automation", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(isRunning())
@@ -113,8 +113,8 @@ public class RealAutomationImpl
                 remove();
             }
         };
-        this.running = BooleanType.createValue(log, listenersFactory, AutomationData.RUNNING_ID, AutomationData.RUNNING_ID, "Whether the automation is running or not", false);
-        this.start = new RealCommandImpl(log, listenersFactory, AutomationData.START_ID, AutomationData.START_ID, "Start the automation", Lists.<RealParameter<?>>newArrayList()) {
+        this.running = BooleanType.createValue(logger, listenersFactory, AutomationData.RUNNING_ID, AutomationData.RUNNING_ID, "Whether the automation is running or not", false);
+        this.start = new RealCommandImpl(logger, listenersFactory, AutomationData.START_ID, AutomationData.START_ID, "Start the automation", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(!isRunning()) {
@@ -123,7 +123,7 @@ public class RealAutomationImpl
                 }
             }
         };
-        this.stop = new RealCommandImpl(log, listenersFactory, AutomationData.STOP_ID, AutomationData.STOP_ID, "Stop the automation", Lists.<RealParameter<?>>newArrayList()) {
+        this.stop = new RealCommandImpl(logger, listenersFactory, AutomationData.STOP_ID, AutomationData.STOP_ID, "Stop the automation", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(isRunning()) {
@@ -132,10 +132,10 @@ public class RealAutomationImpl
                 }
             }
         };
-        this.error = StringType.createValue(log, listenersFactory, AutomationData.ERROR_ID, AutomationData.ERROR_ID, "Current error for the automation", null);
-        this.conditions = (RealList)new RealListImpl<>(log, listenersFactory, AutomationData.CONDITIONS_ID, AutomationData.CONDITIONS_ID, "The automation's conditions");
-        this.satisfiedTasks = (RealList)new RealListImpl<>(log, listenersFactory, AutomationData.SATISFIED_TASKS_ID, AutomationData.SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
-        this.unsatisfiedTasks = (RealList)new RealListImpl<>(log, listenersFactory, AutomationData.UNSATISFIED_TASKS_ID, AutomationData.UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.error = StringType.createValue(logger, listenersFactory, AutomationData.ERROR_ID, AutomationData.ERROR_ID, "Current error for the automation", null);
+        this.conditions = (RealList)new RealListImpl<>(logger, listenersFactory, AutomationData.CONDITIONS_ID, AutomationData.CONDITIONS_ID, "The automation's conditions");
+        this.satisfiedTasks = (RealList)new RealListImpl<>(logger, listenersFactory, AutomationData.SATISFIED_TASKS_ID, AutomationData.SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
+        this.unsatisfiedTasks = (RealList)new RealListImpl<>(logger, listenersFactory, AutomationData.UNSATISFIED_TASKS_ID, AutomationData.UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         addConditionCommand = addConditionCommandFactory.create(AutomationData.ADD_CONDITION_ID, AutomationData.ADD_CONDITION_ID, "Add condition", this, this);
         addSatisfiedTaskCommand = addTaskCommandFactory.create(AutomationData.ADD_SATISFIED_TASK_ID, AutomationData.ADD_SATISFIED_TASK_ID, "Add satisfied task", addSatisfiedTaskCallback, satisfiedTaskRemoveCallback);
         addUnsatisfiedTaskCommand = addTaskCommandFactory.create(AutomationData.ADD_UNSATISFIED_TASK_ID, AutomationData.ADD_UNSATISFIED_TASK_ID, "Add unsatisfied task", addUnsatisfiedTaskCallback, unsatisfiedTaskRemoveCallback);
@@ -229,12 +229,12 @@ public class RealAutomationImpl
     @Override
     public void conditionSatisfied(RealCondition condition, boolean satisfied) {
         try {
-            getLog().d("Automation " + (satisfied ? "" : "un") + "satisfied, executing tasks");
+            getLogger().debug("Automation " + (satisfied ? "" : "un") + "satisfied, executing tasks");
             for(RealTask task : (satisfied ? satisfiedTasks : unsatisfiedTasks))
                 task.executeTask();
         } catch (Throwable t) {
             getErrorValue().setTypedValues("Failed to perform automation tasks: " + t.getMessage());
-            getLog().e("Failed to perform automation tasks", t);
+            getLogger().error("Failed to perform automation tasks", t);
         }
     }
 

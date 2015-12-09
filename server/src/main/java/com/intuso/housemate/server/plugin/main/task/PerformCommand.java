@@ -8,7 +8,7 @@ import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.real.impl.internal.type.RealObjectType;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -17,7 +17,7 @@ public class PerformCommand implements TaskDriver, ObjectLifecycleListener {
 
     private RealObjectType.Reference<BaseHousemateObject<?>> commandPath;
 
-    private final Log log;
+    private final Logger logger;
     private final ObjectRoot objectRoot;
     private final TaskDriver.Callback callback;
     
@@ -42,10 +42,10 @@ public class PerformCommand implements TaskDriver, ObjectLifecycleListener {
     };
 
     @Inject
-    public PerformCommand(Log log,
+    public PerformCommand(Logger logger,
                           ObjectRoot objectRoot,
                           @Assisted TaskDriver.Callback callback) {
-        this.log = log;
+        this.logger = logger;
         this.objectRoot = objectRoot;
         this.callback = callback;
         String[] path = commandPath != null ? commandPath.getPath() : null;
@@ -90,9 +90,9 @@ public class PerformCommand implements TaskDriver, ObjectLifecycleListener {
     @Override
     public void execute() {
         if(command != null) {
-            log.w("Executing " + Joiner.on("/").join(commandPath.getPath()));
+            logger.warn("Executing " + Joiner.on("/").join(commandPath.getPath()));
             command.perform(new TypeInstanceMap(), listener);
         } else
-            log.w("Cannot execute task, no command at " + Joiner.on("/").join(commandPath.getPath()));
+            logger.warn("Cannot execute task, no command at " + Joiner.on("/").join(commandPath.getPath()));
     }
 }

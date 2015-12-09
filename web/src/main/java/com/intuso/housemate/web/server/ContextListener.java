@@ -18,9 +18,10 @@ import com.intuso.housemate.platform.pc.ioc.PCClientModule;
 import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class ContextListener extends GuiceServletContextListener {
         WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
         PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, new String[]{"-log.stdout.level", "DEBUG"});
         return Guice.createInjector(
-                new PCClientModule(defaultProperties, properties, "web-server.log"),
+                new PCClientModule(properties),
                 new JavabinSerialiserClientModule(),
                 new SocketClientModule(defaultProperties),
                 new FileSystemPersistenceModule(defaultProperties));
@@ -68,18 +69,18 @@ public class ContextListener extends GuiceServletContextListener {
 
         super.contextInitialized(servletContextEvent);
 
-        final Log log = INJECTOR.getInstance(Log.class);
+        final Logger logger = LoggerFactory.getLogger(ContextListener.class);
         final Router<?> router = INJECTOR.getInstance(new Key<Router<?>>() {});
         Persistence persistence = INJECTOR.getInstance(Persistence.class);
 
-        checkDefaultUser(log, persistence);
+        checkDefaultUser(logger, persistence);
 
         // will be null if started in dev mode, in which case the server is run separately
         router.addListener(new Router.Listener<Router>() {
 
             @Override
             public void serverConnectionStatusChanged(Router router, ConnectionStatus connectionStatus) {
-                log.d("Server connection status: " + connectionStatus);
+                logger.debug("Server connection status: " + connectionStatus);
                 if (connectionStatus == ConnectionStatus.DisconnectedPermanently) {
                     connectedRouter = true;
                     router.connect();
@@ -88,7 +89,7 @@ public class ContextListener extends GuiceServletContextListener {
 
             @Override
             public void newServerInstance(Router root, String serverId) {
-                log.d("Server instance changed");
+                logger.debug("Server instance changed");
             }
         });
         if(router.getConnectionStatus() == ConnectionStatus.DisconnectedPermanently) {
@@ -104,7 +105,7 @@ public class ContextListener extends GuiceServletContextListener {
         super.contextDestroyed(servletContextEvent);
     }
 
-    private void checkDefaultUser(Log log, Persistence persistence) {
+    private void checkDefaultUser(Logger logger, Persistence persistence) {
         try {
             boolean createUser = false;
             Set<String> values = persistence.getValuesKeys(new String[] {});
@@ -115,11 +116,11 @@ public class ContextListener extends GuiceServletContextListener {
             } else
                 createUser = true;
             if(createUser) {
-                log.d("Creating default user/password admin/admin");
+                logger.debug("Creating default user/password admin/admin");
                 persistence.saveTypeInstances(new String[]{"users", "admin", "password"}, new TypeInstances(new TypeInstance("admin")));
             }
         } catch(Throwable t) {
-            log.e("Failed to ensure default user exists");
+            logger.error("Failed to ensure default user exists");
         }
     }
 }

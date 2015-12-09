@@ -7,8 +7,8 @@ import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.object.api.internal.ObjectListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
+import org.slf4j.Logger;
 
 public abstract class RealObject<
             DATA extends HousemateData<CHILD_DATA>,
@@ -21,12 +21,12 @@ public abstract class RealObject<
     private RealRoot realRoot;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param data {@inheritDoc}
      */
-    protected RealObject(Log log, ListenersFactory listenersFactory, DATA data) {
-        super(log, listenersFactory, data);
+    protected RealObject(Logger logger, ListenersFactory listenersFactory, DATA data) {
+        super(logger, listenersFactory, data);
     }
 
     /**

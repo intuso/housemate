@@ -3,7 +3,7 @@ package com.intuso.housemate.web.client.object;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
 import com.intuso.housemate.comms.v1_0.api.payload.*;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 import com.intuso.utilities.object.ObjectFactory;
 
 /**
@@ -15,7 +15,7 @@ import com.intuso.utilities.object.ObjectFactory;
 */
 public class GWTProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> {
 
-    private final Log log;
+    private final Logger logger;
     private final ObjectFactory<ApplicationData, GWTProxyApplication> applicationFactory;
     private final ObjectFactory<ApplicationInstanceData, GWTProxyApplicationInstance> applicationInstanceFactory;
     private final ObjectFactory<AutomationData, GWTProxyAutomation> automationFactory;
@@ -36,7 +36,7 @@ public class GWTProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObj
     private final ObjectFactory<ValueData, GWTProxyValue> valueFactory;
 
     @Inject
-    public GWTProxyFactory(Log log,
+    public GWTProxyFactory(Logger logger,
                            ObjectFactory<ApplicationData, GWTProxyApplication> applicationFactory,
                            ObjectFactory<ApplicationInstanceData, GWTProxyApplicationInstance> applicationInstanceFactory,
                            ObjectFactory<AutomationData, GWTProxyAutomation> automationFactory,
@@ -55,7 +55,7 @@ public class GWTProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObj
                            ObjectFactory<TypeData<HousemateData<?>>, GWTProxyType> typeFactory,
                            ObjectFactory<UserData, GWTProxyUser> userFactory,
                            ObjectFactory<ValueData, GWTProxyValue> valueFactory) {
-        this.log = log;
+        this.logger = logger;
         this.applicationFactory = applicationFactory;
         this.applicationInstanceFactory = applicationInstanceFactory;
         this.automationFactory = automationFactory;
@@ -114,7 +114,7 @@ public class GWTProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObj
             return typeFactory.create((TypeData) data);
         else if(data instanceof ValueData)
             return valueFactory.create((ValueData) data);
-        log.w("Don't know how to create an object from " + data.getClass().getName());
+        logger.warn("Don't know how to create an object from " + data.getClass().getName());
         return null;
     }
 }

@@ -7,22 +7,22 @@ import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
 import com.intuso.housemate.comms.api.internal.payload.ParameterData;
 import com.intuso.housemate.object.api.internal.Parameter;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 public class ServerProxyParameter
         extends ServerProxyObject<ParameterData, NoChildrenData, NoChildrenServerProxyObject, ServerProxyParameter, Parameter.Listener<? super ServerProxyParameter>>
         implements Parameter<ServerProxyParameter> {
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyParameter(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory,
+    public ServerProxyParameter(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory,
                                 @Assisted ParameterData data) {
-        super(log, listenersFactory, objectFactory, data);
+        super(logger, listenersFactory, objectFactory, data);
     }
 
     @Override

@@ -7,7 +7,7 @@ import com.intuso.housemate.comms.api.internal.payload.TaskData;
 import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.housemate.object.api.internal.Task;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -34,15 +34,15 @@ public class TaskBridge
     private ValueBridge driverLoadedValue;
     private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
-    public TaskBridge(Log log, ListenersFactory listenersFactory, Task<?, ?, ?, ?, ?, ?, ?> task) {
-        super(log, listenersFactory, new TaskData(task.getId(), task.getName(), task.getDescription()));
-        removeCommand = new CommandBridge(log, listenersFactory, task.getRemoveCommand());
-        executingValue = new ValueBridge(log, listenersFactory, task.getExecutingValue());
-        errorValue = new ValueBridge(log, listenersFactory, task.getErrorValue());
-        driverProperty = new PropertyBridge(log, listenersFactory, task.getDriverProperty());
-        driverLoadedValue = new ValueBridge(log, listenersFactory, task.getDriverLoadedValue());
-        propertyList = new ConvertingListBridge<>(log, listenersFactory, task.getProperties(),
-                new PropertyBridge.Converter(log, listenersFactory));
+    public TaskBridge(Logger logger, ListenersFactory listenersFactory, Task<?, ?, ?, ?, ?, ?, ?> task) {
+        super(logger, listenersFactory, new TaskData(task.getId(), task.getName(), task.getDescription()));
+        removeCommand = new CommandBridge(logger, listenersFactory, task.getRemoveCommand());
+        executingValue = new ValueBridge(logger, listenersFactory, task.getExecutingValue());
+        errorValue = new ValueBridge(logger, listenersFactory, task.getErrorValue());
+        driverProperty = new PropertyBridge(logger, listenersFactory, task.getDriverProperty());
+        driverLoadedValue = new ValueBridge(logger, listenersFactory, task.getDriverLoadedValue());
+        propertyList = new ConvertingListBridge<>(logger, listenersFactory, task.getProperties(),
+                new PropertyBridge.Converter(logger, listenersFactory));
         addChild(removeCommand);
         addChild(executingValue);
         addChild(errorValue);
@@ -83,17 +83,17 @@ public class TaskBridge
 
     public static class Converter implements Function<Task<?, ?, ?, ?, ?, ?, ?>, TaskBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public TaskBridge apply(Task<?, ?, ?, ?, ?, ?, ?> command) {
-            return new TaskBridge(log, listenersFactory, command);
+            return new TaskBridge(logger, listenersFactory, command);
         }
     }
 }

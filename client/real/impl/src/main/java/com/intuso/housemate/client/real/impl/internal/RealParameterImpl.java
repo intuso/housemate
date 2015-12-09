@@ -8,7 +8,7 @@ import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
 import com.intuso.housemate.comms.api.internal.payload.ParameterData;
 import com.intuso.housemate.object.api.internal.Parameter;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * @param <O> the type of the parameter's value
@@ -20,7 +20,7 @@ public class RealParameterImpl<O>
     private RealType<O> type;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the parameter's id
      * @param name the parameter's name
@@ -28,13 +28,13 @@ public class RealParameterImpl<O>
      * @param type the type of the parameter's value
      */
     @Inject
-    public RealParameterImpl(Log log,
+    public RealParameterImpl(Logger logger,
                              ListenersFactory listenersFactory,
                              @Assisted("id") String id,
                              @Assisted("name") String name,
                              @Assisted("description") String description,
                              @Assisted RealType<O> type) {
-        super(log, listenersFactory, new ParameterData(id, name, description, type.getId()));
+        super(logger, listenersFactory, new ParameterData(id, name, description, type.getId()));
         this.type = type;
     }
 

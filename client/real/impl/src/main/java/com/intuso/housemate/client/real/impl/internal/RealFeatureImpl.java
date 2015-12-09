@@ -10,7 +10,7 @@ import com.intuso.housemate.comms.api.internal.payload.FeatureData;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.object.api.internal.Feature;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * Base class for all devices
@@ -30,16 +30,16 @@ public final class RealFeatureImpl
     private final RealList<RealValue<?>> values;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      */
     @Inject
-    public RealFeatureImpl(Log log,
+    public RealFeatureImpl(Logger logger,
                            ListenersFactory listenersFactory,
                            @Assisted FeatureData data) {
-        super(log, listenersFactory, new FeatureData(data.getId(), data.getName(), data.getDescription()));
-        this.commands = (RealList)new RealListImpl<>(log, listenersFactory, FeatureData.COMMANDS_ID, FeatureData.COMMANDS_ID, COMMANDS_DESCRIPTION);
-        this.values = (RealList)new RealListImpl<>(log, listenersFactory, FeatureData.VALUES_ID, FeatureData.VALUES_ID, VALUES_DESCRIPTION);
+        super(logger, listenersFactory, new FeatureData(data.getId(), data.getName(), data.getDescription()));
+        this.commands = (RealList)new RealListImpl<>(logger, listenersFactory, FeatureData.COMMANDS_ID, FeatureData.COMMANDS_ID, COMMANDS_DESCRIPTION);
+        this.values = (RealList)new RealListImpl<>(logger, listenersFactory, FeatureData.VALUES_ID, FeatureData.VALUES_ID, VALUES_DESCRIPTION);
         addChild((RealListImpl)commands);
         addChild((RealListImpl)values);
     }

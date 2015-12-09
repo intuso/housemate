@@ -15,11 +15,11 @@ import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.Operator;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.PluginResource;
-import com.intuso.housemate.plugin.manager.PluginManager;
+import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
@@ -41,28 +41,28 @@ public class OperationType extends RealCompoundType<Operation> implements Plugin
     public final static String VALUE_1_NAME = "Second value";
     public final static String VALUE_1_DESCRIPTION = "The second value";
 
-    private final Log log;
+    private final Logger logger;
     private final TypeSerialiser<TypeInfo> operationTypeSerialiser;
     private final TypeSerialiser<ValueSource> sourceTypeSerialiser;
     private final Map<String, Map<String, Operator<?, ?>>> operators = Maps.newHashMap();
 
     @Inject
-    public OperationType(Log log,
+    public OperationType(Logger logger,
                          ListenersFactory listenersFactory,
                          PluginManager pluginManager,
                          @com.intuso.housemate.server.plugin.main.ioc.Operator TypeSerialiser<TypeInfo> operationTypeSerialiser,
                          TypeSerialiser<ValueSource> sourceTypeSerialiser,
                          RealList<RealType<?>> types) {
-        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
-        this.log = log;
+        super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
+        this.logger = logger;
         this.operationTypeSerialiser = operationTypeSerialiser;
         this.sourceTypeSerialiser = sourceTypeSerialiser;
         pluginManager.addPluginListener(this, true);
-        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory,
+        getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory,
                 OPERATION_TYPE_ID, OPERATION_TYPE_NAME, OPERATION_TYPE_DESCRIPTION, OperationTypeType.ID, types));
-        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
+        getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
                 VALUE_0_DESCRIPTION, ValueSourceType.ID, types));
-        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
+        getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
                 VALUE_1_DESCRIPTION, ValueSourceType.ID, types));
     }
 

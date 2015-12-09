@@ -7,7 +7,7 @@ import com.intuso.housemate.client.real.impl.internal.RealPropertyImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -18,7 +18,7 @@ import java.lang.reflect.Field;
 public class FieldProperty extends RealPropertyImpl<Object> {
 
     @Inject
-    public FieldProperty(Log log,
+    public FieldProperty(Logger logger,
                          ListenersFactory listenersFactory,
                          @Assisted("id") String id,
                          @Assisted("name") String name,
@@ -27,7 +27,7 @@ public class FieldProperty extends RealPropertyImpl<Object> {
                          @Nullable @Assisted("value") Object value,
                          @Assisted final Field field,
                          @Assisted("instance") final Object instance) {
-        super(log, listenersFactory, id, name, description, type, value);
+        super(logger, listenersFactory, id, name, description, type, value);
         field.setAccessible(true);
         addObjectListener(new Property.Listener<RealProperty<Object>>() {
 
@@ -41,7 +41,7 @@ public class FieldProperty extends RealPropertyImpl<Object> {
                 try {
                     field.set(instance, property.getTypedValue());
                 } catch(IllegalAccessException e) {
-                    getLog().e("Failed to update property for annotated property " + getId(), e);
+                    getLogger().error("Failed to update property for annotated property " + getId(), e);
                 }
             }
         });

@@ -14,9 +14,9 @@ import com.intuso.housemate.server.comms.RemoteClient;
 import com.intuso.housemate.server.comms.RemoteClientListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.object.ObjectListener;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,8 +36,8 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
     private final Set<RemoteClient> loadedByClients = Sets.newHashSet();
     private final Map<RemoteClient, ListenerRegistration> clientListeners= Maps.newHashMap();
 
-    protected BridgeObject(Log log, ListenersFactory listenersFactory, DATA data) {
-        super(log, listenersFactory, data);
+    protected BridgeObject(Logger logger, ListenersFactory listenersFactory, DATA data) {
+        super(logger, listenersFactory, data);
     }
 
     @Override
@@ -60,7 +60,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
                         } else {
                             BridgeObject<?, ?, ?, ?, ?> child = getChild(treeLoadInfo.getId());
                             if (child == null) {
-                                getLog().w("Load request received from " + Arrays.toString(message.getRoute().toArray(new String[message.getRoute().size()])) + " for non-existant object \"" + treeLoadInfo.getId() + "\"");
+                                getLogger().warn("Load request received from " + Arrays.toString(message.getRoute().toArray(new String[message.getRoute().size()])) + " for non-existant object \"" + treeLoadInfo.getId() + "\"");
                                 errors.add("Object does not exist or you do not have permission to see it");
                             } else
                                 sendChildDataToClient(client, child, treeLoadInfo.getChildren(), false);
@@ -71,7 +71,7 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
                     else
                         sendMessage(LOAD_FINISHED, LoadFinished.forSuccess(loaderId), client);
                 } else {
-                    getLog().e("Client requesting an object is not of type " + ApplicationRegistration.ClientType.Proxy);
+                    getLogger().error("Client requesting an object is not of type " + ApplicationRegistration.ClientType.Proxy);
                     sendMessage(LOAD_FINISHED, LoadFinished.forErrors(loaderId, "Connection type is not " + ApplicationRegistration.ClientType.Proxy.name()), client);
                 }
             }
@@ -189,8 +189,8 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
             try {
                 sendMessage(type, content, client);
             } catch(HousemateCommsException e) {
-                getLog().e("Failed to broadcast message to client");
-                getLog().e(e.getMessage());
+                getLogger().error("Failed to broadcast message to client");
+                getLogger().error(e.getMessage());
             }
         }
     }

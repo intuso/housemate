@@ -7,7 +7,7 @@ import com.intuso.housemate.comms.api.internal.payload.PropertyData;
 import com.intuso.housemate.object.api.internal.Condition;
 import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -33,18 +33,18 @@ public class ConditionBridge
     private ConvertingListBridge<ConditionData, Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ConditionBridge> conditionList;
     private CommandBridge addConditionCommand;
 
-    public ConditionBridge(Log log, ListenersFactory listenersFactory,
+    public ConditionBridge(Logger logger, ListenersFactory listenersFactory,
                            Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> condition) {
-        super(log, listenersFactory,
+        super(logger, listenersFactory,
                 new ConditionData(condition.getId(), condition.getName(), condition.getDescription()));
-        removeCommand = new CommandBridge(log, listenersFactory, condition.getRemoveCommand());
-        satisfiedValue = new ValueBridge(log, listenersFactory, condition.getSatisfiedValue());
-        errorValue = new ValueBridge(log, listenersFactory, condition.getErrorValue());
-        driverProperty = new PropertyBridge(log, listenersFactory, condition.getDriverProperty());
-        driverLoadedValue = new ValueBridge(log, listenersFactory, condition.getDriverLoadedValue());
-        propertyList = new ConvertingListBridge<>(log, listenersFactory, condition.getProperties(), new PropertyBridge.Converter(log, listenersFactory));
-        conditionList = new ConvertingListBridge<>(log, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>) condition.getConditions(), new Converter(log, listenersFactory));
-        addConditionCommand = condition.getAddConditionCommand() == null ? null : new CommandBridge(log, listenersFactory, condition.getAddConditionCommand());
+        removeCommand = new CommandBridge(logger, listenersFactory, condition.getRemoveCommand());
+        satisfiedValue = new ValueBridge(logger, listenersFactory, condition.getSatisfiedValue());
+        errorValue = new ValueBridge(logger, listenersFactory, condition.getErrorValue());
+        driverProperty = new PropertyBridge(logger, listenersFactory, condition.getDriverProperty());
+        driverLoadedValue = new ValueBridge(logger, listenersFactory, condition.getDriverLoadedValue());
+        propertyList = new ConvertingListBridge<>(logger, listenersFactory, condition.getProperties(), new PropertyBridge.Converter(logger, listenersFactory));
+        conditionList = new ConvertingListBridge<>(logger, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>) condition.getConditions(), new Converter(logger, listenersFactory));
+        addConditionCommand = condition.getAddConditionCommand() == null ? null : new CommandBridge(logger, listenersFactory, condition.getAddConditionCommand());
         addChild(removeCommand);
         addChild(satisfiedValue);
         addChild(errorValue);
@@ -97,17 +97,17 @@ public class ConditionBridge
 
     public static class Converter implements Function<Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ConditionBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public ConditionBridge apply(Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> condition) {
-            return new ConditionBridge(log, listenersFactory, condition);
+            return new ConditionBridge(logger, listenersFactory, condition);
         }
     }
 }

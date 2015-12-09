@@ -6,7 +6,7 @@ import com.intuso.housemate.client.real.api.internal.annotations.Property;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.real.api.internal.type.TimeUnit;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * Task that waits for a specified amount of time
@@ -30,24 +30,24 @@ public class RandomDelay implements TaskDriver {
     @TypeInfo(id = "max-amount", name = "Max amount", description = "the maximum amount of time to wait")
     private Integer maxAmount = 1;
 
-    private final Log log;
+    private final Logger logger;
 
     /**
      * Create a new delay task
-     * @param log
+     * @param logger
      */
     @Inject
-    public RandomDelay(Log log,
+    public RandomDelay(Logger logger,
                  @Assisted TaskDriver.Callback callback) {
-        this.log = log;
+        this.logger = logger;
     }
 
     @Override
     public final void execute() {
         long delay = maxAmount * unit.getFactor();
         long actual_delay = (long)(delay * Math.random());
-        log.d("Executing random delay of up to " + maxAmount + " " + unit + " which is " + delay + " milliseconds");
-        log.d("Delaying for " + actual_delay + " milliseconds");
+        logger.debug("Executing random delay of up to " + maxAmount + " " + unit + " which is " + delay + " milliseconds");
+        logger.debug("Delaying for " + actual_delay + " milliseconds");
 
         // work out when we should stop
         long end_time = System.currentTimeMillis() + actual_delay;
@@ -56,7 +56,7 @@ public class RandomDelay implements TaskDriver {
         while(System.currentTimeMillis() < end_time) {
             try {
                 // wait a max of 10 minutes
-                log.d("Waiting for " + Math.min(end_time - System.currentTimeMillis(), 600000) + " milliseconds");
+                logger.debug("Waiting for " + Math.min(end_time - System.currentTimeMillis(), 600000) + " milliseconds");
                 Thread.sleep(Math.min(end_time - System.currentTimeMillis(), 600000));
             } catch(InterruptedException e) {
                 // if interrupted then return
@@ -64,6 +64,6 @@ public class RandomDelay implements TaskDriver {
             }
         }
 
-        log.d("Executed delay");
+        logger.debug("Executed delay");
     }
 }

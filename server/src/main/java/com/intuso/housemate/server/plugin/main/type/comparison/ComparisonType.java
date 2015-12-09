@@ -15,11 +15,11 @@ import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.Comparator;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.PluginResource;
-import com.intuso.housemate.plugin.manager.PluginManager;
+import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
@@ -41,28 +41,28 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     public final static String VALUE_1_NAME = "Second value";
     public final static String VALUE_1_DESCRIPTION = "The second value to compare";
 
-    private final Log log;
+    private final Logger logger;
     private final TypeSerialiser<TypeInfo> comparisonTypeSerialiser;
     private final TypeSerialiser<ValueSource> sourceTypeSerialiser;
 
     private final Map<String, Map<String, Comparator<?>>> comparators = Maps.newHashMap();
 
     @Inject
-    public ComparisonType(Log log,
+    public ComparisonType(Logger logger,
                           ListenersFactory listenersFactory,
                           RealList<RealType<?>> types,
                           @com.intuso.housemate.server.plugin.main.ioc.Comparator TypeSerialiser<TypeInfo> comparisonTypeSerialiser,
                           TypeSerialiser<ValueSource> sourceTypeSerialiser,
                           PluginManager pluginManager) {
-        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
-        this.log = log;
+        super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
+        this.logger = logger;
         this.comparisonTypeSerialiser = comparisonTypeSerialiser;
         this.sourceTypeSerialiser = sourceTypeSerialiser;
-        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, COMPARISON_TYPE_ID,
+        getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, COMPARISON_TYPE_ID,
                 COMPARISON_TYPE_NAME, COMPARISON_TYPE_DESCRIPTION, ComparisonTypeType.ID, types));
-        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
+        getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
                 VALUE_0_DESCRIPTION, ValueSourceType.ID, types));
-        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
+        getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
                 VALUE_1_DESCRIPTION, ValueSourceType.ID, types));
         pluginManager.addPluginListener(this, true);
     }

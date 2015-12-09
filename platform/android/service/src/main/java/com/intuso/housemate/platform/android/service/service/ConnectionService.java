@@ -8,16 +8,15 @@ import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.serialiser.javabin.JavabinSerialiser;
 import com.intuso.housemate.comms.v1_0.transport.socket.client.SocketClient;
 import com.intuso.housemate.comms.v1_0.transport.socket.client.ioc.SocketClientModule;
-import com.intuso.housemate.platform.android.common.AndroidLogWriter;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
-import com.intuso.utilities.log.LogLevel;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -34,7 +33,7 @@ public class ConnectionService extends Service {
     private final PropertyRepository defaultProperties;
 
     private PropertyRepository properties;
-    private Log log;
+    private Logger logger;
     private SocketClient router;
     private ListenerRegistration routerListenerRegistration;
 
@@ -50,7 +49,6 @@ public class ConnectionService extends Service {
 
         // setup the default properties
         defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
-        defaultProperties.set(LOG_LEVEL, LogLevel.DEBUG.toString());
         // use the normal Guice modules to set the default properties
         new SocketClientModule(defaultProperties);
     }
@@ -66,17 +64,17 @@ public class ConnectionService extends Service {
 
         // create all the required objects
         properties = new SharedPreferencesPropertyRepository(listenersFactory, defaultProperties, getApplicationContext());
-        log = new Log(new AndroidLogWriter(LogLevel.valueOf(properties.get(LOG_LEVEL)), "Housemate Service"));
-        router = new SocketClient(log, listenersFactory, properties, new JavabinSerialiser.Factory());
+        logger = LoggerFactory.getLogger(ConnectionService.class);
+        router = new SocketClient(logger, listenersFactory, properties, new JavabinSerialiser.Factory());
 
-        log.d("Connection Service created");
+        logger.debug("Connection Service created");
 
         // listen on the router root object, then connect the router
         routerListenerRegistration = router.addListener(new Router.Listener<Router>() {
 
             @Override
             public void serverConnectionStatusChanged(Router root, ConnectionStatus connectionStatus) {
-                log.d("Server connection status: " + connectionStatus);
+                logger.debug("Server connection status: " + connectionStatus);
                 if(connectionStatus == ConnectionStatus.DisconnectedPermanently) {
                     router.connect();
                 }
@@ -94,7 +92,7 @@ public class ConnectionService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        log.d("Connection Service destroyed");
+        logger.debug("Connection Service destroyed");
         routerListenerRegistration.removeListener();
         router.disconnect();
     }
@@ -103,7 +101,7 @@ public class ConnectionService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(intent != null && NETWORK_AVAILABLE_ACTION.equals(intent.getAction())) {
             if(intent.getExtras().containsKey(NETWORK_AVAILABLE)) {
-                log.d("Received network available update: " + intent.getBooleanExtra(NETWORK_AVAILABLE, true));
+                logger.debug("Received network available update: " + intent.getBooleanExtra(NETWORK_AVAILABLE, true));
                 router.networkAvailable(intent.getBooleanExtra(NETWORK_AVAILABLE, true));
             }
         }
@@ -111,11 +109,6 @@ public class ConnectionService extends Service {
     }
 
     public class Binder extends android.os.Binder {
-
-        public Log getLog() {
-            return log;
-        }
-
         public Router<?> getRouter() {
             return router;
         }

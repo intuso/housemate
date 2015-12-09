@@ -16,7 +16,7 @@ import com.intuso.housemate.server.plugin.main.type.operation.OperationType;
 import com.intuso.housemate.server.plugin.main.type.transformation.Transformation;
 import com.intuso.housemate.server.plugin.main.type.transformation.TransformationType;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,26 +48,26 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
     private final TypeSerialiser<ValueSource> serialiser;
 
     @Inject
-    public ValueSourceType(Log log, ListenersFactory listenersFactory, TypeSerialiser<ValueSource> serialiser,
+    public ValueSourceType(Logger logger, ListenersFactory listenersFactory, TypeSerialiser<ValueSource> serialiser,
                            RealList<RealType<?>> types) {
-        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1, createOptions(log, listenersFactory, types));
+        super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1, createOptions(logger, listenersFactory, types));
         this.serialiser = serialiser;
     }
 
-    private static List<RealOptionImpl> createOptions(Log log, ListenersFactory listenersFactory, RealList<RealType<?>> types) {
+    private static List<RealOptionImpl> createOptions(Logger logger, ListenersFactory listenersFactory, RealList<RealType<?>> types) {
         return Arrays.asList(
-                new RealOptionImpl(log, listenersFactory, CONSTANT_ID, CONSTANT_NAME,
+                new RealOptionImpl(logger, listenersFactory, CONSTANT_ID, CONSTANT_NAME,
                         CONSTANT_DESCRIPTION,
-                        new RealSubTypeImpl<ConstantInstance<Object>>(log, listenersFactory, "type", "Type", "Type of the value", ConstantType.ID, types)),
-                new RealOptionImpl(log, listenersFactory, LOCATION_ID, LOCATION_NAME,
+                        new RealSubTypeImpl<ConstantInstance<Object>>(logger, listenersFactory, "type", "Type", "Type of the value", ConstantType.ID, types)),
+                new RealOptionImpl(logger, listenersFactory, LOCATION_ID, LOCATION_NAME,
                         LOCATION_DESCRIPTION,
-                        new RealSubTypeImpl<RealObjectType.Reference<Value<?, ?>>>(log, listenersFactory, "path", "Path", "Path to the value", RealObjectType.ID, types)),
-                new RealOptionImpl(log, listenersFactory, OPERATION_ID, OPERATION_NAME,
+                        new RealSubTypeImpl<RealObjectType.Reference<Value<?, ?>>>(logger, listenersFactory, "path", "Path", "Path to the value", RealObjectType.ID, types)),
+                new RealOptionImpl(logger, listenersFactory, OPERATION_ID, OPERATION_NAME,
                         OPERATION_DESCRIPTION,
-                        new RealSubTypeImpl<Operation>(log, listenersFactory, "operation", "Operation", "The operation to do", OperationType.ID, types)),
-                new RealOptionImpl(log, listenersFactory, TRANSFORMATION_ID, TRANSFORMATION_NAME,
+                        new RealSubTypeImpl<Operation>(logger, listenersFactory, "operation", "Operation", "The operation to do", OperationType.ID, types)),
+                new RealOptionImpl(logger, listenersFactory, TRANSFORMATION_ID, TRANSFORMATION_NAME,
                         TRANSFORMATION_DESCRIPTION,
-                        new RealSubTypeImpl<Transformation>(log, listenersFactory, "path", "Path", "Path to the value", TransformationType.ID, types)));
+                        new RealSubTypeImpl<Transformation>(logger, listenersFactory, "path", "Path", "Path to the value", TransformationType.ID, types)));
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
 
     public static class Serialiser implements TypeSerialiser<ValueSource> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
         private final TypeSerialiser<RealObjectType.Reference<?>> realObjectTypeSerialiser;
         private final TypeSerialiser<Operation> operationSerialiser;
@@ -91,11 +91,11 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
         private final RealList<RealType<?>> types;
 
         @Inject
-        public Serialiser(Log log, ListenersFactory listenersFactory,
+        public Serialiser(Logger logger, ListenersFactory listenersFactory,
                           TypeSerialiser<RealObjectType.Reference<?>> realObjectTypeSerialiser,
                           TypeSerialiser<Operation> operationSerialiser, TypeSerialiser<Transformation> transformationSerialiser,
                           RootBridge root, RealList<RealType<?>> types) {
-            this.log = log;
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
             this.realObjectTypeSerialiser = realObjectTypeSerialiser;
             this.operationSerialiser = operationSerialiser;
@@ -138,12 +138,12 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
                     return null;
                 String typeId = typeValue.getFirstValue();
                 if(typeId == null) {
-                    log.w("Cannot deserialise constant, type id is null");
+                    logger.warn("Cannot deserialise constant, type id is null");
                     return null;
                 }
                 RealType<?> type = types.get(typeId);
                 if(type == null) {
-                    log.w("Cannot deserialise constant, no type for id " + typeId);
+                    logger.warn("Cannot deserialise constant, no type for id " + typeId);
                     return null;
                 }
                 return new ConstantValue(listenersFactory, type, typeValue.getElements().get(0).getChildValues().getChildren().get(ConstantType.SUB_TYPE_ID));
@@ -155,12 +155,12 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
                     return null;
             } else if(value.getValue().equals(OPERATION_ID)) {
                 if(value.getChildValues().getChildren().get("operation") != null && value.getChildValues().getChildren().get("operation").getElements().size() > 0)
-                    return new OperationOutput(log, listenersFactory, types, operationSerialiser.deserialise(value.getChildValues().getChildren().get("operation").getElements().get(0)));
+                    return new OperationOutput(logger, listenersFactory, types, operationSerialiser.deserialise(value.getChildValues().getChildren().get("operation").getElements().get(0)));
                 else
                     return null;
             } else if(value.getValue().equals(TRANSFORMATION_ID)) {
                 if(value.getChildValues().getChildren().get("transformation") != null && value.getChildValues().getChildren().get("transformation").getElements().size() > 0)
-                    return new TransformationOutput(log, listenersFactory, types, transformationSerialiser.deserialise(value.getChildValues().getChildren().get("transformation").getElements().get(0)));
+                    return new TransformationOutput(logger, listenersFactory, types, transformationSerialiser.deserialise(value.getChildValues().getChildren().get("transformation").getElements().get(0)));
                 else
                     return null;
             } else

@@ -10,7 +10,7 @@ import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 
@@ -25,15 +25,15 @@ public class HardwareListWatcher implements List.Listener<RealHardware<?>> {
 
     private final Multimap<RealHardware, ListenerRegistration> listeners = HashMultimap.create();
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
     private final PropertyListWatcher propertyListWatcher;
     private final HardwareListener hardwareListener;
 
     @Inject
-    public HardwareListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher, HardwareListener hardwareListener) {
-        this.log = log;
+    public HardwareListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher, HardwareListener hardwareListener) {
+        this.logger = logger;
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
         this.propertyListWatcher = propertyListWatcher;
@@ -50,7 +50,7 @@ public class HardwareListWatcher implements List.Listener<RealHardware<?>> {
         try {
             persistence.saveValues(hardware.getPath(), toSave);
         } catch (Throwable t) {
-            log.e("Failed to save new hardware values", t);
+            logger.error("Failed to save new hardware values", t);
         }
         listeners.put(hardware, valueBaseWatcher.watch(hardware.getDriverProperty()));
         listeners.put(hardware, hardware.addObjectListener(hardwareListener));
@@ -67,7 +67,7 @@ public class HardwareListWatcher implements List.Listener<RealHardware<?>> {
         try {
             persistence.removeValues(hardware.getPath());
         } catch(Throwable t) {
-            log.e("Failed to delete hardware properties", t);
+            logger.error("Failed to delete hardware properties", t);
         }
     }
 }

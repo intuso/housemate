@@ -7,7 +7,7 @@ import com.intuso.housemate.object.api.internal.Condition;
 import com.intuso.housemate.object.api.internal.Task;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -33,25 +33,25 @@ public class AutomationBridge
     private CommandBridge addSatisfiedTask;
     private CommandBridge addUnsatisfiedTask;
     
-    public AutomationBridge(Log log, ListenersFactory listenersFactory,
+    public AutomationBridge(Logger logger, ListenersFactory listenersFactory,
                             Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
-        super(log, listenersFactory, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()));
+        super(logger, listenersFactory, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()));
         this.automation = automation;
-        renameCommand = new CommandBridge(log, listenersFactory, automation.getRenameCommand());
-        removeCommand = new CommandBridge(log, listenersFactory, automation.getRemoveCommand());
-        runningValue = new ValueBridge(log, listenersFactory, automation.getRunningValue());
-        startCommand = new CommandBridge(log, listenersFactory, automation.getStartCommand());
-        stopCommand = new CommandBridge(log, listenersFactory, automation.getStopCommand());
-        errorValue = new ValueBridge(log, listenersFactory, automation.getErrorValue());
-        conditionList = new ConvertingListBridge<>(log, listenersFactory,
-                (com.intuso.housemate.object.api.internal.List<? extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>) automation.getConditions(), new ConditionBridge.Converter(log, listenersFactory));
-        satisfiedTaskList = new ConvertingListBridge<>(log, listenersFactory,
-                (com.intuso.housemate.object.api.internal.List<? extends Task<?, ?, ?, ?, ?, ?, ?>>) automation.getSatisfiedTasks(), new TaskBridge.Converter(log, listenersFactory));
-        unsatisfiedTaskList = new ConvertingListBridge<>(log, listenersFactory,
-                (com.intuso.housemate.object.api.internal.List<? extends Task<?, ?, ?, ?, ?, ?, ?>>) automation.getUnsatisfiedTasks(), new TaskBridge.Converter(log, listenersFactory));
-        addCondition = new CommandBridge(log, listenersFactory, automation.getAddConditionCommand());
-        addSatisfiedTask = new CommandBridge(log, listenersFactory, automation.getAddSatisifedTaskCommand());
-        addUnsatisfiedTask = new CommandBridge(log, listenersFactory, automation.getAddUnsatisifedTaskCommand());
+        renameCommand = new CommandBridge(logger, listenersFactory, automation.getRenameCommand());
+        removeCommand = new CommandBridge(logger, listenersFactory, automation.getRemoveCommand());
+        runningValue = new ValueBridge(logger, listenersFactory, automation.getRunningValue());
+        startCommand = new CommandBridge(logger, listenersFactory, automation.getStartCommand());
+        stopCommand = new CommandBridge(logger, listenersFactory, automation.getStopCommand());
+        errorValue = new ValueBridge(logger, listenersFactory, automation.getErrorValue());
+        conditionList = new ConvertingListBridge<>(logger, listenersFactory,
+                (com.intuso.housemate.object.api.internal.List<? extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>) automation.getConditions(), new ConditionBridge.Converter(logger, listenersFactory));
+        satisfiedTaskList = new ConvertingListBridge<>(logger, listenersFactory,
+                (com.intuso.housemate.object.api.internal.List<? extends Task<?, ?, ?, ?, ?, ?, ?>>) automation.getSatisfiedTasks(), new TaskBridge.Converter(logger, listenersFactory));
+        unsatisfiedTaskList = new ConvertingListBridge<>(logger, listenersFactory,
+                (com.intuso.housemate.object.api.internal.List<? extends Task<?, ?, ?, ?, ?, ?, ?>>) automation.getUnsatisfiedTasks(), new TaskBridge.Converter(logger, listenersFactory));
+        addCondition = new CommandBridge(logger, listenersFactory, automation.getAddConditionCommand());
+        addSatisfiedTask = new CommandBridge(logger, listenersFactory, automation.getAddSatisifedTaskCommand());
+        addUnsatisfiedTask = new CommandBridge(logger, listenersFactory, automation.getAddUnsatisifedTaskCommand());
         addChild(renameCommand);
         addChild(removeCommand);
         addChild(runningValue);
@@ -159,17 +159,17 @@ public class AutomationBridge
 
     public final static class Converter implements Function<Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public AutomationBridge apply(Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
-            return new AutomationBridge(log, listenersFactory, automation);
+            return new AutomationBridge(logger, listenersFactory, automation);
         }
     }
 }

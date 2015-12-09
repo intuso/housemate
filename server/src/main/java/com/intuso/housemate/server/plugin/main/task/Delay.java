@@ -6,7 +6,7 @@ import com.intuso.housemate.client.real.api.internal.annotations.Property;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.real.api.internal.type.TimeUnit;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * Task that waits for a specified amount of time
@@ -29,22 +29,22 @@ public class Delay implements TaskDriver {
     @TypeInfo(id = "amount", name = "Amount", description = "the amount of time to wait")
     private Integer amount = 1;
 
-    private final Log log;
+    private final Logger logger;
 
     /**
      * Create a new delay task
-     * @param log
+     * @param logger
      */
     @Inject
-    public Delay(Log log,
+    public Delay(Logger logger,
                  @Assisted TaskDriver.Callback callback) {
-        this.log = log;
+        this.logger = logger;
     }
 
     @Override
     public final void execute() {
         long delay = amount * unit.getFactor();
-        log.d("Executing delay of " + amount + " " + unit + " which is " + delay + " milliseconds");
+        logger.debug("Executing delay of " + amount + " " + unit + " which is " + delay + " milliseconds");
 
         // work out when we should stop
         long end_time = System.currentTimeMillis() + delay;
@@ -53,7 +53,7 @@ public class Delay implements TaskDriver {
         while(System.currentTimeMillis() < end_time) {
             try {
                 // wait a max of 10 minutes
-                log.d("Waiting for " + Math.min(end_time - System.currentTimeMillis(), 600000) + " milliseconds");
+                logger.debug("Waiting for " + Math.min(end_time - System.currentTimeMillis(), 600000) + " milliseconds");
                 Thread.sleep(Math.min(end_time - System.currentTimeMillis(), 600000));
             } catch(InterruptedException e) {
                 // if interrupted then return
@@ -61,6 +61,6 @@ public class Delay implements TaskDriver {
             }
         }
 
-        log.d("Executed delay");
+        logger.debug("Executed delay");
     }
 }

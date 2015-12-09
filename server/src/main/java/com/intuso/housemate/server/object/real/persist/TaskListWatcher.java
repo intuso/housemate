@@ -10,7 +10,7 @@ import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 
@@ -25,14 +25,14 @@ public class TaskListWatcher implements List.Listener<RealTask<?>> {
 
     private final Multimap<RealTask, ListenerRegistration> listeners = HashMultimap.create();
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
     private final PropertyListWatcher propertyListWatcher;
 
     @Inject
-    public TaskListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher) {
-        this.log = log;
+    public TaskListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher) {
+        this.logger = logger;
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
         this.propertyListWatcher = propertyListWatcher;
@@ -48,7 +48,7 @@ public class TaskListWatcher implements List.Listener<RealTask<?>> {
         try {
             persistence.saveValues(task.getPath(), toSave);
         } catch (Throwable t) {
-            log.e("Failed to save new automation values", t);
+            logger.error("Failed to save new automation values", t);
         }
         listeners.put(task, valueBaseWatcher.watch(task.getDriverProperty()));
         listeners.put(task, task.getProperties().addObjectListener(propertyListWatcher, true));

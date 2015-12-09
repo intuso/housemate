@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
+import com.google.inject.util.Modules;
 import com.intuso.housemate.client.real.api.bridge.v1_0.ioc.ClientRealAPIBridgeV1_0Module;
 import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.impl.internal.RealRootImpl;
@@ -13,7 +14,7 @@ import com.intuso.housemate.comms.api.internal.Router;
 import com.intuso.housemate.object.api.bridge.ioc.ObjectAPIBridgeV1_0Module;
 import com.intuso.housemate.object.api.internal.ObjectRoot;
 import com.intuso.housemate.object.api.internal.Root;
-import com.intuso.housemate.plugin.manager.ioc.PluginHostModule;
+import com.intuso.housemate.plugin.manager.internal.ioc.PluginHostModule;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.comms.RemoteClientManager;
@@ -40,7 +41,13 @@ public class ServerModule extends AbstractModule {
         install(new ClientRealAPIBridgeV1_0Module());
 
         // install plugin modules
-        install(new RealObjectModule());
+        install(Modules.override(new RealObjectModule()).with(new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(RealRoot.class).to(ServerRealRoot.class);
+                bind(RealRootImpl.class).to(ServerRealRoot.class);
+            }
+        }));
         install(new PluginHostModule());
 
         // bind everything as singletons that should be
@@ -57,8 +64,6 @@ public class ServerModule extends AbstractModule {
 
         // bind implementations
         bind(ObjectRoot.class).to(RootBridge.class);
-        bind(RealRoot.class).to(ServerRealRoot.class);
-        bind(RealRootImpl.class).to(ServerRealRoot.class);
         bind(new Key<Router<?>>() {}).to(MainRouter.class);
         bind(new Key<Root<?, ?>>() {}).to(RootBridge.class);
     }

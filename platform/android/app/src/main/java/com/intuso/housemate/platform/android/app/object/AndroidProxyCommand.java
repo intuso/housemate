@@ -6,7 +6,7 @@ import com.intuso.housemate.comms.v1_0.api.payload.CommandData;
 import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
 import com.intuso.housemate.comms.v1_0.api.payload.ParameterData;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,8 +25,8 @@ public class AndroidProxyCommand extends ProxyCommand<AndroidProxyValue, Android
      * @param data {@inheritDoc}
      * @param factory
      */
-    protected AndroidProxyCommand(Log log, ListenersFactory listenersFactory, CommandData data, AndroidProxyFactory factory) {
-        super(log, listenersFactory, data);
+    protected AndroidProxyCommand(Logger logger, ListenersFactory listenersFactory, CommandData data, AndroidProxyFactory factory) {
+        super(logger, listenersFactory, data);
         this.factory = factory;
     }
 

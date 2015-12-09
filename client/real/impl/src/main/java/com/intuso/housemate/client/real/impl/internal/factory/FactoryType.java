@@ -10,7 +10,7 @@ import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 
@@ -23,8 +23,8 @@ public class FactoryType<FACTORY> extends RealChoiceType<FactoryType.Entry<FACTO
     private final BiMap<String, Entry<FACTORY>> factories = HashBiMap.create();
 
     @Inject
-    protected FactoryType(Log log, ListenersFactory listenersFactory, String id, String name, String description) {
-        super(log, listenersFactory, id, name, description, 1, 1, Arrays.<RealOptionImpl>asList());
+    protected FactoryType(Logger logger, ListenersFactory listenersFactory, String id, String name, String description) {
+        super(logger, listenersFactory, id, name, description, 1, 1, Arrays.<RealOptionImpl>asList());
         this.listenersFactory = listenersFactory;
     }
 
@@ -36,7 +36,7 @@ public class FactoryType<FACTORY> extends RealChoiceType<FactoryType.Entry<FACTO
 
     public void factoryAvailable(String id, String name, String description, FACTORY factory) {
         getFactoryEntry(id, true).factoryAvailable(factory);
-        options.add(new RealOptionImpl(getLog(), getListenersFactory(), id, name, description));
+        options.add(new RealOptionImpl(getLogger(), getListenersFactory(), id, name, description));
     }
 
     public void factoryUnavailable(String id) {

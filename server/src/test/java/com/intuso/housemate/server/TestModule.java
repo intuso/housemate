@@ -11,11 +11,10 @@ import com.intuso.housemate.persistence.api.internal.NoPersistence;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.housemate.plugin.api.internal.ExternalClientRouter;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
-import com.intuso.utilities.log.LogLevel;
-import com.intuso.utilities.log.writer.StdOutWriter;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,7 +44,7 @@ public class TestModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public Log getLog() {
-        return new Log(new StdOutWriter(LogLevel.DEBUG));
+    public Logger getLogger() {
+        return LoggerFactory.getLogger(TestModule.class);
     }
 }

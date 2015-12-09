@@ -17,7 +17,7 @@ import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class RealObjectWatcher {
 
-    private final Log log;
+    private final Logger logger;
     private final ListenersFactory listenersFactory;
     private final Injector injector;
     private final RealRoot root;
@@ -51,8 +51,8 @@ public class RealObjectWatcher {
     private final RealUser.Factory userFactory;
 
     @Inject
-    public RealObjectWatcher(Log log, ListenersFactory listenersFactory, Injector injector, RealRoot root, Persistence persistence, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, DeviceListWatcher deviceListWatcher, HardwareListWatcher hardwareListWatcher, UserListWatcher userListWatcher, RealAutomation.Factory automationFactory, DeviceFactoryType deviceFactoryType, RealDevice.Factory deviceFactory, HardwareFactoryType hardwareFactoryType, RealHardware.Factory hardwareFactory, RealUser.Factory userFactory) {
-        this.log = log;
+    public RealObjectWatcher(Logger logger, ListenersFactory listenersFactory, Injector injector, RealRoot root, Persistence persistence, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, DeviceListWatcher deviceListWatcher, HardwareListWatcher hardwareListWatcher, UserListWatcher userListWatcher, RealAutomation.Factory automationFactory, DeviceFactoryType deviceFactoryType, RealDevice.Factory deviceFactory, HardwareFactoryType hardwareFactoryType, RealHardware.Factory hardwareFactory, RealUser.Factory userFactory) {
+        this.logger = logger;
         this.listenersFactory = listenersFactory;
         this.injector = injector;
         this.root = root;
@@ -111,7 +111,7 @@ public class RealObjectWatcher {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    RealApplication application = new RealApplicationImpl(log, listenersFactory, details.getChildren().get("id").getFirstValue(),
+                    RealApplication application = new RealApplicationImpl(logger, listenersFactory, details.getChildren().get("id").getFirstValue(),
                             details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(),
                             injector.getInstance(ApplicationStatusType.class));
                     path.add(ApplicationData.APPLICATION_INSTANCES_ID);
@@ -126,9 +126,9 @@ public class RealObjectWatcher {
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved applications " + Arrays.toString(applications.getPath()));
+            logger.warn("No details found for saved applications " + Arrays.toString(applications.getPath()));
         } catch(Throwable t) {
-            log.e("Failed to get names of existing applications", t);
+            logger.error("Failed to get names of existing applications", t);
         }
     }
 
@@ -138,7 +138,7 @@ public class RealObjectWatcher {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    RealApplicationInstance applicationInstance = new RealApplicationInstanceImpl(log, listenersFactory,
+                    RealApplicationInstance applicationInstance = new RealApplicationInstanceImpl(logger, listenersFactory,
                             details.getChildren().get("id").getFirstValue(), injector.getInstance(ApplicationInstanceStatusType.class));
                     ((RealList<RealApplicationInstance>)realApplicationInstances).add(applicationInstance);
                 } finally {
@@ -146,9 +146,9 @@ public class RealObjectWatcher {
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved users " + Arrays.toString(realApplicationInstances.getPath()));
+            logger.warn("No details found for saved users " + Arrays.toString(realApplicationInstances.getPath()));
         } catch(Throwable t) {
-            log.e("Failed to get names of existing users", t);
+            logger.error("Failed to get names of existing users", t);
         }
     }
 
@@ -185,15 +185,15 @@ public class RealObjectWatcher {
                     }
                     ((RealList<RealAutomation>)automations).add(automation);
                 } catch(Throwable t) {
-                    log.e("Failed to load automation", t);
+                    logger.error("Failed to load automation", t);
                 } finally {
                     path.remove(path.size() - 1);
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved automations " + Arrays.toString(automations.getPath()));
+            logger.warn("No details found for saved automations " + Arrays.toString(automations.getPath()));
         } catch(Throwable t) {
-            log.e("Failed to get names of existing automations", t);
+            logger.error("Failed to get names of existing automations", t);
         }
     }
 
@@ -205,15 +205,15 @@ public class RealObjectWatcher {
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
                     command.perform(details);
                 } catch(Throwable t) {
-                    log.e("Failed to load condition", t);
+                    logger.error("Failed to load condition", t);
                 } finally {
                     path.remove(path.size() - 1);
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved conditions " + Arrays.toString(conditions.getPath()));
+            logger.warn("No details found for saved conditions " + Arrays.toString(conditions.getPath()));
         } catch(Throwable t) {
-            log.e("Failed to get device names of existing conditions", t);
+            logger.error("Failed to get device names of existing conditions", t);
         }
     }
 
@@ -229,15 +229,15 @@ public class RealObjectWatcher {
                             new DeviceData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
                             root));
                 } catch(Throwable t) {
-                    log.e("Failed to load device", t);
+                    logger.error("Failed to load device", t);
                 } finally {
                     path.remove(path.size() - 1);
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved devices at " + Joiner.on("/").join(devices.getPath()));
+            logger.warn("No details found for saved devices at " + Joiner.on("/").join(devices.getPath()));
         } catch(Throwable t) {
-            log.e("Failed to get names of existing devices", t);
+            logger.error("Failed to get names of existing devices", t);
         }
     }
 
@@ -253,15 +253,15 @@ public class RealObjectWatcher {
                             new HardwareData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
                             root));
                 } catch(Throwable t) {
-                    log.e("Failed to load hardware", t);
+                    logger.error("Failed to load hardware", t);
                 } finally {
                     path.remove(path.size() - 1);
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved hardwares at " + Joiner.on("/").join(hardwares.getPath()));
+            logger.warn("No details found for saved hardwares at " + Joiner.on("/").join(hardwares.getPath()));
         } catch(Throwable t) {
-            log.e("Failed to get names of existing hardwares", t);
+            logger.error("Failed to get names of existing hardwares", t);
         }
     }
 
@@ -273,15 +273,15 @@ public class RealObjectWatcher {
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
                     command.perform(details);
                 } catch(Throwable t) {
-                    log.e("Failed to load task", t);
+                    logger.error("Failed to load task", t);
                 } finally {
                     path.remove(path.size() - 1);
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved tasks " + Arrays.toString(tasks.getPath()));
+            logger.warn("No details found for saved tasks " + Arrays.toString(tasks.getPath()));
         } catch(Throwable t) {
-            log.e("Failed to get device names of existing tasks", t);
+            logger.error("Failed to get device names of existing tasks", t);
         }
     }
 
@@ -302,9 +302,9 @@ public class RealObjectWatcher {
                 }
             }
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for saved users " + Arrays.toString(users.getPath()));
+            logger.warn("No details found for saved users " + Arrays.toString(users.getPath()));
         } catch(Throwable t) {
-            log.e("Failed to get names of existing users", t);
+            logger.error("Failed to get names of existing users", t);
         }
         if(users.size() == 0)
             ((RealList<RealUser>)users).add(userFactory.create(new UserData("admin", "admin", "Default admin user"), root));
@@ -320,17 +320,17 @@ public class RealObjectWatcher {
 
         @Override
         public void commandStarted(Command<?, ?, ?, ?> command) {
-            log.d("Doing " + description);
+            logger.debug("Doing " + description);
         }
 
         @Override
         public void commandFinished(Command<?, ?, ?, ?> command) {
-            log.d("Done " + description);
+            logger.debug("Done " + description);
         }
 
         @Override
         public void commandFailed(Command<?, ?, ?, ?> command, String error) {
-            log.d(description + " failed: " + error);
+            logger.debug(description + " failed: " + error);
         }
     }
 }

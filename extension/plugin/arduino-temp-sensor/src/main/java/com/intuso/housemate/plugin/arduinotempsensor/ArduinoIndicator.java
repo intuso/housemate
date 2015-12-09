@@ -6,7 +6,7 @@ import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.device.feature.StatefulPowerControl;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 
@@ -25,15 +25,15 @@ public class ArduinoIndicator implements DeviceDriver, StatefulPowerControl {
     @TypeInfo(id = "intensity", name = "Intensity", description = "Intensity of the indicator")
     public int intensity;
 
-    private final Log log;
+    private final Logger logger;
 
     protected PowerValues powerValues;
 
     @Inject
-    protected ArduinoIndicator(Log log,
+    protected ArduinoIndicator(Logger logger,
                                SerialPortWrapper serialPort,
                                @Assisted DeviceDriver.Callback driverCallback) {
-        this.log = log;
+        this.logger = logger;
         this.serialPort = serialPort;
     }
 
@@ -53,7 +53,7 @@ public class ArduinoIndicator implements DeviceDriver, StatefulPowerControl {
             serialPort.writeBytes(new byte[]{colour.getBytes()[0], (byte) ('0' + intensity)});
             powerValues.isOn(true);
         } catch(IOException e) {
-            log.w("Failed to send command to turn light on");
+            logger.warn("Failed to send command to turn light on");
         }
     }
 
@@ -63,7 +63,7 @@ public class ArduinoIndicator implements DeviceDriver, StatefulPowerControl {
             serialPort.writeBytes(new byte[]{colour.getBytes()[0], '0'});
             powerValues.isOn(true);
         } catch(IOException e) {
-            log.w("Failed to send command to turn light off");
+            logger.warn("Failed to send command to turn light off");
         }
     }
 }

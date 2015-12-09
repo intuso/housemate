@@ -6,10 +6,10 @@ import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
-import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
+import org.slf4j.Logger;
 
 import java.io.*;
 
@@ -19,7 +19,7 @@ import java.io.*;
 @TypeInfo(id = "arduino-temp-sensor", name = "Arduino Temperature Sensor", description = "Arduino Temperature Sensor")
 public class ArduinoTemperatureSensor implements DeviceDriver {
 
-    private final Log log;
+    private final Logger logger;
     private final SerialPortWrapper serialPort;
     private final SerialPortEventListener eventListener = new EventListener();
     private PipedInputStream input;
@@ -30,10 +30,10 @@ public class ArduinoTemperatureSensor implements DeviceDriver {
     private TemperatureValues temperatureValues;
 
     @Inject
-    protected ArduinoTemperatureSensor(Log log,
+    protected ArduinoTemperatureSensor(Logger logger,
                                        SerialPortWrapper serialPort,
                                        @Assisted DeviceDriver.Callback callback) {
-        this.log = log;
+        this.logger = logger;
         this.serialPort = serialPort;
     }
 
@@ -56,14 +56,14 @@ public class ArduinoTemperatureSensor implements DeviceDriver {
         try {
             serialPort.removeEventListener();
         } catch(IOException e) {
-            log.e("Failed to remove serial port event listener", e);
+            logger.error("Failed to remove serial port event listener", e);
         }
         if(lineReader != null) {
             lineReader.interrupt();
             try {
                 lineReader.join();
             } catch(InterruptedException e) {
-                log.e("Interrupted waiting for reader to finish", e);
+                logger.error("Interrupted waiting for reader to finish", e);
             }
             lineReader = null;
         }
@@ -77,7 +77,7 @@ public class ArduinoTemperatureSensor implements DeviceDriver {
                 while((available = serialPort.getInputBufferBytesCount()) > 0)
                     output.write(serialPort.readBytes(available));
             } catch(IOException e) {
-                log.e("Failed to read data from Arduino", e);
+                logger.error("Failed to read data from Arduino", e);
             }
         }
     }
@@ -88,21 +88,21 @@ public class ArduinoTemperatureSensor implements DeviceDriver {
             try {
                 String line;
                 while(!isInterrupted() && (line = in.readLine()) != null) {
-                    log.d("Read line");
+                    logger.debug("Read line");
                     try {
                         temperatureValues.setTemperature(Double.parseDouble(line));
-                        log.d("Set temperature");
+                        logger.debug("Set temperature");
                     } catch(NumberFormatException e) {
-                        log.w("Could not parse temperature value \"" + line + "\"");
+                        logger.warn("Could not parse temperature value \"" + line + "\"");
                     }
                 }
             } catch(IOException e) {
-                log.e("Error reading temperature from Arduino", e);
+                logger.error("Error reading temperature from Arduino", e);
             }
             try {
                 in.close();
             } catch(IOException e) {
-                log.e("Failed to close connection to the Arduino", e);
+                logger.error("Failed to close connection to the Arduino", e);
             }
         }
     }

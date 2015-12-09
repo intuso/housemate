@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
 import com.intuso.housemate.comms.v1_0.api.payload.*;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 import com.intuso.utilities.object.ObjectFactory;
 
 /**
@@ -16,12 +16,12 @@ import com.intuso.utilities.object.ObjectFactory;
  */
 public class AndroidProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> {
 
-    private final Log log;
+    private final Logger logger;
     private final ListenersFactory listenersFactory;
 
     @Inject
-    public AndroidProxyFactory(Log log, ListenersFactory listenersFactory) {
-        this.log = log;
+    public AndroidProxyFactory(Logger logger, ListenersFactory listenersFactory) {
+        this.logger = logger;
         this.listenersFactory = listenersFactory;
     }
 
@@ -63,80 +63,80 @@ public class AndroidProxyFactory implements ObjectFactory<HousemateData<?>, Prox
             return createType((TypeData) data);
         else if(data instanceof ValueData)
             return createValue((ValueData) data);
-        log.e("Don't know how to create an object from " + data.getClass().getName());
+        logger.error("Don't know how to create an object from " + data.getClass().getName());
         return null;
     }
 
     public AndroidProxyParameter createParameter(ParameterData data) {
-        return new AndroidProxyParameter(log, listenersFactory, data, this);
+        return new AndroidProxyParameter(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyCommand createCommand(CommandData data) {
-        return new AndroidProxyCommand(log, listenersFactory, data, this);
+        return new AndroidProxyCommand(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyCondition createCondition(ConditionData data) {
-        return new AndroidProxyCondition(log, listenersFactory, data, this);
+        return new AndroidProxyCondition(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyApplication createApplication(ApplicationData data) {
-        return new AndroidProxyApplication(log, listenersFactory, data, this);
+        return new AndroidProxyApplication(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyApplicationInstance createApplicationInstance(ApplicationInstanceData data) {
-        return new AndroidProxyApplicationInstance(log, listenersFactory, data, this);
+        return new AndroidProxyApplicationInstance(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyUser createUser(UserData data) {
-        return new AndroidProxyUser(log, listenersFactory, data, this);
+        return new AndroidProxyUser(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyHardware createHardware(HardwareData data) {
-        return new AndroidProxyHardware(log, listenersFactory, data, this);
+        return new AndroidProxyHardware(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyTask createTask(TaskData data) {
-        return new AndroidProxyTask(log, listenersFactory, data, this);
+        return new AndroidProxyTask(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyDevice createDevice(DeviceData data) {
-        return new AndroidProxyDevice(log, listenersFactory, data, this);
+        return new AndroidProxyDevice(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyFeature createFeature(FeatureData data) {
-        return new AndroidProxyFeature(log, listenersFactory, data, this);
+        return new AndroidProxyFeature(logger, listenersFactory, data, this);
     }
 
     public <CHILD_DATA extends HousemateData<?>, CHILD extends ProxyObject<CHILD_DATA, ?, ?, ?, ?>>
                 AndroidProxyList<CHILD_DATA, CHILD> createList(ListData<CHILD_DATA> data) {
-        return new AndroidProxyList<>(log, listenersFactory, data, this);
+        return new AndroidProxyList<>(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyOption createOption(OptionData data) {
-        return new AndroidProxyOption(log, listenersFactory, data, this);
+        return new AndroidProxyOption(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyProperty createProperty(PropertyData data) {
-        return new AndroidProxyProperty(log, listenersFactory, data, this);
+        return new AndroidProxyProperty(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyAutomation createAutomation(AutomationData data) {
-        return new AndroidProxyAutomation(log, listenersFactory, data, this);
+        return new AndroidProxyAutomation(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyServer createServer(ServerData data) {
-        return new AndroidProxyServer(log, listenersFactory, data, this);
+        return new AndroidProxyServer(logger, listenersFactory, data, this);
     }
 
     public AndroidProxySubType createSubType(SubTypeData data) {
-        return new AndroidProxySubType(log, listenersFactory, data, this);
+        return new AndroidProxySubType(logger, listenersFactory, data, this);
     }
 
     public AndroidProxyValue createValue(ValueData data) {
-        return new AndroidProxyValue(log, listenersFactory, data);
+        return new AndroidProxyValue(logger, listenersFactory, data);
     }
 
     public AndroidProxyType createType(TypeData<HousemateData<?>> data) {
-        return new AndroidProxyType(log, listenersFactory, data, this);
+        return new AndroidProxyType(logger, listenersFactory, data, this);
     }
 }

@@ -6,8 +6,8 @@ import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
 import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import org.slf4j.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,12 +23,12 @@ public class AndroidProxyRoot extends ProxyRoot<
     private final AndroidProxyFactory factory;
 
     /**
-     * @param log    {@inheritDoc}
+     * @param logger    {@inheritDoc}
      * @param router The router to connect through
      */
-    public AndroidProxyRoot(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router) {
-        super(log, listenersFactory, properties, router);
-        this.factory = new AndroidProxyFactory(log, listenersFactory);
+    public AndroidProxyRoot(Logger logger, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router) {
+        super(logger, listenersFactory, properties, router);
+        this.factory = new AndroidProxyFactory(logger, listenersFactory);
     }
 
     @Override

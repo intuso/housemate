@@ -20,7 +20,8 @@ import com.intuso.housemate.platform.android.common.MessageCodes;
 import com.intuso.housemate.platform.android.service.R;
 import com.intuso.housemate.platform.android.service.activity.HousemateActivity;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
     private final Map<String, Router.Registration> clientReceivers = Maps.newHashMap();
     private final Messenger messenger;
 
-    private Log log;
+    private Logger logger;
     private Router<?> router;
     private ListenerRegistration routerListenerRegistration;
 
@@ -55,8 +56,8 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(log == null) {
-            log = null;
+        if(logger == null) {
+            logger = null;
             router = null;
             unbindService(this);
         }
@@ -65,7 +66,7 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
     @Override
     public void onServiceConnected(ComponentName name, IBinder iBinder) {
         ConnectionService.Binder binder = (ConnectionService.Binder) iBinder;
-        log = binder.getLog();
+        logger = LoggerFactory.getLogger(AppService.class);
         router = binder.getRouter();
         serverConnectionStatusChanged(router, router.getConnectionStatus());
         routerListenerRegistration = router.addListener(this);
@@ -75,7 +76,7 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
     public void onServiceDisconnected(ComponentName name) {
         routerListenerRegistration.removeListener();
         serverConnectionStatusChanged(null, ConnectionStatus.DisconnectedPermanently);
-        log = null;
+        logger = null;
         router = null;
         startConnectionService();
     }
@@ -141,38 +142,38 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
                     id = UUID.randomUUID().toString();
                     while(clientReceivers.containsKey(id))
                         id = UUID.randomUUID().toString();
-                    log.d("Registering new client " + id);
+                    logger.debug("Registering new client " + id);
                     try {
                         android.os.Message reply = android.os.Message.obtain();
                         reply.what = MessageCodes.REGISTERED;
                         reply.getData().putString("id", id);
                         msg.replyTo.send(reply);
                     } catch (RemoteException e) {
-                        log.e("Failed to send message to client", e);
+                        logger.error("Failed to send message to client", e);
                     }
                     clientReceivers.put(id, router.registerReceiver(new ClientReceiver(id, msg.replyTo)));
                     break;
                 case MessageCodes.RE_REGISTER:
                     id = msg.getData().getString("id");
-                    log.d("Registering client " + id);
+                    logger.debug("Registering client " + id);
                     try {
                         android.os.Message reply = android.os.Message.obtain();
                         reply.what = MessageCodes.REGISTERED;
                         reply.getData().putString("id", id);
                         msg.replyTo.send(reply);
                     } catch (RemoteException e) {
-                        log.e("Failed to send message to client", e);
+                        logger.error("Failed to send message to client", e);
                     }
                     clientReceivers.put(id, router.registerReceiver(new ClientReceiver(id, msg.replyTo)));
                     break;
                 case MessageCodes.UNREGISTER:
                     id = msg.getData().getString("id");
-                    log.d("Unregistering client " + id);
+                    logger.debug("Unregistering client " + id);
                     registration = clientReceivers.remove(msg.getData().getString("id"));
                     if(registration != null)
                         registration.unregister();
                     else
-                        log.e("Could not find client with id " + id);
+                        logger.error("Could not find client with id " + id);
                     break;
                 case MessageCodes.SEND_MESSAGE:
                     msg.getData().setClassLoader(Message.class.getClassLoader());
@@ -183,12 +184,12 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
                         try {
                             message = ((JsonMessage) msg.getData().getParcelable("message")).getMessage();
                         } catch(Throwable t) {
-                            log.e("Failed to get message from parcelable");
+                            logger.error("Failed to get message from parcelable");
                             break;
                         }
                         registration.sendMessage(message);
                     } else
-                        log.e("Could not find registration for client " + id);
+                        logger.error("Could not find registration for client " + id);
                     break;
                 default:
                     super.handleMessage(msg);
@@ -213,12 +214,12 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
                 msg.getData().putParcelable("message", new JsonMessage(message));
                 clientReceiver.send(msg);
             } catch(DeadObjectException e) {
-                log.d("Client no longer connected");
+                logger.debug("Client no longer connected");
                 clientReceivers.get(id).unregister();
             } catch(RemoteException e) {
-                log.e("Failed to send message to client", e);
+                logger.error("Failed to send message to client", e);
             } catch(Throwable t) {
-                log.e("Problem sending message to client", t);
+                logger.error("Problem sending message to client", t);
             }
         }
 

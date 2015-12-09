@@ -11,7 +11,7 @@ import com.intuso.housemate.client.real.impl.internal.annotations.ioc.RealAnnota
 import com.intuso.housemate.client.real.impl.internal.factory.ioc.RealFactoryModule;
 import com.intuso.housemate.client.real.impl.internal.type.*;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -23,6 +23,9 @@ public class RealObjectModule extends AbstractModule {
         // install other required modules
         install(new RealFactoryModule());
         install(new RealAnnotationsModule());
+
+        bind(RealRoot.class).to(RealRootImpl.class);
+        bind(RealRootImpl.class).in(Scopes.SINGLETON);
 
         bind(RealAutomation.Container.class).to(RealRootImpl.class);
         bind(RealApplication.Container.class).to(RealRootImpl.class);
@@ -46,7 +49,7 @@ public class RealObjectModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public RealList<RealType<?>> getTypes(Log log, ListenersFactory listenersFactory) {
-        return (RealList)new RealListImpl<>(log, listenersFactory, RealRootImpl.TYPES_ID, "Types", "Types");
+    public RealList<RealType<?>> getTypes(Logger logger, ListenersFactory listenersFactory) {
+        return (RealList)new RealListImpl<>(logger, listenersFactory, RealRootImpl.TYPES_ID, "Types", "Types");
     }
 }

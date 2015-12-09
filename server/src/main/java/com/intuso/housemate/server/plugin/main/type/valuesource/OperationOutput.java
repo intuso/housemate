@@ -7,21 +7,21 @@ import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.housemate.plugin.api.internal.Operator;
 import com.intuso.housemate.server.plugin.main.type.operation.Operation;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
 public class OperationOutput extends ValueSource implements ValueAvailableListener {
 
-    private final Log log;
+    private final Logger logger;
     private final ListenersFactory listenersFactory;
     private final RealList<RealType<?>> types;
     private final Operation operation;
     private ComputedValue value;
 
-    public OperationOutput(Log log, ListenersFactory listenersFactory, RealList<RealType<?>> types, Operation operation) {
+    public OperationOutput(Logger logger, ListenersFactory listenersFactory, RealList<RealType<?>> types, Operation operation) {
         super(listenersFactory);
-        this.log = log;
+        this.logger = logger;
         this.listenersFactory = listenersFactory;
         this.types = types;
         this.operation = operation;
@@ -62,7 +62,7 @@ public class OperationOutput extends ValueSource implements ValueAvailableListen
                     value = new ComputedValue(listenersFactory, outputType);
                 value.setTypeInstances(new TypeInstances(outputType.serialise(result)));
             } catch(Throwable t) {
-                log.e("Failed to operate on values", t);
+                logger.error("Failed to operate on values", t);
                 value = null;
                 return;
             }

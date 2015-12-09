@@ -6,7 +6,7 @@ import com.intuso.housemate.comms.api.internal.payload.ListData;
 import com.intuso.housemate.object.api.internal.List;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Iterator;
 
@@ -19,26 +19,26 @@ public final class RealListImpl<
         implements RealList<CHILD> {
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the list's id
      * @param name the list's name
      * @param description the list's description
      */
-    public RealListImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description) {
-        super(log, listenersFactory, new ListData<CHILD_DATA>(id, name, description));
+    public RealListImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description) {
+        super(logger, listenersFactory, new ListData<CHILD_DATA>(id, name, description));
     }
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the list's id
      * @param name the list's name
      * @param description the list's description
      * @param elements the list's elements
      */
-    public RealListImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, java.util.List<CHILD> elements) {
-        this(log, listenersFactory, id, name, description);
+    public RealListImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, java.util.List<CHILD> elements) {
+        this(logger, listenersFactory, id, name, description);
         for(CHILD element : elements)
             addChild(element);
     }

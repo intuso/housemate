@@ -11,8 +11,8 @@ import com.intuso.housemate.plugin.rfxcom.lighting1.Lighting1ARCHandler;
 import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2ACHandler;
 import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2HomeEasyEUHandler;
 import com.intuso.housemate.plugin.rfxcom.temperaturesensor.*;
-import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.RFXtrx;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -32,22 +32,22 @@ public class RFXtrx433Hardware implements HardwareDriver {
     private boolean isRunning = false;
 
     @Inject
-    public RFXtrx433Hardware(Log log,
+    public RFXtrx433Hardware(Logger logger,
                              RealDevice.Container deviceContainer,
                              @Assisted Callback callback) {
 
         // setup the connection to the USB device
-        rfxtrx = new RFXtrx(log, Lists.<Pattern>newArrayList());
+        rfxtrx = new RFXtrx(logger, Lists.<Pattern>newArrayList());
 
         // create all the handlers
-        handlers.add(new Lighting1ARCHandler(log, rfxtrx, deviceContainer));
-        handlers.add(new Lighting2ACHandler(log, rfxtrx, deviceContainer));
-        handlers.add(new Lighting2HomeEasyEUHandler(log, rfxtrx, deviceContainer));
-        handlers.add(new Temperature1Handler(log, rfxtrx, deviceContainer));
-        handlers.add(new Temperature2Handler(log, rfxtrx, deviceContainer));
-        handlers.add(new Temperature3Handler(log, rfxtrx, deviceContainer));
-        handlers.add(new Temperature4Handler(log, rfxtrx, deviceContainer));
-        handlers.add(new Temperature5Handler(log, rfxtrx, deviceContainer));
+        handlers.add(new Lighting1ARCHandler(logger, rfxtrx, deviceContainer));
+        handlers.add(new Lighting2ACHandler(logger, rfxtrx, deviceContainer));
+        handlers.add(new Lighting2HomeEasyEUHandler(logger, rfxtrx, deviceContainer));
+        handlers.add(new Temperature1Handler(logger, rfxtrx, deviceContainer));
+        handlers.add(new Temperature2Handler(logger, rfxtrx, deviceContainer));
+        handlers.add(new Temperature3Handler(logger, rfxtrx, deviceContainer));
+        handlers.add(new Temperature4Handler(logger, rfxtrx, deviceContainer));
+        handlers.add(new Temperature5Handler(logger, rfxtrx, deviceContainer));
     }
 
     @Property(value = "string")

@@ -110,14 +110,14 @@
         </dependency>
         <dependency>
             <groupId>com.intuso.utilities</groupId>
-            <artifactId>utilities-log</artifactId>
+            <artifactId>utilities-properties-api</artifactId>
             <version>${intuso.utilities.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
-            <groupId>com.intuso.utilities</groupId>
-            <artifactId>utilities-properties-api</artifactId>
-            <version>${intuso.utilities.version}</version>
+            <groupId>ru.finam</groupId>
+            <artifactId>slf4j-gwt</artifactId>
+            <version>${slf4j.version}.1</version>
             <classifier>sources</classifier>
         </dependency>
 

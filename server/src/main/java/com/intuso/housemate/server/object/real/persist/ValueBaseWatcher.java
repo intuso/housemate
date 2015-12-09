@@ -8,7 +8,7 @@ import com.intuso.housemate.object.api.internal.ValueBase;
 import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -21,13 +21,13 @@ import java.util.List;
 */
 public class ValueBaseWatcher {
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
     private final Listener listener = new Listener();
 
     @Inject
-    public ValueBaseWatcher(Log log, Persistence persistence) {
-        this.log = log;
+    public ValueBaseWatcher(Logger logger, Persistence persistence) {
+        this.logger = logger;
         this.persistence = persistence;
     }
 
@@ -39,7 +39,7 @@ public class ValueBaseWatcher {
             // sync with what the current value is
             listener.valueChanged(value);
         } catch(Throwable t) {
-            log.e("Failed to load initial property value");
+            logger.error("Failed to load initial property value");
         }
         return ((RealValueBase<?, ValueBase.Listener<? super ValueBase<TypeInstances, ?, ?>>, ?>)value).addObjectListener(listener);
     }
@@ -56,7 +56,7 @@ public class ValueBaseWatcher {
             try {
                 persistence.saveTypeInstances(value.getPath(), value.getValue());
             } catch(Throwable t) {
-                log.e("Failed to save property value", t);
+                logger.error("Failed to save property value", t);
             }
         }
     }

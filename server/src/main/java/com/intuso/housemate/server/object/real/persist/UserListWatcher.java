@@ -10,7 +10,7 @@ import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 
@@ -25,13 +25,13 @@ public class UserListWatcher implements List.Listener<RealUser> {
 
     private final Multimap<RealUser, ListenerRegistration> listeners = HashMultimap.create();
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
 
     @Inject
-    public UserListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher) {
-        this.log = log;
+    public UserListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher) {
+        this.logger = logger;
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
     }
@@ -45,7 +45,7 @@ public class UserListWatcher implements List.Listener<RealUser> {
         try {
             persistence.saveValues(user.getPath(), toSave);
         } catch (Throwable t) {
-            log.e("Failed to save new user values", t);
+            logger.error("Failed to save new user values", t);
         }
         listeners.put(user, valueBaseWatcher.watch(user.getEmailProperty()));
     }
@@ -59,7 +59,7 @@ public class UserListWatcher implements List.Listener<RealUser> {
         try {
             persistence.removeValues(user.getPath());
         } catch(Throwable t) {
-            log.e("Failed to delete automation properties", t);
+            logger.error("Failed to delete automation properties", t);
         }
     }
 }

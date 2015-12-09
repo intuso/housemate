@@ -75,7 +75,7 @@ public class Housemate implements EntryPoint {
                 INJECTOR.getProxyRoot().load(new LoadManager(new LoadManager.Callback() {
                     @Override
                     public void failed(List<String> errors) {
-                        INJECTOR.getProxyRoot().getLog().e("Failed to load clients");
+                        INJECTOR.getProxyRoot().getLogger().error("Failed to load clients");
                         // todo show error
                     }
 

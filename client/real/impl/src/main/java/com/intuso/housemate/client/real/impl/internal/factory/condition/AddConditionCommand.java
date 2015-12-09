@@ -12,7 +12,7 @@ import com.intuso.housemate.comms.api.internal.payload.ConditionData;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
 * Created by tomc on 19/03/15.
@@ -35,7 +35,7 @@ public class AddConditionCommand extends RealCommandImpl {
     private final RealCondition.RemoveCallback removeCallback;
 
     @Inject
-    protected AddConditionCommand(Log log,
+    protected AddConditionCommand(Logger logger,
                                   ListenersFactory listenersFactory,
                                   StringType stringType,
                                   ConditionFactoryType conditionFactoryType,
@@ -45,10 +45,10 @@ public class AddConditionCommand extends RealCommandImpl {
                                   @Assisted("description") String description,
                                   @Assisted Callback callback,
                                   @Assisted RealCondition.RemoveCallback removeCallback) {
-        super(log, listenersFactory, id, name, description,
-                new RealParameterImpl<>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(log, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, conditionFactoryType));
+        super(logger, listenersFactory, id, name, description,
+                new RealParameterImpl<>(logger, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(logger, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(logger, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, conditionFactoryType));
         this.callback = callback;
         this.conditionFactoryType = conditionFactoryType;
         this.conditionFactory = conditionFactory;

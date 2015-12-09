@@ -3,7 +3,8 @@ package com.intuso.housemate.platform.pc.ioc;
 import com.google.inject.AbstractModule;
 import com.intuso.housemate.platform.pc.CopyOnWriteListenersFactory;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,17 +15,9 @@ import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
  */
 public class PCModule extends AbstractModule {
 
-    private final WriteableMapPropertyRepository defaultProperties;
-    private final String defaultLogName;
-
-    public PCModule(WriteableMapPropertyRepository defaultProperties, String defaultLogName) {
-        this.defaultProperties = defaultProperties;
-        this.defaultLogName = defaultLogName;
-    }
-
     @Override
     protected void configure() {
-        install(new PCLogModule(defaultProperties, defaultLogName));
+        bind(Logger.class).toInstance(LoggerFactory.getLogger("com.intuso.housemate"));
         install(new PCRegexMatcherModule());
         bind(ListenersFactory.class).to(CopyOnWriteListenersFactory.class);
     }

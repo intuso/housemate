@@ -5,7 +5,7 @@ import com.intuso.housemate.comms.api.internal.payload.ListData;
 import com.intuso.housemate.object.api.internal.List;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Iterator;
 
@@ -17,8 +17,8 @@ public class ListBridge<
         extends BridgeObject<ListData<WBL>, WBL, WR, ListBridge<WBL, WR>, List.Listener<? super WR>>
         implements List<WR> {
 
-    public ListBridge(Log log, ListenersFactory listenersFactory, ListData<WBL> data) {
-        super(log, listenersFactory, data);
+    public ListBridge(Logger logger, ListenersFactory listenersFactory, ListData<WBL> data) {
+        super(logger, listenersFactory, data);
     }
 
     @Override

@@ -9,8 +9,8 @@ import com.intuso.housemate.plugin.arduinotempsensor.ArduinoTemperatureSensor;
 import com.intuso.housemate.plugin.arduinotempsensor.SerialPortWrapper;
 import com.intuso.housemate.plugin.v1_0.api.AnnotatedPluginModule;
 import com.intuso.housemate.plugin.v1_0.api.DeviceDrivers;
-import com.intuso.utilities.log.Log;
 import jssc.SerialPort;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -26,9 +26,9 @@ public class ArduinoTemperatureSensorPluginModule extends AnnotatedPluginModule 
 
     @Provides
     @Singleton
-    public SerialPortWrapper getSerialPortWrapper(Log log) {
-        log.d("Initialising Arduino Temperature Sensor plugin");
-        return new SerialPortWrapper(log, PATTERNS,
+    public SerialPortWrapper getSerialPortWrapper(Logger logger) {
+        logger.debug("Initialising Arduino Temperature Sensor plugin");
+        return new SerialPortWrapper(logger, PATTERNS,
                 SerialPort.BAUDRATE_115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE, // params
                 SerialPort.FLOWCONTROL_RTSCTS_IN | SerialPort.FLOWCONTROL_RTSCTS_OUT); // flow control mode
     }

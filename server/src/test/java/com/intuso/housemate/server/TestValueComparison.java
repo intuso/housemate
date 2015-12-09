@@ -17,7 +17,7 @@ import com.intuso.housemate.comms.api.internal.payload.DeviceData;
 import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.plugin.api.internal.*;
-import com.intuso.housemate.plugin.manager.PluginManager;
+import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.housemate.server.comms.MainRouter;
 import com.intuso.housemate.server.ioc.ServerModule;
 import com.intuso.housemate.server.object.bridge.RootBridge;
@@ -37,10 +37,10 @@ import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +61,7 @@ public class TestValueComparison {
     }
     
     private static Injector injector;
-    private static Log log;
+    private static Logger logger;
     private static RealAutomation automation;
     private static final ListenersFactory listenersFactory = new ListenersFactory() {
         @Override
@@ -85,7 +85,7 @@ public class TestValueComparison {
 //        need to get local client too? something not adding plugins types to main type list
         // add the main plugin module
         injector.getInstance(PluginManager.class).addPlugin(injector.createChildInjector(new MainPluginModule()));
-        log = injector.getInstance(Log.class);
+        logger = injector.getInstance(Logger.class);
         RealRoot root = injector.getInstance(RealRoot.class);
         TypeInstanceMap automationValues = new TypeInstanceMap();
         automationValues.getChildren().put(AddConditionCommand.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance("test-automation")));
@@ -96,7 +96,7 @@ public class TestValueComparison {
 
     @Test
     public void testTwoConstantsEqualsTrue() {
-        RealType<?> integerType = new IntegerType(log, listenersFactory);
+        RealType<?> integerType = new IntegerType(logger, listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         assertValueComparisonSatisfied("constant-true", CommonComparators.Equal.class.getAnnotation(TypeInfo.class), valueOne, valueTwo, true);
@@ -104,7 +104,7 @@ public class TestValueComparison {
 
     @Test
     public void testTwoConstantsEqualsFalse() {
-        RealType<?> integerType = new IntegerType(log, listenersFactory);
+        RealType<?> integerType = new IntegerType(logger, listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("2")));
         assertValueComparisonSatisfied("constant-false", CommonComparators.Equal.class.getAnnotation(TypeInfo.class), valueOne, valueTwo, false);
@@ -117,20 +117,20 @@ public class TestValueComparison {
         RealList<RealType<?>> types = injector.getInstance(new Key<RealList<RealType<?>>>() {});
 
         // create value one as (((double) 2) + 3.0)
-        RealTypeImpl<?, ?, ?> integerType = new IntegerType(log, listenersFactory);
-        RealTypeImpl<?, ?, ?> doubleType = new DoubleType(log, listenersFactory);
+        RealTypeImpl<?, ?, ?> integerType = new IntegerType(logger, listenersFactory);
+        RealTypeImpl<?, ?, ?> doubleType = new DoubleType(logger, listenersFactory);
         ConstantValue intTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("2")));
         ConstantValue doubleThree = new ConstantValue(listenersFactory, doubleType, new TypeInstances(new TypeInstance("3.0")));
 
         Thread.sleep(100); // let types and transformers be added
 
-        TransformationOutput doubleTwo = new TransformationOutput(log, listenersFactory, types,
+        TransformationOutput doubleTwo = new TransformationOutput(logger, listenersFactory, types,
                 new Transformation(doubleType, new HashMap<String, Transformer<?, ?>>() {
                     {
                         put(SimpleTypeData.Type.Integer.getId(), new FromInteger.ToDouble());
                     }
                 }, intTwo));
-        OperationOutput valueOne = new OperationOutput(log, listenersFactory, types,
+        OperationOutput valueOne = new OperationOutput(logger, listenersFactory, types,
                 new Operation(CommonOperators.Add.class.getAnnotation(TypeInfo.class), new HashMap<String, Operator<?, ?>>() {
                     {
                         put(SimpleTypeData.Type.Double.getId(), new DoubleOperators.Add());

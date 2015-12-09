@@ -6,7 +6,7 @@ import com.intuso.housemate.client.real.api.internal.RealApplication;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
@@ -21,14 +21,14 @@ public class ApplicationListWatcher implements List.Listener<RealApplication> {
 
     private final Map<Application, ListenerRegistration> listeners = Maps.newHashMap();
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
     private final ApplicationInstanceListWatcher instanceListWatcher;
 
     @Inject
-    public ApplicationListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher, ApplicationInstanceListWatcher instanceListWatcher) {
-        this.log = log;
+    public ApplicationListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher, ApplicationInstanceListWatcher instanceListWatcher) {
+        this.logger = logger;
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
         this.instanceListWatcher = instanceListWatcher;
@@ -49,7 +49,7 @@ public class ApplicationListWatcher implements List.Listener<RealApplication> {
         try {
             persistence.saveValues(application.getPath(), toSave);
         } catch (Throwable t) {
-            log.e("Failed to save new application values", t);
+            logger.error("Failed to save new application values", t);
         }
         listeners.put(application, valueBaseWatcher.watch(application.getStatusValue()));
         listeners.put(application, application.getApplicationInstances().addObjectListener(instanceListWatcher, true));
@@ -63,7 +63,7 @@ public class ApplicationListWatcher implements List.Listener<RealApplication> {
         try {
             persistence.removeValues(application.getPath());
         } catch(Throwable t) {
-            log.e("Failed to delete automation properties", t);
+            logger.error("Failed to delete automation properties", t);
         }
     }
 }

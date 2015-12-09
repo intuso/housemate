@@ -2,7 +2,7 @@ package com.intuso.housemate.server.object.real.persist;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.object.api.internal.Command;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
 * Created with IntelliJ IDEA.
@@ -13,27 +13,27 @@ import com.intuso.utilities.log.Log;
 */
 public class CommandPerformListener implements Command.PerformListener<Command<?, ?, ?, ?>> {
 
-    private final Log log;
+    private final Logger logger;
     private final String description;
 
     @Inject
-    public CommandPerformListener(Log log, String description) {
-        this.log = log;
+    public CommandPerformListener(Logger logger, String description) {
+        this.logger = logger;
         this.description = description;
     }
 
     @Override
     public void commandStarted(Command<?, ?, ?, ?> command) {
-        log.d("Doing " + description);
+        logger.debug("Doing " + description);
     }
 
     @Override
     public void commandFinished(Command<?, ?, ?, ?> command) {
-        log.d("Done " + description);
+        logger.debug("Done " + description);
     }
 
     @Override
     public void commandFailed(Command<?, ?, ?, ?> command, String error) {
-        log.d(description + " failed: " + error);
+        logger.debug(description + " failed: " + error);
     }
 }

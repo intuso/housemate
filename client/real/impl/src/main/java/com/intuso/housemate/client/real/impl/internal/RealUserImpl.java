@@ -14,7 +14,7 @@ import com.intuso.housemate.comms.api.internal.payload.UserData;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.User;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 public class RealUserImpl
         extends RealObject<UserData, HousemateData<?>, RealObject<?, ? ,?, ?>, User.Listener<? super RealUser>>
@@ -24,22 +24,22 @@ public class RealUserImpl
     private final RealPropertyImpl<Email> emailProperty;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param data the object's data
      */
     @Inject
-    public RealUserImpl(final Log log,
+    public RealUserImpl(final Logger logger,
                         ListenersFactory listenersFactory,
                         @Assisted UserData data,
                         @Assisted final RemoveCallback removeCallback) {
-        super(log, listenersFactory, data);
-        this.remove = new RealCommandImpl(log, listenersFactory, UserData.REMOVE_ID, UserData.REMOVE_ID, "Remove the user", Lists.<RealParameter<?>>newArrayList()) {
+        super(logger, listenersFactory, data);
+        this.remove = new RealCommandImpl(logger, listenersFactory, UserData.REMOVE_ID, UserData.REMOVE_ID, "Remove the user", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 removeCallback.removeUser(RealUserImpl.this);
             }
         };
-        this.emailProperty = new RealPropertyImpl<>(log, listenersFactory, UserData.EMAIL_ID, UserData.EMAIL_ID, "The user's email address", new EmailType(log, listenersFactory), (Email)null);
+        this.emailProperty = new RealPropertyImpl<>(logger, listenersFactory, UserData.EMAIL_ID, UserData.EMAIL_ID, "The user's email address", new EmailType(logger, listenersFactory), (Email)null);
         addChild(remove);
         addChild(emailProperty);
     }

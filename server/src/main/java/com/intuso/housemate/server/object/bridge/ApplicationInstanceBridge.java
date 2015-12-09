@@ -5,7 +5,7 @@ import com.intuso.housemate.comms.api.internal.payload.ApplicationInstanceData;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -24,12 +24,12 @@ public class ApplicationInstanceBridge
     private final CommandBridge rejectCommand;
     private final ValueBridge statusValue;
 
-    public ApplicationInstanceBridge(Log log, ListenersFactory listenersFactory, ApplicationInstance<?, ?, ?> applicationInstance) {
-        super(log, listenersFactory,
+    public ApplicationInstanceBridge(Logger logger, ListenersFactory listenersFactory, ApplicationInstance<?, ?, ?> applicationInstance) {
+        super(logger, listenersFactory,
                 new ApplicationInstanceData(applicationInstance.getId(), applicationInstance.getName(), applicationInstance.getDescription()));
-        allowCommand = new CommandBridge(log, listenersFactory, applicationInstance.getAllowCommand());
-        rejectCommand = new CommandBridge(log, listenersFactory, applicationInstance.getRejectCommand());
-        statusValue = new ValueBridge(log, listenersFactory, applicationInstance.getStatusValue());
+        allowCommand = new CommandBridge(logger, listenersFactory, applicationInstance.getAllowCommand());
+        rejectCommand = new CommandBridge(logger, listenersFactory, applicationInstance.getRejectCommand());
+        statusValue = new ValueBridge(logger, listenersFactory, applicationInstance.getStatusValue());
         addChild(allowCommand);
         addChild(rejectCommand);
         addChild(statusValue);
@@ -52,17 +52,17 @@ public class ApplicationInstanceBridge
 
     public final static class Converter implements Function<ApplicationInstance<?, ?, ?>, ApplicationInstanceBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public ApplicationInstanceBridge apply(ApplicationInstance<?, ?, ?> applicationInstance) {
-            return new ApplicationInstanceBridge(log, listenersFactory, applicationInstance);
+            return new ApplicationInstanceBridge(logger, listenersFactory, applicationInstance);
         }
     }
 }

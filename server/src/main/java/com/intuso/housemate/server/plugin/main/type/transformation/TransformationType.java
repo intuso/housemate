@@ -13,11 +13,11 @@ import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.Transformer;
-import com.intuso.housemate.plugin.manager.PluginManager;
+import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
@@ -42,19 +42,19 @@ public class TransformationType extends RealCompoundType<Transformation> impleme
     private final Map<String, Map<String, Transformer<?, ?>>> transformers = Maps.newHashMap();
 
     @Inject
-    public TransformationType(final Log log,
+    public TransformationType(final Logger logger,
                               ListenersFactory listenersFactory,
                               PluginManager pluginManager,
                               TypeSerialiser<RealType<?>> outputTypeSerialiser,
                               TypeSerialiser<ValueSource> sourceTypeSerialiser,
                               RealList<RealType<?>> types) {
-        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
+        super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.outputTypeSerialiser = outputTypeSerialiser;
         this.sourceTypeSerialiser = sourceTypeSerialiser;
         pluginManager.addPluginListener(this, true);
-        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, OUTPUT_TYPE_ID, OUTPUT_TYPE_NAME,
+        getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, OUTPUT_TYPE_ID, OUTPUT_TYPE_NAME,
                 OUTPUT_TYPE_DESCRIPTION, TransformationOutputType.ID, types));
-        getSubTypes().add(new RealSubTypeImpl<>(log, listenersFactory, VALUE_ID, VALUE_NAME,
+        getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, VALUE_ID, VALUE_NAME,
                 VALUE_DESCRIPTION, ValueSourceType.ID, types));
     }
 

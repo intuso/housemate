@@ -8,7 +8,7 @@ import com.intuso.housemate.comms.v1_0.api.Message;
 import com.intuso.housemate.web.client.NotConnectedException;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -21,13 +21,13 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
                 Window.alert("Connection timed out due to inactivity, reconnecting");
             else
                 Window.alert("Reconnecting because of unknown error sending a message: " + throwable.getMessage());
-            getLog().e("Failed to send message", throwable);
+            getLogger().error("Failed to send message", throwable);
             disconnect();
         }
 
         @Override
         public void onSuccess(Void aVoid) {
-            getLog().d("Sent message to server");
+            getLogger().debug("Sent message to server");
         }
     };
 
@@ -38,7 +38,7 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
                 Window.alert("Connection timed out due to inactivity, reconnecting");
             else
                 Window.alert("Reconnecting because of unknown error getting messages: " + throwable.getMessage());
-            getLog().e("Failed to receive message", throwable);
+            getLogger().error("Failed to receive message", throwable);
             disconnect();
         }
 
@@ -46,11 +46,11 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
         public void onSuccess(Message<Message.Payload>[] messages) {
             // pass messages on
             for(Message message : messages) {
-                getLog().d("Message received " + message.toString());
+                getLogger().debug("Message received " + message.toString());
                 try {
                     messageReceived(message);
                 } catch(Throwable t) {
-                    getLog().e("Failed to process received message", t);
+                    getLogger().error("Failed to process received message", t);
                 }
             }
 
@@ -65,8 +65,8 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
      * Create a new comms instance
      */
     @Inject
-    public GWTRouter(Log log, ListenersFactory listenersFactory, CommsServiceAsync commsService) {
-        super(log, listenersFactory);
+    public GWTRouter(Logger logger, ListenersFactory listenersFactory, CommsServiceAsync commsService) {
+        super(logger, listenersFactory);
         this.commsService = commsService;
     }
 
@@ -76,7 +76,7 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
         commsService.connectClient(new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable throwable) {
-                getLog().e("Failed to connect", throwable);
+                getLogger().error("Failed to connect", throwable);
                 disconnect();
             }
 
@@ -95,7 +95,7 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
         commsService.disconnectClient(new AsyncCallback<Void>() {
             @Override
             public void onFailure(Throwable throwable) {
-                getLog().e("Failed to disconnect", throwable);
+                getLogger().error("Failed to disconnect", throwable);
             }
 
             @Override
@@ -107,7 +107,7 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
 
     @Override
     protected void sendMessageNow(Message<?> message) {
-        getLog().d("Sending message " + message.toString());
+        getLogger().debug("Sending message " + message.toString());
         commsService.sendMessageToServer(message, sendCallback);
     }
 

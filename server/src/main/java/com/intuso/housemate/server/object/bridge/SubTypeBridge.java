@@ -5,7 +5,7 @@ import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
 import com.intuso.housemate.comms.api.internal.payload.SubTypeData;
 import com.intuso.housemate.object.api.internal.SubType;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -13,8 +13,8 @@ public class SubTypeBridge
         extends BridgeObject<SubTypeData, NoChildrenData, NoChildrenBridgeObject, SubTypeBridge, SubType.Listener<? super SubTypeBridge>>
         implements SubType<SubTypeBridge> {
 
-    public SubTypeBridge(Log log, ListenersFactory listenersFactory, SubType<?> subType) {
-        super(log, listenersFactory, new SubTypeData(subType.getId(), subType.getName(), subType.getDescription(), subType.getTypeId()));
+    public SubTypeBridge(Logger logger, ListenersFactory listenersFactory, SubType<?> subType) {
+        super(logger, listenersFactory, new SubTypeData(subType.getId(), subType.getName(), subType.getDescription(), subType.getTypeId()));
     }
 
     @Override
@@ -24,17 +24,17 @@ public class SubTypeBridge
 
     public final static class Converter implements Function<SubType<?>, SubTypeBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public SubTypeBridge apply(SubType<?> parameter) {
-            return new SubTypeBridge(log, listenersFactory, parameter);
+            return new SubTypeBridge(logger, listenersFactory, parameter);
         }
     }
 }

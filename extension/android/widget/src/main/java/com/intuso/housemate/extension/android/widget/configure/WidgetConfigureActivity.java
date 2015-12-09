@@ -62,8 +62,8 @@ public class WidgetConfigureActivity
         listAdapter = new DeviceListAdapter();
         ((ListView)findViewById(R.id.device_list)).setAdapter(listAdapter);
         ((ListView)findViewById(R.id.device_list)).setOnItemClickListener(this);
-        clientHelper = ProxyClientHelper.newClientHelper(getLog(),
-                new AndroidProxyRoot(getLog(), getListenersFactory(), getProperties(), getRouter()), getRouter());
+        clientHelper = ProxyClientHelper.newClientHelper(getLogger(),
+                new AndroidProxyRoot(getLogger(), getListenersFactory(), getProperties(), getRouter()), getRouter());
         clientHelper.getRouter().addListener(new Router.Listener<Router>() {
             @Override
             public void serverConnectionStatusChanged(Router clientConnection, ConnectionStatus connectionStatus) {

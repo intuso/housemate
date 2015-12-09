@@ -11,7 +11,7 @@ import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -25,12 +25,12 @@ public class CommandBridge
     private ValueBridge enabledValue;
     private ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge> parameters;
 
-    public CommandBridge(Log log, ListenersFactory listenersFactory, Command<?, ?, ?, ?> proxyCommand) {
-        super(log, listenersFactory,
+    public CommandBridge(Logger logger, ListenersFactory listenersFactory, Command<?, ?, ?, ?> proxyCommand) {
+        super(logger, listenersFactory,
                 new CommandData(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
         this.proxyCommand = (Command<TypeInstanceMap, ?, ?, ?>) proxyCommand;
-        enabledValue = new ValueBridge(log, listenersFactory, proxyCommand.getEnabledValue());
-        parameters = new ConvertingListBridge<>(log, listenersFactory, proxyCommand.getParameters(), new ParameterBridge.Converter(log, listenersFactory));
+        enabledValue = new ValueBridge(logger, listenersFactory, proxyCommand.getEnabledValue());
+        parameters = new ConvertingListBridge<>(logger, listenersFactory, proxyCommand.getParameters(), new ParameterBridge.Converter(logger, listenersFactory));
         addChild(enabledValue);
         addChild(parameters);
     }
@@ -59,8 +59,8 @@ public class CommandBridge
                                 listener.commandStarted(getThis(), "");
                             sendMessage(CommandData.PERFORMING_TYPE, new CommandData.PerformingPayload(message.getPayload().getOriginal().getOpId(), true), message.getPayload().getClient());
                         } catch(Throwable t) {
-                            getLog().e("Failed to send command started message to client");
-                            getLog().e(t.getMessage());
+                            getLogger().error("Failed to send command started message to client");
+                            getLogger().error(t.getMessage());
                         }
                     }
 
@@ -71,8 +71,8 @@ public class CommandBridge
                                 listener.commandFinished(getThis());
                             sendMessage(CommandData.PERFORMING_TYPE, new CommandData.PerformingPayload(message.getPayload().getOriginal().getOpId(), false), message.getPayload().getClient());
                         } catch(Throwable t) {
-                            getLog().e("Failed to send command finished message to client");
-                            getLog().e(t.getMessage());
+                            getLogger().error("Failed to send command finished message to client");
+                            getLogger().error(t.getMessage());
                         }
                     }
 
@@ -83,8 +83,8 @@ public class CommandBridge
                                 listener.commandFailed(getThis(), error);
                             sendMessage(CommandData.FAILED_TYPE, new CommandData.FailedPayload(message.getPayload().getOriginal().getOpId(), error), message.getPayload().getClient());
                         } catch(Throwable t) {
-                            getLog().e("Failed to send command failed message to client");
-                            getLog().e(t.getMessage());
+                            getLogger().error("Failed to send command failed message to client");
+                            getLogger().error(t.getMessage());
                         }
                     }
                 });
@@ -115,17 +115,17 @@ public class CommandBridge
 
     public static class Converter implements Function<Command<?, ?, ?, ?>, CommandBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public CommandBridge apply(Command<?, ?, ?, ?> command) {
-            return new CommandBridge(log, listenersFactory, command);
+            return new CommandBridge(logger, listenersFactory, command);
         }
     }
 }

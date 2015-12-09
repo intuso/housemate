@@ -20,7 +20,7 @@ import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -48,31 +48,31 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
     private DRIVER driver;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param data the condition's data
      */
     @Inject
-    public RealConditionImpl(final Log log,
+    public RealConditionImpl(final Logger logger,
                              ListenersFactory listenersFactory,
                              AnnotationProcessor annotationProcessor,
                              ConditionFactoryType driverFactoryType,
                              AddConditionCommand.Factory addConditionCommandFactory,
                              @Assisted ConditionData data,
                              @Assisted final RemoveCallback removeCallback) {
-        super(log, listenersFactory, data);
+        super(logger, listenersFactory, data);
         this.annotationProcessor = annotationProcessor;
-        removeCommand = new RealCommandImpl(log, listenersFactory, ConditionData.REMOVE_ID, ConditionData.REMOVE_ID, "Remove the condition", Lists.<RealParameter<?>>newArrayList()) {
+        removeCommand = new RealCommandImpl(logger, listenersFactory, ConditionData.REMOVE_ID, ConditionData.REMOVE_ID, "Remove the condition", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 removeCallback.removeCondition(RealConditionImpl.this);
             }
         };
-        errorValue = new RealValueImpl<>(log, listenersFactory, ConditionData.ERROR_ID, ConditionData.ERROR_ID, "The current error", new StringType(log, listenersFactory), (List)null);
-        driverProperty = (RealPropertyImpl<PluginResource<ConditionDriver.Factory<DRIVER>>>) new RealPropertyImpl(log, listenersFactory, "driver", "Driver", "The condition's driver", driverFactoryType);
-        driverLoadedValue = BooleanType.createValue(log, listenersFactory, ConditionData.DRIVER_LOADED_ID, ConditionData.DRIVER_LOADED_ID, "Whether the task's driver is loaded or not", false);
-        satisfiedValue = new RealValueImpl<>(log, listenersFactory, ConditionData.SATISFIED_ID, ConditionData.SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(log, listenersFactory), false);
-        properties = (RealList)new RealListImpl<>(log, listenersFactory, ConditionData.PROPERTIES_ID, ConditionData.PROPERTIES_ID, "The condition's properties");
-        children = (RealList)new RealListImpl<>(log, listenersFactory, ConditionData.CONDITIONS_ID, "Conditions", "Child conditions");
+        errorValue = new RealValueImpl<>(logger, listenersFactory, ConditionData.ERROR_ID, ConditionData.ERROR_ID, "The current error", new StringType(logger, listenersFactory), (List)null);
+        driverProperty = (RealPropertyImpl<PluginResource<ConditionDriver.Factory<DRIVER>>>) new RealPropertyImpl(logger, listenersFactory, "driver", "Driver", "The condition's driver", driverFactoryType);
+        driverLoadedValue = BooleanType.createValue(logger, listenersFactory, ConditionData.DRIVER_LOADED_ID, ConditionData.DRIVER_LOADED_ID, "Whether the task's driver is loaded or not", false);
+        satisfiedValue = new RealValueImpl<>(logger, listenersFactory, ConditionData.SATISFIED_ID, ConditionData.SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(logger, listenersFactory), false);
+        properties = (RealList)new RealListImpl<>(logger, listenersFactory, ConditionData.PROPERTIES_ID, ConditionData.PROPERTIES_ID, "The condition's properties");
+        children = (RealList)new RealListImpl<>(logger, listenersFactory, ConditionData.CONDITIONS_ID, "Conditions", "Child conditions");
         addConditionCommand = addConditionCommandFactory.create(ConditionData.ADD_CONDITION_ID, ConditionData.ADD_CONDITION_ID, "Add condition", this, new RemoveCallback() {
             @Override
             public void removeCondition(RealCondition condition) {

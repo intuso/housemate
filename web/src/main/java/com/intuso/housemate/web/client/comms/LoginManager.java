@@ -11,8 +11,8 @@ import com.intuso.housemate.web.client.handler.CredentialsSubmittedHandler;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
 import com.intuso.housemate.web.client.ui.view.LoginView;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import org.slf4j.Logger;
 
 /**
  */
@@ -22,7 +22,7 @@ public class LoginManager implements CredentialsSubmittedHandler, Router.Listene
 
     private final CommsServiceAsync commsService;
 
-    private final Log log;
+    private final Logger logger;
     private final PropertyRepository properties;
     private final LoginView loginView;
     private final GWTProxyRoot proxyRoot;
@@ -30,9 +30,9 @@ public class LoginManager implements CredentialsSubmittedHandler, Router.Listene
     private boolean connectedToServer = false;
 
     @Inject
-    public LoginManager(Log log, PropertyRepository properties, LoginView loginView, Router<?> router, EventBus eventBus,
+    public LoginManager(Logger logger, PropertyRepository properties, LoginView loginView, Router<?> router, EventBus eventBus,
                         GWTProxyRoot proxyRoot, CommsServiceAsync commsService) {
-        this.log = log;
+        this.logger = logger;
         this.properties = properties;
         this.loginView = loginView;
         this.proxyRoot = proxyRoot;
@@ -79,7 +79,7 @@ public class LoginManager implements CredentialsSubmittedHandler, Router.Listene
 
             @Override
             public void onFailure(Throwable caught) {
-                log.e("Failed to check credentials", caught);
+                logger.error("Failed to check credentials", caught);
                 loginView.setMessage("Failed to check credentials");
                 loginView.enable();
             }

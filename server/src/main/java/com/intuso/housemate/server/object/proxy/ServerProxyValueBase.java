@@ -10,8 +10,8 @@ import com.intuso.housemate.object.api.internal.ValueBase;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -31,12 +31,12 @@ public abstract class ServerProxyValueBase<
         implements ValueBase<TypeInstances, LISTENER, VALUE> {
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ServerProxyValueBase(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, DATA data) {
-        super(log, listenersFactory, objectFactory, data);
+    public ServerProxyValueBase(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, DATA data) {
+        super(logger, listenersFactory, objectFactory, data);
     }
 
     @Override
@@ -71,7 +71,7 @@ public abstract class ServerProxyValueBase<
             try {
                 distributeMessage(new Message<>(getPath(), ValueData.VALUE_ID, new ClientPayload(null, new TypeData.TypeInstancesPayload(((ValueBaseData)data).getTypeInstances()))));
             } catch (Throwable t) {
-                getLog().e("Failed to update server proxy value based on new value from client", t);
+                getLogger().error("Failed to update server proxy value based on new value from client", t);
             }
         }
     }

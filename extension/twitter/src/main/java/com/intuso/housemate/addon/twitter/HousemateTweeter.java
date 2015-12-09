@@ -15,8 +15,8 @@ import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
 import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.object.v1_0.api.*;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import org.slf4j.Logger;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -56,7 +56,7 @@ public class HousemateTweeter {
 	 */
 	private final SimpleDateFormat dateFormat;
 
-    private final Log log;
+    private final Logger logger;
 
     private final ApplicationDetails applicationDetails;
     private final String applicationInstanceId;
@@ -70,9 +70,9 @@ public class HousemateTweeter {
 	 * Default constructor
 	 */
 	@Inject
-	public HousemateTweeter(final Log log, final PropertyRepository properties, Injector injector) {
+	public HousemateTweeter(final Logger logger, final PropertyRepository properties, Injector injector) {
 
-        this.log = log;
+        this.logger = logger;
         this.applicationDetails = new ApplicationDetails(HousemateTweeter.class.getName(), "Housemate Tweeter", "Housemate Tweeter");
         this.applicationInstanceId = properties.get(INSTANCE_ID);
 
@@ -87,7 +87,7 @@ public class HousemateTweeter {
 		twitter = new TwitterFactory().getInstance();
 		twitter.setOAuthConsumer("dPL31ZtQCTBknLOvEY7Lg", "slOU1tdctmdGOdVAhgMv2E2Vxe4jZo52TbQ19elALE");
 		getTokenCredentials();
-		log.d("Loaded token and secret. If these are wrong or no longer valid please delete the file \"" + getTokenCredentialsPropsFile().getAbsolutePath() + "\" to force the addon to get a new token and secret");
+		logger.debug("Loaded token and secret. If these are wrong or no longer valid please delete the file \"" + getTokenCredentialsPropsFile().getAbsolutePath() + "\" to force the addon to get a new token and secret");
 
 		// setup the housemate stuff
         final SimpleProxyRoot root = injector.getInstance(SimpleProxyRoot.class);
@@ -100,27 +100,27 @@ public class HousemateTweeter {
             public void applicationInstanceStatusChanged(final SimpleProxyRoot root, ApplicationInstance.Status applicationInstanceStatus) {
                 switch (applicationInstanceStatus) {
                     case Unregistered:
-                        log.d("Application not registered with the server");
+                        logger.debug("Application not registered with the server");
                         tweet("Application not registered with the server");
                         break;
                     case Registering:
-                        log.d("Application registering with the server");
+                        logger.debug("Application registering with the server");
                         tweet("Application registering with the server");
                         break;
                     case Rejected:
-                        log.d("Access to the server rejected");
+                        logger.debug("Access to the server rejected");
                         tweet("Access to the server rejected");
                         break;
                     case Expired:
-                        log.d("Access to the server expired");
+                        logger.debug("Access to the server expired");
                         tweet("Access to the server expired");
                         break;
                     case Pending:
-                        log.d("Access to the server pending");
+                        logger.debug("Access to the server pending");
                         tweet("Access to the server pending");
                         break;
                     case Allowed:
-                        log.d("Access to the server allowed");
+                        logger.debug("Access to the server allowed");
                         tweet("Access to the server allowed");
                         root.load(new LoadManager(new LoadManager.Callback() {
                             @Override
@@ -148,30 +148,30 @@ public class HousemateTweeter {
             public void serverConnectionStatusChanged(Router clientConnection, ConnectionStatus connectionStatus) {
                 switch (connectionStatus) {
                     case DisconnectedPermanently:
-                        log.d("Disconnected permanently from server");
+                        logger.debug("Disconnected permanently from server");
                         tweet("Disconnected permanently from server");
                         return;
                     case DisconnectedTemporarily:
-                        log.d("Disconnected temporarily from server");
+                        logger.debug("Disconnected temporarily from server");
                         tweet("Disconnected temporarily from server");
                         return;
                     case Connecting:
-                        log.d("Connected to server");
+                        logger.debug("Connected to server");
                         tweet("Connected to server");
                         return;
                     case ConnectedToRouter:
-                        log.d("Connected to router");
+                        logger.debug("Connected to router");
                         tweet("Connected to router");
                         return;
                     case ConnectedToServer:
-                        log.d("Connected to server");
+                        logger.debug("Connected to server");
                         tweet("Connected to server");
                 }
             }
 
             @Override
             public void newServerInstance(Router clientConnection, String serverId) {
-                log.d("Server instance changed");
+                logger.debug("Server instance changed");
                 tweet("Server instance changed");
                 root.register(applicationDetails, HousemateTweeter.class.getName());
             }
@@ -242,18 +242,18 @@ public class HousemateTweeter {
 	 */
 	private synchronized void tweet(String to_tweet) {
 		String message = dateFormat.format(new Date()) + ": " + to_tweet;
-		log.d("Tweeting \"" + message + "\"");
+		logger.debug("Tweeting \"" + message + "\"");
 		try {
 			int i = 0;
 			while(i + 140 < message.length()) {
-				log.d("Tweeting characters from " + i + " through to " + (i + 137));
+				logger.debug("Tweeting characters from " + i + " through to " + (i + 137));
 				twitter.updateStatus(message.substring(i, i + 137) + "...");
 				i += 137;
 			}
-			log.d("Tweeting characters from " + i + " through to the end");
+			logger.debug("Tweeting characters from " + i + " through to the end");
 			twitter.updateStatus(message.substring(i));
 		} catch(TwitterException e) {
-			log.e("Could not tweet \"" + message + "\" because: " + e.getMessage());
+			logger.error("Could not tweet \"" + message + "\" because: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

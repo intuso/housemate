@@ -28,7 +28,7 @@ public class JarServerModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(PropertyRepository.class).toInstance(properties);
-        install(new PCModule(defaultProperties, "server.log")); // log and properties provider
+        install(new PCModule()); // log and properties provider
         install(new PersistenceV1_0ReverseBridgeModule()); // bridge internal api to 1.0 apo
         install(new FileSystemPersistenceModule(defaultProperties)); // 1.0 persistence impl
         install(new TransportsModule(defaultProperties)); // socket and rest servers

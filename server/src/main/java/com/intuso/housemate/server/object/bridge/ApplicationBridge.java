@@ -7,7 +7,7 @@ import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -30,15 +30,15 @@ public class ApplicationBridge
     private final CommandBridge rejectCommand;
     private final ValueBridge statusValue;
 
-    public ApplicationBridge(Log log, ListenersFactory listenersFactory, Application application) {
-        super(log, listenersFactory,
+    public ApplicationBridge(Logger logger, ListenersFactory listenersFactory, Application application) {
+        super(logger, listenersFactory,
                 new ApplicationData(application.getId(), application.getName(), application.getDescription()));
         applicationInstances = new ConvertingListBridge<>(
-                log, listenersFactory, application.getApplicationInstances(), new ApplicationInstanceBridge.Converter(log, listenersFactory));
-        allowCommand = new CommandBridge(log, listenersFactory, application.getAllowCommand());
-        someCommand = new CommandBridge(log, listenersFactory, application.getSomeCommand());
-        rejectCommand = new CommandBridge(log, listenersFactory, application.getRejectCommand());
-        statusValue = new ValueBridge(log, listenersFactory, application.getStatusValue());
+                logger, listenersFactory, application.getApplicationInstances(), new ApplicationInstanceBridge.Converter(logger, listenersFactory));
+        allowCommand = new CommandBridge(logger, listenersFactory, application.getAllowCommand());
+        someCommand = new CommandBridge(logger, listenersFactory, application.getSomeCommand());
+        rejectCommand = new CommandBridge(logger, listenersFactory, application.getRejectCommand());
+        statusValue = new ValueBridge(logger, listenersFactory, application.getStatusValue());
         addChild(applicationInstances);
         addChild(allowCommand);
         addChild(rejectCommand);
@@ -72,17 +72,17 @@ public class ApplicationBridge
 
     public final static class Converter implements Function<Application<?, ?, ?, ?, ?>, ApplicationBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public ApplicationBridge apply(Application<?, ?, ?, ?, ?> application) {
-            return new ApplicationBridge(log, listenersFactory, application);
+            return new ApplicationBridge(logger, listenersFactory, application);
         }
     }
 }

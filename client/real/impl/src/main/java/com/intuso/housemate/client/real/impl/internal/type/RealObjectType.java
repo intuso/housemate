@@ -12,8 +12,8 @@ import com.intuso.housemate.object.api.internal.Root;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -32,13 +32,13 @@ public class RealObjectType<O extends BaseHousemateObject<?>>
     private final Serialiser<O> serialiser;
 
     /**
-     * @param log the log
+     * @param logger the logger
      * @param listenersFactory
      * @param root the root to get the object from
      */
     @Inject
-    public RealObjectType(Log log, ListenersFactory listenersFactory, Root<?, ?> root) {
-        super(log, listenersFactory, new ObjectTypeData(ID, NAME, "Path to an object", 1, 1));
+    public RealObjectType(Logger logger, ListenersFactory listenersFactory, Root<?, ?> root) {
+        super(logger, listenersFactory, new ObjectTypeData(ID, NAME, "Path to an object", 1, 1));
         serialiser = new Serialiser<>(root);
     }
 
@@ -146,13 +146,13 @@ public class RealObjectType<O extends BaseHousemateObject<?>>
     public static class Base extends RealObjectType<BaseHousemateObject<?>> {
 
         /**
-         * @param log              the log
+         * @param logger              the logger
          * @param listenersFactory
          * @param root             the root to get the object from
          */
         @Inject
-        public Base(Log log, ListenersFactory listenersFactory, Root<?, ?> root) {
-            super(log, listenersFactory, root);
+        public Base(Logger logger, ListenersFactory listenersFactory, Root<?, ?> root) {
+            super(logger, listenersFactory, root);
         }
     }
 }

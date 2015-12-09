@@ -9,7 +9,7 @@ import com.intuso.housemate.object.api.internal.Hardware;
 import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -44,19 +44,19 @@ public class HardwareBridge
     private ValueBridge driverLoadedValue;
     private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
-    public HardwareBridge(Log log, ListenersFactory listenersFactory, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?> hardware) {
-        super(log, listenersFactory, new HardwareData(hardware.getId(), hardware.getName(), hardware.getDescription()));
+    public HardwareBridge(Logger logger, ListenersFactory listenersFactory, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?> hardware) {
+        super(logger, listenersFactory, new HardwareData(hardware.getId(), hardware.getName(), hardware.getDescription()));
         this.hardware = hardware;
-        renameCommand = new CommandBridge(log, listenersFactory, hardware.getRenameCommand());
-        removeCommand = new CommandBridge(log, listenersFactory, hardware.getRemoveCommand());
-        runningValue = new ValueBridge(log, listenersFactory, hardware.getRunningValue());
-        startCommand = new CommandBridge(log, listenersFactory, hardware.getStartCommand());
-        stopCommand = new CommandBridge(log, listenersFactory, hardware.getStopCommand());
-        errorValue = new ValueBridge(log, listenersFactory, hardware.getErrorValue());
-        driverProperty = new PropertyBridge(log, listenersFactory, hardware.getDriverProperty());
-        driverLoadedValue = new ValueBridge(log, listenersFactory, hardware.getDriverLoadedValue());
-        propertyList = new ConvertingListBridge<>(log, listenersFactory, hardware.getProperties(),
-                new PropertyBridge.Converter(log, listenersFactory));
+        renameCommand = new CommandBridge(logger, listenersFactory, hardware.getRenameCommand());
+        removeCommand = new CommandBridge(logger, listenersFactory, hardware.getRemoveCommand());
+        runningValue = new ValueBridge(logger, listenersFactory, hardware.getRunningValue());
+        startCommand = new CommandBridge(logger, listenersFactory, hardware.getStartCommand());
+        stopCommand = new CommandBridge(logger, listenersFactory, hardware.getStopCommand());
+        errorValue = new ValueBridge(logger, listenersFactory, hardware.getErrorValue());
+        driverProperty = new PropertyBridge(logger, listenersFactory, hardware.getDriverProperty());
+        driverLoadedValue = new ValueBridge(logger, listenersFactory, hardware.getDriverLoadedValue());
+        propertyList = new ConvertingListBridge<>(logger, listenersFactory, hardware.getProperties(),
+                new PropertyBridge.Converter(logger, listenersFactory));
         addChild(renameCommand);
         addChild(removeCommand);
         addChild(runningValue);
@@ -146,17 +146,17 @@ public class HardwareBridge
 
     public static class Converter implements Function<Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public HardwareBridge apply(Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?> hardware) {
-            return new HardwareBridge(log, listenersFactory, hardware);
+            return new HardwareBridge(logger, listenersFactory, hardware);
         }
     }
 }

@@ -11,8 +11,8 @@ import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,11 +33,11 @@ public class RootBridge
     private final Persistence persistence;
 
     @Inject
-    public RootBridge(Log log, ListenersFactory listenersFactory, Persistence persistence) {
-        super(log, listenersFactory, new RootData());
+    public RootBridge(Logger logger, ListenersFactory listenersFactory, Persistence persistence) {
+        super(logger, listenersFactory, new RootData());
         this.listenersFactory = listenersFactory;
         this.persistence = persistence;
-        servers = new ListBridge<>(log, listenersFactory, new ListData<ServerData>(SERVERS_ID, "Servers", "Servers"));
+        servers = new ListBridge<>(logger, listenersFactory, new ListData<ServerData>(SERVERS_ID, "Servers", "Servers"));
         addChild(servers);
         init(null);
     }
@@ -77,7 +77,7 @@ public class RootBridge
     }
 
     public void addProxyRoot(ServerProxyRoot root) {
-        servers.add(new ServerBridge(getLog(), getListenersFactory(), root, persistence));
+        servers.add(new ServerBridge(getLogger(), getListenersFactory(), root, persistence));
     }
 
     private void objectAdded(String path, BaseObject<?, ?, ?> object) {

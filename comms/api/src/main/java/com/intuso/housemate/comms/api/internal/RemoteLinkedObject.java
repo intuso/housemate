@@ -6,8 +6,8 @@ import com.intuso.housemate.object.api.internal.ObjectListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.BaseObject;
+import org.slf4j.Logger;
 
 import java.util.*;
 
@@ -38,7 +38,7 @@ public abstract class RemoteLinkedObject<
     public final static String CHILD_ADDED = "child-added";
     public final static String CHILD_REMOVED = "child-removed";
 
-    private final Log log;
+    private final Logger logger;
     private final ListenersFactory listenersFactory;
 
     private String path[];
@@ -49,9 +49,9 @@ public abstract class RemoteLinkedObject<
     /**
      * @param data the data object
      */
-    protected RemoteLinkedObject(Log log, ListenersFactory listenersFactory, DATA data) {
+    protected RemoteLinkedObject(Logger logger, ListenersFactory listenersFactory, DATA data) {
         super(listenersFactory, data);
-        this.log = log;
+        this.logger = logger;
         this.listenersFactory = listenersFactory;
         this.objectListeners = listenersFactory.create();
     }
@@ -76,8 +76,8 @@ public abstract class RemoteLinkedObject<
      * Gets this object's log instance
      * @return this object's log instance
      */
-    public final Log getLog() {
-        return log;
+    public final Logger getLogger() {
+        return logger;
     }
 
     public final ListenersFactory getListenersFactory() {
@@ -131,7 +131,7 @@ public abstract class RemoteLinkedObject<
      */
     public final void distributeMessage(Message<?> message) throws HousemateCommsException {
         if(path == null) {
-            getLog().e("Cannot receive message when not a registered object");
+            getLogger().error("Cannot receive message when not a registered object");
             return;
         }
         if(message.getPath().length == path.length) {

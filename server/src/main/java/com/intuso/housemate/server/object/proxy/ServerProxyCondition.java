@@ -7,8 +7,8 @@ import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.PropertyData;
 import com.intuso.housemate.object.api.internal.Condition;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 public class ServerProxyCondition
         extends ServerProxyObject<
@@ -39,13 +39,13 @@ public class ServerProxyCondition
     private ServerProxyList<ConditionData, ServerProxyCondition> conditions;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyCondition(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted ConditionData data) {
-        super(log, listenersFactory, objectFactory, data);
+    public ServerProxyCondition(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted ConditionData data) {
+        super(logger, listenersFactory, objectFactory, data);
     }
 
     @Override

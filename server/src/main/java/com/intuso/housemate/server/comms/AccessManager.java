@@ -20,7 +20,7 @@ import com.intuso.housemate.object.api.internal.ApplicationInstance;
 import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.housemate.server.Server;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -36,15 +36,15 @@ import java.util.UUID;
  */
 public class AccessManager {
 
-    private final Log log;
+    private final Logger logger;
     private final ListenersFactory listenersFactory;
     private final Injector injector;
     private final RealRoot realRoot;
     private Map<RemoteClient, StatusListener> statusListeners = Maps.newHashMap();
 
     @Inject
-    public AccessManager(Log log, ListenersFactory listenersFactory, Injector injector, RealRoot realRoot) {
-        this.log = log;
+    public AccessManager(Logger logger, ListenersFactory listenersFactory, Injector injector, RealRoot realRoot) {
+        this.logger = logger;
         this.listenersFactory = listenersFactory;
         this.injector = injector;
         this.realRoot = realRoot;
@@ -59,7 +59,7 @@ public class AccessManager {
             String appId = registration.getApplicationDetails().getApplicationId();
             RealApplication application = realRoot.getApplications().get(appId);
             if (application == null) {
-                application = new RealApplicationImpl(log, listenersFactory, registration.getApplicationDetails(),
+                application = new RealApplicationImpl(logger, listenersFactory, registration.getApplicationDetails(),
                         injector.getInstance(ApplicationStatusType.class));
                 ((RealList<RealApplication>)realRoot.getApplications()).add(application);
                 application.setStatus(getInitialStatus(appId));
@@ -72,7 +72,7 @@ public class AccessManager {
             if (instanceId == null || instanceId.length() == 0 || application.getApplicationInstances().get(instanceId) == null) {
                 instanceId = UUID.randomUUID().toString();
                 RealApplicationInstance applicationInstance =
-                        new RealApplicationInstanceImpl(log, listenersFactory, instanceId,
+                        new RealApplicationInstanceImpl(logger, listenersFactory, instanceId,
                                 injector.getInstance(ApplicationInstanceStatusType.class));
                 ((RealList<RealApplicationInstance>)application.getApplicationInstances()).add(applicationInstance);
                 applicationInstance.getStatusValue().setTypedValues(getInitialStatus(application));
@@ -111,7 +111,7 @@ public class AccessManager {
                     client.sendMessage(new String[]{""}, RootData.APPLICATION_STATUS_TYPE, new ApplicationData.StatusPayload(Application.Status.AllowInstances));
                     client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_STATUS_TYPE, new ApplicationInstanceData.StatusPayload(ApplicationInstance.Status.Allowed));
                 } catch (Throwable t) {
-                    log.e("Failed to tell application instance about statuses", t);
+                    logger.error("Failed to tell application instance about statuses", t);
                 }
 
                 // ensure the client belongs to the application instance
@@ -128,7 +128,7 @@ public class AccessManager {
                     client.sendMessage(new String[]{""}, RootData.APPLICATION_STATUS_TYPE, new ApplicationData.StatusPayload(application.getStatusValue().getTypedValue()));
                     client.sendMessage(new String[]{""}, RootData.APPLICATION_INSTANCE_STATUS_TYPE, new ApplicationInstanceData.StatusPayload(applicationInstance.getStatusValue().getTypedValue()));
                 } catch (Throwable t) {
-                    log.e("Failed to tell application instance about statuses", t);
+                    logger.error("Failed to tell application instance about statuses", t);
                 }
 
                 // ensure the client belongs to the application instance

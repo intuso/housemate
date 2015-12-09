@@ -1,9 +1,9 @@
 package com.intuso.housemate.plugin.rfxcom.lighting2;
 
 import com.intuso.housemate.client.v1_0.real.api.RealDevice;
-import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.RFXtrx;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2;
+import org.slf4j.Logger;
 
 /**
  * Created by tomc on 02/12/15.
@@ -12,8 +12,8 @@ public class Lighting2HomeEasyEUHandler extends Lighting2Handler {
 
     static Lighting2HomeEasyEUHandler INSTANCE;
 
-    public Lighting2HomeEasyEUHandler(Log log, RFXtrx rfxtrx, RealDevice.Container deviceContainer) {
-        super(log, Lighting2.forHomeEasyEU(rfxtrx), deviceContainer);
+    public Lighting2HomeEasyEUHandler(Logger logger, RFXtrx rfxtrx, RealDevice.Container deviceContainer) {
+        super(logger, Lighting2.forHomeEasyEU(rfxtrx), deviceContainer);
         INSTANCE = this;
     }
 

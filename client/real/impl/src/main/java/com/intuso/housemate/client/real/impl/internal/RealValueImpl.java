@@ -8,7 +8,7 @@ import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
 import com.intuso.housemate.comms.api.internal.payload.ValueData;
 import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ public class RealValueImpl<O> extends RealValueBaseImpl<ValueData, NoChildrenDat
         implements RealValue<O> {
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the value's id
      * @param name the value's name
@@ -30,18 +30,18 @@ public class RealValueImpl<O> extends RealValueBaseImpl<ValueData, NoChildrenDat
      * @param type the type of the value's value
      * @param values the value's initial values
      */
-    public RealValueImpl(Log log,
+    public RealValueImpl(Logger logger,
                          ListenersFactory listenersFactory,
                          String id,
                          String name,
                          String description,
                          RealType<O> type,
                          O... values) {
-        this(log, listenersFactory, id, name, description, type, Arrays.asList(values));
+        this(logger, listenersFactory, id, name, description, type, Arrays.asList(values));
     }
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the value's id
      * @param name the value's name
@@ -50,13 +50,13 @@ public class RealValueImpl<O> extends RealValueBaseImpl<ValueData, NoChildrenDat
      * @param values the value's initial values
      */
     @Inject
-    public RealValueImpl(Log log,
+    public RealValueImpl(Logger logger,
                          ListenersFactory listenersFactory,
                          @Assisted("id") String id,
                          @Assisted("name") String name,
                          @Assisted("description") String description,
                          @Assisted RealType<O> type,
                          @Nullable @Assisted List<O> values) {
-        super(log, listenersFactory, new ValueData(id, name, description, type.getId(), RealTypeImpl.serialiseAll(type, values)), type);
+        super(logger, listenersFactory, new ValueData(id, name, description, type.getId(), RealTypeImpl.serialiseAll(type, values)), type);
     }
 }

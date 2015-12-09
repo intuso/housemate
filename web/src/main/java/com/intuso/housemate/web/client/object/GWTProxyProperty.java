@@ -7,7 +7,7 @@ import com.intuso.housemate.comms.v1_0.api.payload.CommandData;
 import com.intuso.housemate.comms.v1_0.api.payload.PropertyData;
 import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -19,16 +19,16 @@ public class GWTProxyProperty extends ProxyProperty<
     private final GWTGinjector injector;
 
     @Inject
-    public GWTProxyProperty(Log log,
+    public GWTProxyProperty(Logger logger,
                             ListenersFactory listenersFactory,
                             GWTGinjector injector,
                             @Assisted PropertyData data) {
-        super(log, listenersFactory, data);
+        super(logger, listenersFactory, data);
         this.injector = injector;
     }
 
     @Override
     protected GWTProxyCommand createChildInstance(CommandData data) {
-        return new GWTProxyCommand(getLog(), getListenersFactory(), injector, data);
+        return new GWTProxyCommand(getLogger(), getListenersFactory(), injector, data);
     }
 }

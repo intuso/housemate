@@ -6,7 +6,7 @@ import com.intuso.housemate.client.real.api.internal.annotations.Property;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.type.Time;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Calendar;
 
@@ -46,7 +46,7 @@ public class TimeOfTheDay implements ConditionDriver {
     @TypeInfo(id = "after", name = "After", description = "The condition is satisfied when the current time is after this time")
     private Time after;
 
-    private final Log log;
+    private final Logger logger;
     private final ConditionDriver.Callback callback;
 
     /**
@@ -55,9 +55,9 @@ public class TimeOfTheDay implements ConditionDriver {
     private Thread monitor;
 
     @Inject
-    public TimeOfTheDay(Log log,
+    public TimeOfTheDay(Logger logger,
                         @Assisted ConditionDriver.Callback callback) {
-        this.log = log;
+        this.logger = logger;
         this.callback = callback;
     }
 
@@ -93,11 +93,11 @@ public class TimeOfTheDay implements ConditionDriver {
     /**
      * Wait for the next occurrence of a time of day
      * @param time the time to wait until
-     * @param log log to use
+     * @param logger logger to use
      */
-    protected static void waitUntilNext(Time time, Log log) throws InterruptedException {
+    protected static void waitUntilNext(Time time, Logger logger) throws InterruptedException {
 
-        log.d("Waiting until current time of day in milliseconds since midnight is " + time);
+        logger.debug("Waiting until current time of day in milliseconds since midnight is " + time);
 
         // get the current time
         Time cur_time = getTime();
@@ -105,32 +105,32 @@ public class TimeOfTheDay implements ConditionDriver {
         // if we're already past, then wait until we go past midnight
         if(cur_time.compareTo(time) > 0) {
 
-            log.d("Time to wait until is after midnight, waiting until past midnight");
+            logger.debug("Time to wait until is after midnight, waiting until past midnight");
 
             // save the old time, then wait a bit
             Time old_time = cur_time;
-            log.d("Now = " + cur_time + ", end = " + time + ", waiting for " + Math.min(WAIT_MAX, DAY_END.minus(cur_time)));
+            logger.debug("Now = " + cur_time + ", end = " + time + ", waiting for " + Math.min(WAIT_MAX, DAY_END.minus(cur_time)));
             Thread.sleep(Math.min(WAIT_MAX, DAY_END.minus(cur_time)));
 
             // past midnight is when the current time is less than the last time we saw
             while(!Thread.currentThread().isInterrupted() && (cur_time = getTime()).compareTo(old_time) >= 0) {
                 // wait for a max of 10 minutes
-                log.d("Now = " + cur_time + ", end = " + time + ", waiting for " + Math.min(WAIT_MAX, DAY_END.minus(cur_time)));
+                logger.debug("Now = " + cur_time + ", end = " + time + ", waiting for " + Math.min(WAIT_MAX, DAY_END.minus(cur_time)));
                 Thread.sleep(Math.min(WAIT_MAX, DAY_END.minus(cur_time)));
             }
 
-            log.d("Past midnight");
+            logger.debug("Past midnight");
         }
 
         // loop until the current time is past the given time
         while(!Thread.currentThread().isInterrupted() && (cur_time = getTime()).compareTo(time) < 0) {
             // wait for max 10 mins
             long toWait = Math.min(WAIT_MAX, time.minus(cur_time));
-            log.d("Now = " + cur_time + ", end = " + time + ", waiting for " + toWait);
+            logger.debug("Now = " + cur_time + ", end = " + time + ", waiting for " + toWait);
             Thread.sleep(Math.min(WAIT_MAX, toWait));
         }
 
-        log.d("Reached time to wait until");
+        logger.debug("Reached time to wait until");
     }
 
     @Override
@@ -165,33 +165,33 @@ public class TimeOfTheDay implements ConditionDriver {
                 if(doesNowSatisfy()) {
 
                     // wait until unsatisfied so that loop works properly
-                    log.d("Waiting for condition to become unsatisfied");
-                    waitUntilNext(before, log);
+                    logger.debug("Waiting for condition to become unsatisfied");
+                    waitUntilNext(before, logger);
                     callback.conditionSatisfied(false);
                 }
 
                 // loop until thread is stopped
-                log.d("Entering time monitor loop");
+                logger.debug("Entering time monitor loop");
                 while(!isInterrupted()) {
 
                     // wait until we next go past the after time
-                    log.d("Waiting until time of the day goes past the after time");
-                    waitUntilNext(after, log);
-                    log.d("Time of the day is after the after time");
+                    logger.debug("Waiting until time of the day goes past the after time");
+                    waitUntilNext(after, logger);
+                    logger.debug("Time of the day is after the after time");
 
                     // condition is now satisfied
                     callback.conditionSatisfied(true);
 
                     // wait until we next go past the before time
-                    log.d("Waiting until time of the day goes past the before time");
-                    waitUntilNext(before, log);
-                    log.d("Time of the day is after the before time");
+                    logger.debug("Waiting until time of the day goes past the before time");
+                    waitUntilNext(before, logger);
+                    logger.debug("Time of the day is after the before time");
 
                     // condition is now unsatisfied
                     callback.conditionSatisfied(false);
                 }
             } catch(InterruptedException e) {
-                log.w("TimeMonitor thread interrupted");
+                logger.warn("TimeMonitor thread interrupted");
             }
         }
     }

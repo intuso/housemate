@@ -5,7 +5,7 @@ import com.intuso.housemate.comms.api.internal.payload.StringPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<ROUTER> {
 
-    private final Log log;
+    private final Logger logger;
 
     private final AtomicInteger nextId = new AtomicInteger(-1);
     private final Listeners<ClientConnection.Listener<? super ROUTER>> listeners;
@@ -34,11 +34,11 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
     private ConnectionStatus listenerToldConnectionStatus;
 
     /**
-     * @param log the log
+     * @param logger the log
      * @param listenersFactory
      */
-    public BaseRouter(final Log log, ListenersFactory listenersFactory) {
-        this.log = log;
+    public BaseRouter(final Logger logger, ListenersFactory listenersFactory) {
+        this.logger = logger;
         this.listeners = listenersFactory.create();
         this.messageDistributor = new MessageDistributor(listenersFactory);
         this.messageSequencer = new MessageSequencer(messageDistributor);
@@ -75,8 +75,8 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
      * Gets the log to use
      * @return the log to use
      */
-    protected final Log getLog() {
-        return log;
+    protected final Logger getLogger() {
+        return logger;
     }
 
     protected final Listeners<ClientConnection.Listener<? super ROUTER>> getListeners() {
@@ -159,7 +159,7 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
         try {
             receiver.serverConnectionStatusChanged(getThis(), nextConnectionStatus);
         } catch(HousemateCommsException e) {
-            log.e("Failed to tell new client " + clientId + " the current router status", e);
+            logger.error("Failed to tell new client " + clientId + " the current router status", e);
         }
         return new RegistrationImpl(clientId);
     }
@@ -182,7 +182,7 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
                 try {
                     receiver.messageReceived(message);
                 } catch(Throwable t) {
-                    log.e("Receiver failed to process message", t);
+                    logger.error("Receiver failed to process message", t);
                 }
             }
         }
@@ -195,7 +195,7 @@ public abstract class BaseRouter<ROUTER extends BaseRouter> implements Router<RO
 
     protected void connectionEstablished() {
         if(routerId != null) {
-            getLog().d("Router re-registering");
+            getLogger().debug("Router re-registering");
             sendMessageNow(new Message<>(AccessManager.ROOT_PATH, Router.ROUTER_CONNECTED, new StringPayload(routerId)));
         } else {
             setThisConnectionStatus(ConnectionStatus.ConnectedToRouter);

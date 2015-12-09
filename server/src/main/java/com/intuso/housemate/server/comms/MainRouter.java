@@ -11,7 +11,7 @@ import com.intuso.housemate.plugin.api.internal.ExternalClientRouter;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -28,8 +28,8 @@ public final class MainRouter extends BaseRouter<MainRouter> {
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
     @Inject
-    public MainRouter(Log log, ListenersFactory listenersFactory, Injector injector) {
-        super(log, listenersFactory);
+    public MainRouter(Logger logger, ListenersFactory listenersFactory, Injector injector) {
+        super(logger, listenersFactory);
         this.injector = injector;
     }
 	
@@ -74,7 +74,7 @@ public final class MainRouter extends BaseRouter<MainRouter> {
         try {
             messageProcessor.join();
         } catch(InterruptedException e) {
-            getLog().e("Failed to wait for message processor to stop");
+            getLogger().error("Failed to wait for message processor to stop");
         }
     }
 
@@ -94,7 +94,7 @@ public final class MainRouter extends BaseRouter<MainRouter> {
     }
 
     public void sendMessageToClient(Message<Message.Payload> message) {
-        getLog().d("Sending message " + message.toString());
+        getLogger().debug("Sending message " + message.toString());
         // to send a message we tell the outgoing root it is received. Any listeners on the outgoing root
         // will get it. These listeners are all created from the clientHandle and just put messages
         // on their respective clients queues, hence "sending" it to the clients that want it
@@ -103,7 +103,7 @@ public final class MainRouter extends BaseRouter<MainRouter> {
 
     @Override
     protected void sendMessageNow(Message<?> message) {
-        getLog().d("Message received " + message.toString());
+        getLogger().debug("Message received " + message.toString());
         try {
             RemoteClient client = injector.getInstance(RemoteClientManager.class).getClient(message.getRoute());
             Message.Receiver receiver = getReceiver(client, message);
@@ -112,7 +112,7 @@ public final class MainRouter extends BaseRouter<MainRouter> {
                     new ClientPayload<>(client, message.getPayload()), message.getRoute());
             receiver.messageReceived(message);
         } catch(Throwable t) {
-            getLog().e("Failed to distribute received message", t);
+            getLogger().error("Failed to distribute received message", t);
         }
     }
 

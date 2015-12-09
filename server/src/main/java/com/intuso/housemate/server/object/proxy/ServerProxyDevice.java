@@ -8,8 +8,8 @@ import com.intuso.housemate.object.api.internal.Device;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -39,13 +39,13 @@ public class ServerProxyDevice
     private ServerProxyList<FeatureData, ServerProxyFeature> features;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyDevice(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted DeviceData data) {
-        super(log, listenersFactory, objectFactory, data);
+    public ServerProxyDevice(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted DeviceData data) {
+        super(logger, listenersFactory, objectFactory, data);
     }
 
     @Override

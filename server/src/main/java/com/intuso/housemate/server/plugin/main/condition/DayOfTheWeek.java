@@ -6,7 +6,7 @@ import com.intuso.housemate.client.real.api.internal.annotations.Property;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.type.Day;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -41,7 +41,7 @@ public class DayOfTheWeek implements ConditionDriver {
     @TypeInfo(id = "days", name = "Days", description = "The days that satisfy the condition")
 	private Set<Day> days;
 
-    private final Log log;
+    private final Logger logger;
     private final ConditionDriver.Callback callback;
     
 	/**
@@ -50,9 +50,9 @@ public class DayOfTheWeek implements ConditionDriver {
 	private Thread monitor;
 
     @Inject
-	public DayOfTheWeek(Log log,
+	public DayOfTheWeek(Logger logger,
                         @Assisted ConditionDriver.Callback callback) {
-		this.log = log;
+		this.logger = logger;
         this.callback = callback;
     }
 
@@ -70,14 +70,14 @@ public class DayOfTheWeek implements ConditionDriver {
 		boolean result = false;
         for(Day day : days)
             result |= DAY_MAP.get(day) == currentDay;
-		log.d("Current day of the week is " + Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + " (1 is Sunday). Condition is " + (result ? "" : "un") + "satisfied");
+		logger.debug("Current day of the week is " + Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + " (1 is Sunday). Condition is " + (result ? "" : "un") + "satisfied");
 		return result;
 	}
 	
 	@Override
 	public void start() {
 		// start monitoring the day of the week
-        log.d("Condition satisfied when day is " + days);
+        logger.debug("Condition satisfied when day is " + days);
 		monitor = new DayMonitorThread();
 		monitor.start();
 		callback.conditionSatisfied(doesTodaySatisfy());
@@ -106,16 +106,16 @@ public class DayOfTheWeek implements ConditionDriver {
                 while(!isInterrupted()) {
 
                     // wait until the next day starts
-                    log.d("Waiting until midnight");
-                    TimeOfTheDay.waitUntilNext(TimeOfTheDay.DAY_START, log);
+                    logger.debug("Waiting until midnight");
+                    TimeOfTheDay.waitUntilNext(TimeOfTheDay.DAY_START, logger);
 
-                    log.d("Past midnight, checking if current day is in set");
+                    logger.debug("Past midnight, checking if current day is in set");
 
                     // check if this condition is now satisfied or not
                     callback.conditionSatisfied(doesTodaySatisfy());
                 }
             } catch(InterruptedException e) {
-                log.w("DayMonitor thread interrupted");
+                logger.warn("DayMonitor thread interrupted");
             }
 		}
 	}

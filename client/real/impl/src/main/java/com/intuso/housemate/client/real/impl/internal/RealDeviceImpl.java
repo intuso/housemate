@@ -19,7 +19,7 @@ import com.intuso.housemate.object.api.internal.Device;
 import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * Base class for all devices
@@ -53,21 +53,21 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
     private DRIVER driver;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param data the device's data
      */
     @Inject
-    public RealDeviceImpl(Log log,
+    public RealDeviceImpl(Logger logger,
                           ListenersFactory listenersFactory,
                           AnnotationProcessor annotationProcessor,
                           DeviceFactoryType driverFactoryType,
                           @Assisted DeviceData data,
                           @Assisted RemoveCallback removeCallback) {
-        super(log, listenersFactory, new DeviceData(data.getId(), data.getName(), data.getDescription()));
+        super(logger, listenersFactory, new DeviceData(data.getId(), data.getName(), data.getDescription()));
         this.annotationProcessor = annotationProcessor;
         this.removeCallback = removeCallback;
-        this.renameCommand = new RealCommandImpl(log, listenersFactory, DeviceData.RENAME_ID, DeviceData.RENAME_ID, "Rename the device", Lists.<RealParameter<?>>newArrayList(StringType.createParameter(log, listenersFactory, DeviceData.NAME_ID, DeviceData.NAME_ID, "The new name"))) {
+        this.renameCommand = new RealCommandImpl(logger, listenersFactory, DeviceData.RENAME_ID, DeviceData.RENAME_ID, "Rename the device", Lists.<RealParameter<?>>newArrayList(StringType.createParameter(logger, listenersFactory, DeviceData.NAME_ID, DeviceData.NAME_ID, "The new name"))) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(values != null && values.getChildren().containsKey(DeviceData.NAME_ID)) {
@@ -81,7 +81,7 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
                 }
             }
         };
-        this.removeCommand = new RealCommandImpl(log, listenersFactory, DeviceData.REMOVE_ID, DeviceData.REMOVE_ID, "Remove the device", Lists.<RealParameter<?>>newArrayList()) {
+        this.removeCommand = new RealCommandImpl(logger, listenersFactory, DeviceData.REMOVE_ID, DeviceData.REMOVE_ID, "Remove the device", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(isRunning())
@@ -89,8 +89,8 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
                 remove();
             }
         };
-        this.runningValue = BooleanType.createValue(log, listenersFactory, DeviceData.RUNNING_ID, DeviceData.RUNNING_ID, "Whether the device is running or not", false);
-        this.startCommand = new RealCommandImpl(log, listenersFactory, DeviceData.START_ID, DeviceData.START_ID, "Start the device", Lists.<RealParameter<?>>newArrayList()) {
+        this.runningValue = BooleanType.createValue(logger, listenersFactory, DeviceData.RUNNING_ID, DeviceData.RUNNING_ID, "Whether the device is running or not", false);
+        this.startCommand = new RealCommandImpl(logger, listenersFactory, DeviceData.START_ID, DeviceData.START_ID, "Start the device", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(!isRunning()) {
@@ -99,7 +99,7 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
                 }
             }
         };
-        this.stopCommand = new RealCommandImpl(log, listenersFactory, DeviceData.STOP_ID, DeviceData.STOP_ID, "Stop the device", Lists.<RealParameter<?>>newArrayList()) {
+        this.stopCommand = new RealCommandImpl(logger, listenersFactory, DeviceData.STOP_ID, DeviceData.STOP_ID, "Stop the device", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(isRunning()) {
@@ -108,11 +108,11 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
                 }
             }
         };
-        this.errorValue = StringType.createValue(log, listenersFactory, DeviceData.ERROR_ID, DeviceData.ERROR_ID, "Current error for the device", null);
-        this.driverProperty = (RealPropertyImpl<PluginResource<DeviceDriver.Factory<DRIVER>>>) new RealPropertyImpl(log, listenersFactory, "driver", "Driver", "The device's driver", driverFactoryType);
-        this.driverLoadedValue = BooleanType.createValue(log, listenersFactory, DeviceData.DRIVER_LOADED_ID, DeviceData.DRIVER_LOADED_ID, "Whether the device's driver is loaded or not", false);
-        this.properties = (RealList)new RealListImpl<>(log, listenersFactory, DeviceData.PROPERTIES_ID, DeviceData.PROPERTIES_ID, PROPERTIES_DESCRIPTION);
-        this.features = (RealList)new RealListImpl<>(log, listenersFactory, DeviceData.FEATURES_ID, DeviceData.FEATURES_ID, FEATURES_DESCRIPTION);
+        this.errorValue = StringType.createValue(logger, listenersFactory, DeviceData.ERROR_ID, DeviceData.ERROR_ID, "Current error for the device", null);
+        this.driverProperty = (RealPropertyImpl<PluginResource<DeviceDriver.Factory<DRIVER>>>) new RealPropertyImpl(logger, listenersFactory, "driver", "Driver", "The device's driver", driverFactoryType);
+        this.driverLoadedValue = BooleanType.createValue(logger, listenersFactory, DeviceData.DRIVER_LOADED_ID, DeviceData.DRIVER_LOADED_ID, "Whether the device's driver is loaded or not", false);
+        this.properties = (RealList)new RealListImpl<>(logger, listenersFactory, DeviceData.PROPERTIES_ID, DeviceData.PROPERTIES_ID, PROPERTIES_DESCRIPTION);
+        this.features = (RealList)new RealListImpl<>(logger, listenersFactory, DeviceData.FEATURES_ID, DeviceData.FEATURES_ID, FEATURES_DESCRIPTION);
         addChild(renameCommand);
         addChild(removeCommand);
         addChild(runningValue);

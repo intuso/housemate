@@ -16,7 +16,7 @@ import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.platform.android.common.JsonMessage;
 import com.intuso.housemate.platform.android.common.MessageCodes;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -45,8 +45,8 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
     private boolean shouldBeConnected = false;
 
     @Inject
-    public AndroidAppRouter(Log log, ListenersFactory listenersFactory, Context context) {
-        super(log, listenersFactory);
+    public AndroidAppRouter(Logger logger, ListenersFactory listenersFactory, Context context) {
+        super(logger, listenersFactory);
         this.context = context;
         this.receiver = new Messenger(new MessageHandler());
         this.outputQueue = new LinkedBlockingQueue<>();
@@ -55,7 +55,7 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
     @Override
     public synchronized void connect() {
 
-        getLog().d("App Router: connect()");
+        getLogger().debug("App Router: connect()");
 
         if (shouldBeConnected)
             return;
@@ -67,7 +67,7 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
     @Override
     public synchronized final void disconnect() {
 
-        getLog().d("App Router: disconnect()");
+        getLogger().debug("App Router: disconnect()");
 
         if(!shouldBeConnected)
             return;
@@ -114,7 +114,7 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
         if(!registered && bindThread == null && registerThread == null)
             return;
 
-        getLog().d("App Router: Disconnecting from service");
+        getLogger().debug("App Router: Disconnecting from service");
 
         if(bindThread != null) {
             bindThread.interrupt();
@@ -130,21 +130,21 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
         }
         if(sender != null) {
             try {
-                getLog().d("App Router: Unregistering");
+                getLogger().debug("App Router: Unregistering");
                 android.os.Message msg = android.os.Message.obtain(null, MessageCodes.UNREGISTER);
                 registered = false;
                 msg.getData().putString("id", id);
                 sender.send(msg);
                 id = null;
             } catch (RemoteException e) {
-                getLog().w("App Router: Failed to send disconnect message from service", e);
+                getLogger().warn("App Router: Failed to send disconnect message from service", e);
             }
             context.unbindService(this);
             registered = false;
             sender = null;
         }
 
-        getLog().d("App Router: Disconnected");
+        getLogger().debug("App Router: Disconnected");
 
         // set the connection status, and check if we should reconnect
         connectionLost(shouldBeConnected);
@@ -153,11 +153,11 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
     @Override
     public void onServiceConnected(ComponentName className, IBinder binder) {
 
-        getLog().d("App Router: Service connected");
+        getLogger().debug("App Router: Service connected");
 
         if(bindThread != null) {
 
-            getLog().d("App Router: Stopping BindThread");
+            getLogger().debug("App Router: Stopping BindThread");
 
             bindThread.interrupt();
             bindThread = null;
@@ -165,14 +165,14 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
         sender = new Messenger(binder);
         registerThread = new RegisterThread();
 
-        getLog().d("App Router: Starting RegisterThread");
+        getLogger().debug("App Router: Starting RegisterThread");
 
         registerThread.start();
     }
 
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
-        getLog().d("App Router: Service connection lost unexpectedly, trying to re-establish connection");
+        getLogger().debug("App Router: Service connection lost unexpectedly, trying to re-establish connection");
         _disconnect();
         checkConnection();
     }
@@ -181,7 +181,7 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
         @Override
         public void run() {
 
-            getLog().d("App Router: BindThread.start()");
+            getLogger().debug("App Router: BindThread.start()");
 
             connecting();
             while(!isInterrupted() && sender == null) {
@@ -191,13 +191,13 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
 
-                    getLog().d("App Router: BindThread interrupted");
+                    getLogger().debug("App Router: BindThread interrupted");
 
                     break;
                 }
             }
 
-            getLog().d("App Router: BindThread stopped");
+            getLogger().debug("App Router: BindThread stopped");
         }
     }
 
@@ -205,13 +205,13 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
         @Override
         public void run() {
 
-            getLog().d("App Router: RegisterThread.start()");
+            getLogger().debug("App Router: RegisterThread.start()");
 
             while(!isInterrupted()
                     && (getConnectionStatus() == ConnectionStatus.Connecting
                             || getConnectionStatus() == ConnectionStatus.DisconnectedTemporarily)) {
                 try {
-                    getLog().d("App Router: Creating server registration");
+                    getLogger().debug("App Router: Creating server registration");
                     if(id == null) {
                         android.os.Message msg = android.os.Message.obtain(null, MessageCodes.CREATE_REGISTRATION);
                         msg.replyTo = receiver;
@@ -223,19 +223,19 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
                         sender.send(msg);
                     }
                 } catch (RemoteException e) {
-                    getLog().e("App Router: Failed to send registration message", e);
+                    getLogger().error("App Router: Failed to send registration message", e);
                 }
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
 
-                    getLog().d("App Router: RegisterThread interrupted");
+                    getLogger().debug("App Router: RegisterThread interrupted");
 
                     break;
                 }
             }
 
-            getLog().d("App Router: RegisterThread stopped");
+            getLogger().debug("App Router: RegisterThread stopped");
         }
     }
 
@@ -248,13 +248,13 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
                     try {
                         messageReceived(((JsonMessage) msg.getData().getParcelable("message")).getMessage());
                     } catch (Throwable t) {
-                        getLog().e("App Router: Failed to receive message", t);
+                        getLogger().error("App Router: Failed to receive message", t);
                         disconnect();
                         checkConnection();
                     }
                     break;
                 case MessageCodes.REGISTERED:
-                    getLog().d("App Router: Registration created");
+                    getLogger().debug("App Router: Registration created");
                     registered = true;
                     if(registerThread != null) {
                         registerThread.interrupt();
@@ -282,7 +282,7 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
         @Override
         public void run() {
 
-            getLog().d("App Router: Starting the message sender");
+            getLogger().debug("App Router: Starting the message sender");
 
             while(!isInterrupted()) {
 
@@ -291,19 +291,19 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
                 try {
                     // get the next message
                     message = outputQueue.take();
-                    getLog().d("App Router: Sending message " + message.toString());
+                    getLogger().debug("App Router: Sending message " + message.toString());
                     sendMessageNow(message);
                 } catch(InterruptedException e) {
                     break;
                 } catch(HousemateCommsException e) {
-                    getLog().e("App Router: Failed to send queued message to client", e);
+                    getLogger().error("App Router: Failed to send queued message to client", e);
                     _disconnect();
                     checkConnection();
                     break;
                 }
             }
 
-            getLog().d("App Router: Stopped message sender");
+            getLogger().debug("App Router: Stopped message sender");
         }
     }
 }

@@ -3,14 +3,13 @@ package com.intuso.housemate.platform.android.app;
 import android.app.Service;
 import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.platform.android.app.comms.AndroidAppRouter;
-import com.intuso.housemate.platform.android.common.AndroidLogWriter;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
-import com.intuso.utilities.log.LogLevel;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -23,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class HousemateService extends Service {
 
-    private Log log;
+    private Logger logger;
     private ListenersFactory listenersFactory;
     private PropertyRepository properties;
     private Router<?> router;
@@ -31,7 +30,7 @@ public abstract class HousemateService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        log = new Log(new AndroidLogWriter(LogLevel.DEBUG, getApplicationContext().getApplicationInfo().name));
+        logger = LoggerFactory.getLogger(this.getClass());
         listenersFactory = new ListenersFactory() {
             @Override
             public <LISTENER extends Listener> Listeners<LISTENER> create() {
@@ -39,20 +38,20 @@ public abstract class HousemateService extends Service {
             }
         };
         properties = new SharedPreferencesPropertyRepository(listenersFactory, getApplicationContext());
-        router = new AndroidAppRouter(log, listenersFactory, getApplicationContext());
+        router = new AndroidAppRouter(logger, listenersFactory, getApplicationContext());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        log = null;
+        logger = null;
         properties = null;
         router.disconnect();
         router = null;
     }
 
-    public Log getLog() {
-        return log;
+    public Logger getLogger() {
+        return logger;
     }
 
     public ListenersFactory getListenersFactory() {

@@ -5,8 +5,8 @@ import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.Router;
 import com.intuso.housemate.plugin.api.internal.ExternalClientRouter;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -32,8 +32,8 @@ public class SocketServer extends ExternalClientRouter<SocketServer> {
     private final V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory;
 
     @Inject
-    public SocketServer(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router, V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory) {
-        super(log, listenersFactory, router);
+    public SocketServer(Logger logger, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router, V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory) {
+        super(logger, listenersFactory, router);
         this.properties = properties;
         this.v1_0SocketClientHandlerFactory = v1_0SocketClientHandlerFactory;
     }
@@ -45,36 +45,36 @@ public class SocketServer extends ExternalClientRouter<SocketServer> {
             // open the server port
             String port = properties.get(PORT);
             if(port == null) {
-                getLog().d("Socket server port not set, using default");
+                getLogger().debug("Socket server port not set, using default");
                 port = "46873";
             }
-            getLog().d("Creating server comms on port " + port);
+            getLogger().debug("Creating server comms on port " + port);
             serverSocket = new ServerSocket(Integer.parseInt(port));
             accepter = new Accepter();
         } catch (IOException e) {
-            getLog().e("Could not open port to listen on", e);
+            getLogger().error("Could not open port to listen on", e);
             throw new HousemateCommsException("Could not open port to listen on", e);
         }
         
         // start the thread that will accept connections from the port
         accepter.start();
-        getLog().d("Accepting socket connections");
+        getLogger().debug("Accepting socket connections");
     }
 
     @Override
     public void _stop() {
-        getLog().d("Stopping server comms");
+        getLogger().debug("Stopping server comms");
         try {
             serverSocket.close();
         } catch (IOException e) {
-            getLog().e("Failed to close socket server's socket", e);
+            getLogger().error("Failed to close socket server's socket", e);
         }
         // start the thread that will accept connections from the port
         accepter.interrupt();
         try {
             accepter.join();
         } catch (InterruptedException e) {
-            getLog().e("Failed to wait for accepter thread to stop");
+            getLogger().error("Failed to wait for accepter thread to stop");
         }
     }
 
@@ -88,7 +88,7 @@ public class SocketServer extends ExternalClientRouter<SocketServer> {
         @Override
         public void run() {
 
-            getLog().d("Listening for connections");
+            getLogger().debug("Listening for connections");
 
             // while we shouldn't shut down
             while(!isInterrupted()) {
@@ -99,7 +99,7 @@ public class SocketServer extends ExternalClientRouter<SocketServer> {
                     socket = serverSocket.accept();
                 } catch (IOException e) {
                     if(!serverSocket.isClosed()) {
-                        getLog().e("Error getting next client connection.", e);
+                        getLogger().error("Error getting next client connection.", e);
                     }
                     continue;
                 }
@@ -112,11 +112,11 @@ public class SocketServer extends ExternalClientRouter<SocketServer> {
                         try {
                             v1_0SocketClientHandlerFactory.create(socket);
                         } catch (Throwable t) {
-                            getLog().e("Could not create client handle for new client connection", t);
+                            getLogger().error("Could not create client handle for new client connection", t);
                             try {
                                 socket.close();
                             } catch (IOException e1) {
-                                getLog().e("Failed to create client connection and close the socket", t);
+                                getLogger().error("Failed to create client connection and close the socket", t);
                             }
                         }
                     }

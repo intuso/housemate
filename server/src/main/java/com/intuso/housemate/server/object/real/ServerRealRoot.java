@@ -18,8 +18,8 @@ import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.NoPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class ServerRealRoot extends RealRootImpl {
     private boolean initialDataSent = false;
 
     @Inject
-    public ServerRealRoot(Log log,
+    public ServerRealRoot(Logger logger,
                           ListenersFactory listenersFactory,
                           PropertyRepository properties,
                           Router<?> router,
@@ -48,7 +48,7 @@ public class ServerRealRoot extends RealRootImpl {
                           RealDevice.Factory deviceFactory,
                           RealHardware.Factory hardwareFactory,
                           RealUser.Factory userFactory) {
-        super(log, listenersFactory, properties, router, types,
+        super(logger, listenersFactory, properties, router, types,
                 addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory,
                 conditionFactoryType, deviceFactoryType, hardwareFactoryType, taskFactoryType, automationFactory,
                 deviceFactory, hardwareFactory, userFactory);

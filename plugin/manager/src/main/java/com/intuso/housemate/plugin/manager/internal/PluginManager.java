@@ -1,4 +1,4 @@
-package com.intuso.housemate.plugin.manager;
+package com.intuso.housemate.plugin.manager.internal;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -11,7 +11,7 @@ import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
@@ -24,20 +24,20 @@ import java.util.Map;
  */
 public class PluginManager {
 
-    private final Log log;
+    private final Logger logger;
 
     private final Map<String, Injector> pluginInjectors = Maps.newHashMap();
     private final Listeners<PluginListener> pluginListeners;
 
     @Inject
-    public PluginManager(Log log, ListenersFactory listenersFactory) {
-        this.log = log;
+    public PluginManager(Logger logger, ListenersFactory listenersFactory) {
+        this.logger = logger;
         this.pluginListeners = listenersFactory.create();
     }
 
     public String addPlugin(Injector pluginInjector) {
 
-        log.d("Adding plugin");
+        logger.debug("Adding plugin");
 
         Version version = detectVersion(pluginInjector);
         pluginInjector = version.createChildInjector(pluginInjector);
@@ -53,7 +53,7 @@ public class PluginManager {
     }
 
     public void removePlugin(String id) {
-        log.d("Removing plugin : " + id);
+        logger.debug("Removing plugin : " + id);
         Injector pluginInjector = pluginInjectors.remove(id);
         if(pluginInjector != null)
             for(PluginListener listener : pluginListeners)

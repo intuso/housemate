@@ -9,7 +9,7 @@ import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,12 +27,12 @@ public abstract class RealTypeImpl<
         implements RealType<O> {
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param data {@inheritDoc}
      */
-    protected RealTypeImpl(Log log, ListenersFactory listenersFactory, DATA data) {
-        super(log, listenersFactory, data);
+    protected RealTypeImpl(Logger logger, ListenersFactory listenersFactory, DATA data) {
+        super(logger, listenersFactory, data);
     }
 
     public static <O> TypeInstances serialiseAll(TypeSerialiser<O> serialiser, O ... typedValues) {

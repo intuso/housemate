@@ -6,7 +6,7 @@ import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.housemate.server.comms.ClientInstance;
 import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 public class ServerBridge
         extends BridgeObject<ServerData, HousemateData<?>, BridgeObject<?, ?, ?, ?, ?>,
@@ -34,35 +34,35 @@ public class ServerBridge
 
     private final CommandBridge renameCommand;
 
-    public ServerBridge(Log log, ListenersFactory listenersFactory, ServerProxyRoot proxyRoot, final Persistence persistence) {
-        super(log, listenersFactory, makeData(log, (ClientInstance.Application) proxyRoot.getClient().getClientInstance(), persistence));
+    public ServerBridge(Logger logger, ListenersFactory listenersFactory, ServerProxyRoot proxyRoot, final Persistence persistence) {
+        super(logger, listenersFactory, makeData(logger, (ClientInstance.Application) proxyRoot.getClient().getClientInstance(), persistence));
         applications = new ConvertingListBridge<ApplicationData, Application<?, ?, ?, ?, ?>, ApplicationBridge>(
-                log, listenersFactory, proxyRoot.getApplications(),
-                new ApplicationBridge.Converter(log, listenersFactory));
+                logger, listenersFactory, proxyRoot.getApplications(),
+                new ApplicationBridge.Converter(logger, listenersFactory));
         automations = new ConvertingListBridge<AutomationData, Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge>(
-                log, listenersFactory, proxyRoot.getAutomations(),
-                new AutomationBridge.Converter(log, listenersFactory));
+                logger, listenersFactory, proxyRoot.getAutomations(),
+                new AutomationBridge.Converter(logger, listenersFactory));
         devices = new ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>(
-                log, listenersFactory, proxyRoot.getDevices(),
-                new DeviceBridge.Converter(log, listenersFactory));
+                logger, listenersFactory, proxyRoot.getDevices(),
+                new DeviceBridge.Converter(logger, listenersFactory));
         hardwares = new ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge>(
-                log, listenersFactory, proxyRoot.getHardwares(),
-                new HardwareBridge.Converter(log, listenersFactory));
+                logger, listenersFactory, proxyRoot.getHardwares(),
+                new HardwareBridge.Converter(logger, listenersFactory));
         types = new ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge>(
-                log, listenersFactory, proxyRoot.getTypes(),
-                new TypeBridge.Converter(log, listenersFactory));
+                logger, listenersFactory, proxyRoot.getTypes(),
+                new TypeBridge.Converter(logger, listenersFactory));
         users = new ConvertingListBridge<UserData, User<?, ?, ?>, UserBridge>(
-                log, listenersFactory, proxyRoot.getUsers(),
-                new UserBridge.Converter(log, listenersFactory));
+                logger, listenersFactory, proxyRoot.getUsers(),
+                new UserBridge.Converter(logger, listenersFactory));
 
-        addAutomation = new CommandBridge(log, listenersFactory, proxyRoot.getAddAutomationCommand());
-        addDevice = new CommandBridge(log, listenersFactory, proxyRoot.getAddDeviceCommand());
-        addHardware = new CommandBridge(log, listenersFactory, proxyRoot.getAddHardwareCommand());
-        addUser = new CommandBridge(log, listenersFactory, proxyRoot.getAddUserCommand());
+        addAutomation = new CommandBridge(logger, listenersFactory, proxyRoot.getAddAutomationCommand());
+        addDevice = new CommandBridge(logger, listenersFactory, proxyRoot.getAddDeviceCommand());
+        addHardware = new CommandBridge(logger, listenersFactory, proxyRoot.getAddHardwareCommand());
+        addUser = new CommandBridge(logger, listenersFactory, proxyRoot.getAddUserCommand());
 
         renameCommand = null;/* todo use custom Command impl instead of RealCommand
-                new CommandBridge(log, listenersFactory, new RealCommand(log, listenersFactory, ServerData.RENAME_ID, ServerData.RENAME_ID, "Rename the client",
-                Lists.<RealParameter<?>>newArrayList(StringType.createParameter(log, listenersFactory, ServerData.NAME_ID, ServerData.NAME_ID, "The new name"))) {
+                new CommandBridge(logger, listenersFactory, new RealCommand(logger, listenersFactory, ServerData.RENAME_ID, ServerData.RENAME_ID, "Rename the client",
+                Lists.<RealParameter<?>>newArrayList(StringType.createParameter(logger, listenersFactory, ServerData.NAME_ID, ServerData.NAME_ID, "The new name"))) {
             @Override
             public void perform(TypeInstanceMap values) {
                 if(values != null && values.getChildren().containsKey(ServerData.NAME_ID)) {
@@ -75,7 +75,7 @@ public class ServerBridge
                             persistedValues.getChildren().put(ServerData.NAME_ID, new TypeInstances(new TypeInstance(newName)));
                             persistence.saveValues(getPath(), persistedValues);
                         } catch(Throwable t) {
-                            getLog().e("Failed to update persisted name", t);
+                            getLog().error("Failed to update persisted name", t);
                         }
                     }
                 }
@@ -94,7 +94,7 @@ public class ServerBridge
         addChild(addUser);
     }
 
-    private static ServerData makeData(Log log, ClientInstance.Application instance, Persistence persistence) {
+    private static ServerData makeData(Logger logger, ClientInstance.Application instance, Persistence persistence) {
 
         String id = instance.getApplicationDetails().getApplicationId() + "-" + instance.getApplicationInstanceId();
         String name = null;
@@ -104,7 +104,7 @@ public class ServerBridge
             if (nameValues != null)
                 name = nameValues.getFirstValue();
         } catch(Throwable t) {
-            log.e("Failed to load name for client " + id, t);
+            logger.error("Failed to load name for client " + id, t);
         }
         if(name == null)
             name = instance.getApplicationDetails().getApplicationName() + " - " + instance.getApplicationInstanceId();

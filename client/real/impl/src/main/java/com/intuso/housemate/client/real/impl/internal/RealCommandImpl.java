@@ -13,7 +13,7 @@ import com.intuso.housemate.object.api.internal.Command;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,29 +30,29 @@ public abstract class RealCommandImpl
     private final RealList<RealParameter<?>> parameters;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the command's id
      * @param name the command's name
      * @param description the command's description
      * @param parameters the command's parameters
      */
-    protected RealCommandImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, RealParameter<?>... parameters) {
-        this(log, listenersFactory, id, name, description, Arrays.asList(parameters));
+    protected RealCommandImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, RealParameter<?>... parameters) {
+        this(logger, listenersFactory, id, name, description, Arrays.asList(parameters));
     }
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the command's id
      * @param name the command's name
      * @param description the command's description
      * @param parameters the command's parameters
      */
-    protected RealCommandImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description, List<RealParameter<?>> parameters) {
-        super(log, listenersFactory, new CommandData(id, name, description));
-        enabledValue = new RealValueImpl<>(log, listenersFactory, CommandData.ENABLED_ID, CommandData.ENABLED_ID, ENABLED_DESCRIPTION, new BooleanType(log, listenersFactory), true);
-        this.parameters = (RealList)new RealListImpl<ParameterData, RealParameterImpl<?>>(log, listenersFactory, CommandData.PARAMETERS_ID, CommandData.PARAMETERS_ID, "The parameters required by the command");
+    protected RealCommandImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, List<RealParameter<?>> parameters) {
+        super(logger, listenersFactory, new CommandData(id, name, description));
+        enabledValue = new RealValueImpl<>(logger, listenersFactory, CommandData.ENABLED_ID, CommandData.ENABLED_ID, ENABLED_DESCRIPTION, new BooleanType(logger, listenersFactory), true);
+        this.parameters = (RealList)new RealListImpl<ParameterData, RealParameterImpl<?>>(logger, listenersFactory, CommandData.PARAMETERS_ID, CommandData.PARAMETERS_ID, "The parameters required by the command");
         for(RealParameter<?> parameter : parameters)
             this.parameters.add(parameter);
         addChild(enabledValue);
@@ -104,7 +104,7 @@ public abstract class RealCommandImpl
             perform(values);
             listener.commandFinished(this);
         } catch(Throwable t) {
-            getLog().e("Failed to perform command", t);
+            getLogger().error("Failed to perform command", t);
             listener.commandFailed(this, t.getMessage());
         }
     }

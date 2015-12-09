@@ -8,7 +8,7 @@ import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -30,51 +30,51 @@ public class StringType extends RealSimpleType<String> {
     };
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      */
     @Inject
-    public StringType(Log log, ListenersFactory listenersFactory) {
-        super(log, listenersFactory, SimpleTypeData.Type.String, SERIALISER);
+    public StringType(Logger logger, ListenersFactory listenersFactory) {
+        super(logger, listenersFactory, SimpleTypeData.Type.String, SERIALISER);
     }
 
     /**
      * Creates an string value object
-     * @param log the log
+     * @param logger the logger
      * @param id the value's id
      * @param name the value's name
      * @param description the value's description
      * @param value the initial value
      * @return a string value object
      */
-    public static RealValueImpl<String> createValue(Log log, ListenersFactory listenersFactory,
+    public static RealValueImpl<String> createValue(Logger logger, ListenersFactory listenersFactory,
                                                 String id, String name, String description, String value) {
-        return new RealValueImpl<>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory), value);
+        return new RealValueImpl<>(logger, listenersFactory, id, name, description, new StringType(logger, listenersFactory), value);
     }
 
     /**
      * Creates a string property object
-     * @param log the log
+     * @param logger the logger
      * @param id the property's id
      * @param name the property's name
      * @param description the property's description
      * @param values the initial values
      * @return a string property object
      */
-    public static RealPropertyImpl<String> createProperty(Log log, ListenersFactory listenersFactory,
+    public static RealPropertyImpl<String> createProperty(Logger logger, ListenersFactory listenersFactory,
                                                       String id, String name, String description, List<String> values) {
-        return new RealPropertyImpl<>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory), values);
+        return new RealPropertyImpl<>(logger, listenersFactory, id, name, description, new StringType(logger, listenersFactory), values);
     }
 
     /**
      * Creates a string parameter object
-     * @param log the log
+     * @param logger the logger
      * @param id the parameter's id
      * @param name the parameter's name
      * @param description the parameter's description
      * @return a string parameter object
      */
-    public static RealParameterImpl<String> createParameter(Log log, ListenersFactory listenersFactory,
+    public static RealParameterImpl<String> createParameter(Logger logger, ListenersFactory listenersFactory,
                                                         String id, String name, String description) {
-        return new RealParameterImpl<>(log, listenersFactory, id, name, description, new StringType(log, listenersFactory));
+        return new RealParameterImpl<>(logger, listenersFactory, id, name, description, new StringType(logger, listenersFactory));
     }
 }

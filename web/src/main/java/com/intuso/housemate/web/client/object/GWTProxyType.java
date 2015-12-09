@@ -8,7 +8,7 @@ import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
 import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
 import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -21,11 +21,11 @@ public class GWTProxyType extends ProxyType<
     private final GWTGinjector injector;
 
     @Inject
-    public GWTProxyType(Log log,
+    public GWTProxyType(Logger logger,
                         ListenersFactory listenersFactory,
                         GWTGinjector injector,
                         @Assisted TypeData<HousemateData<?>> data) {
-        super(log, listenersFactory, data);
+        super(logger, listenersFactory, data);
         this.injector = injector;
     }
 

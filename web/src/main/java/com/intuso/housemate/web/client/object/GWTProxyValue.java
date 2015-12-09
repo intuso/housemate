@@ -7,17 +7,17 @@ import com.intuso.housemate.client.v1_0.proxy.api.ProxyValue;
 import com.intuso.housemate.comms.v1_0.api.payload.NoChildrenData;
 import com.intuso.housemate.comms.v1_0.api.payload.ValueData;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
 public class GWTProxyValue extends ProxyValue<GWTProxyType, GWTProxyValue> {
 
     @Inject
-    public GWTProxyValue(Log log,
+    public GWTProxyValue(Logger logger,
                          ListenersFactory listenersFactory,
                          @Assisted ValueData data) {
-        super(log, listenersFactory, data);
+        super(logger, listenersFactory, data);
     }
 
     @Override

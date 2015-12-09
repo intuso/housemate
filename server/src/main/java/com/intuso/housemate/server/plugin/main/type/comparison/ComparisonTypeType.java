@@ -12,9 +12,9 @@ import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.plugin.api.internal.Comparator;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.PluginResource;
-import com.intuso.housemate.plugin.manager.PluginManager;
+import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
@@ -31,9 +31,9 @@ public class ComparisonTypeType extends RealChoiceType<TypeInfo> implements Plug
     private final ListenersFactory listenersFactory;
 
     @Inject
-    public ComparisonTypeType(Log log, ListenersFactory listenersFactory,
+    public ComparisonTypeType(Logger logger, ListenersFactory listenersFactory,
                               PluginManager pluginManager) {
-        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
+        super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.listenersFactory = listenersFactory;
         pluginManager.addPluginListener(this, true);
     }
@@ -54,7 +54,7 @@ public class ComparisonTypeType extends RealChoiceType<TypeInfo> implements Plug
             TypeInfo typeInfo = comparatorResource.getTypeInfo();
             if (types.get(typeInfo.id()) == null) {
                 types.put(typeInfo.id(), typeInfo);
-                RealOptionImpl option = new RealOptionImpl(getLog(), listenersFactory,
+                RealOptionImpl option = new RealOptionImpl(getLogger(), listenersFactory,
                         typeInfo.id(), typeInfo.name(), typeInfo.description());
                 ((RealList<RealOptionImpl>) getOptions()).add(option);
             }

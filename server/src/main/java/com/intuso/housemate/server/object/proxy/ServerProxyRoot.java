@@ -13,8 +13,8 @@ import com.intuso.housemate.server.comms.RemoteClientListener;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -51,12 +51,12 @@ public class ServerProxyRoot
     private ListenerRegistration clientListenerRegistration;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      */
     @Inject
-    public ServerProxyRoot(Log log, ListenersFactory listenersFactory, RootBridge rootBridge, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory) {
-        super(log, listenersFactory, objectFactory, new RootData());
+    public ServerProxyRoot(Logger logger, ListenersFactory listenersFactory, RootBridge rootBridge, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory) {
+        super(logger, listenersFactory, objectFactory, new RootData());
         this.rootBridge = rootBridge;
         init(null);
     }
@@ -160,7 +160,7 @@ public class ServerProxyRoot
             if (applicationInstanceStatus == ApplicationInstance.Status.Allowed && getData().getChildData().size() == 0)
                 sendMessage(SEND_INITIAL_DATA, NoPayload.INSTANCE);
         } catch(Throwable t) {
-            getLog().e("Failed to send message to load server's initial data", t);
+            getLogger().error("Failed to send message to load server's initial data", t);
         }
     }
 

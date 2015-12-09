@@ -8,7 +8,7 @@ import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 public class RealApplicationImpl
         extends RealObject<ApplicationData, HousemateData<?>, RealObject<?, ? ,?, ?>, Application.Listener<? super RealApplication>>
@@ -21,41 +21,41 @@ public class RealApplicationImpl
     private final RealValueImpl<Status> statusValue;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param details the application details
      */
-    public RealApplicationImpl(Log log, ListenersFactory listenersFactory, ApplicationDetails details, RealType<Status> applicationStatusType) {
-        this(log, listenersFactory, details.getApplicationId(), details.getApplicationName(), details.getApplicationDescription(),
+    public RealApplicationImpl(Logger logger, ListenersFactory listenersFactory, ApplicationDetails details, RealType<Status> applicationStatusType) {
+        this(logger, listenersFactory, details.getApplicationId(), details.getApplicationName(), details.getApplicationDescription(),
                 applicationStatusType);
     }
 
-    public RealApplicationImpl(Log log, ListenersFactory listenersFactory, String id, String name, String description,
+    public RealApplicationImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description,
                                RealType<Status> applicationStatusType) {
-        super(log, listenersFactory, new ApplicationData(id, name, description));
+        super(logger, listenersFactory, new ApplicationData(id, name, description));
         this.applicationInstances = (RealList)new RealListImpl<>(
-                log, listenersFactory, ApplicationData.APPLICATION_INSTANCES_ID, ApplicationData.APPLICATION_INSTANCES_ID, "The application's instances");
-        allowCommand = new RealCommandImpl(log, listenersFactory, ApplicationData.ALLOW_COMMAND_ID, ApplicationData.ALLOW_COMMAND_ID, "Allow access to all the application instances",
+                logger, listenersFactory, ApplicationData.APPLICATION_INSTANCES_ID, ApplicationData.APPLICATION_INSTANCES_ID, "The application's instances");
+        allowCommand = new RealCommandImpl(logger, listenersFactory, ApplicationData.ALLOW_COMMAND_ID, ApplicationData.ALLOW_COMMAND_ID, "Allow access to all the application instances",
                 Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 setStatus(Status.AllowInstances);
             }
         };
-        someCommand = new RealCommandImpl(log, listenersFactory, ApplicationData.SOME_COMMAND_ID, ApplicationData.SOME_COMMAND_ID, "Allow access to some of the application instances",
+        someCommand = new RealCommandImpl(logger, listenersFactory, ApplicationData.SOME_COMMAND_ID, ApplicationData.SOME_COMMAND_ID, "Allow access to some of the application instances",
                 Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 setStatus(Status.SomeInstances);
             }
         };
-        rejectCommand = new RealCommandImpl(log, listenersFactory, ApplicationData.REJECT_COMMAND_ID, ApplicationData.REJECT_COMMAND_ID, "Reject access to all the application instances",
+        rejectCommand = new RealCommandImpl(logger, listenersFactory, ApplicationData.REJECT_COMMAND_ID, ApplicationData.REJECT_COMMAND_ID, "Reject access to all the application instances",
                 Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 setStatus(Status.RejectInstances);
             }
         };
-        statusValue = new RealValueImpl<>(log, listenersFactory, ApplicationData.STATUS_VALUE_ID, ApplicationData.STATUS_VALUE_ID,
+        statusValue = new RealValueImpl<>(logger, listenersFactory, ApplicationData.STATUS_VALUE_ID, ApplicationData.STATUS_VALUE_ID,
                 "The status of the application instances", applicationStatusType, (Status)null);
         addChild((RealListImpl)applicationInstances);
         addChild(allowCommand);

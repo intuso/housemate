@@ -8,7 +8,7 @@ import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -22,7 +22,7 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
     private final TypeSerialiser<E> serialiser;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the type's id
      * @param name the type's name
@@ -32,15 +32,15 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
      * @param enumClass the class of the enum
      * @param values the values of the enum
      */
-    protected EnumChoiceType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+    protected EnumChoiceType(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
                              int maxValues, Class<E> enumClass, E... values) {
-        this(log, listenersFactory, id, name, description, minValues,
+        this(logger, listenersFactory, id, name, description, minValues,
                 maxValues,
                 new EnumMap<E, List<RealSubTypeImpl<?>>>(enumClass), new EnumInstanceSerialiser<>(enumClass), values);
     }
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the type's id
      * @param name the type's name
@@ -51,14 +51,14 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
      * @param optionSubTypes the subtypes for each enum value
      * @param values the values of the enum
      */
-    protected EnumChoiceType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+    protected EnumChoiceType(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
                              int maxValues, Class<E> enumClass,
                              EnumMap<E, List<RealSubTypeImpl<?>>> optionSubTypes, E... values) {
-        this(log, listenersFactory, id, name, description, minValues, maxValues,
+        this(logger, listenersFactory, id, name, description, minValues, maxValues,
                 optionSubTypes, new EnumInstanceSerialiser<>(enumClass), values);
     }
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the type's id
      * @param name the type's name
@@ -69,13 +69,13 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
      * @param elementSerialiser the serialiser for the enum elements
      * @param values the values of the enum
      */
-    protected EnumChoiceType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+    protected EnumChoiceType(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
                              int maxValues, Class<E> enumClass, TypeSerialiser<E> elementSerialiser, E... values) {
-        this(log, listenersFactory, id, name, description, minValues,
+        this(logger, listenersFactory, id, name, description, minValues,
                 maxValues, new EnumMap<E, List<RealSubTypeImpl<?>>>(enumClass), elementSerialiser, values);
     }
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the type's id
      * @param name the type's name
@@ -86,11 +86,11 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
      * @param elementSerialiser the serialiser for the enum elements
      * @param values the values of the enum
      */
-    protected EnumChoiceType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+    protected EnumChoiceType(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
                              int maxValues, EnumMap<E, List<RealSubTypeImpl<?>>> optionSubTypes,
                              TypeSerialiser<E> elementSerialiser, E... values) {
-        super(log, listenersFactory, id, name, description, minValues,
-                maxValues, convertValuesToOptions(log, listenersFactory, values, optionSubTypes));
+        super(logger, listenersFactory, id, name, description, minValues,
+                maxValues, convertValuesToOptions(logger, listenersFactory, values, optionSubTypes));
         this.serialiser = elementSerialiser;
     }
 
@@ -107,20 +107,20 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
     /**
      * Converts the values of an enum to option objects
      *
-     * @param log the log
+     * @param logger the logger
      * @param listenersFactory
      *@param values the enum's values
      * @param optionSubTypes the subtypes for each enum value   @return a list of option objects, one for each value of the enum
      */
-    private static <E extends Enum<E>> List<RealOptionImpl> convertValuesToOptions(final Log log, final ListenersFactory listenersFactory, E[] values,
+    private static <E extends Enum<E>> List<RealOptionImpl> convertValuesToOptions(final Logger logger, final ListenersFactory listenersFactory, E[] values,
                                                                                final EnumMap<E, List<RealSubTypeImpl<?>>> optionSubTypes) {
         return Lists.transform(Arrays.asList(values), new Function<E, RealOptionImpl>() {
             @Override
             public RealOptionImpl apply(E value) {
                 if(optionSubTypes.containsKey(value))
-                    return new RealOptionImpl(log, listenersFactory, value.name(), value.name(), value.name(), optionSubTypes.get(value));
+                    return new RealOptionImpl(logger, listenersFactory, value.name(), value.name(), value.name(), optionSubTypes.get(value));
                 else
-                    return new RealOptionImpl(log, listenersFactory, value.name(), value.name(), value.name());
+                    return new RealOptionImpl(logger, listenersFactory, value.name(), value.name(), value.name());
             }
         });
     }

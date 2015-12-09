@@ -9,8 +9,8 @@ import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.housemate.server.comms.RemoteClient;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 /**
  * @param <DATA> the type of the data
@@ -31,12 +31,12 @@ public abstract class ServerProxyObject<
     private ServerProxyRoot root;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected ServerProxyObject(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, DATA data) {
-        super(log, listenersFactory, data);
+    protected ServerProxyObject(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, DATA data) {
+        super(logger, listenersFactory, data);
         this.objectFactory = objectFactory;
     }
 

@@ -10,7 +10,7 @@ import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
 import com.intuso.housemate.comms.v1_0.serialiser.api.Serialiser;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,7 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
 	/**
 	 * The log to use
 	 */
-	private final Log log;
+	private final Logger logger;
 	
 	/**
 	 * This client's socket
@@ -53,10 +53,10 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
 	/**
 	 * Create a new handle for the given client connection
 	 * @param socket client connection
-	 * @param log log to use
+	 * @param logger log to use
 	 */
     @Inject
-	public V1_0SocketClientHandler(Log log,
+	public V1_0SocketClientHandler(Logger logger,
                                    Router<?> router,
                                    Set<Serialiser.Factory> serialiserFactories,
                                    @Assisted Socket socket) {
@@ -64,22 +64,22 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
 
 		// save all the given input params
 		this.socket = socket;
-		this.log = log;
+		this.logger = logger;
 		
 		// construct the client address used to log messages with
-		this.log.d("Received client connection from " + socket.getInetAddress());
+		this.logger.debug("Received client connection from " + socket.getInetAddress());
 		
 		// set the keepalive and timeouts on the socket
 		try {
 			this.socket.setKeepAlive(true);
 		} catch (SocketException e1) {
-			this.log.e("Could not set socket keepalive to true. Closing connection");
+			this.logger.error("Could not set socket keepalive to true. Closing connection");
 			throw new HousemateCommsException("Could not set socket keepalive to true. Closing connection");
 		}
 		try {
 			this.socket.setSoTimeout(0);
 		} catch (SocketException e1) {
-			this.log.e("Could not set read timeout on socket. Closing connection");
+			this.logger.error("Could not set read timeout on socket. Closing connection");
 			throw new HousemateCommsException("Could not set read timeout on socket. Closing connection from");
 		}
 
@@ -135,7 +135,7 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
                 socket.getOutputStream().write(("Missing " + Serialiser.DETAILS_KEY + " property\n").getBytes());
                 socket.getOutputStream().flush();
             } catch(IOException e) {
-                log.e("Failed to send missing serialisation key message to client", e);
+                logger.error("Failed to send missing serialisation key message to client", e);
             }
             throw new HousemateCommsException("No serialisation key in client details");
         }
@@ -151,12 +151,12 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
                 socket.getOutputStream().write(("No serialiser known for serialisation type " + serialiserType + "\n").getBytes());
                 socket.getOutputStream().flush();
             } catch(IOException e) {
-                log.e("Failed to send unknown serialisation type message to client", e);
+                logger.error("Failed to send unknown serialisation type message to client", e);
             }
             throw new HousemateCommsException("Unknown serialiser type " + serialiserType);
         }
         try {
-            log.d("Found serialiser type for client: " + serialiserType);
+            logger.debug("Found serialiser type for client: " + serialiserType);
             socket.getOutputStream().write(("Success\n").getBytes());
             socket.getOutputStream().flush();
             return serialiserFactory.create(socket.getOutputStream(), socket.getInputStream());
@@ -167,7 +167,7 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
     
     @Override
     public void messageReceived(Message message) {
-        log.d("Sending message " + message);
+        logger.debug("Sending message " + message);
         _sendMessage(message);
     }
 
@@ -185,7 +185,7 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
         try {
             serialiser.write(message);
         } catch (IOException e) {
-            log.e("Failed to write message to client, closing connection");
+            logger.error("Failed to write message to client, closing connection");
             close();
             throw new HousemateCommsException("Client connection no longer open", e);
         }
@@ -201,7 +201,7 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
 			@Override
 			public void run() {
 				
-				log.d("Closing connection");
+				logger.debug("Closing connection");
 				
 				// interrupt the reader/writer threads
 				streamReader.interrupt();
@@ -210,17 +210,17 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
 				try {
 					streamReader.join();
 				} catch(InterruptedException e) {
-					log.e("Interrupted waiting for reader/writer threads to stop");
+					logger.error("Interrupted waiting for reader/writer threads to stop");
 				}
 		
 				// close the socket
 				try {
 					socket.close();
 				} catch (IOException e) {
-					log.e("Could not close client socket connection");
+					logger.error("Could not close client socket connection");
 				}
 				
-				log.d("Closed connection");
+				logger.debug("Closed connection");
 
                 routerRegistration.unregister();
 			}
@@ -244,11 +244,11 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
                     if(message == null)
                         return;
                     else {
-                        log.d("Received message " + message);
+                        logger.debug("Received message " + message);
                         routerRegistration.sendMessage(message);
                     }
 				} catch(HousemateCommsException e) {
-                    log.e("Failed to read message from the queue", e);
+                    logger.error("Failed to read message from the queue", e);
 					close();
 					break;
 				}
@@ -264,7 +264,7 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
                 try {
                     return serialiser.read();
                 } catch(HousemateCommsException e) {
-                    log.e("Problem reading message, retrying", e);
+                    logger.error("Problem reading message, retrying", e);
                 } catch(SocketException e) {
                     if(e.getMessage().equals("Socket closed"))
                         return null;

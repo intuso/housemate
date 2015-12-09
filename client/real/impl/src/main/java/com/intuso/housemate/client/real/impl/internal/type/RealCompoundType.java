@@ -8,7 +8,7 @@ import com.intuso.housemate.comms.api.internal.payload.ListData;
 import com.intuso.housemate.comms.api.internal.payload.SubTypeData;
 import com.intuso.housemate.object.api.internal.SubType;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,7 @@ public abstract class RealCompoundType<O>
     private final RealListImpl<SubTypeData, RealSubTypeImpl<?>> subTypes;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the compound type's id
      * @param name the compound type's name
@@ -38,13 +38,13 @@ public abstract class RealCompoundType<O>
      * @param maxValues the maximum number of values the type can have
      * @param subTypes the compound type's sub types
      */
-    protected RealCompoundType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+    protected RealCompoundType(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
                                int maxValues, RealSubTypeImpl<?>... subTypes) {
-        this(log, listenersFactory, id, name, description, minValues, maxValues, Arrays.asList(subTypes));
+        this(logger, listenersFactory, id, name, description, minValues, maxValues, Arrays.asList(subTypes));
     }
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param listenersFactory
      * @param id the compound type's id
      * @param name the compound type's name
@@ -53,10 +53,10 @@ public abstract class RealCompoundType<O>
      * @param maxValues the maximum number of values the type can have
      * @param subTypes the compound type's sub types
      */
-    protected RealCompoundType(Log log, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
+    protected RealCompoundType(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
                                int maxValues, List<RealSubTypeImpl<?>> subTypes) {
-        super(log, listenersFactory, new CompoundTypeData(id, name, description, minValues, maxValues));
-        this.subTypes = new RealListImpl<SubTypeData, RealSubTypeImpl<?>>(log, listenersFactory, SUB_TYPES_ID, SUB_TYPES_NAME, SUB_TYPES_DESCRIPTION);
+        super(logger, listenersFactory, new CompoundTypeData(id, name, description, minValues, maxValues));
+        this.subTypes = new RealListImpl<SubTypeData, RealSubTypeImpl<?>>(logger, listenersFactory, SUB_TYPES_ID, SUB_TYPES_NAME, SUB_TYPES_DESCRIPTION);
         addChild(this.subTypes);
         for(RealSubTypeImpl<?> subType : subTypes)
             this.subTypes.add(subType);

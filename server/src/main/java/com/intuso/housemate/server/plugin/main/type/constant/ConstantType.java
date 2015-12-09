@@ -10,7 +10,7 @@ import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.object.api.internal.List;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -29,8 +29,8 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
     private final RealList<RealType<?>> types;
 
     @Inject
-    public ConstantType(Log log, ListenersFactory listenersFactory, RealList<RealType<?>> types) {
-        super(log, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
+    public ConstantType(Logger logger, ListenersFactory listenersFactory, RealList<RealType<?>> types) {
+        super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.listenersFactory = listenersFactory;
         this.types = types;
         types.addObjectListener(this);
@@ -45,12 +45,12 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
     public ConstantInstance<Object> deserialise(TypeInstance value) {
         String typeId = value.getValue();
         if(typeId == null) {
-            getLog().w("Cannot deserialise constant, type id is null");
+            getLogger().warn("Cannot deserialise constant, type id is null");
             return null;
         }
         RealType<?> type = types.get(typeId);
         if(type == null) {
-            getLog().w("Cannot deserialise constant, no type for id " + typeId);
+            getLogger().warn("Cannot deserialise constant, no type for id " + typeId);
             return null;
         }
         return new ConstantInstance<>(listenersFactory, (RealType<Object>) type, value.getChildValues().getChildren().get(SUB_TYPE_ID));
@@ -61,8 +61,8 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
         // don't add self
         if(type.getId().equals(getId()))
             return;
-        RealSubTypeImpl<Object> subType = new RealSubTypeImpl<>(getLog(), listenersFactory, SUB_TYPE_ID, SUB_TYPE_NAME, SUB_TYPE_DESCRIPTION, type.getId(), types);
-        RealOptionImpl option = new RealOptionImpl(getLog(), listenersFactory, type.getId(), type.getName(), type.getDescription(), subType);
+        RealSubTypeImpl<Object> subType = new RealSubTypeImpl<>(getLogger(), listenersFactory, SUB_TYPE_ID, SUB_TYPE_NAME, SUB_TYPE_DESCRIPTION, type.getId(), types);
+        RealOptionImpl option = new RealOptionImpl(getLogger(), listenersFactory, type.getId(), type.getName(), type.getDescription(), subType);
         ((RealList<RealOptionImpl>)getOptions()).add(option);
     }
 

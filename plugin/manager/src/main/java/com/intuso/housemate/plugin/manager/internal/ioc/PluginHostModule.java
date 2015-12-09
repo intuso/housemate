@@ -1,8 +1,8 @@
-package com.intuso.housemate.plugin.manager.ioc;
+package com.intuso.housemate.plugin.manager.internal.ioc;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import com.intuso.housemate.plugin.manager.PluginManager;
+import com.intuso.housemate.plugin.manager.internal.PluginManager;
 
 /**
  * Created by tomc on 18/03/15.

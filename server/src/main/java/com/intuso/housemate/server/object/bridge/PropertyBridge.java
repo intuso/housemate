@@ -8,7 +8,7 @@ import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -18,11 +18,11 @@ public class PropertyBridge
 
     private CommandBridge setCommand;
 
-    public PropertyBridge(Log log, ListenersFactory listenersFactory, Property<?, ?, ?> property) {
-        super(log, listenersFactory,
+    public PropertyBridge(Logger logger, ListenersFactory listenersFactory, Property<?, ?, ?> property) {
+        super(logger, listenersFactory,
             new PropertyData(property.getId(), property.getName(), property.getDescription(), property.getTypeId(), (TypeInstances) property.getValue()),
             property);
-        setCommand = new CommandBridge(log, listenersFactory, property.getSetCommand());
+        setCommand = new CommandBridge(logger, listenersFactory, property.getSetCommand());
         addChild(setCommand);
     }
 
@@ -40,17 +40,17 @@ public class PropertyBridge
 
     public static class Converter implements Function<Property<?, ?, ?>, PropertyBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public PropertyBridge apply(Property<?, ?, ?> property) {
-            return new PropertyBridge(log, listenersFactory, property);
+            return new PropertyBridge(logger, listenersFactory, property);
         }
     }
 }

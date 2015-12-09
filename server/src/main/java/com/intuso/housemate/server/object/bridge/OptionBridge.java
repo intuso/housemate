@@ -7,7 +7,7 @@ import com.intuso.housemate.comms.api.internal.payload.SubTypeData;
 import com.intuso.housemate.object.api.internal.Option;
 import com.intuso.housemate.object.api.internal.SubType;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
@@ -21,11 +21,11 @@ public class OptionBridge
 
     private ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge> subTypes;
 
-    public OptionBridge(Log log, ListenersFactory listenersFactory, Option<?, ?> option) {
-        super(log, listenersFactory, new OptionData(option.getId(), option.getName(), option.getDescription()));
+    public OptionBridge(Logger logger, ListenersFactory listenersFactory, Option<?, ?> option) {
+        super(logger, listenersFactory, new OptionData(option.getId(), option.getName(), option.getDescription()));
         if(option.getSubTypes() != null) {
-            subTypes = new ConvertingListBridge<>(log, listenersFactory, option.getSubTypes(),
-                    new SubTypeBridge.Converter(log, listenersFactory));
+            subTypes = new ConvertingListBridge<>(logger, listenersFactory, option.getSubTypes(),
+                    new SubTypeBridge.Converter(logger, listenersFactory));
             addChild(subTypes);
         }
     }
@@ -37,17 +37,17 @@ public class OptionBridge
 
     public final static class Converter implements Function<Option<?, ?>, OptionBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public OptionBridge apply(Option<?, ?> option) {
-            return new OptionBridge(log, listenersFactory, option);
+            return new OptionBridge(logger, listenersFactory, option);
         }
     }
 }

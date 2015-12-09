@@ -6,7 +6,7 @@ import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.Router;
 import com.intuso.housemate.comms.api.internal.access.ConnectionStatus;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,10 +21,10 @@ public abstract class ExternalClientRouter<ROUTER extends ExternalClientRouter<?
     private Router.Registration routerRegistration;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      */
-    public ExternalClientRouter(Log log, ListenersFactory listenersFactory, Router<?> router) {
-        super(log, listenersFactory);
+    public ExternalClientRouter(Logger logger, ListenersFactory listenersFactory, Router<?> router) {
+        super(logger, listenersFactory);
         this.router = router;
     }
 

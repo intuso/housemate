@@ -10,7 +10,7 @@ import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 
@@ -25,15 +25,15 @@ public class ConditionListWatcher implements List.Listener<RealCondition<?>> {
 
     private final Multimap<RealCondition, ListenerRegistration> listeners = HashMultimap.create();
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
     private final PropertyListWatcher propertyListWatcher;
     private ConditionListWatcher conditionListWatcher; // cannot init this in constructor as we'll get inifite recursion
 
     @Inject
-    public ConditionListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher) {
-        this.log = log;
+    public ConditionListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher) {
+        this.logger = logger;
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
         this.propertyListWatcher = propertyListWatcher;
@@ -49,12 +49,12 @@ public class ConditionListWatcher implements List.Listener<RealCondition<?>> {
         try {
             persistence.saveValues(condition.getPath(), toSave);
         } catch (Throwable t) {
-            log.e("Failed to save new automation values", t);
+            logger.error("Failed to save new automation values", t);
         }
         listeners.put(condition, valueBaseWatcher.watch(condition.getDriverProperty()));
         listeners.put(condition, condition.getProperties().addObjectListener(propertyListWatcher, true));
         if(conditionListWatcher == null)
-            conditionListWatcher = new ConditionListWatcher(log, persistence, valueBaseWatcher, propertyListWatcher);
+            conditionListWatcher = new ConditionListWatcher(logger, persistence, valueBaseWatcher, propertyListWatcher);
         listeners.put(condition, condition.getConditions().addObjectListener(conditionListWatcher, true));
     }
 

@@ -7,8 +7,8 @@ import com.intuso.housemate.comms.api.internal.payload.PropertyData;
 import com.intuso.housemate.comms.api.internal.payload.TaskData;
 import com.intuso.housemate.object.api.internal.Task;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
+import org.slf4j.Logger;
 
 public class ServerProxyTask
         extends ServerProxyObject<
@@ -34,13 +34,13 @@ public class ServerProxyTask
     private ServerProxyList<PropertyData, ServerProxyProperty> properties;
 
     /**
-     * @param log {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyTask(Log log, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted TaskData data) {
-        super(log, listenersFactory, objectFactory, data);
+    public ServerProxyTask(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted TaskData data) {
+        super(logger, listenersFactory, objectFactory, data);
     }
 
     @Override

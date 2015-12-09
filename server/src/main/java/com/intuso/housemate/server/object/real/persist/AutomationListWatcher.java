@@ -12,7 +12,7 @@ import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,7 +28,7 @@ public class AutomationListWatcher implements List.Listener<RealAutomation> {
 
     private final Multimap<RealAutomation, ListenerRegistration> listeners = HashMultimap.create();
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
     private final ConditionListWatcher conditionListWatcher;
@@ -36,9 +36,9 @@ public class AutomationListWatcher implements List.Listener<RealAutomation> {
     private final AutomationListener automationListener;
 
     @Inject
-    public AutomationListWatcher(Log log, Persistence persistence, ValueBaseWatcher valueBaseWatcher,
+    public AutomationListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher,
                                  ConditionListWatcher conditionListWatcher, TaskListWatcher taskListWatcher, AutomationListener automationListener) {
-        this.log = log;
+        this.logger = logger;
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
         this.conditionListWatcher = conditionListWatcher;
@@ -56,7 +56,7 @@ public class AutomationListWatcher implements List.Listener<RealAutomation> {
         try {
             persistence.saveValues(automation.getPath(), toSave);
         } catch (Throwable t) {
-            log.e("Failed to save new automation values", t);
+            logger.error("Failed to save new automation values", t);
         }
 
         listeners.put(automation, automation.addObjectListener(automationListener));
@@ -68,11 +68,11 @@ public class AutomationListWatcher implements List.Listener<RealAutomation> {
             TypeInstances instances = persistence.getTypeInstances(automation.getRunningValue().getPath());
             if(instances.getElements().size() > 0 && BooleanType.SERIALISER.deserialise(instances.getElements().get(0)))
                 automation.getStartCommand().perform(new TypeInstanceMap(),
-                        new CommandPerformListener(log, "Start automation \"" + automation.getId() + "\""));
+                        new CommandPerformListener(logger, "Start automation \"" + automation.getId() + "\""));
         } catch(DetailsNotFoundException e) {
-            log.w("No details found for whether the automation was previously running" + Arrays.toString(automation.getPath()));
+            logger.warn("No details found for whether the automation was previously running" + Arrays.toString(automation.getPath()));
         } catch(Throwable t) {
-            log.e("Failed to check value for whether the automation was previously running", t);
+            logger.error("Failed to check value for whether the automation was previously running", t);
         }
     }
 
@@ -85,7 +85,7 @@ public class AutomationListWatcher implements List.Listener<RealAutomation> {
         try {
             persistence.removeValues(automation.getPath());
         } catch(Throwable t) {
-            log.e("Failed to delete automation properties", t);
+            logger.error("Failed to delete automation properties", t);
         }
     }
 }

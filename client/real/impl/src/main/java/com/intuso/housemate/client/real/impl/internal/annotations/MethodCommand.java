@@ -8,7 +8,7 @@ import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,7 +24,7 @@ public class MethodCommand extends RealCommandImpl {
     private final ParameterConverter parameterConverter;
 
     @Inject
-    protected MethodCommand(Log log,
+    protected MethodCommand(Logger logger,
                             ListenersFactory listenersFactory,
                             @Assisted("id") String id,
                             @Assisted("name") String name,
@@ -32,7 +32,7 @@ public class MethodCommand extends RealCommandImpl {
                             @Assisted List<RealParameter<?>> parameters,
                             @Assisted Method method,
                             @Assisted Object instance) {
-        super(log, listenersFactory, id, name, description, parameters);
+        super(logger, listenersFactory, id, name, description, parameters);
         this.method = method;
         this.instance = instance;
         parameterConverter = new ParameterConverter(parameters);

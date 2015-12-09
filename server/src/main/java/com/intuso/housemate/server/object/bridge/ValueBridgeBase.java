@@ -7,7 +7,7 @@ import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.ValueBase;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -23,8 +23,8 @@ public abstract class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
 
     private ValueBase<TypeInstances, ValueBase.Listener<? super ValueBase<TypeInstances, ?, ?>>, ValueBase<TypeInstances, ?, ?>> valueBase;
 
-    public ValueBridgeBase(Log log, ListenersFactory listenersFactory, WBL data, ValueBase<?, ?, ?> valueBase) {
-        super(log, listenersFactory, data);
+    public ValueBridgeBase(Logger logger, ListenersFactory listenersFactory, WBL data, ValueBase<?, ?, ?> valueBase) {
+        super(logger, listenersFactory, data);
         this.valueBase = (ValueBase<TypeInstances, Listener<? super ValueBase<TypeInstances, ?, ?>>, ValueBase<TypeInstances, ?, ?>>) valueBase;
     }
 

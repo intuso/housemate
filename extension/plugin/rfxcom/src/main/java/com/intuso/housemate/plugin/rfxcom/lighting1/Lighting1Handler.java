@@ -10,9 +10,9 @@ import com.intuso.housemate.object.v1_0.api.TypeInstance;
 import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.plugin.rfxcom.Handler;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.util.lighting1.Lighting1;
 import com.rfxcom.rfxtrx.util.lighting1.Lighting1House;
+import org.slf4j.Logger;
 
 import java.util.UUID;
 
@@ -23,16 +23,16 @@ public abstract class Lighting1Handler implements Handler {
 
     static Lighting1Handler INSTANCE;
 
-    private final Log log;
+    private final Logger logger;
     private final RealDevice.Container deviceContainer;
     private final Lighting1 lighting1;
     private ListenerRegistration messageListenerRegistration;
     private final SetMultimap<Byte, Byte> knownAppliances = HashMultimap.create();
     private final CallbackImpl callbackImpl = new CallbackImpl();
 
-    public Lighting1Handler(Log log, Lighting1 lighting1, RealDevice.Container deviceContainer) {
+    public Lighting1Handler(Logger logger, Lighting1 lighting1, RealDevice.Container deviceContainer) {
         INSTANCE = this;
-        this.log = log;
+        this.logger = logger;
         this.deviceContainer = deviceContainer;
         this.lighting1 = lighting1;
     }
@@ -84,7 +84,7 @@ public abstract class Lighting1Handler implements Handler {
                     }
                 });
             } catch (Throwable t) {
-                log.e("Failed to auto-create Lighting1 device " + houseId + "/" + (int) unitCode, t);
+                logger.error("Failed to auto-create Lighting1 device " + houseId + "/" + (int) unitCode, t);
             }
         }
     }

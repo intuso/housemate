@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.impl.internal.driver.LogicCondition;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.Map;
@@ -16,12 +16,12 @@ import java.util.Map;
 @TypeInfo(id = "or", name = "Or", description = "True if any child condition is true")
 public class Or extends LogicCondition {
 
-    private final Log log;
+    private final Logger logger;
 
     @Inject
-    public Or(Log log, @Assisted Callback conditionCallback) {
+    public Or(Logger logger, @Assisted Callback conditionCallback) {
         super(conditionCallback);
-        this.log = log;
+        this.logger = logger;
     }
 
     /**
@@ -37,13 +37,13 @@ public class Or extends LogicCondition {
         for(Boolean b : satisfied) {
             // if one is true, we're true
             if(b) {
-                log.d("One sub-condition is satisfied");
+                logger.debug("One sub-condition is satisfied");
                 return true;
             }
         }
 
         // we only get here if they were all false
-        log.d("All sub-conditions are unsatisfied");
+        logger.debug("All sub-conditions are unsatisfied");
         return false;
     }
 }

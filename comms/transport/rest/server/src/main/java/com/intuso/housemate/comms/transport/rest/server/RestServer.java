@@ -10,13 +10,13 @@ import com.intuso.housemate.comms.transport.rest.server.v1_0.resources.GenericRe
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.plugin.api.internal.ExternalClientRouter;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
+import org.slf4j.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,14 +33,14 @@ public class RestServer extends ExternalClientRouter<RestServer> {
     private final Server server;
 
     @Inject
-    public RestServer(Log log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector, Router<?> router) {
+    public RestServer(Logger log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector, Router<?> router) {
         super(log, listenersFactory, router);
 
         this.injector = injector.createChildInjector(new SimpleProxyModule());
 
         String port = properties.get(PORT);
 
-        log.d("Creating REST server on port " + port);
+        log.debug("Creating REST server on port " + port);
         server = new Server(Integer.parseInt(port));
 
         ServletContextHandler handler = new ServletContextHandler();
@@ -54,7 +54,7 @@ public class RestServer extends ExternalClientRouter<RestServer> {
         try {
             server.start();
         } catch (Exception e) {
-            getLog().e("Could not start the server", e);
+            getLogger().error("Could not start the server", e);
             throw new HousemateCommsException("Could not start the REST server", e);
         }
     }
@@ -63,7 +63,7 @@ public class RestServer extends ExternalClientRouter<RestServer> {
         try {
             server.stop();
         } catch(Exception e) {
-            getLog().e("Could not stop the REST server", e);
+            getLogger().error("Could not stop the REST server", e);
         }
     }
 

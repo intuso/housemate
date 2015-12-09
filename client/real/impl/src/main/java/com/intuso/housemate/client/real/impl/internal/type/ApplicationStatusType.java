@@ -3,7 +3,7 @@ package com.intuso.housemate.client.real.impl.internal.type;
 import com.google.inject.Inject;
 import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,8 +15,8 @@ import com.intuso.utilities.log.Log;
 public class ApplicationStatusType extends EnumChoiceType<Application.Status> {
 
     @Inject
-    protected ApplicationStatusType(Log log, ListenersFactory listenersFactory) {
-        super(log, listenersFactory, "application-status", "Application Status", "Application Status", 1, 1,
+    protected ApplicationStatusType(Logger logger, ListenersFactory listenersFactory) {
+        super(logger, listenersFactory, "application-status", "Application Status", "Application Status", 1, 1,
                 Application.Status.class, Application.Status.Unregistered, Application.Status.AllowInstances, Application.Status.SomeInstances, Application.Status.RejectInstances);
     }
 }

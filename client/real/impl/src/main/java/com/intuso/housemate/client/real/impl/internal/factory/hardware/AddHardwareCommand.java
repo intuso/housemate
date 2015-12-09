@@ -12,7 +12,7 @@ import com.intuso.housemate.comms.api.internal.payload.HardwareData;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
 * Created by tomc on 19/03/15.
@@ -35,7 +35,7 @@ public class AddHardwareCommand extends RealCommandImpl {
     private final RealHardware.RemoveCallback removeCallback;
 
     @Inject
-    protected AddHardwareCommand(Log log,
+    protected AddHardwareCommand(Logger logger,
                                  ListenersFactory listenersFactory,
                                  StringType stringType,
                                  HardwareFactoryType hardwareFactoryType,
@@ -45,10 +45,10 @@ public class AddHardwareCommand extends RealCommandImpl {
                                  @Assisted("description") String description,
                                  @Assisted Callback callback,
                                  @Assisted RealHardware.RemoveCallback removeCallback) {
-        super(log, listenersFactory, id, name, description,
-                new RealParameterImpl<>(log, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(log, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(log, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, hardwareFactoryType));
+        super(logger, listenersFactory, id, name, description,
+                new RealParameterImpl<>(logger, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(logger, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(logger, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, hardwareFactoryType));
         this.hardwareFactoryType = hardwareFactoryType;
         this.callback = callback;
         this.hardwareFactory = hardwareFactory;

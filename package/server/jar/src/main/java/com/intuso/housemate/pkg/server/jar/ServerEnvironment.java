@@ -8,7 +8,7 @@ import com.google.inject.Module;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.pkg.server.jar.ioc.JarServerModule;
 import com.intuso.housemate.platform.pc.Properties;
-import com.intuso.housemate.plugin.manager.PluginManager;
+import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.housemate.server.object.real.FactoryPluginListener;
 import com.intuso.housemate.server.object.real.persist.RealObjectWatcher;
 import com.intuso.housemate.web.server.ContextListener;
@@ -16,7 +16,6 @@ import com.intuso.housemate.web.server.service.CommsServiceImpl;
 import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import jssc.SerialPortList;
@@ -25,6 +24,7 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.resource.URLResource;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -70,28 +70,28 @@ public class ServerEnvironment {
 
         Injector injector = Guice.createInjector(new JarServerModule(defaultProperties, properties));
 
-        Log log = injector.getInstance(Log.class);
+        Logger logger = injector.getInstance(Logger.class);
 
-        log.d("Starting server");
+        logger.debug("Starting server");
         injector.getInstance(com.intuso.housemate.server.Server.class).start();
-        log.d("Started server");
+        logger.debug("Started server");
 
         // force factory listener to be created and register itself for new plugins
         injector.getInstance(FactoryPluginListener.class);
 
-        log.d("Loading plugins");
+        logger.debug("Loading plugins");
         loadPlugins(injector, properties);
-        log.d("Loaded plugins");
+        logger.debug("Loaded plugins");
 
-        log.d("Loading/watching objects");
+        logger.debug("Loading/watching objects");
         injector.getInstance(RealObjectWatcher.class).start();
-        log.d("Loaded objects");
+        logger.debug("Loaded objects");
 
-        log.d("Starting webapp");
+        logger.debug("Starting webapp");
         startWebapp(injector, properties);
-        log.d("Started webapp");
+        logger.debug("Started webapp");
 
-        log.d("Finished startup, accepting external client requests");
+        logger.debug("Finished startup, accepting external client requests");
         injector.getInstance(com.intuso.housemate.server.Server.class).acceptClients();
     }
 
@@ -103,7 +103,7 @@ public class ServerEnvironment {
 
         loadSharedJNILibs();
 
-        Log log = injector.getInstance(Log.class);
+        Logger log = injector.getInstance(Logger.class);
         PluginManager pluginManager = injector.getInstance(PluginManager.class);
 
         // discover plugins from local dir
@@ -111,14 +111,14 @@ public class ServerEnvironment {
         if(!pluginDirectory.exists())
             pluginDirectory.mkdir();
         if(pluginDirectory.isFile())
-            log.w("Plugin path is not a directory");
+            log.warn("Plugin path is not a directory");
         else {
-            log.d("Loading plugins from " + pluginDirectory.getAbsolutePath());
+            log.debug("Loading plugins from " + pluginDirectory.getAbsolutePath());
             for(File pluginFile : pluginDirectory.listFiles(new PluginFileFilter())) {
                 try {
                     pluginIds.put(pluginFile.getAbsolutePath(), pluginManager.addPlugin(createPluginInjector(injector, pluginFile, log)));
                 } catch(Throwable t) {
-                    log.w("Failed to add plugin for file " + pluginFile.getAbsolutePath(), t);
+                    log.warn("Failed to add plugin for file " + pluginFile.getAbsolutePath(), t);
                 }
             }
         }
@@ -129,20 +129,20 @@ public class ServerEnvironment {
         //CommPortIdentifier.getPortIdentifiers();
     }
 
-    private Injector createPluginInjector(Injector injector, File file, Log log) {
-        return injector.createChildInjector(getPluginModules(file, log));
+    private Injector createPluginInjector(Injector injector, File file, Logger logger) {
+        return injector.createChildInjector(getPluginModules(file, logger));
     }
 
-    private List<Module> getPluginModules(File file, Log log) {
-        log.d("Loading plugins from " + file.getAbsolutePath());
+    private List<Module> getPluginModules(File file, Logger logger) {
+        logger.debug("Loading plugins from " + file.getAbsolutePath());
         try {
             ClassLoader cl = new URLClassLoader(new URL[] {file.toURI().toURL()}, getClass().getClassLoader());
             return Lists.newArrayList(ServiceLoader.load(Module.class, cl));
         } catch(MalformedURLException e) {
-            log.e("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not get URL for file");
+            logger.error("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not get URL for file");
             return Lists.newArrayList();
         } catch(IOException e) {
-            log.e("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not load mainifest file");
+            logger.error("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not load mainifest file");
             return Lists.newArrayList();
         }
     }
@@ -156,13 +156,13 @@ public class ServerEnvironment {
 
     private void startWebapp(Injector injector, PropertyRepository properties) {
 
-        Log log = injector.getInstance(Log.class);
+        Logger log = injector.getInstance(Logger.class);
 
         try {
 
             if (properties.get(RUN_WEBAPP) != null
                     && properties.get(RUN_WEBAPP).equalsIgnoreCase("false")) {
-                log.d("Not starting webapp");
+                log.debug("Not starting webapp");
                 return;
             }
 
@@ -171,12 +171,12 @@ public class ServerEnvironment {
                 if (properties.keySet().contains(WEBAPP_PORT))
                     port = Integer.parseInt(properties.get(WEBAPP_PORT));
             } catch (Throwable t) {
-                log.w("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
+                log.warn("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
             }
 
             startJetty(injector, properties, port);
         } catch(Throwable t) {
-            log.e("Failed to start web server", t);
+            log.error("Failed to start web server", t);
         }
     }
 

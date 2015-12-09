@@ -7,21 +7,21 @@ import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.housemate.plugin.api.internal.Transformer;
 import com.intuso.housemate.server.plugin.main.type.transformation.Transformation;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  */
 public class TransformationOutput extends ValueSource implements ValueAvailableListener {
 
-    private final Log log;
+    private final Logger logger;
     private final ListenersFactory listenersFactory;
     private final RealList<RealType<?>> types;
     private final Transformation transformation;
     private ComputedValue value;
 
-    public TransformationOutput(Log log, ListenersFactory listenersFactory, RealList<RealType<?>> types, Transformation transformation) {
+    public TransformationOutput(Logger logger, ListenersFactory listenersFactory, RealList<RealType<?>> types, Transformation transformation) {
         super(listenersFactory);
-        this.log = log;
+        this.logger = logger;
         this.listenersFactory = listenersFactory;
         this.types = types;
         this.transformation = transformation;
@@ -59,7 +59,7 @@ public class TransformationOutput extends ValueSource implements ValueAvailableL
                 value = new ComputedValue(listenersFactory, outputType);
             value.setTypeInstances(new TypeInstances(outputType.serialise(result)));
         } catch(Throwable t) {
-            log.e("Failed to transform value", t);
+            logger.error("Failed to transform value", t);
             value = null;
             return;
         }

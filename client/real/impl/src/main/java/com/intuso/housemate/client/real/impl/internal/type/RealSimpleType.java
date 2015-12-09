@@ -6,7 +6,7 @@ import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * Base class for types that have a simple type, such as string, integer etc
@@ -16,13 +16,13 @@ public abstract class RealSimpleType<O> extends RealTypeImpl<SimpleTypeData, NoC
     private final TypeSerialiser<O> serialiser;
 
     /**
-     * @param log the log
+     * @param logger the logger
      * @param listenersFactory
      * @param type the type of the simple type
      * @param serialiser the serialiser for the type
      */
-    protected RealSimpleType(Log log, ListenersFactory listenersFactory, SimpleTypeData.Type type, TypeSerialiser<O> serialiser) {
-        super(log, listenersFactory, new SimpleTypeData(type));
+    protected RealSimpleType(Logger logger, ListenersFactory listenersFactory, SimpleTypeData.Type type, TypeSerialiser<O> serialiser) {
+        super(logger, listenersFactory, new SimpleTypeData(type));
         this.serialiser = serialiser;
     }
 

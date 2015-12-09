@@ -14,7 +14,7 @@ import com.intuso.housemate.server.plugin.main.type.comparison.Comparison;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueAvailableListener;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * Condition which is true iff the current day of the week matches
@@ -32,15 +32,15 @@ public class ValueComparison implements ConditionDriver {
     private Value<TypeInstances, ?> firstValue = null;
     private Value<TypeInstances, ?> secondValue = null;
 
-    private final Log log;
+    private final Logger logger;
     private final RealList<RealType<?>> types;
     private final ConditionDriver.Callback callback;
 
     @Inject
-	public ValueComparison(Log log,
+	public ValueComparison(Logger logger,
                            RealList<RealType<?>> types,
                            @Assisted ConditionDriver.Callback callback) {
-        this.log = log;
+        this.logger = logger;
         this.types = types;
         this.callback = callback;
     }
@@ -129,7 +129,7 @@ public class ValueComparison implements ConditionDriver {
                         callback.setError(null);
                     } catch(Throwable t) {
                         callback.setError("Error comparing values: " + t.getMessage());
-                        log.e("Error comparing values", t);
+                        logger.error("Error comparing values", t);
                     }
                 }
             }

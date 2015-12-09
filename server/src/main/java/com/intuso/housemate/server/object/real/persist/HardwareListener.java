@@ -8,19 +8,19 @@ import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.Persistence;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 /**
  * Created by tomc on 03/02/15.
  */
 public class HardwareListener implements Hardware.Listener<RealHardware<?>> {
 
-    private final Log log;
+    private final Logger logger;
     private final Persistence persistence;
 
     @Inject
-    protected HardwareListener(Log log, Persistence persistence) {
-        this.log = log;
+    protected HardwareListener(Logger logger, Persistence persistence) {
+        this.logger = logger;
         this.persistence = persistence;
     }
 
@@ -31,7 +31,7 @@ public class HardwareListener implements Hardware.Listener<RealHardware<?>> {
             values.getChildren().put(DeviceData.NAME_ID, new TypeInstances(new TypeInstance(newName)));
             persistence.saveValues(primaryObject.getPath(), values);
         } catch(Throwable t) {
-            log.e("Failed to update persisted name", t);
+            logger.error("Failed to update persisted name", t);
         }
     }
 

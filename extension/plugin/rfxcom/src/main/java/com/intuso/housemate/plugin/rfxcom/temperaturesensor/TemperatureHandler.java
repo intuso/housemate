@@ -9,8 +9,8 @@ import com.intuso.housemate.object.v1_0.api.TypeInstance;
 import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.plugin.rfxcom.Handler;
 import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.log.Log;
 import com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensors;
+import org.slf4j.Logger;
 
 import java.util.Set;
 import java.util.UUID;
@@ -20,15 +20,15 @@ import java.util.UUID;
  */
 public abstract class TemperatureHandler implements Handler {
 
-    private final Log log;
+    private final Logger logger;
     private final RealDevice.Container deviceContainer;
     private final TemperatureSensors temperatureSensors;
     private ListenerRegistration messageListenerRegistration;
     private final CallbackImpl callback = new CallbackImpl();
     private final Set<Integer> knownSensors = Sets.newHashSet();
 
-    public TemperatureHandler(Log log, TemperatureSensors temperatureSensors, RealDevice.Container deviceContainer) {
-        this.log = log;
+    public TemperatureHandler(Logger logger, TemperatureSensors temperatureSensors, RealDevice.Container deviceContainer) {
+        this.logger = logger;
         this.deviceContainer = deviceContainer;
         this.temperatureSensors = temperatureSensors;
     }
@@ -79,7 +79,7 @@ public abstract class TemperatureHandler implements Handler {
                     }
                 });
             } catch (Throwable t) {
-                log.e("Failed to auto-create Temperature device " + sensorId, t);
+                logger.error("Failed to auto-create Temperature device " + sensorId, t);
             }
         }
     }

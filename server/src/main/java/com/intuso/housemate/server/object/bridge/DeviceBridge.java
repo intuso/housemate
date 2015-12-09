@@ -5,7 +5,7 @@ import com.intuso.housemate.comms.api.internal.payload.*;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -39,20 +39,20 @@ public class DeviceBridge
     private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
     private ConvertingListBridge<FeatureData, Feature<?, ?, ?>, FeatureBridge> featureList;
 
-    public DeviceBridge(Log log, ListenersFactory listenersFactory,
+    public DeviceBridge(Logger logger, ListenersFactory listenersFactory,
                         Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
-        super(log, listenersFactory, new DeviceData(device.getId(), device.getName(), device.getDescription()));
+        super(logger, listenersFactory, new DeviceData(device.getId(), device.getName(), device.getDescription()));
         this.device = device;
-        renameCommand = new CommandBridge(log, listenersFactory, device.getRenameCommand());
-        removeCommand = new CommandBridge(log, listenersFactory, device.getRemoveCommand());
-        runningValue = new ValueBridge(log, listenersFactory, device.getRunningValue());
-        startCommand = new CommandBridge(log, listenersFactory, device.getStartCommand());
-        stopCommand = new CommandBridge(log, listenersFactory, device.getStopCommand());
-        errorValue = new ValueBridge(log, listenersFactory, device.getErrorValue());
-        driverProperty = new PropertyBridge(log, listenersFactory, device.getDriverProperty());
-        driverLoadedValue = new ValueBridge(log, listenersFactory, device.getDriverLoadedValue());
-        propertyList = new ConvertingListBridge<>(log, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Property<?, ?, ?>>) device.getProperties(), new PropertyBridge.Converter(log, listenersFactory));
-        featureList = new ConvertingListBridge<>(log, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Feature<?, ?, ?>>) device.getFeatures(), new FeatureBridge.Converter(log, listenersFactory));
+        renameCommand = new CommandBridge(logger, listenersFactory, device.getRenameCommand());
+        removeCommand = new CommandBridge(logger, listenersFactory, device.getRemoveCommand());
+        runningValue = new ValueBridge(logger, listenersFactory, device.getRunningValue());
+        startCommand = new CommandBridge(logger, listenersFactory, device.getStartCommand());
+        stopCommand = new CommandBridge(logger, listenersFactory, device.getStopCommand());
+        errorValue = new ValueBridge(logger, listenersFactory, device.getErrorValue());
+        driverProperty = new PropertyBridge(logger, listenersFactory, device.getDriverProperty());
+        driverLoadedValue = new ValueBridge(logger, listenersFactory, device.getDriverLoadedValue());
+        propertyList = new ConvertingListBridge<>(logger, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Property<?, ?, ?>>) device.getProperties(), new PropertyBridge.Converter(logger, listenersFactory));
+        featureList = new ConvertingListBridge<>(logger, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Feature<?, ?, ?>>) device.getFeatures(), new FeatureBridge.Converter(logger, listenersFactory));
         addChild(renameCommand);
         addChild(removeCommand);
         addChild(runningValue);
@@ -150,17 +150,17 @@ public class DeviceBridge
 
     public final static class Converter implements Function<Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge> {
 
-        private final Log log;
+        private final Logger logger;
         private final ListenersFactory listenersFactory;
 
-        public Converter(Log log, ListenersFactory listenersFactory) {
-            this.log = log;
+        public Converter(Logger logger, ListenersFactory listenersFactory) {
+            this.logger = logger;
             this.listenersFactory = listenersFactory;
         }
 
         @Override
         public DeviceBridge apply(Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
-            return new DeviceBridge(log, listenersFactory, device);
+            return new DeviceBridge(logger, listenersFactory, device);
         }
     }
 }

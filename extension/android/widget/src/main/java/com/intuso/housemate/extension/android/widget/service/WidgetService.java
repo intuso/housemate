@@ -126,8 +126,8 @@ public class WidgetService extends HousemateService {
                 .setPriority(Notification.PRIORITY_MIN)
                 .build());
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        clientHelper = ProxyClientHelper.newClientHelper(getLog(),
-                new AndroidProxyRoot(getLog(), getListenersFactory(), getProperties(), getRouter()),
+        clientHelper = ProxyClientHelper.newClientHelper(getLogger(),
+                new AndroidProxyRoot(getLogger(), getListenersFactory(), getProperties(), getRouter()),
                 getRouter())
                 .applicationDetails(APPLICATION_DETAILS)
                 .component(WidgetService.class.getName())
@@ -175,13 +175,13 @@ public class WidgetService extends HousemateService {
         for(String key : Sets.newHashSet(getProperties().keySet())) {
             if (key.startsWith(PROPERTY_PREFIX)) {
                 String encodedWidget = getProperties().get(key);
-                getLog().d("Loading widget from " + encodedWidget);
+                getLogger().debug("Loading widget from " + encodedWidget);
                 WidgetHandler<?> widgetHandler = decodePropertyValue(encodedWidget);
                 if(widgetHandler != null) {
-                    getLog().d("Decoded widget to a " + widgetHandler.getClass().getName());
+                    getLogger().debug("Decoded widget to a " + widgetHandler.getClass().getName());
                     addWidgetHandler(Integer.parseInt(key.substring(PROPERTY_PREFIX.length())), widgetHandler, false);
                 } else {
-                    getLog().d("Decoding widget config failed, removing property");
+                    getLogger().debug("Decoding widget config failed, removing property");
                     getProperties().remove(key);
                 }
             }
@@ -231,7 +231,7 @@ public class WidgetService extends HousemateService {
                     Toast.makeText(getApplicationContext(), "Not currently connected to server. Please retry later", Toast.LENGTH_SHORT).show();
             } else if (NETWORK_AVAILABLE_ACTION.equals(intent.getAction())) {
                 if (intent.getExtras().containsKey(NETWORK_AVAILABLE)) {
-                    getLog().d("Received network available update: " + intent.getBooleanExtra(NETWORK_AVAILABLE, true));
+                    getLogger().debug("Received network available update: " + intent.getBooleanExtra(NETWORK_AVAILABLE, true));
                     networkAvailable = intent.getBooleanExtra(NETWORK_AVAILABLE, true);
                     updateStatus();
                 }

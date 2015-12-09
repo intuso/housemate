@@ -16,7 +16,6 @@ import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.payload.*;
 import com.intuso.housemate.object.v1_0.api.RegexMatcher;
 import com.intuso.housemate.web.client.GWTListenersFactory;
-import com.intuso.housemate.web.client.GWTLog;
 import com.intuso.housemate.web.client.GWTPropertyRepository;
 import com.intuso.housemate.web.client.GWTRegexMatcherFactory;
 import com.intuso.housemate.web.client.activity.HousemateActivityMapper;
@@ -27,9 +26,9 @@ import com.intuso.housemate.web.client.place.HousematePlaceController;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryHandler;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryMapper;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.log.Log;
 import com.intuso.utilities.object.ObjectFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import org.slf4j.Logger;
 
 /**
  */
@@ -72,7 +71,7 @@ public class MainModule extends AbstractGinModule {
         bind(LoginManager.class).in(Singleton.class);
         bind(GWTProxyRoot.class).in(Singleton.class);
         bind(PropertyRepository.class).to(GWTPropertyRepository.class).in(Singleton.class);
-        bind(Log.class).to(GWTLog.class).in(Singleton.class);
+        bind(Logger.class).toProvider(LoggerProvider.class).in(Singleton.class);
         bind(GWTRouter.class).in(Singleton.class);
         bind(new Key<Router<?>>() {}).to(GWTRouter.class);
         bind(RegexMatcher.Factory.class).to(GWTRegexMatcherFactory.class);
