@@ -2,8 +2,9 @@ package com.intuso.housemate.server.object.proxy;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.payload.*;
-import com.intuso.utilities.object.ObjectFactory;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import org.slf4j.Logger;
 
 /**
@@ -13,7 +14,6 @@ public class ServerProxyFactory {
 
     public static class All implements ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> {
 
-        private final Logger logger;
         private final Provider<ObjectFactory<ApplicationData, ServerProxyApplication>> applicationFactory;
         private final Provider<ObjectFactory<ApplicationInstanceData, ServerProxyApplicationInstance>> applicationInstanceFactory;
         private final Provider<ObjectFactory<AutomationData, ServerProxyAutomation>> automationFactory;
@@ -33,7 +33,7 @@ public class ServerProxyFactory {
         private final Provider<ObjectFactory<ValueData, ServerProxyValue>> valueFactory;
 
         @Inject
-        public All(Logger logger, Provider<ObjectFactory<ApplicationData, ServerProxyApplication>> applicationFactory,
+        public All(Provider<ObjectFactory<ApplicationData, ServerProxyApplication>> applicationFactory,
                 Provider<ObjectFactory<ApplicationInstanceData, ServerProxyApplicationInstance>> applicationInstanceFactory,
                 Provider<ObjectFactory<AutomationData, ServerProxyAutomation>> automationFactory,
                 Provider<ObjectFactory<CommandData, ServerProxyCommand>> commandFactory,
@@ -50,7 +50,6 @@ public class ServerProxyFactory {
                 Provider<ObjectFactory<TypeData<HousemateData<?>>, ServerProxyType>> typeFactory,
                 Provider<ObjectFactory<UserData, ServerProxyUser>> userFactory,
                 Provider<ObjectFactory<ValueData, ServerProxyValue>> valueFactory) {
-            this.logger = logger;
             this.applicationFactory = applicationFactory;
             this.applicationInstanceFactory = applicationInstanceFactory;
             this.automationFactory = automationFactory;
@@ -71,43 +70,42 @@ public class ServerProxyFactory {
         }
 
         @Override
-        public ServerProxyObject<?, ?, ?, ?, ?> create(HousemateData<?> data) {
+        public ServerProxyObject<?, ?, ?, ?, ?> create(Logger logger, HousemateData<?> data) {
             if(data instanceof ApplicationData)
-                return applicationFactory.get().create((ApplicationData) data);
+                return applicationFactory.get().create(logger, (ApplicationData) data);
             else if(data instanceof ApplicationInstanceData)
-                return applicationInstanceFactory.get().create((ApplicationInstanceData) data);
+                return applicationInstanceFactory.get().create(logger, (ApplicationInstanceData) data);
             else if(data instanceof AutomationData)
-                return automationFactory.get().create((AutomationData) data);
+                return automationFactory.get().create(logger, (AutomationData) data);
             else if(data instanceof CommandData)
-                return commandFactory.get().create((CommandData) data);
+                return commandFactory.get().create(logger, (CommandData) data);
             else if(data instanceof ConditionData)
-                return conditionFactory.get().create((ConditionData) data);
+                return conditionFactory.get().create(logger, (ConditionData) data);
             else if(data instanceof DeviceData)
-                return deviceFactory.get().create((DeviceData) data);
+                return deviceFactory.get().create(logger, (DeviceData) data);
             else if(data instanceof FeatureData)
-                return featureFactory.get().create((FeatureData) data);
+                return featureFactory.get().create(logger, (FeatureData) data);
             else if(data instanceof HardwareData)
-                return hardwareFactory.get().create((HardwareData) data);
+                return hardwareFactory.get().create(logger, (HardwareData) data);
             else if(data instanceof ListData)
-                return listFactory.get().create((ListData<HousemateData<?>>) data);
+                return listFactory.get().create(logger, (ListData<HousemateData<?>>) data);
             else if(data instanceof OptionData)
-                return optionFactory.get().create((OptionData) data);
+                return optionFactory.get().create(logger, (OptionData) data);
             else if(data instanceof ParameterData)
-                return parameterFactory.get().create((ParameterData) data);
+                return parameterFactory.get().create(logger, (ParameterData) data);
             else if(data instanceof PropertyData)
-                return propertyFactory.get().create((PropertyData) data);
+                return propertyFactory.get().create(logger, (PropertyData) data);
             else if(data instanceof SubTypeData)
-                return subTypeFactory.get().create((SubTypeData) data);
+                return subTypeFactory.get().create(logger, (SubTypeData) data);
             else if(data instanceof TaskData)
-                return taskFactory.get().create((TaskData) data);
+                return taskFactory.get().create(logger, (TaskData) data);
             else if(data instanceof TypeData)
-                return typeFactory.get().create((TypeData) data);
+                return typeFactory.get().create(logger, (TypeData) data);
             else if(data instanceof UserData)
-                return userFactory.get().create((UserData) data);
+                return userFactory.get().create(logger, (UserData) data);
             else if(data instanceof ValueData)
-                return valueFactory.get().create((ValueData) data);
-            logger.warn("Don't know how to create an object from " + data.getClass().getName());
-            return null;
+                return valueFactory.get().create(logger, (ValueData) data);
+            throw new HousemateCommsException("Don't know how to create an object from " + data.getClass().getName());
         }
     }
 }

@@ -58,13 +58,13 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
      * @param data the device's data
      */
     @Inject
-    public RealDeviceImpl(Logger logger,
-                          ListenersFactory listenersFactory,
+    public RealDeviceImpl(ListenersFactory listenersFactory,
                           AnnotationProcessor annotationProcessor,
                           DeviceFactoryType driverFactoryType,
+                          @Assisted final Logger logger,
                           @Assisted DeviceData data,
                           @Assisted RemoveCallback removeCallback) {
-        super(logger, listenersFactory, new DeviceData(data.getId(), data.getName(), data.getDescription()));
+        super(listenersFactory, logger, new DeviceData(data.getId(), data.getName(), data.getDescription()));
         this.annotationProcessor = annotationProcessor;
         this.removeCallback = removeCallback;
         this.renameCommand = new RealCommandImpl(logger, listenersFactory, DeviceData.RENAME_ID, DeviceData.RENAME_ID, "Rename the device", Lists.<RealParameter<?>>newArrayList(StringType.createParameter(logger, listenersFactory, DeviceData.NAME_ID, DeviceData.NAME_ID, "The new name"))) {
@@ -141,11 +141,11 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
         if(driver == null) {
             PluginResource<DeviceDriver.Factory<DRIVER>> driverFactory = driverProperty.getTypedValue();
             if(driverFactory != null) {
-                driver = driverFactory.getResource().create(this);
+                driver = driverFactory.getResource().create(getLogger(), this);
                 Object originalDriver = asOriginal(driver);
-                for(RealFeature feature : annotationProcessor.findFeatures(originalDriver))
+                for(RealFeature feature : annotationProcessor.findFeatures(getLogger(), originalDriver))
                     features.add(feature);
-                for(RealProperty<?> property : annotationProcessor.findProperties(originalDriver))
+                for(RealProperty<?> property : annotationProcessor.findProperties(getLogger(), originalDriver))
                     properties.add(property);
                 errorValue.setTypedValues((String) null);
                 driverLoadedValue.setTypedValues(true);

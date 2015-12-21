@@ -1,15 +1,16 @@
 package com.intuso.housemate.server.object.proxy;
 
+import com.intuso.housemate.client.real.impl.internal.LoggerUtil;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.RemoteLinkedObject;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.object.api.internal.ObjectListener;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.housemate.server.comms.RemoteClient;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.object.ObjectFactory;
 import org.slf4j.Logger;
 
 /**
@@ -31,12 +32,15 @@ public abstract class ServerProxyObject<
     private ServerProxyRoot root;
 
     /**
-     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected ServerProxyObject(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, DATA data) {
-        super(logger, listenersFactory, data);
+    protected ServerProxyObject(ListenersFactory listenersFactory,
+                                ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory,
+                                Logger logger,
+                                DATA data) {
+        super(listenersFactory, logger, data);
         this.objectFactory = objectFactory;
     }
 
@@ -50,15 +54,16 @@ public abstract class ServerProxyObject<
 
         // unwrap children
         try {
-            createChildren(new ObjectFactory<CHILD_DATA, CHILD>() {
-                @Override
-                public CHILD create(CHILD_DATA data) {
-                    return (CHILD) objectFactory.create(data);
-                }
-            });
+            createChildren();
         } catch(Throwable t) {
             throw new HousemateCommsException("Failed to unwrap child object", t);
         }
+    }
+
+    protected void createChildren() {
+        for(CHILD_DATA childData : getData().getChildData().values())
+            if(getChild(childData.getId()) == null)
+                addChild((CHILD) objectFactory.create(LoggerUtil.child(getLogger(), childData.getId()), childData));
     }
 
     @Override
@@ -117,7 +122,7 @@ public abstract class ServerProxyObject<
 
         // if there isn't a child of that id, then add one
         if(child == null) {
-            child = (CHILD) objectFactory.create(data);
+            child = (CHILD) objectFactory.create(LoggerUtil.child(getLogger(), data.getId()), data);
             child.init(ServerProxyObject.this);
             addChild(child);
         }

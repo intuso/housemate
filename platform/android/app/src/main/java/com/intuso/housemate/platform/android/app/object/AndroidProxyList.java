@@ -1,5 +1,6 @@
 package com.intuso.housemate.platform.android.app.object;
 
+import com.intuso.housemate.client.v1_0.proxy.api.LoggerUtil;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyList;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
 import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
@@ -20,7 +21,7 @@ public class AndroidProxyList<CHILD_DATA extends HousemateData<?>, CHILD extends
     private final AndroidProxyFactory factory;
 
     /**
-     * @param log  {@inheritDoc}
+     * @param logger  {@inheritDoc}
      * @param data {@inheritDoc}
      * @param factory
      */
@@ -30,7 +31,7 @@ public class AndroidProxyList<CHILD_DATA extends HousemateData<?>, CHILD extends
     }
 
     @Override
-    protected CHILD createChildInstance(CHILD_DATA data) {
-        return (CHILD) factory.create(data);
+    protected CHILD createChild(CHILD_DATA data) {
+        return (CHILD) factory.create(LoggerUtil.child(getLogger(), data.getId()), data);
     }
 }

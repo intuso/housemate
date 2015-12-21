@@ -1,17 +1,12 @@
 package com.intuso.housemate.client.real.impl.internal.ioc;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
 import com.google.inject.Scopes;
-import com.google.inject.Singleton;
 import com.intuso.housemate.client.real.api.internal.*;
-import com.intuso.housemate.client.real.impl.internal.RealListImpl;
 import com.intuso.housemate.client.real.impl.internal.RealRootImpl;
 import com.intuso.housemate.client.real.impl.internal.annotations.ioc.RealAnnotationsModule;
 import com.intuso.housemate.client.real.impl.internal.factory.ioc.RealFactoryModule;
 import com.intuso.housemate.client.real.impl.internal.type.*;
-import com.intuso.utilities.listener.ListenersFactory;
-import org.slf4j.Logger;
 
 /**
  */
@@ -45,11 +40,5 @@ public class RealObjectModule extends AbstractModule {
         bind(StringType.class).in(Scopes.SINGLETON);
         bind(TimeType.class).in(Scopes.SINGLETON);
         bind(TimeUnitType.class).in(Scopes.SINGLETON);
-    }
-
-    @Provides
-    @Singleton
-    public RealList<RealType<?>> getTypes(Logger logger, ListenersFactory listenersFactory) {
-        return (RealList)new RealListImpl<>(logger, listenersFactory, RealRootImpl.TYPES_ID, "Types", "Types");
     }
 }

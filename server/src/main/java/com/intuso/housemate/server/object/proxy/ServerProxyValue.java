@@ -5,10 +5,10 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.NoChildrenData;
 import com.intuso.housemate.comms.api.internal.payload.ValueData;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.object.ObjectFactory;
 import org.slf4j.Logger;
 
 public class ServerProxyValue extends ServerProxyValueBase<ValueData, NoChildrenData,
@@ -20,7 +20,10 @@ public class ServerProxyValue extends ServerProxyValueBase<ValueData, NoChildren
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyValue(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted ValueData data) {
-        super(logger, listenersFactory, objectFactory, data);
+    public ServerProxyValue(ListenersFactory listenersFactory,
+                            ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory,
+                            @Assisted Logger logger,
+                            @Assisted ValueData data) {
+        super(listenersFactory, objectFactory, logger, data);
     }
 }

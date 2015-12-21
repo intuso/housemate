@@ -5,6 +5,7 @@ import com.intuso.housemate.client.real.api.internal.type.Email;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,12 +19,13 @@ public class EmailType extends RealRegexType<Email> {
     public final static String ID = "email";
     public final static String NAME = "Email";
 
+    private final static Logger logger = LoggerFactory.getLogger(EmailType.class);
+
     /**
-     * @param logger the logger
      * @param listenersFactory
      */
     @Inject
-    public EmailType(Logger logger, ListenersFactory listenersFactory) {
+    public EmailType(ListenersFactory listenersFactory) {
         super(logger, listenersFactory, ID, NAME, "Email address of the form <username>@<host>", 1, 1, ".+@.+\\..+");
     }
 

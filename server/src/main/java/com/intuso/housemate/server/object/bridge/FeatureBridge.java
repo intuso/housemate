@@ -26,7 +26,7 @@ public class FeatureBridge
 
     public FeatureBridge(Logger logger, ListenersFactory listenersFactory,
                          Feature<?, ?, ?> feature) {
-        super(logger, listenersFactory, new FeatureData(feature.getId(), feature.getName(), feature.getDescription()));
+        super(listenersFactory, logger, new FeatureData(feature.getId(), feature.getName(), feature.getDescription()));
         this.feature = feature;
         commandList = new ConvertingListBridge<>(logger, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Command<?, ?, ?, ?>>) feature.getCommands(), new CommandBridge.Converter(logger, listenersFactory));
         valueList = new ConvertingListBridge<>(logger, listenersFactory, (com.intuso.housemate.object.api.internal.List<? extends Value<?, ?>>) feature.getValues(), new ValueBridge.Converter(logger, listenersFactory));

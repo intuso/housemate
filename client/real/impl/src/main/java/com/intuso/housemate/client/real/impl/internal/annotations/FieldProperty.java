@@ -18,8 +18,8 @@ import java.lang.reflect.Field;
 public class FieldProperty extends RealPropertyImpl<Object> {
 
     @Inject
-    public FieldProperty(Logger logger,
-                         ListenersFactory listenersFactory,
+    public FieldProperty(ListenersFactory listenersFactory,
+                         @Assisted Logger logger,
                          @Assisted("id") String id,
                          @Assisted("name") String name,
                          @Assisted("description") String description,
@@ -48,7 +48,8 @@ public class FieldProperty extends RealPropertyImpl<Object> {
     }
 
     public interface Factory {
-        FieldProperty create(@Assisted("id") String id,
+        FieldProperty create(Logger logger,
+                             @Assisted("id") String id,
                              @Assisted("name") String name,
                              @Assisted("description") String description,
                              RealTypeImpl<?, ?, Object> type,

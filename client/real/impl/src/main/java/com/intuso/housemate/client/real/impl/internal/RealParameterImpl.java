@@ -28,13 +28,13 @@ public class RealParameterImpl<O>
      * @param type the type of the parameter's value
      */
     @Inject
-    public RealParameterImpl(Logger logger,
-                             ListenersFactory listenersFactory,
+    public RealParameterImpl(ListenersFactory listenersFactory,
+                             @Assisted final Logger logger,
                              @Assisted("id") String id,
                              @Assisted("name") String name,
                              @Assisted("description") String description,
                              @Assisted RealType<O> type) {
-        super(logger, listenersFactory, new ParameterData(id, name, description, type.getId()));
+        super(listenersFactory, logger, new ParameterData(id, name, description, type.getId()));
         this.type = type;
     }
 

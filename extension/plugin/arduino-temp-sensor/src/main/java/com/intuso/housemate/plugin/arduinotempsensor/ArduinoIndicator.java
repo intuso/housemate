@@ -30,8 +30,8 @@ public class ArduinoIndicator implements DeviceDriver, StatefulPowerControl {
     protected PowerValues powerValues;
 
     @Inject
-    protected ArduinoIndicator(Logger logger,
-                               SerialPortWrapper serialPort,
+    protected ArduinoIndicator(SerialPortWrapper serialPort,
+                               @Assisted Logger logger,
                                @Assisted DeviceDriver.Callback driverCallback) {
         this.logger = logger;
         this.serialPort = serialPort;

@@ -7,12 +7,12 @@ import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.payload.CommandData;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.ParameterData;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.object.api.internal.Command;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.object.ObjectFactory;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -35,8 +35,11 @@ public class ServerProxyCommand
      * @param data {@inheritDoc}
      */
     @Inject
-    protected ServerProxyCommand(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted CommandData data) {
-        super(logger, listenersFactory, objectFactory, data);
+    protected ServerProxyCommand(ListenersFactory listenersFactory,
+                                 ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory,
+                                 @Assisted Logger logger,
+                                 @Assisted CommandData data) {
+        super(listenersFactory, objectFactory, logger, data);
     }
 
     @Override

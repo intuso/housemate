@@ -3,6 +3,7 @@ package com.intuso.housemate.server.plugin.main.condition;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
@@ -37,11 +38,11 @@ public class ValueComparison implements ConditionDriver {
     private final ConditionDriver.Callback callback;
 
     @Inject
-	public ValueComparison(Logger logger,
-                           RealList<RealType<?>> types,
+	public ValueComparison(RealRoot root,
+                           @Assisted Logger logger,
                            @Assisted ConditionDriver.Callback callback) {
         this.logger = logger;
-        this.types = types;
+        this.types = root.getTypes();
         this.callback = callback;
     }
 

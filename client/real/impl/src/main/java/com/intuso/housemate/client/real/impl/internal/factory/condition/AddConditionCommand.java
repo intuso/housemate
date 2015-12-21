@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealCondition;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.client.real.impl.internal.LoggerUtil;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.type.StringType;
@@ -35,20 +36,20 @@ public class AddConditionCommand extends RealCommandImpl {
     private final RealCondition.RemoveCallback removeCallback;
 
     @Inject
-    protected AddConditionCommand(Logger logger,
-                                  ListenersFactory listenersFactory,
+    protected AddConditionCommand(ListenersFactory listenersFactory,
                                   StringType stringType,
                                   ConditionFactoryType conditionFactoryType,
                                   RealCondition.Factory conditionFactory,
+                                  @Assisted Logger logger,
                                   @Assisted("id") String id,
                                   @Assisted("name") String name,
                                   @Assisted("description") String description,
                                   @Assisted Callback callback,
                                   @Assisted RealCondition.RemoveCallback removeCallback) {
         super(logger, listenersFactory, id, name, description,
-                new RealParameterImpl<>(logger, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(logger, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(logger, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, conditionFactoryType));
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, NAME_PARAMETER_ID), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, DESCRIPTION_PARAMETER_ID), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, TYPE_PARAMETER_ID), TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, conditionFactoryType));
         this.callback = callback;
         this.conditionFactoryType = conditionFactoryType;
         this.conditionFactory = conditionFactory;
@@ -63,7 +64,7 @@ public class AddConditionCommand extends RealCommandImpl {
         TypeInstances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateCommsException("No description specified");
-        RealCondition<?> condition = conditionFactory.create(new ConditionData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
+        RealCondition<?> condition = conditionFactory.create(LoggerUtil.child(getLogger(), name.getFirstValue()), new ConditionData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
         callback.addCondition(condition);
         TypeInstances conditionType = values.getChildren().get(TYPE_PARAMETER_ID);
         if(conditionType != null && conditionType.getFirstValue() != null)
@@ -75,7 +76,8 @@ public class AddConditionCommand extends RealCommandImpl {
     }
 
     public interface Factory {
-        AddConditionCommand create(@Assisted("id") String id,
+        AddConditionCommand create(Logger logger,
+                                   @Assisted("id") String id,
                                    @Assisted("name") String name,
                                    @Assisted("description") String description,
                                    Callback callback,

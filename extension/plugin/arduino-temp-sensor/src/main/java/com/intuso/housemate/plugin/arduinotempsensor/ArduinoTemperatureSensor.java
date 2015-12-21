@@ -30,8 +30,8 @@ public class ArduinoTemperatureSensor implements DeviceDriver {
     private TemperatureValues temperatureValues;
 
     @Inject
-    protected ArduinoTemperatureSensor(Logger logger,
-                                       SerialPortWrapper serialPort,
+    protected ArduinoTemperatureSensor(SerialPortWrapper serialPort,
+                                       @Assisted Logger logger,
                                        @Assisted DeviceDriver.Callback callback) {
         this.logger = logger;
         this.serialPort = serialPort;

@@ -11,6 +11,7 @@ import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
@@ -23,16 +24,15 @@ import java.util.Collection;
 */
 public class TaskListWatcher implements List.Listener<RealTask<?>> {
 
-    private final Multimap<RealTask, ListenerRegistration> listeners = HashMultimap.create();
+    private final static Logger logger = LoggerFactory.getLogger(TaskListWatcher.class);
 
-    private final Logger logger;
+    private final Multimap<RealTask, ListenerRegistration> listeners = HashMultimap.create();
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
     private final PropertyListWatcher propertyListWatcher;
 
     @Inject
-    public TaskListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher) {
-        this.logger = logger;
+    public TaskListWatcher(Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher) {
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
         this.propertyListWatcher = propertyListWatcher;

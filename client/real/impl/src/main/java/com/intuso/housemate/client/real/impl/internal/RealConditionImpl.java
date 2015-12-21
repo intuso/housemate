@@ -52,14 +52,14 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
      * @param data the condition's data
      */
     @Inject
-    public RealConditionImpl(final Logger logger,
-                             ListenersFactory listenersFactory,
+    public RealConditionImpl(ListenersFactory listenersFactory,
                              AnnotationProcessor annotationProcessor,
                              ConditionFactoryType driverFactoryType,
                              AddConditionCommand.Factory addConditionCommandFactory,
+                             @Assisted final Logger logger,
                              @Assisted ConditionData data,
                              @Assisted final RemoveCallback removeCallback) {
-        super(logger, listenersFactory, data);
+        super(listenersFactory, logger, data);
         this.annotationProcessor = annotationProcessor;
         removeCommand = new RealCommandImpl(logger, listenersFactory, ConditionData.REMOVE_ID, ConditionData.REMOVE_ID, "Remove the condition", Lists.<RealParameter<?>>newArrayList()) {
             @Override
@@ -67,13 +67,13 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
                 removeCallback.removeCondition(RealConditionImpl.this);
             }
         };
-        errorValue = new RealValueImpl<>(logger, listenersFactory, ConditionData.ERROR_ID, ConditionData.ERROR_ID, "The current error", new StringType(logger, listenersFactory), (List)null);
+        errorValue = new RealValueImpl<>(listenersFactory, logger, ConditionData.ERROR_ID, ConditionData.ERROR_ID, "The current error", new StringType(listenersFactory), (List)null);
         driverProperty = (RealPropertyImpl<PluginResource<ConditionDriver.Factory<DRIVER>>>) new RealPropertyImpl(logger, listenersFactory, "driver", "Driver", "The condition's driver", driverFactoryType);
         driverLoadedValue = BooleanType.createValue(logger, listenersFactory, ConditionData.DRIVER_LOADED_ID, ConditionData.DRIVER_LOADED_ID, "Whether the task's driver is loaded or not", false);
-        satisfiedValue = new RealValueImpl<>(logger, listenersFactory, ConditionData.SATISFIED_ID, ConditionData.SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(logger, listenersFactory), false);
+        satisfiedValue = new RealValueImpl<>(listenersFactory, logger, ConditionData.SATISFIED_ID, ConditionData.SATISFIED_ID, "Whether the condition is satisfied", new BooleanType(listenersFactory), false);
         properties = (RealList)new RealListImpl<>(logger, listenersFactory, ConditionData.PROPERTIES_ID, ConditionData.PROPERTIES_ID, "The condition's properties");
         children = (RealList)new RealListImpl<>(logger, listenersFactory, ConditionData.CONDITIONS_ID, "Conditions", "Child conditions");
-        addConditionCommand = addConditionCommandFactory.create(ConditionData.ADD_CONDITION_ID, ConditionData.ADD_CONDITION_ID, "Add condition", this, new RemoveCallback() {
+        addConditionCommand = addConditionCommandFactory.create(LoggerUtil.child(logger, ConditionData.ADD_CONDITION_ID), ConditionData.ADD_CONDITION_ID, ConditionData.ADD_CONDITION_ID, "Add condition", this, new RemoveCallback() {
             @Override
             public void removeCondition(RealCondition condition) {
                 children.remove(condition.getId());
@@ -106,8 +106,8 @@ public final class RealConditionImpl<DRIVER extends ConditionDriver>
         if(driver == null) {
             PluginResource<ConditionDriver.Factory<DRIVER>> driverFactoryEntry = driverProperty.getTypedValue();
             if(driverFactoryEntry != null) {
-                driver = driverFactoryEntry.getResource().create(this);
-                for(RealProperty<?> property : annotationProcessor.findProperties(asOriginal(driver)))
+                driver = driverFactoryEntry.getResource().create(getLogger(), this);
+                for(RealProperty<?> property : annotationProcessor.findProperties(getLogger(), asOriginal(driver)))
                     properties.add(property);
                 errorValue.setTypedValues((String) null);
                 driverLoadedValue.setTypedValues(true);

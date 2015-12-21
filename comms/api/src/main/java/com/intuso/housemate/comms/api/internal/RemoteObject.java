@@ -43,7 +43,7 @@ public abstract class RemoteObject<
     /**
      * @param data the data object
      */
-    protected RemoteObject(Logger logger, ListenersFactory listenersFactory, DATA data) {
+    protected RemoteObject(ListenersFactory listenersFactory, Logger logger, DATA data) {
         super(listenersFactory, data);
         this.logger = logger;
         this.listenersFactory = listenersFactory;

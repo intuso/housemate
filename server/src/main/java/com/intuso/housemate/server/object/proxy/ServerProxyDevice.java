@@ -4,11 +4,11 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.payload.*;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.object.api.internal.Device;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.object.ObjectFactory;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -44,8 +44,11 @@ public class ServerProxyDevice
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyDevice(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted DeviceData data) {
-        super(logger, listenersFactory, objectFactory, data);
+    public ServerProxyDevice(ListenersFactory listenersFactory,
+                             ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory,
+                             @Assisted Logger logger,
+                             @Assisted DeviceData data) {
+        super(listenersFactory, objectFactory, logger, data);
     }
 
     @Override

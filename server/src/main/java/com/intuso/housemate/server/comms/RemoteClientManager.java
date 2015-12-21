@@ -13,6 +13,7 @@ import com.intuso.housemate.server.object.proxy.ServerProxyRoot;
 import com.intuso.housemate.server.object.proxy.ioc.ServerProxyModule;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +23,8 @@ import java.util.Map;
  */
 public class RemoteClientManager {
 
-    private final Logger logger;
+    private final static Logger logger = LoggerFactory.getLogger(RemoteClientManager.class);
+
     private final Injector injector;
     private final ServerGeneralRoot generalRoot;
     private final RootBridge bridgeRoot;
@@ -31,8 +33,7 @@ public class RemoteClientManager {
     private final Map<ClientInstance, RemoteClient> clients = Maps.newHashMap();
 
     @Inject
-    public RemoteClientManager(Logger logger, ListenersFactory listenersFactory, Injector injector, ServerGeneralRoot generalRoot, RootBridge bridgeRoot, MainRouter mainRouter) {
-        this.logger = logger;
+    public RemoteClientManager(ListenersFactory listenersFactory, Injector injector, ServerGeneralRoot generalRoot, RootBridge bridgeRoot, MainRouter mainRouter) {
         this.injector = injector;
         this.generalRoot = generalRoot;
         this.bridgeRoot = bridgeRoot;

@@ -13,6 +13,7 @@ import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.object.BaseObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,14 +28,16 @@ public class RootBridge
 
     public final static String SERVERS_ID = "servers";
 
+    private final static Logger logger = LoggerFactory.getLogger(RootBridge.class);
+
     private final ListenersFactory listenersFactory;
     private final ListBridge<ServerData, ServerBridge> servers;
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = new HashMap<>();
     private final Persistence persistence;
 
     @Inject
-    public RootBridge(Logger logger, ListenersFactory listenersFactory, Persistence persistence) {
-        super(logger, listenersFactory, new RootData());
+    public RootBridge(ListenersFactory listenersFactory, Persistence persistence) {
+        super(listenersFactory, logger, new RootData());
         this.listenersFactory = listenersFactory;
         this.persistence = persistence;
         servers = new ListBridge<>(logger, listenersFactory, new ListData<ServerData>(SERVERS_ID, "Servers", "Servers"));

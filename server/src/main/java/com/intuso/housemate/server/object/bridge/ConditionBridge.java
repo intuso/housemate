@@ -35,7 +35,7 @@ public class ConditionBridge
 
     public ConditionBridge(Logger logger, ListenersFactory listenersFactory,
                            Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> condition) {
-        super(logger, listenersFactory,
+        super(listenersFactory, logger,
                 new ConditionData(condition.getId(), condition.getName(), condition.getDescription()));
         removeCommand = new CommandBridge(logger, listenersFactory, condition.getRemoveCommand());
         satisfiedValue = new ValueBridge(logger, listenersFactory, condition.getSatisfiedValue());

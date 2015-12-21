@@ -9,18 +9,19 @@ import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by tomc on 03/02/15.
  */
 public class HardwareListener implements Hardware.Listener<RealHardware<?>> {
 
-    private final Logger logger;
+    private final static Logger logger = LoggerFactory.getLogger(HardwareListener.class);
+
     private final Persistence persistence;
 
     @Inject
-    protected HardwareListener(Logger logger, Persistence persistence) {
-        this.logger = logger;
+    protected HardwareListener(Persistence persistence) {
         this.persistence = persistence;
     }
 

@@ -2,9 +2,9 @@ package com.intuso.housemate.web.client.object;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.comms.v1_0.api.payload.*;
 import org.slf4j.Logger;
-import com.intuso.utilities.object.ObjectFactory;
 
 /**
 * Created with IntelliJ IDEA.
@@ -77,43 +77,43 @@ public class GWTProxyFactory implements ObjectFactory<HousemateData<?>, ProxyObj
     }
 
     @Override
-    public ProxyObject<?, ?, ?, ?, ?> create(HousemateData<?> data) {
+    public ProxyObject<?, ?, ?, ?, ?> create(Logger logger, HousemateData<?> data) {
         if(data instanceof ParameterData)
-            return parameterFactory.create((ParameterData) data);
+            return parameterFactory.create(logger, (ParameterData) data);
         else if(data instanceof CommandData)
-            return commandFactory.create((CommandData) data);
+            return commandFactory.create(logger, (CommandData) data);
         else if(data instanceof ConditionData)
-            return conditionFactory.create((ConditionData) data);
+            return conditionFactory.create(logger, (ConditionData) data);
         else if(data instanceof ApplicationData)
-            return applicationFactory.create((ApplicationData) data);
+            return applicationFactory.create(logger, (ApplicationData) data);
         else if(data instanceof ApplicationInstanceData)
-            return applicationInstanceFactory.create((ApplicationInstanceData) data);
+            return applicationInstanceFactory.create(logger, (ApplicationInstanceData) data);
         else if(data instanceof UserData)
-            return userFactory.create((UserData) data);
+            return userFactory.create(logger, (UserData) data);
         else if(data instanceof TaskData)
-            return taskFactory.create((TaskData) data);
+            return taskFactory.create(logger, (TaskData) data);
         else if(data instanceof DeviceData)
-            return deviceFactory.create((DeviceData) data);
+            return deviceFactory.create(logger, (DeviceData) data);
         else if(data instanceof FeatureData)
-            return featureFactory.create((FeatureData) data);
+            return featureFactory.create(logger, (FeatureData) data);
         else if(data instanceof HardwareData)
-            return hardwareFactory.create((HardwareData) data);
+            return hardwareFactory.create(logger, (HardwareData) data);
         else if(data instanceof ListData)
-            return listFactory.create((ListData<HousemateData<?>>) data);
+            return listFactory.create(logger, (ListData<HousemateData<?>>) data);
         else if(data instanceof OptionData)
-            return optionFactory.create((OptionData) data);
+            return optionFactory.create(logger, (OptionData) data);
         else if(data instanceof PropertyData)
-            return propertyFactory.create((PropertyData) data);
+            return propertyFactory.create(logger, (PropertyData) data);
         else if(data instanceof AutomationData)
-            return automationFactory.create((AutomationData) data);
+            return automationFactory.create(logger, (AutomationData) data);
         else if(data instanceof ServerData)
-            return serverFactory.create((ServerData) data);
+            return serverFactory.create(logger, (ServerData) data);
         else if(data instanceof SubTypeData)
-            return subTypeFactory.create((SubTypeData) data);
+            return subTypeFactory.create(logger, (SubTypeData) data);
         else if(data instanceof TypeData)
-            return typeFactory.create((TypeData) data);
+            return typeFactory.create(logger, (TypeData) data);
         else if(data instanceof ValueData)
-            return valueFactory.create((ValueData) data);
+            return valueFactory.create(logger, (ValueData) data);
         logger.warn("Don't know how to create an object from " + data.getClass().getName());
         return null;
     }

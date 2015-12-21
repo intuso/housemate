@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal.factory.user;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealUser;
+import com.intuso.housemate.client.real.impl.internal.LoggerUtil;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.type.StringType;
@@ -30,18 +31,18 @@ public class AddUserCommand extends RealCommandImpl {
     private final RealUser.RemoveCallback removeCallback;
 
     @Inject
-    protected AddUserCommand(Logger logger,
-                             ListenersFactory listenersFactory,
+    protected AddUserCommand(ListenersFactory listenersFactory,
                              StringType stringType,
                              RealUser.Factory userFactory,
+                             @Assisted Logger logger,
                              @Assisted("id") String id,
                              @Assisted("name") String name,
                              @Assisted("description") String description,
                              @Assisted Callback callback,
                              @Assisted RealUser.RemoveCallback removeCallback) {
         super(logger, listenersFactory, id, name, description,
-                new RealParameterImpl<>(logger, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(logger, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType));
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, NAME_PARAMETER_ID), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, DESCRIPTION_PARAMETER_ID), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType));
         this.callback = callback;
         this.userFactory = userFactory;
         this.removeCallback = removeCallback;
@@ -55,7 +56,7 @@ public class AddUserCommand extends RealCommandImpl {
         TypeInstances name = values.getChildren().get(NAME_PARAMETER_ID);
         if(name == null || name.getFirstValue() == null)
             throw new HousemateCommsException("No name specified");
-        callback.addUser(userFactory.create(new UserData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback));
+        callback.addUser(userFactory.create(LoggerUtil.child(getLogger(), name.getFirstValue()), new UserData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback));
     }
 
     public interface Callback {
@@ -63,7 +64,8 @@ public class AddUserCommand extends RealCommandImpl {
     }
 
     public interface Factory {
-        AddUserCommand create(@Assisted("id") String id,
+        AddUserCommand create(Logger logger,
+                              @Assisted("id") String id,
                               @Assisted("name") String name,
                               @Assisted("description") String description,
                               Callback callback,

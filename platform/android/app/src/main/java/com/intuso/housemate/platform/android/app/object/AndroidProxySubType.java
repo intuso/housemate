@@ -19,7 +19,7 @@ public class AndroidProxySubType extends ProxySubType<AndroidProxySubType> {
     private final AndroidProxyFactory factory;
 
     /**
-     * @param log  {@inheritDoc}
+     * @param logger  {@inheritDoc}
      * @param data {@inheritDoc}
      * @param factory
      */
@@ -29,7 +29,7 @@ public class AndroidProxySubType extends ProxySubType<AndroidProxySubType> {
     }
 
     @Override
-    protected NoChildrenProxyObject createChildInstance(NoChildrenData noChildrenData) {
+    protected NoChildrenProxyObject createChild(NoChildrenData noChildrenData) {
         return null;
     }
 }

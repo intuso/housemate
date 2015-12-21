@@ -9,6 +9,7 @@ import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -29,11 +30,10 @@ public class BooleanType extends RealSimpleType<Boolean> {
         }
     };
 
-    /**
-     * @param logger {@inheritDoc}
-     */
+    private final static Logger logger = LoggerFactory.getLogger(BooleanType.class);
+
     @Inject
-    public BooleanType(Logger logger, ListenersFactory listenersFactory) {
+    public BooleanType(ListenersFactory listenersFactory) {
         super(logger, listenersFactory, SimpleTypeData.Type.Boolean, SERIALISER);
     }
 
@@ -42,14 +42,14 @@ public class BooleanType extends RealSimpleType<Boolean> {
      *
      * @param logger the logger
      * @param listenersFactory
-     *@param id the value's id
+     * @param id the value's id
      * @param name the value's name
      * @param description the value's description
      * @param value the initial value     @return a boolean value object
      */
     public static RealValueImpl<Boolean> createValue(Logger logger, ListenersFactory listenersFactory,
                                                  String id, String name, String description, Boolean value) {
-        return new RealValueImpl<>(logger, listenersFactory, id, name, description, new BooleanType(logger, listenersFactory), value);
+        return new RealValueImpl<>(listenersFactory, logger, id, name, description, new BooleanType(listenersFactory), value);
     }
 
     /**
@@ -63,7 +63,7 @@ public class BooleanType extends RealSimpleType<Boolean> {
      */
     public static RealPropertyImpl<Boolean> createProperty(Logger logger, ListenersFactory listenersFactory,
                                                        String id, String name, String description, List<Boolean> values) {
-        return new RealPropertyImpl<>(logger, listenersFactory, id, name, description, new BooleanType(logger, listenersFactory), values);
+        return new RealPropertyImpl<>(logger, listenersFactory, id, name, description, new BooleanType(listenersFactory), values);
     }
 
     /**
@@ -76,6 +76,6 @@ public class BooleanType extends RealSimpleType<Boolean> {
      */
     public static RealParameterImpl<Boolean> createParameter(Logger logger, ListenersFactory listenersFactory,
                                                          String id, String name, String description) {
-        return new RealParameterImpl<>(logger, listenersFactory, id, name, description, new BooleanType(logger, listenersFactory));
+        return new RealParameterImpl<>(listenersFactory, logger, id, name, description, new BooleanType(listenersFactory));
     }
 }

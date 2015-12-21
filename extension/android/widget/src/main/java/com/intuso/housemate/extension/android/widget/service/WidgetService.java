@@ -13,8 +13,8 @@ import android.widget.Toast;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyClientHelper;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
-import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.Router;
@@ -126,9 +126,7 @@ public class WidgetService extends HousemateService {
                 .setPriority(Notification.PRIORITY_MIN)
                 .build());
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        clientHelper = ProxyClientHelper.newClientHelper(getLogger(),
-                new AndroidProxyRoot(getLogger(), getListenersFactory(), getProperties(), getRouter()),
-                getRouter())
+        clientHelper = new ProxyClientHelper<>(new AndroidProxyRoot(getLogger(), getListenersFactory(), getProperties(), getRouter()), getRouter())
                 .applicationDetails(APPLICATION_DETAILS)
                 .component(WidgetService.class.getName())
                 .load(ProxyRoot.SERVERS_ID, RemoteObject.EVERYTHING, ServerData.DEVICES_ID)

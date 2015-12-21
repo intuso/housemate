@@ -25,7 +25,7 @@ public class ApplicationInstanceBridge
     private final ValueBridge statusValue;
 
     public ApplicationInstanceBridge(Logger logger, ListenersFactory listenersFactory, ApplicationInstance<?, ?, ?> applicationInstance) {
-        super(logger, listenersFactory,
+        super(listenersFactory, logger,
                 new ApplicationInstanceData(applicationInstance.getId(), applicationInstance.getName(), applicationInstance.getDescription()));
         allowCommand = new CommandBridge(logger, listenersFactory, applicationInstance.getAllowCommand());
         rejectCommand = new CommandBridge(logger, listenersFactory, applicationInstance.getRejectCommand());

@@ -35,7 +35,7 @@ public class TaskBridge
     private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
     public TaskBridge(Logger logger, ListenersFactory listenersFactory, Task<?, ?, ?, ?, ?, ?, ?> task) {
-        super(logger, listenersFactory, new TaskData(task.getId(), task.getName(), task.getDescription()));
+        super(listenersFactory, logger, new TaskData(task.getId(), task.getName(), task.getDescription()));
         removeCommand = new CommandBridge(logger, listenersFactory, task.getRemoveCommand());
         executingValue = new ValueBridge(logger, listenersFactory, task.getExecutingValue());
         errorValue = new ValueBridge(logger, listenersFactory, task.getErrorValue());

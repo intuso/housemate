@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.api.bridge.v1_0;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
@@ -26,8 +27,8 @@ public class ConditionDriverFactoryBridge implements ConditionDriver.Factory<Con
     }
 
     @Override
-    public ConditionDriver create(ConditionDriver.Callback callback) {
-        return conditionDriverMapper.map(factory.create(new CallbackBridge(callback)));
+    public ConditionDriver create(Logger logger, ConditionDriver.Callback callback) {
+        return conditionDriverMapper.map(factory.create(logger, new CallbackBridge(callback)));
     }
 
     private class CallbackBridge implements com.intuso.housemate.client.v1_0.real.api.driver.ConditionDriver.Callback {

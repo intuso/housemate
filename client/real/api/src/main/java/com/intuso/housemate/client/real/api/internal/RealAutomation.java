@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.api.internal;
 import com.intuso.housemate.comms.api.internal.payload.AutomationData;
 import com.intuso.housemate.object.api.internal.Automation;
 import com.intuso.housemate.object.api.internal.Condition;
+import org.slf4j.Logger;
 
 public interface RealAutomation
         extends Automation<RealCommand,
@@ -31,6 +32,6 @@ public interface RealAutomation
     }
 
     interface Factory {
-        RealAutomation create(AutomationData data, RemoveCallback removeCallback);
+        RealAutomation create(Logger logger, AutomationData data, RemoveCallback removeCallback);
     }
 }

@@ -4,6 +4,7 @@ import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.driver.PluginResource;
 import com.intuso.housemate.comms.api.internal.payload.ConditionData;
 import com.intuso.housemate.object.api.internal.Condition;
+import org.slf4j.Logger;
 
 public interface RealCondition<DRIVER extends ConditionDriver>
         extends Condition<RealCommand,
@@ -52,6 +53,6 @@ public interface RealCondition<DRIVER extends ConditionDriver>
     }
 
     interface Factory {
-        RealCondition<?> create(ConditionData data, RemoveCallback removeCallback);
+        RealCondition<?> create(Logger logger, ConditionData data, RemoveCallback removeCallback);
     }
 }

@@ -41,7 +41,7 @@ public abstract class RealValueBaseImpl<
      * @param type the type of the value's value
      */
     public RealValueBaseImpl(Logger logger, ListenersFactory listenersFactory, DATA data, RealType<O> type) {
-        super(logger,listenersFactory , data);
+        super(listenersFactory, logger, data);
         this.type = type;
         this.typedValues = RealTypeImpl.deserialiseAll(type, data.getTypeInstances());
     }

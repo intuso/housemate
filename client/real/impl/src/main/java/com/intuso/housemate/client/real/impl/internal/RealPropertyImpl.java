@@ -51,9 +51,9 @@ public class RealPropertyImpl<O>
                             List<O> values) {
         super(logger, listenersFactory, new PropertyData(id, name, description, type.getId(),
                 RealTypeImpl.serialiseAll(type, values)), type);
-        setCommand = new RealCommandImpl(logger, listenersFactory, PropertyData.SET_COMMAND_ID, PropertyData.SET_COMMAND_ID,
+        setCommand = new RealCommandImpl(LoggerUtil.child(logger, PropertyData.SET_COMMAND_ID), listenersFactory, PropertyData.SET_COMMAND_ID, PropertyData.SET_COMMAND_ID,
                 "The function to change the property's value",
-                new RealParameterImpl<>(logger, listenersFactory, PropertyData.VALUE_PARAM, PropertyData.VALUE_PARAM, "The new value for the property", type)) {
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, PropertyData.SET_COMMAND_ID, PropertyData.VALUE_PARAM), PropertyData.VALUE_PARAM, PropertyData.VALUE_PARAM, "The new value for the property", type)) {
             @Override
             public void perform(TypeInstanceMap values) {
                 List<O> typedValues = RealTypeImpl.deserialiseAll(getType(), values.getChildren().get(PropertyData.VALUE_PARAM));

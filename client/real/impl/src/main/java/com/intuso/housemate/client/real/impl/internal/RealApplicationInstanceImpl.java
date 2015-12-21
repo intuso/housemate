@@ -29,7 +29,7 @@ public class RealApplicationInstanceImpl
 
     public RealApplicationInstanceImpl(Logger logger, ListenersFactory listenersFactory, String instanceId,
                                        ApplicationInstanceStatusType applicationInstanceStatusType) {
-        super(logger, listenersFactory, new ApplicationInstanceData(instanceId, instanceId, instanceId));
+        super(listenersFactory, logger, new ApplicationInstanceData(instanceId, instanceId, instanceId));
         allowCommand = new RealCommandImpl(logger, listenersFactory, ApplicationInstanceData.ALLOW_COMMAND_ID, ApplicationInstanceData.ALLOW_COMMAND_ID, "Allow access to the application instance",
                 Lists.<RealParameter<?>>newArrayList()) {
             @Override
@@ -44,7 +44,7 @@ public class RealApplicationInstanceImpl
                 statusValue.setTypedValues(Status.Rejected);
             }
         };
-        statusValue = new RealValueImpl<>(logger, listenersFactory, ApplicationInstanceData.STATUS_VALUE_ID, ApplicationInstanceData.STATUS_VALUE_ID,
+        statusValue = new RealValueImpl<>(listenersFactory, logger, ApplicationInstanceData.STATUS_VALUE_ID, ApplicationInstanceData.STATUS_VALUE_ID,
                 "The status of the application instance", applicationInstanceStatusType, (List)null);
         addChild(allowCommand);
         addChild(rejectCommand);

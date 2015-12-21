@@ -19,7 +19,7 @@ public class Not extends LogicCondition {
     private final Logger logger;
 
     @Inject
-    public Not(Logger logger, @Assisted ConditionDriver.Callback conditionCallback) {
+    public Not(@Assisted Logger logger, @Assisted ConditionDriver.Callback conditionCallback) {
         super(conditionCallback);
         this.logger = logger;
         // todo move this check somewhere else

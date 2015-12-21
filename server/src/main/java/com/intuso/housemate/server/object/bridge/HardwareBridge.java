@@ -45,7 +45,7 @@ public class HardwareBridge
     private ConvertingListBridge<PropertyData, Property<?, ?, ?>, PropertyBridge> propertyList;
 
     public HardwareBridge(Logger logger, ListenersFactory listenersFactory, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?> hardware) {
-        super(logger, listenersFactory, new HardwareData(hardware.getId(), hardware.getName(), hardware.getDescription()));
+        super(listenersFactory, logger, new HardwareData(hardware.getId(), hardware.getName(), hardware.getDescription()));
         this.hardware = hardware;
         renameCommand = new CommandBridge(logger, listenersFactory, hardware.getRenameCommand());
         removeCommand = new CommandBridge(logger, listenersFactory, hardware.getRemoveCommand());

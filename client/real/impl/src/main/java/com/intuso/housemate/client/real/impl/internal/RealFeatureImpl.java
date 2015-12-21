@@ -34,10 +34,10 @@ public final class RealFeatureImpl
      * @param listenersFactory
      */
     @Inject
-    public RealFeatureImpl(Logger logger,
-                           ListenersFactory listenersFactory,
+    public RealFeatureImpl(ListenersFactory listenersFactory,
+                           @Assisted final Logger logger,
                            @Assisted FeatureData data) {
-        super(logger, listenersFactory, new FeatureData(data.getId(), data.getName(), data.getDescription()));
+        super(listenersFactory, logger, new FeatureData(data.getId(), data.getName(), data.getDescription()));
         this.commands = (RealList)new RealListImpl<>(logger, listenersFactory, FeatureData.COMMANDS_ID, FeatureData.COMMANDS_ID, COMMANDS_DESCRIPTION);
         this.values = (RealList)new RealListImpl<>(logger, listenersFactory, FeatureData.VALUES_ID, FeatureData.VALUES_ID, VALUES_DESCRIPTION);
         addChild((RealListImpl)commands);

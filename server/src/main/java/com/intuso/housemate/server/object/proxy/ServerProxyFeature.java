@@ -6,9 +6,9 @@ import com.intuso.housemate.comms.api.internal.payload.CommandData;
 import com.intuso.housemate.comms.api.internal.payload.FeatureData;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.ValueData;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.object.api.internal.Feature;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.object.ObjectFactory;
 import org.slf4j.Logger;
 
 public class ServerProxyFeature
@@ -27,8 +27,11 @@ public class ServerProxyFeature
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyFeature(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted FeatureData data) {
-        super(logger, listenersFactory, objectFactory, data);
+    public ServerProxyFeature(ListenersFactory listenersFactory,
+                              ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory,
+                              @Assisted Logger logger,
+                              @Assisted FeatureData data) {
+        super(listenersFactory, objectFactory, logger, data);
     }
 
     @Override

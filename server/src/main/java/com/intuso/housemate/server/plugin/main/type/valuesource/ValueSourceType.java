@@ -2,6 +2,7 @@ package com.intuso.housemate.server.plugin.main.type.valuesource;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
@@ -17,6 +18,7 @@ import com.intuso.housemate.server.plugin.main.type.transformation.Transformatio
 import com.intuso.housemate.server.plugin.main.type.transformation.TransformationType;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +26,8 @@ import java.util.List;
 /**
  */
 public class ValueSourceType extends RealChoiceType<ValueSource> {
+
+    private final static Logger logger = LoggerFactory.getLogger(ValueSourceType.class);
 
     public final static String ID = "value-source";
     public final static String NAME = "Value Source";
@@ -48,9 +52,10 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
     private final TypeSerialiser<ValueSource> serialiser;
 
     @Inject
-    public ValueSourceType(Logger logger, ListenersFactory listenersFactory, TypeSerialiser<ValueSource> serialiser,
-                           RealList<RealType<?>> types) {
-        super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1, createOptions(logger, listenersFactory, types));
+    public ValueSourceType(ListenersFactory listenersFactory,
+                           TypeSerialiser<ValueSource> serialiser,
+                           RealRoot root) {
+        super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1, createOptions(logger, listenersFactory, root.getTypes()));
         this.serialiser = serialiser;
     }
 
@@ -82,26 +87,25 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
 
     public static class Serialiser implements TypeSerialiser<ValueSource> {
 
-        private final Logger logger;
         private final ListenersFactory listenersFactory;
         private final TypeSerialiser<RealObjectType.Reference<?>> realObjectTypeSerialiser;
         private final TypeSerialiser<Operation> operationSerialiser;
         private final TypeSerialiser<Transformation> transformationSerialiser;
-        private final RootBridge root;
-        private final RealList<RealType<?>> types;
+        private final RootBridge rootBridge;
+        private final RealRoot root;
 
         @Inject
-        public Serialiser(Logger logger, ListenersFactory listenersFactory,
+        public Serialiser(ListenersFactory listenersFactory,
                           TypeSerialiser<RealObjectType.Reference<?>> realObjectTypeSerialiser,
                           TypeSerialiser<Operation> operationSerialiser, TypeSerialiser<Transformation> transformationSerialiser,
-                          RootBridge root, RealList<RealType<?>> types) {
-            this.logger = logger;
+                          RootBridge rootBridge,
+                          RealRoot root) {
             this.listenersFactory = listenersFactory;
             this.realObjectTypeSerialiser = realObjectTypeSerialiser;
             this.operationSerialiser = operationSerialiser;
             this.transformationSerialiser = transformationSerialiser;
+            this.rootBridge = rootBridge;
             this.root = root;
-            this.types = types;
         }
 
         @Override
@@ -141,7 +145,7 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
                     logger.warn("Cannot deserialise constant, type id is null");
                     return null;
                 }
-                RealType<?> type = types.get(typeId);
+                RealType<?> type = root.getTypes().get(typeId);
                 if(type == null) {
                     logger.warn("Cannot deserialise constant, no type for id " + typeId);
                     return null;
@@ -150,17 +154,17 @@ public class ValueSourceType extends RealChoiceType<ValueSource> {
             } else if(value.getValue().equals(LOCATION_ID)) {
                 if(value.getChildValues().getChildren().get("path") != null && value.getChildValues().getChildren().get("path").getElements().size() > 0) {
                     RealObjectType.Reference<?> object = realObjectTypeSerialiser.deserialise(value.getChildValues().getChildren().get("path").getElements().get(0));
-                    return new ValueLocation(listenersFactory, (RealObjectType.Reference<Value<TypeInstances, ?>>)object, root);
+                    return new ValueLocation(listenersFactory, (RealObjectType.Reference<Value<TypeInstances, ?>>)object, rootBridge);
                 } else
                     return null;
             } else if(value.getValue().equals(OPERATION_ID)) {
                 if(value.getChildValues().getChildren().get("operation") != null && value.getChildValues().getChildren().get("operation").getElements().size() > 0)
-                    return new OperationOutput(logger, listenersFactory, types, operationSerialiser.deserialise(value.getChildValues().getChildren().get("operation").getElements().get(0)));
+                    return new OperationOutput(logger, listenersFactory, root.getTypes(), operationSerialiser.deserialise(value.getChildValues().getChildren().get("operation").getElements().get(0)));
                 else
                     return null;
             } else if(value.getValue().equals(TRANSFORMATION_ID)) {
                 if(value.getChildValues().getChildren().get("transformation") != null && value.getChildValues().getChildren().get("transformation").getElements().size() > 0)
-                    return new TransformationOutput(logger, listenersFactory, types, transformationSerialiser.deserialise(value.getChildValues().getChildren().get("transformation").getElements().get(0)));
+                    return new TransformationOutput(logger, listenersFactory, root.getTypes(), transformationSerialiser.deserialise(value.getChildValues().getChildren().get("transformation").getElements().get(0)));
                 else
                     return null;
             } else

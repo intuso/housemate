@@ -25,6 +25,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.resource.URLResource;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -49,6 +50,8 @@ public class ServerEnvironment {
     public final static String RUN_WEBAPP = "webapp.run";
     public final static String WEBAPP_PORT = "webapp.port";
 
+    private final static Logger logger = LoggerFactory.getLogger(ServerEnvironment.class);
+
     private final Map<String, String> pluginIds = Maps.newHashMap();
 
     /**
@@ -69,8 +72,6 @@ public class ServerEnvironment {
         setExtraDefaults(defaultProperties);
 
         Injector injector = Guice.createInjector(new JarServerModule(defaultProperties, properties));
-
-        Logger logger = injector.getInstance(Logger.class);
 
         logger.debug("Starting server");
         injector.getInstance(com.intuso.housemate.server.Server.class).start();
@@ -103,7 +104,6 @@ public class ServerEnvironment {
 
         loadSharedJNILibs();
 
-        Logger log = injector.getInstance(Logger.class);
         PluginManager pluginManager = injector.getInstance(PluginManager.class);
 
         // discover plugins from local dir
@@ -111,14 +111,14 @@ public class ServerEnvironment {
         if(!pluginDirectory.exists())
             pluginDirectory.mkdir();
         if(pluginDirectory.isFile())
-            log.warn("Plugin path is not a directory");
+            logger.warn("Plugin path is not a directory");
         else {
-            log.debug("Loading plugins from " + pluginDirectory.getAbsolutePath());
+            logger.debug("Loading plugins from " + pluginDirectory.getAbsolutePath());
             for(File pluginFile : pluginDirectory.listFiles(new PluginFileFilter())) {
                 try {
-                    pluginIds.put(pluginFile.getAbsolutePath(), pluginManager.addPlugin(createPluginInjector(injector, pluginFile, log)));
+                    pluginIds.put(pluginFile.getAbsolutePath(), pluginManager.addPlugin(createPluginInjector(injector, pluginFile, logger)));
                 } catch(Throwable t) {
-                    log.warn("Failed to add plugin for file " + pluginFile.getAbsolutePath(), t);
+                    logger.warn("Failed to add plugin for file " + pluginFile.getAbsolutePath(), t);
                 }
             }
         }
@@ -156,13 +156,11 @@ public class ServerEnvironment {
 
     private void startWebapp(Injector injector, PropertyRepository properties) {
 
-        Logger log = injector.getInstance(Logger.class);
-
         try {
 
             if (properties.get(RUN_WEBAPP) != null
                     && properties.get(RUN_WEBAPP).equalsIgnoreCase("false")) {
-                log.debug("Not starting webapp");
+                logger.debug("Not starting webapp");
                 return;
             }
 
@@ -171,12 +169,12 @@ public class ServerEnvironment {
                 if (properties.keySet().contains(WEBAPP_PORT))
                     port = Integer.parseInt(properties.get(WEBAPP_PORT));
             } catch (Throwable t) {
-                log.warn("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
+                logger.warn("Failed to parse property " + WEBAPP_PORT + ". Using default of " + port + " instead");
             }
 
             startJetty(injector, properties, port);
         } catch(Throwable t) {
-            log.error("Failed to start web server", t);
+            logger.error("Failed to start web server", t);
         }
     }
 

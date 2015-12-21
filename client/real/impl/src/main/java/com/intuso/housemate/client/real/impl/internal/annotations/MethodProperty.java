@@ -19,8 +19,8 @@ import java.lang.reflect.Method;
 public class MethodProperty extends RealPropertyImpl<Object> {
 
     @Inject
-    public MethodProperty(Logger logger,
-                          ListenersFactory listenersFactory,
+    public MethodProperty(ListenersFactory listenersFactory,
+                          @Assisted Logger logger,
                           @Assisted("id") String id,
                           @Assisted("name") String name,
                           @Assisted("description") String description,
@@ -49,7 +49,8 @@ public class MethodProperty extends RealPropertyImpl<Object> {
     }
 
     public interface Factory {
-        MethodProperty create(@Assisted("id") String id,
+        MethodProperty create(Logger logger,
+                              @Assisted("id") String id,
                               @Assisted("name") String name,
                               @Assisted("description") String description,
                               RealTypeImpl<?, ?, Object> type,

@@ -37,7 +37,7 @@ public class RandomDelay implements TaskDriver {
      * @param logger
      */
     @Inject
-    public RandomDelay(Logger logger,
+    public RandomDelay(@Assisted Logger logger,
                  @Assisted TaskDriver.Callback callback) {
         this.logger = logger;
     }

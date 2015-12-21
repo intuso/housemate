@@ -49,7 +49,7 @@ public abstract class RemoteLinkedObject<
     /**
      * @param data the data object
      */
-    protected RemoteLinkedObject(Logger logger, ListenersFactory listenersFactory, DATA data) {
+    protected RemoteLinkedObject(ListenersFactory listenersFactory, Logger logger, DATA data) {
         super(listenersFactory, data);
         this.logger = logger;
         this.listenersFactory = listenersFactory;

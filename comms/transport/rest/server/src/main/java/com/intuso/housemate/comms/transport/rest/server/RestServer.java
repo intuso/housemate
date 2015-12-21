@@ -17,6 +17,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,18 +30,20 @@ public class RestServer extends ExternalClientRouter<RestServer> {
 
     public final static String PORT = "rest.server.port";
 
+    private final static Logger logger = LoggerFactory.getLogger(RestServer.class);
+
     private final Injector injector;
     private final Server server;
 
     @Inject
-    public RestServer(Logger log, ListenersFactory listenersFactory, PropertyRepository properties, Injector injector, Router<?> router) {
-        super(log, listenersFactory, router);
+    public RestServer(ListenersFactory listenersFactory, PropertyRepository properties, Injector injector, Router<?> router) {
+        super(logger, listenersFactory, router);
 
         this.injector = injector.createChildInjector(new SimpleProxyModule());
 
         String port = properties.get(PORT);
 
-        log.debug("Creating REST server on port " + port);
+        logger.debug("Creating REST server on port " + port);
         server = new Server(Integer.parseInt(port));
 
         ServletContextHandler handler = new ServletContextHandler();

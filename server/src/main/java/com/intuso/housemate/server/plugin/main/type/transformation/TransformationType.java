@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.type.RealCompoundType;
@@ -18,12 +18,15 @@ import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 /**
  */
 public class TransformationType extends RealCompoundType<Transformation> implements PluginListener {
+
+    private final static Logger logger = LoggerFactory.getLogger(TransformationType.class);
 
     public final static String ID = "transformation";
     public final static String NAME = "Transformation";
@@ -42,20 +45,19 @@ public class TransformationType extends RealCompoundType<Transformation> impleme
     private final Map<String, Map<String, Transformer<?, ?>>> transformers = Maps.newHashMap();
 
     @Inject
-    public TransformationType(final Logger logger,
-                              ListenersFactory listenersFactory,
+    public TransformationType(ListenersFactory listenersFactory,
                               PluginManager pluginManager,
                               TypeSerialiser<RealType<?>> outputTypeSerialiser,
                               TypeSerialiser<ValueSource> sourceTypeSerialiser,
-                              RealList<RealType<?>> types) {
+                              RealRoot root) {
         super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.outputTypeSerialiser = outputTypeSerialiser;
         this.sourceTypeSerialiser = sourceTypeSerialiser;
         pluginManager.addPluginListener(this, true);
         getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, OUTPUT_TYPE_ID, OUTPUT_TYPE_NAME,
-                OUTPUT_TYPE_DESCRIPTION, TransformationOutputType.ID, types));
+                OUTPUT_TYPE_DESCRIPTION, TransformationOutputType.ID, root.getTypes()));
         getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, VALUE_ID, VALUE_NAME,
-                VALUE_DESCRIPTION, ValueSourceType.ID, types));
+                VALUE_DESCRIPTION, ValueSourceType.ID, root.getTypes()));
     }
 
     @Override

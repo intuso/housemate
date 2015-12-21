@@ -1,7 +1,10 @@
 package com.intuso.housemate.server.object.real;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.api.internal.RealAutomation;
+import com.intuso.housemate.client.real.api.internal.RealDevice;
+import com.intuso.housemate.client.real.api.internal.RealHardware;
+import com.intuso.housemate.client.real.api.internal.RealUser;
 import com.intuso.housemate.client.real.impl.internal.RealRootImpl;
 import com.intuso.housemate.client.real.impl.internal.factory.automation.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.factory.condition.ConditionFactoryType;
@@ -20,6 +23,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -28,14 +32,14 @@ import java.util.List;
  */
 public class ServerRealRoot extends RealRootImpl {
 
+    private final static Logger logger = LoggerFactory.getLogger(ServerRealRoot.class);
+
     private boolean initialDataSent = false;
 
     @Inject
-    public ServerRealRoot(Logger logger,
-                          ListenersFactory listenersFactory,
+    public ServerRealRoot(ListenersFactory listenersFactory,
                           PropertyRepository properties,
                           Router<?> router,
-                          RealList<RealType<?>> types,
                           AddHardwareCommand.Factory addHardwareCommandFactory,
                           AddDeviceCommand.Factory addDeviceCommandFactory,
                           AddAutomationCommand.Factory addAutomationCommandFactory,
@@ -48,7 +52,7 @@ public class ServerRealRoot extends RealRootImpl {
                           RealDevice.Factory deviceFactory,
                           RealHardware.Factory hardwareFactory,
                           RealUser.Factory userFactory) {
-        super(logger, listenersFactory, properties, router, types,
+        super(logger, listenersFactory, properties, router,
                 addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory,
                 conditionFactoryType, deviceFactoryType, hardwareFactoryType, taskFactoryType, automationFactory,
                 deviceFactory, hardwareFactory, userFactory);

@@ -26,7 +26,7 @@ public final class RealListImpl<
      * @param description the list's description
      */
     public RealListImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description) {
-        super(logger, listenersFactory, new ListData<CHILD_DATA>(id, name, description));
+        super(listenersFactory, logger, new ListData<CHILD_DATA>(id, name, description));
     }
 
     /**

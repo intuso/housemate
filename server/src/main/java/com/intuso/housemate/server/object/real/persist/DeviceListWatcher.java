@@ -13,6 +13,7 @@ import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,17 +27,16 @@ import java.util.Collection;
 */
 public class DeviceListWatcher implements List.Listener<RealDevice<?>> {
 
-    private final Multimap<RealDevice, ListenerRegistration> listeners = HashMultimap.create();
+    private final static Logger logger = LoggerFactory.getLogger(DeviceListWatcher.class);
 
-    private final Logger logger;
+    private final Multimap<RealDevice, ListenerRegistration> listeners = HashMultimap.create();
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
     private final PropertyListWatcher propertyListWatcher;
     private final DeviceListener deviceListener;
 
     @Inject
-    public DeviceListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher, DeviceListener deviceListener) {
-        this.logger = logger;
+    public DeviceListWatcher(Persistence persistence, ValueBaseWatcher valueBaseWatcher, PropertyListWatcher propertyListWatcher, DeviceListener deviceListener) {
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
         this.propertyListWatcher = propertyListWatcher;

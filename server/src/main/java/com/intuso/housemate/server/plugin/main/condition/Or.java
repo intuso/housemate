@@ -19,7 +19,7 @@ public class Or extends LogicCondition {
     private final Logger logger;
 
     @Inject
-    public Or(Logger logger, @Assisted Callback conditionCallback) {
+    public Or(@Assisted Logger logger, @Assisted Callback conditionCallback) {
         super(conditionCallback);
         this.logger = logger;
     }

@@ -28,18 +28,18 @@ public class RealUserImpl
      * @param data the object's data
      */
     @Inject
-    public RealUserImpl(final Logger logger,
-                        ListenersFactory listenersFactory,
+    public RealUserImpl(ListenersFactory listenersFactory,
+                        @Assisted final Logger logger,
                         @Assisted UserData data,
                         @Assisted final RemoveCallback removeCallback) {
-        super(logger, listenersFactory, data);
+        super(listenersFactory, logger, data);
         this.remove = new RealCommandImpl(logger, listenersFactory, UserData.REMOVE_ID, UserData.REMOVE_ID, "Remove the user", Lists.<RealParameter<?>>newArrayList()) {
             @Override
             public void perform(TypeInstanceMap values) {
                 removeCallback.removeUser(RealUserImpl.this);
             }
         };
-        this.emailProperty = new RealPropertyImpl<>(logger, listenersFactory, UserData.EMAIL_ID, UserData.EMAIL_ID, "The user's email address", new EmailType(logger, listenersFactory), (Email)null);
+        this.emailProperty = new RealPropertyImpl<>(logger, listenersFactory, UserData.EMAIL_ID, UserData.EMAIL_ID, "The user's email address", new EmailType(listenersFactory), (Email)null);
         addChild(remove);
         addChild(emailProperty);
     }

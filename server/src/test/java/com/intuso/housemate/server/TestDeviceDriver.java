@@ -7,6 +7,7 @@ import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.annotations.Value;
 import com.intuso.housemate.client.real.api.internal.annotations.Values;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
+import org.slf4j.Logger;
 
 @TypeInfo(id = "test-device", name = "Test Device", description = "Test Device")
 public class TestDeviceDriver implements DeviceDriver {
@@ -14,7 +15,7 @@ public class TestDeviceDriver implements DeviceDriver {
     public TestFeature.MyValues values;
 
     @Inject
-    public TestDeviceDriver(@Assisted DeviceDriver.Callback callback) {}
+    public TestDeviceDriver(@Assisted Logger logger, @Assisted DeviceDriver.Callback callback) {}
 
     @Override
     public void start() {

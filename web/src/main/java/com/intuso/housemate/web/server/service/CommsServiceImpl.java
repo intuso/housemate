@@ -15,6 +15,7 @@ import com.intuso.housemate.web.client.service.CommsService;
 import com.intuso.housemate.web.server.ContextListener;
 import com.intuso.housemate.web.server.GWTClientEndpoint;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -25,12 +26,12 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
 
     private final static String ATT_NAME = "endpoint";
 
-    private final Logger logger;
+    private final static Logger logger = LoggerFactory.getLogger(CommsService.class);
+
     private final Persistence persistence;
 
     @Inject
     public CommsServiceImpl() {
-        this.logger = ContextListener.INJECTOR.getInstance(Logger.class);
         this.persistence = ContextListener.INJECTOR.getInstance(Persistence.class);
     }
 

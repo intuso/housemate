@@ -31,7 +31,7 @@ public class ApplicationBridge
     private final ValueBridge statusValue;
 
     public ApplicationBridge(Logger logger, ListenersFactory listenersFactory, Application application) {
-        super(logger, listenersFactory,
+        super(listenersFactory, logger,
                 new ApplicationData(application.getId(), application.getName(), application.getDescription()));
         applicationInstances = new ConvertingListBridge<>(
                 logger, listenersFactory, application.getApplicationInstances(), new ApplicationInstanceBridge.Converter(logger, listenersFactory));

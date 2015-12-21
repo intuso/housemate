@@ -31,7 +31,7 @@ public class RealApplicationImpl
 
     public RealApplicationImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description,
                                RealType<Status> applicationStatusType) {
-        super(logger, listenersFactory, new ApplicationData(id, name, description));
+        super(listenersFactory, logger, new ApplicationData(id, name, description));
         this.applicationInstances = (RealList)new RealListImpl<>(
                 logger, listenersFactory, ApplicationData.APPLICATION_INSTANCES_ID, ApplicationData.APPLICATION_INSTANCES_ID, "The application's instances");
         allowCommand = new RealCommandImpl(logger, listenersFactory, ApplicationData.ALLOW_COMMAND_ID, ApplicationData.ALLOW_COMMAND_ID, "Allow access to all the application instances",
@@ -55,7 +55,7 @@ public class RealApplicationImpl
                 setStatus(Status.RejectInstances);
             }
         };
-        statusValue = new RealValueImpl<>(logger, listenersFactory, ApplicationData.STATUS_VALUE_ID, ApplicationData.STATUS_VALUE_ID,
+        statusValue = new RealValueImpl<>(listenersFactory, logger, ApplicationData.STATUS_VALUE_ID, ApplicationData.STATUS_VALUE_ID,
                 "The status of the application instances", applicationStatusType, (Status)null);
         addChild((RealListImpl)applicationInstances);
         addChild(allowCommand);

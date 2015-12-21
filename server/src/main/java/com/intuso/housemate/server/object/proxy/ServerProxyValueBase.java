@@ -5,12 +5,12 @@ import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.TypeData;
 import com.intuso.housemate.comms.api.internal.payload.ValueBaseData;
 import com.intuso.housemate.comms.api.internal.payload.ValueData;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.ValueBase;
 import com.intuso.housemate.server.comms.ClientPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.object.ObjectFactory;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -31,12 +31,12 @@ public abstract class ServerProxyValueBase<
         implements ValueBase<TypeInstances, LISTENER, VALUE> {
 
     /**
-     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
+     * @param logger {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    public ServerProxyValueBase(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, DATA data) {
-        super(logger, listenersFactory, objectFactory, data);
+    public ServerProxyValueBase(ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, Logger logger, DATA data) {
+        super(listenersFactory, objectFactory, logger, data);
     }
 
     @Override

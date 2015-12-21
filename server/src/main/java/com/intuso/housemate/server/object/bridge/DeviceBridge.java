@@ -41,7 +41,7 @@ public class DeviceBridge
 
     public DeviceBridge(Logger logger, ListenersFactory listenersFactory,
                         Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> device) {
-        super(logger, listenersFactory, new DeviceData(device.getId(), device.getName(), device.getDescription()));
+        super(listenersFactory, logger, new DeviceData(device.getId(), device.getName(), device.getDescription()));
         this.device = device;
         renameCommand = new CommandBridge(logger, listenersFactory, device.getRenameCommand());
         removeCommand = new CommandBridge(logger, listenersFactory, device.getRemoveCommand());

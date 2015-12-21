@@ -52,13 +52,13 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
      * @param data the hardware's data
      */
     @Inject
-    public RealHardwareImpl(Logger logger,
-                            ListenersFactory listenersFactory,
+    public RealHardwareImpl(ListenersFactory listenersFactory,
                             AnnotationProcessor annotationProcessor,
                             HardwareFactoryType driverFactoryType,
+                            @Assisted final Logger logger,
                             @Assisted HardwareData data,
                             @Assisted RemoveCallback removeCallback) {
-        super(logger, listenersFactory, data);
+        super(listenersFactory, logger, data);
         this.annotationProcessor = annotationProcessor;
         this.removeCallback = removeCallback;
         this.renameCommand = new RealCommandImpl(logger, listenersFactory, HardwareData.RENAME_ID, HardwareData.RENAME_ID, "Rename the hardware", Lists.<RealParameter<?>>newArrayList(StringType.createParameter(logger, listenersFactory, HardwareData.NAME_ID, HardwareData.NAME_ID, "The new name"))) {
@@ -133,8 +133,8 @@ public final class RealHardwareImpl<DRIVER extends HardwareDriver>
         if(driver == null) {
             PluginResource<HardwareDriver.Factory<DRIVER>> driverFactory = driverProperty.getTypedValue();
             if(driverFactory != null) {
-                driver = driverFactory.getResource().create(this);
-                for(RealProperty<?> property : annotationProcessor.findProperties(asOriginal(driver)))
+                driver = driverFactory.getResource().create(getLogger(), this);
+                for(RealProperty<?> property : annotationProcessor.findProperties(getLogger(), asOriginal(driver)))
                     properties.add(property);
                 errorValue.setTypedValues((String) null);
                 driverLoadedValue.setTypedValues(true);

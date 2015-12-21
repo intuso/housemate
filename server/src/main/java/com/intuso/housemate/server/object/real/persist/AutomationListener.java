@@ -9,6 +9,7 @@ import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by tomc on 03/02/15.
@@ -16,13 +17,12 @@ import org.slf4j.Logger;
 public class AutomationListener
         implements Automation.Listener<RealAutomation> {
 
-    private final Logger logger;
+    private final static Logger logger = LoggerFactory.getLogger(AutomationListener.class);
+
     private final Persistence persistence;
 
     @Inject
-    protected AutomationListener(Logger logger, Persistence persistence) {
-
-        this.logger = logger;
+    protected AutomationListener(Persistence persistence) {
         this.persistence = persistence;
     }
 

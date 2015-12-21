@@ -17,13 +17,15 @@ import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.housemate.plugin.api.internal.PluginResource;
 import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by tomc on 19/03/15.
  */
 public class FactoryPluginListener implements PluginListener {
 
-    private final Logger logger;
+    private final static Logger logger = LoggerFactory.getLogger(FactoryPluginListener.class);
+
     private final RealRoot root;
     private final ConditionFactoryType conditionFactoryType;
     private final DeviceFactoryType deviceFactoryType;
@@ -31,8 +33,7 @@ public class FactoryPluginListener implements PluginListener {
     private final TaskFactoryType taskFactoryType;
 
     @Inject
-    public FactoryPluginListener(Logger logger, ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType, HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType, PluginManager pluginManager, RealRoot root) {
-        this.logger = logger;
+    public FactoryPluginListener(ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType, HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType, PluginManager pluginManager, RealRoot root) {
         this.conditionFactoryType = conditionFactoryType;
         this.deviceFactoryType = deviceFactoryType;
         this.hardwareFactoryType = hardwareFactoryType;

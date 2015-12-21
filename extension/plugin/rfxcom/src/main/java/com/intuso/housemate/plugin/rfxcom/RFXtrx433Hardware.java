@@ -32,8 +32,8 @@ public class RFXtrx433Hardware implements HardwareDriver {
     private boolean isRunning = false;
 
     @Inject
-    public RFXtrx433Hardware(Logger logger,
-                             RealDevice.Container deviceContainer,
+    public RFXtrx433Hardware(RealDevice.Container deviceContainer,
+                             @Assisted Logger logger,
                              @Assisted Callback callback) {
 
         // setup the connection to the USB device

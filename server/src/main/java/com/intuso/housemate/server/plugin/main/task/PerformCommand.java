@@ -42,8 +42,8 @@ public class PerformCommand implements TaskDriver, ObjectLifecycleListener {
     };
 
     @Inject
-    public PerformCommand(Logger logger,
-                          ObjectRoot objectRoot,
+    public PerformCommand(ObjectRoot objectRoot,
+                          @Assisted Logger logger,
                           @Assisted TaskDriver.Callback callback) {
         this.logger = logger;
         this.objectRoot = objectRoot;

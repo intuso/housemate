@@ -1,6 +1,5 @@
 package com.intuso.housemate.server.object.real.persist;
 
-import com.google.inject.Inject;
 import com.intuso.housemate.object.api.internal.Command;
 import org.slf4j.Logger;
 
@@ -16,7 +15,6 @@ public class CommandPerformListener implements Command.PerformListener<Command<?
     private final Logger logger;
     private final String description;
 
-    @Inject
     public CommandPerformListener(Logger logger, String description) {
         this.logger = logger;
         this.description = description;

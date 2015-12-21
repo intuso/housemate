@@ -9,6 +9,7 @@ import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -29,11 +30,10 @@ public class StringType extends RealSimpleType<String> {
         }
     };
 
-    /**
-     * @param logger {@inheritDoc}
-     */
+    private final static Logger logger = LoggerFactory.getLogger(StringType.class);
+
     @Inject
-    public StringType(Logger logger, ListenersFactory listenersFactory) {
+    public StringType(ListenersFactory listenersFactory) {
         super(logger, listenersFactory, SimpleTypeData.Type.String, SERIALISER);
     }
 
@@ -48,7 +48,7 @@ public class StringType extends RealSimpleType<String> {
      */
     public static RealValueImpl<String> createValue(Logger logger, ListenersFactory listenersFactory,
                                                 String id, String name, String description, String value) {
-        return new RealValueImpl<>(logger, listenersFactory, id, name, description, new StringType(logger, listenersFactory), value);
+        return new RealValueImpl<>(listenersFactory, logger, id, name, description, new StringType(listenersFactory), value);
     }
 
     /**
@@ -62,7 +62,7 @@ public class StringType extends RealSimpleType<String> {
      */
     public static RealPropertyImpl<String> createProperty(Logger logger, ListenersFactory listenersFactory,
                                                       String id, String name, String description, List<String> values) {
-        return new RealPropertyImpl<>(logger, listenersFactory, id, name, description, new StringType(logger, listenersFactory), values);
+        return new RealPropertyImpl<>(logger, listenersFactory, id, name, description, new StringType(listenersFactory), values);
     }
 
     /**
@@ -75,6 +75,6 @@ public class StringType extends RealSimpleType<String> {
      */
     public static RealParameterImpl<String> createParameter(Logger logger, ListenersFactory listenersFactory,
                                                         String id, String name, String description) {
-        return new RealParameterImpl<>(logger, listenersFactory, id, name, description, new StringType(logger, listenersFactory));
+        return new RealParameterImpl<>(listenersFactory, logger, id, name, description, new StringType(listenersFactory));
     }
 }

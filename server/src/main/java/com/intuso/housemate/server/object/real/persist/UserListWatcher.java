@@ -11,6 +11,7 @@ import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
@@ -23,15 +24,14 @@ import java.util.Collection;
  */
 public class UserListWatcher implements List.Listener<RealUser> {
 
-    private final Multimap<RealUser, ListenerRegistration> listeners = HashMultimap.create();
+    private final static Logger logger = LoggerFactory.getLogger(UserListWatcher.class);
 
-    private final Logger logger;
+    private final Multimap<RealUser, ListenerRegistration> listeners = HashMultimap.create();
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
 
     @Inject
-    public UserListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher) {
-        this.logger = logger;
+    public UserListWatcher(Persistence persistence, ValueBaseWatcher valueBaseWatcher) {
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
     }

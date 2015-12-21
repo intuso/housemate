@@ -2,6 +2,7 @@ package com.intuso.housemate.server.plugin.main.type.constant;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
@@ -11,10 +12,13 @@ import com.intuso.housemate.object.api.internal.List;
 import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  */
 public class ConstantType extends RealChoiceType<ConstantInstance<Object>> implements List.Listener<RealType<?>> {
+
+    private final static Logger logger = LoggerFactory.getLogger(ConstantType.class);
 
     public final static String ID = "constant";
     public final static String NAME = "Constant";
@@ -26,14 +30,14 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
 
     private final ListenersFactory listenersFactory;
 
-    private final RealList<RealType<?>> types;
+    private final RealRoot root;
 
     @Inject
-    public ConstantType(Logger logger, ListenersFactory listenersFactory, RealList<RealType<?>> types) {
+    public ConstantType(ListenersFactory listenersFactory, RealRoot root) {
         super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.listenersFactory = listenersFactory;
-        this.types = types;
-        types.addObjectListener(this);
+        this.root = root;
+        root.getTypes().addObjectListener(this);
     }
 
     @Override
@@ -48,7 +52,7 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
             getLogger().warn("Cannot deserialise constant, type id is null");
             return null;
         }
-        RealType<?> type = types.get(typeId);
+        RealType<?> type = root.getTypes().get(typeId);
         if(type == null) {
             getLogger().warn("Cannot deserialise constant, no type for id " + typeId);
             return null;
@@ -61,7 +65,7 @@ public class ConstantType extends RealChoiceType<ConstantInstance<Object>> imple
         // don't add self
         if(type.getId().equals(getId()))
             return;
-        RealSubTypeImpl<Object> subType = new RealSubTypeImpl<>(getLogger(), listenersFactory, SUB_TYPE_ID, SUB_TYPE_NAME, SUB_TYPE_DESCRIPTION, type.getId(), types);
+        RealSubTypeImpl<Object> subType = new RealSubTypeImpl<>(getLogger(), listenersFactory, SUB_TYPE_ID, SUB_TYPE_NAME, SUB_TYPE_DESCRIPTION, type.getId(), root.getTypes());
         RealOptionImpl option = new RealOptionImpl(getLogger(), listenersFactory, type.getId(), type.getName(), type.getDescription(), subType);
         ((RealList<RealOptionImpl>)getOptions()).add(option);
     }

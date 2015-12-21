@@ -15,12 +15,15 @@ import com.intuso.housemate.plugin.api.internal.PluginResource;
 import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 /**
  */
 public class ComparisonTypeType extends RealChoiceType<TypeInfo> implements PluginListener {
+
+    private final static Logger logger = LoggerFactory.getLogger(ComparisonTypeType.class);
 
     public final static String ID = "comparison-type";
     public final static String NAME = "Comparison Type";
@@ -31,7 +34,7 @@ public class ComparisonTypeType extends RealChoiceType<TypeInfo> implements Plug
     private final ListenersFactory listenersFactory;
 
     @Inject
-    public ComparisonTypeType(Logger logger, ListenersFactory listenersFactory,
+    public ComparisonTypeType(ListenersFactory listenersFactory,
                               PluginManager pluginManager) {
         super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.listenersFactory = listenersFactory;

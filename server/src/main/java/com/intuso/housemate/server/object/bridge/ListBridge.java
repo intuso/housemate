@@ -18,7 +18,7 @@ public class ListBridge<
         implements List<WR> {
 
     public ListBridge(Logger logger, ListenersFactory listenersFactory, ListData<WBL> data) {
-        super(logger, listenersFactory, data);
+        super(listenersFactory, logger, data);
     }
 
     @Override

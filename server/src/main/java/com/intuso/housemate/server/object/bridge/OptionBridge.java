@@ -22,7 +22,7 @@ public class OptionBridge
     private ConvertingListBridge<SubTypeData, SubType<?>, SubTypeBridge> subTypes;
 
     public OptionBridge(Logger logger, ListenersFactory listenersFactory, Option<?, ?> option) {
-        super(logger, listenersFactory, new OptionData(option.getId(), option.getName(), option.getDescription()));
+        super(listenersFactory, logger, new OptionData(option.getId(), option.getName(), option.getDescription()));
         if(option.getSubTypes() != null) {
             subTypes = new ConvertingListBridge<>(logger, listenersFactory, option.getSubTypes(),
                     new SubTypeBridge.Converter(logger, listenersFactory));

@@ -28,7 +28,7 @@ public class GWTProxyProperty extends ProxyProperty<
     }
 
     @Override
-    protected GWTProxyCommand createChildInstance(CommandData data) {
+    protected GWTProxyCommand createChild(CommandData data) {
         return new GWTProxyCommand(getLogger(), getListenersFactory(), injector, data);
     }
 }

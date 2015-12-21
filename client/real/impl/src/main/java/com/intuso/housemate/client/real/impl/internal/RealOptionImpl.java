@@ -41,7 +41,7 @@ public class RealOptionImpl
      * @param subTypes the option's sub types
      */
     public RealOptionImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, List<RealSubTypeImpl<?>> subTypes) {
-        super(logger, listenersFactory, new OptionData(id, name,  description));
+        super(listenersFactory, logger, new OptionData(id, name,  description));
         this.subTypes = (RealList)new RealListImpl<>(logger, listenersFactory, OptionData.SUB_TYPES_ID,
                 "Sub Types", "The sub types of this option", subTypes);
         addChild((RealListImpl)this.subTypes);

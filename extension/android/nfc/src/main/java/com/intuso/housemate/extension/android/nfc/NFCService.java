@@ -6,8 +6,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyClientHelper;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
-import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
 import com.intuso.housemate.comms.v1_0.api.access.ApplicationDetails;
 import com.intuso.housemate.object.v1_0.api.Application;
 import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
@@ -37,7 +37,7 @@ public class NFCService extends HousemateService {
         int result = super.onStartCommand(intent, flags, startId);
         if(NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
             new CommandPerformer(intent.getData().getPath(),
-                    ProxyClientHelper.newClientHelper(getLogger(), new AndroidProxyRoot(getLogger(), getListenersFactory(), getProperties(), getRouter()), getRouter())
+                    new ProxyClientHelper<>(new AndroidProxyRoot(getLogger(), getListenersFactory(), getProperties(), getRouter()), getRouter())
                             .applicationDetails(APPLICATION_DETAILS)
                             .component(NFCService.class.getName()),
                     startId).start();

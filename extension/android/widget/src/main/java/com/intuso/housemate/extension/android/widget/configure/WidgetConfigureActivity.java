@@ -12,9 +12,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
+import com.intuso.housemate.client.v1_0.proxy.api.ProxyClientHelper;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
 import com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl;
-import com.intuso.housemate.client.v1_0.proxy.simple.ProxyClientHelper;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
@@ -62,8 +62,7 @@ public class WidgetConfigureActivity
         listAdapter = new DeviceListAdapter();
         ((ListView)findViewById(R.id.device_list)).setAdapter(listAdapter);
         ((ListView)findViewById(R.id.device_list)).setOnItemClickListener(this);
-        clientHelper = ProxyClientHelper.newClientHelper(getLogger(),
-                new AndroidProxyRoot(getLogger(), getListenersFactory(), getProperties(), getRouter()), getRouter());
+        clientHelper = new ProxyClientHelper<>(new AndroidProxyRoot(getLogger(), getListenersFactory(), getProperties(), getRouter()), getRouter());
         clientHelper.getRouter().addListener(new Router.Listener<Router>() {
             @Override
             public void serverConnectionStatusChanged(Router clientConnection, ConnectionStatus connectionStatus) {

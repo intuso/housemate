@@ -5,14 +5,13 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.impl.internal.LoggerUtil;
 import com.intuso.housemate.client.real.impl.internal.RealApplicationImpl;
 import com.intuso.housemate.client.real.impl.internal.RealApplicationInstanceImpl;
-import com.intuso.housemate.client.real.impl.internal.factory.device.DeviceFactoryType;
-import com.intuso.housemate.client.real.impl.internal.factory.hardware.HardwareFactoryType;
+import com.intuso.housemate.client.real.impl.internal.RealRootImpl;
 import com.intuso.housemate.client.real.impl.internal.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.client.real.impl.internal.type.ApplicationStatusType;
 import com.intuso.housemate.comms.api.internal.payload.*;
-import com.intuso.housemate.object.api.internal.Command;
 import com.intuso.housemate.object.api.internal.TypeInstanceMap;
 import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.internal.Persistence;
@@ -31,7 +30,6 @@ import java.util.List;
  */
 public class RealObjectWatcher {
 
-    private final Logger logger;
     private final ListenersFactory listenersFactory;
     private final Injector injector;
     private final RealRoot root;
@@ -44,15 +42,12 @@ public class RealObjectWatcher {
     private final UserListWatcher userListWatcher;
 
     private final RealAutomation.Factory automationFactory;
-    private final DeviceFactoryType deviceFactoryType;
     private final RealDevice.Factory deviceFactory;
-    private final HardwareFactoryType hardwareFactoryType;
     private final RealHardware.Factory hardwareFactory;
     private final RealUser.Factory userFactory;
 
     @Inject
-    public RealObjectWatcher(Logger logger, ListenersFactory listenersFactory, Injector injector, RealRoot root, Persistence persistence, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, DeviceListWatcher deviceListWatcher, HardwareListWatcher hardwareListWatcher, UserListWatcher userListWatcher, RealAutomation.Factory automationFactory, DeviceFactoryType deviceFactoryType, RealDevice.Factory deviceFactory, HardwareFactoryType hardwareFactoryType, RealHardware.Factory hardwareFactory, RealUser.Factory userFactory) {
-        this.logger = logger;
+    public RealObjectWatcher(ListenersFactory listenersFactory, Injector injector, RealRoot root, Persistence persistence, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, DeviceListWatcher deviceListWatcher, HardwareListWatcher hardwareListWatcher, UserListWatcher userListWatcher, RealAutomation.Factory automationFactory, RealDevice.Factory deviceFactory, RealHardware.Factory hardwareFactory, RealUser.Factory userFactory) {
         this.listenersFactory = listenersFactory;
         this.injector = injector;
         this.root = root;
@@ -63,9 +58,7 @@ public class RealObjectWatcher {
         this.hardwareListWatcher = hardwareListWatcher;
         this.userListWatcher = userListWatcher;
         this.automationFactory = automationFactory;
-        this.deviceFactoryType = deviceFactoryType;
         this.deviceFactory = deviceFactory;
-        this.hardwareFactoryType = hardwareFactoryType;
         this.hardwareFactory = hardwareFactory;
         this.userFactory = userFactory;
     }
@@ -79,31 +72,31 @@ public class RealObjectWatcher {
     }
 
     private void watchApplications() {
-        loadApplications();
+        loadApplications(LoggerUtil.child(root.getLogger(), RealRootImpl.APPLICATIONS_ID));
         root.getApplications().addObjectListener(applicationListWatcher, true);
     }
 
     private void watchAutomations() {
-        loadAutomations();
+        loadAutomations(LoggerUtil.child(root.getLogger(), RealRootImpl.AUTOMATIONS_ID));
         root.getAutomations().addObjectListener(automationListWatcher, true);
     }
 
     private void watchDevices() {
-        loadDevices();
+        loadDevices(LoggerUtil.child(root.getLogger(), RealRootImpl.DEVICES_ID));
         root.getDevices().addObjectListener(deviceListWatcher, true);
     }
 
     private void watchHardwares() {
-        loadHardwares();
+        loadHardwares(LoggerUtil.child(root.getLogger(), RealRootImpl.HARDWARES_ID));
         root.getHardwares().addObjectListener(hardwareListWatcher, true);
     }
 
     private void watchUsers() {
-        loadUsers();
+        loadUsers(LoggerUtil.child(root.getLogger(), RealRootImpl.USERS_ID));
         root.getUsers().addObjectListener(userListWatcher, true);
     }
 
-    private void loadApplications() {
+    private void loadApplications(Logger logger) {
         RealList<? extends RealApplication> applications = root.getApplications();
         try {
             List<String> path = Lists.newArrayList(applications.getPath());
@@ -111,12 +104,14 @@ public class RealObjectWatcher {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    RealApplication application = new RealApplicationImpl(logger, listenersFactory, details.getChildren().get("id").getFirstValue(),
+                    Logger applicationLogger = LoggerUtil.child(logger, details.getChildren().get("id").getFirstValue());
+                    RealApplication application = new RealApplicationImpl(applicationLogger,
+                            listenersFactory, details.getChildren().get("id").getFirstValue(),
                             details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue(),
                             injector.getInstance(ApplicationStatusType.class));
                     path.add(ApplicationData.APPLICATION_INSTANCES_ID);
                     try {
-                        loadApplicationInstances(Lists.newArrayList(path), application.getApplicationInstances());
+                        loadApplicationInstances(LoggerUtil.child(applicationLogger, ApplicationData.APPLICATION_INSTANCES_ID), Lists.newArrayList(path), application.getApplicationInstances());
                     } finally {
                         path.remove(path.size() - 1);
                     }
@@ -132,13 +127,14 @@ public class RealObjectWatcher {
         }
     }
 
-    private void loadApplicationInstances(java.util.List<String> path, RealList<? extends RealApplicationInstance> realApplicationInstances) {
+    private void loadApplicationInstances(Logger logger, java.util.List<String> path, RealList<? extends RealApplicationInstance> realApplicationInstances) {
         try {
             for(String key : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    RealApplicationInstance applicationInstance = new RealApplicationInstanceImpl(logger, listenersFactory,
+                    RealApplicationInstance applicationInstance = new RealApplicationInstanceImpl(LoggerUtil.child(logger, details.getChildren().get("id").getFirstValue()),
+                            listenersFactory,
                             details.getChildren().get("id").getFirstValue(), injector.getInstance(ApplicationInstanceStatusType.class));
                     ((RealList<RealApplicationInstance>)realApplicationInstances).add(applicationInstance);
                 } finally {
@@ -152,7 +148,7 @@ public class RealObjectWatcher {
         }
     }
 
-    private void loadAutomations() {
+    private void loadAutomations(Logger logger) {
         RealList<? extends RealAutomation> automations = root.getAutomations();
         List<String> path = Lists.newArrayList(automations.getPath());
         try {
@@ -160,26 +156,27 @@ public class RealObjectWatcher {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    RealAutomation automation = automationFactory.create(
+                    Logger automationLogger = LoggerUtil.child(logger, details.getChildren().get("id").getFirstValue());
+                    RealAutomation automation = automationFactory.create(automationLogger,
                             new AutomationData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
                             root);
                     // automation is not yet initialised so we cannot use it's path to load conditions etc. Instead,
                     // we can manually build the path using the list's path as a base.
                     try {
                         path.add(AutomationData.CONDITIONS_ID);
-                        loadConditions(path, automation.getConditions(), automation.getAddConditionCommand());
+                        loadConditions(automationLogger, path, automation.getConditions(), automation.getAddConditionCommand());
                     } finally {
                         path.remove(path.size() - 1);
                     }
                     try {
                         path.add(AutomationData.SATISFIED_TASKS_ID);
-                        loadTasks(path, automation.getSatisfiedTasks(), automation.getAddSatisifedTaskCommand());
+                        loadTasks(automationLogger, path, automation.getSatisfiedTasks(), automation.getAddSatisifedTaskCommand());
                     } finally {
                         path.remove(path.size() - 1);
                     }
                     try {
                         path.add(AutomationData.UNSATISFIED_TASKS_ID);
-                        loadTasks(path, automation.getUnsatisfiedTasks(), automation.getAddUnsatisifedTaskCommand());
+                        loadTasks(automationLogger, path, automation.getUnsatisfiedTasks(), automation.getAddUnsatisifedTaskCommand());
                     } finally {
                         path.remove(path.size() - 1);
                     }
@@ -197,7 +194,7 @@ public class RealObjectWatcher {
         }
     }
 
-    private void loadConditions(java.util.List<String> path, RealList<? extends RealCondition<?>> conditions, RealCommand command) {
+    private void loadConditions(Logger logger, java.util.List<String> path, RealList<? extends RealCondition<?>> conditions, RealCommand command) {
         try {
             for(String conditionName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
@@ -217,7 +214,7 @@ public class RealObjectWatcher {
         }
     }
 
-    private void loadDevices() {
+    private void loadDevices(Logger logger) {
         RealList<? extends RealDevice<?>> devices = root.getDevices();
         List<String> path = Lists.newArrayList(devices.getPath());
         try {
@@ -225,7 +222,7 @@ public class RealObjectWatcher {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    ((RealList<RealDevice<?>>)devices).add(deviceFactory.create(
+                    ((RealList<RealDevice<?>>)devices).add(deviceFactory.create(LoggerUtil.child(logger, details.getChildren().get("id").getFirstValue()),
                             new DeviceData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
                             root));
                 } catch(Throwable t) {
@@ -241,7 +238,7 @@ public class RealObjectWatcher {
         }
     }
 
-    private void loadHardwares() {
+    private void loadHardwares(Logger logger) {
         RealList<? extends RealHardware<?>> hardwares = root.getHardwares();
         List<String> path = Lists.newArrayList(hardwares.getPath());
         try {
@@ -249,7 +246,7 @@ public class RealObjectWatcher {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    ((RealList<RealHardware<?>>)hardwares).add(hardwareFactory.create(
+                    ((RealList<RealHardware<?>>)hardwares).add(hardwareFactory.create(LoggerUtil.child(logger, details.getChildren().get("id").getFirstValue()),
                             new HardwareData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
                             root));
                 } catch(Throwable t) {
@@ -265,7 +262,7 @@ public class RealObjectWatcher {
         }
     }
 
-    private void loadTasks(java.util.List<String> path, RealList<? extends RealTask<?>> tasks, RealCommand command) {
+    private void loadTasks(Logger logger, java.util.List<String> path, RealList<? extends RealTask<?>> tasks, RealCommand command) {
         try {
             for(String taskName : persistence.getValuesKeys(path.toArray(new String[path.size()]))) {
                 try {
@@ -285,7 +282,7 @@ public class RealObjectWatcher {
         }
     }
 
-    private void loadUsers() {
+    private void loadUsers(Logger logger) {
         RealList<? extends RealUser> users = root.getUsers();
         List<String> path = Lists.newArrayList(users.getPath());
         try {
@@ -293,7 +290,7 @@ public class RealObjectWatcher {
                 try {
                     path.add(key);
                     TypeInstanceMap details = persistence.getValues(path.toArray(new String[path.size()]));
-                    RealUser user = userFactory.create(
+                    RealUser user = userFactory.create(LoggerUtil.child(logger, details.getChildren().get("id").getFirstValue()),
                             new UserData(details.getChildren().get("id").getFirstValue(), details.getChildren().get("name").getFirstValue(), details.getChildren().get("description").getFirstValue()),
                             root);
                     ((RealList<RealUser>)users).add(user);
@@ -307,30 +304,6 @@ public class RealObjectWatcher {
             logger.error("Failed to get names of existing users", t);
         }
         if(users.size() == 0)
-            ((RealList<RealUser>)users).add(userFactory.create(new UserData("admin", "admin", "Default admin user"), root));
-    }
-
-    private class CommandPerformListener implements Command.PerformListener<Command<?, ?, ?, ?>> {
-
-        private final String description;
-
-        private CommandPerformListener(String description) {
-            this.description = description;
-        }
-
-        @Override
-        public void commandStarted(Command<?, ?, ?, ?> command) {
-            logger.debug("Doing " + description);
-        }
-
-        @Override
-        public void commandFinished(Command<?, ?, ?, ?> command) {
-            logger.debug("Done " + description);
-        }
-
-        @Override
-        public void commandFailed(Command<?, ?, ?, ?> command, String error) {
-            logger.debug(description + " failed: " + error);
-        }
+            ((RealList<RealUser>)users).add(userFactory.create(LoggerUtil.child(logger, "admin"), new UserData("admin", "admin", "Default admin user"), root));
     }
 }

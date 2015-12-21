@@ -21,7 +21,7 @@ public class GWTProxyParameter extends ProxyParameter<GWTProxyParameter> {
     }
 
     @Override
-    protected NoChildrenProxyObject createChildInstance(NoChildrenData noChildrenData) {
+    protected NoChildrenProxyObject createChild(NoChildrenData noChildrenData) {
         return null;
     }
 }

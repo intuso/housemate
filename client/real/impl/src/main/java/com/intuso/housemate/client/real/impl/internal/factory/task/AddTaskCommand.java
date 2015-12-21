@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
 import com.intuso.housemate.client.real.api.internal.RealTask;
+import com.intuso.housemate.client.real.impl.internal.LoggerUtil;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.type.StringType;
@@ -35,20 +36,20 @@ public class AddTaskCommand extends RealCommandImpl {
     private final RealTask.RemoveCallback removeCallback;
 
     @Inject
-    protected AddTaskCommand(Logger logger,
-                             ListenersFactory listenersFactory,
+    protected AddTaskCommand(ListenersFactory listenersFactory,
                              StringType stringType,
                              TaskFactoryType taskFactoryType,
                              RealTask.Factory taskFactory,
+                             @Assisted Logger logger,
                              @Assisted("id") String id,
                              @Assisted("name") String name,
                              @Assisted("description") String description,
                              @Assisted Callback callback,
                              @Assisted RealTask.RemoveCallback removeCallback) {
         super(logger, listenersFactory, id, name, description,
-                new RealParameterImpl<>(logger, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(logger, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(logger, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, taskFactoryType));
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, NAME_PARAMETER_ID), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, DESCRIPTION_PARAMETER_ID), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, TYPE_PARAMETER_ID), TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, taskFactoryType));
         this.taskFactoryType = taskFactoryType;
         this.callback = callback;
         this.taskFactory = taskFactory;
@@ -63,7 +64,7 @@ public class AddTaskCommand extends RealCommandImpl {
         TypeInstances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateCommsException("No description specified");
-        RealTask<?> task = taskFactory.create(new TaskData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
+        RealTask<?> task = taskFactory.create(LoggerUtil.child(getLogger(), name.getFirstValue()), new TaskData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
         callback.addTask(task);
         TypeInstances taskType = values.getChildren().get(TYPE_PARAMETER_ID);
         if(taskType != null && taskType.getFirstValue() != null)
@@ -75,7 +76,8 @@ public class AddTaskCommand extends RealCommandImpl {
     }
 
     public interface Factory {
-        AddTaskCommand create(@Assisted("id") String id,
+        AddTaskCommand create(Logger logger,
+                              @Assisted("id") String id,
                               @Assisted("name") String name,
                               @Assisted("description") String description,
                               Callback callback,

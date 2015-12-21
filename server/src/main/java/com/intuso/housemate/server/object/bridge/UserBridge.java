@@ -17,7 +17,7 @@ public class UserBridge
     private final PropertyBridge emailProperty;
 
     public UserBridge(Logger logger, ListenersFactory listenersFactory, User user) {
-        super(logger, listenersFactory, new UserData(user.getId(), user.getName(), user.getDescription()));
+        super(listenersFactory, logger, new UserData(user.getId(), user.getName(), user.getDescription()));
         removeCommand = new CommandBridge(logger, listenersFactory, user.getRemoveCommand());
         emailProperty = new PropertyBridge(logger, listenersFactory, user.getEmailProperty());
         addChild(removeCommand);

@@ -32,7 +32,7 @@ public abstract class RealTypeImpl<
      * @param data {@inheritDoc}
      */
     protected RealTypeImpl(Logger logger, ListenersFactory listenersFactory, DATA data) {
-        super(logger, listenersFactory, data);
+        super(listenersFactory, logger, data);
     }
 
     public static <O> TypeInstances serialiseAll(TypeSerialiser<O> serialiser, O ... typedValues) {

@@ -15,12 +15,15 @@ import com.intuso.housemate.plugin.api.internal.PluginResource;
 import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 /**
  */
 public class OperationTypeType extends RealChoiceType<TypeInfo> implements PluginListener {
+
+    private final static Logger logger = LoggerFactory.getLogger(OperationTypeType.class);
 
     public final static String ID = "operation-type";
     public final static String NAME = "Operation Type";
@@ -31,7 +34,7 @@ public class OperationTypeType extends RealChoiceType<TypeInfo> implements Plugi
     private final ListenersFactory listenersFactory;
 
     @Inject
-    public OperationTypeType(Logger logger, ListenersFactory listenersFactory,
+    public OperationTypeType(ListenersFactory listenersFactory,
                              PluginManager pluginManager) {
         super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.listenersFactory = listenersFactory;

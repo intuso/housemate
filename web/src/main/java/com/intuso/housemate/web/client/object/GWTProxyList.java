@@ -2,6 +2,7 @@ package com.intuso.housemate.web.client.object;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.v1_0.proxy.api.LoggerUtil;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyList;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
 import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
@@ -28,7 +29,7 @@ public class GWTProxyList<CHILD_DATA extends HousemateData<?>,
     }
 
     @Override
-    protected CHILD createChildInstance(CHILD_DATA data) {
-        return (CHILD) injector.getObjectFactory().create(data);
+    protected CHILD createChild(CHILD_DATA data) {
+        return (CHILD) injector.getObjectFactory().create(LoggerUtil.child(getLogger(), data.getId()), data);
     }
 }

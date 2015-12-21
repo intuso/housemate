@@ -89,7 +89,6 @@ public class RealRootImpl
                         ListenersFactory listenersFactory,
                         PropertyRepository properties,
                         Router<?> router,
-                        RealList<RealType<?>> types,
                         AddHardwareCommand.Factory addHardwareCommandFactory,
                         AddDeviceCommand.Factory addDeviceCommandFactory,
                         AddAutomationCommand.Factory addAutomationCommandFactory,
@@ -102,13 +101,13 @@ public class RealRootImpl
                         RealDevice.Factory deviceFactory,
                         RealHardware.Factory hardwareFactory,
                         RealUser.Factory userFactory) {
-        super(logger, listenersFactory, new RootData());
+        super(listenersFactory, logger, new RootData());
 
         this.applications = (RealList)new RealListImpl<>(logger, listenersFactory, APPLICATIONS_ID, "Applications", "Applications");
         this.automations = (RealList)new RealListImpl<>(logger, listenersFactory, AUTOMATIONS_ID, "Automations", "Automations");
         this.devices = (RealList)new RealListImpl<>(logger, listenersFactory, DEVICES_ID, "Devices", "Devices");
         this.hardwares = (RealList)new RealListImpl<>(logger, listenersFactory, HARDWARES_ID, "Hardware", "Hardware");
-        this.types = types;
+        this.types = (RealList)new RealListImpl<>(logger, listenersFactory, TYPES_ID, "Types", "Types");
         this.users = (RealList)new RealListImpl<>(logger, listenersFactory, USERS_ID, "Users", "Users");
 
         this.automationFactory = automationFactory;
@@ -116,10 +115,10 @@ public class RealRootImpl
         this.hardwareFactory = hardwareFactory;
         this.userFactory = userFactory;
 
-        this.addAutomationCommand = addAutomationCommandFactory.create(ADD_AUTOMATION_ID, ADD_AUTOMATION_ID, "Add an automation", this, this);
-        this.addDeviceCommand = addDeviceCommandFactory.create(ADD_DEVICE_ID, ADD_DEVICE_ID, "Add a device", this, this);
-        this.addHardwareCommand = addHardwareCommandFactory.create(ADD_HARDWARE_ID, ADD_HARDWARE_ID, "Add hardware", this, this);
-        this.addUserCommand = addUserCommandFactory.create(ADD_USER_ID, ADD_USER_ID, "Add a user", this, this);
+        this.addAutomationCommand = addAutomationCommandFactory.create(LoggerUtil.child(logger, ADD_AUTOMATION_ID), ADD_AUTOMATION_ID, ADD_AUTOMATION_ID, "Add an automation", this, this);
+        this.addDeviceCommand = addDeviceCommandFactory.create(LoggerUtil.child(logger, ADD_DEVICE_ID), ADD_DEVICE_ID, ADD_DEVICE_ID, "Add a device", this, this);
+        this.addHardwareCommand = addHardwareCommandFactory.create(LoggerUtil.child(logger, ADD_HARDWARE_ID), ADD_HARDWARE_ID, ADD_HARDWARE_ID, "Add hardware", this, this);
+        this.addUserCommand = addUserCommandFactory.create(LoggerUtil.child(logger, ADD_USER_ID), ADD_USER_ID, ADD_USER_ID, "Add a user", this, this);
 
         this.accessManager = new AccessManager(listenersFactory, properties, ApplicationRegistration.ClientType.Real, this);
 
@@ -276,7 +275,7 @@ public class RealRootImpl
 
     @Override
     public <DRIVER extends HardwareDriver> RealHardware<DRIVER> createAndAddHardware(HardwareData data) {
-        RealHardware<?> hardware = hardwareFactory.create(data, this);
+        RealHardware<?> hardware = hardwareFactory.create(LoggerUtil.child(getLogger(), HARDWARES_ID, data.getId()), data, this);
         addHardware(hardware);
         return (RealHardware<DRIVER>) hardware;
     }
@@ -303,7 +302,7 @@ public class RealRootImpl
 
     @Override
     public <DRIVER extends DeviceDriver> RealDevice<DRIVER> createAndAddDevice(DeviceData data) {
-        RealDevice<?> device = deviceFactory.create(data, this);
+        RealDevice<?> device = deviceFactory.create(LoggerUtil.child(getLogger(), DEVICES_ID, data.getId()), data, this);
         addDevice(device);
         return (RealDevice<DRIVER>) device;
     }
@@ -330,7 +329,7 @@ public class RealRootImpl
 
     @Override
     public RealAutomation createAndAddAutomation(AutomationData data) {
-        RealAutomation automation = automationFactory.create(data, this);
+        RealAutomation automation = automationFactory.create(LoggerUtil.child(getLogger(), AUTOMATIONS_ID, data.getId()), data, this);
         addAutomation(automation);
         return automation;
     }
@@ -372,7 +371,7 @@ public class RealRootImpl
 
     @Override
     public RealUser createAndAddUser(UserData data) {
-        RealUser user = userFactory.create(data, this);
+        RealUser user = userFactory.create(LoggerUtil.child(getLogger(), USERS_ID, data.getId()), data, this);
         addUser(user);
         return user;
     }

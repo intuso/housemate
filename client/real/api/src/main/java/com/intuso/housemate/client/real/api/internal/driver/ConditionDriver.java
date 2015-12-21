@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.real.api.internal.driver;
 
+import org.slf4j.Logger;
+
 import java.util.Map;
 
 /**
@@ -18,6 +20,6 @@ public interface ConditionDriver {
     }
 
     interface Factory<DRIVER extends ConditionDriver> {
-        DRIVER create(Callback callback);
+        DRIVER create(Logger logger, Callback callback);
     }
 }

@@ -7,6 +7,7 @@ import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -19,15 +20,14 @@ import java.util.Map;
  */
 public class ApplicationInstanceListWatcher implements List.Listener<RealApplicationInstance> {
 
-    private final Map<ApplicationInstance, ListenerRegistration> listeners = Maps.newHashMap();
+    private final static Logger logger = LoggerFactory.getLogger(ApplicationInstanceListWatcher.class);
 
-    private final Logger logger;
+    private final Map<ApplicationInstance, ListenerRegistration> listeners = Maps.newHashMap();
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
 
     @Inject
-    public ApplicationInstanceListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher) {
-        this.logger = logger;
+    public ApplicationInstanceListWatcher(Persistence persistence, ValueBaseWatcher valueBaseWatcher) {
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
     }

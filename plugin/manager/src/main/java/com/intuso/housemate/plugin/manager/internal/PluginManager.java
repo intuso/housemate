@@ -12,6 +12,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -24,14 +25,13 @@ import java.util.Map;
  */
 public class PluginManager {
 
-    private final Logger logger;
+    private final static Logger logger = LoggerFactory.getLogger(PluginManager.class);
 
     private final Map<String, Injector> pluginInjectors = Maps.newHashMap();
     private final Listeners<PluginListener> pluginListeners;
 
     @Inject
-    public PluginManager(Logger logger, ListenersFactory listenersFactory) {
-        this.logger = logger;
+    public PluginManager(ListenersFactory listenersFactory) {
         this.pluginListeners = listenersFactory.create();
     }
 

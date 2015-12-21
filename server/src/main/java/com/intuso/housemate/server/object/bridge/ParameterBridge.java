@@ -14,7 +14,7 @@ public class ParameterBridge
         implements Parameter<ParameterBridge> {
 
     public ParameterBridge(Logger logger, ListenersFactory listenersFactory, Parameter<?> parameter) {
-        super(logger, listenersFactory, new ParameterData(parameter.getId(), parameter.getName(), parameter.getDescription(), parameter.getTypeId()));
+        super(listenersFactory, logger, new ParameterData(parameter.getId(), parameter.getName(), parameter.getDescription(), parameter.getTypeId()));
     }
 
     @Override

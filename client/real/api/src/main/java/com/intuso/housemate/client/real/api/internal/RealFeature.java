@@ -2,6 +2,7 @@ package com.intuso.housemate.client.real.api.internal;
 
 import com.intuso.housemate.comms.api.internal.payload.FeatureData;
 import com.intuso.housemate.object.api.internal.Feature;
+import org.slf4j.Logger;
 
 /**
  * Base class for all devices
@@ -12,6 +13,6 @@ public interface RealFeature extends Feature<
         RealFeature> {
 
     interface Factory {
-            RealFeature create(FeatureData data);
+            RealFeature create(Logger logger, FeatureData data);
     }
 }

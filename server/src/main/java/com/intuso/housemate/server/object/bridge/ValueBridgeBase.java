@@ -24,7 +24,7 @@ public abstract class ValueBridgeBase<WBL extends ValueBaseData<SWBL>,
     private ValueBase<TypeInstances, ValueBase.Listener<? super ValueBase<TypeInstances, ?, ?>>, ValueBase<TypeInstances, ?, ?>> valueBase;
 
     public ValueBridgeBase(Logger logger, ListenersFactory listenersFactory, WBL data, ValueBase<?, ?, ?> valueBase) {
-        super(logger, listenersFactory, data);
+        super(listenersFactory, logger, data);
         this.valueBase = (ValueBase<TypeInstances, Listener<? super ValueBase<TypeInstances, ?, ?>>, ValueBase<TypeInstances, ?, ?>>) valueBase;
     }
 

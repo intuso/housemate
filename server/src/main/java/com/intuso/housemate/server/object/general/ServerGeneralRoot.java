@@ -18,6 +18,7 @@ import com.intuso.housemate.server.comms.*;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,12 +35,14 @@ public class ServerGeneralRoot
             ApplicationRegistration.APPLICATION_UNREGISTRATION_TYPE,
             Router.ROUTER_CONNECTED));
 
+    private final static Logger logger = LoggerFactory.getLogger(ServerGeneralRoot.class);
+
     private final Injector injector;
     private final AccessManager accessManager;
 
     @Inject
-    public ServerGeneralRoot(Logger logger, ListenersFactory listenersFactory, Injector injector, AccessManager accessManager) {
-        super(logger, listenersFactory, new RootData());
+    public ServerGeneralRoot(ListenersFactory listenersFactory, Injector injector, AccessManager accessManager) {
+        super(listenersFactory, logger, new RootData());
         this.injector = injector;
         this.accessManager = accessManager;
         init(null);

@@ -7,6 +7,7 @@ import com.intuso.housemate.plugin.api.internal.ExternalClientRouter;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,6 +18,8 @@ import java.net.Socket;
 public class SocketServer extends ExternalClientRouter<SocketServer> {
 
     public final static String PORT = "socket.server.port";
+
+    private final static Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
     /**
      * The server socket
@@ -32,7 +35,7 @@ public class SocketServer extends ExternalClientRouter<SocketServer> {
     private final V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory;
 
     @Inject
-    public SocketServer(Logger logger, ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router, V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory) {
+    public SocketServer(ListenersFactory listenersFactory, PropertyRepository properties, Router<?> router, V1_0SocketClientHandler.Factory v1_0SocketClientHandlerFactory) {
         super(logger, listenersFactory, router);
         this.properties = properties;
         this.v1_0SocketClientHandlerFactory = v1_0SocketClientHandlerFactory;
@@ -110,7 +113,7 @@ public class SocketServer extends ExternalClientRouter<SocketServer> {
                     @Override
                     public void run() {
                         try {
-                            v1_0SocketClientHandlerFactory.create(socket);
+                            v1_0SocketClientHandlerFactory.create(logger, socket);
                         } catch (Throwable t) {
                             getLogger().error("Could not create client handle for new client connection", t);
                             try {

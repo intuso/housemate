@@ -35,7 +35,7 @@ public class AutomationBridge
     
     public AutomationBridge(Logger logger, ListenersFactory listenersFactory,
                             Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> automation) {
-        super(logger, listenersFactory, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()));
+        super(listenersFactory, logger, new AutomationData(automation.getId(), automation.getName(), automation.getDescription()));
         this.automation = automation;
         renameCommand = new CommandBridge(logger, listenersFactory, automation.getRenameCommand());
         removeCommand = new CommandBridge(logger, listenersFactory, automation.getRemoveCommand());

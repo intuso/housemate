@@ -4,8 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.client.real.api.internal.RealList;
-import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.type.RealCompoundType;
@@ -20,12 +19,15 @@ import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 /**
  */
 public class ComparisonType extends RealCompoundType<Comparison> implements PluginListener {
+
+    private final static Logger logger = LoggerFactory.getLogger(ComparisonType.class);
 
     public final static String ID = "comparison";
     public final static String NAME = "Comparison";
@@ -41,29 +43,26 @@ public class ComparisonType extends RealCompoundType<Comparison> implements Plug
     public final static String VALUE_1_NAME = "Second value";
     public final static String VALUE_1_DESCRIPTION = "The second value to compare";
 
-    private final Logger logger;
     private final TypeSerialiser<TypeInfo> comparisonTypeSerialiser;
     private final TypeSerialiser<ValueSource> sourceTypeSerialiser;
 
     private final Map<String, Map<String, Comparator<?>>> comparators = Maps.newHashMap();
 
     @Inject
-    public ComparisonType(Logger logger,
-                          ListenersFactory listenersFactory,
-                          RealList<RealType<?>> types,
+    public ComparisonType(ListenersFactory listenersFactory,
+                          RealRoot root,
                           @com.intuso.housemate.server.plugin.main.ioc.Comparator TypeSerialiser<TypeInfo> comparisonTypeSerialiser,
                           TypeSerialiser<ValueSource> sourceTypeSerialiser,
                           PluginManager pluginManager) {
         super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
-        this.logger = logger;
         this.comparisonTypeSerialiser = comparisonTypeSerialiser;
         this.sourceTypeSerialiser = sourceTypeSerialiser;
         getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, COMPARISON_TYPE_ID,
-                COMPARISON_TYPE_NAME, COMPARISON_TYPE_DESCRIPTION, ComparisonTypeType.ID, types));
+                COMPARISON_TYPE_NAME, COMPARISON_TYPE_DESCRIPTION, ComparisonTypeType.ID, root.getTypes()));
         getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
-                VALUE_0_DESCRIPTION, ValueSourceType.ID, types));
+                VALUE_0_DESCRIPTION, ValueSourceType.ID, root.getTypes()));
         getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
-                VALUE_1_DESCRIPTION, ValueSourceType.ID, types));
+                VALUE_1_DESCRIPTION, ValueSourceType.ID, root.getTypes()));
         pluginManager.addPluginListener(this, true);
     }
 

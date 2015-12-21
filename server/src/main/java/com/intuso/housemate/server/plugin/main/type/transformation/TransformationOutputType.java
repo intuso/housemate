@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.type.RealChoiceType;
@@ -13,10 +14,13 @@ import com.intuso.housemate.plugin.api.internal.Transformer;
 import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  */
 public class TransformationOutputType extends RealChoiceType<RealType<?>> implements PluginListener {
+
+    private final static Logger logger = LoggerFactory.getLogger(TransformationOutputType.class);
 
     public final static String ID = "output-type";
     public final static String NAME = "Output Type";
@@ -24,16 +28,15 @@ public class TransformationOutputType extends RealChoiceType<RealType<?>> implem
 
     private final ListenersFactory listenersFactory;
 
-    private final RealList<RealType<?>> types;
+    private final RealRoot root;
 
     @Inject
-    public TransformationOutputType(final Logger logger,
-                                    ListenersFactory listenersFactory,
-                                    RealList<RealType<?>> types,
+    public TransformationOutputType(ListenersFactory listenersFactory,
+                                    RealRoot root,
                                     PluginManager pluginManager) {
         super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
         this.listenersFactory = listenersFactory;
-        this.types = types;
+        this.root = root;
         pluginManager.addPluginListener(this, true);
     }
 
@@ -45,7 +48,7 @@ public class TransformationOutputType extends RealChoiceType<RealType<?>> implem
     @Override
     public RealType<?> deserialise(TypeInstance instance) {
         String typeId = instance != null ? instance.getValue() : null;
-        return typeId != null ? types.get(typeId) : null;
+        return typeId != null ? root.getTypes().get(typeId) : null;
     }
 
     @Override

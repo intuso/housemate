@@ -14,7 +14,7 @@ public class SubTypeBridge
         implements SubType<SubTypeBridge> {
 
     public SubTypeBridge(Logger logger, ListenersFactory listenersFactory, SubType<?> subType) {
-        super(logger, listenersFactory, new SubTypeData(subType.getId(), subType.getName(), subType.getDescription(), subType.getTypeId()));
+        super(listenersFactory, logger, new SubTypeData(subType.getId(), subType.getName(), subType.getDescription(), subType.getTypeId()));
     }
 
     @Override

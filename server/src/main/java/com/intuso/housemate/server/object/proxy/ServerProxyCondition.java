@@ -5,9 +5,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.comms.api.internal.payload.ConditionData;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.PropertyData;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.object.api.internal.Condition;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.object.ObjectFactory;
 import org.slf4j.Logger;
 
 public class ServerProxyCondition
@@ -44,8 +44,11 @@ public class ServerProxyCondition
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyCondition(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted ConditionData data) {
-        super(logger, listenersFactory, objectFactory, data);
+    public ServerProxyCondition(ListenersFactory listenersFactory,
+                                ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory,
+                                @Assisted Logger logger,
+                                @Assisted ConditionData data) {
+        super(listenersFactory, objectFactory, logger, data);
     }
 
     @Override

@@ -41,6 +41,7 @@ import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,9 +60,10 @@ public class TestValueComparison {
         COMPARISONS_BY_TYPE.get(CommonComparators.Equal.class.getAnnotation(TypeInfo.class).id()).put(SimpleTypeData.Type.Integer.getId(), new IntegerComparators.Equal());
         COMPARISONS_BY_TYPE.get(CommonComparators.Equal.class.getAnnotation(TypeInfo.class).id()).put(SimpleTypeData.Type.Double.getId(), new DoubleComparators.Equal());
     }
-    
+
+    private final static Logger logger = LoggerFactory.getLogger(TestValueComparison.class);
+
     private static Injector injector;
-    private static Logger logger;
     private static RealAutomation automation;
     private static final ListenersFactory listenersFactory = new ListenersFactory() {
         @Override
@@ -85,7 +87,7 @@ public class TestValueComparison {
 //        need to get local client too? something not adding plugins types to main type list
         // add the main plugin module
         injector.getInstance(PluginManager.class).addPlugin(injector.createChildInjector(new MainPluginModule()));
-        logger = injector.getInstance(Logger.class);
+
         RealRoot root = injector.getInstance(RealRoot.class);
         TypeInstanceMap automationValues = new TypeInstanceMap();
         automationValues.getChildren().put(AddConditionCommand.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance("test-automation")));
@@ -96,7 +98,7 @@ public class TestValueComparison {
 
     @Test
     public void testTwoConstantsEqualsTrue() {
-        RealType<?> integerType = new IntegerType(logger, listenersFactory);
+        RealType<?> integerType = new IntegerType(listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         assertValueComparisonSatisfied("constant-true", CommonComparators.Equal.class.getAnnotation(TypeInfo.class), valueOne, valueTwo, true);
@@ -104,7 +106,7 @@ public class TestValueComparison {
 
     @Test
     public void testTwoConstantsEqualsFalse() {
-        RealType<?> integerType = new IntegerType(logger, listenersFactory);
+        RealType<?> integerType = new IntegerType(listenersFactory);
         ConstantValue valueOne = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("1")));
         ConstantValue valueTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("2")));
         assertValueComparisonSatisfied("constant-false", CommonComparators.Equal.class.getAnnotation(TypeInfo.class), valueOne, valueTwo, false);
@@ -117,8 +119,8 @@ public class TestValueComparison {
         RealList<RealType<?>> types = injector.getInstance(new Key<RealList<RealType<?>>>() {});
 
         // create value one as (((double) 2) + 3.0)
-        RealTypeImpl<?, ?, ?> integerType = new IntegerType(logger, listenersFactory);
-        RealTypeImpl<?, ?, ?> doubleType = new DoubleType(logger, listenersFactory);
+        RealTypeImpl<?, ?, ?> integerType = new IntegerType(listenersFactory);
+        RealTypeImpl<?, ?, ?> doubleType = new DoubleType(listenersFactory);
         ConstantValue intTwo = new ConstantValue(listenersFactory, integerType, new TypeInstances(new TypeInstance("2")));
         ConstantValue doubleThree = new ConstantValue(listenersFactory, doubleType, new TypeInstances(new TypeInstance("3.0")));
 
@@ -158,7 +160,7 @@ public class TestValueComparison {
                 });
         RealCondition<ValueComparison> vc = makeValueComparison("locations", CommonComparators.Equal.class.getAnnotation(TypeInfo.class), valueOne, valueTwo);
         assertEquals(vc.getErrorValue().getTypedValue(), "Second value is not available");
-        RealDevice<TestDeviceDriver> device = (RealDevice<TestDeviceDriver>) injector.getInstance(RealDevice.Factory.class).create(new DeviceData("device", "Device", "Device"), null);
+        RealDevice<TestDeviceDriver> device = (RealDevice<TestDeviceDriver>) injector.getInstance(RealDevice.Factory.class).create(logger, new DeviceData("device", "Device", "Device"), null);
         device.getDriverProperty().setTypedValues(injector.getInstance(new Key<FactoryType.Entry<DeviceDriver.Factory<TestDeviceDriver>>>() {}));
         injector.getInstance(RealRoot.class).addDevice(device);
         synchronized (lock) {

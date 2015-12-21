@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.api.bridge.v1_0;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.driver.HardwareDriver;
+import org.slf4j.Logger;
 
 /**
  * Created by tomc on 05/11/15.
@@ -24,8 +25,8 @@ public class HardwareDriverFactoryBridgeReverse implements HardwareDriver.Factor
     }
 
     @Override
-    public HardwareDriver create(HardwareDriver.Callback callback) {
-        return hardwareDriverMapper.map(factory.create(new CallbackBridge(callback)));
+    public HardwareDriver create(Logger logger, HardwareDriver.Callback callback) {
+        return hardwareDriverMapper.map(factory.create(logger, new CallbackBridge(callback)));
     }
 
     private class CallbackBridge implements com.intuso.housemate.client.real.api.internal.driver.HardwareDriver.Callback {

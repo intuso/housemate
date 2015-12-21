@@ -50,8 +50,8 @@ public abstract class RealCommandImpl
      * @param parameters the command's parameters
      */
     protected RealCommandImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, List<RealParameter<?>> parameters) {
-        super(logger, listenersFactory, new CommandData(id, name, description));
-        enabledValue = new RealValueImpl<>(logger, listenersFactory, CommandData.ENABLED_ID, CommandData.ENABLED_ID, ENABLED_DESCRIPTION, new BooleanType(logger, listenersFactory), true);
+        super(listenersFactory, logger, new CommandData(id, name, description));
+        enabledValue = new RealValueImpl<>(listenersFactory, logger, CommandData.ENABLED_ID, CommandData.ENABLED_ID, ENABLED_DESCRIPTION, new BooleanType(listenersFactory), true);
         this.parameters = (RealList)new RealListImpl<ParameterData, RealParameterImpl<?>>(logger, listenersFactory, CommandData.PARAMETERS_ID, CommandData.PARAMETERS_ID, "The parameters required by the command");
         for(RealParameter<?> parameter : parameters)
             this.parameters.add(parameter);

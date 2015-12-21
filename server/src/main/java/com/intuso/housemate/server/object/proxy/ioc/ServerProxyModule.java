@@ -4,8 +4,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.intuso.housemate.comms.api.internal.payload.*;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.server.object.proxy.*;
-import com.intuso.utilities.object.ObjectFactory;
 
 /**
  * Created with IntelliJ IDEA.

@@ -81,14 +81,14 @@ public class RealAutomationImpl
     private ListenerRegistration conditionListenerRegistration;
 
     @Inject
-    public RealAutomationImpl(final Logger logger,
-                              ListenersFactory listenersFactory,
+    public RealAutomationImpl(ListenersFactory listenersFactory,
                               AddConditionCommand.Factory addConditionCommandFactory,
                               AddTaskCommand.Factory addTaskCommandFactory,
                               RealCondition.Factory conditionFactory,
+                              @Assisted final Logger logger,
                               @Assisted AutomationData data,
                               @Assisted RemoveCallback removeCallback) {
-        super(logger, listenersFactory, data);
+        super(listenersFactory, logger, data);
         this.conditionFactory = conditionFactory;
         this.removeCallback = removeCallback;
         this.rename = new RealCommandImpl(logger, listenersFactory, AutomationData.RENAME_ID, AutomationData.RENAME_ID, "Rename the automation", Lists.<RealParameter<?>>newArrayList(StringType.createParameter(logger, listenersFactory, AutomationData.NAME_ID, AutomationData.NAME_ID, "The new name"))) {
@@ -136,9 +136,9 @@ public class RealAutomationImpl
         this.conditions = (RealList)new RealListImpl<>(logger, listenersFactory, AutomationData.CONDITIONS_ID, AutomationData.CONDITIONS_ID, "The automation's conditions");
         this.satisfiedTasks = (RealList)new RealListImpl<>(logger, listenersFactory, AutomationData.SATISFIED_TASKS_ID, AutomationData.SATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
         this.unsatisfiedTasks = (RealList)new RealListImpl<>(logger, listenersFactory, AutomationData.UNSATISFIED_TASKS_ID, AutomationData.UNSATISFIED_TASKS_ID, "The tasks to run when the automation is satisfied");
-        addConditionCommand = addConditionCommandFactory.create(AutomationData.ADD_CONDITION_ID, AutomationData.ADD_CONDITION_ID, "Add condition", this, this);
-        addSatisfiedTaskCommand = addTaskCommandFactory.create(AutomationData.ADD_SATISFIED_TASK_ID, AutomationData.ADD_SATISFIED_TASK_ID, "Add satisfied task", addSatisfiedTaskCallback, satisfiedTaskRemoveCallback);
-        addUnsatisfiedTaskCommand = addTaskCommandFactory.create(AutomationData.ADD_UNSATISFIED_TASK_ID, AutomationData.ADD_UNSATISFIED_TASK_ID, "Add unsatisfied task", addUnsatisfiedTaskCallback, unsatisfiedTaskRemoveCallback);
+        addConditionCommand = addConditionCommandFactory.create(LoggerUtil.child(logger, AutomationData.ADD_CONDITION_ID), AutomationData.ADD_CONDITION_ID, AutomationData.ADD_CONDITION_ID, "Add condition", this, this);
+        addSatisfiedTaskCommand = addTaskCommandFactory.create(LoggerUtil.child(logger, AutomationData.ADD_SATISFIED_TASK_ID), AutomationData.ADD_SATISFIED_TASK_ID, AutomationData.ADD_SATISFIED_TASK_ID, "Add satisfied task", addSatisfiedTaskCallback, satisfiedTaskRemoveCallback);
+        addUnsatisfiedTaskCommand = addTaskCommandFactory.create(LoggerUtil.child(logger, AutomationData.ADD_UNSATISFIED_TASK_ID), AutomationData.ADD_UNSATISFIED_TASK_ID, AutomationData.ADD_UNSATISFIED_TASK_ID, "Add unsatisfied task", addUnsatisfiedTaskCallback, unsatisfiedTaskRemoveCallback);
         addChild(this.rename);
         addChild(this.remove);
         addChild(this.running);
@@ -245,7 +245,7 @@ public class RealAutomationImpl
 
     @Override
     public <DRIVER extends ConditionDriver> RealCondition<DRIVER> createAndAddCondition(ConditionData data) {
-        RealCondition<?> condition = conditionFactory.create(data, this);
+        RealCondition<?> condition = conditionFactory.create(LoggerUtil.child(getLogger(), AutomationData.CONDITIONS_ID, data.getId()), data, this);
         addCondition(condition);
         return (RealCondition<DRIVER>) condition;
     }

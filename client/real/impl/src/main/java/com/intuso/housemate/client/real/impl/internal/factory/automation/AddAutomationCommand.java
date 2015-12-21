@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal.factory.automation;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealAutomation;
+import com.intuso.housemate.client.real.impl.internal.LoggerUtil;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.type.StringType;
@@ -30,18 +31,18 @@ public class AddAutomationCommand extends RealCommandImpl {
     private final RealAutomation.RemoveCallback removeCallback;
 
     @Inject
-    protected AddAutomationCommand(Logger logger,
-                                   ListenersFactory listenersFactory,
+    protected AddAutomationCommand(ListenersFactory listenersFactory,
                                    StringType stringType,
                                    RealAutomation.Factory automationFactory,
+                                   @Assisted Logger logger,
                                    @Assisted("id") String id,
                                    @Assisted("name") String name,
                                    @Assisted("description") String description,
                                    @Assisted Callback callback,
                                    @Assisted RealAutomation.RemoveCallback removeCallback) {
         super(logger, listenersFactory, id, name, description,
-                new RealParameterImpl<>(logger, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(logger, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType));
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, NAME_PARAMETER_ID), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, DESCRIPTION_PARAMETER_ID), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType));
         this.callback = callback;
         this.automationFactory = automationFactory;
         this.removeCallback = removeCallback;
@@ -55,7 +56,7 @@ public class AddAutomationCommand extends RealCommandImpl {
         TypeInstances name = values.getChildren().get(NAME_PARAMETER_ID);
         if(name == null || name.getFirstValue() == null)
             throw new HousemateCommsException("No name specified");
-        callback.addAutomation(automationFactory.create(new AutomationData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback));
+        callback.addAutomation(automationFactory.create(LoggerUtil.child(getLogger(), name.getFirstValue()), new AutomationData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback));
     }
 
     public interface Callback {
@@ -63,7 +64,8 @@ public class AddAutomationCommand extends RealCommandImpl {
     }
 
     public interface Factory {
-        AddAutomationCommand create(@Assisted("id") String id,
+        AddAutomationCommand create(Logger logger,
+                                    @Assisted("id") String id,
                                     @Assisted("name") String name,
                                     @Assisted("description") String description,
                                     Callback callback,

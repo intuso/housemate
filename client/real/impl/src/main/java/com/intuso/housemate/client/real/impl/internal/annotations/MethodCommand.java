@@ -24,8 +24,8 @@ public class MethodCommand extends RealCommandImpl {
     private final ParameterConverter parameterConverter;
 
     @Inject
-    protected MethodCommand(Logger logger,
-                            ListenersFactory listenersFactory,
+    protected MethodCommand(ListenersFactory listenersFactory,
+                            @Assisted Logger logger,
                             @Assisted("id") String id,
                             @Assisted("name") String name,
                             @Assisted("description") String description,
@@ -70,8 +70,12 @@ public class MethodCommand extends RealCommandImpl {
     }
 
     public interface Factory {
-        MethodCommand create(@Assisted("id") String id, @Assisted("name") String name,
-                             @Assisted("description") String description, List<RealParameter<?>> parameters,
-                             Method method, Object instance);
+        MethodCommand create(Logger logger,
+                             @Assisted("id") String id,
+                             @Assisted("name") String name,
+                             @Assisted("description") String description,
+                             List<RealParameter<?>> parameters,
+                             Method method,
+                             Object instance);
     }
 }

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealHardware;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.client.real.impl.internal.LoggerUtil;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.type.StringType;
@@ -35,20 +36,20 @@ public class AddHardwareCommand extends RealCommandImpl {
     private final RealHardware.RemoveCallback removeCallback;
 
     @Inject
-    protected AddHardwareCommand(Logger logger,
-                                 ListenersFactory listenersFactory,
+    protected AddHardwareCommand(ListenersFactory listenersFactory,
                                  StringType stringType,
                                  HardwareFactoryType hardwareFactoryType,
                                  RealHardware.Factory hardwareFactory,
+                                 @Assisted Logger logger,
                                  @Assisted("id") String id,
                                  @Assisted("name") String name,
                                  @Assisted("description") String description,
                                  @Assisted Callback callback,
                                  @Assisted RealHardware.RemoveCallback removeCallback) {
         super(logger, listenersFactory, id, name, description,
-                new RealParameterImpl<>(logger, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(logger, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(logger, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, hardwareFactoryType));
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, NAME_PARAMETER_ID), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, DESCRIPTION_PARAMETER_ID), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, TYPE_PARAMETER_ID), TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, hardwareFactoryType));
         this.hardwareFactoryType = hardwareFactoryType;
         this.callback = callback;
         this.hardwareFactory = hardwareFactory;
@@ -63,7 +64,7 @@ public class AddHardwareCommand extends RealCommandImpl {
         TypeInstances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateCommsException("No description specified");
-        RealHardware<?> hardware = hardwareFactory.create(new HardwareData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
+        RealHardware<?> hardware = hardwareFactory.create(LoggerUtil.child(getLogger(), name.getFirstValue()), new HardwareData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
         callback.addHardware(hardware);
         TypeInstances hardwareType = values.getChildren().get(TYPE_PARAMETER_ID);
         if(hardwareType != null && hardwareType.getFirstValue() != null)
@@ -75,7 +76,8 @@ public class AddHardwareCommand extends RealCommandImpl {
     }
 
     public interface Factory {
-        AddHardwareCommand create(@Assisted("id") String id,
+        AddHardwareCommand create(Logger logger,
+                                  @Assisted("id") String id,
                                   @Assisted("name") String name,
                                   @Assisted("description") String description,
                                   Callback callback,

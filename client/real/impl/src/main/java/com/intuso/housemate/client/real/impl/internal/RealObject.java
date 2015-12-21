@@ -21,12 +21,12 @@ public abstract class RealObject<
     private RealRoot realRoot;
 
     /**
-     * @param logger {@inheritDoc}
      * @param listenersFactory
+     * @param logger {@inheritDoc}
      * @param data {@inheritDoc}
      */
-    protected RealObject(Logger logger, ListenersFactory listenersFactory, DATA data) {
-        super(logger, listenersFactory, data);
+    protected RealObject(ListenersFactory listenersFactory, Logger logger, DATA data) {
+        super(listenersFactory, logger, data);
     }
 
     /**

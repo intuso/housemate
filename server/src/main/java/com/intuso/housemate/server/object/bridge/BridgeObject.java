@@ -36,8 +36,8 @@ public abstract class BridgeObject<DATA extends HousemateData<CHILD_DATA>,
     private final Set<RemoteClient> loadedByClients = Sets.newHashSet();
     private final Map<RemoteClient, ListenerRegistration> clientListeners= Maps.newHashMap();
 
-    protected BridgeObject(Logger logger, ListenersFactory listenersFactory, DATA data) {
-        super(logger, listenersFactory, data);
+    protected BridgeObject(ListenersFactory listenersFactory, Logger logger, DATA data) {
+        super(listenersFactory, logger, data);
     }
 
     @Override

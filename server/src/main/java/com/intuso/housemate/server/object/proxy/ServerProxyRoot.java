@@ -5,6 +5,7 @@ import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.comms.api.internal.Message;
 import com.intuso.housemate.comms.api.internal.access.ApplicationRegistration;
 import com.intuso.housemate.comms.api.internal.payload.*;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.object.api.internal.*;
 import com.intuso.housemate.server.comms.ClientInstance;
 import com.intuso.housemate.server.comms.ClientPayload;
@@ -13,8 +14,8 @@ import com.intuso.housemate.server.comms.RemoteClientListener;
 import com.intuso.housemate.server.object.bridge.RootBridge;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.object.ObjectFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -45,18 +46,19 @@ public class ServerProxyRoot
     public final static String ADD_HARDWARE_ID = "add-hardware";
     public final static String ADD_USER_ID = "add-user";
 
+    private final static Logger logger = LoggerFactory.getLogger(ServerProxyRoot.class);
+
     private final RootBridge rootBridge;
 
     private RemoteClient client;
     private ListenerRegistration clientListenerRegistration;
 
     /**
-     * @param logger {@inheritDoc}
      * @param objectFactory {@inheritDoc}
      */
     @Inject
-    public ServerProxyRoot(Logger logger, ListenersFactory listenersFactory, RootBridge rootBridge, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory) {
-        super(logger, listenersFactory, objectFactory, new RootData());
+    public ServerProxyRoot(ListenersFactory listenersFactory, RootBridge rootBridge, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory) {
+        super(listenersFactory, objectFactory, logger, new RootData());
         this.rootBridge = rootBridge;
         init(null);
     }

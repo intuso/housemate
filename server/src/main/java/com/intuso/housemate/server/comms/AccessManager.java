@@ -21,6 +21,7 @@ import com.intuso.housemate.object.api.internal.Value;
 import com.intuso.housemate.server.Server;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -36,15 +37,15 @@ import java.util.UUID;
  */
 public class AccessManager {
 
-    private final Logger logger;
+    private final static Logger logger = LoggerFactory.getLogger(AccessManager.class);
+
     private final ListenersFactory listenersFactory;
     private final Injector injector;
     private final RealRoot realRoot;
     private Map<RemoteClient, StatusListener> statusListeners = Maps.newHashMap();
 
     @Inject
-    public AccessManager(Logger logger, ListenersFactory listenersFactory, Injector injector, RealRoot realRoot) {
-        this.logger = logger;
+    public AccessManager(ListenersFactory listenersFactory, Injector injector, RealRoot realRoot) {
         this.listenersFactory = listenersFactory;
         this.injector = injector;
         this.realRoot = realRoot;

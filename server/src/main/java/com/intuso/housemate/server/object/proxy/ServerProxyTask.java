@@ -5,9 +5,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.comms.api.internal.payload.HousemateData;
 import com.intuso.housemate.comms.api.internal.payload.PropertyData;
 import com.intuso.housemate.comms.api.internal.payload.TaskData;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.object.api.internal.Task;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.object.ObjectFactory;
 import org.slf4j.Logger;
 
 public class ServerProxyTask
@@ -39,8 +39,11 @@ public class ServerProxyTask
      * @param data {@inheritDoc}
      */
     @Inject
-    public ServerProxyTask(Logger logger, ListenersFactory listenersFactory, ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory, @Assisted TaskData data) {
-        super(logger, listenersFactory, objectFactory, data);
+    public ServerProxyTask(ListenersFactory listenersFactory,
+                           ObjectFactory<HousemateData<?>, ServerProxyObject<?, ?, ?, ?, ?>> objectFactory,
+                           @Assisted Logger logger,
+                           @Assisted TaskData data) {
+        super(listenersFactory, objectFactory, logger, data);
     }
 
     @Override

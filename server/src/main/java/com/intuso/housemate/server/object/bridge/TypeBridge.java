@@ -22,7 +22,7 @@ public class TypeBridge
     private final static String SUB_TYPES = "sub-types";
 
     public TypeBridge(Logger logger, ListenersFactory listenersFactory, Type<?> type) {
-        super(logger, listenersFactory, cloneData(logger, type));
+        super(listenersFactory, logger, cloneData(logger, type));
         if(type instanceof RemoteLinkedObject && ((RemoteLinkedObject)type).getChild(OPTIONS) != null) {
             addChild(new ConvertingListBridge<>(logger, listenersFactory, (List<Option<?, ?>>) ((RemoteLinkedObject) (type)).getChild(OPTIONS),
                     new OptionBridge.Converter(logger, listenersFactory)));

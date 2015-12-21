@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.client.real.impl.internal.LoggerUtil;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.type.StringType;
@@ -35,20 +36,20 @@ public class AddDeviceCommand extends RealCommandImpl {
     private final RealDevice.RemoveCallback removeCallback;
 
     @Inject
-    protected AddDeviceCommand(Logger logger,
-                               ListenersFactory listenersFactory,
+    protected AddDeviceCommand(ListenersFactory listenersFactory,
                                StringType stringType,
                                DeviceFactoryType deviceFactoryType,
                                RealDevice.Factory deviceFactory,
+                               @Assisted Logger logger,
                                @Assisted("id") String id,
                                @Assisted("name") String name,
                                @Assisted("description") String description,
                                @Assisted Callback callback,
                                @Assisted RealDevice.RemoveCallback removeCallback) {
         super(logger, listenersFactory, id, name, description,
-                new RealParameterImpl<>(logger, listenersFactory, NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(logger, listenersFactory, DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
-                new RealParameterImpl<>(logger, listenersFactory, TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, deviceFactoryType));
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, NAME_PARAMETER_ID), NAME_PARAMETER_ID, NAME_PARAMETER_NAME, NAME_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, DESCRIPTION_PARAMETER_ID), DESCRIPTION_PARAMETER_ID, DESCRIPTION_PARAMETER_NAME, DESCRIPTION_PARAMETER_DESCRIPTION, stringType),
+                new RealParameterImpl<>(listenersFactory, LoggerUtil.child(logger, TYPE_PARAMETER_ID), TYPE_PARAMETER_ID, TYPE_PARAMETER_NAME, TYPE_PARAMETER_DESCRIPTION, deviceFactoryType));
         this.deviceFactoryType = deviceFactoryType;
         this.callback = callback;
         this.deviceFactory = deviceFactory;
@@ -63,7 +64,7 @@ public class AddDeviceCommand extends RealCommandImpl {
         TypeInstances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
         if(description == null || description.getFirstValue() == null)
             throw new HousemateCommsException("No description specified");
-        RealDevice<?> device = deviceFactory.create(new DeviceData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
+        RealDevice<?> device = deviceFactory.create(LoggerUtil.child(getLogger(), name.getFirstValue()), new DeviceData(name.getFirstValue(), name.getFirstValue(), description.getFirstValue()), removeCallback);
         callback.addDevice(device);
         TypeInstances deviceType = values.getChildren().get(TYPE_PARAMETER_ID);
         if(deviceType != null && deviceType.getFirstValue() != null)
@@ -75,7 +76,8 @@ public class AddDeviceCommand extends RealCommandImpl {
     }
 
     public interface Factory {
-        AddDeviceCommand create(@Assisted("id") String id,
+        AddDeviceCommand create(Logger logger,
+                                @Assisted("id") String id,
                                 @Assisted("name") String name,
                                 @Assisted("description") String description,
                                 Callback callback,

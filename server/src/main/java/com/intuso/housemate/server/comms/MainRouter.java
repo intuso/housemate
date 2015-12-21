@@ -12,6 +12,7 @@ import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.general.ServerGeneralRoot;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,6 +22,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public final class MainRouter extends BaseRouter<MainRouter> {
 
+    private final static Logger logger = LoggerFactory.getLogger(MainRouter.class);
+
     private final Injector injector;
     private Set<ExternalClientRouter> externalClientRouters;
 
@@ -28,7 +31,7 @@ public final class MainRouter extends BaseRouter<MainRouter> {
     private final MessageProcessor messageProcessor = new MessageProcessor();
 
     @Inject
-    public MainRouter(Logger logger, ListenersFactory listenersFactory, Injector injector) {
+    public MainRouter(ListenersFactory listenersFactory, Injector injector) {
         super(logger, listenersFactory);
         this.injector = injector;
     }

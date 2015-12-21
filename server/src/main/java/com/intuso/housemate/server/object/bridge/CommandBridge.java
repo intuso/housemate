@@ -26,7 +26,7 @@ public class CommandBridge
     private ConvertingListBridge<ParameterData, Parameter<?>, ParameterBridge> parameters;
 
     public CommandBridge(Logger logger, ListenersFactory listenersFactory, Command<?, ?, ?, ?> proxyCommand) {
-        super(logger, listenersFactory,
+        super(listenersFactory, logger,
                 new CommandData(proxyCommand.getId(), proxyCommand.getName(), proxyCommand.getDescription()));
         this.proxyCommand = (Command<TypeInstanceMap, ?, ?, ?>) proxyCommand;
         enabledValue = new ValueBridge(logger, listenersFactory, proxyCommand.getEnabledValue());

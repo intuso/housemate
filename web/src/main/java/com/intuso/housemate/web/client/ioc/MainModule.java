@@ -12,6 +12,7 @@ import com.google.inject.Key;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.payload.*;
 import com.intuso.housemate.object.v1_0.api.RegexMatcher;
@@ -26,7 +27,6 @@ import com.intuso.housemate.web.client.place.HousematePlaceController;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryHandler;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryMapper;
 import com.intuso.utilities.listener.ListenersFactory;
-import com.intuso.utilities.object.ObjectFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import org.slf4j.Logger;
 

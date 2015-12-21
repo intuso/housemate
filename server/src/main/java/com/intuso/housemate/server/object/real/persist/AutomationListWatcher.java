@@ -13,6 +13,7 @@ import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,9 +27,9 @@ import java.util.Collection;
 */
 public class AutomationListWatcher implements List.Listener<RealAutomation> {
 
-    private final Multimap<RealAutomation, ListenerRegistration> listeners = HashMultimap.create();
+    private final static Logger logger = LoggerFactory.getLogger(AutomationListWatcher.class);
 
-    private final Logger logger;
+    private final Multimap<RealAutomation, ListenerRegistration> listeners = HashMultimap.create();
     private final Persistence persistence;
     private final ValueBaseWatcher valueBaseWatcher;
     private final ConditionListWatcher conditionListWatcher;
@@ -36,9 +37,8 @@ public class AutomationListWatcher implements List.Listener<RealAutomation> {
     private final AutomationListener automationListener;
 
     @Inject
-    public AutomationListWatcher(Logger logger, Persistence persistence, ValueBaseWatcher valueBaseWatcher,
+    public AutomationListWatcher(Persistence persistence, ValueBaseWatcher valueBaseWatcher,
                                  ConditionListWatcher conditionListWatcher, TaskListWatcher taskListWatcher, AutomationListener automationListener) {
-        this.logger = logger;
         this.persistence = persistence;
         this.valueBaseWatcher = valueBaseWatcher;
         this.conditionListWatcher = conditionListWatcher;

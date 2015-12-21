@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 public class AndroidProxyValue extends ProxyValue<AndroidProxyType, AndroidProxyValue> {
 
     /**
-     * @param log  {@inheritDoc}
+     * @param logger  {@inheritDoc}
      * @param data {@inheritDoc}
      */
     public AndroidProxyValue(Logger logger, ListenersFactory listenersFactory, ValueData data) {
@@ -25,7 +25,7 @@ public class AndroidProxyValue extends ProxyValue<AndroidProxyType, AndroidProxy
     }
 
     @Override
-    protected NoChildrenProxyObject createChildInstance(NoChildrenData noChildrenData) {
+    protected NoChildrenProxyObject createChild(NoChildrenData noChildrenData) {
         return null;
     }
 }

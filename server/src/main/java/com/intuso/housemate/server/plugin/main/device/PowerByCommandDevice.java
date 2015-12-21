@@ -7,6 +7,7 @@ import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.device.feature.StatefulPowerControl;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 
@@ -27,7 +28,7 @@ public final class PowerByCommandDevice implements DeviceDriver, StatefulPowerCo
     private PowerValues powerValues;
 
     @Inject
-	public PowerByCommandDevice(@Assisted DeviceDriver.Callback callback) {}
+	public PowerByCommandDevice(@Assisted Logger logger, @Assisted DeviceDriver.Callback callback) {}
 
     @Override
     public void start() {

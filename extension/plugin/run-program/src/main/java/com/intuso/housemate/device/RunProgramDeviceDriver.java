@@ -28,7 +28,7 @@ public class RunProgramDeviceDriver implements DeviceDriver {
     private Monitor monitor = null;
 
     @Inject
-    public RunProgramDeviceDriver(Logger logger,
+    public RunProgramDeviceDriver(@Assisted Logger logger,
                                   @Assisted DeviceDriver.Callback driverCallback) {
         this.logger = logger;
     }

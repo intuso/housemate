@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.api.internal;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.object.api.internal.TypeInstances;
 import com.intuso.housemate.object.api.internal.Value;
+import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -15,7 +16,8 @@ public interface RealValue<O>
         Value<TypeInstances, RealValue<O>> {
 
     interface Factory {
-        RealValue<?> create(@Assisted("id") String id,
+        RealValue<?> create(Logger logger,
+                            @Assisted("id") String id,
                             @Assisted("name") String name,
                             @Assisted("description") String description,
                             RealType<?> type,

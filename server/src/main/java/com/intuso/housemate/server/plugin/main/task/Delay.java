@@ -36,7 +36,7 @@ public class Delay implements TaskDriver {
      * @param logger
      */
     @Inject
-    public Delay(Logger logger,
+    public Delay(@Assisted Logger logger,
                  @Assisted TaskDriver.Callback callback) {
         this.logger = logger;
     }

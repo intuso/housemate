@@ -22,22 +22,21 @@ public class RealValueImpl<O> extends RealValueBaseImpl<ValueData, NoChildrenDat
         implements RealValue<O> {
 
     /**
-     * @param logger {@inheritDoc}
      * @param listenersFactory
+     * @param logger {@inheritDoc}
      * @param id the value's id
      * @param name the value's name
      * @param description the value's description
      * @param type the type of the value's value
      * @param values the value's initial values
      */
-    public RealValueImpl(Logger logger,
-                         ListenersFactory listenersFactory,
+    public RealValueImpl(ListenersFactory listenersFactory, Logger logger,
                          String id,
                          String name,
                          String description,
                          RealType<O> type,
                          O... values) {
-        this(logger, listenersFactory, id, name, description, type, Arrays.asList(values));
+        this(listenersFactory, logger, id, name, description, type, Arrays.asList(values));
     }
 
     /**
@@ -50,8 +49,8 @@ public class RealValueImpl<O> extends RealValueBaseImpl<ValueData, NoChildrenDat
      * @param values the value's initial values
      */
     @Inject
-    public RealValueImpl(Logger logger,
-                         ListenersFactory listenersFactory,
+    public RealValueImpl(ListenersFactory listenersFactory,
+                         @Assisted final Logger logger,
                          @Assisted("id") String id,
                          @Assisted("name") String name,
                          @Assisted("description") String description,

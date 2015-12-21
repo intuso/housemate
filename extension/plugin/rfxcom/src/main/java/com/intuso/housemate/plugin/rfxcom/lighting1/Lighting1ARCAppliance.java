@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
+import org.slf4j.Logger;
 
 /**
  * Housemate device that controls a USB relay
@@ -13,7 +14,7 @@ import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 public class Lighting1ARCAppliance extends Lighting1Appliance {
 
 	@Inject
-	public Lighting1ARCAppliance(@Assisted DeviceDriver.Callback driverCallback) {
+	public Lighting1ARCAppliance(@Assisted Logger logger, @Assisted DeviceDriver.Callback driverCallback) {
 		super(Lighting1ARCHandler.INSTANCE, driverCallback);
 	}
 

@@ -19,7 +19,7 @@ public class And extends LogicCondition {
 	private final Logger logger;
 
     @Inject
-	public And(Logger logger, @Assisted Callback conditionCallback) {
+	public And(@Assisted Logger logger, @Assisted Callback conditionCallback) {
 		super(conditionCallback);
         this.logger = logger;
     }

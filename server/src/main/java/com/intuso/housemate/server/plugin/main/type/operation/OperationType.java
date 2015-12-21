@@ -4,8 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.client.real.api.internal.RealList;
-import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.RealRoot;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.type.RealCompoundType;
@@ -20,12 +19,15 @@ import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSource;
 import com.intuso.housemate.server.plugin.main.type.valuesource.ValueSourceType;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 /**
  */
 public class OperationType extends RealCompoundType<Operation> implements PluginListener {
+
+    private final static Logger logger = LoggerFactory.getLogger(OperationType.class);
 
     public final static String ID = "operation";
     public final static String NAME = "Operation";
@@ -41,29 +43,26 @@ public class OperationType extends RealCompoundType<Operation> implements Plugin
     public final static String VALUE_1_NAME = "Second value";
     public final static String VALUE_1_DESCRIPTION = "The second value";
 
-    private final Logger logger;
     private final TypeSerialiser<TypeInfo> operationTypeSerialiser;
     private final TypeSerialiser<ValueSource> sourceTypeSerialiser;
     private final Map<String, Map<String, Operator<?, ?>>> operators = Maps.newHashMap();
 
     @Inject
-    public OperationType(Logger logger,
-                         ListenersFactory listenersFactory,
+    public OperationType(ListenersFactory listenersFactory,
                          PluginManager pluginManager,
                          @com.intuso.housemate.server.plugin.main.ioc.Operator TypeSerialiser<TypeInfo> operationTypeSerialiser,
                          TypeSerialiser<ValueSource> sourceTypeSerialiser,
-                         RealList<RealType<?>> types) {
+                         RealRoot root) {
         super(logger, listenersFactory, ID, NAME, DESCRIPTION, 1, 1);
-        this.logger = logger;
         this.operationTypeSerialiser = operationTypeSerialiser;
         this.sourceTypeSerialiser = sourceTypeSerialiser;
         pluginManager.addPluginListener(this, true);
         getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory,
-                OPERATION_TYPE_ID, OPERATION_TYPE_NAME, OPERATION_TYPE_DESCRIPTION, OperationTypeType.ID, types));
+                OPERATION_TYPE_ID, OPERATION_TYPE_NAME, OPERATION_TYPE_DESCRIPTION, OperationTypeType.ID, root.getTypes()));
         getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, VALUE_0_ID, VALUE_0_NAME,
-                VALUE_0_DESCRIPTION, ValueSourceType.ID, types));
+                VALUE_0_DESCRIPTION, ValueSourceType.ID, root.getTypes()));
         getSubTypes().add(new RealSubTypeImpl<>(logger, listenersFactory, VALUE_1_ID, VALUE_1_NAME,
-                VALUE_1_DESCRIPTION, ValueSourceType.ID, types));
+                VALUE_1_DESCRIPTION, ValueSourceType.ID, root.getTypes()));
     }
 
     @Override

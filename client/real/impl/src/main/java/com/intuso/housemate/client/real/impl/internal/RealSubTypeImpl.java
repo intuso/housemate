@@ -28,7 +28,7 @@ public class RealSubTypeImpl<O>
      */
     public RealSubTypeImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, String typeId,
                            RealList<RealType<?>> types) {
-        super(logger, listenersFactory, new SubTypeData(id, name, description, typeId));
+        super(listenersFactory, logger, new SubTypeData(id, name, description, typeId));
         this.types = types;
     }
 

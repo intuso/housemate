@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.object.api.internal.Application;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,8 +15,10 @@ import org.slf4j.Logger;
  */
 public class ApplicationStatusType extends EnumChoiceType<Application.Status> {
 
+    private final static Logger logger = LoggerFactory.getLogger(ApplicationInstanceStatusType.class);
+
     @Inject
-    protected ApplicationStatusType(Logger logger, ListenersFactory listenersFactory) {
+    protected ApplicationStatusType(ListenersFactory listenersFactory) {
         super(logger, listenersFactory, "application-status", "Application Status", "Application Status", 1, 1,
                 Application.Status.class, Application.Status.Unregistered, Application.Status.AllowInstances, Application.Status.SomeInstances, Application.Status.RejectInstances);
     }

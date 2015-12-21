@@ -51,7 +51,7 @@ public class ContextListener extends GuiceServletContextListener {
             }
         };
         WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
-        PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, new String[]{"-log.stdout.level", "DEBUG"});
+        PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, new String[] {});
         return Guice.createInjector(
                 new PCClientModule(properties),
                 new JavabinSerialiserClientModule(),

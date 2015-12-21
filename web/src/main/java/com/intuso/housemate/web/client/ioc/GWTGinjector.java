@@ -8,13 +8,13 @@ import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
 import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
 import com.intuso.housemate.web.client.bootstrap.ioc.BootstrapUiModule;
 import com.intuso.housemate.web.client.comms.LoginManager;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
 import com.intuso.housemate.web.client.ui.view.*;
-import com.intuso.utilities.object.ObjectFactory;
 
 /**
  * Created with IntelliJ IDEA.

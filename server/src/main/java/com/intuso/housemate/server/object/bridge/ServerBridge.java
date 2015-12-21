@@ -35,7 +35,7 @@ public class ServerBridge
     private final CommandBridge renameCommand;
 
     public ServerBridge(Logger logger, ListenersFactory listenersFactory, ServerProxyRoot proxyRoot, final Persistence persistence) {
-        super(logger, listenersFactory, makeData(logger, (ClientInstance.Application) proxyRoot.getClient().getClientInstance(), persistence));
+        super(listenersFactory, logger, makeData(logger, (ClientInstance.Application) proxyRoot.getClient().getClientInstance(), persistence));
         applications = new ConvertingListBridge<ApplicationData, Application<?, ?, ?, ?, ?>, ApplicationBridge>(
                 logger, listenersFactory, proxyRoot.getApplications(),
                 new ApplicationBridge.Converter(logger, listenersFactory));

@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.api.internal;
 import com.intuso.housemate.client.real.api.internal.type.Email;
 import com.intuso.housemate.comms.api.internal.payload.UserData;
 import com.intuso.housemate.object.api.internal.User;
+import org.slf4j.Logger;
 
 public interface RealUser
         extends User<RealCommand, RealProperty<Email>, RealUser> {
@@ -17,6 +18,6 @@ public interface RealUser
     }
 
     interface Factory {
-        RealUser create(UserData data, RemoveCallback removeCallback);
+        RealUser create(Logger logger, UserData data, RemoveCallback removeCallback);
     }
 }

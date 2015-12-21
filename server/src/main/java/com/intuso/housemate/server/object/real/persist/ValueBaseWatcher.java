@@ -9,6 +9,7 @@ import com.intuso.housemate.persistence.api.internal.DetailsNotFoundException;
 import com.intuso.housemate.persistence.api.internal.Persistence;
 import com.intuso.utilities.listener.ListenerRegistration;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -21,13 +22,13 @@ import java.util.List;
 */
 public class ValueBaseWatcher {
 
-    private final Logger logger;
+    private final static Logger logger = LoggerFactory.getLogger(ValueBaseWatcher.class);
+
     private final Persistence persistence;
     private final Listener listener = new Listener();
 
     @Inject
-    public ValueBaseWatcher(Logger logger, Persistence persistence) {
-        this.logger = logger;
+    public ValueBaseWatcher(Persistence persistence) {
         this.persistence = persistence;
     }
 

@@ -55,7 +55,7 @@ public class TimeOfTheDay implements ConditionDriver {
     private Thread monitor;
 
     @Inject
-    public TimeOfTheDay(Logger logger,
+    public TimeOfTheDay(@Assisted Logger logger,
                         @Assisted ConditionDriver.Callback callback) {
         this.logger = logger;
         this.callback = callback;

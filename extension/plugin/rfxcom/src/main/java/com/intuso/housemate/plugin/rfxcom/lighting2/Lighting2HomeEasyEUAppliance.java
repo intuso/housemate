@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance;
+import org.slf4j.Logger;
 
 /**
  * Housemate device that controls a USB relay
@@ -14,7 +15,7 @@ import com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance;
 public class Lighting2HomeEasyEUAppliance extends com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2Appliance {
 
 	@Inject
-	public Lighting2HomeEasyEUAppliance(@Assisted DeviceDriver.Callback driverCallback) {
+	public Lighting2HomeEasyEUAppliance(@Assisted Logger logger, @Assisted DeviceDriver.Callback driverCallback) {
 		super(Lighting2HomeEasyEUHandler.INSTANCE, driverCallback);
 	}
 

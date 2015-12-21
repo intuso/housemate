@@ -28,7 +28,7 @@ import java.util.Set;
 public final class V1_0SocketClientHandler implements Router.Receiver {
 
     public interface Factory {
-        V1_0SocketClientHandler create(Socket socket);
+        V1_0SocketClientHandler create(Logger logger, Socket socket);
     }
 
 	/**
@@ -56,9 +56,9 @@ public final class V1_0SocketClientHandler implements Router.Receiver {
 	 * @param logger log to use
 	 */
     @Inject
-	public V1_0SocketClientHandler(Logger logger,
-                                   Router<?> router,
+	public V1_0SocketClientHandler(Router<?> router,
                                    Set<Serialiser.Factory> serialiserFactories,
+                                   @Assisted Logger logger,
                                    @Assisted Socket socket) {
         super();
 

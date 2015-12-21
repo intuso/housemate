@@ -45,13 +45,13 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
      * @param data the object's data
      */
     @Inject
-    public RealTaskImpl(Logger logger,
-                        ListenersFactory listenersFactory,
+    public RealTaskImpl(ListenersFactory listenersFactory,
                         AnnotationProcessor annotationProcessor,
                         TaskFactoryType driverFactoryType,
+                        @Assisted final Logger logger,
                         @Assisted TaskData data,
                         @Assisted final RemoveCallback removeCallback) {
-        super(logger, listenersFactory, data);
+        super(listenersFactory, logger, data);
         this.annotationProcessor = annotationProcessor;
         removeCommand = new RealCommandImpl(logger, listenersFactory, TaskData.REMOVE_ID, TaskData.REMOVE_ID, "Remove the task", Lists.<RealParameter<?>>newArrayList()) {
             @Override
@@ -59,10 +59,10 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
                 removeCallback.removeTask(RealTaskImpl.this);
             }
         };
-        errorValue = new RealValueImpl<>(logger, listenersFactory, TaskData.ERROR_ID, TaskData.ERROR_ID, "The current error", new StringType(logger, listenersFactory), (List)null);
+        errorValue = new RealValueImpl<>(listenersFactory, logger, TaskData.ERROR_ID, TaskData.ERROR_ID, "The current error", new StringType(listenersFactory), (List)null);
         driverProperty = (RealPropertyImpl<PluginResource<TaskDriver.Factory<DRIVER>>>) new RealPropertyImpl(logger, listenersFactory, "driver", "Driver", "The task's driver", driverFactoryType);
         driverLoadedValue = BooleanType.createValue(logger, listenersFactory, TaskData.DRIVER_LOADED_ID, TaskData.DRIVER_LOADED_ID, "Whether the task's driver is loaded or not", false);
-        executingValue = new RealValueImpl<>(logger, listenersFactory, TaskData.EXECUTING_ID, TaskData.EXECUTING_ID, "Whether the task is executing", new BooleanType(logger, listenersFactory), false);
+        executingValue = new RealValueImpl<>(listenersFactory, logger, TaskData.EXECUTING_ID, TaskData.EXECUTING_ID, "Whether the task is executing", new BooleanType(listenersFactory), false);
         properties = (RealList)new RealListImpl<>(logger, listenersFactory, TaskData.PROPERTIES_ID, TaskData.PROPERTIES_ID, "The task's properties");
         addChild(removeCommand);
         addChild(errorValue);
@@ -88,8 +88,8 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
         if(driver == null) {
             PluginResource<TaskDriver.Factory<DRIVER>> driverFactory = driverProperty.getTypedValue();
             if(driverFactory != null) {
-                driver = driverFactory.getResource().create(this);
-                for(RealProperty<?> property : annotationProcessor.findProperties(asOriginal(driver)))
+                driver = driverFactory.getResource().create(getLogger(), this);
+                for(RealProperty<?> property : annotationProcessor.findProperties(getLogger(), asOriginal(driver)))
                     properties.add(property);
                 errorValue.setTypedValues((String) null);
                 driverLoadedValue.setTypedValues(true);

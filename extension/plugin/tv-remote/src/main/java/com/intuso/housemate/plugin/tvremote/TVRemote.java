@@ -9,6 +9,7 @@ import com.intuso.housemate.client.v1_0.real.api.device.feature.PowerControl;
 import com.intuso.housemate.client.v1_0.real.api.device.feature.VolumeControl;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
 import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public class TVRemote implements DeviceDriver, PowerControl, PlaybackControl, Vo
     public String remoteName;
 
     @Inject
-    public TVRemote(@Assisted DeviceDriver.Callback driverCallback) {}
+    public TVRemote(@Assisted Logger logger, @Assisted DeviceDriver.Callback driverCallback) {}
 
     @Override
     public void start() {}

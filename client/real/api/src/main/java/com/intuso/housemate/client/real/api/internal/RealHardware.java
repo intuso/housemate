@@ -4,6 +4,7 @@ import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.real.api.internal.driver.PluginResource;
 import com.intuso.housemate.comms.api.internal.payload.HardwareData;
 import com.intuso.housemate.object.api.internal.Hardware;
+import org.slf4j.Logger;
 
 /**
  * Base class for all hardwares
@@ -36,6 +37,6 @@ public interface RealHardware<DRIVER extends HardwareDriver>
     }
 
     interface Factory {
-        RealHardware<?> create(HardwareData data, RemoveCallback removeCallback);
+        RealHardware<?> create(Logger logger, HardwareData data, RemoveCallback removeCallback);
     }
 }

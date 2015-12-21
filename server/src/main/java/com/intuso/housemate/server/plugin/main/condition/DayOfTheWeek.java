@@ -50,7 +50,7 @@ public class DayOfTheWeek implements ConditionDriver {
 	private Thread monitor;
 
     @Inject
-	public DayOfTheWeek(Logger logger,
+	public DayOfTheWeek(@Assisted Logger logger,
                         @Assisted ConditionDriver.Callback callback) {
 		this.logger = logger;
         this.callback = callback;
