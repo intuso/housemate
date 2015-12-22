@@ -22,8 +22,6 @@ import com.intuso.housemate.comms.api.internal.payload.NoPayload;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -31,8 +29,6 @@ import java.util.List;
  * Created by tomc on 20/03/15.
  */
 public class ServerRealRoot extends RealRootImpl {
-
-    private final static Logger logger = LoggerFactory.getLogger(ServerRealRoot.class);
 
     private boolean initialDataSent = false;
 
@@ -52,7 +48,7 @@ public class ServerRealRoot extends RealRootImpl {
                           RealDevice.Factory deviceFactory,
                           RealHardware.Factory hardwareFactory,
                           RealUser.Factory userFactory) {
-        super(logger, listenersFactory, properties, router,
+        super(listenersFactory, properties, router,
                 addHardwareCommandFactory, addDeviceCommandFactory, addAutomationCommandFactory, addUserCommandFactory,
                 conditionFactoryType, deviceFactoryType, hardwareFactoryType, taskFactoryType, automationFactory,
                 deviceFactory, hardwareFactory, userFactory);

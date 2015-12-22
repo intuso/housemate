@@ -29,6 +29,7 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.object.BaseObject;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,8 @@ public class RealRootImpl
     public final static String ADD_DEVICE_ID = "add-device";
     public final static String ADD_HARDWARE_ID = "add-hardware";
     public final static String ADD_USER_ID = "add-user";
+
+    private final static Logger logger = LoggerFactory.getLogger("com.intuso.housemate.real");
 
     private final Map<String, Listeners<ObjectLifecycleListener>> objectLifecycleListeners = Maps.newHashMap();
 
@@ -85,8 +88,7 @@ public class RealRootImpl
     });
 
     @Inject
-    public RealRootImpl(Logger logger,
-                        ListenersFactory listenersFactory,
+    public RealRootImpl(ListenersFactory listenersFactory,
                         PropertyRepository properties,
                         Router<?> router,
                         AddHardwareCommand.Factory addHardwareCommandFactory,
@@ -103,22 +105,22 @@ public class RealRootImpl
                         RealUser.Factory userFactory) {
         super(listenersFactory, logger, new RootData());
 
-        this.applications = (RealList)new RealListImpl<>(logger, listenersFactory, APPLICATIONS_ID, "Applications", "Applications");
-        this.automations = (RealList)new RealListImpl<>(logger, listenersFactory, AUTOMATIONS_ID, "Automations", "Automations");
-        this.devices = (RealList)new RealListImpl<>(logger, listenersFactory, DEVICES_ID, "Devices", "Devices");
-        this.hardwares = (RealList)new RealListImpl<>(logger, listenersFactory, HARDWARES_ID, "Hardware", "Hardware");
-        this.types = (RealList)new RealListImpl<>(logger, listenersFactory, TYPES_ID, "Types", "Types");
-        this.users = (RealList)new RealListImpl<>(logger, listenersFactory, USERS_ID, "Users", "Users");
+        this.applications = (RealList)new RealListImpl<>(LoggerUtil.child(logger, APPLICATIONS_ID), listenersFactory, APPLICATIONS_ID, "Applications", "Applications");
+        this.automations = (RealList)new RealListImpl<>(LoggerUtil.child(logger, AUTOMATIONS_ID), listenersFactory, AUTOMATIONS_ID, "Automations", "Automations");
+        this.devices = (RealList)new RealListImpl<>(LoggerUtil.child(logger, DEVICES_ID), listenersFactory, DEVICES_ID, "Devices", "Devices");
+        this.hardwares = (RealList)new RealListImpl<>(LoggerUtil.child(logger, HARDWARES_ID), listenersFactory, HARDWARES_ID, "Hardware", "Hardware");
+        this.types = (RealList)new RealListImpl<>(LoggerUtil.child(logger, TYPES_ID), listenersFactory, TYPES_ID, "Types", "Types");;
+        this.users = (RealList)new RealListImpl<>(LoggerUtil.child(logger, USERS_ID), listenersFactory, USERS_ID, "Users", "Users");
 
         this.automationFactory = automationFactory;
         this.deviceFactory = deviceFactory;
         this.hardwareFactory = hardwareFactory;
         this.userFactory = userFactory;
 
-        this.addAutomationCommand = addAutomationCommandFactory.create(LoggerUtil.child(logger, ADD_AUTOMATION_ID), ADD_AUTOMATION_ID, ADD_AUTOMATION_ID, "Add an automation", this, this);
-        this.addDeviceCommand = addDeviceCommandFactory.create(LoggerUtil.child(logger, ADD_DEVICE_ID), ADD_DEVICE_ID, ADD_DEVICE_ID, "Add a device", this, this);
-        this.addHardwareCommand = addHardwareCommandFactory.create(LoggerUtil.child(logger, ADD_HARDWARE_ID), ADD_HARDWARE_ID, ADD_HARDWARE_ID, "Add hardware", this, this);
-        this.addUserCommand = addUserCommandFactory.create(LoggerUtil.child(logger, ADD_USER_ID), ADD_USER_ID, ADD_USER_ID, "Add a user", this, this);
+        this.addAutomationCommand = addAutomationCommandFactory.create(LoggerUtil.child(LoggerUtil.child(logger, ADD_AUTOMATION_ID), ADD_AUTOMATION_ID), ADD_AUTOMATION_ID, ADD_AUTOMATION_ID, "Add an automation", this, this);
+        this.addDeviceCommand = addDeviceCommandFactory.create(LoggerUtil.child(LoggerUtil.child(logger, ADD_DEVICE_ID), ADD_DEVICE_ID), ADD_DEVICE_ID, ADD_DEVICE_ID, "Add a device", this, this);
+        this.addHardwareCommand = addHardwareCommandFactory.create(LoggerUtil.child(LoggerUtil.child(logger, ADD_HARDWARE_ID), ADD_HARDWARE_ID), ADD_HARDWARE_ID, ADD_HARDWARE_ID, "Add hardware", this, this);
+        this.addUserCommand = addUserCommandFactory.create(LoggerUtil.child(LoggerUtil.child(logger, ADD_USER_ID), ADD_USER_ID), ADD_USER_ID, ADD_USER_ID, "Add a user", this, this);
 
         this.accessManager = new AccessManager(listenersFactory, properties, ApplicationRegistration.ClientType.Real, this);
 
