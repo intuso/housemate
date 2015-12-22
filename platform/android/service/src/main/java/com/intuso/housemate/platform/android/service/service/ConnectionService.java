@@ -65,7 +65,7 @@ public class ConnectionService extends Service {
         // create all the required objects
         properties = new SharedPreferencesPropertyRepository(listenersFactory, defaultProperties, getApplicationContext());
         logger = LoggerFactory.getLogger(ConnectionService.class);
-        router = new SocketClient(logger, listenersFactory, properties, new JavabinSerialiser.Factory());
+        router = new SocketClient(listenersFactory, properties, new JavabinSerialiser.Factory());
 
         logger.debug("Connection Service created");
 
