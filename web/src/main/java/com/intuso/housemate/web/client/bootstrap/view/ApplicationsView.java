@@ -44,8 +44,9 @@ public class ApplicationsView extends FlowPanel
     }
 
     @Override
-    public void elementAdded(GWTProxyServer client) {
-        add(new ApplicationList(client.getName(), client.getTypes(), client.getApplications(), null));
+    public void elementAdded(GWTProxyServer server) {
+        if(server.getApplications() != null)
+            add(new ApplicationList(server.getName(), server.getTypes(), server.getApplications(), null));
     }
 
     @Override

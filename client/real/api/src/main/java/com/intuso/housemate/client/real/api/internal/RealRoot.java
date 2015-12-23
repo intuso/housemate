@@ -13,17 +13,12 @@ public interface RealRoot
         RequiresAccess,
         Message.Sender,
         ObjectRoot<RealRoot.Listener, RealRoot>,
-        RealApplication.Container,
-        RealAutomation.Container,
         RealDevice.Container,
         RealHardware.Container,
-        RealType.Container,
-        RealUser.Container {
+        RealType.Container {
     Logger getLogger();
     RealCommand getAddHardwareCommand();
     RealCommand getAddDeviceCommand();
-    RealCommand getAddAutomationCommand();
-    RealCommand getAddUserCommand();
     ListenerRegistration addObjectLifecycleListener(String[] ancestorPath, ObjectLifecycleListener listener);
     interface Listener extends Root.Listener<RealRoot>, RequiresAccess.Listener<RealRoot> {}
 }

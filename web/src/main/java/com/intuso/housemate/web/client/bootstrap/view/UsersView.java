@@ -44,8 +44,9 @@ public class UsersView extends FlowPanel
     }
 
     @Override
-    public void elementAdded(GWTProxyServer client) {
-        add(new UserList(client.getName(), client.getTypes(), client.getUsers(), client.getAddUserCommand()));
+    public void elementAdded(GWTProxyServer server) {
+        if(server.getUsers() != null)
+            add(new UserList(server.getName(), server.getTypes(), server.getUsers(), server.getAddUserCommand()));
     }
 
     @Override

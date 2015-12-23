@@ -5,10 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.client.real.api.internal.*;
-import com.intuso.housemate.client.real.impl.internal.LoggerUtil;
-import com.intuso.housemate.client.real.impl.internal.RealApplicationImpl;
-import com.intuso.housemate.client.real.impl.internal.RealApplicationInstanceImpl;
-import com.intuso.housemate.client.real.impl.internal.RealRootImpl;
+import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.real.impl.internal.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.client.real.impl.internal.type.ApplicationStatusType;
 import com.intuso.housemate.comms.api.internal.payload.*;
@@ -32,7 +29,7 @@ public class RealObjectWatcher {
 
     private final ListenersFactory listenersFactory;
     private final Injector injector;
-    private final RealRoot root;
+    private final ServerRealRoot root;
     private final Persistence persistence;
 
     private final AutomationListWatcher automationListWatcher;
@@ -47,7 +44,7 @@ public class RealObjectWatcher {
     private final RealUser.Factory userFactory;
 
     @Inject
-    public RealObjectWatcher(ListenersFactory listenersFactory, Injector injector, RealRoot root, Persistence persistence, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, DeviceListWatcher deviceListWatcher, HardwareListWatcher hardwareListWatcher, UserListWatcher userListWatcher, RealAutomation.Factory automationFactory, RealDevice.Factory deviceFactory, RealHardware.Factory hardwareFactory, RealUser.Factory userFactory) {
+    public RealObjectWatcher(ListenersFactory listenersFactory, Injector injector, ServerRealRoot root, Persistence persistence, AutomationListWatcher automationListWatcher, ApplicationListWatcher applicationListWatcher, DeviceListWatcher deviceListWatcher, HardwareListWatcher hardwareListWatcher, UserListWatcher userListWatcher, RealAutomation.Factory automationFactory, RealDevice.Factory deviceFactory, RealHardware.Factory hardwareFactory, RealUser.Factory userFactory) {
         this.listenersFactory = listenersFactory;
         this.injector = injector;
         this.root = root;
@@ -72,27 +69,27 @@ public class RealObjectWatcher {
     }
 
     private void watchApplications() {
-        loadApplications(LoggerUtil.child(root.getLogger(), RealRootImpl.APPLICATIONS_ID));
+        loadApplications(LoggerUtil.child(root.getLogger(), ServerRealRoot.APPLICATIONS_ID));
         root.getApplications().addObjectListener(applicationListWatcher, true);
     }
 
     private void watchAutomations() {
-        loadAutomations(LoggerUtil.child(root.getLogger(), RealRootImpl.AUTOMATIONS_ID));
+        loadAutomations(LoggerUtil.child(root.getLogger(), ServerRealRoot.AUTOMATIONS_ID));
         root.getAutomations().addObjectListener(automationListWatcher, true);
     }
 
     private void watchDevices() {
-        loadDevices(LoggerUtil.child(root.getLogger(), RealRootImpl.DEVICES_ID));
+        loadDevices(LoggerUtil.child(root.getLogger(), BasicRealRoot.DEVICES_ID));
         root.getDevices().addObjectListener(deviceListWatcher, true);
     }
 
     private void watchHardwares() {
-        loadHardwares(LoggerUtil.child(root.getLogger(), RealRootImpl.HARDWARES_ID));
+        loadHardwares(LoggerUtil.child(root.getLogger(), BasicRealRoot.HARDWARES_ID));
         root.getHardwares().addObjectListener(hardwareListWatcher, true);
     }
 
     private void watchUsers() {
-        loadUsers(LoggerUtil.child(root.getLogger(), RealRootImpl.USERS_ID));
+        loadUsers(LoggerUtil.child(root.getLogger(), ServerRealRoot.USERS_ID));
         root.getUsers().addObjectListener(userListWatcher, true);
     }
 

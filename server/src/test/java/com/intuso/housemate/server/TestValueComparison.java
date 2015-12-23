@@ -8,6 +8,7 @@ import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
+import com.intuso.housemate.client.real.impl.internal.ServerRealRoot;
 import com.intuso.housemate.client.real.impl.internal.factory.FactoryType;
 import com.intuso.housemate.client.real.impl.internal.factory.condition.AddConditionCommand;
 import com.intuso.housemate.client.real.impl.internal.type.DoubleType;
@@ -88,7 +89,7 @@ public class TestValueComparison {
         // add the main plugin module
         injector.getInstance(PluginManager.class).addPlugin(injector.createChildInjector(new MainPluginModule()));
 
-        RealRoot root = injector.getInstance(RealRoot.class);
+        ServerRealRoot root = injector.getInstance(ServerRealRoot.class);
         TypeInstanceMap automationValues = new TypeInstanceMap();
         automationValues.getChildren().put(AddConditionCommand.NAME_PARAMETER_ID, new TypeInstances(new TypeInstance("test-automation")));
         automationValues.getChildren().put(AddConditionCommand.DESCRIPTION_PARAMETER_ID, new TypeInstances(new TypeInstance("test-automation")));
@@ -140,7 +141,7 @@ public class TestValueComparison {
                 }, doubleTwo, doubleThree));
 
         // create second value as one from the device
-        String[] valuePath = new String[] {"", "servers", "server-Internal Client", "devices", "device", "features", "feature", "values", "value"};
+        String[] valuePath = new String[] {"", "servers", "Local", "devices", "device", "features", "feature", "values", "value"};
         ValueLocation valueTwo = new ValueLocation(listenersFactory,
                 new RealObjectType.Reference<Value<TypeInstances, ?>>(valuePath),
                 injector.getInstance(RootBridge.class));

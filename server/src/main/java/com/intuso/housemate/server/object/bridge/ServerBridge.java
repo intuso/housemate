@@ -36,29 +36,78 @@ public class ServerBridge
 
     public ServerBridge(Logger logger, ListenersFactory listenersFactory, ServerProxyRoot proxyRoot, final Persistence persistence) {
         super(listenersFactory, logger, makeData(logger, (ClientInstance.Application) proxyRoot.getClient().getClientInstance(), persistence));
-        applications = new ConvertingListBridge<ApplicationData, Application<?, ?, ?, ?, ?>, ApplicationBridge>(
-                logger, listenersFactory, proxyRoot.getApplications(),
-                new ApplicationBridge.Converter(logger, listenersFactory));
-        automations = new ConvertingListBridge<AutomationData, Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge>(
-                logger, listenersFactory, proxyRoot.getAutomations(),
-                new AutomationBridge.Converter(logger, listenersFactory));
-        devices = new ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>(
-                logger, listenersFactory, proxyRoot.getDevices(),
-                new DeviceBridge.Converter(logger, listenersFactory));
-        hardwares = new ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge>(
-                logger, listenersFactory, proxyRoot.getHardwares(),
-                new HardwareBridge.Converter(logger, listenersFactory));
-        types = new ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge>(
-                logger, listenersFactory, proxyRoot.getTypes(),
-                new TypeBridge.Converter(logger, listenersFactory));
-        users = new ConvertingListBridge<UserData, User<?, ?, ?>, UserBridge>(
-                logger, listenersFactory, proxyRoot.getUsers(),
-                new UserBridge.Converter(logger, listenersFactory));
 
-        addAutomation = new CommandBridge(logger, listenersFactory, proxyRoot.getAddAutomationCommand());
-        addDevice = new CommandBridge(logger, listenersFactory, proxyRoot.getAddDeviceCommand());
-        addHardware = new CommandBridge(logger, listenersFactory, proxyRoot.getAddHardwareCommand());
-        addUser = new CommandBridge(logger, listenersFactory, proxyRoot.getAddUserCommand());
+        if(proxyRoot.getApplications() != null) {
+            applications = new ConvertingListBridge<ApplicationData, Application<?, ?, ?, ?, ?>, ApplicationBridge>(
+                    logger, listenersFactory, proxyRoot.getApplications(),
+                    new ApplicationBridge.Converter(logger, listenersFactory));
+            addChild(applications);
+        } else
+            applications = null;
+
+        if(proxyRoot.getAutomations() != null) {
+            automations = new ConvertingListBridge<AutomationData, Automation<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, AutomationBridge>(
+                    logger, listenersFactory, proxyRoot.getAutomations(),
+                    new AutomationBridge.Converter(logger, listenersFactory));
+            addChild(automations);
+        } else
+            automations = null;
+
+        if(proxyRoot.getAutomations() != null) {
+            devices = new ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>(
+                    logger, listenersFactory, proxyRoot.getDevices(),
+                    new DeviceBridge.Converter(logger, listenersFactory));
+            addChild(devices);
+        } else
+            devices = null;
+
+        if(proxyRoot.getAutomations() != null) {
+            hardwares = new ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge>(
+                    logger, listenersFactory, proxyRoot.getHardwares(),
+                    new HardwareBridge.Converter(logger, listenersFactory));
+            addChild(hardwares);
+        } else
+            hardwares = null;
+
+        if(proxyRoot.getAutomations() != null) {
+            types = new ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge>(
+                    logger, listenersFactory, proxyRoot.getTypes(),
+                    new TypeBridge.Converter(logger, listenersFactory));
+            addChild(types);
+        } else
+            types = null;
+
+        if(proxyRoot.getAutomations() != null) {
+            users = new ConvertingListBridge<UserData, User<?, ?, ?>, UserBridge>(
+                    logger, listenersFactory, proxyRoot.getUsers(),
+                    new UserBridge.Converter(logger, listenersFactory));
+            addChild(users);
+        } else
+            users = null;
+
+        if(proxyRoot.getAddAutomationCommand() != null) {
+            addAutomation = new CommandBridge(logger, listenersFactory, proxyRoot.getAddAutomationCommand());
+            addChild(addAutomation);
+        } else
+            addAutomation = null;
+
+        if(proxyRoot.getAddDeviceCommand() != null) {
+            addDevice = new CommandBridge(logger, listenersFactory, proxyRoot.getAddDeviceCommand());
+            addChild(addDevice);
+        } else
+            addDevice = null;
+
+        if(proxyRoot.getAddHardwareCommand() != null) {
+            addHardware = new CommandBridge(logger, listenersFactory, proxyRoot.getAddHardwareCommand());
+            addChild(addHardware);
+        } else
+            addHardware = null;
+
+        if(proxyRoot.getAddUserCommand() != null) {
+            addUser = new CommandBridge(logger, listenersFactory, proxyRoot.getAddUserCommand());
+            addChild(addUser);
+        } else
+            addUser = null;
 
         renameCommand = null;/* todo use custom Command impl instead of RealCommand
                 new CommandBridge(logger, listenersFactory, new RealCommand(logger, listenersFactory, ServerData.RENAME_ID, ServerData.RENAME_ID, "Rename the client",
@@ -81,17 +130,6 @@ public class ServerBridge
                 }
             }
         });*/
-
-        addChild(applications);
-        addChild(automations);
-        addChild(devices);
-        addChild(hardwares);
-        addChild(types);
-        addChild(users);
-        addChild(addAutomation);
-        addChild(addDevice);
-        addChild(addHardware);
-        addChild(addUser);
     }
 
     private static ServerData makeData(Logger logger, ClientInstance.Application instance, Persistence persistence) {
@@ -107,7 +145,7 @@ public class ServerBridge
             logger.error("Failed to load name for client " + id, t);
         }
         if(name == null)
-            name = instance.getApplicationDetails().getApplicationName() + " - " + instance.getApplicationInstanceId();
+            name = instance.getApplicationDetails().getApplicationName();
         return new ServerData(id, name, name);
     }
 
