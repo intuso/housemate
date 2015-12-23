@@ -95,6 +95,7 @@ public class ServerRealRoot
     public void sendMessage(Message<?> message) {
         if(message.getPayload() instanceof HousemateData)
             ((Message)message).setPayload(((HousemateData<?>) message.getPayload()).deepClone());
+        super.sendMessage(message);
     }
 
     @Override

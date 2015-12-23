@@ -53,7 +53,7 @@ public class ServerBridge
         } else
             automations = null;
 
-        if(proxyRoot.getAutomations() != null) {
+        if(proxyRoot.getDevices() != null) {
             devices = new ConvertingListBridge<DeviceData, Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, DeviceBridge>(
                     logger, listenersFactory, proxyRoot.getDevices(),
                     new DeviceBridge.Converter(logger, listenersFactory));
@@ -61,7 +61,7 @@ public class ServerBridge
         } else
             devices = null;
 
-        if(proxyRoot.getAutomations() != null) {
+        if(proxyRoot.getHardwares() != null) {
             hardwares = new ConvertingListBridge<HardwareData, Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HardwareBridge>(
                     logger, listenersFactory, proxyRoot.getHardwares(),
                     new HardwareBridge.Converter(logger, listenersFactory));
@@ -69,7 +69,7 @@ public class ServerBridge
         } else
             hardwares = null;
 
-        if(proxyRoot.getAutomations() != null) {
+        if(proxyRoot.getTypes() != null) {
             types = new ConvertingListBridge<TypeData<?>, Type<?>, TypeBridge>(
                     logger, listenersFactory, proxyRoot.getTypes(),
                     new TypeBridge.Converter(logger, listenersFactory));
@@ -77,7 +77,7 @@ public class ServerBridge
         } else
             types = null;
 
-        if(proxyRoot.getAutomations() != null) {
+        if(proxyRoot.getUsers() != null) {
             users = new ConvertingListBridge<UserData, User<?, ?, ?>, UserBridge>(
                     logger, listenersFactory, proxyRoot.getUsers(),
                     new UserBridge.Converter(logger, listenersFactory));
