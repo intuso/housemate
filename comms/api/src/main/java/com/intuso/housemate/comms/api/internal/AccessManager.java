@@ -69,13 +69,13 @@ public class AccessManager implements RequiresAccess {
     /**
      * Requests access to the server
      */
-    public void register(ApplicationDetails applicationDetails, String component) {
+    public void register(ApplicationDetails applicationDetails) {
         if(applicationInstanceStatus != ApplicationInstance.Status.Unregistered)
             throw new HousemateCommsException("Registration already in progress or done");
         else if(applicationDetails != null) {
             setApplicationInstanceStatus(ApplicationInstance.Status.Registering);
             sender.sendMessage(new Message<>(ROOT_PATH, ApplicationRegistration.APPLICATION_REGISTRATION_TYPE,
-                    new ApplicationRegistration(applicationDetails, properties.get(APPLICATION_INSTANCE_ID), component, clientType)));
+                    new ApplicationRegistration(applicationDetails, properties.get(APPLICATION_INSTANCE_ID), clientType)));
         } else
             throw new HousemateCommsException("Null application or instance details");
     }

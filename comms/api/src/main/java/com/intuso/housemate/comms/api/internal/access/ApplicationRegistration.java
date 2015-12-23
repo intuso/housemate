@@ -14,7 +14,6 @@ public final class ApplicationRegistration implements Message.Payload {
 
     private ApplicationDetails applicationDetails;
     private String applicationInstanceId;
-    private String component;
     private ClientType type;
 
     public ApplicationRegistration() {}
@@ -23,11 +22,9 @@ public final class ApplicationRegistration implements Message.Payload {
      * @param type the type of the connection. NB this affects what data you can/can't receive. For user interface
      *             applications you should use {@link ClientType#Proxy}
      */
-    public ApplicationRegistration(ApplicationDetails applicationDetails, String applicationInstanceId,
-                                   String component, ClientType type) {
+    public ApplicationRegistration(ApplicationDetails applicationDetails, String applicationInstanceId, ClientType type) {
         this.applicationDetails = applicationDetails;
         this.applicationInstanceId = applicationInstanceId;
-        this.component = component;
         this.type = type;
     }
 
@@ -45,14 +42,6 @@ public final class ApplicationRegistration implements Message.Payload {
 
     public void setApplicationInstanceId(String applicationInstanceId) {
         this.applicationInstanceId = applicationInstanceId;
-    }
-
-    public String getComponent() {
-        return component;
-    }
-
-    public void setComponent(String component) {
-        this.component = component;
     }
 
     public ClientType getType() {

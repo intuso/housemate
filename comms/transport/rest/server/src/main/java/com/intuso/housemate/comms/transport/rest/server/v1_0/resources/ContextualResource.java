@@ -50,16 +50,18 @@ public class ContextualResource implements ProxyRoot.Listener<SimpleProxyRoot>, 
     @GET
     public void getRequestAccess(@Context HttpServletRequest request,
                                  @QueryParam("appId") String appId,
-                                 @QueryParam("component") String component,
+                                 @QueryParam("appName") String appName,
+                                 @QueryParam("appDescription") String appDescription,
                                  @QueryParam("instanceId") String instanceId) {
-        postRequestAccess(request, appId, component, instanceId);
+        postRequestAccess(request, appId, appName, appDescription, instanceId);
     }
 
     @Path("/requestAccess")
     @POST
     public void postRequestAccess(@Context HttpServletRequest request,
                                   @QueryParam("appId") String appId,
-                                  @QueryParam("component") String component,
+                                  @QueryParam("appName") String appName,
+                                  @QueryParam("appDescription") String appDescription,
                                   @QueryParam("instanceId") String instanceId) {
         if(request.getAttribute("root") != null) {
             SimpleProxyRoot root = (SimpleProxyRoot)request.getAttribute("root");
@@ -67,7 +69,7 @@ public class ContextualResource implements ProxyRoot.Listener<SimpleProxyRoot>, 
         }
         SimpleProxyRoot root = injector.getInstance(SimpleProxyRoot.class);
         root.addObjectListener(this);
-        root.register(new ApplicationDetails(appId, appId, appId), component);
+        root.register(new ApplicationDetails(appId, appId, appId));
         request.setAttribute("root", root);
         ROOT = root;
     }

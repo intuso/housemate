@@ -68,7 +68,6 @@ public class MessageMapper {
             return (PAYLOAD) new ApplicationRegistration(
                     applicationDetailsMapper.map(applicationRegistration.getApplicationDetails()),
                     applicationRegistration.getApplicationInstanceId(),
-                    applicationRegistration.getComponent(),
                     ApplicationRegistration.ClientType.valueOf(applicationRegistration.getType().name()));
         } else if(payload instanceof com.intuso.housemate.comms.v1_0.api.ChildOverview)
             return (PAYLOAD) childOverviewMapper.map((com.intuso.housemate.comms.v1_0.api.ChildOverview) payload);
@@ -126,7 +125,6 @@ public class MessageMapper {
             return (PAYLOAD) new com.intuso.housemate.comms.v1_0.api.access.ApplicationRegistration(
                     applicationDetailsMapper.map(applicationRegistration.getApplicationDetails()),
                     applicationRegistration.getApplicationInstanceId(),
-                    applicationRegistration.getComponent(),
                     com.intuso.housemate.comms.v1_0.api.access.ApplicationRegistration.ClientType.valueOf(applicationRegistration.getType().name()));
         } else if(payload instanceof ChildOverview)
             return (PAYLOAD) childOverviewMapper.map((ChildOverview) payload);

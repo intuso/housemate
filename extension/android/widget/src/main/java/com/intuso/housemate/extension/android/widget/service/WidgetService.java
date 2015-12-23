@@ -128,7 +128,6 @@ public class WidgetService extends HousemateService {
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
         clientHelper = new ProxyClientHelper<>(new AndroidProxyRoot(getLogger(), getListenersFactory(), getProperties(), getRouter()), getRouter())
                 .applicationDetails(APPLICATION_DETAILS)
-                .component(WidgetService.class.getName())
                 .load(ProxyRoot.SERVERS_ID, RemoteObject.EVERYTHING, ServerData.DEVICES_ID)
                 .callback(new LoadManager.Callback() {
                               @Override

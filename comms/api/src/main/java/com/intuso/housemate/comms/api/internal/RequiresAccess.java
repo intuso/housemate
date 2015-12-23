@@ -15,10 +15,9 @@ public interface RequiresAccess {
     /**
      * Logs in to the server
      * @param applicationDetails
-     * @param component
      *
      */
-    void register(ApplicationDetails applicationDetails, String component);
+    void register(ApplicationDetails applicationDetails);
 
     /**
      * Logs out of the server

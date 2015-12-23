@@ -47,7 +47,7 @@ public final class MainRouter extends BaseRouter<MainRouter> {
         messageProcessor.start();
 
         // register the local client
-        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION_DETAILS_V1_0, "Internal Client");
+        injector.getInstance(RealRoot.class).register(Server.INTERNAL_APPLICATION_DETAILS_V1_0);
     }
 
     public final void startExternalRouters() {

@@ -173,11 +173,11 @@ public class HousemateTweeter {
             public void newServerInstance(Router clientConnection, String serverId) {
                 logger.debug("Server instance changed");
                 tweet("Server instance changed");
-                root.register(applicationDetails, HousemateTweeter.class.getName());
+                root.register(applicationDetails);
             }
         });
 
-        root.register(applicationDetails, HousemateTweeter.class.getName());
+        root.register(applicationDetails);
 	}
 
 	/**

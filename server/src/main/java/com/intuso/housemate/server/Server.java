@@ -20,8 +20,8 @@ import java.util.UUID;
 public class Server {
 
     public final static String INSTANCE_ID = UUID.randomUUID().toString();
-    public final static ApplicationDetails INTERNAL_APPLICATION_DETAILS = new ApplicationDetails("server", "Server", "Server");
-    public final static com.intuso.housemate.comms.api.internal.access.ApplicationDetails INTERNAL_APPLICATION_DETAILS_V1_0 = new com.intuso.housemate.comms.api.internal.access.ApplicationDetails("server", "Server", "Server");
+    public final static ApplicationDetails INTERNAL_APPLICATION_DETAILS = new ApplicationDetails("local", "Local", "Local");
+    public final static com.intuso.housemate.comms.api.internal.access.ApplicationDetails INTERNAL_APPLICATION_DETAILS_V1_0 = new com.intuso.housemate.comms.api.internal.access.ApplicationDetails("local", "Local", "Local");
 
     public final static String SERVER_NAME = "server.name";
 

@@ -35,12 +35,12 @@ public abstract class ClientInstance {
         private final ApplicationRegistration.ClientType clientType;
         private final int hashCode;
 
-        public Application(boolean internal, ApplicationDetails applicationDetails, String applicationInstanceId, String component, ApplicationRegistration.ClientType clientType) {
+        public Application(boolean internal, ApplicationDetails applicationDetails, String applicationInstanceId, ApplicationRegistration.ClientType clientType) {
             super(internal);
             this.applicationDetails = applicationDetails;
             this.applicationInstanceId = applicationInstanceId;
             this.clientType = clientType;
-            this.hashCode = (applicationDetails.getApplicationId() + "/" + applicationInstanceId + "/" + component + "/" + clientType).hashCode();
+            this.hashCode = (applicationDetails.getApplicationId() + "/" + applicationInstanceId + "/" + clientType).hashCode();
         }
 
         public ApplicationDetails getApplicationDetails() {

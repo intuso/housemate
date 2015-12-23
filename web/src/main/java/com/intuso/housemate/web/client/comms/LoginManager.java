@@ -59,7 +59,7 @@ public class LoginManager implements CredentialsSubmittedHandler, Router.Listene
 
     private void login() {
         if(properties.keySet().contains(INSTANCE_ID))
-            proxyRoot.register(Housemate.APPLICATION_DETAILS, "UI");
+            proxyRoot.register(Housemate.APPLICATION_DETAILS);
         else {
             loginView.setMessage(null);
             loginView.show();
@@ -88,7 +88,7 @@ public class LoginManager implements CredentialsSubmittedHandler, Router.Listene
             public void onSuccess(Boolean result) {
                 loginView.enable();
                 if(result) {
-                    proxyRoot.register(Housemate.APPLICATION_DETAILS, "UI");
+                    proxyRoot.register(Housemate.APPLICATION_DETAILS);
                     loginView.hide();
                 } else {
                     loginView.setMessage("Incorrect credentials");

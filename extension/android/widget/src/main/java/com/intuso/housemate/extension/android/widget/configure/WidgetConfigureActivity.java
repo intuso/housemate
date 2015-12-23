@@ -99,7 +99,6 @@ public class WidgetConfigureActivity
             }
         });
         clientHelper.applicationDetails(WidgetService.APPLICATION_DETAILS)
-                .component(WidgetConfigureActivity.class.getName())
                 .load(ProxyRoot.SERVERS_ID, RemoteObject.EVERYTHING, ServerData.DEVICES_ID, RemoteObject.EVERYTHING)
                 .callback(this)
                 .start();

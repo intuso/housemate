@@ -4,9 +4,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.api.internal.RealApplication;
+import com.intuso.housemate.client.real.api.internal.RealApplicationInstance;
+import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.RealValue;
 import com.intuso.housemate.client.real.impl.internal.RealApplicationImpl;
 import com.intuso.housemate.client.real.impl.internal.RealApplicationInstanceImpl;
+import com.intuso.housemate.client.real.impl.internal.ServerRealRoot;
 import com.intuso.housemate.client.real.impl.internal.type.ApplicationInstanceStatusType;
 import com.intuso.housemate.client.real.impl.internal.type.ApplicationStatusType;
 import com.intuso.housemate.comms.api.internal.Router;
@@ -41,11 +45,11 @@ public class AccessManager {
 
     private final ListenersFactory listenersFactory;
     private final Injector injector;
-    private final RealRoot realRoot;
+    private final ServerRealRoot realRoot;
     private Map<RemoteClient, StatusListener> statusListeners = Maps.newHashMap();
 
     @Inject
-    public AccessManager(ListenersFactory listenersFactory, Injector injector, RealRoot realRoot) {
+    public AccessManager(ListenersFactory listenersFactory, Injector injector, ServerRealRoot realRoot) {
         this.listenersFactory = listenersFactory;
         this.injector = injector;
         this.realRoot = realRoot;
@@ -55,7 +59,7 @@ public class AccessManager {
 
         // get the application
         if(isInternalRegistration(route, registration)) {
-            return new ClientInstance.Application(true, Server.INTERNAL_APPLICATION_DETAILS, registration.getComponent(), registration.getComponent(), registration.getType());
+            return new ClientInstance.Application(true, Server.INTERNAL_APPLICATION_DETAILS, registration.getApplicationInstanceId(), registration.getType());
         } else {
             String appId = registration.getApplicationDetails().getApplicationId();
             RealApplication application = realRoot.getApplications().get(appId);
@@ -79,7 +83,7 @@ public class AccessManager {
                 applicationInstance.getStatusValue().setTypedValues(getInitialStatus(application));
             }
 
-            return new ClientInstance.Application(false, registration.getApplicationDetails(), instanceId, registration.getComponent(), registration.getType());
+            return new ClientInstance.Application(false, registration.getApplicationDetails(), instanceId, registration.getType());
         }
     }
 
