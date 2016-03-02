@@ -2,7 +2,9 @@ package com.intuso.housemate.extension.android.widget.handler;
 
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
 import com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl;
+import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
@@ -126,7 +128,7 @@ public abstract class WidgetHandler<FEATURE extends AndroidProxyFeatureImpl> {
                         status = Status.NO_DEVICE;
                     updateWidget();
                 }
-            }, TreeLoadInfo.create(deviceId)));
+            }, TreeLoadInfo.create(deviceId, DeviceData.FEATURES_ID, getFeatureId(), RemoteObject.EVERYTHING_RECURSIVE)));
         }
     }
 

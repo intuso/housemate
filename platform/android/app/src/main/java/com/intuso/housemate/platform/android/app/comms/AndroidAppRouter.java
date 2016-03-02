@@ -98,23 +98,26 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
         if(shouldBeConnected)
             _ensureConnected();
         else
-            _disconnect();
+            _disconnect(false);
     }
 
     private void _ensureConnected() {
         if(registered || bindThread != null || registerThread != null)
             return;
 
+        connecting();
         bindThread = new BindThread();
         bindThread.start();
     }
 
-    private synchronized void _disconnect() {
+    private synchronized void _disconnect(boolean willReconnect) {
 
         if(!registered && bindThread == null && registerThread == null)
             return;
 
         getLogger().debug("App Router: Disconnecting from service");
+
+        connectionLost(willReconnect);
 
         if(bindThread != null) {
             bindThread.interrupt();
@@ -173,7 +176,7 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
         getLogger().debug("App Router: Service connection lost unexpectedly, trying to re-establish connection");
-        _disconnect();
+        _disconnect(true);
         checkConnection();
     }
 
@@ -244,7 +247,7 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
         public void handleMessage(android.os.Message msg) {
             switch (msg.what) {
                 case MessageCodes.SEND_MESSAGE:
-                    msg.getData().setClassLoader(Message.class.getClassLoader());
+                    msg.getData().setClassLoader(JsonMessage.class.getClassLoader());
                     try {
                         messageReceived(((JsonMessage) msg.getData().getParcelable("message")).getMessage());
                     } catch (Throwable t) {
@@ -260,11 +263,11 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
                         registerThread.interrupt();
                         registerThread = null;
                     }
-                    messageSender = new MessageSender();
+                    id = msg.getData().getString("id");
                     connectionEstablished();
                     // start the sender thread
+                    messageSender = new MessageSender();
                     messageSender.start();
-                    id = msg.getData().getString("id");
                     break;
                 default:
                     super.handleMessage(msg);
@@ -297,7 +300,7 @@ public class AndroidAppRouter extends BaseRouter<AndroidAppRouter> implements Se
                     break;
                 } catch(HousemateCommsException e) {
                     getLogger().error("App Router: Failed to send queued message to client", e);
-                    _disconnect();
+                    _disconnect(true);
                     checkConnection();
                     break;
                 }

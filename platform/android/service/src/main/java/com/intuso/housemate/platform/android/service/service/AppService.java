@@ -176,7 +176,7 @@ public class AppService extends Service implements ServiceConnection, Router.Lis
                         logger.error("Could not find client with id " + id);
                     break;
                 case MessageCodes.SEND_MESSAGE:
-                    msg.getData().setClassLoader(Message.class.getClassLoader());
+                    msg.getData().setClassLoader(JsonMessage.class.getClassLoader());
                     id = msg.getData().getString("id");
                     registration = clientReceivers.get(id);
                     if(registration != null) {

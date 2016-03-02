@@ -49,7 +49,7 @@ public class MessageMapper {
     public <PAYLOAD extends com.intuso.housemate.comms.v1_0.api.Message.Payload> com.intuso.housemate.comms.v1_0.api.Message<PAYLOAD> map(Message<?> message) {
         if(message == null)
             return null;
-        return new com.intuso.housemate.comms.v1_0.api.Message<>(message.getSequenceId(), message.getPath(), message.getType(), this.<PAYLOAD>map(message.getPayload()), message.getRoute());
+        return new com.intuso.housemate.comms.v1_0.api.Message<>(message.getSequenceId(), message.getPath(), message.getType(), this.<PAYLOAD>map(message.getPayload()), Lists.newArrayList(message.getRoute()));
     }
 
     public <PAYLOAD extends Message.Payload> PAYLOAD map(com.intuso.housemate.comms.v1_0.api.Message.Payload payload) {

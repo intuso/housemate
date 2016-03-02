@@ -18,6 +18,7 @@ import com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl;
 import com.intuso.housemate.comms.v1_0.api.RemoteObject;
 import com.intuso.housemate.comms.v1_0.api.Router;
 import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
+import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
 import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
@@ -99,7 +100,7 @@ public class WidgetConfigureActivity
             }
         });
         clientHelper.applicationDetails(WidgetService.APPLICATION_DETAILS)
-                .load(ProxyRoot.SERVERS_ID, RemoteObject.EVERYTHING, ServerData.DEVICES_ID, RemoteObject.EVERYTHING)
+                .load(ProxyRoot.SERVERS_ID, RemoteObject.EVERYTHING, ServerData.DEVICES_ID, RemoteObject.EVERYTHING, DeviceData.FEATURES_ID, RemoteObject.EVERYTHING)
                 .callback(this)
                 .start();
     }
