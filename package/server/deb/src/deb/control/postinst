@@ -2,6 +2,7 @@
 
 systemctl daemon-reload
 echo "Starting Intuso Housemate"
+systemctl enable housemate
 systemctl start housemate
 
 exit 0

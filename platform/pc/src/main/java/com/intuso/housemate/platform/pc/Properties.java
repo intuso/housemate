@@ -4,6 +4,8 @@ import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.reader.commandline.CommandLinePropertyRepository;
 import com.intuso.utilities.properties.reader.file.FilePropertyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,6 +43,11 @@ public class Properties {
         // create the directory if it does not exist
         if(!configDirectory.exists())
             configDirectory.mkdirs();
+
+        Logback.configure(configDirectory);
+
+        Logger logger = LoggerFactory.getLogger(Properties.class);
+
         // get the props file
         File props_file = new File(configDirectory, clProperties.get(HOUSEMATE_PROPS_FILE));
         FilePropertyRepository systemProperties = null;
@@ -49,9 +56,9 @@ public class Properties {
                 props_file.createNewFile();
             systemProperties = new FilePropertyRepository(listenersFactory, parent, props_file);
         } catch (FileNotFoundException e) {
-            System.out.println("WARN: Could not find system properties file \"" + props_file.getAbsolutePath() + "\"");
+            logger.warn("Could not find system properties file \"" + props_file.getAbsolutePath() + "\"");
         } catch (IOException e) {
-            System.err.println("ERROR: Could not read system properties from file");
+            logger.error("Could not read system properties from file");
             e.printStackTrace();
         }
 

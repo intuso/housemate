@@ -17,12 +17,20 @@
         <!-- Jar module -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-package-server-jsw</artifactId>
+            <artifactId>housemate-package-server-jar</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
 
     <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <artifactId>jdeb</artifactId>
@@ -30,29 +38,52 @@
                 <version>1.4</version>
                 <executions>
                     <execution>
-                        <id>housemate-package</id>
+                        <id>package-deb</id>
                         <phase>package</phase>
                         <goals>
                             <goal>jdeb</goal>
                         </goals>
                         <configuration>
+                            <deb>${project.build.directory}/housemate-${project.version}.deb</deb>
+                            <changesOut>${project.build.directory}/housemate-${project.version}.changes</changesOut>
                             <dataSet>
                                 <data>
-                                    <src>${project.basedir}/../jsw/target/housemate-package-server-jsw-${project.version}.tar.gz</src>
-                                    <type>archive</type>
+                                    <src>${project.basedir}/../jar/target/housemate-package-server-jar-${project.version}-jar-with-dependencies.jar</src>
+                                    <type>file</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <strip>1</strip>
-                                        <prefix>/opt/intuso</prefix>
+                                        <prefix>/usr/share/intuso/housemate</prefix>
                                         <user>hm</user>
                                         <group>nogroup</group>
                                         <filemode>744</filemode>
                                     </mapper>
                                 </data>
-
                                 <data>
-                                    <src>${basedir}/src/deb/init</src>
+                                    <src>${project.build.directory}/classes/conf</src>
                                     <type>directory</type>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <prefix>/etc/intuso/housemate</prefix>
+                                        <user>hm</user>
+                                        <group>nogroup</group>
+                                        <filemode>744</filemode>
+                                    </mapper>
+                                </data>
+                                <data>
+                                    <type>template</type>
+                                    <paths>
+                                        <path>/var/log/intuso</path>
+                                    </paths>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <user>hm</user>
+                                        <group>nogroup</group>
+                                        <filemode>755</filemode>
+                                    </mapper>
+                                </data>
+                                <data>
+                                    <src>${project.build.directory}/classes/systemctl/housemate.service</src>
+                                    <type>file</type>
                                     <mapper>
                                         <type>perm</type>
                                         <prefix>/lib/systemd/system</prefix>

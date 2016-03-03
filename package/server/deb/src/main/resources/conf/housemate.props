@@ -1,0 +1,2 @@
+conf.dir=/etc/intuso/housemate
+persistence.flatfile.base=/etc/intuso/housemate/database
