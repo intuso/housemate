@@ -1,6 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal;
 
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Serialiser;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -78,10 +79,10 @@ public abstract class RealObject<DATA extends Object.Data,
         if(producer != null) {
             try {
                 StreamMessage streamMessage = session.createStreamMessage();
-                streamMessage.writeObject(data);
+                streamMessage.writeObject(Serialiser.serialise(data));
                 producer.send(streamMessage);
             } catch (JMSException e) {
-                logger.error("Failed to send data object");
+                logger.error("Failed to send data object", e);
             }
         }
     }

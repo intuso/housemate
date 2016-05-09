@@ -2,6 +2,7 @@ package com.intuso.housemate.client.real.impl.internal;
 
 import com.google.common.collect.Lists;
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Serialiser;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.real.api.internal.RealValueBase;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -103,7 +104,7 @@ public abstract class RealValueBaseImpl<O,
         this.values = values;
         try {
             StreamMessage streamMessage = session.createStreamMessage();
-            streamMessage.writeObject(RealTypeImpl.serialiseAll(type, values));
+            streamMessage.writeObject(Serialiser.serialise(RealTypeImpl.serialiseAll(type, values)));
             valueProducer.send(streamMessage);
         } catch(JMSException e) {
             logger.error("Failed to send value update", e);
