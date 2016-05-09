@@ -3,6 +3,8 @@ package com.intuso.housemate.platform.pc.ioc;
 import com.google.inject.AbstractModule;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
+import javax.jms.Connection;
+
 /**
  * Created with IntelliJ IDEA.
  * User: tomc
@@ -20,7 +22,8 @@ public class PCClientModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(PropertyRepository.class).toInstance(properties);
         install(new PCModule());
+        bind(PropertyRepository.class).toInstance(properties);
+        bind(Connection.class).toProvider(ConnectionProvider.class);
     }
 }
