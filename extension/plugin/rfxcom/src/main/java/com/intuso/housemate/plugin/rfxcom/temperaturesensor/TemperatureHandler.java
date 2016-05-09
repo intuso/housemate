@@ -1,19 +1,13 @@
 package com.intuso.housemate.plugin.rfxcom.temperaturesensor;
 
 import com.google.common.collect.Sets;
-import com.intuso.housemate.client.v1_0.real.api.RealCommand;
 import com.intuso.housemate.client.v1_0.real.api.RealDevice;
-import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
-import com.intuso.housemate.object.v1_0.api.Command;
-import com.intuso.housemate.object.v1_0.api.TypeInstance;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.plugin.rfxcom.Handler;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensors;
 import org.slf4j.Logger;
 
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Created by tomc on 03/12/15.
@@ -57,8 +51,9 @@ public abstract class TemperatureHandler implements Handler {
         if(!knownSensors.contains(sensorId)) {
             try {
                 String name = getNewDeviceName(sensorId);
-                final RealDevice<TemperatureSensor> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
-                device.getDriverProperty().set(new TypeInstances(new TypeInstance(getDriverId())), new Command.PerformListener<RealCommand>() {
+                // todo
+                /*final RealDevice<TemperatureSensor> device = deviceContainer.createAndAddDevice(new Device.Data(UUID.randomUUID().toString(), name, name));
+                device.getDriverProperty().set(new Type.Instances(new Type.Instance(getDriverId())), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
 
@@ -77,7 +72,7 @@ public abstract class TemperatureHandler implements Handler {
                     public void commandFailed(RealCommand command, String error) {
 
                     }
-                });
+                });*/
             } catch (Throwable t) {
                 logger.error("Failed to auto-create Temperature device " + sensorId, t);
             }

@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
-import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.plugin.api.bridge.v1_0.ioc.PluginV1_0BridgeModule;
 import com.intuso.housemate.plugin.api.internal.PluginListener;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -77,7 +77,7 @@ public class PluginManager {
             pluginInjector.getInstance(com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo.class);
             return Version.V1_0;
         } catch(Throwable t) {}
-        throw new HousemateCommsException("Could not detect plugin api version");
+        throw new HousemateException("Could not detect plugin api version");
     }
 
     enum Version {

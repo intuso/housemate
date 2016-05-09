@@ -2,11 +2,11 @@ package com.intuso.housemate.extension.android.widget.handler;
 
 import android.widget.RemoteViews;
 import android.widget.Toast;
-import com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl;
+import com.intuso.housemate.client.v1_0.api.object.Command;
+import com.intuso.housemate.client.v1_0.api.object.Value;
+import com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPowerControl;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
-import com.intuso.housemate.object.v1_0.api.Command;
-import com.intuso.housemate.object.v1_0.api.Value;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyValue;
 import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureFactory;

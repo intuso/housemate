@@ -13,6 +13,10 @@
     <name>Housemate Platform Android App</name>
     <description>Platform for running Housemate Android apps</description>
 
+    <properties>
+        <jms.version>1.1</jms.version>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -24,6 +28,41 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>housemate-client-1-0-proxy-api</artifactId>
             <version>${intuso.housemate.client.version}</version>
+            <exclusions>
+                <!-- Exclude JVM libraries -->
+                <exclusion>
+                    <groupId>javax.jms</groupId>
+                    <artifactId>jms</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- include JMV libraries for compiling -->
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms</artifactId>
+            <version>${jms.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>${activemq.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <!-- Exclude JVM libraries -->
+                <exclusion>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-jms_1.1_spec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

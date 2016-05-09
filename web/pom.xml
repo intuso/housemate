@@ -54,52 +54,18 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-1-0-serialiser-javabin</artifactId>
-            <version>${intuso.housemate.comms.version}</version>
-            <exclusions>
-                <!-- Exclude non-gin-compliant version of guice -->
-                <exclusion>
-                    <groupId>com.google.inject</groupId>
-                    <artifactId>guice</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-1-0-transport-socket-client</artifactId>
-            <version>${intuso.housemate.comms.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-persistence-1-0-filesystem</artifactId>
-            <version>${intuso.housemate.persistence.version}</version>
-        </dependency>
 
         <!-- Sources deps for gwt to compile -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-object-1-0-api</artifactId>
-            <version>${intuso.housemate.object.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-1-0-api</artifactId>
-            <version>${intuso.housemate.comms.version}</version>
+            <artifactId>housemate-client-1-0-api</artifactId>
+            <version>${intuso.housemate.client.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>housemate-client-1-0-proxy-api</artifactId>
             <version>${intuso.housemate.client.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>com.intuso.utilities</groupId>
-            <artifactId>utilities-object</artifactId>
-            <version>${intuso.utilities.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>

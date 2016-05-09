@@ -1,12 +1,13 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
+import com.intuso.housemate.client.api.internal.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.object.Parameter;
+import com.intuso.housemate.client.api.internal.object.Property;
+import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.RealPropertyImpl;
 import com.intuso.housemate.client.real.impl.internal.RealValueImpl;
-import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
-import com.intuso.housemate.object.api.internal.TypeInstance;
-import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +21,12 @@ public class DoubleType extends RealSimpleType<Double> {
 
     public final static TypeSerialiser<Double> SERIALISER = new TypeSerialiser<Double>() {
         @Override
-        public TypeInstance serialise(Double d) {
-            return d != null ? new TypeInstance(d.toString()) : null;
+        public Instance serialise(Double d) {
+            return d != null ? new Instance(d.toString()) : null;
         }
 
         @Override
-        public Double deserialise(TypeInstance value) {
+        public Double deserialise(Instance value) {
             return value != null && value.getValue() != null ? new Double(value.getValue()) : null;
         }
     };
@@ -34,47 +35,35 @@ public class DoubleType extends RealSimpleType<Double> {
 
     @Inject
     public DoubleType(ListenersFactory listenersFactory) {
-        super(logger, listenersFactory, SimpleTypeData.Type.Double, SERIALISER);
+        super(logger, Simple.Double, SERIALISER, listenersFactory);
     }
 
     /**
      * Creates a double value object
-     * @param logger the logger
-     * @param id the value's id
-     * @param name the value's name
-     * @param description the value's description
+     * @param logger the log
      * @param value the initial value
      * @return a double value object
      */
-    public static RealValueImpl<Double> createValue(Logger logger, ListenersFactory listenersFactory,
-                                                String id, String name, String description, Double value) {
-        return new RealValueImpl<>(listenersFactory, logger, id, name, description, new DoubleType(listenersFactory), value);
+    public static RealValueImpl<Double> createValue(Logger logger, Value.Data data, ListenersFactory listenersFactory, Double value) {
+        return new RealValueImpl<>(logger, data, listenersFactory, new DoubleType(listenersFactory), value);
     }
 
     /**
      * Creates a double property object
-     * @param logger the logger
-     * @param id the property's id
-     * @param name the property's name
-     * @param description the property's description
+     * @param logger the log
      * @param values the initial values
      * @return a double property object
      */
-    public static RealPropertyImpl<Double> createProperty(Logger logger, ListenersFactory listenersFactory,
-                                                      String id, String name, String description, List<Double> values) {
-        return new RealPropertyImpl<>(logger, listenersFactory, id, name, description, new DoubleType(listenersFactory), values);
+    public static RealPropertyImpl<Double> createProperty(Logger logger, Property.Data data, ListenersFactory listenersFactory, List<Double> values) {
+        return new RealPropertyImpl<>(logger, data, listenersFactory, new DoubleType(listenersFactory), values);
     }
 
     /**
      * Creates a double parameter object
-     * @param logger the logger
-     * @param id the parameter's id
-     * @param name the parameter's name
-     * @param description the parameter's description
+     * @param logger the log
      * @return a double parameter object
      */
-    public static RealParameterImpl<Double> createParameter(Logger logger, ListenersFactory listenersFactory,
-                                                        String id, String name, String description) {
-        return new RealParameterImpl<>(listenersFactory, logger, id, name, description, new DoubleType(listenersFactory));
+    public static RealParameterImpl<Double> createParameter(Logger logger, Parameter.Data data, ListenersFactory listenersFactory) {
+        return new RealParameterImpl<>(logger, data, listenersFactory, new DoubleType(listenersFactory));
     }
 }

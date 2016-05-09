@@ -3,8 +3,9 @@ package com.intuso.housemate.web.client.comms;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
-import com.intuso.housemate.comms.v1_0.api.BaseRouter;
-import com.intuso.housemate.comms.v1_0.api.Message;
+import com.intuso.housemate.client.v1_0.data.api.BaseRouter;
+import com.intuso.housemate.client.v1_0.data.api.Message;
+import com.intuso.housemate.client.v1_0.data.api.payload.Payload;
 import com.intuso.housemate.web.client.NotConnectedException;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -31,7 +32,7 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
         }
     };
 
-    private AsyncCallback<Message<Message.Payload>[]> receiveCallback = new AsyncCallback<Message<Message.Payload>[]>() {
+    private AsyncCallback<Message<Payload>[]> receiveCallback = new AsyncCallback<Message<Payload>[]>() {
         @Override
         public void onFailure(Throwable throwable) {
             if(throwable instanceof NotConnectedException)
@@ -43,7 +44,7 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
         }
 
         @Override
-        public void onSuccess(Message<Message.Payload>[] messages) {
+        public void onSuccess(Message<Payload>[] messages) {
             // pass messages on
             for(Message message : messages) {
                 getLogger().debug("Message received " + message.toString());

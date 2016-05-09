@@ -10,10 +10,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.intuso.housemate.comms.v1_0.api.payload.OptionData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.object.v1_0.api.TypeInstance;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.client.v1_0.api.object.Option;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.event.UserInputEvent;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -38,20 +36,20 @@ public class SingleSelectInput extends Composite implements TypeInput, UserInput
     @UiField
     protected FlowPanel subTypesPanel;
 
-    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
-    private final TypeInstances typeInstances;
-    private final GWTProxyList<OptionData, GWTProxyOption> options;
+    private final GWTProxyList<Type.Data<?>, GWTProxyType> types;
+    private final Type.Instances typeInstances;
+    private final GWTProxyList<Option.Data, GWTProxyOption> options;
     private final BiMap<GWTProxyOption, Integer> optionMap = HashBiMap.create();
 
-    public SingleSelectInput(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyType type, final TypeInstances typeInstances) {
+    public SingleSelectInput(GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyType type, final Type.Instances typeInstances) {
 
         this.types = types;
         this.typeInstances = typeInstances;
 
         if(typeInstances.getElements().size() == 0)
-            typeInstances.getElements().add(new TypeInstance());
+            typeInstances.getElements().add(new Type.Instance());
 
-        options = (GWTProxyList<OptionData, GWTProxyOption>) type.getChild(OPTIONS);
+        options = (GWTProxyList<Option.Data, GWTProxyOption>) type.getChild(OPTIONS);
 
         initWidget(ourUiBinder.createAndBindUi(this));
         listBox.setMultipleSelect(false);
@@ -84,17 +82,17 @@ public class SingleSelectInput extends Composite implements TypeInput, UserInput
         listBox.addChangeHandler(this);
     }
 
-    private void showOptions(String optionId, TypeInstances typeInstances) {
+    private void showOptions(String optionId, Type.Instances typeInstances) {
         subTypesPanel.clear();
         GWTProxyOption option = options.get(optionId);
         if(option != null && option.getSubTypes() != null) {
             for(GWTProxySubType subType : option.getSubTypes()) {
                 if(typeInstances.getElements().get(0) == null)
-                    typeInstances.getElements().add(0, new TypeInstance());
+                    typeInstances.getElements().add(0, new Type.Instance());
                 if(typeInstances.getElements().get(0).getChildValues() == null)
-                    typeInstances.getElements().add(0, new TypeInstance());
+                    typeInstances.getElements().add(0, new Type.Instance());
                 if(typeInstances.getElements().get(0).getChildValues().getChildren().get(subType.getId()) == null)
-                    typeInstances.getElements().get(0).getChildValues().getChildren().put(subType.getId(), new TypeInstances());
+                    typeInstances.getElements().get(0).getChildValues().getChildren().put(subType.getId(), new Type.Instances());
                 TypeInput input = TypeInput.FACTORY.create(types, subType.getTypeId(), typeInstances.getElements().get(0).getChildValues().getChildren().get(subType.getId()), this);
                 subTypesPanel.add(input);
             }
@@ -110,7 +108,7 @@ public class SingleSelectInput extends Composite implements TypeInput, UserInput
     }
 
     @Override
-    public TypeInstances getTypeInstances() {
+    public Type.Instances getTypeInstances() {
         return typeInstances;
     }
 

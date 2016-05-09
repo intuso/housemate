@@ -1,16 +1,16 @@
 package com.intuso.housemate.client.real.api.internal;
 
-import com.intuso.housemate.object.api.internal.Type;
-import com.intuso.housemate.object.api.internal.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.object.Type;
 
 /**
  * @param <O> the type of the type instances
  */
-public interface RealType<O>
-        extends Type<RealType<O>>, TypeSerialiser<O> {
+public interface RealType<O, TYPE extends RealType<O, TYPE>>
+        extends Type<TYPE>, TypeSerialiser<O> {
 
-    interface Container extends Type.Container<RealList<RealType<?>>> {
-        void addType(RealType<?> type);
-        void removeType(RealType<?> type);
+    interface Container<TYPE extends RealType<?, ?>, TYPES extends RealList<? extends TYPE, ?>> extends Type.Container<TYPES> {
+        void addType(TYPE type);
+        void removeType(TYPE type);
     }
 }

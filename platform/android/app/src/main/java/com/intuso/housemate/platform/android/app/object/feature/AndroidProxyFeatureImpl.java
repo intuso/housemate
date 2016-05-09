@@ -1,6 +1,6 @@
 package com.intuso.housemate.platform.android.app.object.feature;
 
-import com.intuso.housemate.client.v1_0.proxy.api.feature.ProxyFeature;
+import com.intuso.housemate.client.v1_0.proxy.api.object.feature.ProxyFeature;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyValue;
@@ -22,7 +22,7 @@ public abstract class AndroidProxyFeatureImpl implements ProxyFeature {
 
     public final static class PowerControl
             extends AndroidProxyFeatureImpl
-            implements com.intuso.housemate.client.v1_0.proxy.api.feature.PowerControl<AndroidProxyCommand> {
+            implements com.intuso.housemate.client.v1_0.proxy.api.object.feature.PowerControl<AndroidProxyCommand> {
 
         public PowerControl(AndroidProxyFeature feature) {
             super(feature);
@@ -41,7 +41,7 @@ public abstract class AndroidProxyFeatureImpl implements ProxyFeature {
 
     public final static class StatefulPowerControl
             extends AndroidProxyFeatureImpl
-            implements com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl<AndroidProxyCommand, AndroidProxyValue> {
+            implements com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPowerControl<AndroidProxyCommand, AndroidProxyValue> {
 
         public StatefulPowerControl(AndroidProxyFeature feature) {
             super(feature);
@@ -74,7 +74,7 @@ public abstract class AndroidProxyFeatureImpl implements ProxyFeature {
 
     public final static class PlaybackControl
             extends AndroidProxyFeatureImpl
-            implements com.intuso.housemate.client.v1_0.proxy.api.feature.PlaybackControl<AndroidProxyCommand> {
+            implements com.intuso.housemate.client.v1_0.proxy.api.object.feature.PlaybackControl<AndroidProxyCommand> {
 
         public PlaybackControl(AndroidProxyFeature feature) {
             super(feature);
@@ -108,7 +108,7 @@ public abstract class AndroidProxyFeatureImpl implements ProxyFeature {
 
     public final static class StatefulPlaybackControl
             extends AndroidProxyFeatureImpl
-            implements com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPlaybackControl<AndroidProxyCommand, AndroidProxyValue> {
+            implements com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPlaybackControl<AndroidProxyCommand, AndroidProxyValue> {
 
         public StatefulPlaybackControl(AndroidProxyFeature feature) {
             super(feature);
@@ -156,7 +156,7 @@ public abstract class AndroidProxyFeatureImpl implements ProxyFeature {
 
     public final static class VolumeControl
             extends AndroidProxyFeatureImpl
-            implements com.intuso.housemate.client.v1_0.proxy.api.feature.VolumeControl<AndroidProxyCommand> {
+            implements com.intuso.housemate.client.v1_0.proxy.api.object.feature.VolumeControl<AndroidProxyCommand> {
 
         public VolumeControl(AndroidProxyFeature feature) {
             super(feature);
@@ -180,7 +180,7 @@ public abstract class AndroidProxyFeatureImpl implements ProxyFeature {
 
     public final static class StatefulVolumeControl
             extends AndroidProxyFeatureImpl
-            implements com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulVolumeControl<AndroidProxyCommand, AndroidProxyValue> {
+            implements com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulVolumeControl<AndroidProxyCommand, AndroidProxyValue> {
 
         public StatefulVolumeControl(AndroidProxyFeature feature) {
             super(feature);

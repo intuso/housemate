@@ -3,8 +3,6 @@ package com.intuso.housemate.server.object.real;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.intuso.housemate.client.real.api.internal.RealRoot;
-import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
 import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
@@ -26,19 +24,17 @@ public class FactoryPluginListener implements PluginListener {
 
     private final static Logger logger = LoggerFactory.getLogger(FactoryPluginListener.class);
 
-    private final RealRoot root;
     private final ConditionFactoryType conditionFactoryType;
     private final DeviceFactoryType deviceFactoryType;
     private final HardwareFactoryType hardwareFactoryType;
     private final TaskFactoryType taskFactoryType;
 
     @Inject
-    public FactoryPluginListener(ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType, HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType, PluginManager pluginManager, RealRoot root) {
+    public FactoryPluginListener(ConditionFactoryType conditionFactoryType, DeviceFactoryType deviceFactoryType, HardwareFactoryType hardwareFactoryType, TaskFactoryType taskFactoryType, PluginManager pluginManager) {
         this.conditionFactoryType = conditionFactoryType;
         this.deviceFactoryType = deviceFactoryType;
         this.hardwareFactoryType = hardwareFactoryType;
         this.taskFactoryType = taskFactoryType;
-        this.root = root;
         pluginManager.addPluginListener(this, true);
     }
 
@@ -48,7 +44,6 @@ public class FactoryPluginListener implements PluginListener {
         addDeviceFactories(pluginInjector);
         addHardwareFactories(pluginInjector);
         addTaskFactories(pluginInjector);
-        addTypes(pluginInjector);
     }
 
     @Override
@@ -57,7 +52,6 @@ public class FactoryPluginListener implements PluginListener {
         removeDeviceFactories(pluginInjector);
         removeHardwareFactories(pluginInjector);
         removeTaskFactories(pluginInjector);
-        removeTypes(pluginInjector);
     }
 
     private void addConditionFactories(Injector pluginInjector) {
@@ -114,19 +108,5 @@ public class FactoryPluginListener implements PluginListener {
     private void removeTaskFactories(Injector pluginInjector) {
         for(PluginResource<? extends TaskDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends TaskDriver.Factory<?>>>>() {}))
             taskFactoryType.factoryUnavailable(factoryResource.getTypeInfo().id());
-    }
-
-    private void addTypes(Injector pluginInjector) {
-        for(RealType<?> type : pluginInjector.getInstance(new Key<Iterable<? extends RealType<?>>>() {})) {
-            logger.debug("Adding type " + type.getId());
-            root.addType(type);
-        }
-    }
-
-    private void removeTypes(Injector pluginInjector) {
-        for(RealType<?> type : pluginInjector.getInstance(new Key<Iterable<? extends RealType<?>>>() {})) {
-            logger.debug("Removing type " + type.getId());
-            root.removeType(type);
-        }
     }
 }

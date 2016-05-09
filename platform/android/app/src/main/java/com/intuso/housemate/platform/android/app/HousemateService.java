@@ -1,16 +1,17 @@
 package com.intuso.housemate.platform.android.app;
 
 import android.app.Service;
-import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.platform.android.app.comms.AndroidAppRouter;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.Connection;
+import javax.jms.JMSException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -25,7 +26,7 @@ public abstract class HousemateService extends Service {
     private Logger logger;
     private ListenersFactory listenersFactory;
     private PropertyRepository properties;
-    private Router<?> router;
+    private Connection connection;
 
     @Override
     public void onCreate() {
@@ -38,7 +39,11 @@ public abstract class HousemateService extends Service {
             }
         };
         properties = new SharedPreferencesPropertyRepository(listenersFactory, getApplicationContext());
-        router = new AndroidAppRouter(logger, listenersFactory, getApplicationContext());
+        try {
+            connection = new ActiveMQConnectionFactory("tcp://" + properties.get("server.host") + ":" + properties.get("server.port")).createConnection();
+        } catch (JMSException e) {
+            logger.error("Failed to create connection to server", e);
+        }
     }
 
     @Override
@@ -46,8 +51,14 @@ public abstract class HousemateService extends Service {
         super.onDestroy();
         logger = null;
         properties = null;
-        router.disconnect();
-        router = null;
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (JMSException e) {
+                logger.error("Failed to close conncetion to server", e);
+            }
+            connection = null;
+        }
     }
 
     public Logger getLogger() {
@@ -62,7 +73,7 @@ public abstract class HousemateService extends Service {
         return properties;
     }
 
-    public Router getRouter() {
-        return router;
+    public Connection getConnection() {
+        return connection;
     }
 }

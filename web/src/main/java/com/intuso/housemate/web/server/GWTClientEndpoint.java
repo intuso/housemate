@@ -1,10 +1,10 @@
 package com.intuso.housemate.web.server;
 
-import com.intuso.housemate.comms.v1_0.api.ClientConnection;
-import com.intuso.housemate.comms.v1_0.api.Message;
-import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
-import com.intuso.housemate.comms.v1_0.api.payload.StringPayload;
+import com.intuso.housemate.client.v1_0.data.api.ClientConnection;
+import com.intuso.housemate.client.v1_0.data.api.Message;
+import com.intuso.housemate.client.v1_0.data.api.Router;
+import com.intuso.housemate.client.v1_0.data.api.access.ConnectionStatus;
+import com.intuso.housemate.client.v1_0.data.api.payload.StringPayload;
 
 import java.util.ArrayList;
 import java.util.List;

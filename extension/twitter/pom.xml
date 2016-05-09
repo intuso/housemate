@@ -19,6 +19,12 @@
 			<version>${intuso.housemate.client.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.intuso.utilities</groupId>
+			<artifactId>utilities-properties-api</artifactId>
+			<version>${intuso.utilities.version}</version>
+		</dependency>
+
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>

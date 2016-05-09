@@ -7,7 +7,7 @@ import com.google.gwt.user.cellview.client.CellTree;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
 
 import java.util.Collections;
 import java.util.Comparator;

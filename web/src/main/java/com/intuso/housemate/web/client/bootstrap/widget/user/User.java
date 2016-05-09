@@ -1,12 +1,11 @@
 package com.intuso.housemate.web.client.bootstrap.widget.user;
 
 import com.google.gwt.user.client.ui.Widget;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
-import com.intuso.housemate.comms.v1_0.api.ChildOverview;
-import com.intuso.housemate.comms.v1_0.api.RemoteObject;
-import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.comms.v1_0.api.payload.UserData;
+import com.intuso.housemate.client.v1_0.data.api.ChildOverview;
+import com.intuso.housemate.client.v1_0.data.api.RemoteObject;
+import com.intuso.housemate.client.v1_0.data.api.TreeLoadInfo;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
@@ -19,9 +18,9 @@ import java.util.List;
  */
 public class User extends ObjectWidget<GWTProxyUser> {
 
-    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+    private final GWTProxyList<Type.Data<?>, GWTProxyType> types;
 
-    public User(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyList<UserData, GWTProxyUser> users, final ChildOverview childOverview) {
+    public User(GWTProxyList<Type.Data<?>, GWTProxyType> types, final GWTProxyList<com.intuso.housemate.client.v1_0.api.object.User.Data, GWTProxyUser> users, final ChildOverview childOverview) {
         this.types = types;
         GWTProxyUser user = users.get(childOverview.getId());
         if(user != null)

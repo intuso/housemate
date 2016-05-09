@@ -5,7 +5,6 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.inject.*;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
@@ -29,50 +28,6 @@ public abstract class AnnotatedPluginModule extends AbstractModule {
     @Singleton
     public TypeInfo getTypeInfo() {
         return getClass().getAnnotation(TypeInfo.class);
-    }
-
-    @Provides
-    @Singleton
-    public Iterable<? extends RealType<?>> getTypes(Injector injector) {
-        Types types = getClass().getAnnotation(Types.class);
-        if(types == null)
-            return Lists.newArrayList();
-        return FluentIterable.from(Lists.newArrayList(types.value()))
-                .transform(this.<RealType<?>>makeInstance(injector))
-                .toList();
-    }
-
-    @Provides
-    @Singleton
-    public Iterable<PluginResource<? extends Comparator<?>>> getComparators(Injector injector) {
-        Comparators comparators = getClass().getAnnotation(Comparators.class);
-        if(comparators == null)
-            return Lists.newArrayList();
-        return FluentIterable.from(Lists.newArrayList(comparators.value()))
-                .transform(this.<Comparator<?>>asResource(injector))
-                .toList();
-    }
-
-    @Provides
-    @Singleton
-    public Iterable<PluginResource<? extends Operator<?, ?>>> getOperators(Injector injector) {
-        Operators operators = getClass().getAnnotation(Operators.class);
-        if(operators == null)
-            return Lists.newArrayList();
-        return FluentIterable.from(Lists.newArrayList(operators.value()))
-                .transform(this.<Operator<?, ?>>asResource(injector))
-                .toList();
-    }
-
-    @Provides
-    @Singleton
-    public Iterable<? extends Transformer<?, ?>> getTransformers(Injector injector) {
-        Transformers transformers = getClass().getAnnotation(Transformers.class);
-        if(transformers == null)
-            return Lists.newArrayList();
-        return FluentIterable.from(Lists.newArrayList(transformers.value()))
-                .transform(this.<Transformer<?, ?>>makeInstance(injector))
-                .toList();
     }
 
     @Provides

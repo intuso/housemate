@@ -1,110 +1,121 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.intuso.housemate.client.api.internal.object.Command;
+import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
-import com.intuso.housemate.client.real.api.internal.RealList;
-import com.intuso.housemate.client.real.api.internal.RealParameter;
-import com.intuso.housemate.client.real.api.internal.RealValue;
 import com.intuso.housemate.client.real.impl.internal.type.BooleanType;
-import com.intuso.housemate.comms.api.internal.Message;
-import com.intuso.housemate.comms.api.internal.payload.CommandData;
-import com.intuso.housemate.comms.api.internal.payload.HousemateData;
-import com.intuso.housemate.comms.api.internal.payload.ParameterData;
-import com.intuso.housemate.object.api.internal.Command;
-import com.intuso.housemate.object.api.internal.TypeInstanceMap;
-import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.*;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  */
 public abstract class RealCommandImpl
-        extends RealObject<CommandData, HousemateData<?>, RealObject<?, ?, ?, ?>, Command.Listener<? super RealCommand>>
-        implements RealCommand {
+        extends RealObject<Command.Data, Command.Listener<? super RealCommandImpl>>
+        implements RealCommand<RealValueImpl<Boolean>, RealListImpl<RealParameterImpl<?>>, RealCommandImpl>, MessageListener {
 
     private final static String ENABLED_DESCRIPTION = "Whether the command is enabled or not";
 
     private final RealValueImpl<Boolean> enabledValue;
-    private final RealList<RealParameter<?>> parameters;
+    private final RealListImpl<RealParameterImpl<?>> parameters;
+
+    private Session session;
+    private MessageProducer performStatusProducer;
+    private MessageConsumer performConsumer;
 
     /**
      * @param logger {@inheritDoc}
      * @param listenersFactory
-     * @param id the command's id
-     * @param name the command's name
-     * @param description the command's description
      * @param parameters the command's parameters
      */
-    protected RealCommandImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, RealParameter<?>... parameters) {
-        this(logger, listenersFactory, id, name, description, Arrays.asList(parameters));
+    protected RealCommandImpl(Logger logger,
+                              Command.Data data,
+                              ListenersFactory listenersFactory,
+                              RealParameterImpl<?>... parameters) {
+        this(logger, data, listenersFactory, Arrays.asList(parameters));
     }
 
     /**
      * @param logger {@inheritDoc}
      * @param listenersFactory
-     * @param id the command's id
-     * @param name the command's name
-     * @param description the command's description
      * @param parameters the command's parameters
      */
-    protected RealCommandImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, List<RealParameter<?>> parameters) {
-        super(listenersFactory, logger, new CommandData(id, name, description));
-        enabledValue = new RealValueImpl<>(listenersFactory, logger, CommandData.ENABLED_ID, CommandData.ENABLED_ID, ENABLED_DESCRIPTION, new BooleanType(listenersFactory), true);
-        this.parameters = (RealList)new RealListImpl<ParameterData, RealParameterImpl<?>>(logger, listenersFactory, CommandData.PARAMETERS_ID, CommandData.PARAMETERS_ID, "The parameters required by the command");
-        for(RealParameter<?> parameter : parameters)
-            this.parameters.add(parameter);
-        addChild(enabledValue);
-        addChild((RealListImpl)this.parameters);
+    protected RealCommandImpl(Logger logger,
+                              Command.Data data,
+                              ListenersFactory listenersFactory,
+                              List<RealParameterImpl<?>> parameters) {
+        super(logger, data, listenersFactory);
+        enabledValue = new RealValueImpl<>(logger,
+                new Value.Data(Command.ENABLED_ID, Command.ENABLED_ID, ENABLED_DESCRIPTION),
+                listenersFactory,
+                new BooleanType(listenersFactory), true);
+        this.parameters = new RealListImpl<>(logger, new com.intuso.housemate.client.api.internal.object.List.Data(Command.PARAMETERS_ID, Command.PARAMETERS_ID, "The parameters required by the command"), listenersFactory, parameters);
     }
 
     @Override
-    protected final List<ListenerRegistration> registerListeners() {
-        List<ListenerRegistration> result = super.registerListeners();
-        result.add(addMessageListener(CommandData.PERFORM_TYPE, new Message.Receiver<CommandData.PerformPayload>() {
-            @Override
-            public void messageReceived(final Message<CommandData.PerformPayload> message) {
-                perform(message.getPayload().getValues(), new PerformListener<RealCommand>() {
+    protected final void initChildren(String name, Session session) throws JMSException {
+        super.initChildren(name, session);
+        enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID), session);
+        parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID), session);
+        this.session = session;
+        performStatusProducer = session.createProducer(session.createTopic(ChildUtil.name(name, Command.PERFORM_STATUS_ID)));
+        performConsumer = session.createConsumer(session.createQueue(ChildUtil.name(name, Command.PERFORM_ID)));
+        performConsumer.setMessageListener(this);
+    }
 
-                    @Override
-                    public void commandStarted(RealCommand command) {
-                        sendMessage(CommandData.PERFORMING_TYPE, new CommandData.PerformingPayload(message.getPayload().getOpId(), true));
-                    }
-
-                    @Override
-                    public void commandFinished(RealCommand command) {
-                        sendMessage(CommandData.PERFORMING_TYPE, new CommandData.PerformingPayload(message.getPayload().getOpId(), false));
-                    }
-
-                    @Override
-                    public void commandFailed(RealCommand command, String error) {
-                        sendMessage(CommandData.FAILED_TYPE, new CommandData.FailedPayload(message.getPayload().getOpId(), error));
-                    }
-                });
+    @Override
+    protected void uninitChildren() {
+        super.uninitChildren();
+        enabledValue.uninit();
+        parameters.uninit();
+        if(performStatusProducer != null) {
+            try {
+                performStatusProducer.close();
+            } catch(JMSException e) {
+                logger.error("Failed to close perform status producer");
             }
-        }));
-        return result;
+            performStatusProducer = null;
+        }
+        if(performConsumer != null) {
+            try {
+                performConsumer.close();
+            } catch(JMSException e) {
+                logger.error("Failed to close perform producer");
+            }
+            performConsumer = null;
+        }
+        if(session != null) {
+            try {
+                session.close();
+            } catch(JMSException e) {
+                logger.error("Failed to close session");
+            }
+            session = null;
+        }
     }
 
     @Override
-    public RealValue<Boolean> getEnabledValue() {
+    public RealValueImpl<Boolean> getEnabledValue() {
         return enabledValue;
     }
 
     @Override
-    public RealList<RealParameter<?>> getParameters() {
+    public RealListImpl<RealParameterImpl<?>> getParameters() {
         return parameters;
     }
 
     @Override
-    public void perform(TypeInstanceMap values, PerformListener<? super RealCommand> listener) {
+    public void perform(Type.InstanceMap values, PerformListener<? super RealCommandImpl> listener) {
         try {
             listener.commandStarted(this);
             perform(values);
             listener.commandFinished(this);
         } catch(Throwable t) {
-            getLogger().error("Failed to perform command", t);
+            logger.error("Failed to perform command", t);
             listener.commandFailed(this, t.getMessage());
         }
     }
@@ -113,5 +124,49 @@ public abstract class RealCommandImpl
      * Performs the command
      * @param values the values of the parameters to use
      */
-    public abstract void perform(TypeInstanceMap values);
+    public abstract void perform(Type.InstanceMap values);
+
+    @Override
+    public void onMessage(Message message) {
+        if(message instanceof StreamMessage) {
+            StreamMessage streamMessage = (StreamMessage) message;
+            try {
+                Object object = streamMessage.readObject();
+                if (object instanceof PerformData) {
+                    final PerformData performData = (PerformData) object;
+                    perform(performData.getInstanceMap(), new PerformListener<RealCommandImpl>() {
+
+                        @Override
+                        public void commandStarted(RealCommandImpl command) {
+                            performStatus(performData.getOpId(), false, null);
+                        }
+
+                        @Override
+                        public void commandFinished(RealCommandImpl command) {
+                            performStatus(performData.getOpId(), true, null);
+                        }
+
+                        @Override
+                        public void commandFailed(RealCommandImpl command, String error) {
+                            performStatus(performData.getOpId(), true, error);
+                        }
+                    });
+                } else
+                    logger.warn("Read message object that wasn't a {}", PerformData.class.getName());
+            } catch(JMSException e) {
+                logger.error("Failed to read object from message", e);
+            }
+        } else
+            logger.warn("Received message that wasn't a {}", StreamMessage.class.getName());
+    }
+
+    private void performStatus(String opId, boolean finished, String error) {
+        try {
+            StreamMessage streamMessage = session.createStreamMessage();
+            streamMessage.writeObject(new PerformStatusData(opId, finished, error));
+            performStatusProducer.send(streamMessage);
+        } catch(JMSException e) {
+            logger.error("Failed to send perform status update ({}, {}, {})", opId, finished, error, e);
+        }
+    }
 }

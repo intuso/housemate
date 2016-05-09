@@ -5,12 +5,12 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.object.*;
 
 public class StatefulVolumeControl extends Composite implements FeatureWidget,
-        com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulVolumeControl<GWTProxyCommand, GWTProxyValue> {
+        com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulVolumeControl<GWTProxyCommand, GWTProxyValue> {
 
     interface VolumeWidgetUiBinder extends UiBinder<Widget, StatefulVolumeControl> {}
 
@@ -31,7 +31,7 @@ public class StatefulVolumeControl extends Composite implements FeatureWidget,
     }
 
     @Override
-    public void setTypes(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+    public void setTypes(GWTProxyList<Type.Data<?>, GWTProxyType> types) {
         muteButton.setCommand(types, getMuteCommand());
         upButton.setCommand(types, getVolumeUpCommand());
         downButton.setCommand(types, getVolumeDownCommand());

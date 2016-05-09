@@ -2,13 +2,10 @@ package com.intuso.housemate.client.real.impl.internal.ioc;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import com.google.inject.util.Modules;
-import com.intuso.housemate.client.real.api.internal.RealApplication;
-import com.intuso.housemate.client.real.api.internal.RealAutomation;
-import com.intuso.housemate.client.real.api.internal.RealRoot;
-import com.intuso.housemate.client.real.api.internal.RealUser;
-import com.intuso.housemate.client.real.impl.internal.BasicRealRoot;
-import com.intuso.housemate.client.real.impl.internal.ServerRealRoot;
+import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.impl.internal.RealServerImpl;
+import com.intuso.housemate.client.real.impl.internal.annotations.ioc.RealAnnotationsModule;
+import com.intuso.housemate.client.real.impl.internal.factory.ioc.RealFactoryModule;
 
 /**
  */
@@ -17,18 +14,17 @@ public class ServerRealObjectModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        install(Modules.override(new BasicRealObjectModule()).with(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(RealRoot.class).to(ServerRealRoot.class);
-                bind(BasicRealRoot.class).to(ServerRealRoot.class);
-            }
-        }));
+        // install other required modules
+        install(new RealFactoryModule());
+        install(new RealAnnotationsModule());
+        install(new RealTypesModule());
 
-        bind(ServerRealRoot.class).in(Scopes.SINGLETON);
+        bind(RealServer.class).to(RealServerImpl.class);
+        bind(RealServerImpl.class).in(Scopes.SINGLETON);
 
-        bind(RealAutomation.Container.class).to(ServerRealRoot.class);
-        bind(RealApplication.Container.class).to(ServerRealRoot.class);
-        bind(RealUser.Container.class).to(ServerRealRoot.class);
+        bind(RealAutomation.Container.class).to(RealServerImpl.class);
+        bind(RealDevice.Container.class).to(RealServerImpl.class);
+        bind(RealUser.Container.class).to(RealServerImpl.class);
+        bind(RealNode.Container.class).to(RealServerImpl.class);
     }
 }

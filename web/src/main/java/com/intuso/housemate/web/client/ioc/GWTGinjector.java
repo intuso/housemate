@@ -7,10 +7,10 @@ import com.google.gwt.inject.client.Ginjector;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.place.shared.PlaceHistoryMapper;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
-import com.intuso.housemate.comms.v1_0.api.ObjectFactory;
-import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
+import com.intuso.housemate.client.v1_0.api.object.Object;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
+import com.intuso.housemate.client.v1_0.data.api.ObjectFactory;
+import com.intuso.housemate.client.v1_0.data.api.Router;
 import com.intuso.housemate.web.client.bootstrap.ioc.BootstrapUiModule;
 import com.intuso.housemate.web.client.comms.LoginManager;
 import com.intuso.housemate.web.client.object.GWTProxyRoot;
@@ -31,7 +31,7 @@ public interface GWTGinjector extends Ginjector {
     LoginManager getLoginManager();
     Router<?> getRouter();
     GWTProxyRoot getProxyRoot();
-    ObjectFactory<HousemateData<?>, ProxyObject<?, ?, ?, ?, ?>> getObjectFactory();
+    ObjectFactory<Object.Data<?>, ProxyObject<?, ?, ?, ?, ?>> getObjectFactory();
 
     // activity/place stuff
     ActivityMapper getActivityMapper();

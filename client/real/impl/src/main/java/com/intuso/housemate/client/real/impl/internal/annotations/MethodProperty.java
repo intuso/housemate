@@ -2,10 +2,9 @@ package com.intuso.housemate.client.real.impl.internal.annotations;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.real.impl.internal.RealPropertyImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
-import com.intuso.housemate.object.api.internal.Property;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -20,29 +19,27 @@ public class MethodProperty extends RealPropertyImpl<Object> {
 
     @Inject
     public MethodProperty(ListenersFactory listenersFactory,
-                          @Assisted Logger logger,
-                          @Assisted("id") String id,
-                          @Assisted("name") String name,
-                          @Assisted("description") String description,
-                          @Assisted RealTypeImpl<?, ?, Object> type,
+                          final @Assisted Logger logger,
+                          @Assisted Property.Data data,
+                          @Assisted RealTypeImpl<Object> type,
                           @Nullable @Assisted("value") Object value,
                           @Assisted final Method method,
                           @Assisted("instance") final Object instance) {
-        super(logger, listenersFactory, id, name, description, type, value);
+        super(logger, data, listenersFactory, type, value);
         method.setAccessible(true);
-        addObjectListener(new Property.Listener<RealProperty<Object>>() {
+        addObjectListener(new Property.Listener<RealPropertyImpl<Object>>() {
 
             @Override
-            public void valueChanging(RealProperty<Object> value) {
+            public void valueChanging(RealPropertyImpl<Object> value) {
                 // do nothing
             }
 
             @Override
-            public void valueChanged(RealProperty<Object> property) {
+            public void valueChanged(RealPropertyImpl<Object> property) {
                 try {
-                    method.invoke(instance, property.getTypedValue());
+                    method.invoke(instance, property.getValue());
                 } catch(IllegalAccessException|InvocationTargetException e) {
-                    getLogger().error("Failed to update property for annotated property " + getId(), e);
+                    logger.error("Failed to update property for annotated property " + getId(), e);
                 }
             }
         });
@@ -50,10 +47,8 @@ public class MethodProperty extends RealPropertyImpl<Object> {
 
     public interface Factory {
         MethodProperty create(Logger logger,
-                              @Assisted("id") String id,
-                              @Assisted("name") String name,
-                              @Assisted("description") String description,
-                              RealTypeImpl<?, ?, Object> type,
+                              Property.Data data,
+                              RealTypeImpl<Object> type,
                               @Nullable @Assisted("value") Object value,
                               Method method,
                               @Assisted("instance") Object instance);

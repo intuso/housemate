@@ -1,12 +1,11 @@
 package com.intuso.housemate.web.client.bootstrap.widget.automation;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
-import com.intuso.housemate.comms.v1_0.api.ChildOverview;
-import com.intuso.housemate.comms.v1_0.api.RemoteObject;
-import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
-import com.intuso.housemate.comms.v1_0.api.payload.AutomationData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.data.api.ChildOverview;
+import com.intuso.housemate.client.v1_0.data.api.RemoteObject;
+import com.intuso.housemate.client.v1_0.data.api.TreeLoadInfo;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -18,11 +17,11 @@ import java.util.List;
 /**
  * Created by tomc on 05/03/15.
  */
-public class Automation extends ObjectWidget<GWTProxyAutomation> implements com.intuso.housemate.object.v1_0.api.Automation.Listener<GWTProxyAutomation> {
+public class Automation extends ObjectWidget<GWTProxyAutomation> implements com.intuso.housemate.client.v1_0.api.object.Automation.Listener<GWTProxyAutomation> {
 
-    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+    private final GWTProxyList<Type.Data<?>, GWTProxyType> types;
 
-    public Automation(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyList<AutomationData, GWTProxyAutomation> automations, final ChildOverview childOverview) {
+    public Automation(GWTProxyList<Type.Data<?>, GWTProxyType> types, final GWTProxyList<com.intuso.housemate.client.v1_0.api.object.Automation.Data, GWTProxyAutomation> automations, final ChildOverview childOverview) {
         this.types = types;
         GWTProxyAutomation user = automations.get(childOverview.getId());
         if(user != null)

@@ -6,9 +6,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.intuso.housemate.comms.v1_0.api.payload.SubTypeData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.client.v1_0.api.object.SubType;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxySubType;
@@ -29,7 +28,7 @@ public class CompoundTypeInputModal extends Composite implements TypeInput {
     @UiField
     SubTypeList subTypeList;
 
-    public CompoundTypeInputModal(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<SubTypeData, GWTProxySubType> list, TypeInstances typeInstances) {
+    public CompoundTypeInputModal(GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyList<SubType.Data, GWTProxySubType> list, Type.Instances typeInstances) {
         initWidget(ourUiBinder.createAndBindUi(this));
         modal.setTitle(list.getName());
         subTypeList.setTypes(types);
@@ -39,7 +38,7 @@ public class CompoundTypeInputModal extends Composite implements TypeInput {
     }
 
     @Override
-    public TypeInstances getTypeInstances() {
+    public Type.Instances getTypeInstances() {
         return subTypeList.getTypeInstances();
     }
 

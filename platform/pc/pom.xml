@@ -17,7 +17,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-object-api</artifactId>
+            <artifactId>housemate-client-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 

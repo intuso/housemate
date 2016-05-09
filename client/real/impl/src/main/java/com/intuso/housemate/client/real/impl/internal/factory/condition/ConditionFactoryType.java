@@ -14,7 +14,7 @@ public class ConditionFactoryType extends FactoryType<ConditionDriver.Factory<?>
 
     public final static String TYPE_ID = "condition-factory";
     public final static String TYPE_NAME = "Condition Factory";
-    public final static String TYPE_DESCRIPTION = "Available types for new conditions";
+    public final static String TYPE_DESCRIPTION = "Available types for new condition";
 
     private final static Logger logger = LoggerFactory.getLogger(ConditionFactoryType.class);
 

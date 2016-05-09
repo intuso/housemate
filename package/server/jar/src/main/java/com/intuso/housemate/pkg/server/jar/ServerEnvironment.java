@@ -5,25 +5,17 @@ import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import com.intuso.housemate.comms.api.internal.HousemateCommsException;
 import com.intuso.housemate.pkg.server.jar.ioc.JarServerModule;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.plugin.manager.internal.PluginManager;
 import com.intuso.housemate.server.object.real.FactoryPluginListener;
-import com.intuso.housemate.server.object.real.persist.RealObjectWatcher;
-import com.intuso.housemate.web.server.ContextListener;
-import com.intuso.housemate.web.server.service.CommsServiceImpl;
 import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import jssc.SerialPortList;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.util.resource.URLResource;
+import org.apache.activemq.broker.BrokerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,16 +76,12 @@ public class ServerEnvironment {
         loadPlugins(injector, properties);
         logger.debug("Loaded plugins");
 
-        logger.debug("Loading/watching objects");
-        injector.getInstance(RealObjectWatcher.class).start();
-        logger.debug("Loaded objects");
-
         logger.debug("Starting webapp");
         startWebapp(injector, properties);
         logger.debug("Started webapp");
 
-        logger.debug("Finished startup, accepting external client requests");
-        injector.getInstance(com.intuso.housemate.server.Server.class).acceptClients();
+        logger.debug("Finished startup, accepting external client connections");
+        injector.getInstance(BrokerService.class);
     }
 
     private void setExtraDefaults(WriteableMapPropertyRepository defaultProperties) {
@@ -179,10 +167,10 @@ public class ServerEnvironment {
     }
 
     private void startJetty(Injector injector, PropertyRepository properties, int port) {
-
-        ServletHandler servletHandler = new ServletHandler();
+// todo when web interface reenabled
+        /*ServletHandler servletHandler = new ServletHandler();
         servletHandler.addServletWithMapping(CommsServiceImpl.class, "/Housemate/comms");
-        servletHandler.addServletWithMapping(StaticFilesServlet.class, "/*");
+        servletHandler.addServletWithMapping(StaticFilesServlet.class, "*//*");
 
         ServletContextHandler handler = new ServletContextHandler(null, "/housemate");
         handler.setServletHandler(servletHandler);
@@ -209,6 +197,6 @@ public class ServerEnvironment {
             server.start();
         } catch(Exception e) {
             throw new HousemateCommsException("Failed to start internal webserver", e);
-        }
+        }*/
     }
 }

@@ -1,11 +1,7 @@
 package com.intuso.housemate.platform.android.app.object;
 
-import com.intuso.housemate.client.v1_0.proxy.api.LoggerUtil;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyHardware;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
-import com.intuso.housemate.comms.v1_0.api.payload.HardwareData;
-import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
-import com.intuso.housemate.comms.v1_0.api.payload.PropertyData;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyHardware;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -20,23 +16,17 @@ public class AndroidProxyHardware extends ProxyHardware<
         AndroidProxyCommand,
         AndroidProxyValue,
         AndroidProxyProperty,
-        AndroidProxyList<PropertyData, AndroidProxyProperty>,
+        AndroidProxyList<AndroidProxyProperty>,
         AndroidProxyHardware> {
-
-    private final AndroidProxyFactory factory;
 
     /**
      * @param logger  {@inheritDoc}
-     * @param data {@inheritDoc}
-     * @param factory
      */
-    protected AndroidProxyHardware(Logger logger, ListenersFactory listenersFactory, HardwareData data, AndroidProxyFactory factory) {
-        super(logger, listenersFactory, data);
-        this.factory = factory;
-    }
-
-    @Override
-    protected ProxyObject<?, ?, ?, ?, ?> createChild(HousemateData<?> data) {
-        return factory.create(LoggerUtil.child(getLogger(), data.getId()), data);
+    protected AndroidProxyHardware(Logger logger, ListenersFactory listenersFactory,
+                                   ProxyObject.Factory<AndroidProxyCommand> commandFactory,
+                                   ProxyObject.Factory<AndroidProxyValue> valueFactory,
+                                   ProxyObject.Factory<AndroidProxyProperty> propertyFactory,
+                                   ProxyObject.Factory<AndroidProxyList<AndroidProxyProperty>> propertiesFactory) {
+        super(logger, listenersFactory, commandFactory, valueFactory, propertyFactory, propertiesFactory);
     }
 }

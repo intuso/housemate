@@ -5,7 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.bootstrap.widget.command.CommandList;
 import com.intuso.housemate.web.client.bootstrap.widget.value.ValueList;
 import com.intuso.housemate.web.client.object.GWTProxyFeature;
@@ -33,7 +33,7 @@ public class UnknownFeature extends Composite implements FeatureWidget {
     }
 
     @Override
-    public void setTypes(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+    public void setTypes(GWTProxyList<Type.Data<?>, GWTProxyType> types) {
         commandsList.setTypes(types);
         commandsList.setList(feature.getCommands());
         valuesList.setTypes(types);

@@ -1,10 +1,10 @@
 package com.intuso.housemate.plugin.rfxcom.lighting1;
 
+import com.intuso.housemate.client.v1_0.api.HousemateException;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
-import com.intuso.housemate.client.v1_0.real.api.device.feature.StatefulPowerControl;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
-import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
+import com.intuso.housemate.client.v1_0.real.api.feature.StatefulPowerControl;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.io.IOException;
@@ -93,24 +93,24 @@ public abstract class Lighting1Appliance implements DeviceDriver, StatefulPowerC
     @Override
     public void turnOn() {
         if(lighting1Appliance == null)
-            throw new HousemateCommsException("Not connected to RFXCom device. Ensure properties are set correctly");
+            throw new HousemateException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting1Appliance.turnOn();
             powerValues.isOn(true);
 		} catch (IOException e) {
-			throw new HousemateCommsException("Could not turn appliance on", e);
+			throw new HousemateException("Could not turn appliance on", e);
 		}
 	}
 	
 	@Override
     public void turnOff() {
         if(lighting1Appliance == null)
-            throw new HousemateCommsException("Not connected to RFXCom device. Ensure properties are set correctly");
+            throw new HousemateException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting1Appliance.turnOff();
             powerValues.isOn(false);
 		} catch (IOException e) {
-			throw new HousemateCommsException("Could not turn appliance off", e);
+			throw new HousemateException("Could not turn appliance off", e);
 		}
 	}
 

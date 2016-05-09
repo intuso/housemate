@@ -1,12 +1,13 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
+import com.intuso.housemate.client.api.internal.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.object.Parameter;
+import com.intuso.housemate.client.api.internal.object.Property;
+import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.RealPropertyImpl;
 import com.intuso.housemate.client.real.impl.internal.RealValueImpl;
-import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
-import com.intuso.housemate.object.api.internal.TypeInstance;
-import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +21,12 @@ public class IntegerType extends RealSimpleType<Integer> {
 
     public final static TypeSerialiser<Integer> SERIALISER = new TypeSerialiser<Integer>() {
         @Override
-        public TypeInstance serialise(Integer i) {
-            return i != null ? new TypeInstance(i.toString()) : null;
+        public Instance serialise(Integer i) {
+            return i != null ? new Instance(i.toString()) : null;
         }
 
         @Override
-        public Integer deserialise(TypeInstance value) {
+        public Integer deserialise(Instance value) {
             return value != null && value.getValue() != null ? new Integer(value.getValue()) : null;
         }
     };
@@ -34,47 +35,35 @@ public class IntegerType extends RealSimpleType<Integer> {
 
     @Inject
     public IntegerType(ListenersFactory listenersFactory) {
-        super(logger, listenersFactory, SimpleTypeData.Type.Integer, SERIALISER);
+        super(logger, Simple.Integer, SERIALISER, listenersFactory);
     }
 
     /**
      * Creates an integer value object
-     * @param logger the logger
-     * @param id the value's id
-     * @param name the value's name
-     * @param description the value's description
+     * @param logger the log
      * @param value the initial value
      * @return an integer value object
      */
-    public static RealValueImpl<Integer> createValue(Logger logger, ListenersFactory listenersFactory,
-                                                 String id, String name, String description, Integer value) {
-        return new RealValueImpl<>(listenersFactory, logger, id, name, description, new IntegerType(listenersFactory), value);
+    public static RealValueImpl<Integer> createValue(Logger logger, Value.Data data, ListenersFactory listenersFactory, Integer value) {
+        return new RealValueImpl<>(logger, data, listenersFactory, new IntegerType(listenersFactory), value);
     }
 
     /**
      * Creates an integer property object
-     * @param logger the logger
-     * @param id the property's id
-     * @param name the property's name
-     * @param description the property's description
+     * @param logger the log
      * @param values the initial values
      * @return an integer property object
      */
-    public static RealPropertyImpl<Integer> createProperty(Logger logger, ListenersFactory listenersFactory,
-                                                       String id, String name, String description, List<Integer> values) {
-        return new RealPropertyImpl<>(logger, listenersFactory, id, name, description, new IntegerType(listenersFactory), values);
+    public static RealPropertyImpl<Integer> createProperty(Logger logger, Property.Data data, ListenersFactory listenersFactory, List<Integer> values) {
+        return new RealPropertyImpl<>(logger, data, listenersFactory, new IntegerType(listenersFactory), values);
     }
 
     /**
      * Creates an integer parameter object
-     * @param logger the logger
-     * @param id the parameter's id
-     * @param name the parameter's name
-     * @param description the parameter's description
+     * @param logger the log
      * @return an integer parameter object
      */
-    public static RealParameterImpl<Integer> createParameter(Logger logger, ListenersFactory listenersFactory,
-                                                         String id, String name, String description) {
-        return new RealParameterImpl<>(listenersFactory, logger, id, name, description, new IntegerType(listenersFactory));
+    public static RealParameterImpl<Integer> createParameter(Logger logger, Parameter.Data data, ListenersFactory listenersFactory) {
+        return new RealParameterImpl<>(logger, data, listenersFactory, new IntegerType(listenersFactory));
     }
 }

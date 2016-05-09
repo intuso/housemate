@@ -16,14 +16,20 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-object-1-0-api</artifactId>
-            <version>${intuso.housemate.object.version}</version>
+            <artifactId>housemate-client-1-0-api</artifactId>
+            <version>${intuso.housemate.client.version}</version>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-1-0-serialiser-json</artifactId>
-            <version>${intuso.housemate.comms.version}</version>
+            <artifactId>housemate-client-1-0-serialiser-json</artifactId>
+            <version>${intuso.housemate.client.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>utilities-properties-api</artifactId>
+            <version>${intuso.utilities.version}</version>
         </dependency>
 
         <dependency>

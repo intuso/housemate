@@ -1,6 +1,6 @@
 package com.intuso.housemate.platform.android.app.object.feature;
 
-import com.intuso.housemate.client.v1_0.proxy.api.feature.ProxyFeatureFactory;
+import com.intuso.housemate.client.v1_0.proxy.api.object.feature.ProxyFeatureFactory;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
 
 /**

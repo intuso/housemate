@@ -5,7 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyFeature;
@@ -13,7 +13,7 @@ import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 
 public class PlaybackControl extends Composite implements FeatureWidget,
-        com.intuso.housemate.client.v1_0.proxy.api.feature.PlaybackControl<GWTProxyCommand> {
+        com.intuso.housemate.client.v1_0.proxy.api.object.feature.PlaybackControl<GWTProxyCommand> {
 
 
     interface PlaybackWidgetUiBinder extends UiBinder<Widget, PlaybackControl> {}
@@ -39,7 +39,7 @@ public class PlaybackControl extends Composite implements FeatureWidget,
     }
 
     @Override
-    public void setTypes(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+    public void setTypes(GWTProxyList<Type.Data<?>, GWTProxyType> types) {
         playButton.setCommand(types, getPlayCommand());
         pauseButton.setCommand(types, getPauseCommand());
         stopButton.setCommand(types, getStopCommand());

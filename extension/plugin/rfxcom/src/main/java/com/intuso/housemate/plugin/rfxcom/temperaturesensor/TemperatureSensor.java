@@ -9,7 +9,7 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * Housemate device that receives temperature updates from a sensor
  *
  */
-public abstract class TemperatureSensor implements DeviceDriver, com.intuso.housemate.client.v1_0.real.api.device.feature.TemperatureSensor {
+public abstract class TemperatureSensor implements DeviceDriver, com.intuso.housemate.client.v1_0.real.api.feature.TemperatureSensor {
 
 	private com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensor sensor;
     private ListenerRegistration listenerRegistration;

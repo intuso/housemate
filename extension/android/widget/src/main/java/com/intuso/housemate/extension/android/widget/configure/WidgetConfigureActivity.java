@@ -11,21 +11,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.google.common.collect.Lists;
-import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyClientHelper;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyRoot;
-import com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl;
-import com.intuso.housemate.comms.v1_0.api.RemoteObject;
-import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
-import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
-import com.intuso.housemate.comms.v1_0.api.payload.ServerData;
+import com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPowerControl;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
-import com.intuso.housemate.object.v1_0.api.Application;
-import com.intuso.housemate.object.v1_0.api.ApplicationInstance;
 import com.intuso.housemate.platform.android.app.HousemateActivity;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
+import com.intuso.housemate.platform.android.app.object.AndroidProxyList;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -41,11 +32,11 @@ import java.util.List;
  */
 public class WidgetConfigureActivity
         extends HousemateActivity
-        implements LoadManager.Callback, AdapterView.OnItemClickListener {
+        implements AdapterView.OnItemClickListener {
 
     private final String featureId = StatefulPowerControl.ID;
 
-    private ProxyClientHelper<AndroidProxyRoot> clientHelper;
+    private AndroidProxyRoot root;
     private List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
     private DeviceListAdapter listAdapter;
 
@@ -63,70 +54,18 @@ public class WidgetConfigureActivity
         listAdapter = new DeviceListAdapter();
         ((ListView)findViewById(R.id.device_list)).setAdapter(listAdapter);
         ((ListView)findViewById(R.id.device_list)).setOnItemClickListener(this);
-        clientHelper = new ProxyClientHelper<>(new AndroidProxyRoot(getLogger(), getListenersFactory(), getProperties(), getRouter()), getRouter());
-        clientHelper.getRouter().addListener(new Router.Listener<Router>() {
-            @Override
-            public void serverConnectionStatusChanged(Router clientConnection, ConnectionStatus connectionStatus) {
-                if(connectionStatus != ConnectionStatus.ConnectedToServer)
-                    setStatus("Router: " + connectionStatus);
-            }
-
-            @Override
-            public void newServerInstance(Router clientConnection, String serverId) {
-
-            }
-        });
-        clientHelper.getRoot().addObjectListener(new ProxyRoot.Listener<AndroidProxyRoot>() {
-            @Override
-            public void applicationStatusChanged(AndroidProxyRoot requiresAccess, Application.Status applicationStatus) {
-                if(clientHelper.getRouter().getConnectionStatus() == ConnectionStatus.ConnectedToServer
-                        && applicationStatus != Application.Status.AllowInstances
-                        && applicationStatus != Application.Status.SomeInstances)
-                    setStatus("Application: " + applicationStatus);
-            }
-
-            @Override
-            public void applicationInstanceStatusChanged(AndroidProxyRoot requiresAccess, ApplicationInstance.Status applicationInstanceStatus) {
-                if(clientHelper.getRouter().getConnectionStatus() == ConnectionStatus.ConnectedToServer
-                        && clientHelper.getRoot().getApplicationStatus() != Application.Status.AllowInstances
-                        && clientHelper.getRoot().getApplicationStatus() != Application.Status.SomeInstances
-                        && applicationInstanceStatus != ApplicationInstance.Status.Allowed)
-                    setStatus("Application Instance: " + applicationInstanceStatus);
-            }
-
-            @Override
-            public void newApplicationInstance(AndroidProxyRoot requiresAccess, String instanceId) {
-
-            }
-        });
-        clientHelper.applicationDetails(WidgetService.APPLICATION_DETAILS)
-                .load(ProxyRoot.SERVERS_ID, RemoteObject.EVERYTHING, ServerData.DEVICES_ID, RemoteObject.EVERYTHING, DeviceData.FEATURES_ID, RemoteObject.EVERYTHING)
-                .callback(this)
-                .start();
+        root = new AndroidProxyRoot(getLogger(), getListenersFactory(), getConnection(), null /* todo */);
+        setStatus("Pick device to control");
+        listenerRegistrations.add(root.getServers().addObjectListener(new ClientListListener(), true));
+        listAdapter.notifyDataSetChanged();
+        listAdapter.setNotifyOnChange(true);
     }
 
     @Override
     protected void onStop() {
         for(ListenerRegistration listenerRegistration : listenerRegistrations)
             listenerRegistration.removeListener();
-        if(clientHelper != null) {
-            clientHelper.stop();
-            clientHelper = null;
-        }
         super.onStop();
-    }
-
-    @Override
-    public void failed(List<String> errors) {
-        setStatus("Failed to load device names");
-    }
-
-    @Override
-    public void succeeded() {
-        setStatus("Pick device to control");
-        listenerRegistrations.add(clientHelper.getRoot().getServers().addObjectListener(new ClientListListener(), true));
-        listAdapter.notifyDataSetChanged();
-        listAdapter.setNotifyOnChange(true);
     }
 
     @Override
@@ -151,20 +90,20 @@ public class WidgetConfigureActivity
         });
     }
 
-    private class ClientListListener implements com.intuso.housemate.object.v1_0.api.List.Listener<AndroidProxyServer> {
+    private class ClientListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyServer, AndroidProxyList<AndroidProxyServer>> {
 
         @Override
-        public void elementAdded(AndroidProxyServer client) {
-            listenerRegistrations.add(client.getDevices().addObjectListener(new DeviceListListener(client), true));
+        public void elementAdded(AndroidProxyList<AndroidProxyServer> list, AndroidProxyServer server) {
+            listenerRegistrations.add(server.getDevices().addObjectListener(new DeviceListListener(server), true));
         }
 
         @Override
-        public void elementRemoved(AndroidProxyServer client) {
+        public void elementRemoved(AndroidProxyList<AndroidProxyServer> list, AndroidProxyServer server) {
             // should probably clean up the list! todo
         }
     }
 
-    private class DeviceListListener implements com.intuso.housemate.object.v1_0.api.List.Listener<AndroidProxyDevice> {
+    private class DeviceListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyDevice, AndroidProxyList<AndroidProxyDevice>> {
 
         private final AndroidProxyServer client;
 
@@ -173,13 +112,13 @@ public class WidgetConfigureActivity
         }
 
         @Override
-        public void elementAdded(AndroidProxyDevice device) {
+        public void elementAdded(AndroidProxyList<AndroidProxyDevice> list, AndroidProxyDevice device) {
             if(device.getFeatures().get(featureId) != null)
                 listAdapter.add(new DeviceInfo(client, device));
         }
 
         @Override
-        public void elementRemoved(AndroidProxyDevice device) {
+        public void elementRemoved(AndroidProxyList<AndroidProxyDevice> list, AndroidProxyDevice device) {
             listAdapter.remove(new DeviceInfo(client, device));
         }
     }

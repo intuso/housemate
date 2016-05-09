@@ -5,12 +5,11 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.servlet.GuiceServletContextListener;
-import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
-import com.intuso.housemate.comms.v1_0.serialiser.javabin.ioc.JavabinSerialiserClientModule;
-import com.intuso.housemate.comms.v1_0.transport.socket.client.ioc.SocketClientModule;
-import com.intuso.housemate.object.v1_0.api.TypeInstance;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.client.v1_0.api.object.Type;
+import com.intuso.housemate.client.v1_0.data.api.Router;
+import com.intuso.housemate.client.v1_0.data.api.access.ConnectionStatus;
+import com.intuso.housemate.client.v1_0.data.serialiser.javabin.ioc.JavabinSerialiserClientModule;
+import com.intuso.housemate.client.v1_0.transport.socket.client.ioc.SocketClientModule;
 import com.intuso.housemate.persistence.v1_0.api.Persistence;
 import com.intuso.housemate.persistence.v1_0.filesystem.ioc.FileSystemPersistenceModule;
 import com.intuso.housemate.platform.pc.Properties;
@@ -117,7 +116,7 @@ public class ContextListener extends GuiceServletContextListener {
                 createUser = true;
             if(createUser) {
                 logger.debug("Creating default user/password admin/admin");
-                persistence.saveTypeInstances(new String[]{"users", "admin", "password"}, new TypeInstances(new TypeInstance("admin")));
+                persistence.saveTypeInstances(new String[]{"users", "admin", "password"}, new Type.Instances(new Type.Instance("admin")));
             }
         } catch(Throwable t) {
             logger.error("Failed to ensure default user exists");

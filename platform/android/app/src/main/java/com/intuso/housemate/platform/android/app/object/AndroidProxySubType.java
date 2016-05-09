@@ -1,9 +1,7 @@
 package com.intuso.housemate.platform.android.app.object;
 
-import com.intuso.housemate.client.v1_0.proxy.api.NoChildrenProxyObject;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxySubType;
-import com.intuso.housemate.comms.v1_0.api.payload.NoChildrenData;
-import com.intuso.housemate.comms.v1_0.api.payload.SubTypeData;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxySubType;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -14,22 +12,12 @@ import org.slf4j.Logger;
  * Time: 09:28
  * To change this template use File | Settings | File Templates.
  */
-public class AndroidProxySubType extends ProxySubType<AndroidProxySubType> {
-
-    private final AndroidProxyFactory factory;
+public class AndroidProxySubType extends ProxySubType<AndroidProxyType, AndroidProxySubType> {
 
     /**
      * @param logger  {@inheritDoc}
-     * @param data {@inheritDoc}
-     * @param factory
      */
-    protected AndroidProxySubType(Logger logger, ListenersFactory listenersFactory, SubTypeData data, AndroidProxyFactory factory) {
-        super(logger, listenersFactory, data);
-        this.factory = factory;
-    }
-
-    @Override
-    protected NoChildrenProxyObject createChild(NoChildrenData noChildrenData) {
-        return null;
+    protected AndroidProxySubType(Logger logger, ListenersFactory listenersFactory, ProxyObject.Factory<AndroidProxyType> typeFactory) {
+        super(logger, listenersFactory, typeFactory);
     }
 }

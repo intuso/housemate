@@ -2,11 +2,11 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.intuso.housemate.client.api.internal.HousemateException;
+import com.intuso.housemate.client.api.internal.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
-import com.intuso.housemate.comms.api.internal.HousemateCommsException;
-import com.intuso.housemate.object.api.internal.TypeInstance;
-import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -89,25 +89,25 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
     protected EnumChoiceType(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, int minValues,
                              int maxValues, EnumMap<E, List<RealSubTypeImpl<?>>> optionSubTypes,
                              TypeSerialiser<E> elementSerialiser, E... values) {
-        super(logger, listenersFactory, id, name, description, minValues,
+        super(logger, id, name, description, listenersFactory, minValues,
                 maxValues, convertValuesToOptions(logger, listenersFactory, values, optionSubTypes));
         this.serialiser = elementSerialiser;
     }
 
     @Override
-    public TypeInstance serialise(E o) {
+    public Instance serialise(E o) {
         return serialiser.serialise(o);
     }
 
     @Override
-    public E deserialise(TypeInstance value) {
+    public E deserialise(Instance value) {
         return serialiser.deserialise(value);
     }
 
     /**
      * Converts the values of an enum to option objects
      *
-     * @param logger the logger
+     * @param logger the log
      * @param listenersFactory
      *@param values the enum's values
      * @param optionSubTypes the subtypes for each enum value   @return a list of option objects, one for each value of the enum
@@ -118,9 +118,9 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
             @Override
             public RealOptionImpl apply(E value) {
                 if(optionSubTypes.containsKey(value))
-                    return new RealOptionImpl(logger, listenersFactory, value.name(), value.name(), value.name(), optionSubTypes.get(value));
+                    return new RealOptionImpl(logger, new Option.Data(value.name(), value.name(), value.name()), listenersFactory, optionSubTypes.get(value));
                 else
-                    return new RealOptionImpl(logger, listenersFactory, value.name(), value.name(), value.name());
+                    return new RealOptionImpl(logger, new Option.Data(value.name(), value.name(), value.name()), listenersFactory);
             }
         });
     }
@@ -141,16 +141,16 @@ public abstract class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E
         }
 
         @Override
-        public TypeInstance serialise(E value) {
-            return value != null ? new TypeInstance(value.name()) : null;
+        public Instance serialise(E value) {
+            return value != null ? new Instance(value.name()) : null;
         }
 
         @Override
-        public E deserialise(TypeInstance value) {
+        public E deserialise(Instance value) {
             try {
                 return value != null && value.getValue() != null ? Enum.valueOf(enumClass, value.getValue()) : null;
             } catch(Throwable t) {
-                throw new HousemateCommsException("Could not convert \"" + value + "\" to instance of enum " + enumClass.getName());
+                throw new HousemateException("Could not convert \"" + value + "\" to instance of enum " + enumClass.getName());
             }
         }
     }

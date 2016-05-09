@@ -2,7 +2,6 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.client.real.api.internal.type.Email;
-import com.intuso.housemate.object.api.internal.TypeInstance;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +25,16 @@ public class EmailType extends RealRegexType<Email> {
      */
     @Inject
     public EmailType(ListenersFactory listenersFactory) {
-        super(logger, listenersFactory, ID, NAME, "Email address of the form <username>@<host>", 1, 1, ".+@.+\\..+");
+        super(logger, ID, NAME, "Email address of the form <username>@<host>", listenersFactory, 1, 1, ".+@.+\\..+");
     }
 
     @Override
-    public TypeInstance serialise(Email email) {
-        return email == null ? null : new TypeInstance(email.getEmail());
+    public Instance serialise(Email email) {
+        return email == null ? null : new Instance(email.getEmail());
     }
 
     @Override
-    public Email deserialise(TypeInstance instance) {
+    public Email deserialise(Instance instance) {
         return instance == null || instance.getValue() == null ? null : new Email(instance.getValue());
     }
 }

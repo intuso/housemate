@@ -2,9 +2,9 @@ package com.intuso.housemate.web.client.bootstrap.widget.object;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.client.v1_0.proxy.api.ProxyRemoveable;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.object.v1_0.api.Command;
+import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.web.client.bootstrap.widget.command.CommandModal;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -14,7 +14,7 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 
 public class RemoveableWidget extends Button implements ClickHandler, Command.Listener<GWTProxyCommand> {
 
-    private GWTProxyList<TypeData<?>, GWTProxyType> types;
+    private GWTProxyList<Type.Data<?>, GWTProxyType> types;
     private GWTProxyCommand command;
 
     public RemoveableWidget() {
@@ -22,12 +22,12 @@ public class RemoveableWidget extends Button implements ClickHandler, Command.Li
         addClickHandler(this);
     }
 
-    public RemoveableWidget(GWTProxyList<TypeData<?>, GWTProxyType> types, ProxyRemoveable<GWTProxyCommand> object) {
+    public RemoveableWidget(GWTProxyList<Type.Data<?>, GWTProxyType> types, ProxyRemoveable<GWTProxyCommand> object) {
         this();
         setObject(types, object);
     }
 
-    public void setObject(GWTProxyList<TypeData<?>, GWTProxyType> types, ProxyRemoveable<GWTProxyCommand> object) {
+    public void setObject(GWTProxyList<Type.Data<?>, GWTProxyType> types, ProxyRemoveable<GWTProxyCommand> object) {
         this.types = types;
         this.command = object.getRemoveCommand();
         command.addObjectListener(this);

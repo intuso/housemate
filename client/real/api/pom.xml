@@ -25,7 +25,7 @@
         <!-- Internal API dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-api</artifactId>
+            <artifactId>housemate-client-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 

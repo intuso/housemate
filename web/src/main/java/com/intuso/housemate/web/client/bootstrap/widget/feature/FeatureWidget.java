@@ -1,8 +1,8 @@
 package com.intuso.housemate.web.client.bootstrap.widget.feature;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.intuso.housemate.client.v1_0.proxy.api.feature.ProxyFeatureFactory;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.api.object.Type;
+import com.intuso.housemate.client.v1_0.proxy.api.object.feature.ProxyFeatureFactory;
 import com.intuso.housemate.web.client.object.GWTProxyFeature;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
@@ -12,7 +12,7 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
  */
 public interface FeatureWidget extends IsWidget {
 
-    void setTypes(GWTProxyList<TypeData<?>, GWTProxyType> types);
+    void setTypes(GWTProxyList<Type.Data<?>, GWTProxyType> types);
 
     Factory FACTORY = new Factory();
 

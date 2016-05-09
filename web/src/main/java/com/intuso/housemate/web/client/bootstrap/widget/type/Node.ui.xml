@@ -1,9 +1,0 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
-    <g:FlowPanel addStyleNames="node">
-        <b:Icon type="CHEVRON_RIGHT" ui:field="icon"/>
-        <g:Anchor ui:field="heading"/>
-        <g:FlowPanel ui:field="children"/>
-    </g:FlowPanel>
-</ui:UiBinder>

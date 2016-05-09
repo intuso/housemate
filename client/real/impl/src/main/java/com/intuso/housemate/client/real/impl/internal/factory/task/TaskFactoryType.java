@@ -14,7 +14,7 @@ public class TaskFactoryType extends FactoryType<TaskDriver.Factory<?>> {
 
     public final static String TYPE_ID = "task-factory";
     public final static String TYPE_NAME = "Task Factory";
-    public final static String TYPE_DESCRIPTION = "Available types for new tasks";
+    public final static String TYPE_DESCRIPTION = "Available types for new task";
 
     private final static Logger logger = LoggerFactory.getLogger(TaskFactoryType.class);
 

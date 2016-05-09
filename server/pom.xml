@@ -21,21 +21,6 @@
         <!-- Housemate API+objects -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-object-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-persistence-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>housemate-client-real-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -44,10 +29,36 @@
             <artifactId>housemate-plugin-host</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- Properties -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-client-real-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>utilities-properties-api</artifactId>
+            <version>${intuso.utilities.version}</version>
+        </dependency>
+
+        <!-- ActiveMQ Broker -->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-broker</artifactId>
+            <version>${activemq.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-kahadb-store</artifactId>
+            <version>${activemq.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

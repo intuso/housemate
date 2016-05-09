@@ -2,12 +2,11 @@ package com.intuso.housemate.web.client.bootstrap.widget.value;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
-import com.intuso.housemate.comms.v1_0.api.RemoteObject;
-import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
-import com.intuso.housemate.comms.v1_0.api.payload.SimpleTypeData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.object.v1_0.api.Value;
+import com.intuso.housemate.client.v1_0.data.api.RemoteObject;
+import com.intuso.housemate.client.v1_0.data.api.TreeLoadInfo;
+import com.intuso.housemate.client.v1_0.api.object.Value;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
 import com.intuso.housemate.web.client.object.GWTProxyValue;
@@ -56,8 +55,8 @@ public interface ValueDisplay extends IsWidget, Value.Listener<GWTProxyValue> {
 
             ValueDisplay result = null;
             TypeData typeData = proxyType.getData();
-            if (typeData instanceof SimpleTypeData) {
-                switch (((SimpleTypeData) typeData).getType()) {
+            if (typeData instanceof Type.SimpleData) {
+                switch (((Type.SimpleData) typeData).getType()) {
                     case String:
                     case Integer:
                     case Double:

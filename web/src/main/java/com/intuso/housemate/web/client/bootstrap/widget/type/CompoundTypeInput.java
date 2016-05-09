@@ -3,9 +3,8 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.intuso.housemate.comms.v1_0.api.payload.SubTypeData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.client.v1_0.api.object.SubType;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.event.UserInputEvent;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -19,11 +18,11 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
  */
 public class CompoundTypeInput extends Button implements TypeInput, ClickHandler, UserInputHandler {
 
-    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
-    private final GWTProxyList<SubTypeData, GWTProxySubType> list;
-    private final TypeInstances typeInstances;
+    private final GWTProxyList<Type.Data<?>, GWTProxyType> types;
+    private final GWTProxyList<SubType.Data, GWTProxySubType> list;
+    private final Type.Instances typeInstances;
 
-    public CompoundTypeInput(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<SubTypeData, GWTProxySubType> list, TypeInstances typeInstances) {
+    public CompoundTypeInput(GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyList<SubType.Data, GWTProxySubType> list, Type.Instances typeInstances) {
         this.types = types;
         this.list = list;
         this.typeInstances = typeInstances;
@@ -32,7 +31,7 @@ public class CompoundTypeInput extends Button implements TypeInput, ClickHandler
     }
 
     @Override
-    public TypeInstances getTypeInstances() {
+    public Type.Instances getTypeInstances() {
         return typeInstances;
     }
 

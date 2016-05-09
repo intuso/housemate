@@ -32,39 +32,15 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Transport implementations -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-transport-socket-server</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-transport-rest-server</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- Serialisers -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-1-0-serialiser-javabin</artifactId>
-            <version>${intuso.housemate.comms.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-1-0-serialiser-json</artifactId>
-            <version>${intuso.housemate.comms.version}</version>
-        </dependency>
-
-        <!-- Persistence implementation -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-persistence-1-0-filesystem</artifactId>
-            <version>${intuso.housemate.persistence.version}</version>
+            <artifactId>housemate-client-1-0-serialiser-json</artifactId>
+            <version>${intuso.housemate.client.version}</version>
         </dependency>
 
         <!-- Depend on web so it gets built before we add it to the package -->
-        <dependency>
+        <!--<dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>housemate-web</artifactId>
             <classifier>classes</classifier>
@@ -75,7 +51,7 @@
                     <artifactId>housemate-gwt-user</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 
         <!-- Jetty server/web container stuff -->
         <dependency>
@@ -109,14 +85,6 @@
             <groupId>org.scream3r</groupId>
             <artifactId>jssc</artifactId>
             <version>2.8.0</version>
-        </dependency>
-
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-comms-1-0-transport-socket-client</artifactId>
-            <version>${intuso.housemate.comms.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

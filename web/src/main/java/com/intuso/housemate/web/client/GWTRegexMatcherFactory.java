@@ -1,7 +1,7 @@
 package com.intuso.housemate.web.client;
 
 import com.google.gwt.regexp.shared.RegExp;
-import com.intuso.housemate.object.v1_0.api.RegexMatcher;
+import com.intuso.housemate.client.v1_0.api.RegexMatcher;
 
 /**
 * Created with IntelliJ IDEA.

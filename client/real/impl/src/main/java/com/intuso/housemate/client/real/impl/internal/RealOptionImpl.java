@@ -1,54 +1,63 @@
 package com.intuso.housemate.client.real.impl.internal;
 
-import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.real.api.internal.RealOption;
-import com.intuso.housemate.client.real.api.internal.RealSubType;
-import com.intuso.housemate.comms.api.internal.payload.ListData;
-import com.intuso.housemate.comms.api.internal.payload.OptionData;
-import com.intuso.housemate.comms.api.internal.payload.SubTypeData;
-import com.intuso.housemate.object.api.internal.Option;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.JMSException;
+import javax.jms.Session;
 import java.util.Arrays;
 import java.util.List;
 
-public class RealOptionImpl
-        extends RealObject<OptionData, ListData<SubTypeData>,
-        RealListImpl<SubTypeData, RealSubTypeImpl<?>>, Option.Listener<? super RealOption>>
-        implements RealOption {
+public final class RealOptionImpl
+        extends RealObject<Option.Data, Option.Listener<? super RealOptionImpl>>
+        implements RealOption<RealListImpl<RealSubTypeImpl<?>>, RealOptionImpl> {
 
-    private final RealList<RealSubType<?>> subTypes;
+    private final RealListImpl<RealSubTypeImpl<?>> subTypes;
 
     /**
      * @param logger {@inheritDoc}
      * @param listenersFactory
-     * @param id the option's id
-     * @param name the option's name
-     * @param description the option's description
      * @param subTypes the option's sub types
      */
-    public RealOptionImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, RealSubTypeImpl<?>... subTypes) {
-        this(logger, listenersFactory, id, name, description, Arrays.asList(subTypes));
+    public RealOptionImpl(Logger logger,
+                          Option.Data data,
+                          ListenersFactory listenersFactory,
+                          RealSubTypeImpl<?>... subTypes) {
+        this(logger, data, listenersFactory, Arrays.asList(subTypes));
     }
 
     /**
      * @param logger {@inheritDoc}
      * @param listenersFactory
-     * @param id the option's id
-     * @param name the option's name
-     * @param description the option's description
      * @param subTypes the option's sub types
      */
-    public RealOptionImpl(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, List<RealSubTypeImpl<?>> subTypes) {
-        super(listenersFactory, logger, new OptionData(id, name,  description));
-        this.subTypes = (RealList)new RealListImpl<>(logger, listenersFactory, OptionData.SUB_TYPES_ID,
-                "Sub Types", "The sub types of this option", subTypes);
-        addChild((RealListImpl)this.subTypes);
+    public RealOptionImpl(Logger logger,
+                          Option.Data data,
+                          ListenersFactory listenersFactory,
+                          List<RealSubTypeImpl<?>> subTypes) {
+        super(logger, data, listenersFactory);
+        this.subTypes = new RealListImpl<>(ChildUtil.logger(logger, Option.SUB_TYPES_ID),
+                new com.intuso.housemate.client.api.internal.object.List.Data(Option.SUB_TYPES_ID, "Sub Types", "The sub types of this option"),
+                listenersFactory,
+                subTypes);
     }
 
     @Override
-    public final RealList<RealSubType<?>> getSubTypes() {
+    protected void initChildren(String name, Session session) throws JMSException {
+        super.initChildren(name, session);
+        subTypes.init(ChildUtil.name(name, Option.SUB_TYPES_ID), session);
+    }
+
+    @Override
+    protected void uninitChildren() {
+        super.uninitChildren();
+        subTypes.uninit();
+    }
+
+    @Override
+    public final RealListImpl<RealSubTypeImpl<?>> getSubTypes() {
         return subTypes;
     }
 }

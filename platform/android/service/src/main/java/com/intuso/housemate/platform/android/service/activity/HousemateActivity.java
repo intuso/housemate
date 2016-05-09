@@ -12,14 +12,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
-import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.comms.v1_0.api.access.ConnectionStatus;
 import com.intuso.housemate.platform.android.service.R;
 import com.intuso.housemate.platform.android.service.service.ConnectionService;
 import com.intuso.utilities.listener.ListenerRegistration;
 
-public class HousemateActivity extends Activity implements ServiceConnection, Router.Listener<Router> {
+public class HousemateActivity extends Activity implements ServiceConnection {
 
     private ListenerRegistration routerRegistration;
     private boolean bound = false;
@@ -77,9 +74,6 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
     @Override
     public void onServiceConnected(ComponentName name, IBinder binder) {
         bound = true;
-        Router<?> router = ((ConnectionService.Binder)binder).getRouter();
-        routerRegistration = router.addListener(this);
-        serverConnectionStatusChanged(null, router.getConnectionStatus());
     }
 
     @Override
@@ -87,21 +81,6 @@ public class HousemateActivity extends Activity implements ServiceConnection, Ro
         bound = false;
         routerRegistration.removeListener();
         routerRegistration = null;
-    }
-
-    @Override
-    public void serverConnectionStatusChanged(Router router, final ConnectionStatus connectionStatus) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ((TextView) findViewById(R.id.server_connection_status)).setText("Server Connection Status: " + connectionStatus);
-            }
-        });
-    }
-
-    @Override
-    public void newServerInstance(Router root, String serverId) {
-        // do nothing
     }
 }
 

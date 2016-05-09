@@ -1,9 +1,7 @@
 package com.intuso.housemate.platform.android.app.object;
 
-import com.intuso.housemate.client.v1_0.proxy.api.LoggerUtil;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyServer;
-import com.intuso.housemate.comms.v1_0.api.payload.*;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyServer;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -14,27 +12,22 @@ import org.slf4j.Logger;
  * Time: 18:49
  * To change this template use File | Settings | File Templates.
  */
-public class AndroidProxyServer extends ProxyServer<
-        AndroidProxyApplication, AndroidProxyList<ApplicationData, AndroidProxyApplication>,
-        AndroidProxyAutomation, AndroidProxyList<AutomationData, AndroidProxyAutomation>,
-        AndroidProxyDevice, AndroidProxyList<DeviceData, AndroidProxyDevice>,
-        AndroidProxyHardware, AndroidProxyList<HardwareData, AndroidProxyHardware>,
-        AndroidProxyType, AndroidProxyList<TypeData<HousemateData<?>>, AndroidProxyType>,
-        AndroidProxyUser, AndroidProxyList<UserData, AndroidProxyUser>,
-        AndroidProxyCommand, AndroidProxyServer> {
-
-    private final AndroidProxyFactory factory;
+public class AndroidProxyServer extends ProxyServer<AndroidProxyCommand,
+        AndroidProxyList<AndroidProxyAutomation>,
+        AndroidProxyList<AndroidProxyDevice>,
+        AndroidProxyList<AndroidProxyUser>,
+        AndroidProxyList<AndroidProxyNode>,
+        AndroidProxyServer> {
 
     /**
      * @param logger    {@inheritDoc}
      */
-    public AndroidProxyServer(Logger logger, ListenersFactory listenersFactory, ServerData data, AndroidProxyFactory factory) {
-        super(logger, listenersFactory, data);
-        this.factory = factory;
-    }
-
-    @Override
-    protected ProxyObject createChild(HousemateData<?> data) {
-        return factory.create(LoggerUtil.child(getLogger(), data.getId()), data);
+    public AndroidProxyServer(Logger logger, ListenersFactory listenersFactory,
+                              ProxyObject.Factory<AndroidProxyCommand> commandFactory,
+                              ProxyObject.Factory<AndroidProxyList<AndroidProxyAutomation>> automationsFactory,
+                              ProxyObject.Factory<AndroidProxyList<AndroidProxyDevice>> devicesFactory,
+                              ProxyObject.Factory<AndroidProxyList<AndroidProxyUser>> usersFactory,
+                              ProxyObject.Factory<AndroidProxyList<AndroidProxyNode>> nodesFactory) {
+        super(logger, listenersFactory, commandFactory, automationsFactory, devicesFactory, usersFactory, nodesFactory);
     }
 }

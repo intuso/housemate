@@ -3,13 +3,10 @@ package com.intuso.housemate.platform.android.common;
 import android.os.Parcel;
 import android.os.Parcelable;
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonWriter;
-import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
-import com.intuso.housemate.comms.v1_0.api.Message;
-import com.intuso.housemate.comms.v1_0.serialiser.json.JsonSerialiser;
-import com.intuso.housemate.comms.v1_0.serialiser.json.config.GsonConfig;
+import com.intuso.housemate.client.v1_0.api.HousemateException;
+import com.intuso.housemate.client.v1_0.data.serialiser.json.config.GsonConfig;
 
-import java.io.StringWriter;
+import java.io.Serializable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,14 +19,14 @@ public class JsonMessage implements Parcelable {
 
     private final static Gson GSON = GsonConfig.createGson();
 
-    private final Message<?> message;
+    private final Serializable payload;
 
-    public JsonMessage(Message<?> message) {
-        this.message = message;
+    public JsonMessage(Serializable payload) {
+        this.payload = payload;
     }
 
-    public Message<?> getMessage() {
-        return message;
+    public Serializable getPayload() {
+        return payload;
     }
 
     @Override
@@ -38,10 +35,8 @@ public class JsonMessage implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int flags) {
-        StringWriter sw = new StringWriter();
-        GSON.toJson(message, JsonSerialiser.MESSAGE_TYPE, new JsonWriter(sw));
-        parcel.writeString(sw.getBuffer().toString());
+    public void writeToParcel(Parcel parcel, int flags) {;
+        parcel.writeString(GSON.toJson(payload));
     }
 
     public final static Parcelable.Creator<JsonMessage> CREATOR = new Creator<JsonMessage>() {
@@ -49,9 +44,9 @@ public class JsonMessage implements Parcelable {
         public JsonMessage createFromParcel(Parcel parcel) {
             String json = parcel.readString();
             try {
-                return new JsonMessage(GSON.<Message<?>>fromJson(json, JsonSerialiser.MESSAGE_TYPE));
+                return new JsonMessage(GSON.fromJson(json, Serializable.class));
             } catch(Throwable t) {
-                throw new HousemateCommsException("Could not deserialise JSON message: " + json, t);
+                throw new HousemateException("Could not deserialise JSON message: " + json, t);
             }
         }
 

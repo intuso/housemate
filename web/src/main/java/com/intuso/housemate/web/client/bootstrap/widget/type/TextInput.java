@@ -4,11 +4,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.regexp.shared.RegExp;
-import com.intuso.housemate.comms.v1_0.api.payload.RegexTypeData;
-import com.intuso.housemate.comms.v1_0.api.payload.SimpleTypeData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.object.v1_0.api.TypeInstance;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.event.UserInputEvent;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
 import org.gwtbootstrap3.client.ui.TextBox;
@@ -17,21 +13,21 @@ import org.gwtbootstrap3.client.ui.TextBox;
  */
 public class TextInput extends TextBox implements TypeInput, ChangeHandler {
 
-    private final TypeInstances typeInstances;
+    private final Type.Instances typeInstances;
     private final Validator validator;
 
-    public TextInput(TypeData typeData, final TypeInstances typeInstances) {
+    public TextInput(TypeData typeData, final Type.Instances typeInstances) {
 
         setWidth("100%");
 
         this.typeInstances = typeInstances;
 
         if(typeInstances.getElements().size() == 0)
-            typeInstances.getElements().add(new TypeInstance());
+            typeInstances.getElements().add(new Type.Instance());
 
         if(typeInstances.getElements().get(0) == null) {
             typeInstances.getElements().remove(0);
-            typeInstances.getElements().add(0, new TypeInstance());
+            typeInstances.getElements().add(0, new Type.Instance());
         }
 
         if(typeInstances.getFirstValue() == null)
@@ -54,7 +50,7 @@ public class TextInput extends TextBox implements TypeInput, ChangeHandler {
     }
 
     @Override
-    public TypeInstances getTypeInstances() {
+    public Type.Instances getTypeInstances() {
         return typeInstances;
     }
 
@@ -64,8 +60,8 @@ public class TextInput extends TextBox implements TypeInput, ChangeHandler {
     }
 
     private Validator getValidator(TypeData typeData) {
-        if(typeData instanceof SimpleTypeData) {
-            switch (((SimpleTypeData)typeData).getType()) {
+        if(typeData instanceof Type.SimpleData) {
+            switch (((Type.SimpleData)typeData).getType()) {
                 case String:
                     return new StringValidator();
                 case Integer:
@@ -75,8 +71,8 @@ public class TextInput extends TextBox implements TypeInput, ChangeHandler {
                 case Boolean:
                     return new BooleanValidator();
             }
-        } else if(typeData instanceof RegexTypeData) {
-            RegexTypeData regexTypeData = (RegexTypeData)typeData;
+        } else if(typeData instanceof Type.RegexData) {
+            Type.RegexData regexTypeData = (Type.RegexData)typeData;
             return new RegexValidator(regexTypeData.getRegexPattern(), regexTypeData.getDescription());
         }
         return new StringValidator();

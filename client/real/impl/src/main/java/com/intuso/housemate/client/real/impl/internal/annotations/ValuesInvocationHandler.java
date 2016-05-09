@@ -1,7 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal.annotations;
 
-import com.intuso.housemate.client.real.api.internal.RealValue;
-import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import com.intuso.housemate.client.api.internal.HousemateException;
+import com.intuso.housemate.client.real.impl.internal.RealValueImpl;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -12,18 +12,18 @@ import java.util.Map;
  */
 public class ValuesInvocationHandler implements InvocationHandler {
 
-    private final Map<Method, RealValue<?>> values;
+    private final Map<Method, RealValueImpl<?>> values;
 
-    public ValuesInvocationHandler(Map<Method, RealValue<?>> values) {
+    public ValuesInvocationHandler(Map<Method, RealValueImpl<?>> values) {
         this.values = values;
     }
 
     @Override
     public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
-        RealValue<?> value = values.get(method);
+        RealValueImpl value = values.get(method);
         if(value == null)
-            throw new HousemateCommsException("Could not find value instance for annotated method " + method.getName());
-        value.setTypedValues(objects[0]);
+            throw new HousemateException("Could not find value instance for annotated method " + method.getName());
+        value.setValue(objects[0]);
         return null;
     }
 }

@@ -1,7 +1,6 @@
 package com.intuso.housemate.client.real.api.internal;
 
-import com.intuso.housemate.object.api.internal.TypeInstances;
-import com.intuso.housemate.object.api.internal.ValueBase;
+import com.intuso.housemate.client.api.internal.object.ValueBase;
 
 import java.util.List;
 
@@ -10,33 +9,25 @@ import java.util.List;
  * @param <VALUE> the type of the value
  */
 public interface RealValueBase<O,
+        TYPE extends com.intuso.housemate.client.real.api.internal.RealType<O, ?>,
         LISTENER extends ValueBase.Listener<? super VALUE>,
-        VALUE extends RealValueBase<O, LISTENER, VALUE>>
-        extends ValueBase<TypeInstances, LISTENER, VALUE> {
-
-    com.intuso.housemate.client.real.api.internal.RealType<O> getType();
-
-    /**
-     * Gets the object representation of this value
-     * @return
-     */
-    O getTypedValue();
+        VALUE extends RealValueBase<O, TYPE, LISTENER, VALUE>>
+        extends ValueBase<O,
+        TYPE,
+        LISTENER,
+        VALUE> {
 
     /**
      * Gets the object representation of this value
      * @return
      */
-    List<O> getTypedValues();
+    List<O> getValues();
+
+    void setValue(O value);
 
     /**
      * Sets the object representation of this value
-     * @param typedValues the new value
+     * @param values the new values
      */
-    void setTypedValues(O... typedValues);
-
-    /**
-     * Sets the object representation of this value
-     * @param typedValues the new value
-     */
-    void setTypedValues(List<O> typedValues);
+    void setValues(List<O> values);
 }

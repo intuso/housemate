@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  * Time: 09:12
  * To change this template use File | Settings | File Templates.
  */
-public class RegexMatcher implements com.intuso.housemate.object.v1_0.api.RegexMatcher {
+public class RegexMatcher implements com.intuso.housemate.client.v1_0.api.RegexMatcher {
 
     private final Pattern pattern;
 
@@ -22,10 +22,10 @@ public class RegexMatcher implements com.intuso.housemate.object.v1_0.api.RegexM
         return pattern.matcher(value).matches();
     }
 
-    public static class Factory implements com.intuso.housemate.object.v1_0.api.RegexMatcher.Factory {
+    public static class Factory implements com.intuso.housemate.client.v1_0.api.RegexMatcher.Factory {
 
         @Override
-        public com.intuso.housemate.object.v1_0.api.RegexMatcher createRegexMatcher(String pattern) {
+        public com.intuso.housemate.client.v1_0.api.RegexMatcher createRegexMatcher(String pattern) {
             return new RegexMatcher(pattern);
         }
     }

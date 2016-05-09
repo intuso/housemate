@@ -1,22 +1,19 @@
 package com.intuso.housemate.client.real.api.internal;
 
-import com.intuso.housemate.comms.api.internal.payload.CommandData;
-import com.intuso.housemate.object.api.internal.Command;
-import com.intuso.housemate.object.api.internal.TypeInstanceMap;
-import org.slf4j.Logger;
+import com.intuso.housemate.client.api.internal.object.Command;
+import com.intuso.housemate.client.api.internal.object.Type;
 
 /**
  */
-public interface RealCommand
-        extends Command<TypeInstanceMap, RealValue<Boolean>, RealList<? extends RealParameter<?>>, RealCommand> {
+public interface RealCommand<
+        BOOLEAN_VALUE extends com.intuso.housemate.client.real.api.internal.RealValue<Boolean, ?, ?>,
+        PARAMETERS extends RealList<? extends RealParameter<?, ?, ?>, ?>,
+        COMMAND extends RealCommand<BOOLEAN_VALUE, PARAMETERS, COMMAND>>
+        extends Command<Type.InstanceMap, BOOLEAN_VALUE, PARAMETERS, COMMAND> {
 
     /**
      * Performs the command
      * @param values the values of the parameters to use
      */
-    void perform(TypeInstanceMap values);
-
-    interface Factory {
-        RealCommand create(Logger logger, CommandData data);
-    }
+    void perform(Type.InstanceMap values);
 }

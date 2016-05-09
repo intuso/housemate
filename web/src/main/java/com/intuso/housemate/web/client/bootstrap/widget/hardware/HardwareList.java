@@ -1,8 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.widget.hardware;
 
-import com.intuso.housemate.comms.v1_0.api.ChildOverview;
-import com.intuso.housemate.comms.v1_0.api.payload.HardwareData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.api.object.Type;
+import com.intuso.housemate.client.v1_0.data.api.ChildOverview;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
@@ -17,12 +16,12 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
  * Time: 00:39
  * To change this template use File | Settings | File Templates.
  */
-public class HardwareList extends MainList<HardwareData, GWTProxyHardware> {
+public class HardwareList extends MainList<com.intuso.housemate.client.v1_0.api.object.Hardware.Data, GWTProxyHardware> {
 
-    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
-    private final GWTProxyList<HardwareData, GWTProxyHardware> hardwares;
+    private final GWTProxyList<Type.Data<?>, GWTProxyType> types;
+    private final GWTProxyList<com.intuso.housemate.client.v1_0.api.object.Hardware.Data, GWTProxyHardware> hardwares;
 
-    public HardwareList(String title, GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<HardwareData, GWTProxyHardware> hardwares, GWTProxyCommand addCommand) {
+    public HardwareList(String title, GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyList<com.intuso.housemate.client.v1_0.api.object.Hardware.Data, GWTProxyHardware> hardwares, GWTProxyCommand addCommand) {
         super(title, types, addCommand);
         this.types = types;
         this.hardwares = hardwares;

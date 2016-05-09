@@ -2,11 +2,11 @@ package com.intuso.housemate.server.plugin.main.device;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
 import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
-import com.intuso.housemate.client.real.api.internal.device.feature.StatefulPowerControl;
 import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
-import com.intuso.housemate.comms.api.internal.HousemateCommsException;
+import com.intuso.housemate.client.real.api.internal.feature.StatefulPowerControl;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -50,10 +50,10 @@ public final class PowerByCommandDevice implements DeviceDriver, StatefulPowerCo
                 Runtime.getRuntime().exec(command);
                 powerValues.isOn(true);
             } catch(IOException e) {
-                throw new HousemateCommsException("Could not run command to turn device on", e);
+                throw new HousemateException("Could not run command to turn device on", e);
             }
         } else
-            throw new HousemateCommsException("No command set");
+            throw new HousemateException("No command set");
     }
 
 	/**
@@ -66,9 +66,9 @@ public final class PowerByCommandDevice implements DeviceDriver, StatefulPowerCo
                 Runtime.getRuntime().exec(command);
                 powerValues.isOn(false);
             } catch(IOException e) {
-                throw new HousemateCommsException("Could not run command to turn device off", e);
+                throw new HousemateException("Could not run command to turn device off", e);
             }
         } else
-            throw new HousemateCommsException("No command set");
+            throw new HousemateException("No command set");
     }
 }

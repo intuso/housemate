@@ -1,9 +1,8 @@
 package com.intuso.housemate.web.client.bootstrap.widget.property;
 
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.comms.v1_0.api.ChildOverview;
-import com.intuso.housemate.comms.v1_0.api.payload.PropertyData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.api.object.Type;
+import com.intuso.housemate.client.v1_0.data.api.ChildOverview;
 import com.intuso.housemate.web.client.bootstrap.widget.list.NestedList;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyProperty;
@@ -16,11 +15,11 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
  * Time: 21:16
  * To change this template use File | Settings | File Templates.
  */
-public class PropertyList extends NestedList<PropertyData, GWTProxyProperty> {
+public class PropertyList extends NestedList<com.intuso.housemate.client.v1_0.api.object.Property.Data, GWTProxyProperty> {
 
-    private GWTProxyList<TypeData<?>, GWTProxyType> types;
+    private GWTProxyList<Type.Data<?>, GWTProxyType> types;
 
-    public void setTypes(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+    public void setTypes(GWTProxyList<Type.Data<?>, GWTProxyType> types) {
         this.types = types;
     }
 

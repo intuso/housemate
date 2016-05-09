@@ -1,7 +1,7 @@
 package com.intuso.housemate.platform.pc.ioc;
 
 import com.google.inject.AbstractModule;
-import com.intuso.housemate.object.api.internal.RegexMatcher;
+import com.intuso.housemate.client.api.internal.RegexMatcher;
 
 import java.util.regex.Pattern;
 

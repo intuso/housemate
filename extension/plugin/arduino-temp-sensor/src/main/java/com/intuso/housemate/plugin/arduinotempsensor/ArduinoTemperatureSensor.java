@@ -2,10 +2,10 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.v1_0.api.HousemateException;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
-import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -45,7 +45,7 @@ public class ArduinoTemperatureSensor implements DeviceDriver {
             output = new PipedOutputStream(input);
             in = new BufferedReader(new InputStreamReader(input));
         } catch(IOException e) {
-            throw new HousemateCommsException("Failed to set up Arduino connection for reading data", e);
+            throw new HousemateException("Failed to set up Arduino connection for reading data", e);
         }
         lineReader = new LineReader();
         lineReader.start();

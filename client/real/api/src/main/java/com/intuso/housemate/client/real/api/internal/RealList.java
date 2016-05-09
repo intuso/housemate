@@ -1,28 +1,22 @@
 package com.intuso.housemate.client.real.api.internal;
 
-import com.intuso.housemate.object.api.internal.List;
+import com.intuso.housemate.client.api.internal.object.List;
 
 /**
  */
-public interface RealList<CHILD>
-        extends List<CHILD> {
+public interface RealList<ELEMENT, LIST extends RealList<ELEMENT, ?>>
+        extends List<ELEMENT, LIST> {
 
     /**
      * Adds an element to the list
      * @param element the element to add
      */
-    void add(CHILD element);
+    void add(ELEMENT element);
 
     /**
      * Removes an elements from the list
      * @param id the id of the element to remove
      * @return the removed element, or null if there was none for the id
      */
-    CHILD remove(String id);
-
-    /**
-     * Resends all elements of the list to the server. Used when the server instance has changed and the server needs
-     * to be retold of all objects
-     */
-    void resendElements();
+    ELEMENT remove(String id);
 }

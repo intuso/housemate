@@ -2,13 +2,12 @@ package com.intuso.housemate.web.client.object;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.v1_0.api.object.Object;
+import com.intuso.housemate.client.v1_0.api.object.Feature;
+import com.intuso.housemate.client.v1_0.api.object.Property;
 import com.intuso.housemate.client.v1_0.proxy.api.LoggerUtil;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyDevice;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
-import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
-import com.intuso.housemate.comms.v1_0.api.payload.FeatureData;
-import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
-import com.intuso.housemate.comms.v1_0.api.payload.PropertyData;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyDevice;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
 import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
@@ -20,8 +19,8 @@ public class GWTProxyDevice
         GWTProxyCommand,
         GWTProxyProperty,
         GWTProxyValue,
-        GWTProxyList<PropertyData, GWTProxyProperty>,
-        GWTProxyList<FeatureData, GWTProxyFeature>,
+        GWTProxyList<Property.Data, GWTProxyProperty>,
+        GWTProxyList<Feature.Data, GWTProxyFeature>,
         GWTProxyDevice> {
 
     private final GWTGinjector injector;
@@ -30,13 +29,13 @@ public class GWTProxyDevice
     public GWTProxyDevice(Logger logger,
                           ListenersFactory listenersFactory,
                           GWTGinjector injector,
-                          @Assisted DeviceData data) {
+                          @Assisted Data data) {
         super(logger, listenersFactory, data);
         this.injector = injector;
     }
 
     @Override
-    protected ProxyObject<?, ?, ?, ?, ?> createChild(HousemateData<?> data) {
+    protected ProxyObject<?, ?, ?, ?, ?> createChild(Object.Data<?> data) {
         return injector.getObjectFactory().create(LoggerUtil.child(getLogger(), data.getId()), data);
     }
 }

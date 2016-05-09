@@ -1,11 +1,11 @@
 package com.intuso.housemate.web.client.bootstrap.widget.feature;
 
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.bootstrap.extensions.CommandToggleSwitch;
 import com.intuso.housemate.web.client.object.*;
 
 public class StatefulPowerControl extends CommandToggleSwitch implements FeatureWidget,
-        com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl<GWTProxyCommand, GWTProxyValue> {
+        com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPowerControl<GWTProxyCommand, GWTProxyValue> {
 
     private final GWTProxyFeature feature;
 
@@ -17,7 +17,7 @@ public class StatefulPowerControl extends CommandToggleSwitch implements Feature
     }
 
     @Override
-    public void setTypes(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+    public void setTypes(GWTProxyList<Type.Data<?>, GWTProxyType> types) {
 
     }
 

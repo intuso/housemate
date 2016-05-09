@@ -2,19 +2,12 @@ package com.intuso.housemate.plugin.rfxcom.lighting1;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
-import com.intuso.housemate.client.v1_0.real.api.RealCommand;
 import com.intuso.housemate.client.v1_0.real.api.RealDevice;
-import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
-import com.intuso.housemate.object.v1_0.api.Command;
-import com.intuso.housemate.object.v1_0.api.TypeInstance;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
 import com.intuso.housemate.plugin.rfxcom.Handler;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.rfxcom.rfxtrx.util.lighting1.Lighting1;
 import com.rfxcom.rfxtrx.util.lighting1.Lighting1House;
 import org.slf4j.Logger;
-
-import java.util.UUID;
 
 /**
  * Created by tomc on 02/12/15.
@@ -61,8 +54,9 @@ public abstract class Lighting1Handler implements Handler {
         if(!knownAppliances.containsEntry(houseId, unitCode)) {
             try {
                 String name = getDeviceName(houseId, unitCode);
-                final RealDevice<Lighting1Appliance> device = deviceContainer.createAndAddDevice(new DeviceData(UUID.randomUUID().toString(), name, name));
-                device.getDriverProperty().set(new TypeInstances(new TypeInstance(getDriverId())), new Command.PerformListener<RealCommand>() {
+                // todo
+                /*final RealDevice<Lighting1Appliance> device = deviceContainer.createAndAddDevice(new Device.Data(UUID.randomUUID().toString(), name, name));
+                device.getDriverProperty().set(new Type.Instances(new Type.Instance(getDriverId())), new Command.PerformListener<RealCommand>() {
                     @Override
                     public void commandStarted(RealCommand command) {
 
@@ -82,7 +76,7 @@ public abstract class Lighting1Handler implements Handler {
                     public void commandFailed(RealCommand command, String error) {
 
                     }
-                });
+                });*/
             } catch (Throwable t) {
                 logger.error("Failed to auto-create Lighting1 device " + houseId + "/" + (int) unitCode, t);
             }

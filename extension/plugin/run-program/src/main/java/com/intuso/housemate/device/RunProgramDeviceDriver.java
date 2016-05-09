@@ -2,9 +2,9 @@ package com.intuso.housemate.device;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.v1_0.api.HousemateException;
 import com.intuso.housemate.client.v1_0.real.api.annotations.*;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
-import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
@@ -38,10 +38,10 @@ public class RunProgramDeviceDriver implements DeviceDriver {
     public void startProgram() {
         try {
             if(command ==  null || command.length() == 0)
-                throw new HousemateCommsException("No command has been set");
+                throw new HousemateException("No command has been set");
             Runtime.getRuntime().exec(command);
         } catch (Throwable t) {
-            throw new HousemateCommsException("Could not start program", t);
+            throw new HousemateException("Could not start program", t);
         }
     }
 
@@ -53,10 +53,10 @@ public class RunProgramDeviceDriver implements DeviceDriver {
             try {
                 Runtime.getRuntime().exec("kill " + pid);
             } catch(IOException e) {
-                throw new HousemateCommsException("Failed to stop the program", e);
+                throw new HousemateException("Failed to stop the program", e);
             }
         } else
-            throw new HousemateCommsException("No program running, not stopping");
+            throw new HousemateException("No program running, not stopping");
     }
 
     /**

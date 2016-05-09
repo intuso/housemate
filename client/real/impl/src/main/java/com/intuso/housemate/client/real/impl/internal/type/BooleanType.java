@@ -1,12 +1,13 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
+import com.intuso.housemate.client.api.internal.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.object.Parameter;
+import com.intuso.housemate.client.api.internal.object.Property;
+import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.RealPropertyImpl;
 import com.intuso.housemate.client.real.impl.internal.RealValueImpl;
-import com.intuso.housemate.comms.api.internal.payload.SimpleTypeData;
-import com.intuso.housemate.object.api.internal.TypeInstance;
-import com.intuso.housemate.object.api.internal.TypeSerialiser;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +21,12 @@ public class BooleanType extends RealSimpleType<Boolean> {
 
     public final static TypeSerialiser<Boolean> SERIALISER = new TypeSerialiser<Boolean>() {
         @Override
-        public TypeInstance serialise(Boolean b) {
-            return b != null ? new TypeInstance(b.toString()) : null;
+        public Instance serialise(Boolean b) {
+            return b != null ? new Instance(b.toString()) : null;
         }
 
         @Override
-        public Boolean deserialise(TypeInstance value) {
+        public Boolean deserialise(Instance value) {
             return value != null && value.getValue() != null ? Boolean.parseBoolean(value.getValue()) : null;
         }
     };
@@ -34,48 +35,35 @@ public class BooleanType extends RealSimpleType<Boolean> {
 
     @Inject
     public BooleanType(ListenersFactory listenersFactory) {
-        super(logger, listenersFactory, SimpleTypeData.Type.Boolean, SERIALISER);
+        super(logger, Simple.Boolean, SERIALISER, listenersFactory);
     }
 
     /**
      * Creates a boolean value object
-     *
-     * @param logger the logger
+     *  @param logger the log
      * @param listenersFactory
-     * @param id the value's id
-     * @param name the value's name
-     * @param description the value's description
      * @param value the initial value     @return a boolean value object
      */
-    public static RealValueImpl<Boolean> createValue(Logger logger, ListenersFactory listenersFactory,
-                                                 String id, String name, String description, Boolean value) {
-        return new RealValueImpl<>(listenersFactory, logger, id, name, description, new BooleanType(listenersFactory), value);
+    public static RealValueImpl<Boolean> createValue(Logger logger, Value.Data data, ListenersFactory listenersFactory, Boolean value) {
+        return new RealValueImpl<>(logger, data, listenersFactory, new BooleanType(listenersFactory), value);
     }
 
     /**
      * Creates a boolean property object
-     * @param logger the logger
-     * @param id the property's id
-     * @param name the property's name
-     * @param description the property's description
+     * @param logger the log
      * @param values the initial values
      * @return a boolean property object
      */
-    public static RealPropertyImpl<Boolean> createProperty(Logger logger, ListenersFactory listenersFactory,
-                                                       String id, String name, String description, List<Boolean> values) {
-        return new RealPropertyImpl<>(logger, listenersFactory, id, name, description, new BooleanType(listenersFactory), values);
+    public static RealPropertyImpl<Boolean> createProperty(Logger logger, Property.Data data, ListenersFactory listenersFactory, List<Boolean> values) {
+        return new RealPropertyImpl<>(logger, data, listenersFactory, new BooleanType(listenersFactory), values);
     }
 
     /**
      * Creates a boolean parameter object
-     * @param logger the logger
-     * @param id the parameter's id
-     * @param name the parameter's name
-     * @param description the parameter's description
+     * @param logger the log
      * @return a boolean parameter object
      */
-    public static RealParameterImpl<Boolean> createParameter(Logger logger, ListenersFactory listenersFactory,
-                                                         String id, String name, String description) {
-        return new RealParameterImpl<>(listenersFactory, logger, id, name, description, new BooleanType(listenersFactory));
+    public static RealParameterImpl<Boolean> createParameter(Logger logger, Parameter.Data data, ListenersFactory listenersFactory) {
+        return new RealParameterImpl<>(logger, data, listenersFactory, new BooleanType(listenersFactory));
     }
 }

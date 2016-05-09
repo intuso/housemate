@@ -14,7 +14,7 @@ public class DeviceFactoryType extends FactoryType<DeviceDriver.Factory<?>> {
 
     public final static String TYPE_ID = "device-factory";
     public final static String TYPE_NAME = "Device Factory";
-    public final static String TYPE_DESCRIPTION = "Available types for new devices";
+    public final static String TYPE_DESCRIPTION = "Available types for new device";
 
     private final static Logger logger = LoggerFactory.getLogger(DeviceFactoryType.class);
 

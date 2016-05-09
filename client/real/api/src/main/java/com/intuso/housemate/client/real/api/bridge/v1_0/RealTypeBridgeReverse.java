@@ -3,33 +3,32 @@ package com.intuso.housemate.client.real.api.bridge.v1_0;
 import com.google.common.base.Function;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.bridge.v1_0.TypeInstanceMapper;
 import com.intuso.housemate.client.v1_0.real.api.RealType;
-import com.intuso.housemate.object.api.bridge.v1_0.TypeInstanceMapper;
-import com.intuso.housemate.object.v1_0.api.TypeInstance;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * Created by tomc on 06/11/15.
  */
-public class RealTypeBridgeReverse<FROM, TO> implements RealType<TO> {
+public class RealTypeBridgeReverse<FROM, TO> implements RealType<TO, RealTypeBridgeReverse<FROM, TO>> {
 
-    private final com.intuso.housemate.client.real.api.internal.RealType<FROM> type;
+    private final com.intuso.housemate.client.real.api.internal.RealType<FROM, ?> type;
     private final Function<? super FROM, ? extends TO> convertFrom;
     private final Function<? super TO, ? extends FROM> convertTo;
     private final TypeInstanceMapper typeInstanceMapper;
 
     @Inject
-    public RealTypeBridgeReverse(@Assisted com.intuso.housemate.client.real.api.internal.RealType<?> type,
+    public RealTypeBridgeReverse(@Assisted com.intuso.housemate.client.real.api.internal.RealType<?, ?> type,
                                  @Assisted("convertFrom") Function<?, ?> convertFrom,
                                  @Assisted("convertTo") Function<?, ?> convertTo,
                                  TypeInstanceMapper typeInstanceMapper) {
-        this.type = (com.intuso.housemate.client.real.api.internal.RealType<FROM>) type;
+        this.type = (com.intuso.housemate.client.real.api.internal.RealType<FROM, ?>) type;
         this.convertFrom = (Function<? super FROM, ? extends TO>) convertFrom;
         this.convertTo = (Function<? super TO, ? extends FROM>) convertTo;
         this.typeInstanceMapper = typeInstanceMapper;
     }
 
-    public com.intuso.housemate.client.real.api.internal.RealType<FROM> getType() {
+    public com.intuso.housemate.client.real.api.internal.RealType<FROM, ?> getType() {
         return type;
     }
 
@@ -49,26 +48,21 @@ public class RealTypeBridgeReverse<FROM, TO> implements RealType<TO> {
     }
 
     @Override
-    public String[] getPath() {
-        return type.getPath();
-    }
-
-    @Override
-    public ListenerRegistration addObjectListener(Listener<? super RealType<TO>> listener) {
+    public ListenerRegistration addObjectListener(Listener<? super RealTypeBridgeReverse<FROM, TO>> listener) {
         return null; // todo
     }
 
     @Override
-    public TypeInstance serialise(TO to) {
+    public Instance serialise(TO to) {
         return typeInstanceMapper.map(type.serialise(convertTo.apply(to)));
     }
 
     @Override
-    public TO deserialise(TypeInstance instance) {
+    public TO deserialise(Instance instance) {
         return convertFrom.apply(type.deserialise(typeInstanceMapper.map(instance)));
     }
 
     public interface Factory {
-        RealTypeBridgeReverse<?, ?> create(com.intuso.housemate.client.real.api.internal.RealType<?> type, @Assisted("convertFrom") Function<?, ?> convertFrom, @Assisted("convertTo") Function<?, ?> convertTo);
+        RealTypeBridgeReverse<?, ?> create(com.intuso.housemate.client.real.api.internal.RealType<?, ?> type, @Assisted("convertFrom") Function<?, ?> convertFrom, @Assisted("convertTo") Function<?, ?> convertTo);
     }
 }

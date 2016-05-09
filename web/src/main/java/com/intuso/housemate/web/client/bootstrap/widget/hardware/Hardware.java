@@ -1,12 +1,11 @@
 package com.intuso.housemate.web.client.bootstrap.widget.hardware;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
-import com.intuso.housemate.comms.v1_0.api.ChildOverview;
-import com.intuso.housemate.comms.v1_0.api.RemoteObject;
-import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
-import com.intuso.housemate.comms.v1_0.api.payload.HardwareData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.data.api.ChildOverview;
+import com.intuso.housemate.client.v1_0.data.api.RemoteObject;
+import com.intuso.housemate.client.v1_0.data.api.TreeLoadInfo;
 import com.intuso.housemate.web.client.bootstrap.widget.object.ObjectWidget;
 import com.intuso.housemate.web.client.object.GWTProxyHardware;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -20,9 +19,9 @@ import java.util.List;
  */
 public class Hardware extends ObjectWidget<GWTProxyHardware> {
 
-    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
+    private final GWTProxyList<Type.Data<?>, GWTProxyType> types;
 
-    public Hardware(GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyList<HardwareData, GWTProxyHardware> hardwares, final ChildOverview childOverview) {
+    public Hardware(GWTProxyList<Type.Data<?>, GWTProxyType> types, final GWTProxyList<com.intuso.housemate.client.v1_0.api.object.Hardware.Data, GWTProxyHardware> hardwares, final ChildOverview childOverview) {
         this.types = types;
         final GWTProxyHardware hardware = hardwares.get(childOverview.getId());
         if(hardware != null)

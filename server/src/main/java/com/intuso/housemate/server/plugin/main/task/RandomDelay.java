@@ -43,6 +43,16 @@ public class RandomDelay implements TaskDriver {
     }
 
     @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
     public final void execute() {
         long delay = maxAmount * unit.getFactor();
         long actual_delay = (long)(delay * Math.random());

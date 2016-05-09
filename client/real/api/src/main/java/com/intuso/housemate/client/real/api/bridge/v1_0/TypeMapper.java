@@ -9,16 +9,16 @@ import com.intuso.housemate.client.v1_0.real.api.RealType;
  */
 public class TypeMapper {
 
-    private final Function<com.intuso.housemate.client.real.api.internal.RealType<?>, RealType<?>> toV1_0Function = new Function<com.intuso.housemate.client.real.api.internal.RealType<?>, RealType<?>>() {
+    private final Function<com.intuso.housemate.client.real.api.internal.RealType<?, ?>, RealType<?, ?>> toV1_0Function = new Function<com.intuso.housemate.client.real.api.internal.RealType<?, ?>, RealType<?, ?>>() {
         @Override
-        public RealType<?> apply(com.intuso.housemate.client.real.api.internal.RealType<?> type) {
+        public RealType<?, ?> apply(com.intuso.housemate.client.real.api.internal.RealType<?, ?> type) {
             return map(type);
         }
     };
 
-    private final Function<RealType<?>, com.intuso.housemate.client.real.api.internal.RealType<?>> fromV1_0Function = new Function<RealType<?>, com.intuso.housemate.client.real.api.internal.RealType<?>>() {
+    private final Function<RealType<?, ?>, com.intuso.housemate.client.real.api.internal.RealType<?, ?>> fromV1_0Function = new Function<RealType<?, ?>, com.intuso.housemate.client.real.api.internal.RealType<?, ?>>() {
         @Override
-        public com.intuso.housemate.client.real.api.internal.RealType<?> apply(RealType<?> type) {
+        public com.intuso.housemate.client.real.api.internal.RealType<?, ?> apply(RealType<?, ?> type) {
             return map(type);
         }
     };
@@ -32,35 +32,35 @@ public class TypeMapper {
         this.reverseBridgeFactory = reverseBridgeFactory;
     }
 
-    public Function<RealType<?>, com.intuso.housemate.client.real.api.internal.RealType<?>> getFromV1_0Function() {
+    public Function<RealType<?, ?>, com.intuso.housemate.client.real.api.internal.RealType<?, ?>> getFromV1_0Function() {
         return fromV1_0Function;
     }
 
-    public Function<com.intuso.housemate.client.real.api.internal.RealType<?>, RealType<?>> getToV1_0Function() {
+    public Function<com.intuso.housemate.client.real.api.internal.RealType<?, ?>, RealType<?, ?>> getToV1_0Function() {
         return toV1_0Function;
     }
 
-    public <O> RealType<O> map(com.intuso.housemate.client.real.api.internal.RealType<O> value) {
+    public <O> RealType<O, ?> map(com.intuso.housemate.client.real.api.internal.RealType<O, ?> value) {
         return map(value, new IdentityFunction<O>(), new IdentityFunction<O>());
     }
 
-    public <FROM, TO> RealType<TO> map(com.intuso.housemate.client.real.api.internal.RealType<FROM> value, Function<? super FROM, ? extends TO> convertFrom, Function<? super TO, ? extends FROM> convertTo) {
+    public <FROM, TO> RealType<TO, ?> map(com.intuso.housemate.client.real.api.internal.RealType<FROM, ?> value, Function<? super FROM, ? extends TO> convertFrom, Function<? super TO, ? extends FROM> convertTo) {
         if(value == null)
             return null;
         if(value instanceof RealTypeBridge)
             return ((RealTypeBridge<TO, FROM>)value).getType();
-        return (RealType<TO>) reverseBridgeFactory.create(value, convertFrom, convertTo);
+        return (RealType<TO, ?>) reverseBridgeFactory.create(value, convertFrom, convertTo);
     }
 
-    public <O> com.intuso.housemate.client.real.api.internal.RealType<O> map(RealType<O> value) {
+    public <O> com.intuso.housemate.client.real.api.internal.RealType<O, ?> map(RealType<O, ?> value) {
         return map(value, new IdentityFunction<O>(), new IdentityFunction<O>());
     }
 
-    public <FROM, TO> com.intuso.housemate.client.real.api.internal.RealType<TO> map(RealType<FROM> value, Function<? super FROM, ? extends TO> converterFrom, Function<? super TO, ? extends FROM> convertTo) {
+    public <FROM, TO> com.intuso.housemate.client.real.api.internal.RealType<TO, ?> map(RealType<FROM, ?> value, Function<? super FROM, ? extends TO> converterFrom, Function<? super TO, ? extends FROM> convertTo) {
         if(value == null)
             return null;
         if(value instanceof RealTypeBridgeReverse)
             return ((RealTypeBridgeReverse<TO, FROM>)value).getType();
-        return (com.intuso.housemate.client.real.api.internal.RealType<TO>) bridgeFactory.create(value, converterFrom, convertTo);
+        return (com.intuso.housemate.client.real.api.internal.RealType<TO, ?>) bridgeFactory.create(value, converterFrom, convertTo);
     }
 }

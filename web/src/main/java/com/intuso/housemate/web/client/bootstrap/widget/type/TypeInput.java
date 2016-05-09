@@ -3,11 +3,11 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.intuso.housemate.client.v1_0.api.object.SubType;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
-import com.intuso.housemate.comms.v1_0.api.RemoteObject;
-import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
-import com.intuso.housemate.comms.v1_0.api.payload.*;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.client.v1_0.data.api.RemoteObject;
+import com.intuso.housemate.client.v1_0.data.api.TreeLoadInfo;
 import com.intuso.housemate.web.client.event.UserInputEvent;
 import com.intuso.housemate.web.client.handler.HasUserInputHandlers;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
@@ -21,7 +21,7 @@ import java.util.List;
  */
 public interface TypeInput extends IsWidget, HasUserInputHandlers {
 
-    TypeInstances getTypeInstances();
+    Type.Instances getTypeInstances();
 
     Factory FACTORY = new Factory();
 
@@ -29,7 +29,7 @@ public interface TypeInput extends IsWidget, HasUserInputHandlers {
 
         private Factory() {}
 
-        public TypeInput create(final GWTProxyList<TypeData<?>, GWTProxyType> types, final String typeId, final TypeInstances typeInstances) {
+        public TypeInput create(final GWTProxyList<Type.Data<?>, GWTProxyType> types, final String typeId, final Type.Instances typeInstances) {
             GWTProxyType type = types.get(typeId);
             if(type != null)
                 return _create(types, type, typeInstances);
@@ -52,30 +52,30 @@ public interface TypeInput extends IsWidget, HasUserInputHandlers {
             }
         }
 
-        private TypeInput _create(final GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyType type, final TypeInstances typeInstances) {
+        private TypeInput _create(final GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyType type, final Type.Instances typeInstances) {
             if(type == null)
                 return null;
-            TypeData typeData = type.getData();
-            if (typeData instanceof SimpleTypeData) {
-                if (((SimpleTypeData) typeData).getType() == SimpleTypeData.Type.Boolean)
+            Type.Data data = type.getData();
+            if (data instanceof Type.SimpleData) {
+                if (((Type.SimpleData) data).getType() == Type.SimpleData.SimpleType.Boolean)
                     return new CheckBoxInput(typeInstances);
                 else
-                    return new TextInput(typeData, typeInstances);
-            } else if (typeData instanceof ChoiceTypeData) {
-                if (typeData.getMinValues() == 1 && typeData.getMaxValues() == 1)
+                    return new TextInput(data, typeInstances);
+            } else if (data instanceof Type.ChoiceData) {
+                if (data.getMinValues() == 1 && data.getMaxValues() == 1)
                     return new SingleSelectInput(types, type, typeInstances);
                 else
                     return new MultiSelectInput(type, typeInstances);
-            } else if (typeData instanceof RegexTypeData)
-                return new TextInput(typeData, typeInstances);
-            else if (typeData instanceof ObjectTypeData)
-                return new ObjectBrowserInput((ObjectTypeData) typeData, typeInstances);
-            else if (typeData instanceof CompoundTypeData)
-                return new CompoundTypeInput(types, (GWTProxyList<SubTypeData, GWTProxySubType>) type.getChild("sub-types"), typeInstances);
+            } else if (data instanceof Type.RegexData)
+                return new TextInput(data, typeInstances);
+            else if (data instanceof Type.ObjectData)
+                return new ObjectBrowserInput((Type.ObjectData) data, typeInstances);
+            else if (data instanceof Type.CompoundData)
+                return new CompoundTypeInput(types, (GWTProxyList<SubType.Data, GWTProxySubType>) type.getChild("sub-types"), typeInstances);
             return null;
         }
 
-        public TypeInput create(GWTProxyList<TypeData<?>, GWTProxyType> types, String typeId, TypeInstances typeInstances, UserInputHandler handler) {
+        public TypeInput create(GWTProxyList<Type.Data<?>, GWTProxyType> types, String typeId, Type.Instances typeInstances, UserInputHandler handler) {
             TypeInput result = create(types, typeId, typeInstances);
             if(result != null)
                 result.addUserInputHandler(handler);
@@ -85,14 +85,14 @@ public interface TypeInput extends IsWidget, HasUserInputHandlers {
 
     class LazyLoaded extends SimplePanel implements TypeInput, UserInputHandler {
 
-        private final TypeInstances typeInstances;
+        private final Type.Instances typeInstances;
 
-        public LazyLoaded(TypeInstances typeInstances) {
+        public LazyLoaded(Type.Instances typeInstances) {
             this.typeInstances = typeInstances;
         }
 
         @Override
-        public TypeInstances getTypeInstances() {
+        public Type.Instances getTypeInstances() {
             return typeInstances;
         }
 

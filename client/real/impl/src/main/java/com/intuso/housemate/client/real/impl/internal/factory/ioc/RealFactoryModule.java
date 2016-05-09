@@ -4,7 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.real.impl.internal.factory.automation.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.factory.condition.AddConditionCommand;
@@ -26,57 +25,48 @@ public class RealFactoryModule extends AbstractModule {
 
         // automations
         install(new FactoryModuleBuilder()
-                .implement(RealAutomation.class, RealAutomationImpl.class)
-                .build(RealAutomation.Factory.class));
+                .build(new TypeLiteral<RealAutomationImpl.Factory>() {}));
         install(new FactoryModuleBuilder().build(AddAutomationCommand.Factory.class));
 
-        // conditions
+        // condition
         install(new FactoryModuleBuilder()
-                .implement(new TypeLiteral<RealCondition<?>>() {}, new TypeLiteral<RealConditionImpl<?>>() {})
-                .build(RealCondition.Factory.class));
+                .build(new TypeLiteral<RealConditionImpl.Factory>() {}));
         bind(ConditionFactoryType.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(AddConditionCommand.Factory.class));
 
         // devices
         install(new FactoryModuleBuilder()
-                .implement(new TypeLiteral<RealDevice<?>>() {}, new TypeLiteral<RealDeviceImpl<?>>() {})
-                .build(RealDevice.Factory.class));
+                .build(new TypeLiteral<RealDeviceImpl.Factory>() {}));
         bind(DeviceFactoryType.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(AddDeviceCommand.Factory.class));
 
         // features
         install(new FactoryModuleBuilder()
-                .implement(RealFeature.class, RealFeatureImpl.class)
-                .build(RealFeature.Factory.class));
+                .build(new TypeLiteral<RealFeatureImpl.Factory>() {}));
 
         // hardwares
         install(new FactoryModuleBuilder()
-                .implement(new TypeLiteral<RealHardware<?>>() {}, new TypeLiteral<RealHardwareImpl<?>>() {})
-                .build(RealHardware.Factory.class));
+                .build(new TypeLiteral<RealHardwareImpl.Factory>() {}));
         bind(HardwareFactoryType.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(AddHardwareCommand.Factory.class));
 
         // parameters
         install(new FactoryModuleBuilder()
-                .implement(new TypeLiteral<RealParameter<?>>() {}, new TypeLiteral<RealParameterImpl<?>>() {})
-                .build(RealParameter.Factory.class));
+                .build(new TypeLiteral<RealParameterImpl.Factory>() {}));
 
         // tasks
         install(new FactoryModuleBuilder()
-                .implement(new TypeLiteral<RealTask<?>>() {}, new TypeLiteral<RealTaskImpl<?>>() {})
-                .build(RealTask.Factory.class));
+                .build(new TypeLiteral<RealTaskImpl.Factory>() {}));
         bind(TaskFactoryType.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(AddTaskCommand.Factory.class));
 
         // users
         install(new FactoryModuleBuilder()
-                .implement(RealUser.class, RealUserImpl.class)
-                .build(RealUser.Factory.class));
+                .build(new TypeLiteral<RealUserImpl.Factory>() {}));
         install(new FactoryModuleBuilder().build(AddUserCommand.Factory.class));
 
         // values
         install(new FactoryModuleBuilder()
-                .implement(new TypeLiteral<RealValue<?>>() {}, new TypeLiteral<RealValueImpl<?>>() {})
-                .build(RealValue.Factory.class));
+                .build(new TypeLiteral<RealValueImpl.Factory>() {}));
     }
 }

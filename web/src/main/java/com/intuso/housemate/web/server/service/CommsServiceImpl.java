@@ -3,11 +3,11 @@ package com.intuso.housemate.web.server.service;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 import com.google.inject.Key;
-import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
-import com.intuso.housemate.comms.v1_0.api.Message;
-import com.intuso.housemate.comms.v1_0.api.Router;
-import com.intuso.housemate.object.v1_0.api.TypeInstance;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.client.v1_0.api.object.Type;
+import com.intuso.housemate.client.v1_0.api.HousemateException;
+import com.intuso.housemate.client.v1_0.data.api.Message;
+import com.intuso.housemate.client.v1_0.data.api.payload.Payload;
+import com.intuso.housemate.client.v1_0.data.api.Router;
 import com.intuso.housemate.persistence.v1_0.api.DetailsNotFoundException;
 import com.intuso.housemate.persistence.v1_0.api.Persistence;
 import com.intuso.housemate.web.client.NotConnectedException;
@@ -46,7 +46,7 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
     }
 
     @Override
-    public Message<Message.Payload>[] getMessages(int num, long timeout) throws NotConnectedException {
+    public Message<Payload>[] getMessages(int num, long timeout) throws NotConnectedException {
         List<Message> result = getEndpoint().getMessages(num, timeout);
         return result.toArray(new Message[result.size()]);
     }
@@ -58,9 +58,9 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
 
     public void resetPassword(String username) {
         try {
-            persistence.saveTypeInstances(new String[] {"users", username, "password"}, new TypeInstances(new TypeInstance("changeme")));
+            persistence.saveTypeInstances(new String[] {"users", username, "password"}, new Type.Instances(new Type.Instance("changeme")));
         } catch (Throwable t) {
-            throw new HousemateCommsException("Failed to reset password. Couldn't save new one", t);
+            throw new HousemateException("Failed to reset password. Couldn't save new one", t);
         }
     }
 
@@ -68,7 +68,7 @@ public class CommsServiceImpl extends RemoteServiceServlet implements CommsServi
     public Boolean checkCredentials(String username, String password) {
         String hashed = hash(password);
         try {
-            TypeInstances typeInstances = persistence.getTypeInstances(new String[] {"users", username, "password"});
+            Type.Instances typeInstances = persistence.getTypeInstances(new String[] {"users", username, "password"});
             String firstValue = typeInstances.getFirstValue();
             return firstValue != null && firstValue.equals(hashed);
         } catch (DetailsNotFoundException e) {

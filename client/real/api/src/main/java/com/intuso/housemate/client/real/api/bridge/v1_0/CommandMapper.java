@@ -9,16 +9,16 @@ import com.intuso.housemate.client.v1_0.real.api.RealCommand;
  */
 public class CommandMapper {
 
-    private final Function<com.intuso.housemate.client.real.api.internal.RealCommand, RealCommand> toV1_0Function = new Function<com.intuso.housemate.client.real.api.internal.RealCommand, RealCommand>() {
+    private final Function<com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>, RealCommand<?, ?, ?>> toV1_0Function = new Function<com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>, RealCommand<?, ?, ?>>() {
         @Override
-        public RealCommand apply(com.intuso.housemate.client.real.api.internal.RealCommand command) {
+        public RealCommand<?, ?, ?> apply(com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?> command) {
             return map(command);
         }
     };
 
-    private final Function<RealCommand, com.intuso.housemate.client.real.api.internal.RealCommand> fromV1_0Function = new Function<RealCommand, com.intuso.housemate.client.real.api.internal.RealCommand>() {
+    private final Function<RealCommand<?, ?, ?>, com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>> fromV1_0Function = new Function<RealCommand<?, ?, ?>, com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>>() {
         @Override
-        public com.intuso.housemate.client.real.api.internal.RealCommand apply(RealCommand command) {
+        public com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?> apply(RealCommand<?, ?, ?> command) {
             return map(command);
         }
     };
@@ -32,11 +32,11 @@ public class CommandMapper {
         this.reverseBridgeFactory = reverseBridgeFactory;
     }
 
-    public Function<com.intuso.housemate.client.real.api.internal.RealCommand, RealCommand> getToV1_0Function() {
+    public Function<com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>, RealCommand<?, ?, ?>> getToV1_0Function() {
         return toV1_0Function;
     }
 
-    public Function<RealCommand, com.intuso.housemate.client.real.api.internal.RealCommand> getFromV1_0Function() {
+    public Function<RealCommand<?, ?, ?>, com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>> getFromV1_0Function() {
         return fromV1_0Function;
     }
 

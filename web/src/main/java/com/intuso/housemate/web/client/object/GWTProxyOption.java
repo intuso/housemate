@@ -2,10 +2,9 @@ package com.intuso.housemate.web.client.object;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyOption;
-import com.intuso.housemate.comms.v1_0.api.payload.ListData;
-import com.intuso.housemate.comms.v1_0.api.payload.OptionData;
-import com.intuso.housemate.comms.v1_0.api.payload.SubTypeData;
+import com.intuso.housemate.client.v1_0.api.object.List;
+import com.intuso.housemate.client.v1_0.api.object.SubType;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyOption;
 import com.intuso.housemate.web.client.ioc.GWTGinjector;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
@@ -14,7 +13,7 @@ import org.slf4j.Logger;
  */
 public class GWTProxyOption extends ProxyOption<
             GWTProxySubType,
-            GWTProxyList<SubTypeData, GWTProxySubType>,
+            GWTProxyList<SubType.Data, GWTProxySubType>,
             GWTProxyOption> {
 
     private final GWTGinjector injector;
@@ -23,13 +22,13 @@ public class GWTProxyOption extends ProxyOption<
     public GWTProxyOption(Logger logger,
                           ListenersFactory listenersFactory,
                           GWTGinjector injector,
-                          @Assisted OptionData data) {
+                          @Assisted Data data) {
         super(logger, listenersFactory, data);
         this.injector = injector;
     }
 
     @Override
-    protected GWTProxyList<SubTypeData, GWTProxySubType> createChild(ListData<SubTypeData> data) {
+    protected GWTProxyList<SubType.Data, GWTProxySubType> createChild(List.Data<SubType.Data> data) {
         return new GWTProxyList<>(getLogger(), getListenersFactory(), injector, data);
     }
 }

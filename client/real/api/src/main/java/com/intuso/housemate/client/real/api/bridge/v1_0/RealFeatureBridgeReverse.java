@@ -11,15 +11,19 @@ import com.intuso.utilities.listener.ListenerRegistration;
 /**
  * Created by tomc on 03/11/15.
  */
-public class RealFeatureBridgeReverse implements RealFeature {
+public class RealFeatureBridgeReverse
+        implements RealFeature<
+        RealList<? extends RealCommand<?, ?, ?>, ?>,
+        RealList<? extends RealValue<?, ?, ?>, ?>,
+        RealFeatureBridgeReverse> {
 
-    private final com.intuso.housemate.client.real.api.internal.RealFeature feature;
+    private final com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?> feature;
     private final ListMapper listMapper;
     private final CommandMapper commandMapper;
     private final ValueMapper valueMapper;
 
     @Inject
-    public RealFeatureBridgeReverse(@Assisted com.intuso.housemate.client.real.api.internal.RealFeature feature,
+    public RealFeatureBridgeReverse(@Assisted com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?> feature,
                                     ListMapper listMapper,
                                     CommandMapper commandMapper,
                                     ValueMapper valueMapper) {
@@ -29,7 +33,7 @@ public class RealFeatureBridgeReverse implements RealFeature {
         this.valueMapper = valueMapper;
     }
 
-    public com.intuso.housemate.client.real.api.internal.RealFeature getFeature() {
+    public com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?> getFeature() {
         return feature;
     }
 
@@ -49,30 +53,25 @@ public class RealFeatureBridgeReverse implements RealFeature {
     }
 
     @Override
-    public String[] getPath() {
-        return feature.getPath();
-    }
-
-    @Override
-    public ListenerRegistration addObjectListener(Listener<? super RealFeature> listener) {
+    public ListenerRegistration addObjectListener(Listener<? super RealFeatureBridgeReverse> listener) {
         return null; //todo
     }
 
     @Override
-    public RealList<RealCommand> getCommands() {
-        return listMapper.map(feature.getCommands(),
+    public RealList<? extends RealCommand<?, ?, ?>, ?> getCommands() {
+        return listMapper.map((com.intuso.housemate.client.real.api.internal.RealList<com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>, ?>) feature.getCommands(),
                 commandMapper.getToV1_0Function(),
                 commandMapper.getFromV1_0Function());
     }
 
     @Override
-    public RealList<RealValue<?>> getValues() {
-        return listMapper.map(feature.getValues(),
+    public RealList<? extends RealValue<?, ?, ?>, ?> getValues() {
+        return listMapper.map((com.intuso.housemate.client.real.api.internal.RealList<com.intuso.housemate.client.real.api.internal.RealValue<?, ?, ?>, ?>) feature.getValues(),
                 valueMapper.getToV1_0Function(),
                 valueMapper.getFromV1_0Function());
     }
 
     public interface Factory {
-        RealFeatureBridgeReverse create(com.intuso.housemate.client.real.api.internal.RealFeature feature);
+        RealFeatureBridgeReverse create(com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?> feature);
     }
 }

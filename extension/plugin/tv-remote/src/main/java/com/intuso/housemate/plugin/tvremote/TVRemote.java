@@ -2,13 +2,13 @@ package com.intuso.housemate.plugin.tvremote;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.v1_0.api.HousemateException;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
 import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
-import com.intuso.housemate.client.v1_0.real.api.device.feature.PlaybackControl;
-import com.intuso.housemate.client.v1_0.real.api.device.feature.PowerControl;
-import com.intuso.housemate.client.v1_0.real.api.device.feature.VolumeControl;
 import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
-import com.intuso.housemate.comms.v1_0.api.HousemateCommsException;
+import com.intuso.housemate.client.v1_0.real.api.feature.PlaybackControl;
+import com.intuso.housemate.client.v1_0.real.api.feature.PowerControl;
+import com.intuso.housemate.client.v1_0.real.api.feature.VolumeControl;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class TVRemote implements DeviceDriver, PowerControl, PlaybackControl, Vo
         try {
             Runtime.getRuntime().exec("irsend SEND_ONCE " + remoteName + " " + buttonName);
         } catch(IOException e) {
-            throw new HousemateCommsException("Failed to perform TV remote command", e);
+            throw new HousemateException("Failed to perform TV remote command", e);
         }
     }
 }

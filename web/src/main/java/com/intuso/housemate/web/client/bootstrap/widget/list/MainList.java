@@ -4,11 +4,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.intuso.housemate.client.v1_0.api.object.Object;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.client.v1_0.proxy.api.AvailableChildrenListener;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
-import com.intuso.housemate.comms.v1_0.api.ChildOverview;
-import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
+import com.intuso.housemate.client.v1_0.data.api.ChildOverview;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.event.SelectedIdsChangedEvent;
 import com.intuso.housemate.web.client.handler.HasSelectedIdsChangedHandlers;
@@ -31,13 +31,13 @@ import java.util.Set;
  * Time: 21:04
  * To change this template use File | Settings | File Templates.
  */
-public abstract class MainList<DATA extends HousemateData<?>, OBJECT extends ProxyObject<DATA, ?, ?, ?, ?>>
+public abstract class MainList<DATA extends Object.Data<?>, OBJECT extends ProxyObject<DATA, ?, ?, ?, ?>>
         extends FlowPanel implements AvailableChildrenListener<GWTProxyList<DATA, OBJECT>>, HasSelectedIdsChangedHandlers {
 
     private final Row row = new Row();
     private final Map<String, IsWidget> widgets = Maps.newHashMap();
 
-    public MainList(String title, GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand addCommand) {
+    public MainList(String title, GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyCommand addCommand) {
 
         addStyleName("main");
         add(new Heading(HeadingSize.H4, title));

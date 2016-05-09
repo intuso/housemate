@@ -1,11 +1,7 @@
 package com.intuso.housemate.platform.android.app.object;
 
-import com.intuso.housemate.client.v1_0.proxy.api.LoggerUtil;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyCondition;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
-import com.intuso.housemate.comms.v1_0.api.payload.ConditionData;
-import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
-import com.intuso.housemate.comms.v1_0.api.payload.PropertyData;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyCondition;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -19,24 +15,19 @@ import org.slf4j.Logger;
 public class AndroidProxyCondition extends ProxyCondition<AndroidProxyCommand,
         AndroidProxyValue,
         AndroidProxyProperty,
-        AndroidProxyList<PropertyData, AndroidProxyProperty>,
+        AndroidProxyList<AndroidProxyProperty>,
         AndroidProxyCondition,
-        AndroidProxyList<ConditionData, AndroidProxyCondition>> {
-
-    private final AndroidProxyFactory factory;
+        AndroidProxyList<AndroidProxyCondition>> {
 
     /**
      * @param logger  {@inheritDoc}
-     * @param data {@inheritDoc}
-     * @param factory
      */
-    protected AndroidProxyCondition(Logger logger, ListenersFactory listenersFactory, ConditionData data, AndroidProxyFactory factory) {
-        super(logger, listenersFactory, data);
-        this.factory = factory;
-    }
-
-    @Override
-    protected ProxyObject<?, ?, ?, ?, ?> createChild(HousemateData<?> data) {
-        return factory.create(LoggerUtil.child(getLogger(), data.getId()), data);
+    protected AndroidProxyCondition(Logger logger, ListenersFactory listenersFactory,
+                                    ProxyObject.Factory<AndroidProxyCommand> commandFactory,
+                                    ProxyObject.Factory<AndroidProxyValue> valueFactory,
+                                    ProxyObject.Factory<AndroidProxyProperty> propertyFactory,
+                                    ProxyObject.Factory<AndroidProxyList<AndroidProxyProperty>> propertiesFactory,
+                                    ProxyObject.Factory<AndroidProxyList<AndroidProxyCondition>> conditionsFactory) {
+        super(logger, listenersFactory, commandFactory, valueFactory, propertyFactory, propertiesFactory, conditionsFactory);
     }
 }

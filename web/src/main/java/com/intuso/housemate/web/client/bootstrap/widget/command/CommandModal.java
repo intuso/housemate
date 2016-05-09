@@ -5,7 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;
 import com.intuso.housemate.web.client.object.GWTProxyType;
@@ -18,7 +18,7 @@ import org.gwtbootstrap3.client.ui.Modal;
  * Time: 08:44
  * To change this template use File | Settings | File Templates.
  */
-public class CommandModal extends Composite implements com.intuso.housemate.object.v1_0.api.Command.PerformListener<GWTProxyCommand> {
+public class CommandModal extends Composite implements com.intuso.housemate.client.v1_0.api.object.Command.PerformListener<GWTProxyCommand> {
 
     interface CommandModalUiBinder extends UiBinder<SimplePanel, CommandModal> {}
 
@@ -29,13 +29,13 @@ public class CommandModal extends Composite implements com.intuso.housemate.obje
     @UiField(provided = true)
     Command command;
 
-    private final com.intuso.housemate.object.v1_0.api.Command.PerformListener<GWTProxyCommand> listener;
+    private final com.intuso.housemate.client.v1_0.api.object.Command.PerformListener<GWTProxyCommand> listener;
 
-    public CommandModal(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command) {
+    public CommandModal(GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyCommand command) {
         this(types, command, null);
     }
 
-    public CommandModal(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command, com.intuso.housemate.object.v1_0.api.Command.PerformListener<GWTProxyCommand> listener) {
+    public CommandModal(GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyCommand command, com.intuso.housemate.client.v1_0.api.object.Command.PerformListener<GWTProxyCommand> listener) {
 
         this.command = new Command(types, command, this);
         this.listener = listener;

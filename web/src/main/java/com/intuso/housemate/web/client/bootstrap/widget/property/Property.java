@@ -2,10 +2,7 @@ package com.intuso.housemate.web.client.bootstrap.widget.property;
 
 import com.google.gwt.uibinder.client.UiFactory;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.intuso.housemate.comms.v1_0.api.payload.PropertyData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.object.v1_0.api.TypeInstanceMap;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.Housemate;
 import com.intuso.housemate.web.client.bootstrap.widget.type.TypeInput;
 import com.intuso.housemate.web.client.event.PerformCommandEvent;
@@ -19,21 +16,21 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
  */
 public class Property extends SimplePanel implements UserInputHandler {
 
-    private final TypeInstanceMap values;
+    private final Type.InstanceMap values;
 
     private final GWTProxyProperty property;
 
-    public Property(final GWTProxyList<TypeData<?>, GWTProxyType> types, final GWTProxyProperty property) {
+    public Property(final GWTProxyList<Type.Data<?>, GWTProxyType> types, final GWTProxyProperty property) {
 
         this.property = property;
 
-        values = new TypeInstanceMap();
+        values = new Type.InstanceMap();
         if(property.getValue() != null)
-            values.getChildren().put(PropertyData.VALUE_PARAM, property.getValue());
+            values.getChildren().put(com.intuso.housemate.client.v1_0.api.object.Property.Data.VALUE_PARAM, property.getValue());
         else
-            values.getChildren().put(PropertyData.VALUE_PARAM, new TypeInstances());
+            values.getChildren().put(com.intuso.housemate.client.v1_0.api.object.Property.Data.VALUE_PARAM, new Type.Instances());
 
-        setWidget(TypeInput.FACTORY.create(types, property.getTypeId(), values.getChildren().get(PropertyData.VALUE_PARAM), this));
+        setWidget(TypeInput.FACTORY.create(types, property.getTypeId(), values.getChildren().get(com.intuso.housemate.client.v1_0.api.object.Property.Data.VALUE_PARAM), this));
     }
 
     @UiFactory

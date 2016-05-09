@@ -5,13 +5,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.object.v1_0.api.Value;
+import com.intuso.housemate.client.v1_0.api.object.Type;
+import com.intuso.housemate.client.v1_0.api.object.Value;
 import com.intuso.housemate.web.client.bootstrap.widget.command.PerformButton;
 import com.intuso.housemate.web.client.object.*;
 
 public class StatefulPlaybackControl extends Composite implements FeatureWidget, Value.Listener<GWTProxyValue>,
-        com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPlaybackControl<GWTProxyCommand, GWTProxyValue> {
+        com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPlaybackControl<GWTProxyCommand, GWTProxyValue> {
 
     interface PlaybackWidgetUiBinder extends UiBinder<Widget, StatefulPlaybackControl> {}
 
@@ -38,7 +38,7 @@ public class StatefulPlaybackControl extends Composite implements FeatureWidget,
     }
 
     @Override
-    public void setTypes(GWTProxyList<TypeData<?>, GWTProxyType> types) {
+    public void setTypes(GWTProxyList<Type.Data<?>, GWTProxyType> types) {
         playButton.setCommand(types, getPlayCommand());
         pauseButton.setCommand(types, getPauseCommand());
         stopButton.setCommand(types, getStopCommand());

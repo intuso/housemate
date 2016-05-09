@@ -3,9 +3,8 @@ package com.intuso.housemate.web.client.bootstrap.widget.type;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.intuso.housemate.comms.v1_0.api.payload.OptionData;
-import com.intuso.housemate.object.v1_0.api.TypeInstance;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.client.v1_0.api.object.Option;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.event.UserInputEvent;
 import com.intuso.housemate.web.client.handler.UserInputHandler;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -24,20 +23,20 @@ public class MultiSelectInput extends ListBox implements TypeInput, ChangeHandle
 
     public final static String OPTIONS = "options";
 
-    private final TypeInstances typeInstances;
+    private final Type.Instances typeInstances;
     private final Map<GWTProxyOption, Integer> optionIndices = new HashMap<>();
     private final Set<String> selectedOptions = new HashSet<>();
-    private GWTProxyList<OptionData, GWTProxyOption> options;
+    private GWTProxyList<Option.Data, GWTProxyOption> options;
     private final Map<String, GWTProxyOption> optionsByName = new HashMap<>();
 
-    public MultiSelectInput(GWTProxyType type, final TypeInstances typeInstances) {
+    public MultiSelectInput(GWTProxyType type, final Type.Instances typeInstances) {
 
         setMultipleSelect(true);
 
         this.typeInstances = typeInstances;
 
         if(type.getChild(OPTIONS) != null) {
-            options = (GWTProxyList<OptionData, GWTProxyOption>) type.getChild(OPTIONS);
+            options = (GWTProxyList<Option.Data, GWTProxyOption>) type.getChild(OPTIONS);
             int i = 0;
             for(GWTProxyOption option : options) {
                 optionIndices.put(option, i);
@@ -45,7 +44,7 @@ public class MultiSelectInput extends ListBox implements TypeInput, ChangeHandle
                 addItem(option.getName());
                 i++;
             }
-            for(TypeInstance typeInstance : typeInstances.getElements())
+            for(Type.Instance typeInstance : typeInstances.getElements())
                 selectedOptions.add(typeInstance.getValue());
             for(String id : selectedOptions) {
                 GWTProxyOption option = options.get(id);
@@ -67,12 +66,12 @@ public class MultiSelectInput extends ListBox implements TypeInput, ChangeHandle
                 selectedOptions.add(getItemText(i));
         typeInstances.getElements().clear();
         for(String selectedOption : selectedOptions)
-            typeInstances.getElements().add(new TypeInstance(selectedOption));
+            typeInstances.getElements().add(new Type.Instance(selectedOption));
         fireEvent(new UserInputEvent());
     }
 
     @Override
-    public TypeInstances getTypeInstances() {
+    public Type.Instances getTypeInstances() {
         return typeInstances;
     }
 

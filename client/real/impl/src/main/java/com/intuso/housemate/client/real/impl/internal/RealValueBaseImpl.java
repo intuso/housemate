@@ -1,38 +1,36 @@
 package com.intuso.housemate.client.real.impl.internal;
 
-import com.intuso.housemate.client.real.api.internal.RealType;
+import com.google.common.collect.Lists;
+import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.real.api.internal.RealValueBase;
-import com.intuso.housemate.comms.api.internal.payload.HousemateData;
-import com.intuso.housemate.comms.api.internal.payload.TypeData;
-import com.intuso.housemate.comms.api.internal.payload.ValueBaseData;
-import com.intuso.housemate.comms.api.internal.payload.ValueData;
-import com.intuso.housemate.object.api.internal.TypeInstances;
-import com.intuso.housemate.object.api.internal.ValueBase;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.StreamMessage;
 import java.util.List;
 
 /**
- * @param <DATA> the type of the data object
- * @param <CHILD_DATA> the type of the child's data object
- * @param <CHILD> the type of the child
  * @param <O> the type of the value's value
+ * @param <DATA> the type of the data object
  * @param <VALUE> the type of the value
  */
-public abstract class RealValueBaseImpl<
-        DATA extends ValueBaseData<CHILD_DATA>,
-        CHILD_DATA extends HousemateData<?>,
-        CHILD extends RealObject<? extends CHILD_DATA, ?, ?, ?>,
-        O,
-        LISTENER extends ValueBase.Listener<? super VALUE>,
-        VALUE extends RealValueBase<O, LISTENER, VALUE>>
-        extends RealObject<DATA, CHILD_DATA, CHILD, LISTENER>
-        implements RealValueBase<O, LISTENER, VALUE> {
+public abstract class RealValueBaseImpl<O,
+            DATA extends Object.Data,
+            LISTENER extends ValueBase.Listener<? super VALUE>,
+            VALUE extends RealValueBase<O, RealTypeImpl<O>, LISTENER, VALUE>>
+        extends RealObject<DATA, LISTENER>
+        implements RealValueBase<O, RealTypeImpl<O>, LISTENER, VALUE> {
 
-    private RealType<O> type;
-    private List<O> typedValues;
+    private final RealTypeImpl<O> type;
+
+    private Session session;
+    private MessageProducer valueProducer;
+
+    private List<O> values;
 
     /**
      * @param logger {@inheritDoc}
@@ -40,67 +38,75 @@ public abstract class RealValueBaseImpl<
      * @param data {@inheritDoc}
      * @param type the type of the value's value
      */
-    public RealValueBaseImpl(Logger logger, ListenersFactory listenersFactory, DATA data, RealType<O> type) {
-        super(listenersFactory, logger, data);
+    public RealValueBaseImpl(Logger logger, DATA data, ListenersFactory listenersFactory, RealTypeImpl<O> type, List<O> values) {
+        super(logger, data, listenersFactory);
         this.type = type;
-        this.typedValues = RealTypeImpl.deserialiseAll(type, data.getTypeInstances());
+        this.values = values;
     }
 
     @Override
-    public String getTypeId() {
-        return getData().getType();
+    protected void initChildren(String name, Session session) throws JMSException {
+        super.initChildren(name, session);
+        this.session = session;
+        valueProducer = session.createProducer(session.createTopic(ChildUtil.name(name, ValueBase.VALUE_ID)));
     }
 
-    public RealType<O> getType() {
+    @Override
+    protected void uninitChildren() {
+        super.uninitChildren();
+        if(valueProducer != null) {
+            try {
+                valueProducer.close();
+            } catch(JMSException e) {
+                logger.error("Failed to close value producer");
+            }
+            valueProducer = null;
+        }
+        if(session != null) {
+            try {
+                session.close();
+            } catch(JMSException e) {
+                logger.error("Failed to close session");
+            }
+            session = null;
+        }
+    }
+
+    @Override
+    public RealTypeImpl<O> getType() {
         return type;
     }
 
     @Override
-    public TypeInstances getValue() {
-        return getData().getTypeInstances();
+    public O getValue() {
+        return values != null && values.size() > 0 ? values.get(0) : null;
     }
 
     /**
      * Gets the object representation of this value
      * @return
      */
-    public O getTypedValue() {
-        return typedValues != null && typedValues.size() != 0 ? typedValues.get(0) : null;
+    public List<O> getValues() {
+        return values;
     }
 
-    /**
-     * Gets the object representation of this value
-     * @return
-     */
-    public List<O> getTypedValues() {
-        return typedValues;
-    }
-
-    /**
-     * Sets the object representation of this value
-     * @param typedValues the new value
-     */
-    public final void setTypedValues(O ... typedValues) {
-        if(typedValues == null)
-            setTypedValues((List)null);
-        else
-            setTypedValues(Arrays.asList(typedValues));
+    @Override
+    public void setValue(O value) {
+        setValues(Lists.newArrayList(value));
     }
 
     /**
      * Sets the object representation of this value
-     * @param typedValues the new value
+     * @param values the new value
      */
-    public final void setTypedValues(List<O> typedValues) {
-        if((this.typedValues == null && typedValues == null)
-                || (this.typedValues != null && typedValues != null && this.typedValues.equals(typedValues)))
-            return;
-        for(Listener<? super VALUE> listener : getObjectListeners())
-            listener.valueChanging((VALUE)this);
-        this.typedValues = typedValues;
-        this.getData().setTypeInstances(RealTypeImpl.serialiseAll(getType(), typedValues));
-        for(Listener<? super VALUE> listener : getObjectListeners())
-            listener.valueChanged((VALUE)this);
-        sendMessage(ValueData.VALUE_ID, new TypeData.TypeInstancesPayload(getValue()));
+    public final void setValues(List<O> values) {
+        this.values = values;
+        try {
+            StreamMessage streamMessage = session.createStreamMessage();
+            streamMessage.writeObject(RealTypeImpl.serialiseAll(type, values));
+            valueProducer.send(streamMessage);
+        } catch(JMSException e) {
+            logger.error("Failed to send value update", e);
+        }
     }
 }

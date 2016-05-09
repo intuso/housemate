@@ -1,37 +1,30 @@
 package com.intuso.housemate.client.real.api.internal;
 
-import com.intuso.housemate.comms.api.internal.payload.AutomationData;
-import com.intuso.housemate.object.api.internal.Automation;
-import com.intuso.housemate.object.api.internal.Condition;
-import org.slf4j.Logger;
+import com.intuso.housemate.client.api.internal.object.Automation;
 
-public interface RealAutomation
-        extends Automation<RealCommand,
-                RealCommand,
-                RealCommand,
-                RealCommand,
-                RealValue<Boolean>,
-                RealValue<String>,
-                RealCondition<?>,
-                RealList<RealCondition<?>>,
-                RealTask<?>,
-                RealList<RealTask<?>>,
-                RealAutomation>,
-        Condition.Listener<RealCondition<?>>,
-        RealCondition.Container {
+public interface RealAutomation<COMMAND extends RealCommand<?, ?, ?>,
+        BOOLEAN_VALUE extends com.intuso.housemate.client.real.api.internal.RealValue<Boolean, ?, ?>,
+        STRING_VALUE extends com.intuso.housemate.client.real.api.internal.RealValue<String, ?, ?>,
+        CONDITIONS extends RealList<? extends RealCondition<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
+        TASKS extends RealList<? extends RealTask<?, ?, ?, ?, ?, ?, ?>, ?>,
+        AUTOMATION extends RealAutomation<COMMAND, BOOLEAN_VALUE, STRING_VALUE, CONDITIONS, TASKS, AUTOMATION>>
+        extends Automation<COMMAND,
+                COMMAND,
+                COMMAND,
+                COMMAND,
+                BOOLEAN_VALUE,
+                STRING_VALUE,
+                CONDITIONS,
+                TASKS,
+                AUTOMATION> {
 
     boolean isRunning();
 
-    interface Container extends Automation.Container<RealList<RealAutomation>>, RemoveCallback {
-        RealAutomation createAndAddAutomation(AutomationData data);
-        void addAutomation(RealAutomation automation);
+    interface Container<AUTOMATION extends RealAutomation<?, ?, ?, ?, ?, ?>, AUTOMATIONS extends com.intuso.housemate.client.real.api.internal.RealList<? extends AUTOMATION, ?>> extends Automation.Container<AUTOMATIONS>, RemoveCallback<AUTOMATION> {
+        void addAutomation(AUTOMATION automation);
     }
 
-    interface RemoveCallback {
-        void removeAutomation(RealAutomation automation);
-    }
-
-    interface Factory {
-        RealAutomation create(Logger logger, AutomationData data, RemoveCallback removeCallback);
+    interface RemoveCallback<AUTOMATION extends RealAutomation<?, ?, ?, ?, ?, ?>> {
+        void removeAutomation(AUTOMATION automation);
     }
 }

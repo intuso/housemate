@@ -9,16 +9,16 @@ import com.intuso.housemate.client.v1_0.real.api.RealFeature;
  */
 public class FeatureMapper {
 
-    private final Function<com.intuso.housemate.client.real.api.internal.RealFeature, RealFeature> toV1_0Function = new Function<com.intuso.housemate.client.real.api.internal.RealFeature, RealFeature>() {
+    private final Function<com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?>, RealFeature<?, ?, ?>> toV1_0Function = new Function<com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?>, RealFeature<?, ?, ?>>() {
         @Override
-        public RealFeature apply(com.intuso.housemate.client.real.api.internal.RealFeature feature) {
+        public RealFeature<?, ?, ?> apply(com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?> feature) {
             return map(feature);
         }
     };
 
-    private final Function<RealFeature, com.intuso.housemate.client.real.api.internal.RealFeature> fromV1_0Function = new Function<RealFeature, com.intuso.housemate.client.real.api.internal.RealFeature>() {
+    private final Function<RealFeature<?, ?, ?>, com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?>> fromV1_0Function = new Function<RealFeature<?, ?, ?>, com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?>>() {
         @Override
-        public com.intuso.housemate.client.real.api.internal.RealFeature apply(RealFeature feature) {
+        public com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?> apply(RealFeature<?, ?, ?> feature) {
             return map(feature);
         }
     };
@@ -32,15 +32,15 @@ public class FeatureMapper {
         this.reverseBridgeFactory = reverseBridgeFactory;
     }
 
-    public Function<com.intuso.housemate.client.real.api.internal.RealFeature, RealFeature> getToV1_0Function() {
+    public Function<com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?>, RealFeature<?, ?, ?>> getToV1_0Function() {
         return toV1_0Function;
     }
 
-    public Function<RealFeature, com.intuso.housemate.client.real.api.internal.RealFeature> getFromV1_0Function() {
+    public Function<RealFeature<?, ?, ?>, com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?>> getFromV1_0Function() {
         return fromV1_0Function;
     }
 
-    public RealFeature map(com.intuso.housemate.client.real.api.internal.RealFeature feature) {
+    public RealFeature<?, ?, ?> map(com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?> feature) {
         if(feature == null)
             return null;
         if(feature instanceof RealFeatureBridge)
@@ -48,7 +48,7 @@ public class FeatureMapper {
         return reverseBridgeFactory.create(feature);
     }
 
-    public com.intuso.housemate.client.real.api.internal.RealFeature map(RealFeature feature) {
+    public com.intuso.housemate.client.real.api.internal.RealFeature<?, ?, ?> map(RealFeature<?, ?, ?> feature) {
         if(feature == null)
             return null;
         if(feature instanceof RealFeatureBridgeReverse)

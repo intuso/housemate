@@ -1,18 +1,12 @@
 package com.intuso.housemate.extension.android.widget.handler;
 
-import com.intuso.housemate.client.v1_0.proxy.api.LoadManager;
-import com.intuso.housemate.client.v1_0.proxy.api.feature.StatefulPowerControl;
-import com.intuso.housemate.comms.v1_0.api.RemoteObject;
-import com.intuso.housemate.comms.v1_0.api.TreeLoadInfo;
-import com.intuso.housemate.comms.v1_0.api.payload.DeviceData;
+import com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPowerControl;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureFactory;
 import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureImpl;
-
-import java.util.List;
 
 /**
 * Created with IntelliJ IDEA.
@@ -101,34 +95,23 @@ public abstract class WidgetHandler<FEATURE extends AndroidProxyFeatureImpl> {
     }
 
     private void loadData() {
-        final AndroidProxyServer client = widgetService.getRoot().getServers().get(clientId);
-        if(client == null)
+        final AndroidProxyServer server = widgetService.getRoot().getServers().get(clientId);
+        if(server == null)
             status = Status.NO_CLIENT;
         else {
-            client.getDevices().load(new LoadManager(new LoadManager.Callback() {
-                @Override
-                public void failed(List<String> errors) {
-                    status = Status.DEVICE_LOAD_FAILED;
+            device = server.getDevices().get(deviceId);
+            if (device != null) {
+                AndroidProxyFeature proxyFeature = device.getFeatures().get(getFeatureId());
+                if(proxyFeature != null) {
+                    feature = proxyFeatureFactory.getFeatureAs(proxyFeature);
+                    init();
+                    status = Status.READY;
                     updateWidget();
-                }
-
-                @Override
-                public void succeeded() {
-                    device = client.getDevices().get(deviceId);
-                    if (device != null) {
-                        AndroidProxyFeature proxyFeature = device.getFeatures().get(getFeatureId());
-                        if(proxyFeature != null) {
-                            feature = proxyFeatureFactory.getFeatureAs(proxyFeature);
-                            init();
-                            status = Status.READY;
-                            updateWidget();
-                        } else
-                            status = Status.NO_FEATURE;
-                    } else
-                        status = Status.NO_DEVICE;
-                    updateWidget();
-                }
-            }, TreeLoadInfo.create(deviceId, DeviceData.FEATURES_ID, getFeatureId(), RemoteObject.EVERYTHING_RECURSIVE)));
+                } else
+                    status = Status.NO_FEATURE;
+            } else
+                status = Status.NO_DEVICE;
+            updateWidget();
         }
     }
 

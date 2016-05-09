@@ -1,8 +1,7 @@
 package com.intuso.housemate.web.client.bootstrap.widget.automation;
 
-import com.intuso.housemate.comms.v1_0.api.ChildOverview;
-import com.intuso.housemate.comms.v1_0.api.payload.AutomationData;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
+import com.intuso.housemate.client.v1_0.api.object.Type;
+import com.intuso.housemate.client.v1_0.data.api.ChildOverview;
 import com.intuso.housemate.web.client.bootstrap.widget.LazyLoadedWidgetCallback;
 import com.intuso.housemate.web.client.bootstrap.widget.list.MainList;
 import com.intuso.housemate.web.client.object.GWTProxyAutomation;
@@ -17,12 +16,12 @@ import com.intuso.housemate.web.client.object.GWTProxyType;
  * Time: 00:39
  * To change this template use File | Settings | File Templates.
  */
-public class AutomationList extends MainList<AutomationData, GWTProxyAutomation> {
+public class AutomationList extends MainList<com.intuso.housemate.client.v1_0.api.object.Automation.Data, GWTProxyAutomation> {
 
-    private final GWTProxyList<TypeData<?>, GWTProxyType> types;
-    private final GWTProxyList<AutomationData, GWTProxyAutomation> automations;
+    private final GWTProxyList<Type.Data<?>, GWTProxyType> types;
+    private final GWTProxyList<com.intuso.housemate.client.v1_0.api.object.Automation.Data, GWTProxyAutomation> automations;
 
-    public AutomationList(String title, GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyList<AutomationData, GWTProxyAutomation> automations, GWTProxyCommand addCommand) {
+    public AutomationList(String title, GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyList<com.intuso.housemate.client.v1_0.api.object.Automation.Data, GWTProxyAutomation> automations, GWTProxyCommand addCommand) {
         super(title, types, addCommand);
         this.types = types;
         this.automations = automations;

@@ -42,6 +42,16 @@ public class Delay implements TaskDriver {
     }
 
     @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
     public final void execute() {
         long delay = amount * unit.getFactor();
         logger.debug("Executing delay of " + amount + " " + unit + " which is " + delay + " milliseconds");

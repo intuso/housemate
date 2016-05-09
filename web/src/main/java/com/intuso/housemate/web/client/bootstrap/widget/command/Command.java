@@ -8,8 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.intuso.housemate.comms.v1_0.api.payload.TypeData;
-import com.intuso.housemate.object.v1_0.api.TypeInstances;
+import com.intuso.housemate.client.v1_0.api.object.Type;
 import com.intuso.housemate.web.client.bootstrap.widget.type.ParameterInputList;
 import com.intuso.housemate.web.client.object.GWTProxyCommand;
 import com.intuso.housemate.web.client.object.GWTProxyList;
@@ -19,7 +18,7 @@ import org.gwtbootstrap3.client.ui.Button;
 
 /**
  */
-public class Command extends Composite implements com.intuso.housemate.object.v1_0.api.Command.PerformListener<GWTProxyCommand> {
+public class Command extends Composite implements com.intuso.housemate.client.v1_0.api.object.Command.PerformListener<GWTProxyCommand> {
 
     interface CommandUiBinder extends UiBinder<FlowPanel, Command> {}
 
@@ -33,19 +32,19 @@ public class Command extends Composite implements com.intuso.housemate.object.v1
     Button performButton;
 
     private GWTProxyCommand command;
-    private com.intuso.housemate.object.v1_0.api.Command.PerformListener<GWTProxyCommand> listener;
-    private TypeInstances values;
+    private com.intuso.housemate.client.v1_0.api.object.Command.PerformListener<GWTProxyCommand> listener;
+    private Type.Instances values;
 
-    public Command(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command) {
+    public Command(GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyCommand command) {
         this(types, command, null);
     }
 
-    public Command(GWTProxyList<TypeData<?>, GWTProxyType> types, GWTProxyCommand command, com.intuso.housemate.object.v1_0.api.Command.PerformListener<GWTProxyCommand> listener) {
+    public Command(GWTProxyList<Type.Data<?>, GWTProxyType> types, GWTProxyCommand command, com.intuso.housemate.client.v1_0.api.object.Command.PerformListener<GWTProxyCommand> listener) {
 
         this.command = command;
         this.listener = listener;
 
-        values = new TypeInstances();
+        values = new Type.Instances();
 
         initWidget(ourUiBinder.createAndBindUi(this));
 

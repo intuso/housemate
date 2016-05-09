@@ -1,10 +1,7 @@
 package com.intuso.housemate.platform.android.app.object;
 
-import com.intuso.housemate.client.v1_0.proxy.api.LoggerUtil;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyObject;
-import com.intuso.housemate.client.v1_0.proxy.api.ProxyUser;
-import com.intuso.housemate.comms.v1_0.api.payload.HousemateData;
-import com.intuso.housemate.comms.v1_0.api.payload.UserData;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyUser;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -17,20 +14,12 @@ import org.slf4j.Logger;
  */
 public class AndroidProxyUser extends ProxyUser<AndroidProxyCommand, AndroidProxyProperty, AndroidProxyUser> {
 
-    private final AndroidProxyFactory factory;
-
     /**
      * @param logger  {@inheritDoc}
-     * @param data {@inheritDoc}
-     * @param factory
      */
-    protected AndroidProxyUser(Logger logger, ListenersFactory listenersFactory, UserData data, AndroidProxyFactory factory) {
-        super(logger, listenersFactory, data);
-        this.factory = factory;
-    }
-
-    @Override
-    protected ProxyObject<?, ?, ?, ?, ?> createChild(HousemateData<?> data) {
-        return factory.create(LoggerUtil.child(getLogger(), data.getId()), data);
+    protected AndroidProxyUser(Logger logger, ListenersFactory listenersFactory,
+                               ProxyObject.Factory<AndroidProxyCommand> commandFactory,
+                               ProxyObject.Factory<AndroidProxyProperty> propertyFactory) {
+        super(logger, listenersFactory, commandFactory, propertyFactory);
     }
 }

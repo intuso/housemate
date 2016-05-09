@@ -1,25 +1,29 @@
 package com.intuso.housemate.client.real.api.internal;
 
+import com.intuso.housemate.client.api.internal.object.Hardware;
 import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.real.api.internal.driver.PluginResource;
-import com.intuso.housemate.comms.api.internal.payload.HardwareData;
-import com.intuso.housemate.object.api.internal.Hardware;
-import org.slf4j.Logger;
 
 /**
  * Base class for all hardwares
  */
-public interface RealHardware<DRIVER extends HardwareDriver>
-        extends Hardware<
-        RealCommand,
-        RealCommand,
-        RealCommand,
-        RealValue<Boolean>,
-        RealValue<String>,
-        RealProperty<PluginResource<HardwareDriver.Factory<DRIVER>>>,
-        RealValue<Boolean>,
-        RealList<RealProperty<?>>,
-        RealHardware<DRIVER>>,HardwareDriver.Callback {
+public interface RealHardware<DRIVER extends HardwareDriver,
+        COMMAND extends RealCommand<?, ?, ?>,
+        BOOLEAN_VALUE extends RealValue<Boolean, ?, ?>,
+        STRING_VALUE extends RealValue<String, ?, ?>,
+        DRIVER_PROPERTY extends RealProperty<PluginResource<HardwareDriver.Factory<DRIVER>>, ?, ?, ?>,
+        PROPERTIES extends com.intuso.housemate.client.real.api.internal.RealList<? extends RealProperty<?, ?, ?, ?>, ?>,
+        HARDWARE extends RealHardware<DRIVER, COMMAND, BOOLEAN_VALUE, STRING_VALUE, DRIVER_PROPERTY, PROPERTIES, HARDWARE>>
+        extends Hardware<COMMAND,
+                        COMMAND,
+                        COMMAND,
+                        BOOLEAN_VALUE,
+                        STRING_VALUE,
+                        DRIVER_PROPERTY,
+                        BOOLEAN_VALUE,
+                        PROPERTIES,
+                        HARDWARE>,
+        HardwareDriver.Callback {
 
     DRIVER getDriver();
 
@@ -27,16 +31,11 @@ public interface RealHardware<DRIVER extends HardwareDriver>
 
     boolean isRunning();
 
-    interface Container extends Hardware.Container<RealList<RealHardware<?>>>, RemoveCallback {
-        <DRIVER extends HardwareDriver> RealHardware<DRIVER> createAndAddHardware(HardwareData data);
-        void addHardware(RealHardware<?> hardware);
+    interface Container<HARDWARE extends RealHardware<?, ?, ?, ?, ?, ?, ?>, HARDWARES extends com.intuso.housemate.client.real.api.internal.RealList<? extends HARDWARE, ?>> extends Hardware.Container<HARDWARES>, RemoveCallback<HARDWARE> {
+        void addHardware(HARDWARE hardware);
     }
 
-    interface RemoveCallback {
-        void removeHardware(RealHardware hardware);
-    }
-
-    interface Factory {
-        RealHardware<?> create(Logger logger, HardwareData data, RemoveCallback removeCallback);
+    interface RemoveCallback<HARDWARE extends RealHardware<?, ?, ?, ?, ?, ?, ?>> {
+        void removeHardware(HARDWARE hardware);
     }
 }
