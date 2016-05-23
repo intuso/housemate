@@ -1,9 +1,9 @@
 package com.intuso.housemate.device.ioc;
 
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.device.RunProgramDeviceDriver;
-import com.intuso.housemate.plugin.v1_0.api.AnnotatedPluginModule;
-import com.intuso.housemate.plugin.v1_0.api.DeviceDrivers;
+import com.intuso.housemate.plugin.v1_0.api.module.AnnotatedPluginModule;
+import com.intuso.housemate.plugin.v1_0.api.module.DeviceDrivers;
 
 /**
  * Created with IntelliJ IDEA.

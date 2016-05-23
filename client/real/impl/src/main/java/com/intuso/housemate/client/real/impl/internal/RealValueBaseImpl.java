@@ -1,7 +1,6 @@
 package com.intuso.housemate.client.real.impl.internal;
 
 import com.google.common.collect.Lists;
-import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Serialiser;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.real.api.internal.RealValueBase;
@@ -20,7 +19,7 @@ import java.util.List;
  * @param <VALUE> the type of the value
  */
 public abstract class RealValueBaseImpl<O,
-            DATA extends Object.Data,
+            DATA extends ValueBase.Data,
             LISTENER extends ValueBase.Listener<? super VALUE>,
             VALUE extends RealValueBase<O, RealTypeImpl<O>, LISTENER, VALUE>>
         extends RealObject<DATA, LISTENER>
@@ -31,7 +30,7 @@ public abstract class RealValueBaseImpl<O,
     private Session session;
     private MessageProducer valueProducer;
 
-    private List<O> values;
+    private Iterable<O> values;
 
     /**
      * @param logger {@inheritDoc}
@@ -39,7 +38,7 @@ public abstract class RealValueBaseImpl<O,
      * @param data {@inheritDoc}
      * @param type the type of the value's value
      */
-    public RealValueBaseImpl(Logger logger, DATA data, ListenersFactory listenersFactory, RealTypeImpl<O> type, List<O> values) {
+    public RealValueBaseImpl(Logger logger, DATA data, ListenersFactory listenersFactory, RealTypeImpl<O> type, Iterable<O> values) {
         super(logger, data, listenersFactory);
         this.type = type;
         this.values = values;
@@ -80,14 +79,14 @@ public abstract class RealValueBaseImpl<O,
 
     @Override
     public O getValue() {
-        return values != null && values.size() > 0 ? values.get(0) : null;
+        return values != null && values.iterator().hasNext() ? values.iterator().next() : null;
     }
 
     /**
      * Gets the object representation of this value
      * @return
      */
-    public List<O> getValues() {
+    public Iterable<O> getValues() {
         return values;
     }
 

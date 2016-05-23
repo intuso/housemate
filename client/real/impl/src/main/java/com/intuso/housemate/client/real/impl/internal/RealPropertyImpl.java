@@ -1,7 +1,9 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Command;
-import com.intuso.housemate.client.api.internal.object.Parameter;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
@@ -10,7 +12,6 @@ import org.slf4j.Logger;
 
 import javax.jms.JMSException;
 import javax.jms.Session;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,38 +29,36 @@ public class RealPropertyImpl<O>
      * @param type the property's type
      * @param values the property's initial value
      */
-    public RealPropertyImpl(Logger logger,
-                            Property.Data data,
+    @Inject
+    public RealPropertyImpl(@Assisted Logger logger,
+                            @Assisted("id") String id,
+                            @Assisted("name") String name,
+                            @Assisted("description") String description,
+                            @Assisted("min") int minValues,
+                            @Assisted("max") int maxValues,
+                            @Assisted Iterable<O> values,
                             ListenersFactory listenersFactory,
-                            RealTypeImpl<O> type,
-                            O... values) {
-        this(logger, data, listenersFactory, type, Arrays.asList(values));
-    }
-
-    /**
-     * @param logger {@inheritDoc}
-     * @param listenersFactory
-     * @param type the property's type
-     * @param values the property's initial value
-     */
-    public RealPropertyImpl(Logger logger,
-                            Property.Data data,
-                            ListenersFactory listenersFactory,
-                            RealTypeImpl<O> type,
-                            List<O> values) {
-        super(logger, data, listenersFactory, type, values);
-        setCommand = new RealCommandImpl(ChildUtil.logger(logger, Property.SET_COMMAND_ID),
-                new Command.Data(Property.SET_COMMAND_ID, Property.SET_COMMAND_ID, "The function to change the property's value"),
-                listenersFactory,
-                new RealParameterImpl<>(ChildUtil.logger(logger, Property.SET_COMMAND_ID, Property.VALUE_PARAM),
-                        new Parameter.Data(Property.VALUE_PARAM, Property.VALUE_PARAM, "The new value for the property"),
-                        listenersFactory, type)) {
-            @Override
-            public void perform(Type.InstanceMap serialisedValues) {
-                List<O> values = RealTypeImpl.deserialiseAll(getType(), serialisedValues.getChildren().get(Property.VALUE_PARAM));
-                RealPropertyImpl.this.setValues(values);
-            }
-        };
+                            RealCommandImpl.Factory commandFactory,
+                            RealParameterImpl.Factory<O> parameterFactory,
+                            RealTypeImpl<O> type) {
+        super(logger, new Property.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory, type, values);
+        setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID),
+                Property.SET_COMMAND_ID,
+                Property.SET_COMMAND_ID,
+                "The function to change the property's value",
+                new RealCommandImpl.Performer() {
+                    @Override
+                    public void perform(Type.InstanceMap serialisedValues) {
+                        List<O> values = RealTypeImpl.deserialiseAll(getType(), serialisedValues.getChildren().get(Property.VALUE_PARAM));
+                        RealPropertyImpl.this.setValues(values);
+                    }
+                },
+                Lists.newArrayList(parameterFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID, Property.VALUE_PARAM),
+                        Property.VALUE_PARAM,
+                        Property.VALUE_PARAM,
+                        "The new value for the property",
+                        minValues,
+                        maxValues)));
     }
 
     @Override
@@ -86,5 +85,15 @@ public class RealPropertyImpl<O>
     @Override
     public RealCommandImpl getSetCommand() {
         return setCommand;
+    }
+
+    public interface Factory<O> {
+        RealPropertyImpl<O> create(Logger logger,
+                                   @Assisted("id") String id,
+                                   @Assisted("name") String name,
+                                   @Assisted("description") String description,
+                                   @Assisted("min") int minValues,
+                                   @Assisted("max") int maxValues,
+                                   Iterable<O> values);
     }
 }

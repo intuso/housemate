@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Type for selecting options from a list
@@ -30,13 +29,10 @@ public abstract class RealChoiceType<O>
      * @param name the type's name
      * @param description the type's description
      * @param listenersFactory
-     * @param minValues the minimum number of values the type can have
-     * @param maxValues the maximum number of values the type can have
      * @param options the type's options
      */
-    protected RealChoiceType(Logger logger, String id, String name, String description, ListenersFactory listenersFactory, int minValues,
-                             int maxValues, RealOptionImpl... options) {
-        this(logger, id, name, description, listenersFactory, minValues, maxValues, Arrays.asList(options));
+    protected RealChoiceType(Logger logger, String id, String name, String description, ListenersFactory listenersFactory, RealOptionImpl... options) {
+        this(logger, id, name, description, listenersFactory, Arrays.asList(options));
     }
 
     /**
@@ -45,14 +41,16 @@ public abstract class RealChoiceType<O>
      * @param name the type's name
      * @param description the type's description
      * @param listenersFactory
-     * @param minValues the minimum number of values the type can have
-     * @param maxValues the maximum number of values the type can have
      * @param options the type's options
      */
-    protected RealChoiceType(Logger logger, String id, String name, String description, ListenersFactory listenersFactory, int minValues,
-                             int maxValues, List<RealOptionImpl> options) {
-        super(logger, new ChoiceData(id, name, description, minValues, maxValues), listenersFactory);
-        this.options = new RealListImpl<>(logger, new com.intuso.housemate.client.api.internal.object.List.Data(OPTIONS, OPTIONS, "The options for the choice"), listenersFactory, options);
+    protected RealChoiceType(Logger logger, String id, String name, String description, ListenersFactory listenersFactory, Iterable<RealOptionImpl> options) {
+        super(logger, new ChoiceData(id, name, description), listenersFactory);
+        this.options = new RealListImpl<>(logger,
+                OPTIONS,
+                OPTIONS,
+                "The options for the choice",
+                options, listenersFactory
+        );
     }
 
     @Override

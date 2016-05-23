@@ -1,13 +1,13 @@
 package com.intuso.housemate.plugin.api.bridge.v1_0;
 
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
+import com.intuso.housemate.plugin.v1_0.api.annotations.TypeInfo;
 
 import java.lang.annotation.Annotation;
 
 /**
  * Created by tomc on 06/11/15.
  */
-public class TypeInfoBridge implements com.intuso.housemate.client.real.api.internal.annotations.TypeInfo {
+public class TypeInfoBridge implements com.intuso.housemate.plugin.api.internal.annotations.TypeInfo {
 
     private final TypeInfo typeInfo;
 
@@ -32,6 +32,6 @@ public class TypeInfoBridge implements com.intuso.housemate.client.real.api.inte
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return com.intuso.housemate.client.real.api.internal.annotations.TypeInfo.class;
+        return com.intuso.housemate.plugin.api.internal.annotations.TypeInfo.class;
     }
 }

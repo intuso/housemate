@@ -1,9 +1,9 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Feature;
-import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.real.api.internal.RealFeature;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
@@ -20,15 +20,23 @@ public final class RealFeatureImpl
 
     @Inject
     public RealFeatureImpl(@Assisted final Logger logger,
-                           @Assisted Feature.Data data,
-                           ListenersFactory listenersFactory) {
-        super(logger, data, listenersFactory);
-        this.commands = new RealListImpl<>(ChildUtil.logger(logger, Feature.COMMANDS_ID),
-                new List.Data(Feature.COMMANDS_ID, "Commands", "The commands of this feature"),
-                listenersFactory);
-        this.values = new RealListImpl<>(ChildUtil.logger(logger, Feature.VALUES_ID),
-                new List.Data(Feature.VALUES_ID, "Values", "The values of this feature"),
-                listenersFactory);
+                           @Assisted("id") String id,
+                           @Assisted("name") String name,
+                           @Assisted("description") String description,
+                           ListenersFactory listenersFactory,
+                           RealListImpl.Factory<RealCommandImpl> commandsFactory,
+                           RealListImpl.Factory<RealValueImpl<?>> valuesFactory) {
+        super(logger, new Feature.Data(id, name, description), listenersFactory);
+        this.commands = commandsFactory.create(ChildUtil.logger(logger, Feature.COMMANDS_ID),
+                Feature.COMMANDS_ID,
+                "Commands",
+                "The commands of this feature",
+                Lists.<RealCommandImpl>newArrayList());
+        this.values = valuesFactory.create(ChildUtil.logger(logger, Feature.VALUES_ID),
+                Feature.VALUES_ID,
+                "Values",
+                "The values of this feature",
+                Lists.<RealValueImpl<?>>newArrayList());
     }
 
     @Override
@@ -56,6 +64,9 @@ public final class RealFeatureImpl
     }
 
     public interface Factory {
-        RealFeatureImpl create(Logger logger, Feature.Data data);
+        RealFeatureImpl create(Logger logger,
+                               @Assisted("id") String id,
+                               @Assisted("name") String name,
+                               @Assisted("description") String description);
     }
 }

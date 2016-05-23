@@ -20,7 +20,6 @@ public interface Property<
      * @param value the new value
      * @param listener the listener to notify of progress
      */
-    // todo use a PropertySet listener instead. Not every impl has a command to use in the PerformListener, eg RealPropertyBridge.
     void set(DATA_TYPE value, Command.PerformListener<? super SET_COMMAND> listener);
 
     /**
@@ -48,16 +47,16 @@ public interface Property<
      *
      * Data object for a property
      */
-    final class Data extends Object.Data {
+    final class Data extends ValueBase.Data {
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "property";
+        public final static String OBJECT_TYPE = "property";
 
         private Data() {}
 
-        public Data(String id, String name, String description) {
-            super(TYPE, id, name, description);
+        public Data(String id, String name, String description, String type, int minValues, int maxValues) {
+            super(OBJECT_TYPE, id, name, description, type, minValues, maxValues);
         }
     }
 }

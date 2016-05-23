@@ -17,7 +17,7 @@ public class AndroidProxyProperty extends ProxyProperty<AndroidProxyType, Androi
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxyProperty(Logger logger, ListenersFactory listenersFactory, ProxyObject.Factory<AndroidProxyType> typeFactory, ProxyObject.Factory<AndroidProxyCommand> commandFactory) {
-        super(logger, listenersFactory, typeFactory, commandFactory);
+    protected AndroidProxyProperty(Logger logger, ListenersFactory listenersFactory, ProxyObject.Factory<AndroidProxyCommand> commandFactory) {
+        super(logger, listenersFactory, commandFactory);
     }
 }

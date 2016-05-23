@@ -1,32 +1,31 @@
 package com.intuso.housemate.client.real.api.internal;
 
 import com.intuso.housemate.client.api.internal.object.Condition;
-import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.client.real.api.internal.driver.PluginResource;
+import com.intuso.housemate.plugin.api.internal.driver.ConditionDriver;
+import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
 
-public interface RealCondition<DRIVER extends ConditionDriver,
-        COMMAND extends RealCommand<?, ?, ?>,
+public interface RealCondition<COMMAND extends RealCommand<?, ?, ?>,
         BOOLEAN_VALUE extends RealValue<Boolean, ?, ?>,
         STRING_VALUE extends RealValue<String, ?, ?>,
-        DRIVER_PROPERTY extends RealProperty<PluginResource<ConditionDriver.Factory<DRIVER>>, ?, ?, ?>,
-        PROPERTIES extends com.intuso.housemate.client.real.api.internal.RealList<? extends RealProperty<?, ?, ?, ?>, ?>,
-        CHILD_CONDITION extends RealCondition<?, ?, ?, ?, ?, ?, ?, ?, ?>,
-        CHILD_CONDITIONS extends com.intuso.housemate.client.real.api.internal.RealList<? extends CHILD_CONDITION, ?>,
-        CONDITION extends RealCondition<DRIVER, COMMAND, BOOLEAN_VALUE, STRING_VALUE, DRIVER_PROPERTY, PROPERTIES, CHILD_CONDITION, CHILD_CONDITIONS, CONDITION>>
+        DRIVER_PROPERTY extends RealProperty<PluginResource<ConditionDriver.Factory<?>>, ?, ?, ?>,
+        PROPERTIES extends RealList<? extends RealProperty<?, ?, ?, ?>, ?>,
+        CHILD_CONDITION extends RealCondition<?, ?, ?, ?, ?, ?, ?, ?>,
+        CHILD_CONDITIONS extends RealList<? extends CHILD_CONDITION, ?>,
+        CONDITION extends RealCondition<COMMAND, BOOLEAN_VALUE, STRING_VALUE, DRIVER_PROPERTY, PROPERTIES, CHILD_CONDITION, CHILD_CONDITIONS, CONDITION>>
         extends Condition<COMMAND,
-                COMMAND,
-                STRING_VALUE,
-                DRIVER_PROPERTY,
-                BOOLEAN_VALUE,
-                BOOLEAN_VALUE,
-                PROPERTIES,
-                COMMAND,
-                CHILD_CONDITIONS,
-                CONDITION>,
+        COMMAND,
+        STRING_VALUE,
+        DRIVER_PROPERTY,
+        BOOLEAN_VALUE,
+        BOOLEAN_VALUE,
+        PROPERTIES,
+        COMMAND,
+        CHILD_CONDITIONS,
+        CONDITION>,
         Condition.Listener<CHILD_CONDITION>,
         ConditionDriver.Callback {
 
-    DRIVER getDriver();
+    <DRIVER extends ConditionDriver> DRIVER getDriver();
 
     boolean isDriverLoaded();
 
@@ -50,11 +49,11 @@ public interface RealCondition<DRIVER extends ConditionDriver,
 
     void stop();
 
-    interface Container<CONDITION extends RealCondition<?, ?, ?, ?, ?, ?, ?, ?, ?>, CONDITIONS extends com.intuso.housemate.client.real.api.internal.RealList<? extends CONDITION, ?>> extends Condition.Container<CONDITIONS>, RemoveCallback {
+    interface Container<CONDITION extends RealCondition<?, ?, ?, ?, ?, ?, ?, ?>, CONDITIONS extends RealList<? extends CONDITION, ?>> extends Condition.Container<CONDITIONS>, RemoveCallback {
         void addCondition(CONDITION condition);
     }
 
-    interface RemoveCallback<CONDITION extends RealCondition<?, ?, ?, ?, ?, ?, ?, ?, ?>> {
+    interface RemoveCallback<CONDITION extends RealCondition<?, ?, ?, ?, ?, ?, ?, ?>> {
         void removeCondition(CONDITION condition);
     }
 }

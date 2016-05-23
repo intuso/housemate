@@ -5,7 +5,7 @@ import com.google.inject.Key;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
+import com.intuso.housemate.plugin.api.internal.driver.DeviceDriver;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;

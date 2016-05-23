@@ -5,14 +5,13 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
-import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.internal.object.Property;
+import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
-import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
-import com.intuso.housemate.client.real.api.internal.driver.PluginResource;
 import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationProcessor;
-import com.intuso.housemate.client.real.impl.internal.factory.device.DeviceFactoryType;
-import com.intuso.housemate.client.real.impl.internal.type.BooleanType;
-import com.intuso.housemate.client.real.impl.internal.type.StringType;
+import com.intuso.housemate.plugin.api.internal.driver.DeviceDriver;
+import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -22,11 +21,11 @@ import javax.jms.Session;
 /**
  * Base class for all device
  */
-public final class RealDeviceImpl<DRIVER extends DeviceDriver>
-        extends RealObject<Device.Data, Device.Listener<? super RealDeviceImpl<DRIVER>>>
-        implements RealDevice<DRIVER, RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-                RealPropertyImpl<PluginResource<DeviceDriver.Factory<DRIVER>>>, RealListImpl<RealPropertyImpl<?>>,
-                RealListImpl<RealFeatureImpl>, RealDeviceImpl<DRIVER>> {
+public final class RealDeviceImpl
+        extends RealObject<Device.Data, Device.Listener<? super RealDeviceImpl>>
+        implements RealDevice<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
+        RealPropertyImpl<PluginResource<DeviceDriver.Factory<?>>>, RealListImpl<RealPropertyImpl<?>>,
+        RealListImpl<RealFeatureImpl>, RealDeviceImpl> {
 
     private final static String PROPERTIES_DESCRIPTION = "The device's properties";
     private final static String FEATURES_DESCRIPTION = "The device's features";
@@ -39,103 +38,144 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
     private final RealCommandImpl startCommand;
     private final RealCommandImpl stopCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealPropertyImpl<PluginResource<DeviceDriver.Factory<DRIVER>>> driverProperty;
+    private final RealPropertyImpl<PluginResource<DeviceDriver.Factory<?>>> driverProperty;
     private final RealValueImpl<Boolean> driverLoadedValue;
     private final RealListImpl<RealPropertyImpl<?>> properties;
     private final RealListImpl<RealFeatureImpl> features;
 
-    private final RemoveCallback<RealDeviceImpl<DRIVER>> removeCallback;
+    private final RemoveCallback<RealDeviceImpl> removeCallback;
 
-    private DRIVER driver;
+    private DeviceDriver driver;
 
     /**
      * @param logger {@inheritDoc}
-     * @param data the device's data
      * @param listenersFactory
      */
     @Inject
     public RealDeviceImpl(@Assisted final Logger logger,
-                          @Assisted Device.Data data,
+                          @Assisted("id") String id,
+                          @Assisted("name") String name,
+                          @Assisted("description") String description,
+                          @Assisted RemoveCallback<RealDeviceImpl> removeCallback,
                           ListenersFactory listenersFactory,
-                          @Assisted RemoveCallback<RealDeviceImpl<DRIVER>> removeCallback,
                           AnnotationProcessor annotationProcessor,
-                          DeviceFactoryType driverFactoryType) {
-        super(logger, data, listenersFactory);
+                          RealCommandImpl.Factory commandFactory,
+                          RealParameterImpl.Factory<String> stringParameterFactory,
+                          RealValueImpl.Factory<Boolean> booleanValueFactory,
+                          RealValueImpl.Factory<String> stringValueFactory,
+                          RealListImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
+                          RealListImpl.Factory<RealFeatureImpl> featuresFactory,
+                          RealPropertyImpl.Factory<PluginResource<DeviceDriver.Factory<? extends DeviceDriver>>> driverPropertyFactory) {
+        super(logger, new Device.Data(id, name, description), listenersFactory);
         this.annotationProcessor = annotationProcessor;
         this.removeCallback = removeCallback;
-        this.renameCommand = new RealCommandImpl(ChildUtil.logger(logger, Renameable.RENAME_ID),
-                new Command.Data(Renameable.RENAME_ID, Renameable.RENAME_ID, "Rename the device"),
-                listenersFactory,
-                StringType.createParameter(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
-                        new Parameter.Data(Renameable.NAME_ID, Renameable.NAME_ID, "The new name"),
-                        listenersFactory)) {
+        this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
+                Renameable.RENAME_ID,
+                Renameable.RENAME_ID,
+                "Rename the device",
+                new RealCommandImpl.Performer() {
+                    @Override
+                    public void perform(Type.InstanceMap values) {
+                        if(values != null && values.getChildren().containsKey(Renameable.NAME_ID)) {
+                            String newName = values.getChildren().get(Renameable.NAME_ID).getFirstValue();
+                            if (newName != null && !RealDeviceImpl.this.getName().equals(newName))
+                                setName(newName);
+                        }
+                    }
+                },
+                Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
+                        Renameable.NAME_ID,
+                        Renameable.NAME_ID,
+                        "The new name",
+                        1,
+                        1)));
+        this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
+                Removeable.REMOVE_ID,
+                Removeable.REMOVE_ID,
+                "Remove the device",
+                new RealCommandImpl.Performer() {
+                    @Override
+                    public void perform(Type.InstanceMap values) {
+                        if(isRunning())
+                            throw new HousemateException("Cannot remove while device is still running");
+                        remove();
+                    }
+                },
+                Lists.<RealParameterImpl<?>>newArrayList());
+        this.runningValue = booleanValueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID),
+                Runnable.RUNNING_ID,
+                Runnable.RUNNING_ID,
+                "Whether the device is running or not",
+                1,
+                1,
+                Lists.newArrayList(false));
+        this.startCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.START_ID),
+                Runnable.START_ID,
+                Runnable.START_ID,
+                "Start the device",
+                new RealCommandImpl.Performer() {
+                    @Override
+                    public void perform(Type.InstanceMap values) {
+                        if(!isRunning()) {
+                            _start();
+                            runningValue.setValue(true);
+                        }
+                    }
+                },
+                Lists.<RealParameterImpl<?>>newArrayList());
+        this.stopCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.STOP_ID),
+                Runnable.STOP_ID,
+                Runnable.STOP_ID,
+                "Stop the device",
+                new RealCommandImpl.Performer() {
+                    @Override
+                    public void perform(Type.InstanceMap values) {
+                        if(isRunning()) {
+                            _stop();
+                            runningValue.setValue(false);
+                        }
+                    }
+                },
+                Lists.<RealParameterImpl<?>>newArrayList());
+        this.errorValue = stringValueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID),
+                Failable.ERROR_ID,
+                Failable.ERROR_ID,
+                "Current error for the device",
+                1,
+                1,
+                Lists.<String>newArrayList());
+        this.driverProperty = driverPropertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
+                UsesDriver.DRIVER_ID,
+                UsesDriver.DRIVER_ID,
+                "The device's driver",
+                1,
+                1,
+                Lists.<PluginResource<DeviceDriver.Factory<?>>>newArrayList());
+        this.driverLoadedValue = booleanValueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
+                UsesDriver.DRIVER_LOADED_ID,
+                UsesDriver.DRIVER_LOADED_ID,
+                "Whether the device's driver is loaded or not",
+                1,
+                1,
+                Lists.newArrayList(false));
+        this.properties = propertiesFactory.create(ChildUtil.logger(logger, Device.PROPERTIES_ID),
+                Device.PROPERTIES_ID,
+                Device.PROPERTIES_ID,
+                PROPERTIES_DESCRIPTION,
+                Lists.<RealPropertyImpl<?>>newArrayList());
+        this.features = featuresFactory.create(ChildUtil.logger(logger, Device.FEATURES_ID),
+                Device.FEATURES_ID,
+                Device.FEATURES_ID,
+                FEATURES_DESCRIPTION,
+                Lists.<RealFeatureImpl>newArrayList());
+        driverProperty.addObjectListener(new Property.Listener<RealPropertyImpl<PluginResource<DeviceDriver.Factory<?>>>>() {
             @Override
-            public void perform(Type.InstanceMap values) {
-                if(values != null && values.getChildren().containsKey(Renameable.NAME_ID)) {
-                    String newName = values.getChildren().get(Renameable.NAME_ID).getFirstValue();
-                    if (newName != null && !RealDeviceImpl.this.getName().equals(newName))
-                        setName(newName);
-                }
-            }
-        };
-        this.removeCommand = new RealCommandImpl(ChildUtil.logger(logger, Removeable.REMOVE_ID),
-                new Command.Data(Removeable.REMOVE_ID, Removeable.REMOVE_ID, "Remove the device"),
-                listenersFactory) {
-            @Override
-            public void perform(Type.InstanceMap values) {
-                if(isRunning())
-                    throw new HousemateException("Cannot remove while device is still running");
-                remove();
-            }
-        };
-        this.runningValue = BooleanType.createValue(ChildUtil.logger(logger, Runnable.RUNNING_ID),
-                new Value.Data(Runnable.RUNNING_ID, Runnable.RUNNING_ID, "Whether the device is running or not"),
-                listenersFactory,
-                false);
-        this.startCommand = new RealCommandImpl(ChildUtil.logger(logger, Runnable.START_ID),
-                new Command.Data(Runnable.START_ID, Runnable.START_ID, "Start the device"),
-                listenersFactory) {
-            @Override
-            public void perform(Type.InstanceMap values) {
-                if(!isRunning()) {
-                    _start();
-                    runningValue.setValue(true);
-                }
-            }
-        };
-        this.stopCommand = new RealCommandImpl(ChildUtil.logger(logger, Runnable.STOP_ID),
-                new Command.Data(Runnable.STOP_ID, Runnable.STOP_ID, "Stop the device"),
-                listenersFactory) {
-            @Override
-            public void perform(Type.InstanceMap values) {
-                if(isRunning()) {
-                    _stop();
-                    runningValue.setValue(false);
-                }
-            }
-        };
-        this.errorValue = StringType.createValue(ChildUtil.logger(logger, Failable.ERROR_ID),
-                new Value.Data(Failable.ERROR_ID, Failable.ERROR_ID, "Current error for the device"),
-                listenersFactory,
-                null);
-        this.driverProperty = (RealPropertyImpl) new RealPropertyImpl(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
-                new Property.Data(UsesDriver.DRIVER_ID, UsesDriver.DRIVER_ID, "The device's driver"),
-                listenersFactory,
-                driverFactoryType);
-        this.driverLoadedValue = BooleanType.createValue(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
-                new Value.Data(UsesDriver.DRIVER_LOADED_ID, UsesDriver.DRIVER_LOADED_ID, "Whether the device's driver is loaded or not"),
-                listenersFactory,
-                false);
-        this.properties = new RealListImpl<>(ChildUtil.logger(logger, Device.PROPERTIES_ID), new List.Data(Device.PROPERTIES_ID, Device.PROPERTIES_ID, PROPERTIES_DESCRIPTION), listenersFactory);
-        this.features = new RealListImpl<>(ChildUtil.logger(logger, Device.FEATURES_ID), new List.Data(Device.FEATURES_ID, Device.FEATURES_ID, FEATURES_DESCRIPTION), listenersFactory);
-        driverProperty.addObjectListener(new Property.Listener<RealPropertyImpl<PluginResource<DeviceDriver.Factory<DRIVER>>>>() {
-            @Override
-            public void valueChanging(RealPropertyImpl<PluginResource<DeviceDriver.Factory<DRIVER>>> factoryRealProperty) {
+            public void valueChanging(RealPropertyImpl<PluginResource<DeviceDriver.Factory<?>>> factoryRealProperty) {
                 uninitDriver();
             }
 
             @Override
-            public void valueChanged(RealPropertyImpl<PluginResource<DeviceDriver.Factory<DRIVER>>> factoryRealProperty) {
+            public void valueChanged(RealPropertyImpl<PluginResource<DeviceDriver.Factory<?>>> factoryRealProperty) {
                 initDriver();
             }
         });
@@ -174,7 +214,7 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
 
     private void setName(String newName) {
         RealDeviceImpl.this.getData().setName(newName);
-        for(Device.Listener<? super RealDeviceImpl<DRIVER>> listener : listeners)
+        for(Device.Listener<? super RealDeviceImpl> listener : listeners)
             listener.renamed(RealDeviceImpl.this, RealDeviceImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
@@ -182,7 +222,7 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
 
     private void initDriver() {
         if(driver == null) {
-            PluginResource<DeviceDriver.Factory<DRIVER>> driverFactory = driverProperty.getValue();
+            PluginResource<DeviceDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
                 driver = driverFactory.getResource().create(logger, this);
                 for(RealFeatureImpl feature : annotationProcessor.findFeatures(logger, driver))
@@ -207,8 +247,8 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
         }
     }
 
-    public DRIVER getDriver() {
-        return driver;
+    public <DRIVER extends DeviceDriver> DRIVER getDriver() {
+        return (DRIVER) driver;
     }
 
     @Override
@@ -227,7 +267,7 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
     }
 
     @Override
-    public RealPropertyImpl<PluginResource<DeviceDriver.Factory<DRIVER>>> getDriverProperty() {
+    public RealPropertyImpl<PluginResource<DeviceDriver.Factory<?>>> getDriverProperty() {
         return driverProperty;
     }
 
@@ -292,7 +332,11 @@ public final class RealDeviceImpl<DRIVER extends DeviceDriver>
         errorValue.setValue(error);
     }
 
-    public static interface Factory {
-        RealDeviceImpl<?> create(Logger logger, Device.Data data, RemoveCallback<RealDeviceImpl<?>> removeCallback);
+    public interface Factory {
+        RealDeviceImpl create(Logger logger,
+                                 @Assisted("id") String id,
+                                 @Assisted("name") String name,
+                                 @Assisted("description") String description,
+                                 RemoveCallback<RealDeviceImpl> removeCallback);
     }
 }

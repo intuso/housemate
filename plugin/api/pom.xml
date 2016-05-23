@@ -21,13 +21,6 @@
             <version>${intuso.housemate.plugin.version}</version>
         </dependency>
 
-        <!-- API dependencies -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-client-real-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- Guice -->
         <dependency>
             <groupId>com.google.inject.extensions</groupId>

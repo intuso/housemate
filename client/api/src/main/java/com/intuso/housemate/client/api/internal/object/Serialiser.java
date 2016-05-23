@@ -1,6 +1,6 @@
 package com.intuso.housemate.client.api.internal.object;
 
-import com.intuso.housemate.client.v1_0.api.HousemateException;
+import com.intuso.housemate.client.api.internal.HousemateException;
 
 import java.io.*;
 

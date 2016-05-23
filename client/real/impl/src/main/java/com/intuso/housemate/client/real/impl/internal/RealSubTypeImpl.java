@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.SubType;
 import com.intuso.housemate.client.real.api.internal.RealSubType;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -19,16 +21,30 @@ public final class RealSubTypeImpl<O>
      * @param listenersFactory
      * @param type
      */
-    public RealSubTypeImpl(Logger logger,
-                           SubType.Data data,
+    @Inject
+    public RealSubTypeImpl(@Assisted Logger logger,
+                           @Assisted("id") String id,
+                           @Assisted("name") String name,
+                           @Assisted("description") String description,
+                           @Assisted("min") int minValues,
+                           @Assisted("max") int maxValues,
                            ListenersFactory listenersFactory,
                            RealTypeImpl<O> type) {
-        super(logger, data, listenersFactory);
+        super(logger, new SubType.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory);
         this.type = type;
     }
 
     @Override
     public final RealTypeImpl<O> getType() {
         return type;
+    }
+
+    public interface Factory<O> {
+        RealSubTypeImpl<O> create(Logger logger,
+                                  @Assisted("id") String id,
+                                  @Assisted("name") String name,
+                                  @Assisted("description") String description,
+                                  @Assisted("min") int minValues,
+                                  @Assisted("max") int maxValues);
     }
 }

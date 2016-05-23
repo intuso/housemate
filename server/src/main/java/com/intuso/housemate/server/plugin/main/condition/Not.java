@@ -2,9 +2,7 @@ package com.intuso.housemate.server.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
-import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.client.real.impl.internal.driver.LogicCondition;
+import com.intuso.housemate.plugin.api.internal.annotations.TypeInfo;
 import org.slf4j.Logger;
 
 import java.util.Map;
@@ -19,7 +17,7 @@ public class Not extends LogicCondition {
     private final Logger logger;
 
     @Inject
-    public Not(@Assisted Logger logger, @Assisted ConditionDriver.Callback conditionCallback) {
+    public Not(@Assisted Logger logger, @Assisted Callback conditionCallback) {
         super(conditionCallback);
         this.logger = logger;
         // todo move this check somewhere else

@@ -1,26 +1,26 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Serialiser;
 import com.intuso.housemate.client.api.internal.object.Type;
-import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
-import com.intuso.housemate.client.real.impl.internal.type.BooleanType;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
 import javax.jms.*;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  */
-public abstract class RealCommandImpl
+public final class RealCommandImpl
         extends RealObject<Command.Data, Command.Listener<? super RealCommandImpl>>
         implements RealCommand<RealValueImpl<Boolean>, RealListImpl<RealParameterImpl<?>>, RealCommandImpl>, MessageListener {
 
     private final static String ENABLED_DESCRIPTION = "Whether the command is enabled or not";
 
+    private final Performer performer;
     private final RealValueImpl<Boolean> enabledValue;
     private final RealListImpl<RealParameterImpl<?>> parameters;
 
@@ -30,33 +30,32 @@ public abstract class RealCommandImpl
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
      * @param parameters the command's parameters
-     */
-    protected RealCommandImpl(Logger logger,
-                              Command.Data data,
-                              ListenersFactory listenersFactory,
-                              RealParameterImpl<?>... parameters) {
-        this(logger, data, listenersFactory, Arrays.asList(parameters));
-    }
-
-    /**
-     * @param logger {@inheritDoc}
      * @param listenersFactory
-     * @param parameters the command's parameters
      */
-    protected RealCommandImpl(Logger logger,
-                              Command.Data data,
+    @Inject
+    protected RealCommandImpl(@Assisted Logger logger,
+                              @Assisted("id") String id,
+                              @Assisted("name") String name,
+                              @Assisted("description") String description,
+                              @Assisted Performer performer,
+                              @Assisted Iterable<? extends RealParameterImpl<?>> parameters,
                               ListenersFactory listenersFactory,
-                              List<RealParameterImpl<?>> parameters) {
-        super(logger, data, listenersFactory);
-        enabledValue = new RealValueImpl<>(ChildUtil.logger(logger, Command.ENABLED_ID),
-                new Value.Data(Command.ENABLED_ID, Command.ENABLED_ID, ENABLED_DESCRIPTION),
-                listenersFactory,
-                new BooleanType(listenersFactory), true);
-        this.parameters = new RealListImpl<>(ChildUtil.logger(logger, Command.PARAMETERS_ID),
-                new com.intuso.housemate.client.api.internal.object.List.Data(Command.PARAMETERS_ID, Command.PARAMETERS_ID, "The parameters required by the command"),
-                listenersFactory,
+                              RealValueImpl.Factory<Boolean> booleanValueFactory,
+                              RealListImpl.Factory<RealParameterImpl<?>> parametersFactory) {
+        super(logger, new Command.Data(id, name, description), listenersFactory);
+        this.performer = performer;
+        this.enabledValue = booleanValueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID),
+                Command.ENABLED_ID,
+                Command.ENABLED_ID,
+                ENABLED_DESCRIPTION,
+                1,
+                1,
+                Lists.newArrayList(true));
+        this.parameters = parametersFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID),
+                Command.PARAMETERS_ID,
+                Command.PARAMETERS_ID,
+                "The parameters required by the command",
                 parameters);
     }
 
@@ -124,12 +123,6 @@ public abstract class RealCommandImpl
         }
     }
 
-    /**
-     * Performs the command
-     * @param values the values of the parameters to use
-     */
-    public abstract void perform(Type.InstanceMap values);
-
     @Override
     public void onMessage(Message message) {
         if(message instanceof StreamMessage) {
@@ -138,7 +131,7 @@ public abstract class RealCommandImpl
                 java.lang.Object messageObject = streamMessage.readObject();
                 if(messageObject instanceof byte[]) {
                     java.lang.Object object = Serialiser.deserialise((byte[]) messageObject);
-                    if (object instanceof PerformData) {
+                    if (object instanceof Command.PerformData) {
                         final PerformData performData = (PerformData) object;
                         perform(performData.getInstanceMap(), new PerformListener<RealCommandImpl>() {
 
@@ -171,10 +164,28 @@ public abstract class RealCommandImpl
     private void performStatus(String opId, boolean finished, String error) {
         try {
             StreamMessage streamMessage = session.createStreamMessage();
-            streamMessage.writeObject(Serialiser.serialise(new PerformStatusData(opId, finished, error)));
+            streamMessage.writeObject(Serialiser.serialise(new Command.PerformStatusData(opId, finished, error)));
             performStatusProducer.send(streamMessage);
         } catch(JMSException e) {
             logger.error("Failed to send perform status update ({}, {}, {})", opId, finished, error, e);
         }
+    }
+
+    @Override
+    public void perform(Type.InstanceMap values) {
+        performer.perform(values);
+    }
+
+    public interface Performer {
+        void perform(Type.InstanceMap values);
+    }
+
+    public interface Factory {
+        RealCommandImpl create(Logger logger,
+                               @Assisted("id") String id,
+                               @Assisted("name") String name,
+                               @Assisted("description") String description,
+                               Performer performer,
+                               Iterable<? extends RealParameterImpl<?>> parameters);
     }
 }

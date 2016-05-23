@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.intuso.housemate.client.real.api.bridge.v1_0.*;
 import com.intuso.housemate.client.v1_0.real.api.RealDevice;
+import com.intuso.housemate.plugin.api.bridge.v1_0.driver.*;
 
 /**
  * Created by tomc on 06/11/15.

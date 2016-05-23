@@ -49,8 +49,4 @@ public abstract class RealTypeImpl<O>
             result.add(serialiser.deserialise(value));
         return result;
     }
-
-    public interface Factory<TYPE extends RealTypeImpl<?>> {
-        TYPE create(Logger logger);
-    }
 }

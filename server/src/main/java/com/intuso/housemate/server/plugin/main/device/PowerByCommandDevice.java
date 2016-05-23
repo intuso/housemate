@@ -3,10 +3,10 @@ package com.intuso.housemate.server.plugin.main.device;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.real.api.internal.annotations.Property;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
-import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
-import com.intuso.housemate.client.real.api.internal.feature.StatefulPowerControl;
+import com.intuso.housemate.plugin.api.internal.annotations.Property;
+import com.intuso.housemate.plugin.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.plugin.api.internal.driver.DeviceDriver;
+import com.intuso.housemate.plugin.api.internal.feature.StatefulPowerControl;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public final class PowerByCommandDevice implements DeviceDriver, StatefulPowerCo
     @TypeInfo(id = "off-command", name = "Off Command", description = "The command to turn the device off")
     private String offCommandProperty;
 
-    private PowerValues powerValues;
+    private StatefulPowerControl.PowerValues powerValues;
 
     @Inject
 	public PowerByCommandDevice(@Assisted Logger logger, @Assisted DeviceDriver.Callback callback) {}

@@ -28,7 +28,7 @@ public interface Automation<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         extends
         Object<Automation.Listener<? super AUTOMATION>>,
         Renameable<RENAME_COMMAND>,
-        Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
+        com.intuso.housemate.client.api.internal.Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
         Failable<ERROR_VALUE>,
         Removeable<REMOVE_COMMAND>,
         Condition.Container<CONDITIONS> {
@@ -106,12 +106,12 @@ public interface Automation<RENAME_COMMAND extends Command<?, ?, ?, ?>,
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "automation";
+        public final static String OBJECT_TYPE = "automation";
 
         public Data() {}
 
         public Data(String id, String name, String description) {
-            super(TYPE, id, name,  description);
+            super(OBJECT_TYPE, id, name,  description);
         }
     }
 }

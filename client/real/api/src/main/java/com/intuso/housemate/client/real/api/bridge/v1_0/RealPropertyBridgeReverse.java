@@ -1,6 +1,7 @@
 package com.intuso.housemate.client.real.api.bridge.v1_0;
 
 import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
@@ -64,9 +65,9 @@ public class RealPropertyBridgeReverse<FROM, TO>
     }
 
     @Override
-    public List<TO> getValues() {
-        List<FROM> values = property.getValues();
-        return values == null ? null : Lists.transform(values, convertFrom);
+    public Iterable<TO> getValues() {
+        Iterable<FROM> values = property.getValues();
+        return values == null ? null : Iterables.transform(values, convertFrom);
     }
 
     @Override

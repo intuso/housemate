@@ -6,7 +6,7 @@ import com.intuso.housemate.client.api.internal.object.Type;
 /**
  */
 public interface RealCommand<
-        BOOLEAN_VALUE extends com.intuso.housemate.client.real.api.internal.RealValue<Boolean, ?, ?>,
+        BOOLEAN_VALUE extends RealValue<Boolean, ?, ?>,
         PARAMETERS extends RealList<? extends RealParameter<?, ?, ?>, ?>,
         COMMAND extends RealCommand<BOOLEAN_VALUE, PARAMETERS, COMMAND>>
         extends Command<Type.InstanceMap, BOOLEAN_VALUE, PARAMETERS, COMMAND> {

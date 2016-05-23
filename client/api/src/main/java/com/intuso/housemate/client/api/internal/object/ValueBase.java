@@ -9,12 +9,11 @@ public interface ValueBase<DATA_TYPE,
         LISTENER extends ValueBase.Listener<? super VALUE>, VALUE extends ValueBase<?, ?, ?, ?>>
         extends Object<LISTENER> {
 
-    String TYPE_ID = "type";
     String VALUE_ID = "value";
 
     /**
-     * Gets the value's type's id
-     * @return the value's type's id
+     * Gets the value's type
+     * @return the value's type
      */
     TYPE getType();
 
@@ -41,5 +40,51 @@ public interface ValueBase<DATA_TYPE,
          * @param value the value object whose value has just been changed
          */
         void valueChanged(VALUE value);
+    }
+
+    /**
+     *
+     * Data object for a value
+     */
+    class Data extends Object.Data {
+
+        private static final long serialVersionUID = -1L;
+
+        private String typePath;
+        private int minValues;
+        private int maxValues;
+
+        public Data() {}
+
+        public Data(String objectType, String id, String name, String description, String typePath, int minValues, int maxValues) {
+            super(objectType, id, name,  description);
+            this.typePath = typePath;
+            this.minValues = minValues;
+            this.maxValues = maxValues;
+        }
+
+        public String getTypePath() {
+            return typePath;
+        }
+
+        public void setTypePath(String typePath) {
+            this.typePath = typePath;
+        }
+
+        public int getMaxValues() {
+            return maxValues;
+        }
+
+        public void setMaxValues(int maxValues) {
+            this.maxValues = maxValues;
+        }
+
+        public int getMinValues() {
+            return minValues;
+        }
+
+        public void setMinValues(int minValues) {
+            this.minValues = minValues;
+        }
     }
 }

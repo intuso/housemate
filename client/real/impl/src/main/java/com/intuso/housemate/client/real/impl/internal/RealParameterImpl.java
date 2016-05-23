@@ -23,10 +23,14 @@ public final class RealParameterImpl<O>
      */
     @Inject
     public RealParameterImpl(@Assisted final Logger logger,
-                             @Assisted Parameter.Data data,
+                             @Assisted("id") String id,
+                             @Assisted("name") String name,
+                             @Assisted("description") String description,
+                             @Assisted("min") int minValues,
+                             @Assisted("max") int maxValues,
                              ListenersFactory listenersFactory,
-                             @Assisted RealTypeImpl<O> type) {
-        super(logger, data, listenersFactory);
+                             RealTypeImpl<O> type) {
+        super(logger, new Parameter.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory);
         this.type = type;
     }
 
@@ -35,7 +39,12 @@ public final class RealParameterImpl<O>
         return type;
     }
 
-    public interface Factory {
-        RealParameterImpl<?> create(Logger logger, Parameter.Data data, RealTypeImpl<?> type);
+    public interface Factory<O> {
+        RealParameterImpl<O> create(Logger logger,
+                                    @Assisted("id") String id,
+                                    @Assisted("name") String name,
+                                    @Assisted("description") String description,
+                                    @Assisted("min") int minValues,
+                                    @Assisted("max") int maxValues);
     }
 }

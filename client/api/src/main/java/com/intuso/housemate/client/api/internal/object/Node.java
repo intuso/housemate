@@ -38,12 +38,12 @@ public interface Node<
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "node";
+        public final static String OBJECT_TYPE = "node";
 
         public Data() {}
 
         public Data(String id, String name, String description) {
-            super(TYPE, id, name, description);
+            super(OBJECT_TYPE, id, name, description);
         }
     }
 }

@@ -1,10 +1,10 @@
 package com.intuso.housemate.plugin.rfxcom.lighting1;
 
+import com.intuso.housemate.client.real.api.internal.annotations.Property;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
+import com.intuso.housemate.client.real.api.internal.feature.StatefulPowerControl;
 import com.intuso.housemate.client.v1_0.api.HousemateException;
-import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
-import com.intuso.housemate.client.v1_0.real.api.driver.DeviceDriver;
-import com.intuso.housemate.client.v1_0.real.api.feature.StatefulPowerControl;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.io.IOException;

@@ -9,7 +9,7 @@ import java.util.List;
  * @param <VALUE> the type of the value
  */
 public interface RealValueBase<O,
-        TYPE extends com.intuso.housemate.client.real.api.internal.RealType<O, ?>,
+        TYPE extends RealType<O, ?>,
         LISTENER extends ValueBase.Listener<? super VALUE>,
         VALUE extends RealValueBase<O, TYPE, LISTENER, VALUE>>
         extends ValueBase<O,
@@ -21,7 +21,7 @@ public interface RealValueBase<O,
      * Gets the object representation of this value
      * @return
      */
-    List<O> getValues();
+    Iterable<O> getValues();
 
     void setValue(O value);
 

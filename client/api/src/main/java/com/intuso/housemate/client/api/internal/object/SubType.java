@@ -7,8 +7,6 @@ public interface SubType<TYPE extends Type<?>,
             SUB_TYPE extends SubType<?, ?>>
         extends Object<SubType.Listener<? super SUB_TYPE>> {
 
-    String TYPE_ID = "type";
-
     /**
      * Gets the sub types' type's id
      * @return the sub type's type's id
@@ -42,12 +40,43 @@ public interface SubType<TYPE extends Type<?>,
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "subtype";
+        public final static String OBJECT_TYPE = "subtype";
+
+        private String typePath;
+        private int minValues;
+        private int maxValues;
 
         public Data() {}
 
-        public Data(String id, String name, String description) {
-            super(TYPE, id, name, description);
+        public Data(String id, String name, String description, String typePath, int minValues, int maxValues) {
+            super(OBJECT_TYPE, id, name, description);
+            this.typePath = typePath;
+            this.minValues = minValues;
+            this.maxValues = maxValues;
+        }
+
+        public String getTypePath() {
+            return typePath;
+        }
+
+        public void setTypePath(String typePath) {
+            this.typePath = typePath;
+        }
+
+        public int getMinValues() {
+            return minValues;
+        }
+
+        public void setMinValues(int minValues) {
+            this.minValues = minValues;
+        }
+
+        public int getMaxValues() {
+            return maxValues;
+        }
+
+        public void setMaxValues(int maxValues) {
+            this.maxValues = maxValues;
         }
     }
 }

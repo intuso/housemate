@@ -64,46 +64,15 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
 
         private static final long serialVersionUID = -1L;
 
-        private int minValues;
-        private int maxValues;
-
         protected Data() {}
 
         /**
          * @param id the type's id
          * @param name the type's name
          * @param description the type's description
-         * @param minValues the minimum number of values the type can have
-         * @param maxValues the maximum number of values the type can have
          */
-        public Data(String type, String id, String name, String description, int minValues, int maxValues) {
+        public Data(String type, String id, String name, String description) {
             super(type, id, name, description);
-            this.minValues = minValues;
-            this.maxValues = maxValues;
-        }
-
-        /**
-         * Get the minimum number of values an instance of this type should have
-         * @return the minimum number of values an instance of this type should have
-         */
-        public int getMinValues() {
-            return minValues;
-        }
-
-        public void setMinValues(int minValues) {
-            this.minValues = minValues;
-        }
-
-        /**
-         * Get the maximum number of values an instance of this type should have
-         * @return the maximum number of values an instance of this type should have
-         */
-        public int getMaxValues() {
-            return maxValues;
-        }
-
-        public void setMaxValues(int maxValues) {
-            this.maxValues = maxValues;
         }
     }
 
@@ -114,7 +83,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "type-choice";
+        public final static String OBJECT_TYPE = "type-choice";
 
         public ChoiceData() {}
 
@@ -122,11 +91,9 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
          * @param id {@inheritDoc}
          * @param name {@inheritDoc}
          * @param description {@inheritDoc}
-         * @param minValues {@inheritDoc}
-         * @param maxValues {@inheritDoc}
          */
-        public ChoiceData(String id, String name, String description, int minValues, int maxValues) {
-            super(TYPE, id, name, description, minValues, maxValues);
+        public ChoiceData(String id, String name, String description) {
+            super(OBJECT_TYPE, id, name, description);
         }
     }
 
@@ -138,7 +105,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "type-regex";
+        public final static String OBJECT_TYPE = "type-regex";
 
         private String regexPattern;
 
@@ -148,12 +115,10 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
          * @param id {@inheritDoc}
          * @param name {@inheritDoc}
          * @param description {@inheritDoc}
-         * @param minValues {@inheritDoc}
-         * @param maxValues {@inheritDoc}
          * @param regexPattern the regex pattern that values of this type must match
          */
-        public RegexData(String id, String name, String description, int minValues, int maxValues, String regexPattern) {
-            super(TYPE, id, name, description, minValues, maxValues);
+        public RegexData(String id, String name, String description, String regexPattern) {
+            super(OBJECT_TYPE, id, name, description);
             this.regexPattern = regexPattern;
         }
 
@@ -174,23 +139,21 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
      *
      * Data object for a compound type
      */
-    final class CompoundData extends Data {
+    final class CompositeData extends Data {
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "type-compound";
+        public final static String OBJECT_TYPE = "type-compound";
 
-        public CompoundData() {}
+        public CompositeData() {}
 
         /**
          * @param id {@inheritDoc}
          * @param name {@inheritDoc}
          * @param description {@inheritDoc}
-         * @param minValues {@inheritDoc}
-         * @param maxValues {@inheritDoc}
          */
-        public CompoundData(String id, String name, String description, int minValues, int maxValues) {
-            super(TYPE, id, name, description, minValues, maxValues);
+        public CompositeData(String id, String name, String description) {
+            super(OBJECT_TYPE, id, name, description);
         }
     }
 
@@ -202,7 +165,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "type-object";
+        public final static String OBJECT_TYPE = "type-object";
 
         public ObjectData() {}
 
@@ -210,11 +173,9 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
          * @param id {@inheritDoc}
          * @param name {@inheritDoc}
          * @param description {@inheritDoc}
-         * @param minValues {@inheritDoc}
-         * @param maxValues {@inheritDoc}
          */
-        public ObjectData(String id, String name, String description, int minValues, int maxValues) {
-            super(TYPE, id, name,  description, minValues, maxValues);
+        public ObjectData(String id, String name, String description) {
+            super(OBJECT_TYPE, id, name,  description);
         }
     }
 
@@ -226,7 +187,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "type-simple";
+        public final static String OBJECT_TYPE = "type-simple";
 
         /**
          * Enumeration of all simple types
@@ -240,7 +201,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
          * @param simple the type of the type
          */
         public SimpleData(Simple simple) {
-            super(TYPE, simple.getId(), simple.getName(), simple.getDescription(), 1, 1);
+            super(OBJECT_TYPE, simple.getId(), simple.getName(), simple.getDescription());
             this.simple = simple;
         }
 

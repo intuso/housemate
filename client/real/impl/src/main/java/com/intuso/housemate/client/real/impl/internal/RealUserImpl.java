@@ -1,14 +1,14 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
-import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.object.User;
 import com.intuso.housemate.client.real.api.internal.RealUser;
-import com.intuso.housemate.client.real.api.internal.type.Email;
-import com.intuso.housemate.client.real.impl.internal.type.EmailType;
-import com.intuso.housemate.client.real.impl.internal.type.StringType;
+import com.intuso.housemate.plugin.api.internal.type.Email;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -30,43 +30,58 @@ public final class RealUserImpl
 
     /**
      * @param logger {@inheritDoc}
-     * @param data the user's data
      * @param listenersFactory
      */
     @Inject
     public RealUserImpl(@Assisted final Logger logger,
-                        @Assisted User.Data data,
+                        @Assisted("id") String id,
+                        @Assisted("name") String name,
+                        @Assisted("description") String description,
+                        @Assisted RemoveCallback<RealUserImpl> removeCallback,
                         ListenersFactory listenersFactory,
-                        @Assisted RemoveCallback<RealUserImpl> removeCallback) {
-        super(logger, data, listenersFactory);
+                        RealCommandImpl.Factory commandFactory,
+                        RealParameterImpl.Factory<String> stringParameterFactory,
+                        RealPropertyImpl.Factory<Email> emailPropertyFactory) {
+        super(logger, new User.Data(id, name, description), listenersFactory);
         this.removeCallback = removeCallback;
-        this.renameCommand = new RealCommandImpl(ChildUtil.logger(logger, Renameable.RENAME_ID),
-                new Command.Data(Renameable.RENAME_ID, Renameable.RENAME_ID, "Rename the user"),
-                listenersFactory,
-                StringType.createParameter(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
-                        new Parameter.Data(Renameable.NAME_ID, Renameable.NAME_ID, "The new name"),
-                        listenersFactory)) {
-            @Override
-            public void perform(Type.InstanceMap values) {
-                if(values != null && values.getChildren().containsKey(Renameable.NAME_ID)) {
-                    String newName = values.getChildren().get(Renameable.NAME_ID).getFirstValue();
-                    if (newName != null && !RealUserImpl.this.getName().equals(newName))
-                        setName(newName);
-                }
-            }
-        };
-        this.removeCommand = new RealCommandImpl(ChildUtil.logger(logger, Removeable.REMOVE_ID),
-                new Command.Data(Removeable.REMOVE_ID, Removeable.REMOVE_ID, "Remove the user"),
-                listenersFactory) {
-            @Override
-            public void perform(Type.InstanceMap values) {
-                remove();
-            }
-        };
-        this.emailProperty = new RealPropertyImpl<>(ChildUtil.logger(logger, User.EMAIL_ID),
-                new Property.Data(User.EMAIL_ID, User.EMAIL_ID, User.EMAIL_ID),
-                listenersFactory,
-                new EmailType(listenersFactory));
+        this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
+                Renameable.RENAME_ID,
+                Renameable.RENAME_ID,
+                "Rename the user",
+                new RealCommandImpl.Performer() {
+                    @Override
+                    public void perform(Type.InstanceMap values) {
+                        if(values != null && values.getChildren().containsKey(Renameable.NAME_ID)) {
+                            String newName = values.getChildren().get(Renameable.NAME_ID).getFirstValue();
+                            if (newName != null && !RealUserImpl.this.getName().equals(newName))
+                                setName(newName);
+                        }
+                    }
+                },
+                Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
+                        Renameable.NAME_ID,
+                        Renameable.NAME_ID,
+                        "The new name",
+                        1,
+                        1)));
+        this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
+                Removeable.REMOVE_ID,
+                Removeable.REMOVE_ID,
+                "Remove the user",
+                new RealCommandImpl.Performer() {
+                    @Override
+                    public void perform(Type.InstanceMap values) {
+                        remove();
+                    }
+                },
+                Lists.<RealParameterImpl<?>>newArrayList());
+        this.emailProperty = emailPropertyFactory.create(ChildUtil.logger(logger, User.EMAIL_ID),
+                User.EMAIL_ID,
+                User.EMAIL_ID,
+                User.EMAIL_ID,
+                1,
+                1,
+                Lists.<Email>newArrayList());
     }
 
     @Override
@@ -113,6 +128,10 @@ public final class RealUserImpl
     }
 
     public interface Factory {
-        RealUserImpl create(Logger logger, User.Data data, RemoveCallback<RealUserImpl> removeCallback);
+        RealUserImpl create(Logger logger,
+                            @Assisted("id") String id,
+                            @Assisted("name") String name,
+                            @Assisted("description") String description,
+                            RemoveCallback<RealUserImpl> removeCallback);
     }
 }

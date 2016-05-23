@@ -48,7 +48,7 @@ public interface Object<LISTENER extends Object.Listener> {
 
         private static final long serialVersionUID = -1L;
 
-        private String type;
+        private String objectType;
         private String id;
         private String name;
         private String description;
@@ -60,8 +60,8 @@ public interface Object<LISTENER extends Object.Listener> {
          * @param name object's name
          * @param description object's description
          */
-        public Data(String type, String id, String name, String description) {
-            this.type = type;
+        public Data(String objectType, String id, String name, String description) {
+            this.objectType = objectType;
             this.id = id;
             this.name = name;
             this.description = description;
@@ -71,12 +71,12 @@ public interface Object<LISTENER extends Object.Listener> {
          * Gets the type of the object
          * @return the type of the object
          */
-        public String getType() {
-            return type;
+        public String getObjectType() {
+            return objectType;
         }
 
-        public void setType(String type) {
-            this.type = type;
+        public void setObjectType(String objectType) {
+            this.objectType = objectType;
         }
 
         /**

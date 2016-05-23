@@ -43,12 +43,12 @@ public interface Feature<
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "feature";
+        public final static String OBJECT_TYPE = "feature";
 
         public Data() {}
 
         public Data(String id, String name, String description) {
-            super(TYPE, id, name, description);
+            super(OBJECT_TYPE, id, name, description);
         }
     }
 }

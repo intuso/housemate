@@ -44,16 +44,16 @@ public interface Value<DATA_TYPE,
      *
      * Data object for a value
      */
-    final class Data extends Object.Data {
+    final class Data extends ValueBase.Data {
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "value";
+        public final static String OBJECT_TYPE = "value";
 
         public Data() {}
 
-        public Data(String id, String name, String description) {
-            super(TYPE, id, name,  description);
+        public Data(String id, String name, String description, String type, int minValues, int maxValues) {
+            super(OBJECT_TYPE, id, name,  description, type, minValues, maxValues);
         }
     }
 }

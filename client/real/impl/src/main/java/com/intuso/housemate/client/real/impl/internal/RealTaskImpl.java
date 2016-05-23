@@ -7,14 +7,13 @@ import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.UsesDriver;
-import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.object.Property;
+import com.intuso.housemate.client.api.internal.object.Task;
+import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealTask;
-import com.intuso.housemate.client.real.api.internal.driver.PluginResource;
-import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationProcessor;
-import com.intuso.housemate.client.real.impl.internal.factory.task.TaskFactoryType;
-import com.intuso.housemate.client.real.impl.internal.type.BooleanType;
-import com.intuso.housemate.client.real.impl.internal.type.StringType;
+import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
+import com.intuso.housemate.plugin.api.internal.driver.TaskDriver;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -24,11 +23,11 @@ import javax.jms.Session;
 /**
  * Base class for all task
  */
-public final class RealTaskImpl<DRIVER extends TaskDriver>
-        extends RealObject<Task.Data, Task.Listener<? super RealTaskImpl<DRIVER>>>
-        implements RealTask<DRIVER, RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-                RealPropertyImpl<PluginResource<TaskDriver.Factory<DRIVER>>>, RealListImpl<RealPropertyImpl<?>>,
-                RealTaskImpl<DRIVER>> {
+public final class RealTaskImpl
+        extends RealObject<Task.Data, Task.Listener<? super RealTaskImpl>>
+        implements RealTask<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
+        RealPropertyImpl<PluginResource<TaskDriver.Factory<?>>>, RealListImpl<RealPropertyImpl<?>>,
+        RealTaskImpl> {
 
     private final static String PROPERTIES_DESCRIPTION = "The task's properties";
 
@@ -37,78 +36,108 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealPropertyImpl<PluginResource<TaskDriver.Factory<DRIVER>>> driverProperty;
+    private final RealPropertyImpl<PluginResource<TaskDriver.Factory<?>>> driverProperty;
     private final RealValueImpl<Boolean> driverLoadedValue;
     private final RealListImpl<RealPropertyImpl<?>> properties;
     private final RealValueImpl<Boolean> executingValue;
 
-    private final RemoveCallback<RealTaskImpl<DRIVER>> removeCallback;
+    private final RemoveCallback<RealTaskImpl> removeCallback;
 
-    private DRIVER driver;
+    private TaskDriver driver;
 
     /**
      * @param logger {@inheritDoc}
-     * @param data the task's data
      * @param listenersFactory
      */
     @Inject
     public RealTaskImpl(@Assisted final Logger logger,
-                        @Assisted Task.Data data,
+                        @Assisted("id") String id,
+                        @Assisted("name") String name,
+                        @Assisted("description") String description,
+                        @Assisted RemoveCallback<RealTaskImpl> removeCallback,
                         ListenersFactory listenersFactory,
-                        @Assisted RemoveCallback<RealTaskImpl<DRIVER>> removeCallback,
                         AnnotationProcessor annotationProcessor,
-                        TaskFactoryType driverFactoryType) {
-        super(logger, data, listenersFactory);
+                        RealCommandImpl.Factory commandFactory,
+                        RealParameterImpl.Factory<String> stringParameterFactory,
+                        RealValueImpl.Factory<Boolean> booleanValueFactory,
+                        RealValueImpl.Factory<String> stringValueFactory,
+                        RealListImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
+                        RealPropertyImpl.Factory<PluginResource<TaskDriver.Factory<? extends TaskDriver>>> driverPropertyFactory) {
+        super(logger, new Task.Data(id, name, description), listenersFactory);
         this.annotationProcessor = annotationProcessor;
         this.removeCallback = removeCallback;
-        this.renameCommand = new RealCommandImpl(ChildUtil.logger(logger, Renameable.RENAME_ID),
-                new Command.Data(Renameable.RENAME_ID, Renameable.RENAME_ID, "Rename the task"),
-                listenersFactory,
-                StringType.createParameter(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
-                        new Parameter.Data(Renameable.NAME_ID, Renameable.NAME_ID, "The new name"),
-                        listenersFactory)) {
+        this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
+                Renameable.RENAME_ID,
+                Renameable.RENAME_ID,
+                "Rename the task",
+                new RealCommandImpl.Performer() {
+                    @Override
+                    public void perform(Type.InstanceMap values) {
+                        if(values != null && values.getChildren().containsKey(Renameable.NAME_ID)) {
+                            String newName = values.getChildren().get(Renameable.NAME_ID).getFirstValue();
+                            if (newName != null && !RealTaskImpl.this.getName().equals(newName))
+                                setName(newName);
+                        }
+                    }
+                },
+                Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
+                        Renameable.NAME_ID,
+                        Renameable.NAME_ID,
+                        "The new name",
+                        1,
+                        1)));
+        this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
+                Removeable.REMOVE_ID,
+                Removeable.REMOVE_ID,
+                "Remove the task",
+                new RealCommandImpl.Performer() {
+                    @Override
+                    public void perform(Type.InstanceMap values) {
+                        remove();
+                    }
+                },
+                Lists.<RealParameterImpl<?>>newArrayList());
+        this.errorValue = stringValueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID),
+                Failable.ERROR_ID,
+                Failable.ERROR_ID,
+                "Current error for the task",
+                1,
+                1,
+                Lists.<String>newArrayList());
+        this.driverProperty = driverPropertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
+                UsesDriver.DRIVER_ID,
+                UsesDriver.DRIVER_ID,
+                "The task's driver",
+                1,
+                1,
+                Lists.<PluginResource<TaskDriver.Factory<?>>>newArrayList());
+        this.driverLoadedValue = booleanValueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
+                UsesDriver.DRIVER_LOADED_ID,
+                UsesDriver.DRIVER_LOADED_ID,
+                "Whether the task's driver is loaded or not",
+                1,
+                1,
+                Lists.newArrayList(false));
+        this.properties = propertiesFactory.create(ChildUtil.logger(logger, Task.PROPERTIES_ID),
+                Task.PROPERTIES_ID,
+                Task.PROPERTIES_ID,
+                PROPERTIES_DESCRIPTION,
+                Lists.<RealPropertyImpl<?>>newArrayList());
+        this.executingValue = booleanValueFactory.create(ChildUtil.logger(logger, Task.EXECUTING_ID),
+                Task.EXECUTING_ID,
+                Task.EXECUTING_ID,
+                "Whether the task is executing or not",
+                1,
+                1,
+                Lists.newArrayList(false));
+        driverProperty.addObjectListener(new Property.Listener<RealPropertyImpl<PluginResource<TaskDriver.Factory<?>>>>() {
             @Override
-            public void perform(Type.InstanceMap values) {
-                if(values != null && values.getChildren().containsKey(Renameable.NAME_ID)) {
-                    String newName = values.getChildren().get(Renameable.NAME_ID).getFirstValue();
-                    if (newName != null && !RealTaskImpl.this.getName().equals(newName))
-                        setName(newName);
-                }
-            }
-        };
-        this.removeCommand = new RealCommandImpl(ChildUtil.logger(logger, Removeable.REMOVE_ID),
-                new Command.Data(Removeable.REMOVE_ID, Removeable.REMOVE_ID, "Remove the task"),
-                listenersFactory) {
-            @Override
-            public void perform(Type.InstanceMap values) {
-                remove();
-            }
-        };
-        this.errorValue = StringType.createValue(ChildUtil.logger(logger, Failable.ERROR_ID),
-                new Value.Data(Failable.ERROR_ID, Failable.ERROR_ID, "Current error for the task"),
-                listenersFactory,
-                null);
-        this.driverProperty = (RealPropertyImpl) new RealPropertyImpl(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
-                new Property.Data(UsesDriver.DRIVER_ID, UsesDriver.DRIVER_ID, "The task's driver"),
-                listenersFactory,
-                driverFactoryType);
-        this.driverLoadedValue = BooleanType.createValue(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
-                new Value.Data(UsesDriver.DRIVER_LOADED_ID, UsesDriver.DRIVER_LOADED_ID, "Whether the task's driver is loaded or not"),
-                listenersFactory,
-                false);
-        this.properties = new RealListImpl<>(ChildUtil.logger(logger, Task.PROPERTIES_ID), new List.Data(Task.PROPERTIES_ID, Task.PROPERTIES_ID, PROPERTIES_DESCRIPTION), listenersFactory);
-        this.executingValue = BooleanType.createValue(ChildUtil.logger(logger, Task.EXECUTING_ID),
-                new Value.Data(Task.EXECUTING_ID, Task.EXECUTING_ID, "Whether the task is executing or not"),
-                listenersFactory,
-                false);
-        driverProperty.addObjectListener(new Property.Listener<RealPropertyImpl<PluginResource<TaskDriver.Factory<DRIVER>>>>() {
-            @Override
-            public void valueChanging(RealPropertyImpl<PluginResource<TaskDriver.Factory<DRIVER>>> factoryRealProperty) {
+            public void valueChanging(RealPropertyImpl<PluginResource<TaskDriver.Factory<?>>> factoryRealProperty) {
                 uninitDriver();
             }
 
             @Override
-            public void valueChanged(RealPropertyImpl<PluginResource<TaskDriver.Factory<DRIVER>>> factoryRealProperty) {
+            public void valueChanged(RealPropertyImpl<PluginResource<TaskDriver.Factory<?>>> factoryRealProperty) {
                 initDriver();
             }
         });
@@ -141,7 +170,7 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
 
     private void setName(String newName) {
         RealTaskImpl.this.getData().setName(newName);
-        for(Task.Listener<? super RealTaskImpl<DRIVER>> listener : listeners)
+        for(Task.Listener<? super RealTaskImpl> listener : listeners)
             listener.renamed(RealTaskImpl.this, RealTaskImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
@@ -149,7 +178,7 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
 
     private void initDriver() {
         if(driver == null) {
-            PluginResource<TaskDriver.Factory<DRIVER>> driverFactory = driverProperty.getValue();
+            PluginResource<TaskDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
                 driver = driverFactory.getResource().create(logger, this);
                 for(RealPropertyImpl<?> property : annotationProcessor.findProperties(logger, driver))
@@ -173,8 +202,8 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
     }
 
     @Override
-    public DRIVER getDriver() {
-        return driver;
+    public <DRIVER extends TaskDriver> DRIVER getDriver() {
+        return (DRIVER) driver;
     }
 
     @Override
@@ -193,7 +222,7 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
     }
 
     @Override
-    public RealPropertyImpl<PluginResource<TaskDriver.Factory<DRIVER>>> getDriverProperty() {
+    public RealPropertyImpl<PluginResource<TaskDriver.Factory<?>>> getDriverProperty() {
         return driverProperty;
     }
 
@@ -263,7 +292,7 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
     private void taskExecuting(boolean executing) {
         if(executing != isExecuting()) {
             executingValue.setValue(executing);
-            for(Task.Listener<? super RealTaskImpl<DRIVER>> listener : listeners)
+            for(Task.Listener<? super RealTaskImpl> listener : listeners)
                 listener.taskExecuting(this, executing);
         }
     }
@@ -288,6 +317,10 @@ public final class RealTaskImpl<DRIVER extends TaskDriver>
     }
 
     public interface Factory {
-        RealTaskImpl<?> create(Logger logger, Task.Data data, RemoveCallback<RealTaskImpl<?>> removeCallback);
+        RealTaskImpl create(Logger logger,
+                            @Assisted("id") String id,
+                            @Assisted("name") String name,
+                            @Assisted("description") String description,
+                            RemoveCallback<RealTaskImpl> removeCallback);
     }
 }

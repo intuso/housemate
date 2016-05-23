@@ -19,7 +19,7 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         extends
         Object<Hardware.Listener<? super HARDWARE>>,
         Renameable<RENAME_COMMAND>,
-        Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
+        com.intuso.housemate.client.api.internal.Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
         Failable<ERROR_VALUE>,
         Removeable<REMOVE_COMMAND>,
         UsesDriver<DRIVER_PROPERTY, DRIVER_LOADED_VALUE>,
@@ -57,12 +57,12 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
 
         private static final long serialVersionUID = -1L;
 
-        public final static String TYPE = "hardware";
+        public final static String OBJECT_TYPE = "hardware";
 
         public Data() {}
 
         public Data(String id, String name, String description) {
-            super(TYPE, id, name, description);
+            super(OBJECT_TYPE, id, name, description);
         }
     }
 }
