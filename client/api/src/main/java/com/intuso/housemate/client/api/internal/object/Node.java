@@ -2,11 +2,14 @@ package com.intuso.housemate.client.api.internal.object;
 
 public interface Node<
         COMMAND extends Command<?, ?, ?, ?>,
+        TYPES extends List<? extends Type<?>, ?>,
         HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
-        NODE extends Node>
+        NODE extends Node<COMMAND, TYPES, HARDWARES, NODE>>
         extends Object<Node.Listener<? super NODE>>,
+        Type.Container<TYPES>,
         Hardware.Container<HARDWARES> {
 
+    String TYPES_ID = "types";
     String HARDWARES_ID = "hardwares";
     String ADD_HARDWARE_ID = "add-hardware";
 
@@ -22,7 +25,7 @@ public interface Node<
      *
      * Interface to show that the implementing object has a list of server
      */
-    interface Container<NODES extends List<? extends Node<?, ?, ?>, ?>> {
+    interface Container<NODES extends List<? extends Node<?, ?, ?, ?>, ?>> {
 
         /**
          * Gets the commands list

@@ -39,8 +39,10 @@ public class TypeModule extends AbstractModule {
     protected void configure() {
         if(typeImpl != null)
             bind((TypeLiteral<RealTypeImpl<?>>) TypeLiteral.get(Types.newParameterizedType(RealTypeImpl.class, type))).toInstance(typeImpl);
-        else
-            bind((TypeLiteral<RealTypeImpl<?>>)TypeLiteral.get(Types.newParameterizedType(RealTypeImpl.class, type))).to(typeImplClass).in(Scopes.SINGLETON);
+        else {
+            bind(typeImplClass).in(Scopes.SINGLETON);
+            bind((TypeLiteral<RealTypeImpl<?>>) TypeLiteral.get(Types.newParameterizedType(RealTypeImpl.class, type))).to(typeImplClass);
+        }
         install(new FactoryModuleBuilder().build(TypeLiteral.get(Types.newParameterizedTypeWithOwner(RealParameterImpl.class, RealParameterImpl.Factory.class, type))));
         install(new FactoryModuleBuilder().build(TypeLiteral.get(Types.newParameterizedTypeWithOwner(RealPropertyImpl.class, RealPropertyImpl.Factory.class, type))));
         install(new FactoryModuleBuilder().build(TypeLiteral.get(Types.newParameterizedTypeWithOwner(RealValueImpl.class, RealValueImpl.Factory.class, type))));

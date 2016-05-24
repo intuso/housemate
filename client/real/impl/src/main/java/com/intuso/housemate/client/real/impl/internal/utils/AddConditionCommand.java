@@ -8,6 +8,7 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealCondition;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
 import com.intuso.housemate.client.real.impl.internal.*;
+import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.plugin.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
 import org.slf4j.Logger;
@@ -57,19 +58,19 @@ public class AddConditionCommand {
                                       Callback callback,
                                       RealCondition.RemoveCallback<RealConditionImpl> removeCallback) {
             return commandFactory.create(logger, id, name, description, performerFactory.create(baseLogger, callback, removeCallback),
-                    Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, NAME_PARAMETER_ID),
+                    Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, NAME_PARAMETER_ID),
                                     NAME_PARAMETER_ID,
                                     NAME_PARAMETER_NAME,
                                     NAME_PARAMETER_DESCRIPTION,
                                     1,
                                     1),
-                            stringParameterFactory.create(ChildUtil.logger(logger, DESCRIPTION_PARAMETER_ID),
+                            stringParameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, DESCRIPTION_PARAMETER_ID),
                                     DESCRIPTION_PARAMETER_ID,
                                     DESCRIPTION_PARAMETER_NAME,
                                     DESCRIPTION_PARAMETER_DESCRIPTION,
                                     1,
                                     1),
-                            conditionDriverParameterFactory.create(ChildUtil.logger(logger, TYPE_PARAMETER_ID),
+                            conditionDriverParameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, TYPE_PARAMETER_ID),
                                     TYPE_PARAMETER_ID,
                                     TYPE_PARAMETER_NAME,
                                     TYPE_PARAMETER_DESCRIPTION,

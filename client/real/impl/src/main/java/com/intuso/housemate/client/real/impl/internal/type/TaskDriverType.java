@@ -1,6 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
+import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.ioc.Types;
 import com.intuso.housemate.plugin.api.internal.driver.TaskDriver;
@@ -18,6 +19,6 @@ public class TaskDriverType extends FactoryType<TaskDriver.Factory<?>> {
 
     @Inject
     protected TaskDriverType(@Types Logger logger, ListenersFactory listenersFactory, RealOptionImpl.Factory optionFactory) {
-        super(logger, listenersFactory, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, optionFactory);
+        super(ChildUtil.logger(logger, TYPE_ID), listenersFactory, TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, optionFactory);
     }
 }

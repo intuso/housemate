@@ -1,10 +1,11 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
+import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.client.real.impl.internal.ioc.Types;
 import com.intuso.housemate.plugin.api.internal.type.Email;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -18,14 +19,12 @@ public class EmailType extends RealRegexType<Email> {
     public final static String ID = "email";
     public final static String NAME = "Email";
 
-    private final static Logger logger = LoggerFactory.getLogger(EmailType.class);
-
     /**
      * @param listenersFactory
      */
     @Inject
-    public EmailType(ListenersFactory listenersFactory, Email.Factory emailFactory) {
-        super(logger, ID, NAME, "Email address of the form <username>@<host>", listenersFactory, ".+@.+\\..+", emailFactory);
+    public EmailType(@Types Logger logger, ListenersFactory listenersFactory, Email.Factory emailFactory) {
+        super(ChildUtil.logger(logger, ID), ID, NAME, "Email address of the form <username>@<host>", listenersFactory, ".+@.+\\..+", emailFactory);
     }
 
     @Override

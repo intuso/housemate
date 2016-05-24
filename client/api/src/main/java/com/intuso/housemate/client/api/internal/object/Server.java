@@ -1,11 +1,12 @@
 package com.intuso.housemate.client.api.internal.object;
 
 public interface Server<
-        COMMAND extends Command<?, ?, ?, ?>, AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
+        COMMAND extends Command<?, ?, ?, ?>,
+        AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         USERS extends List<? extends User<?, ?, ?, ?>, ?>,
-        NODES extends List<? extends Node<?, ?, ?>, ?>,
-        SERVER extends Server>
+        NODES extends List<? extends Node<?, ?, ?, ?>, ?>,
+        SERVER extends Server<COMMAND, AUTOMATIONS, DEVICES, USERS, NODES, SERVER>>
         extends Object<Server.Listener<? super SERVER>>,
         Device.Container<DEVICES>,
         Automation.Container<AUTOMATIONS>,

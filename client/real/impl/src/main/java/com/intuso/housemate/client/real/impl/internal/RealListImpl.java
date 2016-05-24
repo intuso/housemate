@@ -10,6 +10,8 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.JMSException;
+import javax.jms.Session;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -20,6 +22,8 @@ public final class RealListImpl<ELEMENT extends RealObject<?, ?>>
         implements RealList<ELEMENT, RealListImpl<ELEMENT>> {
 
     private final Map<String, ELEMENT> elements;
+    private String name;
+    private Session session;
 
     /**
      * @param logger {@inheritDoc}
@@ -49,19 +53,46 @@ public final class RealListImpl<ELEMENT extends RealObject<?, ?>>
     }
 
     @Override
+    protected void initChildren(String name, Session session) throws JMSException {
+        super.initChildren(name, session);
+        this.name = name;
+        this.session = session;
+        for(ELEMENT element : elements.values())
+            element.init(ChildUtil.name(name, element.getId()), session);
+    }
+
+    @Override
     public void add(ELEMENT element) {
         if(elements.containsKey(element.getId()))
             throw new HousemateException("Element with id " + element.getId() + " already exists");
+        if(session != null) {
+            try {
+                element.init(ChildUtil.name(name, element.getId()), session);
+            } catch(JMSException e) {
+                throw new HousemateException("Couldn't add element, failed to initialise it");
+            }
+        }
         for(List.Listener<? super ELEMENT, ? super RealListImpl<ELEMENT>> listener : listeners)
             listener.elementAdded(this, element);
     }
 
     @Override
+    protected void uninitChildren() {
+        super.uninitChildren();
+        this.name = null;
+        this.session = null;
+        for(ELEMENT element : elements.values())
+            element.uninit();
+    }
+
+    @Override
     public ELEMENT remove(String id) {
         ELEMENT element = elements.get(id);
-        if(element != null)
-            for(List.Listener<? super ELEMENT, ? super RealListImpl<ELEMENT>> listener : listeners)
+        if(element != null) {
+            element.uninit();
+            for (List.Listener<? super ELEMENT, ? super RealListImpl<ELEMENT>> listener : listeners)
                 listener.elementRemoved(this, element);
+        }
         return element;
     }
 

@@ -2,9 +2,10 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.TypeSerialiser;
+import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.client.real.impl.internal.ioc.Types;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Type for a double
@@ -23,10 +24,8 @@ public class DoubleType extends RealSimpleType<Double> {
         }
     };
 
-    private final static Logger logger = LoggerFactory.getLogger(DoubleType.class);
-
     @Inject
-    public DoubleType(ListenersFactory listenersFactory) {
-        super(logger, Simple.Double, SERIALISER, listenersFactory);
+    public DoubleType(@Types Logger logger, ListenersFactory listenersFactory) {
+        super(ChildUtil.logger(logger, Simple.Double.getId()), Simple.Double, SERIALISER, listenersFactory);
     }
 }

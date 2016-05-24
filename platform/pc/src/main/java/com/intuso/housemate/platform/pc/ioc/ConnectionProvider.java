@@ -14,7 +14,9 @@ public class ConnectionProvider implements Provider<Connection> {
     @Override
     public Connection get() {
         try {
-            return new ActiveMQConnectionFactory("tcp://localhost:46873").createConnection();
+            Connection connection = new ActiveMQConnectionFactory("tcp://localhost:46873").createConnection();
+            connection.start();
+            return connection;
         } catch (JMSException e) {
             throw new HousemateException("Failed to create connection to broker");
         }

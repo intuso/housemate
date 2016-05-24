@@ -10,6 +10,7 @@ import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealAutomationImpl;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
+import com.intuso.housemate.client.v1_0.api.object.Command;
 import org.slf4j.Logger;
 
 /**
@@ -51,13 +52,13 @@ public class AddAutomationCommand {
                                       Callback callback,
                                       RealAutomation.RemoveCallback<RealAutomationImpl> removeCallback) {
             return commandFactory.create(logger, id, name, description, performerFactory.create(baseLogger, callback, removeCallback),
-                    Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, NAME_PARAMETER_ID),
+                    Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, NAME_PARAMETER_ID),
                                     NAME_PARAMETER_ID,
                                     NAME_PARAMETER_NAME,
                                     NAME_PARAMETER_DESCRIPTION,
                                     1,
                                     1),
-                            stringParameterFactory.create(ChildUtil.logger(logger, DESCRIPTION_PARAMETER_ID),
+                            stringParameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, DESCRIPTION_PARAMETER_ID),
                                     DESCRIPTION_PARAMETER_ID,
                                     DESCRIPTION_PARAMETER_NAME,
                                     DESCRIPTION_PARAMETER_DESCRIPTION,

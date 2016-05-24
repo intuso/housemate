@@ -9,7 +9,7 @@ public interface RealServer<COMMAND extends RealCommand<?, ?, ?>,
         DEVICES extends RealList<? extends DEVICE, ?>,
         USER extends RealUser<?, ?, ?>,
         USERS extends RealList<? extends USER, ?>,
-        NODE extends RealNode<?, ?, ?, ?>,
+        NODE extends RealNode<?, ?, ?, ?, ?>,
         NODES extends RealList<? extends NODE, ?>,
         SERVER extends RealServer<COMMAND, AUTOMATION, AUTOMATIONS, DEVICE, DEVICES, USER, USERS, NODE, NODES, SERVER>>
         extends Server<COMMAND, AUTOMATIONS, DEVICES, USERS, NODES, SERVER>,

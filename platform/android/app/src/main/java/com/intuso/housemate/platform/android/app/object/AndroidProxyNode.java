@@ -13,6 +13,7 @@ import org.slf4j.Logger;
  */
 public class AndroidProxyNode extends ProxyNode<
         AndroidProxyCommand,
+        AndroidProxyList<AndroidProxyType>,
         AndroidProxyList<AndroidProxyHardware>,
         AndroidProxyNode> {
 
@@ -21,7 +22,8 @@ public class AndroidProxyNode extends ProxyNode<
      */
     protected AndroidProxyNode(Logger logger, ListenersFactory listenersFactory,
                                Factory<AndroidProxyCommand> commandFactory,
+                               Factory<AndroidProxyList<AndroidProxyType>> typesFactory,
                                Factory<AndroidProxyList<AndroidProxyHardware>> hardwaresFactory) {
-        super(logger, listenersFactory, commandFactory, hardwaresFactory);
+        super(logger, listenersFactory, commandFactory, typesFactory, hardwaresFactory);
     }
 }

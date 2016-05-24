@@ -2,9 +2,10 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.TypeSerialiser;
+import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.client.real.impl.internal.ioc.Types;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Type for a string
@@ -23,10 +24,8 @@ public class StringType extends RealSimpleType<String> {
         }
     };
 
-    private final static Logger logger = LoggerFactory.getLogger(StringType.class);
-
     @Inject
-    public StringType(ListenersFactory listenersFactory) {
-        super(logger, Simple.String, SERIALISER, listenersFactory);
+    public StringType(@Types Logger logger, ListenersFactory listenersFactory) {
+        super(ChildUtil.logger(logger, Simple.String.getId()), Simple.String, SERIALISER, listenersFactory);
     }
 }

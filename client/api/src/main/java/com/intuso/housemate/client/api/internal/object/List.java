@@ -5,7 +5,10 @@ import com.intuso.utilities.listener.ListenerRegistration;
 /**
  * @param <ELEMENT> the type of the list's elements
  */
-public interface List<ELEMENT, LIST extends List<ELEMENT, ?>> extends Object<List.Listener<? super ELEMENT, ? super LIST>>, Iterable<ELEMENT> {
+public interface List<ELEMENT,
+        LIST extends List<ELEMENT, ?>>
+        extends Object<List.Listener<? super ELEMENT, ? super LIST>>,
+        Iterable<ELEMENT> {
 
     /**
      * Get an element from the list by name

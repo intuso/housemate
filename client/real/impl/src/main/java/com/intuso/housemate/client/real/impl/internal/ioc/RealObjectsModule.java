@@ -60,6 +60,8 @@ public class RealObjectsModule extends AbstractModule {
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListImpl.Factory<RealTaskImpl>>() {}));
         install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListImpl.Factory<RealTypeImpl<?>>>() {}));
+        install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListImpl.Factory<RealUserImpl>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListImpl.Factory<RealValueImpl<?>>>() {}));

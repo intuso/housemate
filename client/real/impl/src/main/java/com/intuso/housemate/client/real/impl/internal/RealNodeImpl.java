@@ -7,6 +7,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.intuso.housemate.client.api.internal.object.Node;
 import com.intuso.housemate.client.real.api.internal.RealNode;
 import com.intuso.housemate.client.real.impl.internal.ioc.Root;
+import com.intuso.housemate.client.real.impl.internal.type.RegisteredTypes;
 import com.intuso.housemate.client.real.impl.internal.utils.AddHardwareCommand;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
@@ -17,9 +18,10 @@ import javax.jms.Session;
 
 public final class RealNodeImpl
         extends RealObject<Node.Data, Node.Listener<? super RealNodeImpl>>
-        implements RealNode<RealCommandImpl, RealHardwareImpl, RealListImpl<RealHardwareImpl>, RealNodeImpl>,
+        implements RealNode<RealCommandImpl, RealListImpl<RealTypeImpl<?>>, RealHardwareImpl, RealListImpl<RealHardwareImpl>, RealNodeImpl>,
         AddHardwareCommand.Callback {
 
+    private final RealListImpl<RealTypeImpl<?>> types;
     private final RealListImpl<RealHardwareImpl> hardwares;
     private final RealCommandImpl addHardwareCommand;
 
@@ -29,9 +31,14 @@ public final class RealNodeImpl
                         @Assisted("name") String name,
                         @Assisted("description") String description,
                         ListenersFactory listenersFactory,
+                        RegisteredTypes registeredTypes,
                         RealListImpl.Factory<RealHardwareImpl> hardwaresFactory,
                         AddHardwareCommand.Factory addHardwareCommandFactory) {
         super(logger, new Node.Data(id, name, description), listenersFactory);
+        this.types = registeredTypes.createList(ChildUtil.logger(logger, TYPES_ID),
+                TYPES_ID,
+                "Types",
+                "Types");
         this.hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID),
                 HARDWARES_ID,
                 "Hardware",
@@ -49,13 +56,20 @@ public final class RealNodeImpl
     @Inject
     public RealNodeImpl(@Root Logger logger,
                         ListenersFactory listenersFactory,
+                        RegisteredTypes registeredTypes,
                         RealListImpl.Factory<RealHardwareImpl> hardwaresFactory,
                         AddHardwareCommand.Factory addHardwareCommandFactory,
                         Connection connection) throws JMSException {
-        this(logger, "node", "node", "node", listenersFactory, hardwaresFactory, addHardwareCommandFactory);
+        this(logger, "node", "node", "node", listenersFactory, registeredTypes, hardwaresFactory, addHardwareCommandFactory);
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        this.types.init(TYPES_ID, session);
         this.hardwares.init(HARDWARES_ID, session);
         this.addHardwareCommand.init(ADD_HARDWARE_ID, session);
+    }
+
+    @Override
+    public RealListImpl<RealTypeImpl<?>> getTypes() {
+        return types;
     }
 
     @Override
