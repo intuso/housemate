@@ -37,34 +37,68 @@ public class RealObjectsModule extends AbstractModule {
                 .build(new TypeLiteral<RealTaskImpl.Factory>() {}));
 
         // lists
+        // generated
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealAutomationImpl>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealAutomationImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealCommandImpl>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealCommandImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealConditionImpl>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealConditionImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealDeviceImpl>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealDeviceImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealFeatureImpl>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealFeatureImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealHardwareImpl>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealHardwareImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealNodeImpl>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealNodeImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealParameterImpl<?>>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealOptionImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealPropertyImpl<?>>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealParameterImpl<?>>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealSubTypeImpl<?>>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealPropertyImpl<?>>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealTaskImpl>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealSubTypeImpl<?>>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealTypeImpl<?>>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealTaskImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealUserImpl>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealTypeImpl<?>>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListImpl.Factory<RealValueImpl<?>>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealUserImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealValueImpl<?>>>() {}));
+        // persisted
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealAutomationImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealCommandImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealConditionImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealDeviceImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealFeatureImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealHardwareImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealNodeImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealOptionImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealParameterImpl<?>>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealPropertyImpl<?>>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealSubTypeImpl<?>>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealTaskImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealTypeImpl<?>>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealUserImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealValueImpl<?>>>() {}));
 
         // hardwares
         install(new FactoryModuleBuilder()

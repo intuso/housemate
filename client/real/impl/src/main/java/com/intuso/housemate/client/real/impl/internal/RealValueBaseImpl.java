@@ -7,10 +7,7 @@ import com.intuso.housemate.client.real.api.internal.RealValueBase;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.StreamMessage;
+import javax.jms.*;
 import java.util.List;
 
 /**
@@ -45,9 +42,9 @@ public abstract class RealValueBaseImpl<O,
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        this.session = session;
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         valueProducer = session.createProducer(session.createTopic(ChildUtil.name(name, ValueBase.VALUE_ID)));
     }
 

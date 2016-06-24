@@ -7,14 +7,14 @@ import com.intuso.housemate.client.real.api.internal.RealOption;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 public final class RealOptionImpl
         extends RealObject<Option.Data, Option.Listener<? super RealOptionImpl>>
-        implements RealOption<RealListImpl<RealSubTypeImpl<?>>, RealOptionImpl> {
+        implements RealOption<RealListGeneratedImpl<RealSubTypeImpl<?>>, RealOptionImpl> {
 
-    private final RealListImpl<RealSubTypeImpl<?>> subTypes;
+    private final RealListGeneratedImpl<RealSubTypeImpl<?>> subTypes;
 
     /**
      * @param logger {@inheritDoc}
@@ -28,7 +28,7 @@ public final class RealOptionImpl
                           @Assisted("description") String description,
                           @Assisted Iterable<RealSubTypeImpl<?>> subTypes,
                           ListenersFactory listenersFactory,
-                          RealListImpl.Factory<RealSubTypeImpl<?>> subTypesFactory) {
+                          RealListGeneratedImpl.Factory<RealSubTypeImpl<?>> subTypesFactory) {
         super(logger, new Option.Data(id, name, description), listenersFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID),
                 Option.SUB_TYPES_ID,
@@ -38,9 +38,9 @@ public final class RealOptionImpl
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        subTypes.init(ChildUtil.name(name, Option.SUB_TYPES_ID), session);
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        subTypes.init(ChildUtil.name(name, Option.SUB_TYPES_ID), connection);
     }
 
     @Override
@@ -50,7 +50,7 @@ public final class RealOptionImpl
     }
 
     @Override
-    public final RealListImpl<RealSubTypeImpl<?>> getSubTypes() {
+    public final RealListGeneratedImpl<RealSubTypeImpl<?>> getSubTypes() {
         return subTypes;
     }
 

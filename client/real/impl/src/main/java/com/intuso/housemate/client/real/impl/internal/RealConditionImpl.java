@@ -9,6 +9,7 @@ import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.UsesDriver;
 import com.intuso.housemate.client.api.internal.object.Condition;
+import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealCondition;
@@ -20,8 +21,8 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 import java.util.Map;
 
 /**
@@ -30,8 +31,8 @@ import java.util.Map;
 public final class RealConditionImpl
         extends RealObject<Condition.Data, Condition.Listener<? super RealConditionImpl>>
         implements RealCondition<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>>, RealListImpl<RealPropertyImpl<?>>,
-        RealConditionImpl, RealListImpl<RealConditionImpl>, RealConditionImpl>, AddConditionCommand.Callback {
+        RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
+        RealConditionImpl, RealListPersistedImpl<RealConditionImpl>, RealConditionImpl>, AddConditionCommand.Callback {
 
     private final static String PROPERTIES_DESCRIPTION = "The condition's properties";
 
@@ -42,9 +43,9 @@ public final class RealConditionImpl
     private final RealValueImpl<String> errorValue;
     private final RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>> driverProperty;
     private final RealValueImpl<Boolean> driverLoadedValue;
-    private final RealListImpl<RealPropertyImpl<?>> properties;
+    private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
     private final RealValueImpl<Boolean> satisfiedValue;
-    private final RealListImpl<RealConditionImpl> childConditions;
+    private final RealListPersistedImpl<RealConditionImpl> childConditions;
     private final RealCommandImpl addConditionCommand;
 
     private final Map<String, Boolean> childSatisfied = Maps.newHashMap();
@@ -63,15 +64,16 @@ public final class RealConditionImpl
                              @Assisted("id") String id,
                              @Assisted("name") String name,
                              @Assisted("description") String description,
-                             @Assisted RemoveCallback<RealConditionImpl> removeCallback,
+                             @Assisted final RemoveCallback<RealConditionImpl> removeCallback,
                              ListenersFactory listenersFactory,
                              AnnotationProcessor annotationProcessor,
                              RealCommandImpl.Factory commandFactory,
                              RealParameterImpl.Factory<String> stringParameterFactory,
                              RealValueImpl.Factory<Boolean> booleanValueFactory,
                              RealValueImpl.Factory<String> stringValueFactory,
-                             RealListImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
-                             RealListImpl.Factory<RealConditionImpl> conditionsFactory,
+                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
+                             final RealConditionImpl.Factory conditionFactory,
+                             final RealListPersistedImpl.Factory<RealConditionImpl> conditionsFactory,
                              RealPropertyImpl.Factory<PluginResource<ConditionDriver.Factory<? extends ConditionDriver>>> driverPropertyFactory,
                              AddConditionCommand.Factory addConditionCommandFactory) {
         super(logger, new Condition.Data(id, name, description), listenersFactory);
@@ -141,23 +143,29 @@ public final class RealConditionImpl
                 1,
                 1,
                 Lists.newArrayList(false));
+        final RemoveCallback<RealConditionImpl> childRemoveCallback = new RemoveCallback() {
+            @Override
+            public void removeCondition(RealCondition condition) {
+                childConditions.remove(condition.getId());
+            }
+        };
         this.childConditions = conditionsFactory.create(ChildUtil.logger(logger, Condition.CONDITIONS_ID),
                 Condition.CONDITIONS_ID,
                 Condition.CONDITIONS_ID,
                 "Child conditions",
-                Lists.<RealConditionImpl>newArrayList());
+                new RealListPersistedImpl.ExistingObjectFactory<RealConditionImpl>() {
+                    @Override
+                    public RealConditionImpl create(Logger parentLogger, Object.Data data) {
+                        return conditionFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), childRemoveCallback);
+                    }
+                });
         this.addConditionCommand = addConditionCommandFactory.create(ChildUtil.logger(logger, Condition.CONDITIONS_ID),
                 ChildUtil.logger(logger, Condition.ADD_CONDITION_ID),
                 Condition.ADD_CONDITION_ID,
                 Condition.ADD_CONDITION_ID,
                 "Add condition",
                 this,
-                new RemoveCallback() {
-                    @Override
-                    public void removeCondition(RealCondition condition) {
-                        childConditions.remove(condition.getId());
-                    }
-                });
+                childRemoveCallback);
         driverProperty.addObjectListener(new Property.Listener<RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>>>() {
             @Override
             public void valueChanging(RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>> factoryRealProperty) {
@@ -173,17 +181,17 @@ public final class RealConditionImpl
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), session);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), session);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), session);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), session);
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), session);
-        properties.init(ChildUtil.name(name, Condition.PROPERTIES_ID), session);
-        satisfiedValue.init(ChildUtil.name(name, Condition.SATISFIED_ID), session);
-        childConditions.init(ChildUtil.name(name, Condition.PROPERTIES_ID), session);
-        addConditionCommand.init(ChildUtil.name(name, Condition.PROPERTIES_ID), session);
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
+        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
+        properties.init(ChildUtil.name(name, Condition.PROPERTIES_ID), connection);
+        satisfiedValue.init(ChildUtil.name(name, Condition.SATISFIED_ID), connection);
+        childConditions.init(ChildUtil.name(name, Condition.PROPERTIES_ID), connection);
+        addConditionCommand.init(ChildUtil.name(name, Condition.PROPERTIES_ID), connection);
     }
 
     @Override
@@ -269,7 +277,7 @@ public final class RealConditionImpl
     }
 
     @Override
-    public final RealListImpl<RealPropertyImpl<?>> getProperties() {
+    public final RealListGeneratedImpl<RealPropertyImpl<?>> getProperties() {
         return properties;
     }
 
@@ -284,7 +292,7 @@ public final class RealConditionImpl
     }
 
     @Override
-    public RealListImpl<RealConditionImpl> getConditions() {
+    public RealListPersistedImpl<RealConditionImpl> getConditions() {
         return childConditions;
     }
 

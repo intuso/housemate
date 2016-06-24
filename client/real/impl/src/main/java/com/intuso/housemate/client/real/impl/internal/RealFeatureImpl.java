@@ -8,15 +8,15 @@ import com.intuso.housemate.client.real.api.internal.RealFeature;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 public final class RealFeatureImpl
         extends RealObject<Feature.Data, Feature.Listener<? super RealFeatureImpl>>
-        implements RealFeature<RealListImpl<RealCommandImpl>, RealListImpl<RealValueImpl<?>>, RealFeatureImpl> {
+        implements RealFeature<RealListGeneratedImpl<RealCommandImpl>, RealListGeneratedImpl<RealValueImpl<?>>, RealFeatureImpl> {
 
-    private final RealListImpl<RealCommandImpl> commands;
-    private final RealListImpl<RealValueImpl<?>> values;
+    private final RealListGeneratedImpl<RealCommandImpl> commands;
+    private final RealListGeneratedImpl<RealValueImpl<?>> values;
 
     @Inject
     public RealFeatureImpl(@Assisted final Logger logger,
@@ -24,8 +24,8 @@ public final class RealFeatureImpl
                            @Assisted("name") String name,
                            @Assisted("description") String description,
                            ListenersFactory listenersFactory,
-                           RealListImpl.Factory<RealCommandImpl> commandsFactory,
-                           RealListImpl.Factory<RealValueImpl<?>> valuesFactory) {
+                           RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
+                           RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory) {
         super(logger, new Feature.Data(id, name, description), listenersFactory);
         this.commands = commandsFactory.create(ChildUtil.logger(logger, Feature.COMMANDS_ID),
                 Feature.COMMANDS_ID,
@@ -40,10 +40,10 @@ public final class RealFeatureImpl
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        commands.init(ChildUtil.name(name, Feature.COMMANDS_ID), session);
-        values.init(ChildUtil.name(name, Feature.VALUES_ID), session);
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        commands.init(ChildUtil.name(name, Feature.COMMANDS_ID), connection);
+        values.init(ChildUtil.name(name, Feature.VALUES_ID), connection);
     }
 
     @Override
@@ -54,12 +54,12 @@ public final class RealFeatureImpl
     }
 
     @Override
-    public final RealListImpl<RealCommandImpl> getCommands() {
+    public final RealListGeneratedImpl<RealCommandImpl> getCommands() {
         return commands;
     }
 
     @Override
-    public RealListImpl<RealValueImpl<?>> getValues() {
+    public RealListGeneratedImpl<RealValueImpl<?>> getValues() {
         return values;
     }
 

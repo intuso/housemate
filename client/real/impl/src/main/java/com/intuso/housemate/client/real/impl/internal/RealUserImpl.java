@@ -12,8 +12,8 @@ import com.intuso.housemate.plugin.api.internal.type.Email;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 /**
  * Base class for all user
@@ -85,11 +85,11 @@ public final class RealUserImpl
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), session);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), session);
-        emailProperty.init(ChildUtil.name(name, User.EMAIL_ID), session);
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
+        emailProperty.init(ChildUtil.name(name, User.EMAIL_ID), connection);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.TypeSerialiser;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.housemate.plugin.api.internal.type.RegexType;
@@ -22,7 +24,14 @@ public class RealRegexType<O extends RegexType> extends RealTypeImpl<O> {
      * @param regexPattern the regex pattern that values must match
      * @param factory
      */
-    protected RealRegexType(Logger logger, String id, String name, String description, ListenersFactory listenersFactory, String regexPattern, RegexType.Factory<O> factory) {
+    @Inject
+    protected RealRegexType(@Assisted Logger logger,
+                            @Assisted("id") String id,
+                            @Assisted("name") String name,
+                            @Assisted("description") String description,
+                            @Assisted("regexPattern") String regexPattern,
+                            @Assisted RegexType.Factory factory,
+                            ListenersFactory listenersFactory) {
         super(logger, new RegexData(id, name, description, regexPattern), listenersFactory);
         this.serialiser = new Serialiser<>(factory);
     }
@@ -54,5 +63,14 @@ public class RealRegexType<O extends RegexType> extends RealTypeImpl<O> {
         public Instance serialise(O o) {
             return o == null ? null : new Instance(o.getValue());
         }
+    }
+
+    public interface Factory {
+        RealRegexType create(Logger logger,
+                             @Assisted("id") String id,
+                             @Assisted("name") String name,
+                             @Assisted("description") String description,
+                             @Assisted("regexPattern") String regexPattern,
+                             RegexType.Factory factory);
     }
 }

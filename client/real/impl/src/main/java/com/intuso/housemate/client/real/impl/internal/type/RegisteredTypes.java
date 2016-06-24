@@ -20,15 +20,15 @@ import java.util.Map;
 public final class RegisteredTypes {
 
     private final TypeBuilder typeBuilder;
-    private final RealListImpl.Factory<RealTypeImpl<?>> typesFactory;
-    private final List<RealListImpl<RealTypeImpl<?>>> lists = Lists.newArrayList();
+    private final RealListGeneratedImpl.Factory<RealTypeImpl<?>> typesFactory;
+    private final List<RealListGeneratedImpl<RealTypeImpl<?>>> lists = Lists.newArrayList();
     private final Map<String, RealTypeImpl<?>> types = Maps.newHashMap();
     private final Map<String, RealParameterImpl.Factory<?>> parameterFactories = Maps.newHashMap();
     private final Map<String, RealPropertyImpl.Factory<?>> propertyFactories = Maps.newHashMap();
     private final Map<String, RealValueImpl.Factory> valueFactories = Maps.newHashMap();
 
     @Inject
-    public RegisteredTypes(TypeBuilder typeBuilder, RealListImpl.Factory<RealTypeImpl<?>> typesFactory, Iterable<TypeFactories<?>> systemTypes) {
+    public RegisteredTypes(TypeBuilder typeBuilder, RealListGeneratedImpl.Factory<RealTypeImpl<?>> typesFactory, Iterable<TypeFactories<?>> systemTypes) {
         this.typeBuilder = typeBuilder;
         this.typesFactory = typesFactory;
         for(TypeFactories typeFactories : systemTypes) {
@@ -42,8 +42,8 @@ public final class RegisteredTypes {
         }
     }
 
-    public RealListImpl<RealTypeImpl<?>> createList(Logger logger, String id, String name, String description) {
-        RealListImpl<RealTypeImpl<?>> result = typesFactory.create(logger, id, name, description, types.values());
+    public RealListGeneratedImpl<RealTypeImpl<?>> createList(Logger logger, String id, String name, String description) {
+        RealListGeneratedImpl<RealTypeImpl<?>> result = typesFactory.create(logger, id, name, description, types.values());
         lists.add(result);
         return result;
     }
@@ -79,7 +79,7 @@ public final class RegisteredTypes {
         if(types.containsKey(type.getId()))
             throw new HousemateException("Duplicate type found when registering type " + type.getId());
         Injector typeInjector = injector.createChildInjector(new TypeModule(type, typeType));
-        for(RealListImpl<RealTypeImpl<?>> list : lists)
+        for(RealListGeneratedImpl<RealTypeImpl<?>> list : lists)
             list.add(type);
         types.put(type.getId(), type);
         parameterFactories.put(type.getId(), typeInjector.getInstance(new Key<RealParameterImpl.Factory<?>>() {}));
@@ -88,7 +88,7 @@ public final class RegisteredTypes {
     }
 
     public synchronized void typeUnavailable(String id) {
-        for(RealListImpl<RealTypeImpl<?>> list : lists)
+        for(RealListGeneratedImpl<RealTypeImpl<?>> list : lists)
             list.remove(id);
         types.remove(id);
         parameterFactories.remove(id);

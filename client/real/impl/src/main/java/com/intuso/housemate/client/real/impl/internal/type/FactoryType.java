@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
 import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
@@ -23,8 +24,9 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginResource<FACTORY>
     private final RealOptionImpl.Factory optionFactory;
     private final BiMap<String, Entry<FACTORY>> factories = HashBiMap.create();
 
-    protected FactoryType(Logger logger, ListenersFactory listenersFactory, String id, String name, String description, RealOptionImpl.Factory optionFactory) {
-        super(logger, id, name, description, listenersFactory, Arrays.<RealOptionImpl>asList());
+    protected FactoryType(Logger logger, String id, String name, String description, ListenersFactory listenersFactory,
+                          RealOptionImpl.Factory optionFactory, RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
+        super(logger, id, name, description, listenersFactory, optionsFactory, Arrays.<RealOptionImpl>asList());
         this.listenersFactory = listenersFactory;
         this.optionFactory = optionFactory;
     }

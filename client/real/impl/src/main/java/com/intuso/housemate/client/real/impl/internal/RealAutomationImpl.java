@@ -7,6 +7,7 @@ import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Automation;
 import com.intuso.housemate.client.api.internal.object.Condition;
+import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealAutomation;
 import com.intuso.housemate.client.real.api.internal.RealCondition;
@@ -17,8 +18,8 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 /**
  * Base class for all automation
@@ -26,7 +27,7 @@ import javax.jms.Session;
 public final class RealAutomationImpl
         extends RealObject<Automation.Data, Automation.Listener<? super RealAutomationImpl>>
         implements RealAutomation<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealListImpl<RealConditionImpl>, RealListImpl<RealTaskImpl>, RealAutomationImpl>,
+        RealListPersistedImpl<RealConditionImpl>, RealListPersistedImpl<RealTaskImpl>, RealAutomationImpl>,
         Condition.Listener<RealConditionImpl> {
 
     private final RealCommandImpl renameCommand;
@@ -35,11 +36,11 @@ public final class RealAutomationImpl
     private final RealCommandImpl startCommand;
     private final RealCommandImpl stopCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealListImpl<RealConditionImpl> conditions;
+    private final RealListPersistedImpl<RealConditionImpl> conditions;
     private final RealCommandImpl addConditionCommand;
-    private final RealListImpl<RealTaskImpl> satisfiedTasks;
+    private final RealListPersistedImpl<RealTaskImpl> satisfiedTasks;
     private final RealCommandImpl addSatisfiedTaskCommand;
-    private final RealListImpl<RealTaskImpl> unsatisfiedTasks;
+    private final RealListPersistedImpl<RealTaskImpl> unsatisfiedTasks;
     private final RealCommandImpl addUnsatisfiedTaskCommand;
 
     private final RemoveCallback<RealAutomationImpl> removeCallback;
@@ -99,7 +100,7 @@ public final class RealAutomationImpl
      * @param listenersFactory
      */
     @Inject
-    public RealAutomationImpl(@Assisted Logger logger,
+    public RealAutomationImpl(@Assisted final Logger logger,
                               @Assisted("id") String id,
                               @Assisted("name") String name,
                               @Assisted("description") String description,
@@ -109,8 +110,10 @@ public final class RealAutomationImpl
                               RealParameterImpl.Factory<String> stringParameterFactory,
                               RealValueImpl.Factory<Boolean> booleanValueFactory,
                               RealValueImpl.Factory<String> stringValueFactory,
-                              RealListImpl.Factory<RealConditionImpl> conditionsFactory,
-                              RealListImpl.Factory<RealTaskImpl> tasksFactory,
+                              final RealConditionImpl.Factory conditionFactory,
+                              RealListPersistedImpl.Factory<RealConditionImpl> conditionsFactory,
+                              final RealTaskImpl.Factory taskFactory,
+                              RealListPersistedImpl.Factory<RealTaskImpl> tasksFactory,
                               AddConditionCommand.Factory addConditionCommandFactory,
                               AddTaskCommand.Factory addTaskCommandFactory) {
         super(logger, new Automation.Data(id, name, description), listenersFactory);
@@ -194,7 +197,12 @@ public final class RealAutomationImpl
                 Automation.CONDITIONS_ID,
                 Automation.CONDITIONS_ID,
                 Automation.CONDITIONS_ID,
-                Lists.<RealConditionImpl>newArrayList());
+                new RealListPersistedImpl.ExistingObjectFactory<RealConditionImpl>() {
+                    @Override
+                    public RealConditionImpl create(Logger parentLogger, Object.Data data) {
+                        return conditionFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), conditionRemoveCallback);
+                    }
+                });
         this.addConditionCommand = addConditionCommandFactory.create(ChildUtil.logger(logger, CONDITIONS_ID),
                 ChildUtil.logger(logger, Automation.ADD_CONDITION_ID),
                 Automation.ADD_CONDITION_ID,
@@ -206,7 +214,12 @@ public final class RealAutomationImpl
                 Automation.SATISFIED_TASKS_ID,
                 Automation.SATISFIED_TASKS_ID,
                 Automation.SATISFIED_TASKS_ID,
-                Lists.<RealTaskImpl>newArrayList());
+                new RealListPersistedImpl.ExistingObjectFactory<RealTaskImpl>() {
+                    @Override
+                    public RealTaskImpl create(Logger parentLogger, Object.Data data) {
+                        return taskFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), satisfiedTaskRemoveCallback);
+                    }
+                });
         this.addSatisfiedTaskCommand = addTaskCommandFactory.create(ChildUtil.logger(logger, SATISFIED_TASKS_ID),
                 ChildUtil.logger(logger, Automation.ADD_SATISFIED_TASK_ID),
                 Automation.ADD_SATISFIED_TASK_ID,
@@ -218,7 +231,12 @@ public final class RealAutomationImpl
                 Automation.UNSATISFIED_TASKS_ID,
                 Automation.UNSATISFIED_TASKS_ID,
                 Automation.UNSATISFIED_TASKS_ID,
-                Lists.<RealTaskImpl>newArrayList());
+                new RealListPersistedImpl.ExistingObjectFactory<RealTaskImpl>() {
+                    @Override
+                    public RealTaskImpl create(Logger parentLogger, Object.Data data) {
+                        return taskFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), unsatisfiedTaskRemoveCallback);
+                    }
+                });
         this.addUnsatisfiedTaskCommand = addTaskCommandFactory.create(ChildUtil.logger(logger, UNSATISFIED_TASKS_ID),
                 ChildUtil.logger(logger, Automation.ADD_UNSATISFIED_TASK_ID),
                 Automation.ADD_UNSATISFIED_TASK_ID,
@@ -229,17 +247,17 @@ public final class RealAutomationImpl
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), session);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), session);
-        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), session);
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID), session);
-        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), session);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), session);
-        conditions.init(ChildUtil.name(name, Automation.CONDITIONS_ID), session);
-        satisfiedTasks.init(ChildUtil.name(name, Automation.SATISFIED_TASKS_ID), session);
-        unsatisfiedTasks.init(ChildUtil.name(name, Automation.UNSATISFIED_TASKS_ID), session);
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
+        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), connection);
+        startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
+        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
+        conditions.init(ChildUtil.name(name, Automation.CONDITIONS_ID), connection);
+        satisfiedTasks.init(ChildUtil.name(name, Automation.SATISFIED_TASKS_ID), connection);
+        unsatisfiedTasks.init(ChildUtil.name(name, Automation.UNSATISFIED_TASKS_ID), connection);
     }
 
     @Override
@@ -300,7 +318,7 @@ public final class RealAutomationImpl
     }
 
     @Override
-    public RealListImpl<RealConditionImpl> getConditions() {
+    public RealListPersistedImpl<RealConditionImpl> getConditions() {
         return conditions;
     }
 
@@ -310,7 +328,7 @@ public final class RealAutomationImpl
     }
 
     @Override
-    public RealListImpl<RealTaskImpl> getSatisfiedTasks() {
+    public RealListPersistedImpl<RealTaskImpl> getSatisfiedTasks() {
         return satisfiedTasks;
     }
 
@@ -320,7 +338,7 @@ public final class RealAutomationImpl
     }
 
     @Override
-    public RealListImpl<RealTaskImpl> getUnsatisfiedTasks() {
+    public RealListPersistedImpl<RealTaskImpl> getUnsatisfiedTasks() {
         return unsatisfiedTasks;
     }
 

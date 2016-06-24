@@ -2,9 +2,12 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.TypeSerialiser;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -27,11 +30,16 @@ public class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
      * @param description the type's description
      * @param listenersFactory
      */
-    public EnumChoiceType(Logger logger,
-                          String id, String name, String description, ListenersFactory listenersFactory,
-                          Class<E> enumClass,
-                          RealOptionImpl.Factory optionFactory) {
-        super(logger, id, name, description, listenersFactory, convertValuesToOptions(logger, optionFactory, enumClass));
+    @Inject
+    public EnumChoiceType(@Assisted Logger logger,
+                          @Assisted("id") String id,
+                          @Assisted("name") String name,
+                          @Assisted("description") String description,
+                          @Assisted Class enumClass,
+                          ListenersFactory listenersFactory,
+                          RealOptionImpl.Factory optionFactory,
+                          RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
+        super(logger, id, name, description, listenersFactory, optionsFactory, convertValuesToOptions(logger, optionFactory, enumClass));
         this.serialiser = new EnumInstanceSerialiser<>(enumClass);
     }
 
@@ -89,5 +97,13 @@ public class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
                 throw new HousemateException("Could not convert \"" + value + "\" to instance of enum " + enumClass.getName());
             }
         }
+    }
+
+    public interface Factory {
+        EnumChoiceType create(Logger logger,
+                                 @Assisted("id") String id,
+                                 @Assisted("name") String name,
+                                 @Assisted("description") String description,
+                                 Class enumClass);
     }
 }

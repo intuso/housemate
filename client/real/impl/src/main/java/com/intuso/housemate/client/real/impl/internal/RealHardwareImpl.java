@@ -15,8 +15,8 @@ import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 /**
  * Base class for all hardwares
@@ -24,7 +24,7 @@ import javax.jms.Session;
 public final class RealHardwareImpl
         extends RealObject<Hardware.Data, Hardware.Listener<? super RealHardwareImpl>>
         implements RealHardware<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealPropertyImpl<PluginResource<HardwareDriver.Factory<?>>>, RealListImpl<RealPropertyImpl<?>>,
+        RealPropertyImpl<PluginResource<HardwareDriver.Factory<?>>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
         RealHardwareImpl> {
 
     private final static String PROPERTIES_DESCRIPTION = "The hardware's properties";
@@ -39,7 +39,7 @@ public final class RealHardwareImpl
     private final RealValueImpl<String> errorValue;
     private final RealPropertyImpl<PluginResource<HardwareDriver.Factory<?>>> driverProperty;
     private final RealValueImpl<Boolean> driverLoadedValue;
-    private final RealListImpl<RealPropertyImpl<?>> properties;
+    private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
 
     private final RemoveCallback<RealHardwareImpl> removeCallback;
 
@@ -61,7 +61,7 @@ public final class RealHardwareImpl
                             RealParameterImpl.Factory<String> stringParameterFactory,
                             RealValueImpl.Factory<Boolean> booleanValueFactory,
                             RealValueImpl.Factory<String> stringValueFactory,
-                            RealListImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
+                            RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                             RealPropertyImpl.Factory<PluginResource<HardwareDriver.Factory<? extends HardwareDriver>>> driverPropertyFactory) {
         super(logger, new Hardware.Data(id, name, description), listenersFactory);
         this.annotationProcessor = annotationProcessor;
@@ -175,17 +175,17 @@ public final class RealHardwareImpl
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), session);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), session);
-        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), session);
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID), session);
-        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), session);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), session);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), session);
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), session);
-        properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID), session);
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
+        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), connection);
+        startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
+        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
+        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
+        properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID), connection);
     }
 
     @Override
@@ -292,7 +292,7 @@ public final class RealHardwareImpl
     }
 
     @Override
-    public final RealListImpl<RealPropertyImpl<?>> getProperties() {
+    public final RealListGeneratedImpl<RealPropertyImpl<?>> getProperties() {
         return properties;
     }
 

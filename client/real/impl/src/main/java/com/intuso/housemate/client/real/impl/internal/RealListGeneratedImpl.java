@@ -10,20 +10,21 @@ import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 import java.util.Iterator;
 import java.util.Map;
 
 /**
  */
-public final class RealListImpl<ELEMENT extends RealObject<?, ?>>
-        extends RealObject<List.Data, List.Listener<? super ELEMENT, ? super RealListImpl<ELEMENT>>>
-        implements RealList<ELEMENT, RealListImpl<ELEMENT>> {
+public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
+        extends RealObject<List.Data, List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>>>
+        implements RealList<ELEMENT, RealListGeneratedImpl<ELEMENT>> {
 
     private final Map<String, ELEMENT> elements;
+
     private String name;
-    private Session session;
+    private Connection connection;
 
     /**
      * @param logger {@inheritDoc}
@@ -31,12 +32,12 @@ public final class RealListImpl<ELEMENT extends RealObject<?, ?>>
      * @param listenersFactory
      */
     @Inject
-    public RealListImpl(@Assisted Logger logger,
-                        @Assisted("id") String id,
-                        @Assisted("name") String name,
-                        @Assisted("description") String description,
-                        @Assisted Iterable<? extends ELEMENT> elements,
-                        ListenersFactory listenersFactory) {
+    public RealListGeneratedImpl(@Assisted Logger logger,
+                                 @Assisted("id") String id,
+                                 @Assisted("name") String name,
+                                 @Assisted("description") String description,
+                                 @Assisted Iterable<? extends ELEMENT> elements,
+                                 ListenersFactory listenersFactory) {
         super(logger, new List.Data(id, name, description), listenersFactory);
         this.elements = Maps.newHashMap();
         for(ELEMENT element : elements)
@@ -44,7 +45,7 @@ public final class RealListImpl<ELEMENT extends RealObject<?, ?>>
     }
 
     @Override
-    public ListenerRegistration addObjectListener(List.Listener<? super ELEMENT, ? super RealListImpl<ELEMENT>> listener, boolean callForExistingElements) {
+    public ListenerRegistration addObjectListener(List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>> listener, boolean callForExistingElements) {
         ListenerRegistration listenerRegistration = super.addObjectListener(listener);
         if(callForExistingElements)
             for(ELEMENT element : this)
@@ -53,36 +54,37 @@ public final class RealListImpl<ELEMENT extends RealObject<?, ?>>
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
         this.name = name;
-        this.session = session;
+        this.connection = connection;
         for(ELEMENT element : elements.values())
-            element.init(ChildUtil.name(name, element.getId()), session);
-    }
-
-    @Override
-    public void add(ELEMENT element) {
-        if(elements.containsKey(element.getId()))
-            throw new HousemateException("Element with id " + element.getId() + " already exists");
-        if(session != null) {
-            try {
-                element.init(ChildUtil.name(name, element.getId()), session);
-            } catch(JMSException e) {
-                throw new HousemateException("Couldn't add element, failed to initialise it");
-            }
-        }
-        for(List.Listener<? super ELEMENT, ? super RealListImpl<ELEMENT>> listener : listeners)
-            listener.elementAdded(this, element);
+            element.init(ChildUtil.name(name, element.getId()), connection);
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
         this.name = null;
-        this.session = null;
+        this.connection = null;
         for(ELEMENT element : elements.values())
             element.uninit();
+    }
+
+    @Override
+    public void add(ELEMENT element) {
+        if(elements.containsKey(element.getId()))
+            throw new HousemateException("Element with id " + element.getId() + " already exists");
+        elements.put(element.getId(), element);
+        if(connection != null) {
+            try {
+                element.init(ChildUtil.name(name, element.getId()), connection);
+            } catch(JMSException e) {
+                throw new HousemateException("Couldn't add element, failed to initialise it");
+            }
+        }
+        for(List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>> listener : listeners)
+            listener.elementAdded(this, element);
     }
 
     @Override
@@ -90,7 +92,7 @@ public final class RealListImpl<ELEMENT extends RealObject<?, ?>>
         ELEMENT element = elements.get(id);
         if(element != null) {
             element.uninit();
-            for (List.Listener<? super ELEMENT, ? super RealListImpl<ELEMENT>> listener : listeners)
+            for (List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>> listener : listeners)
                 listener.elementRemoved(this, element);
         }
         return element;
@@ -112,10 +114,10 @@ public final class RealListImpl<ELEMENT extends RealObject<?, ?>>
     }
 
     public interface Factory<ELEMENT extends RealObject<?, ?>> {
-        RealListImpl<ELEMENT> create(Logger logger,
-                                     @Assisted("id") String id,
-                                     @Assisted("name") String name,
-                                     @Assisted("description") String description,
-                                     Iterable<? extends ELEMENT> elements);
+        RealListGeneratedImpl<ELEMENT> create(Logger logger,
+                                          @Assisted("id") String id,
+                                          @Assisted("name") String name,
+                                          @Assisted("description") String description,
+                                          Iterable<? extends ELEMENT> elements);
     }
 }

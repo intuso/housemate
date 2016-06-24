@@ -17,8 +17,8 @@ import com.intuso.housemate.plugin.api.internal.driver.TaskDriver;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 /**
  * Base class for all task
@@ -26,7 +26,7 @@ import javax.jms.Session;
 public final class RealTaskImpl
         extends RealObject<Task.Data, Task.Listener<? super RealTaskImpl>>
         implements RealTask<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealPropertyImpl<PluginResource<TaskDriver.Factory<?>>>, RealListImpl<RealPropertyImpl<?>>,
+        RealPropertyImpl<PluginResource<TaskDriver.Factory<?>>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
         RealTaskImpl> {
 
     private final static String PROPERTIES_DESCRIPTION = "The task's properties";
@@ -38,7 +38,7 @@ public final class RealTaskImpl
     private final RealValueImpl<String> errorValue;
     private final RealPropertyImpl<PluginResource<TaskDriver.Factory<?>>> driverProperty;
     private final RealValueImpl<Boolean> driverLoadedValue;
-    private final RealListImpl<RealPropertyImpl<?>> properties;
+    private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
     private final RealValueImpl<Boolean> executingValue;
 
     private final RemoveCallback<RealTaskImpl> removeCallback;
@@ -61,7 +61,7 @@ public final class RealTaskImpl
                         RealParameterImpl.Factory<String> stringParameterFactory,
                         RealValueImpl.Factory<Boolean> booleanValueFactory,
                         RealValueImpl.Factory<String> stringValueFactory,
-                        RealListImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
+                        RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                         RealPropertyImpl.Factory<PluginResource<TaskDriver.Factory<? extends TaskDriver>>> driverPropertyFactory) {
         super(logger, new Task.Data(id, name, description), listenersFactory);
         this.annotationProcessor = annotationProcessor;
@@ -145,15 +145,15 @@ public final class RealTaskImpl
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), session);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), session);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), session);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), session);
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), session);
-        properties.init(ChildUtil.name(name, Task.PROPERTIES_ID), session);
-        executingValue.init(ChildUtil.name(name, Task.EXECUTING_ID), session);
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
+        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
+        properties.init(ChildUtil.name(name, Task.PROPERTIES_ID), connection);
+        executingValue.init(ChildUtil.name(name, Task.EXECUTING_ID), connection);
     }
 
     @Override
@@ -237,7 +237,7 @@ public final class RealTaskImpl
     }
 
     @Override
-    public final RealListImpl<RealPropertyImpl<?>> getProperties() {
+    public final RealListGeneratedImpl<RealPropertyImpl<?>> getProperties() {
         return properties;
     }
 

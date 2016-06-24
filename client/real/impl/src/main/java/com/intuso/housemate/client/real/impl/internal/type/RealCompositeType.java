@@ -1,16 +1,18 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.TypeSerialiser;
 import com.intuso.housemate.client.api.internal.object.SubType;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.housemate.client.real.impl.internal.RealListImpl;
+import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 /**
  * Real type for types that are made up of a collection of other types. For example, a GPS position is made up of two
@@ -19,14 +21,14 @@ import javax.jms.Session;
  */
 public final class RealCompositeType<O>
         extends RealTypeImpl<O>
-        implements SubType.Container<RealListImpl<RealSubTypeImpl<?>>> {
+        implements SubType.Container<RealListGeneratedImpl<RealSubTypeImpl<?>>> {
 
     public final static String SUB_TYPES_ID = "sub-types";
     public final static String SUB_TYPES_NAME = "Sub types";
     public final static String SUB_TYPES_DESCRIPTION = "The sub types that combine to form this type";
 
     private final TypeSerialiser<O> serialiser;
-    private final RealListImpl<RealSubTypeImpl<?>> subTypes;
+    private final RealListGeneratedImpl<RealSubTypeImpl<?>> subTypes;
 
     /**
      * @param logger {@inheritDoc}
@@ -36,14 +38,21 @@ public final class RealCompositeType<O>
      * @param listenersFactory
      * @param subTypes the compound type's sub types
      */
-    protected RealCompositeType(Logger logger, String id, String name, String description, ListenersFactory listenersFactory, Iterable<RealSubTypeImpl<?>> subTypes) {
+    @Inject
+    protected RealCompositeType(@Assisted Logger logger,
+                                @Assisted("id") String id,
+                                @Assisted("name") String name,
+                                @Assisted("description") String description,
+                                @Assisted Iterable<RealSubTypeImpl<?>> subTypes,
+                                ListenersFactory listenersFactory,
+                                RealListGeneratedImpl.Factory<RealSubTypeImpl<?>> subTypesFactory) {
         super(logger, new CompositeData(id, name, description), listenersFactory);
         this.serialiser = new Serialiser<>();
-        this.subTypes = new RealListImpl<>(ChildUtil.logger(logger, SUB_TYPES_ID),
+        this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID),
                 SUB_TYPES_ID,
                 SUB_TYPES_NAME,
                 SUB_TYPES_DESCRIPTION,
-                subTypes, listenersFactory);
+                subTypes);
     }
 
     @Override
@@ -57,9 +66,9 @@ public final class RealCompositeType<O>
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        subTypes.init(ChildUtil.name(name, SUB_TYPES_ID), session);
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        subTypes.init(ChildUtil.name(name, SUB_TYPES_ID), connection);
     }
 
     @Override
@@ -69,7 +78,7 @@ public final class RealCompositeType<O>
     }
 
     @Override
-    public final RealListImpl<RealSubTypeImpl<?>> getSubTypes() {
+    public final RealListGeneratedImpl<RealSubTypeImpl<?>> getSubTypes() {
         return subTypes;
     }
 
@@ -84,5 +93,13 @@ public final class RealCompositeType<O>
         public O deserialise(Instance instance) {
             return null; // todo deserialise the map of subtype to value
         }
+    }
+
+    public interface Factory  {
+        RealCompositeType create(Logger logger,
+                                    @Assisted("id") String id,
+                                    @Assisted("name") String name,
+                                    @Assisted("description") String description,
+                                    Iterable<RealSubTypeImpl<?>> options);
     }
 }

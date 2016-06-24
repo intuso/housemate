@@ -3,8 +3,14 @@ package com.intuso.housemate.server.ioc;
 import com.google.inject.Provider;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.broker.region.policy.PolicyEntry;
+import org.apache.activemq.broker.region.policy.PolicyMap;
+import org.apache.activemq.broker.region.policy.RetainedMessageSubscriptionRecoveryPolicy;
+import org.apache.activemq.store.kahadb.KahaDBStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * Created by tomc on 05/05/16.
@@ -15,8 +21,22 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
 
     @Override
     public BrokerService get() {
+
         BrokerService brokerService = new BrokerService();
         brokerService.setBrokerName("housemate");
+
+        try {
+            brokerService.setPersistenceAdapter(new KahaDBStore());
+        } catch (IOException e) {
+            logger.error("Failed to setup broker message persistence", e);
+        }
+
+        // setup the destination policies
+        PolicyMap policyMap = new PolicyMap();
+        PolicyEntry defaultEntry = new PolicyEntry();
+        defaultEntry.setSubscriptionRecoveryPolicy(new RetainedMessageSubscriptionRecoveryPolicy(null));
+        policyMap.setDefaultEntry(defaultEntry);
+        brokerService.setDestinationPolicy(policyMap);
 
         // setup the connectors this broker will provide
         try {

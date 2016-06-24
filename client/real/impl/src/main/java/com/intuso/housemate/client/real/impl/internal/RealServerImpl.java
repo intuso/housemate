@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.ioc.Root;
@@ -15,27 +16,26 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 public final class RealServerImpl
         extends RealObject<Server.Data, Server.Listener<? super RealServerImpl>>
         implements RealServer<RealCommandImpl,
-        RealAutomationImpl, RealListImpl<RealAutomationImpl>,
-        RealDeviceImpl, RealListImpl<RealDeviceImpl>,
-        RealUserImpl, RealListImpl<RealUserImpl>,
-        RealNodeImpl, RealListImpl<RealNodeImpl>,
+        RealAutomationImpl, RealListPersistedImpl<RealAutomationImpl>,
+        RealDeviceImpl, RealListPersistedImpl<RealDeviceImpl>,
+        RealUserImpl, RealListPersistedImpl<RealUserImpl>,
+        RealNodeImpl, RealListGeneratedImpl<RealNodeImpl>,
         RealServerImpl>,
         AddAutomationCommand.Callback,
         AddDeviceCommand.Callback,
         AddUserCommand.Callback {
 
-    private final RealListImpl<RealAutomationImpl> automations;
+    private final RealListPersistedImpl<RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
-    private final RealListImpl<RealDeviceImpl> devices;
+    private final RealListPersistedImpl<RealDeviceImpl> devices;
     private final RealCommandImpl addDeviceCommand;
-    private final RealListImpl<RealUserImpl> users;
+    private final RealListGeneratedImpl<RealNodeImpl> nodes;
+    private final RealListPersistedImpl<RealUserImpl> users;
     private final RealCommandImpl addUserCommand;
-    private final RealListImpl<RealNodeImpl> nodes;
 
     @AssistedInject
     private RealServerImpl(@Assisted Logger logger,
@@ -43,10 +43,13 @@ public final class RealServerImpl
                            @Assisted("name") String name,
                            @Assisted("description") String description,
                            ListenersFactory listenersFactory,
-                           RealListImpl.Factory<RealAutomationImpl> automationsFactory,
-                           RealListImpl.Factory<RealDeviceImpl> devicesFactory,
-                           RealListImpl.Factory<RealNodeImpl> nodesFactory,
-                           RealListImpl.Factory<RealUserImpl> usersFactory,
+                           final RealAutomationImpl.Factory automationFactory,
+                           RealListPersistedImpl.Factory<RealAutomationImpl> automationsFactory,
+                           final RealDeviceImpl.Factory deviceFactory,
+                           RealListPersistedImpl.Factory<RealDeviceImpl> devicesFactory,
+                           RealListGeneratedImpl.Factory<RealNodeImpl> nodesFactory,
+                           final RealUserImpl.Factory userFactory,
+                           RealListPersistedImpl.Factory<RealUserImpl> usersFactory,
                            AddAutomationCommand.Factory addAutomationCommandFactory,
                            AddDeviceCommand.Factory addDeviceCommandFactory,
                            AddUserCommand.Factory addUserCommandFactory) {
@@ -55,7 +58,12 @@ public final class RealServerImpl
                 AUTOMATIONS_ID,
                 "Automations",
                 "Automations",
-                Lists.<RealAutomationImpl>newArrayList());
+                new RealListPersistedImpl.ExistingObjectFactory<RealAutomationImpl>() {
+                    @Override
+                    public RealAutomationImpl create(Logger parentLogger, Object.Data data) {
+                        return automationFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
+                    }
+                });
         this.addAutomationCommand = addAutomationCommandFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),
                 ChildUtil.logger(logger, ADD_AUTOMATION_ID),
                 ADD_AUTOMATION_ID,
@@ -67,7 +75,12 @@ public final class RealServerImpl
                 DEVICES_ID,
                 "Devices",
                 "Devices",
-                Lists.<RealDeviceImpl>newArrayList());
+                new RealListPersistedImpl.ExistingObjectFactory<RealDeviceImpl>() {
+                    @Override
+                    public RealDeviceImpl create(Logger parentLogger, Object.Data data) {
+                        return deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
+                    }
+                });
         this.addDeviceCommand = addDeviceCommandFactory.create(ChildUtil.logger(logger, DEVICES_ID),
                 ChildUtil.logger(logger, ADD_DEVICE_ID),
                 ADD_DEVICE_ID,
@@ -79,7 +92,12 @@ public final class RealServerImpl
                 USERS_ID,
                 "Users",
                 "Users",
-                Lists.<RealUserImpl>newArrayList());
+                new RealListPersistedImpl.ExistingObjectFactory<RealUserImpl>() {
+                    @Override
+                    public RealUserImpl create(Logger parentLogger, Object.Data data) {
+                        return userFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
+                    }
+                });
         this.addUserCommand = addUserCommandFactory.create(ChildUtil.logger(logger, USERS_ID),
                 ChildUtil.logger(logger, ADD_USER_ID),
                 ADD_USER_ID,
@@ -97,28 +115,57 @@ public final class RealServerImpl
     @Inject
     public RealServerImpl(@Root Logger logger,
                           ListenersFactory listenersFactory,
-                          RealListImpl.Factory<RealAutomationImpl> automationsFactory,
-                          RealListImpl.Factory<RealDeviceImpl> devicesFactory,
-                          RealListImpl.Factory<RealNodeImpl> nodesFactory,
-                          RealListImpl.Factory<RealUserImpl> usersFactory,
+                          RealAutomationImpl.Factory automationFactory,
+                          RealListPersistedImpl.Factory<RealAutomationImpl> automationsFactory,
+                          RealDeviceImpl.Factory deviceFactory,
+                          RealListPersistedImpl.Factory<RealDeviceImpl> devicesFactory,
+                          RealListGeneratedImpl.Factory<RealNodeImpl> nodesFactory,
+                          RealUserImpl.Factory userFactory,
+                          RealListPersistedImpl.Factory<RealUserImpl> usersFactory,
+                          RealNodeImpl.Factory nodeFactory,
                           AddAutomationCommand.Factory addAutomationCommandFactory,
                           AddDeviceCommand.Factory addDeviceCommandFactory,
                           AddUserCommand.Factory addUserCommandFactory,
                           Connection connection) throws JMSException {
-        this(logger, "server", "server", "server", listenersFactory, automationsFactory, devicesFactory, nodesFactory,
-                usersFactory, addAutomationCommandFactory, addDeviceCommandFactory, addUserCommandFactory);
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        this.automations.init(AUTOMATIONS_ID, session);
-        this.addAutomationCommand.init(ADD_AUTOMATION_ID, session);
-        this.devices.init(DEVICES_ID, session);
-        this.addDeviceCommand.init(ADD_DEVICE_ID, session);
-        this.users.init(USERS_ID, session);
-        this.addUserCommand.init(ADD_USER_ID, session);
-        this.nodes.init(NODES_ID, session);
+        this(logger, "server", "server", "server", listenersFactory, automationFactory, automationsFactory,
+                deviceFactory, devicesFactory, nodesFactory, userFactory, usersFactory, addAutomationCommandFactory,
+                addDeviceCommandFactory, addUserCommandFactory);
+        this.automations.init(AUTOMATIONS_ID, connection);
+        this.addAutomationCommand.init(ADD_AUTOMATION_ID, connection);
+        this.devices.init(DEVICES_ID, connection);
+        this.addDeviceCommand.init(ADD_DEVICE_ID, connection);
+        this.users.init(USERS_ID, connection);
+        this.addUserCommand.init(ADD_USER_ID, connection);
+        this.nodes.init(NODES_ID, connection);
+        this.nodes.add(nodeFactory.create(ChildUtil.logger(logger, NODES_ID, "local"), "local", "Local", "Local Node"));
     }
 
     @Override
-    public RealListImpl<RealAutomationImpl> getAutomations() {
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        this.automations.init(AUTOMATIONS_ID, connection);
+        this.addAutomationCommand.init(ADD_AUTOMATION_ID, connection);
+        this.devices.init(DEVICES_ID, connection);
+        this.addDeviceCommand.init(ADD_DEVICE_ID, connection);
+        this.users.init(USERS_ID, connection);
+        this.addUserCommand.init(ADD_USER_ID, connection);
+        this.nodes.init(NODES_ID, connection);
+    }
+
+    @Override
+    protected void uninitChildren() {
+        super.uninitChildren();
+        this.automations.uninit();
+        this.addAutomationCommand.uninit();
+        this.devices.uninit();
+        this.addDeviceCommand.uninit();
+        this.users.uninit();
+        this.addUserCommand.uninit();
+        this.nodes.uninit();
+    }
+
+    @Override
+    public RealListPersistedImpl<RealAutomationImpl> getAutomations() {
         return automations;
     }
 
@@ -138,7 +185,7 @@ public final class RealServerImpl
     }
 
     @Override
-    public RealListImpl<RealDeviceImpl> getDevices() {
+    public RealListPersistedImpl<RealDeviceImpl> getDevices() {
         return devices;
     }
 
@@ -158,7 +205,7 @@ public final class RealServerImpl
     }
 
     @Override
-    public RealListImpl<RealUserImpl> getUsers() {
+    public RealListPersistedImpl<RealUserImpl> getUsers() {
         return users;
     }
 
@@ -178,7 +225,7 @@ public final class RealServerImpl
     }
 
     @Override
-    public RealListImpl<RealNodeImpl> getNodes() {
+    public RealListGeneratedImpl<RealNodeImpl> getNodes() {
         return nodes;
     }
 

@@ -15,8 +15,8 @@ import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 /**
  * Base class for all device
@@ -24,8 +24,8 @@ import javax.jms.Session;
 public final class RealDeviceImpl
         extends RealObject<Device.Data, Device.Listener<? super RealDeviceImpl>>
         implements RealDevice<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealPropertyImpl<PluginResource<DeviceDriver.Factory<?>>>, RealListImpl<RealPropertyImpl<?>>,
-        RealListImpl<RealFeatureImpl>, RealDeviceImpl> {
+        RealPropertyImpl<PluginResource<DeviceDriver.Factory<?>>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
+        RealListGeneratedImpl<RealFeatureImpl>, RealDeviceImpl> {
 
     private final static String PROPERTIES_DESCRIPTION = "The device's properties";
     private final static String FEATURES_DESCRIPTION = "The device's features";
@@ -40,8 +40,8 @@ public final class RealDeviceImpl
     private final RealValueImpl<String> errorValue;
     private final RealPropertyImpl<PluginResource<DeviceDriver.Factory<?>>> driverProperty;
     private final RealValueImpl<Boolean> driverLoadedValue;
-    private final RealListImpl<RealPropertyImpl<?>> properties;
-    private final RealListImpl<RealFeatureImpl> features;
+    private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
+    private final RealListGeneratedImpl<RealFeatureImpl> features;
 
     private final RemoveCallback<RealDeviceImpl> removeCallback;
 
@@ -63,8 +63,8 @@ public final class RealDeviceImpl
                           RealParameterImpl.Factory<String> stringParameterFactory,
                           RealValueImpl.Factory<Boolean> booleanValueFactory,
                           RealValueImpl.Factory<String> stringValueFactory,
-                          RealListImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
-                          RealListImpl.Factory<RealFeatureImpl> featuresFactory,
+                          RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
+                          RealListGeneratedImpl.Factory<RealFeatureImpl> featuresFactory,
                           RealPropertyImpl.Factory<PluginResource<DeviceDriver.Factory<? extends DeviceDriver>>> driverPropertyFactory) {
         super(logger, new Device.Data(id, name, description), listenersFactory);
         this.annotationProcessor = annotationProcessor;
@@ -183,18 +183,18 @@ public final class RealDeviceImpl
     }
 
     @Override
-    protected void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), session);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), session);
-        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), session);
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID), session);
-        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), session);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), session);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), session);
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), session);
-        properties.init(ChildUtil.name(name, Device.PROPERTIES_ID), session);
-        features.init(ChildUtil.name(name, Device.FEATURES_ID), session);
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
+        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), connection);
+        startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
+        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
+        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
+        properties.init(ChildUtil.name(name, Device.PROPERTIES_ID), connection);
+        features.init(ChildUtil.name(name, Device.FEATURES_ID), connection);
     }
 
     @Override
@@ -304,12 +304,12 @@ public final class RealDeviceImpl
     }
 
     @Override
-    public final RealListImpl<RealPropertyImpl<?>> getProperties() {
+    public final RealListGeneratedImpl<RealPropertyImpl<?>> getProperties() {
         return properties;
     }
 
     @Override
-    public RealListImpl<RealFeatureImpl> getFeatures() {
+    public RealListGeneratedImpl<RealFeatureImpl> getFeatures() {
         return features;
     }
 

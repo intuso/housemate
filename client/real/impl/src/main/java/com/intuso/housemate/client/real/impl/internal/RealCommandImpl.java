@@ -16,13 +16,13 @@ import javax.jms.*;
  */
 public final class RealCommandImpl
         extends RealObject<Command.Data, Command.Listener<? super RealCommandImpl>>
-        implements RealCommand<RealValueImpl<Boolean>, RealListImpl<RealParameterImpl<?>>, RealCommandImpl>, MessageListener {
+        implements RealCommand<RealValueImpl<Boolean>, RealListGeneratedImpl<RealParameterImpl<?>>, RealCommandImpl>, MessageListener {
 
     private final static String ENABLED_DESCRIPTION = "Whether the command is enabled or not";
 
     private final Performer performer;
     private final RealValueImpl<Boolean> enabledValue;
-    private final RealListImpl<RealParameterImpl<?>> parameters;
+    private final RealListGeneratedImpl<RealParameterImpl<?>> parameters;
 
     private Session session;
     private MessageProducer performStatusProducer;
@@ -42,7 +42,7 @@ public final class RealCommandImpl
                               @Assisted Iterable<? extends RealParameterImpl<?>> parameters,
                               ListenersFactory listenersFactory,
                               RealValueImpl.Factory<Boolean> booleanValueFactory,
-                              RealListImpl.Factory<RealParameterImpl<?>> parametersFactory) {
+                              RealListGeneratedImpl.Factory<RealParameterImpl<?>> parametersFactory) {
         super(logger, new Command.Data(id, name, description), listenersFactory);
         this.performer = performer;
         this.enabledValue = booleanValueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID),
@@ -60,11 +60,11 @@ public final class RealCommandImpl
     }
 
     @Override
-    protected final void initChildren(String name, Session session) throws JMSException {
-        super.initChildren(name, session);
-        enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID), session);
-        parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID), session);
-        this.session = session;
+    protected final void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID), connection);
+        parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID), connection);
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         performStatusProducer = session.createProducer(session.createTopic(ChildUtil.name(name, Command.PERFORM_STATUS_ID)));
         performConsumer = session.createConsumer(session.createQueue(ChildUtil.name(name, Command.PERFORM_ID)));
         performConsumer.setMessageListener(this);
@@ -107,7 +107,7 @@ public final class RealCommandImpl
     }
 
     @Override
-    public RealListImpl<RealParameterImpl<?>> getParameters() {
+    public RealListGeneratedImpl<RealParameterImpl<?>> getParameters() {
         return parameters;
     }
 

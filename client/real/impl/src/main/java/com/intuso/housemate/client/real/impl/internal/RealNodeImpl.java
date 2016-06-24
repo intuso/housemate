@@ -1,10 +1,10 @@
 package com.intuso.housemate.client.real.impl.internal;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.intuso.housemate.client.api.internal.object.Node;
+import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.real.api.internal.RealNode;
 import com.intuso.housemate.client.real.impl.internal.ioc.Root;
 import com.intuso.housemate.client.real.impl.internal.type.RegisteredTypes;
@@ -14,25 +14,25 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 public final class RealNodeImpl
         extends RealObject<Node.Data, Node.Listener<? super RealNodeImpl>>
-        implements RealNode<RealCommandImpl, RealListImpl<RealTypeImpl<?>>, RealHardwareImpl, RealListImpl<RealHardwareImpl>, RealNodeImpl>,
+        implements RealNode<RealCommandImpl, RealListGeneratedImpl<RealTypeImpl<?>>, RealHardwareImpl, RealListPersistedImpl<RealHardwareImpl>, RealNodeImpl>,
         AddHardwareCommand.Callback {
 
-    private final RealListImpl<RealTypeImpl<?>> types;
-    private final RealListImpl<RealHardwareImpl> hardwares;
+    private final RealListGeneratedImpl<RealTypeImpl<?>> types;
+    private final RealListPersistedImpl<RealHardwareImpl> hardwares;
     private final RealCommandImpl addHardwareCommand;
 
     @AssistedInject
-    public RealNodeImpl(@Assisted Logger logger,
+    public RealNodeImpl(@Assisted final Logger logger,
                         @Assisted("id") String id,
                         @Assisted("name") String name,
                         @Assisted("description") String description,
                         ListenersFactory listenersFactory,
                         RegisteredTypes registeredTypes,
-                        RealListImpl.Factory<RealHardwareImpl> hardwaresFactory,
+                        final RealHardwareImpl.Factory hardwareFactory,
+                        RealListPersistedImpl.Factory<RealHardwareImpl> hardwaresFactory,
                         AddHardwareCommand.Factory addHardwareCommandFactory) {
         super(logger, new Node.Data(id, name, description), listenersFactory);
         this.types = registeredTypes.createList(ChildUtil.logger(logger, TYPES_ID),
@@ -43,7 +43,12 @@ public final class RealNodeImpl
                 HARDWARES_ID,
                 "Hardware",
                 "Hardware",
-                Lists.<RealHardwareImpl>newArrayList());
+                new RealListPersistedImpl.ExistingObjectFactory<RealHardwareImpl>() {
+                    @Override
+                    public RealHardwareImpl create(Logger parentLogger, Object.Data data) {
+                        return hardwareFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealNodeImpl.this);
+                    }
+                });
         this.addHardwareCommand = addHardwareCommandFactory.create(ChildUtil.logger(logger, HARDWARES_ID),
                 ChildUtil.logger(logger, ADD_HARDWARE_ID),
                 ADD_HARDWARE_ID,
@@ -57,23 +62,39 @@ public final class RealNodeImpl
     public RealNodeImpl(@Root Logger logger,
                         ListenersFactory listenersFactory,
                         RegisteredTypes registeredTypes,
-                        RealListImpl.Factory<RealHardwareImpl> hardwaresFactory,
+                        RealHardwareImpl.Factory hardwareFactory,
+                        RealListPersistedImpl.Factory<RealHardwareImpl> hardwaresFactory,
                         AddHardwareCommand.Factory addHardwareCommandFactory,
                         Connection connection) throws JMSException {
-        this(logger, "node", "node", "node", listenersFactory, registeredTypes, hardwaresFactory, addHardwareCommandFactory);
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        this.types.init(TYPES_ID, session);
-        this.hardwares.init(HARDWARES_ID, session);
-        this.addHardwareCommand.init(ADD_HARDWARE_ID, session);
+        this(logger, "node", "node", "node", listenersFactory, registeredTypes, hardwareFactory, hardwaresFactory, addHardwareCommandFactory);
+        this.types.init(TYPES_ID, connection);
+        this.hardwares.init(HARDWARES_ID, connection);
+        this.addHardwareCommand.init(ADD_HARDWARE_ID, connection);
     }
 
     @Override
-    public RealListImpl<RealTypeImpl<?>> getTypes() {
+    protected void initChildren(String name, Connection connection) throws JMSException {
+        super.initChildren(name, connection);
+        types.init(TYPES_ID, connection);
+        hardwares.init(HARDWARES_ID, connection);
+        addHardwareCommand.init(ADD_HARDWARE_ID, connection);
+    }
+
+    @Override
+    protected void uninitChildren() {
+        super.uninitChildren();
+        types.uninit();
+        hardwares.uninit();
+        addHardwareCommand.uninit();
+    }
+
+    @Override
+    public RealListGeneratedImpl<RealTypeImpl<?>> getTypes() {
         return types;
     }
 
     @Override
-    public RealListImpl<RealHardwareImpl> getHardwares() {
+    public RealListPersistedImpl<RealHardwareImpl> getHardwares() {
         return hardwares;
     }
 

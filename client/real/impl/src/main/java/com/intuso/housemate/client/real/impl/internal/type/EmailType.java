@@ -24,7 +24,7 @@ public class EmailType extends RealRegexType<Email> {
      */
     @Inject
     public EmailType(@Types Logger logger, ListenersFactory listenersFactory, Email.Factory emailFactory) {
-        super(ChildUtil.logger(logger, ID), ID, NAME, "Email address of the form <username>@<host>", listenersFactory, ".+@.+\\..+", emailFactory);
+        super(ChildUtil.logger(logger, ID), ID, NAME, "Email address of the form <username>@<host>", ".+@.+\\..+", emailFactory, listenersFactory);
     }
 
     @Override
