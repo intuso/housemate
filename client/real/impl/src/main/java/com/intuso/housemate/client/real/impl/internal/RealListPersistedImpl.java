@@ -41,7 +41,7 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
                                  @Assisted("description") String description,
                                  @Assisted ExistingObjectFactory<ELEMENT> existingObjectHandler,
                                  ListenersFactory listenersFactory) {
-        super(logger, new List.Data(id, name, description), listenersFactory);
+        super(logger, false, new List.Data(id, name, description), listenersFactory);
         this.elements = Maps.newHashMap();
         this.existingObjectHandler = existingObjectHandler;
     }
@@ -61,7 +61,7 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
         this.name = name;
         this.connection = connection;
         this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        existingObjectConsumer = session.createConsumer(session.createTopic(ChildUtil.name(name, "*")));
+        existingObjectConsumer = session.createConsumer(session.createTopic(ChildUtil.name(name, "*") + "?consumer.retroactive=true"));
         existingObjectConsumer.setMessageListener(this);
     }
 

@@ -26,7 +26,7 @@ public final class RealFeatureImpl
                            ListenersFactory listenersFactory,
                            RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                            RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory) {
-        super(logger, new Feature.Data(id, name, description), listenersFactory);
+        super(logger, false, new Feature.Data(id, name, description), listenersFactory);
         this.commands = commandsFactory.create(ChildUtil.logger(logger, Feature.COMMANDS_ID),
                 Feature.COMMANDS_ID,
                 "Commands",

@@ -43,7 +43,7 @@ public final class RealCommandImpl
                               ListenersFactory listenersFactory,
                               RealValueImpl.Factory<Boolean> booleanValueFactory,
                               RealListGeneratedImpl.Factory<RealParameterImpl<?>> parametersFactory) {
-        super(logger, new Command.Data(id, name, description), listenersFactory);
+        super(logger, false, new Command.Data(id, name, description), listenersFactory);
         this.performer = performer;
         this.enabledValue = booleanValueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID),
                 Command.ENABLED_ID,
@@ -164,7 +164,7 @@ public final class RealCommandImpl
     private void performStatus(String opId, boolean finished, String error) {
         try {
             StreamMessage streamMessage = session.createStreamMessage();
-            streamMessage.writeObject(Serialiser.serialise(new Command.PerformStatusData(opId, finished, error)));
+            streamMessage.writeBytes(Serialiser.serialise(new Command.PerformStatusData(opId, finished, error)));
             performStatusProducer.send(streamMessage);
         } catch(JMSException e) {
             logger.error("Failed to send perform status update ({}, {}, {})", opId, finished, error, e);

@@ -76,7 +76,7 @@ public final class RealConditionImpl
                              final RealListPersistedImpl.Factory<RealConditionImpl> conditionsFactory,
                              RealPropertyImpl.Factory<PluginResource<ConditionDriver.Factory<? extends ConditionDriver>>> driverPropertyFactory,
                              AddConditionCommand.Factory addConditionCommandFactory) {
-        super(logger, new Condition.Data(id, name, description), listenersFactory);
+        super(logger, true, new Condition.Data(id, name, description), listenersFactory);
         this.annotationProcessor = annotationProcessor;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),

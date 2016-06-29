@@ -30,7 +30,7 @@ public final class RealParameterImpl<O>
                              @Assisted("max") int maxValues,
                              ListenersFactory listenersFactory,
                              RealTypeImpl<O> type) {
-        super(logger, new Parameter.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory);
+        super(logger, false, new Parameter.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory);
         this.type = type;
     }
 

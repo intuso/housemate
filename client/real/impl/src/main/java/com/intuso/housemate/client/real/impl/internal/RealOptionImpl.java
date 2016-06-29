@@ -29,7 +29,7 @@ public final class RealOptionImpl
                           @Assisted Iterable<RealSubTypeImpl<?>> subTypes,
                           ListenersFactory listenersFactory,
                           RealListGeneratedImpl.Factory<RealSubTypeImpl<?>> subTypesFactory) {
-        super(logger, new Option.Data(id, name, description), listenersFactory);
+        super(logger, false, new Option.Data(id, name, description), listenersFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID),
                 Option.SUB_TYPES_ID,
                 "Sub Types",

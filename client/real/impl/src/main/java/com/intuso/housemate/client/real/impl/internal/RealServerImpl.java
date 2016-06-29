@@ -7,7 +7,6 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.real.api.internal.RealServer;
-import com.intuso.housemate.client.real.impl.internal.ioc.Root;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddDeviceCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddUserCommand;
@@ -53,7 +52,7 @@ public final class RealServerImpl
                            AddAutomationCommand.Factory addAutomationCommandFactory,
                            AddDeviceCommand.Factory addDeviceCommandFactory,
                            AddUserCommand.Factory addUserCommandFactory) {
-        super(logger, new Server.Data(id, name, description), listenersFactory);
+        super(logger, true, new Server.Data(id, name, description), listenersFactory);
         this.automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),
                 AUTOMATIONS_ID,
                 "Automations",
@@ -113,7 +112,7 @@ public final class RealServerImpl
     }
 
     @Inject
-    public RealServerImpl(@Root Logger logger,
+    public RealServerImpl(@com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
                           ListenersFactory listenersFactory,
                           RealAutomationImpl.Factory automationFactory,
                           RealListPersistedImpl.Factory<RealAutomationImpl> automationsFactory,

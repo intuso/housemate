@@ -63,7 +63,7 @@ public final class RealHardwareImpl
                             RealValueImpl.Factory<String> stringValueFactory,
                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                             RealPropertyImpl.Factory<PluginResource<HardwareDriver.Factory<? extends HardwareDriver>>> driverPropertyFactory) {
-        super(logger, new Hardware.Data(id, name, description), listenersFactory);
+        super(logger, true, new Hardware.Data(id, name, description), listenersFactory);
         this.annotationProcessor = annotationProcessor;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),

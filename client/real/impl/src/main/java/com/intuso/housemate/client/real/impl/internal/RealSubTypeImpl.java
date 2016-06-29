@@ -30,7 +30,7 @@ public final class RealSubTypeImpl<O>
                            @Assisted("max") int maxValues,
                            ListenersFactory listenersFactory,
                            RealTypeImpl<O> type) {
-        super(logger, new SubType.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory);
+        super(logger, false, new SubType.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory);
         this.type = type;
     }
 

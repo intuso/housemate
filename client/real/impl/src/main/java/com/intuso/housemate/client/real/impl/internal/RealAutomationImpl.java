@@ -116,7 +116,7 @@ public final class RealAutomationImpl
                               RealListPersistedImpl.Factory<RealTaskImpl> tasksFactory,
                               AddConditionCommand.Factory addConditionCommandFactory,
                               AddTaskCommand.Factory addTaskCommandFactory) {
-        super(logger, new Automation.Data(id, name, description), listenersFactory);
+        super(logger, true, new Automation.Data(id, name, description), listenersFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -256,8 +256,11 @@ public final class RealAutomationImpl
         stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
         conditions.init(ChildUtil.name(name, Automation.CONDITIONS_ID), connection);
+        addConditionCommand.init(ChildUtil.name(name, Automation.ADD_CONDITION_ID), connection);
         satisfiedTasks.init(ChildUtil.name(name, Automation.SATISFIED_TASKS_ID), connection);
+        addSatisfiedTaskCommand.init(ChildUtil.name(name, Automation.ADD_SATISFIED_TASK_ID), connection);
         unsatisfiedTasks.init(ChildUtil.name(name, Automation.UNSATISFIED_TASKS_ID), connection);
+        addUnsatisfiedTaskCommand.init(ChildUtil.name(name, Automation.ADD_UNSATISFIED_TASK_ID), connection);
     }
 
     @Override
@@ -270,8 +273,11 @@ public final class RealAutomationImpl
         stopCommand.uninit();
         errorValue.uninit();
         conditions.uninit();
+        addConditionCommand.uninit();
         satisfiedTasks.uninit();
+        addSatisfiedTaskCommand.uninit();
         unsatisfiedTasks.uninit();
+        addUnsatisfiedTaskCommand.uninit();
     }
 
     private void setName(String newName) {

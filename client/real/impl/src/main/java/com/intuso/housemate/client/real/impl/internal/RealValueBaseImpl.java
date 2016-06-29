@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.client.api.internal.object.Serialiser;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.real.api.internal.RealValueBase;
+import com.intuso.housemate.client.v1_0.api.MessageConstants;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -36,7 +37,7 @@ public abstract class RealValueBaseImpl<O,
      * @param type the type of the value's value
      */
     public RealValueBaseImpl(Logger logger, DATA data, ListenersFactory listenersFactory, RealTypeImpl<O> type, Iterable<O> values) {
-        super(logger, data, listenersFactory);
+        super(logger, false, data, listenersFactory);
         this.type = type;
         this.values = values;
     }
@@ -100,7 +101,8 @@ public abstract class RealValueBaseImpl<O,
         this.values = values;
         try {
             StreamMessage streamMessage = session.createStreamMessage();
-            streamMessage.writeObject(Serialiser.serialise(RealTypeImpl.serialiseAll(type, values)));
+            streamMessage.setBooleanProperty(MessageConstants.STORE, true);
+            streamMessage.writeBytes(Serialiser.serialise(RealTypeImpl.serialiseAll(type, values)));
             valueProducer.send(streamMessage);
         } catch(JMSException e) {
             logger.error("Failed to send value update", e);

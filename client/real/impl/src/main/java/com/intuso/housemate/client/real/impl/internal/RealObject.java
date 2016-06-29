@@ -1,5 +1,6 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.intuso.housemate.client.api.internal.MessageConstants;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Serialiser;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -14,12 +15,14 @@ public abstract class RealObject<DATA extends Object.Data,
         implements Object<LISTENER> {
 
     protected final Logger logger;
+    protected final boolean persistent;
     protected final DATA data;
     protected final Listeners<LISTENER> listeners;
     private Session session;
     private MessageProducer producer;
 
-    protected RealObject(Logger logger, DATA data, ListenersFactory listenersFactory) {
+    protected RealObject(Logger logger, boolean persistent, DATA data, ListenersFactory listenersFactory) {
+        this.persistent = persistent;
         logger.debug("Creating");
         this.logger = logger;
         this.data = data;
@@ -87,7 +90,9 @@ public abstract class RealObject<DATA extends Object.Data,
         if(producer != null) {
             try {
                 StreamMessage streamMessage = session.createStreamMessage();
-                streamMessage.writeObject(Serialiser.serialise(data));
+                if(persistent)
+                    streamMessage.setBooleanProperty(MessageConstants.STORE, true);
+                streamMessage.writeBytes(Serialiser.serialise(data));
                 producer.send(streamMessage);
             } catch (JMSException e) {
                 logger.error("Failed to send data object", e);

@@ -25,7 +25,7 @@ public abstract class RealTypeImpl<O>
     protected RealTypeImpl(Logger logger,
                            Type.Data data,
                            ListenersFactory listenersFactory) {
-        super(logger, data, listenersFactory);
+        super(logger, false, data, listenersFactory);
     }
 
     public static <O> Instances serialiseAll(TypeSerialiser<O> serialiser, O ... typedValues) {

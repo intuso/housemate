@@ -2,14 +2,16 @@ package com.intuso.housemate.server.ioc;
 
 import com.google.inject.Provider;
 import com.intuso.housemate.client.api.internal.HousemateException;
+import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.server.activemq.StoredMessageSubscriptionRecoveryPolicy;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
 import org.apache.activemq.broker.region.policy.PolicyMap;
-import org.apache.activemq.broker.region.policy.RetainedMessageSubscriptionRecoveryPolicy;
 import org.apache.activemq.store.kahadb.KahaDBStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -34,7 +36,9 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
         // setup the destination policies
         PolicyMap policyMap = new PolicyMap();
         PolicyEntry defaultEntry = new PolicyEntry();
-        defaultEntry.setSubscriptionRecoveryPolicy(new RetainedMessageSubscriptionRecoveryPolicy(null));
+        File messageRootDir = new File("messages");
+        messageRootDir.mkdirs();
+        defaultEntry.setSubscriptionRecoveryPolicy(new StoredMessageSubscriptionRecoveryPolicy(ChildUtil.logger(logger, "message-persistence"), brokerService, messageRootDir));
         policyMap.setDefaultEntry(defaultEntry);
         brokerService.setDestinationPolicy(policyMap);
 

@@ -66,7 +66,7 @@ public final class RealDeviceImpl
                           RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                           RealListGeneratedImpl.Factory<RealFeatureImpl> featuresFactory,
                           RealPropertyImpl.Factory<PluginResource<DeviceDriver.Factory<? extends DeviceDriver>>> driverPropertyFactory) {
-        super(logger, new Device.Data(id, name, description), listenersFactory);
+        super(logger, true, new Device.Data(id, name, description), listenersFactory);
         this.annotationProcessor = annotationProcessor;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
