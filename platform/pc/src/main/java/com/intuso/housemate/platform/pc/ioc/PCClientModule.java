@@ -1,9 +1,13 @@
 package com.intuso.housemate.platform.pc.ioc;
 
+import com.google.common.util.concurrent.Service;
+import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
 import javax.jms.Connection;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,5 +29,10 @@ public class PCClientModule extends AbstractModule {
         install(new PCModule());
         bind(PropertyRepository.class).toInstance(properties);
         bind(Connection.class).toProvider(ConnectionProvider.class);
+    }
+
+    @Provides
+    public ServiceManager getServiceManager(Set<Service> services) {
+        return new ServiceManager(services);
     }
 }

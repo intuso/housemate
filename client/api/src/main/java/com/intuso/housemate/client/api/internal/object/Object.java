@@ -10,6 +10,8 @@ import java.io.Serializable;
  */
 public interface Object<LISTENER extends Object.Listener> {
 
+    public final static String VERSION = "internal";
+
     /**
      * Gets the object's id
      * @return the object's id

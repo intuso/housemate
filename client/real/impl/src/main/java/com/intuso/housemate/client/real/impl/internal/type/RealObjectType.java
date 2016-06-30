@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.TypeSerialiser;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.housemate.client.real.impl.internal.RealNodeImpl;
+import com.intuso.housemate.client.real.impl.internal.RealServerRoot;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.ioc.Types;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -31,12 +31,12 @@ public final class RealObjectType<O extends Object<?>>
 
     /**
      * @param listenersFactory
-     * @param root the root to get the object from
+     * @param server the root to get the object from
      */
     @Inject
-    public RealObjectType(@Types Logger logger, ListenersFactory listenersFactory, RealNodeImpl root) {
+    public RealObjectType(@Types Logger logger, ListenersFactory listenersFactory, RealServerRoot server) {
         super(ChildUtil.logger(logger, ID), new ObjectData(ID, NAME, "Path to an object"), listenersFactory);
-        serialiser = new Serialiser<>(root);
+        serialiser = new Serialiser<>(server);
     }
 
     @Override
@@ -113,14 +113,14 @@ public final class RealObjectType<O extends Object<?>>
      */
     public static class Serialiser<O extends Object<?>> implements TypeSerialiser<Reference<O>> {
 
-        private final RealNodeImpl root;
+        private final RealServerRoot server;
 
         /**
-         * @param root the root to get the object from
+         * @param server the root to get the object from
          */
         @Inject
-        public Serialiser(RealNodeImpl root) {
-            this.root = root;
+        public Serialiser(RealServerRoot server) {
+            this.server = server;
         }
 
         @Override

@@ -1,7 +1,6 @@
 package com.intuso.housemate.client.real.impl.internal;
 
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.intuso.housemate.client.api.internal.object.Object;
@@ -16,7 +15,7 @@ import org.slf4j.Logger;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 
-public final class RealServerImpl
+public class RealServerImpl
         extends RealObject<Server.Data, Server.Listener<? super RealServerImpl>>
         implements RealServer<RealCommandImpl,
         RealAutomationImpl, RealListPersistedImpl<RealAutomationImpl>,
@@ -37,7 +36,7 @@ public final class RealServerImpl
     private final RealCommandImpl addUserCommand;
 
     @AssistedInject
-    private RealServerImpl(@Assisted Logger logger,
+    public RealServerImpl(@Assisted Logger logger,
                            @Assisted("id") String id,
                            @Assisted("name") String name,
                            @Assisted("description") String description,
@@ -109,34 +108,6 @@ public final class RealServerImpl
                 "Nodes",
                 "Nodes",
                 Lists.<RealNodeImpl>newArrayList());
-    }
-
-    @Inject
-    public RealServerImpl(@com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
-                          ListenersFactory listenersFactory,
-                          RealAutomationImpl.Factory automationFactory,
-                          RealListPersistedImpl.Factory<RealAutomationImpl> automationsFactory,
-                          RealDeviceImpl.Factory deviceFactory,
-                          RealListPersistedImpl.Factory<RealDeviceImpl> devicesFactory,
-                          RealListGeneratedImpl.Factory<RealNodeImpl> nodesFactory,
-                          RealUserImpl.Factory userFactory,
-                          RealListPersistedImpl.Factory<RealUserImpl> usersFactory,
-                          RealNodeImpl.Factory nodeFactory,
-                          AddAutomationCommand.Factory addAutomationCommandFactory,
-                          AddDeviceCommand.Factory addDeviceCommandFactory,
-                          AddUserCommand.Factory addUserCommandFactory,
-                          Connection connection) throws JMSException {
-        this(logger, "server", "server", "server", listenersFactory, automationFactory, automationsFactory,
-                deviceFactory, devicesFactory, nodesFactory, userFactory, usersFactory, addAutomationCommandFactory,
-                addDeviceCommandFactory, addUserCommandFactory);
-        this.automations.init(AUTOMATIONS_ID, connection);
-        this.addAutomationCommand.init(ADD_AUTOMATION_ID, connection);
-        this.devices.init(DEVICES_ID, connection);
-        this.addDeviceCommand.init(ADD_DEVICE_ID, connection);
-        this.users.init(USERS_ID, connection);
-        this.addUserCommand.init(ADD_USER_ID, connection);
-        this.nodes.init(NODES_ID, connection);
-        this.nodes.add(nodeFactory.create(ChildUtil.logger(logger, NODES_ID, "local"), "local", "Local", "Local Node"));
     }
 
     @Override

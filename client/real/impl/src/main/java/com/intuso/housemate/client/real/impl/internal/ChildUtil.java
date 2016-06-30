@@ -1,5 +1,6 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,13 +9,19 @@ import org.slf4j.LoggerFactory;
  */
 public class ChildUtil {
 
+    private final static Joiner DOT_JOINER = Joiner.on(".");
+
     private ChildUtil() {}
 
     public static String name(String parent, String... childNames) {
-        StringBuilder loggerName = new StringBuilder(parent);
-        for(String childName : childNames)
-            loggerName.append(".").append(childName);
-        return loggerName.toString();
+        if(parent == null && childNames.length == 0)
+            return "";
+        else if(parent == null)
+            return DOT_JOINER.join(childNames);
+        else if(childNames.length == 0)
+            return parent;
+        else
+            return parent + "." + DOT_JOINER.join(childNames);
     }
 
     public static Logger logger(Logger parent, String... childNames) {

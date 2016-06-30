@@ -1,11 +1,14 @@
 package com.intuso.housemate.client.real.impl.internal.ioc;
 
+import com.google.common.util.concurrent.Service;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
-import com.intuso.housemate.client.real.api.internal.*;
+import com.google.inject.multibindings.Multibinder;
+import com.intuso.housemate.client.real.api.internal.RealHardware;
+import com.intuso.housemate.client.real.api.internal.RealNode;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.housemate.client.real.impl.internal.RealServerImpl;
+import com.intuso.housemate.client.real.impl.internal.RealNodeRoot;
 import com.intuso.housemate.client.real.impl.internal.annotations.ioc.RealAnnotationsModule;
 import com.intuso.housemate.client.real.impl.internal.type.ioc.RealTypesModule;
 import com.intuso.housemate.client.real.impl.internal.utils.ioc.RealUtilsModule;
@@ -14,7 +17,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  */
-public class ServerRealObjectModule extends AbstractModule {
+public class NodeRootModule extends AbstractModule {
+
+    private final String nodeId;
+
+    public NodeRootModule(String nodeId) {
+        this.nodeId = nodeId;
+    }
 
     @Override
     protected void configure() {
@@ -25,25 +34,24 @@ public class ServerRealObjectModule extends AbstractModule {
         install(new RealTypesModule());
         install(new RealUtilsModule());
 
-        bind(RealServer.class).to(RealServerImpl.class);
-        bind(RealServerImpl.class).in(Scopes.SINGLETON);
+        bind(RealNode.class).to(RealNodeRoot.class);
+        bind(RealNodeRoot.class).in(Scopes.SINGLETON);
 
-        bind(RealAutomation.Container.class).to(RealServerImpl.class);
-        bind(RealDevice.Container.class).to(RealServerImpl.class);
-        bind(RealUser.Container.class).to(RealServerImpl.class);
-        bind(RealNode.Container.class).to(RealServerImpl.class);
-    }
+        bind(RealHardware.Container.class).to(RealNodeRoot.class);
 
-    @Provides
-    @Server
-    public Logger getServerLogger() {
-        return LoggerFactory.getLogger("com.intuso.housemate.objects");
+        Multibinder.newSetBinder(binder(), Service.class).addBinding().to(RealNodeRoot.Service.class);
     }
 
     @Provides
     @Node
-    public Logger getNodeLogger(@Server Logger rootLogger) {
-        return ChildUtil.logger(rootLogger, "nodes", "local");
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    @Provides
+    @Node
+    public Logger getRootLogger() {
+        return LoggerFactory.getLogger("com.intuso.housemate.objects");
     }
 
     @Provides

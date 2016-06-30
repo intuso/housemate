@@ -1,11 +1,9 @@
 package com.intuso.housemate.client.real.impl.internal;
 
-import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.real.api.internal.RealNode;
-import com.intuso.housemate.client.real.impl.internal.ioc.Node;
 import com.intuso.housemate.client.real.impl.internal.type.RegisteredTypes;
 import com.intuso.housemate.client.real.impl.internal.utils.AddHardwareCommand;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -14,7 +12,7 @@ import org.slf4j.Logger;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 
-public final class RealNodeImpl
+public class RealNodeImpl
         extends RealObject<com.intuso.housemate.client.api.internal.object.Node.Data, com.intuso.housemate.client.api.internal.object.Node.Listener<? super RealNodeImpl>>
         implements RealNode<RealCommandImpl, RealListGeneratedImpl<RealTypeImpl<?>>, RealHardwareImpl, RealListPersistedImpl<RealHardwareImpl>, RealNodeImpl>,
         AddHardwareCommand.Callback {
@@ -55,20 +53,6 @@ public final class RealNodeImpl
                 "Add hardware",
                 this,
                 this);
-    }
-
-    @Inject
-    public RealNodeImpl(@Node Logger logger,
-                        ListenersFactory listenersFactory,
-                        RegisteredTypes registeredTypes,
-                        RealHardwareImpl.Factory hardwareFactory,
-                        RealListPersistedImpl.Factory<RealHardwareImpl> hardwaresFactory,
-                        AddHardwareCommand.Factory addHardwareCommandFactory,
-                        Connection connection) throws JMSException {
-        this(logger, "node", "node", "node", listenersFactory, registeredTypes, hardwareFactory, hardwaresFactory, addHardwareCommandFactory);
-        this.types.init(TYPES_ID, connection);
-        this.hardwares.init(HARDWARES_ID, connection);
-        this.addHardwareCommand.init(ADD_HARDWARE_ID, connection);
     }
 
     @Override
