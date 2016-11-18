@@ -2,7 +2,7 @@ package com.intuso.housemate.client.real.api.internal;
 
 import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.plugin.api.internal.driver.DeviceDriver;
-import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
+import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 
 /**
  * Base class for all devices
@@ -10,7 +10,7 @@ import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
 public interface RealDevice<COMMAND extends RealCommand<?, ?, ?>,
         BOOLEAN_VALUE extends RealValue<Boolean, ?, ?>,
         STRING_VALUE extends RealValue<String, ?, ?>,
-        DRIVER_PROPERTY extends RealProperty<PluginResource<DeviceDriver.Factory<?>>, ?, ?, ?>,
+        DRIVER_PROPERTY extends RealProperty<PluginDependency<DeviceDriver.Factory<?>>, ?, ?, ?>,
         PROPERTIES extends RealList<? extends RealProperty<?, ?, ?, ?>, ?>,
         FEATURES extends RealList<? extends RealFeature<?, ?, ?>, ?>,
         DEVICE extends RealDevice<COMMAND, BOOLEAN_VALUE, STRING_VALUE, DRIVER_PROPERTY, PROPERTIES, FEATURES, DEVICE>>

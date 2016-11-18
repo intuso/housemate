@@ -2,8 +2,7 @@ package com.intuso.housemate.server;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.intuso.housemate.plugin.manager.internal.PluginManager;
-import com.intuso.housemate.server.plugin.main.ioc.MainPluginModule;
+import com.intuso.housemate.plugin.host.internal.PluginHost;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,9 +23,8 @@ public class Server {
     }
 
     public final void start() {
-
-        // add the default plugin
-        injector.getInstance(PluginManager.class).addPlugin(injector.createChildInjector(new MainPluginModule()));
+        // getting an instance is enough
+        injector.getInstance(PluginHost.class);
     }
 
     public Injector getInjector() {

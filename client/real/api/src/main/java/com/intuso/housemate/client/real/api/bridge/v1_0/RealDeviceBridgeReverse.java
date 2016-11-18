@@ -8,7 +8,7 @@ import com.intuso.housemate.plugin.api.bridge.v1_0.driver.DeviceDriverFactoryMap
 import com.intuso.housemate.plugin.api.bridge.v1_0.driver.DeviceDriverMapper;
 import com.intuso.housemate.plugin.api.bridge.v1_0.driver.PluginResourceMapper;
 import com.intuso.housemate.plugin.v1_0.api.driver.DeviceDriver;
-import com.intuso.housemate.plugin.v1_0.api.driver.PluginResource;
+import com.intuso.housemate.plugin.v1_0.api.driver.PluginDependency;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -18,7 +18,7 @@ public class RealDeviceBridgeReverse
         implements RealDevice<RealCommand<?, ?, ?>,
         RealValue<Boolean, ?, ?>,
         RealValue<String, ?, ?>,
-        RealProperty<PluginResource<DeviceDriver.Factory<?>>, ?, ?, ?>,
+        RealProperty<PluginDependency<DeviceDriver.Factory<?>>, ?, ?, ?>,
         RealList<? extends RealProperty<?, ?, ?, ?>, ?>,
         RealList<? extends RealFeature<?, ?, ?>, ?>,
         RealDeviceBridgeReverse> {
@@ -43,7 +43,7 @@ public class RealDeviceBridgeReverse
                                    DeviceDriverMapper deviceDriverMapper,
                                    DeviceDriverFactoryMapper deviceDriverFactoryMapper) {
         this.featureMapper = featureMapper;
-        this.device = (com.intuso.housemate.client.real.api.internal.RealDevice<?, ?, ?, ?, ?, ?, ?>) device;
+        this.device = device;
         this.listMapper = listMapper;
         this.commandMapper = commandMapper;
         this.valueMapper = valueMapper;
@@ -123,14 +123,14 @@ public class RealDeviceBridgeReverse
     }
 
     @Override
-    public RealProperty<PluginResource<DeviceDriver.Factory<?>>, ?, ?, ?> getDriverProperty() {
+    public RealProperty<PluginDependency<DeviceDriver.Factory<?>>, ?, ?, ?> getDriverProperty() {
         Function<com.intuso.housemate.plugin.api.internal.driver.DeviceDriver.Factory<?>, DeviceDriver.Factory<?>> ddfConvertFrom
                 = deviceDriverFactoryMapper.getToV1_0Function();
-        Function<com.intuso.housemate.plugin.api.internal.driver.PluginResource<com.intuso.housemate.plugin.api.internal.driver.DeviceDriver.Factory<?>>, PluginResource<DeviceDriver.Factory<?>>> convertFrom
+        Function<com.intuso.housemate.plugin.api.internal.driver.PluginDependency<com.intuso.housemate.plugin.api.internal.driver.DeviceDriver.Factory<?>>, PluginDependency<DeviceDriver.Factory<?>>> convertFrom
                 = pluginResourceMapper.getToV1_0Function(ddfConvertFrom);
         Function<DeviceDriver.Factory<?>, com.intuso.housemate.plugin.api.internal.driver.DeviceDriver.Factory<?>> ddfConvertTo
                 = deviceDriverFactoryMapper.getFromV1_0Function();
-        Function<PluginResource<DeviceDriver.Factory<?>>, com.intuso.housemate.plugin.api.internal.driver.PluginResource<com.intuso.housemate.plugin.api.internal.driver.DeviceDriver.Factory<?>>> convertTo
+        Function<PluginDependency<DeviceDriver.Factory<?>>, com.intuso.housemate.plugin.api.internal.driver.PluginDependency<com.intuso.housemate.plugin.api.internal.driver.DeviceDriver.Factory<?>>> convertTo
                 = pluginResourceMapper.getFromV1_0Function(ddfConvertTo);
         return propertyMapper.map(device.getDriverProperty(),
                 convertFrom,

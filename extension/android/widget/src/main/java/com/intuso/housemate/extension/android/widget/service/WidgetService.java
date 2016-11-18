@@ -15,7 +15,8 @@ import com.google.common.collect.Sets;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.handler.WidgetHandler;
 import com.intuso.housemate.platform.android.app.HousemateService;
-import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
+import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
+import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureFactory;
 
 /**
@@ -46,7 +47,6 @@ public class WidgetService extends HousemateService {
     private final static String PERFORM_COMMAND_ACTION = "performCommand";
 
     private final static String WIDGET_ID = "widgetId";
-    private final static String CLIENT_ID = "clientId";
     private final static String DEVICE_ID = "deviceId";
     private final static String FEATURE_ID = "featureId";
 
@@ -60,17 +60,16 @@ public class WidgetService extends HousemateService {
     private final HashBiMap<Integer, WidgetHandler<?>> widgetHandlers = HashBiMap.create();
     private final AndroidProxyFeatureFactory proxyFeatureFactory;
 
-    private AndroidProxyRoot root;
+    private AndroidProxyServer server;
     private AppWidgetManager appWidgetManager;
     private Status status = Status.NOT_CONNECTED;
 
     private boolean networkAvailable = true;
 
-    public static void addWidget(Context context, int widgetId, String clientId, String deviceId, String featureId) {
+    public static void addWidget(Context context, int widgetId, String deviceId, String featureId) {
         Intent intent = new Intent(context, WidgetService.class);
         intent.setAction(ADD_WIDGET_ACTION);
         intent.putExtra(WIDGET_ID, widgetId);
-        intent.putExtra(CLIENT_ID, clientId);
         intent.putExtra(DEVICE_ID, deviceId);
         intent.putExtra(FEATURE_ID, featureId);
         context.startService(intent);
@@ -96,8 +95,8 @@ public class WidgetService extends HousemateService {
         return PendingIntent.getService(getApplicationContext(), widgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    public AndroidProxyRoot getRoot() {
-        return root;
+    public AndroidProxyServer getServer() {
+        return server;
     }
 
     @Override
@@ -110,7 +109,7 @@ public class WidgetService extends HousemateService {
                 .setPriority(Notification.PRIORITY_MIN)
                 .build());
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        root = new AndroidProxyRoot(getLogger(), getListenersFactory(), getConnection(), null /* todo */);
+        server = new AndroidProxyServer(getLogger(), getListenersFactory(), new AndroidObjectFactories(getListenersFactory()), getConnection());
         updateStatus();
         for (String key : Sets.newHashSet(getProperties().keySet())) {
             if (key.startsWith(PROPERTY_PREFIX)) {
@@ -130,7 +129,7 @@ public class WidgetService extends HousemateService {
 
     @Override
     public void onDestroy() {
-        root = null;
+        server = null;
         status = Status.SERVICE_STOPPED;
         notifyNewStatus();
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -179,10 +178,9 @@ public class WidgetService extends HousemateService {
                 }
             } else if(ADD_WIDGET_ACTION.equals(intent.getAction())) {
                 int widgetId = intent.getIntExtra(WIDGET_ID, 0);
-                String clientId = intent.getStringExtra(CLIENT_ID);
                 String deviceId = intent.getStringExtra(DEVICE_ID);
                 String featureId = intent.getStringExtra(FEATURE_ID);
-                addWidgetHandler(widgetId, WidgetHandler.createFeatureWidget(WidgetService.this, proxyFeatureFactory, clientId, deviceId, featureId), true);
+                addWidgetHandler(widgetId, WidgetHandler.createFeatureWidget(WidgetService.this, proxyFeatureFactory, deviceId, featureId), true);
             }
         }
         return START_STICKY;
@@ -192,9 +190,9 @@ public class WidgetService extends HousemateService {
         Status oldStatus = status;
         if (!networkAvailable)
             status = Status.NO_NETWORK;
-        else if(root == null)
+        else if(server == null)
             status = Status.NOT_CONNECTED;
-        else if (getRoot().getServers() == null)
+        else if (getServer().getDevices() == null)
             status = Status.NOT_LOADED;
         else
             status = Status.LOADED;
@@ -219,13 +217,13 @@ public class WidgetService extends HousemateService {
     }
 
     private String encodePropertyValue(WidgetHandler<?> widgetHandler) {
-        return widgetHandler.getClientId() + PROPERTY_VALUE_DELIMITER + widgetHandler.getDeviceId() + PROPERTY_VALUE_DELIMITER + widgetHandler.getFeatureId();
+        return widgetHandler.getDeviceId() + PROPERTY_VALUE_DELIMITER + widgetHandler.getFeatureId();
     }
 
     private WidgetHandler<?> decodePropertyValue(String value) {
         String[] parts = value.split(PROPERTY_VALUE_DELIMITER);
-        if(parts.length != 3)
+        if(parts.length != 2)
             return null;
-        return WidgetHandler.createFeatureWidget(this, proxyFeatureFactory, parts[0], parts[1], parts[2]);
+        return WidgetHandler.createFeatureWidget(this, proxyFeatureFactory, parts[1], parts[2]);
     }
 }

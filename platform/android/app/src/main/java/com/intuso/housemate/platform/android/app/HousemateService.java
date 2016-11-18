@@ -40,6 +40,7 @@ public abstract class HousemateService extends Service {
         };
         properties = new SharedPreferencesPropertyRepository(listenersFactory, getApplicationContext());
         try {
+            // todo ask for whether a local broker is available (run by an hm android service)
             connection = new ActiveMQConnectionFactory("tcp://" + properties.get("server.host") + ":" + properties.get("server.port")).createConnection();
         } catch (JMSException e) {
             logger.error("Failed to create connection to server", e);

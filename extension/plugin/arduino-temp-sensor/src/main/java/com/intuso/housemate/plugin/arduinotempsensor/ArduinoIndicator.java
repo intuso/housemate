@@ -2,10 +2,10 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.annotations.Property;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
-import com.intuso.housemate.client.real.api.internal.driver.DeviceDriver;
-import com.intuso.housemate.client.real.api.internal.feature.StatefulPowerControl;
+import com.intuso.housemate.plugin.v1_0.api.annotations.Property;
+import com.intuso.housemate.plugin.v1_0.api.annotations.TypeInfo;
+import com.intuso.housemate.plugin.v1_0.api.driver.DeviceDriver;
+import com.intuso.housemate.plugin.v1_0.api.feature.StatefulPowerControl;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -14,6 +14,8 @@ import java.io.IOException;
  */
 @TypeInfo(id = "arduino-indicator", name = "Arduino Indicator", description = "Arduino Indicator")
 public class ArduinoIndicator implements DeviceDriver, StatefulPowerControl {
+
+    // todo use remote hardware
 
     private final SerialPortWrapper serialPort;
 

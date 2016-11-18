@@ -16,8 +16,7 @@ public class AndroidProxyValue extends ProxyValue<AndroidProxyType, AndroidProxy
     /**
      * @param logger  {@inheritDoc}
      */
-    public AndroidProxyValue(Logger logger,
-                             ListenersFactory listenersFactory) {
+    public AndroidProxyValue(Logger logger, ListenersFactory listenersFactory) {
         super(logger, listenersFactory);
     }
 }

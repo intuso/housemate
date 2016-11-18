@@ -3,14 +3,14 @@ package com.intuso.housemate.plugin.rfxcom;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.RealDevice;
-import com.intuso.housemate.client.real.api.internal.annotations.Property;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
-import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
+import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.plugin.rfxcom.lighting1.Lighting1ARCHandler;
 import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2ACHandler;
 import com.intuso.housemate.plugin.rfxcom.lighting2.Lighting2HomeEasyEUHandler;
 import com.intuso.housemate.plugin.rfxcom.temperaturesensor.*;
+import com.intuso.housemate.plugin.v1_0.api.annotations.Property;
+import com.intuso.housemate.plugin.v1_0.api.annotations.TypeInfo;
+import com.intuso.housemate.plugin.v1_0.api.driver.HardwareDriver;
 import com.rfxcom.rfxtrx.RFXtrx;
 import org.slf4j.Logger;
 

@@ -37,7 +37,7 @@ public class PluginV1_0BridgeModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public Iterable<com.intuso.housemate.plugin.api.internal.driver.PluginResource<Class<?>>> getTypes(PluginResourceMapper pluginResourceMapper, Iterable<PluginResource<Class<?>>> types) {
+    public Iterable<com.intuso.housemate.plugin.api.internal.module.PluginResource<Class<?>>> getTypes(PluginResourceMapper pluginResourceMapper, Iterable<PluginResource<Class<?>>> types) {
         return Lists.newArrayList(Iterables.transform((Iterable)types, pluginResourceMapper.getFromV1_0Function(new Function<Class<?>, Class<?>>() {
             @Override
             public Class<?> apply(Class<?> typeClass) {
@@ -48,25 +48,25 @@ public class PluginV1_0BridgeModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public Iterable<com.intuso.housemate.plugin.api.internal.driver.PluginResource<? extends com.intuso.housemate.plugin.api.internal.driver.ConditionDriver.Factory<?>>> getConditionDrivers(PluginResourceMapper pluginResourceMapper, ConditionDriverFactoryMapper conditionDriverFactoryMapper, Iterable<PluginResource<? extends ConditionDriver.Factory<?>>> conditionDriverFactories) {
+    public Iterable<com.intuso.housemate.plugin.api.internal.module.PluginResource<? extends com.intuso.housemate.plugin.api.internal.driver.ConditionDriver.Factory<?>>> getConditionDrivers(PluginResourceMapper pluginResourceMapper, ConditionDriverFactoryMapper conditionDriverFactoryMapper, Iterable<PluginResource<? extends ConditionDriver.Factory<?>>> conditionDriverFactories) {
         return Lists.newArrayList(Iterables.transform((Iterable)conditionDriverFactories, pluginResourceMapper.getFromV1_0Function(conditionDriverFactoryMapper.getFromV1_0Function())));
     }
 
     @Provides
     @Singleton
-    public Iterable<com.intuso.housemate.plugin.api.internal.driver.PluginResource<? extends com.intuso.housemate.plugin.api.internal.driver.DeviceDriver.Factory<?>>> getDeviceDrivers(PluginResourceMapper pluginResourceMapper, DeviceDriverFactoryMapper deviceDriverFactoryMapper, Iterable<PluginResource<? extends DeviceDriver.Factory<?>>> deviceDriverFactories) {
+    public Iterable<com.intuso.housemate.plugin.api.internal.module.PluginResource<? extends com.intuso.housemate.plugin.api.internal.driver.DeviceDriver.Factory<?>>> getDeviceDrivers(PluginResourceMapper pluginResourceMapper, DeviceDriverFactoryMapper deviceDriverFactoryMapper, Iterable<PluginResource<? extends DeviceDriver.Factory<?>>> deviceDriverFactories) {
         return Lists.newArrayList(Iterables.transform((Iterable)deviceDriverFactories, pluginResourceMapper.getFromV1_0Function(deviceDriverFactoryMapper.getFromV1_0Function())));
     }
 
     @Provides
     @Singleton
-    public Iterable<com.intuso.housemate.plugin.api.internal.driver.PluginResource<? extends com.intuso.housemate.plugin.api.internal.driver.HardwareDriver.Factory<?>>> getHardwareDrivers(PluginResourceMapper pluginResourceMapper, HardwareDriverFactoryMapper hardwareDriverFactoryMapper, Iterable<PluginResource<? extends HardwareDriver.Factory<?>>> hardwareDriverFactories) {
+    public Iterable<com.intuso.housemate.plugin.api.internal.module.PluginResource<? extends com.intuso.housemate.plugin.api.internal.driver.HardwareDriver.Factory<?>>> getHardwareDrivers(PluginResourceMapper pluginResourceMapper, HardwareDriverFactoryMapper hardwareDriverFactoryMapper, Iterable<PluginResource<? extends HardwareDriver.Factory<?>>> hardwareDriverFactories) {
         return Lists.newArrayList(Iterables.transform((Iterable)hardwareDriverFactories, pluginResourceMapper.getFromV1_0Function(hardwareDriverFactoryMapper.getFromV1_0Function())));
     }
 
     @Provides
     @Singleton
-    public Iterable<com.intuso.housemate.plugin.api.internal.driver.PluginResource<? extends com.intuso.housemate.plugin.api.internal.driver.TaskDriver.Factory<?>>> getTaskDrivers(PluginResourceMapper pluginResourceMapper, TaskDriverFactoryMapper taskDriverFactoryMapper, Iterable<PluginResource<? extends TaskDriver.Factory<?>>> taskDriverFactories) {
+    public Iterable<com.intuso.housemate.plugin.api.internal.module.PluginResource<? extends com.intuso.housemate.plugin.api.internal.driver.TaskDriver.Factory<?>>> getTaskDrivers(PluginResourceMapper pluginResourceMapper, TaskDriverFactoryMapper taskDriverFactoryMapper, Iterable<PluginResource<? extends TaskDriver.Factory<?>>> taskDriverFactories) {
         return Lists.newArrayList(Iterables.transform((Iterable)taskDriverFactories, pluginResourceMapper.getFromV1_0Function(taskDriverFactoryMapper.getFromV1_0Function())));
     }
 }

@@ -2,12 +2,12 @@ package com.intuso.housemate.client.real.api.internal;
 
 import com.intuso.housemate.client.api.internal.object.Condition;
 import com.intuso.housemate.plugin.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
+import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 
 public interface RealCondition<COMMAND extends RealCommand<?, ?, ?>,
         BOOLEAN_VALUE extends RealValue<Boolean, ?, ?>,
         STRING_VALUE extends RealValue<String, ?, ?>,
-        DRIVER_PROPERTY extends RealProperty<PluginResource<ConditionDriver.Factory<?>>, ?, ?, ?>,
+        DRIVER_PROPERTY extends RealProperty<PluginDependency<ConditionDriver.Factory<?>>, ?, ?, ?>,
         PROPERTIES extends RealList<? extends RealProperty<?, ?, ?, ?>, ?>,
         CHILD_CONDITION extends RealCondition<?, ?, ?, ?, ?, ?, ?, ?>,
         CHILD_CONDITIONS extends RealList<? extends CHILD_CONDITION, ?>,

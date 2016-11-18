@@ -16,7 +16,7 @@ import com.intuso.housemate.client.real.api.internal.RealCondition;
 import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationProcessor;
 import com.intuso.housemate.client.real.impl.internal.utils.AddConditionCommand;
 import com.intuso.housemate.plugin.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
+import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ import java.util.Map;
 public final class RealConditionImpl
         extends RealObject<Condition.Data, Condition.Listener<? super RealConditionImpl>>
         implements RealCondition<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
+        RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
         RealConditionImpl, RealListPersistedImpl<RealConditionImpl>, RealConditionImpl>, AddConditionCommand.Callback {
 
     private final static String PROPERTIES_DESCRIPTION = "The condition's properties";
@@ -41,7 +41,7 @@ public final class RealConditionImpl
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>> driverProperty;
+    private final RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>> driverProperty;
     private final RealValueImpl<Boolean> driverLoadedValue;
     private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
     private final RealValueImpl<Boolean> satisfiedValue;
@@ -74,7 +74,7 @@ public final class RealConditionImpl
                              RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                              final RealConditionImpl.Factory conditionFactory,
                              final RealListPersistedImpl.Factory<RealConditionImpl> conditionsFactory,
-                             RealPropertyImpl.Factory<PluginResource<ConditionDriver.Factory<? extends ConditionDriver>>> driverPropertyFactory,
+                             RealPropertyImpl.Factory<PluginDependency<ConditionDriver.Factory<? extends ConditionDriver>>> driverPropertyFactory,
                              AddConditionCommand.Factory addConditionCommandFactory) {
         super(logger, true, new Condition.Data(id, name, description), listenersFactory);
         this.annotationProcessor = annotationProcessor;
@@ -123,7 +123,7 @@ public final class RealConditionImpl
                 "The condition's driver",
                 1,
                 1,
-                Lists.<PluginResource<ConditionDriver.Factory<?>>>newArrayList());
+                Lists.<PluginDependency<ConditionDriver.Factory<?>>>newArrayList());
         this.driverLoadedValue = booleanValueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
                 UsesDriver.DRIVER_LOADED_ID,
                 UsesDriver.DRIVER_LOADED_ID,
@@ -166,14 +166,14 @@ public final class RealConditionImpl
                 "Add condition",
                 this,
                 childRemoveCallback);
-        driverProperty.addObjectListener(new Property.Listener<RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>>>() {
+        driverProperty.addObjectListener(new Property.Listener<RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>>>() {
             @Override
-            public void valueChanging(RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>> factoryRealProperty) {
+            public void valueChanging(RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>> factoryRealProperty) {
                 uninitDriver();
             }
 
             @Override
-            public void valueChanged(RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>> factoryRealProperty) {
+            public void valueChanged(RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>> factoryRealProperty) {
                 initDriver();
             }
         });
@@ -218,9 +218,9 @@ public final class RealConditionImpl
 
     private void initDriver() {
         if(driver == null) {
-            PluginResource<ConditionDriver.Factory<?>> driverFactory = driverProperty.getValue();
+            PluginDependency<ConditionDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
-                driver = driverFactory.getResource().create(logger, this);
+                driver = driverFactory.getDependency().create(logger, this);
                 for(RealPropertyImpl<?> property : annotationProcessor.findProperties(logger, driver))
                     properties.add(property);
                 errorValue.setValue((String) null);
@@ -262,7 +262,7 @@ public final class RealConditionImpl
     }
 
     @Override
-    public RealPropertyImpl<PluginResource<ConditionDriver.Factory<?>>> getDriverProperty() {
+    public RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>> getDriverProperty() {
         return driverProperty;
     }
 

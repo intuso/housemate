@@ -9,7 +9,7 @@ import com.intuso.housemate.client.real.api.internal.RealProperty;
 import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.v1_0.api.object.Command;
-import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
+import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 import com.intuso.housemate.plugin.api.internal.driver.TaskDriver;
 import org.slf4j.Logger;
 
@@ -36,13 +36,13 @@ public class AddTaskCommand {
 
         private final RealCommandImpl.Factory commandFactory;
         private final RealParameterImpl.Factory<String> stringParameterFactory;
-        private final RealParameterImpl.Factory<PluginResource<TaskDriver.Factory<?>>> taskDriverParameterFactory;
+        private final RealParameterImpl.Factory<PluginDependency<TaskDriver.Factory<?>>> taskDriverParameterFactory;
         private final Performer.Factory performerFactory;
 
         @Inject
         public Factory(RealCommandImpl.Factory commandFactory,
                        RealParameterImpl.Factory<String> stringParameterFactory,
-                       RealParameterImpl.Factory<PluginResource<TaskDriver.Factory<? extends TaskDriver>>> taskDriverParameterFactory,
+                       RealParameterImpl.Factory<PluginDependency<TaskDriver.Factory<? extends TaskDriver>>> taskDriverParameterFactory,
                        Performer.Factory performerFactory) {
             this.commandFactory = commandFactory;
             this.stringParameterFactory = stringParameterFactory;
@@ -84,14 +84,14 @@ public class AddTaskCommand {
         private final Logger logger;
         private final Callback callback;
         private final RealTask.RemoveCallback<RealTaskImpl> removeCallback;
-        private final RealTypeImpl<PluginResource<TaskDriver.Factory<? extends TaskDriver>>> taskDriverType;
+        private final RealTypeImpl<PluginDependency<TaskDriver.Factory<? extends TaskDriver>>> taskDriverType;
         private final RealTaskImpl.Factory taskFactory;
 
         @Inject
         public Performer(@Assisted Logger logger,
                          @Assisted Callback callback,
                          @Assisted RealTask.RemoveCallback<RealTaskImpl> removeCallback,
-                         RealTypeImpl<PluginResource<TaskDriver.Factory<? extends TaskDriver>>> taskDriverType,
+                         RealTypeImpl<PluginDependency<TaskDriver.Factory<? extends TaskDriver>>> taskDriverType,
                          RealTaskImpl.Factory taskFactory) {
             this.logger = logger;
             this.taskDriverType = taskDriverType;

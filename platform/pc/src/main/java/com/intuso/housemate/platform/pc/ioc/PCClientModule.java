@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.Service;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.multibindings.Multibinder;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
 import javax.jms.Connection;
@@ -29,6 +30,9 @@ public class PCClientModule extends AbstractModule {
         install(new PCModule());
         bind(PropertyRepository.class).toInstance(properties);
         bind(Connection.class).toProvider(ConnectionProvider.class);
+
+        // create the set binder. Prevents a guice error when getting set of services
+        Multibinder.newSetBinder(binder(), Service.class);
     }
 
     @Provides

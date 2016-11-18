@@ -8,8 +8,9 @@ import android.widget.Toast;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.platform.android.app.HousemateService;
+import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
-import com.intuso.housemate.platform.android.app.object.AndroidProxyRoot;
+import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 
 /**
  * Created by tomc on 09/05/14.
@@ -26,7 +27,7 @@ public class NFCService extends HousemateService {
         int result = super.onStartCommand(intent, flags, startId);
         if(NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
             new CommandPerformer(intent.getData().getPath(),
-                    new AndroidProxyRoot(getLogger(), getListenersFactory(), getConnection(), null /* todo */),
+                    new AndroidProxyServer(getLogger(), getListenersFactory(), new AndroidObjectFactories(getListenersFactory()), getConnection()),
                     startId);
         }
         return result;
@@ -35,14 +36,14 @@ public class NFCService extends HousemateService {
     private class CommandPerformer implements Command.PerformListener<AndroidProxyCommand> {
 
         private final String objectPath;
-        private final AndroidProxyRoot root;
+        private final AndroidProxyServer server;
         private final int startId;
 
-        private CommandPerformer(String objectPath, AndroidProxyRoot root, int startId) {
+        private CommandPerformer(String objectPath, AndroidProxyServer server, int startId) {
             this.objectPath = objectPath;
-            this.root = root;
+            this.server = server;
             this.startId = startId;
-            final Object<?> object = null;// todo root.findObject(objectPath.substring(1).split("/"));
+            final Object<?> object = null;// todo server.findObject(objectPath.substring(1).split("/"));
             if (object == null) {
                 message("Scanned tag's path does not exist", false);
                 finished();

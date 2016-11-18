@@ -26,8 +26,8 @@ public class StatefulPowerControlWidgetHandler
 
     private ListenerRegistration listenerRegistration;
 
-    public StatefulPowerControlWidgetHandler(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String clientId, String deviceId) {
-        super(widgetService, proxyFeatureFactory, clientId, deviceId);
+    public StatefulPowerControlWidgetHandler(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String deviceId) {
+        super(widgetService, proxyFeatureFactory, deviceId);
     }
 
     @Override
@@ -84,9 +84,6 @@ public class StatefulPowerControlWidgetHandler
                         break;
                     case DEVICE_LOAD_FAILED:
                         views.setTextViewText(R.id.device_label, "Load device failed");
-                        break;
-                    case NO_CLIENT:
-                        views.setTextViewText(R.id.device_label, "Unknown client");
                         break;
                     case NO_DEVICE:
                         views.setTextViewText(R.id.device_label, "Unknown device");

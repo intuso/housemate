@@ -79,8 +79,9 @@ public class HousemateTweeter {
 		logger.debug("Loaded token and secret. If these are wrong or no longer valid please delete the file \"" + getTokenCredentialsPropsFile().getAbsolutePath() + "\" to force the addon to get a new token and secret");
 
 		// setup the housemate stuff
-        final SimpleProxyRoot root = injector.getInstance(SimpleProxyRoot.class);
-        root.getServers().addObjectListener(serverListListener, true);
+        // todo get all servers
+        final SimpleProxyServer server = injector.getInstance(SimpleProxyServer.class);
+        server.getDevices().addObjectListener(deviceListListener, true);
 	}
 
 	/**

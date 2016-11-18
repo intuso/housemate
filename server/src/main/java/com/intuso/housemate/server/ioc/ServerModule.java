@@ -5,7 +5,7 @@ import com.google.inject.Scopes;
 import com.intuso.housemate.client.api.bridge.ioc.ObjectAPIBridgeV1_0Module;
 import com.intuso.housemate.client.real.api.bridge.v1_0.ioc.ClientRealAPIBridgeV1_0Module;
 import com.intuso.housemate.client.real.impl.internal.ioc.ServerRootModule;
-import com.intuso.housemate.plugin.manager.internal.ioc.PluginHostModule;
+import com.intuso.housemate.plugin.host.internal.ioc.PluginHostModule;
 import com.intuso.housemate.server.Server;
 import com.intuso.housemate.server.object.real.FactoryPluginListener;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;

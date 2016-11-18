@@ -27,10 +27,10 @@ public class RealTypesModule extends AbstractModule {
         install(new TypeModule(EmailType.class, Email.class));
 
         // driver factory types
-        install(new TypeModule(ConditionDriverType.class, Types.newParameterizedType(PluginResource.class, Types.newParameterizedTypeWithOwner(ConditionDriver.class, ConditionDriver.Factory.class, Types.subtypeOf(ConditionDriver.class)))));
-        install(new TypeModule(DeviceDriverType.class, Types.newParameterizedType(PluginResource.class, Types.newParameterizedTypeWithOwner(DeviceDriver.class, DeviceDriver.Factory.class, Types.subtypeOf(DeviceDriver.class)))));
-        install(new TypeModule(HardwareDriverType.class, Types.newParameterizedType(PluginResource.class, Types.newParameterizedTypeWithOwner(HardwareDriver.class, HardwareDriver.Factory.class, Types.subtypeOf(HardwareDriver.class)))));
-        install(new TypeModule(TaskDriverType.class, Types.newParameterizedType(PluginResource.class, Types.newParameterizedTypeWithOwner(TaskDriver.class, TaskDriver.Factory.class, Types.subtypeOf(TaskDriver.class)))));
+        install(new TypeModule(ConditionDriverType.class, Types.newParameterizedType(PluginDependency.class, Types.newParameterizedTypeWithOwner(ConditionDriver.class, ConditionDriver.Factory.class, Types.subtypeOf(ConditionDriver.class)))));
+        install(new TypeModule(DeviceDriverType.class, Types.newParameterizedType(PluginDependency.class, Types.newParameterizedTypeWithOwner(DeviceDriver.class, DeviceDriver.Factory.class, Types.subtypeOf(DeviceDriver.class)))));
+        install(new TypeModule(HardwareDriverType.class, Types.newParameterizedType(PluginDependency.class, Types.newParameterizedTypeWithOwner(HardwareDriver.class, HardwareDriver.Factory.class, Types.subtypeOf(HardwareDriver.class)))));
+        install(new TypeModule(TaskDriverType.class, Types.newParameterizedType(PluginDependency.class, Types.newParameterizedTypeWithOwner(TaskDriver.class, TaskDriver.Factory.class, Types.subtypeOf(TaskDriver.class)))));
 
         // other type factories
         install(new FactoryModuleBuilder().build(EnumChoiceType.Factory.class));

@@ -10,7 +10,7 @@ import com.intuso.housemate.plugin.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.plugin.api.internal.driver.TaskDriver;
 import com.intuso.housemate.plugin.api.internal.module.PluginListener;
 import com.intuso.housemate.plugin.api.internal.module.PluginResource;
-import com.intuso.housemate.plugin.manager.internal.PluginManager;
+import com.intuso.housemate.plugin.host.internal.PluginHost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,13 +28,13 @@ public class FactoryPluginListener implements PluginListener {
     private final TaskDriverType taskDriverType;
 
     @Inject
-    public FactoryPluginListener(RegisteredTypes types, ConditionDriverType conditionDriverType, DeviceDriverType deviceDriverType, HardwareDriverType hardwareDriverType, TaskDriverType taskDriverType, PluginManager pluginManager) {
+    public FactoryPluginListener(RegisteredTypes types, ConditionDriverType conditionDriverType, DeviceDriverType deviceDriverType, HardwareDriverType hardwareDriverType, TaskDriverType taskDriverType, PluginHost pluginHost) {
         this.types = types;
         this.conditionDriverType = conditionDriverType;
         this.deviceDriverType = deviceDriverType;
         this.hardwareDriverType = hardwareDriverType;
         this.taskDriverType = taskDriverType;
-        pluginManager.addPluginListener(this, true);
+        pluginHost.addPluginListener(this, true);
     }
 
     @Override

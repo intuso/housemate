@@ -1,10 +1,10 @@
 package com.intuso.housemate.client.real.impl.internal;
 
 import com.google.common.collect.Lists;
+import com.intuso.housemate.client.api.internal.MessageConstants;
 import com.intuso.housemate.client.api.internal.object.Serialiser;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.real.api.internal.RealValueBase;
-import com.intuso.housemate.client.v1_0.api.MessageConstants;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 

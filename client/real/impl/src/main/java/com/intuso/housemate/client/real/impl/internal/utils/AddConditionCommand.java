@@ -10,7 +10,7 @@ import com.intuso.housemate.client.real.api.internal.RealProperty;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.plugin.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
+import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 import org.slf4j.Logger;
 
 /**
@@ -36,13 +36,13 @@ public class AddConditionCommand {
 
         private final RealCommandImpl.Factory commandFactory;
         private final RealParameterImpl.Factory<String> stringParameterFactory;
-        private final RealParameterImpl.Factory<PluginResource<ConditionDriver.Factory<?>>> conditionDriverParameterFactory;
+        private final RealParameterImpl.Factory<PluginDependency<ConditionDriver.Factory<?>>> conditionDriverParameterFactory;
         private final Performer.Factory performerFactory;
 
         @Inject
         public Factory(RealCommandImpl.Factory commandFactory,
                        RealParameterImpl.Factory<String> stringParameterFactory,
-                       RealParameterImpl.Factory<PluginResource<ConditionDriver.Factory<? extends ConditionDriver>>> conditionDriverParameterFactory,
+                       RealParameterImpl.Factory<PluginDependency<ConditionDriver.Factory<? extends ConditionDriver>>> conditionDriverParameterFactory,
                        Performer.Factory performerFactory) {
             this.commandFactory = commandFactory;
             this.stringParameterFactory = stringParameterFactory;
@@ -84,14 +84,14 @@ public class AddConditionCommand {
         private final Logger logger;
         private final Callback callback;
         private final RealCondition.RemoveCallback<RealConditionImpl> removeCallback;
-        private final RealTypeImpl<PluginResource<ConditionDriver.Factory<? extends ConditionDriver>>> conditionDriverType;
+        private final RealTypeImpl<PluginDependency<ConditionDriver.Factory<? extends ConditionDriver>>> conditionDriverType;
         private final RealConditionImpl.Factory conditionFactory;
 
         @Inject
         public Performer(@Assisted Logger logger,
                          @Assisted Callback callback,
                          @Assisted RealCondition.RemoveCallback<RealConditionImpl> removeCallback,
-                         RealTypeImpl<PluginResource<ConditionDriver.Factory<? extends ConditionDriver>>> conditionDriverType,
+                         RealTypeImpl<PluginDependency<ConditionDriver.Factory<? extends ConditionDriver>>> conditionDriverType,
                          RealConditionImpl.Factory conditionFactory) {
             this.logger = logger;
             this.conditionDriverType = conditionDriverType;

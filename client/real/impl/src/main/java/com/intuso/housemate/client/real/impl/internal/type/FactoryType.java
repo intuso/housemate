@@ -7,7 +7,7 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
-import com.intuso.housemate.plugin.api.internal.driver.PluginResource;
+import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 /**
  * Created by tomc on 19/03/15.
  */
-public class FactoryType<FACTORY> extends RealChoiceType<PluginResource<FACTORY>> {
+public class FactoryType<FACTORY> extends RealChoiceType<PluginDependency<FACTORY>> {
 
     private final ListenersFactory listenersFactory;
     private final RealOptionImpl.Factory optionFactory;
@@ -48,7 +48,7 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginResource<FACTORY>
     }
 
     @Override
-    public Type.Instance serialise(PluginResource<FACTORY> factory) {
+    public Type.Instance serialise(PluginDependency<FACTORY> factory) {
         return factory == null ? null : new Type.Instance(factories.inverse().get(factory));
     }
 
@@ -57,7 +57,7 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginResource<FACTORY>
         return value != null && value.getValue() != null ? factories.get(value.getValue()) : null;
     }
 
-    public static class Entry<FACTORY> implements PluginResource<FACTORY> {
+    public static class Entry<FACTORY> implements PluginDependency<FACTORY> {
 
         private FACTORY factory;
         private final Listeners<Listener<FACTORY>> listeners;
@@ -67,7 +67,7 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginResource<FACTORY>
         }
 
         @Override
-        public FACTORY getResource() {
+        public FACTORY getDependency() {
             return factory;
         }
 
@@ -79,13 +79,13 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginResource<FACTORY>
         private void factoryAvailable(FACTORY factory) {
             this.factory = factory;
             for(Listener<FACTORY> listener : listeners)
-                listener.resourceAvailable(factory);
+                listener.dependencyAvailable(factory);
         }
 
         private void factoryUnavailable() {
             this.factory = null;
             for(Listener<FACTORY> listener : listeners)
-                listener.resourceUnavailable();
+                listener.dependencyUnavailable();
         }
     }
 }

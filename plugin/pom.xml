@@ -15,7 +15,8 @@
 
     <modules>
         <module>api</module>
-        <module>manager</module>
+        <module>host</module>
+        <module>main</module>
     </modules>
 
 </project>

@@ -4,7 +4,6 @@ import com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPowerCo
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
-import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureFactory;
 import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureImpl;
 
@@ -23,7 +22,6 @@ public abstract class WidgetHandler<FEATURE extends AndroidProxyFeatureImpl> {
         SERVICE_NOT_READY,
         DEVICE_NOT_LOADED,
         DEVICE_LOAD_FAILED,
-        NO_CLIENT,
         NO_DEVICE,
         NO_FEATURE,
         READY
@@ -31,7 +29,6 @@ public abstract class WidgetHandler<FEATURE extends AndroidProxyFeatureImpl> {
 
     private final WidgetService widgetService;
     private final AndroidProxyFeatureFactory proxyFeatureFactory;
-    private final String clientId;
     private final String deviceId;
 
     private WidgetService.Status serviceStatus;
@@ -39,25 +36,20 @@ public abstract class WidgetHandler<FEATURE extends AndroidProxyFeatureImpl> {
     private AndroidProxyDevice device;
     private FEATURE feature;
 
-    public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String clientId, String deviceId, String featureId) {
+    public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String deviceId, String featureId) {
         if(featureId.equals(StatefulPowerControl.ID))
-            return new StatefulPowerControlWidgetHandler(widgetService, proxyFeatureFactory, clientId, deviceId);
+            return new StatefulPowerControlWidgetHandler(widgetService, proxyFeatureFactory, deviceId);
         return null;
     }
 
-    WidgetHandler(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String clientId, String deviceId) {
+    WidgetHandler(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String deviceId) {
         this.widgetService = widgetService;
         this.proxyFeatureFactory = proxyFeatureFactory;
-        this.clientId = clientId;
         this.deviceId = deviceId;
     }
 
     protected WidgetService getWidgetService() {
         return widgetService;
-    }
-
-    public String getClientId() {
-        return clientId;
     }
 
     public String getDeviceId() {
@@ -95,24 +87,19 @@ public abstract class WidgetHandler<FEATURE extends AndroidProxyFeatureImpl> {
     }
 
     private void loadData() {
-        final AndroidProxyServer server = widgetService.getRoot().getServers().get(clientId);
-        if(server == null)
-            status = Status.NO_CLIENT;
-        else {
-            device = server.getDevices().get(deviceId);
-            if (device != null) {
-                AndroidProxyFeature proxyFeature = device.getFeatures().get(getFeatureId());
-                if(proxyFeature != null) {
-                    feature = proxyFeatureFactory.getFeatureAs(proxyFeature);
-                    init();
-                    status = Status.READY;
-                    updateWidget();
-                } else
-                    status = Status.NO_FEATURE;
+        device = widgetService.getServer().getDevices().get(deviceId);
+        if (device != null) {
+            AndroidProxyFeature proxyFeature = device.getFeatures().get(getFeatureId());
+            if(proxyFeature != null) {
+                feature = proxyFeatureFactory.getFeatureAs(proxyFeature);
+                init();
+                status = Status.READY;
+                updateWidget();
             } else
-                status = Status.NO_DEVICE;
-            updateWidget();
-        }
+                status = Status.NO_FEATURE;
+        } else
+            status = Status.NO_DEVICE;
+        updateWidget();
     }
 
     protected void init() {}

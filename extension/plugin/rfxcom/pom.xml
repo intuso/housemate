@@ -18,6 +18,12 @@
             <artifactId>housemate-plugin-1-0-api</artifactId>
             <version>${intuso.housemate.plugin.version}</version>
         </dependency>
+		<!-- Needed so we can callback to add new devices -->
+		<dependency>
+			<groupId>com.intuso.housemate</groupId>
+			<artifactId>housemate-client-1-0-real-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>com.rfxcom</groupId>
 			<artifactId>rfxtrx</artifactId>

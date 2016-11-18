@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.rfxcom.lighting1;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
-import com.intuso.housemate.client.real.api.internal.RealDevice;
+import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.plugin.rfxcom.Handler;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.rfxcom.rfxtrx.util.lighting1.Lighting1;
@@ -54,7 +54,7 @@ public abstract class Lighting1Handler implements Handler {
         if(!knownAppliances.containsEntry(houseId, unitCode)) {
             try {
                 String name = getDeviceName(houseId, unitCode);
-                // todo
+                // todo create and add device
                 /*final RealDevice<Lighting1Appliance> device = deviceContainer.createAndAddDevice(new Device.Data(UUID.randomUUID().toString(), name, name));
                 device.getDriverProperty().set(new Type.Instances(new Type.Instance(getDriverId())), new Command.PerformListener<RealCommand>() {
                     @Override

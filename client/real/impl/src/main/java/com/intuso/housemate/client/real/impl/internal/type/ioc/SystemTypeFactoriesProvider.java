@@ -22,10 +22,10 @@ public class SystemTypeFactoriesProvider implements Provider<Iterable<TypeFactor
     private final TypeFactories<Email> emailTypeFactories;
 
     // driver factory types
-    private final TypeFactories<PluginResource<ConditionDriver.Factory<?>>> conditionDriverTypeFactories;
-    private final TypeFactories<PluginResource<DeviceDriver.Factory<?>>> deviceDriverTypeFactories;
-    private final TypeFactories<PluginResource<HardwareDriver.Factory<?>>> hardwareDriverTypeFactories;
-    private final TypeFactories<PluginResource<TaskDriver.Factory<?>>> taskDriverTypeFactories;
+    private final TypeFactories<PluginDependency<ConditionDriver.Factory<?>>> conditionDriverTypeFactories;
+    private final TypeFactories<PluginDependency<DeviceDriver.Factory<?>>> deviceDriverTypeFactories;
+    private final TypeFactories<PluginDependency<HardwareDriver.Factory<?>>> hardwareDriverTypeFactories;
+    private final TypeFactories<PluginDependency<TaskDriver.Factory<?>>> taskDriverTypeFactories;
 
     @Inject
     public SystemTypeFactoriesProvider(TypeFactories<Boolean> booleanTypeFactories,
@@ -33,10 +33,10 @@ public class SystemTypeFactoriesProvider implements Provider<Iterable<TypeFactor
                                        TypeFactories<Integer> integerTypeFactories,
                                        TypeFactories<String> stringTypeFactories,
                                        TypeFactories<Email> emailTypeFactories,
-                                       TypeFactories<PluginResource<ConditionDriver.Factory<? extends ConditionDriver>>> conditionDriverTypeFactories,
-                                       TypeFactories<PluginResource<DeviceDriver.Factory<? extends DeviceDriver>>> deviceDriverTypeFactories,
-                                       TypeFactories<PluginResource<HardwareDriver.Factory<? extends HardwareDriver>>> hardwareDriverTypeFactories,
-                                       TypeFactories<PluginResource<TaskDriver.Factory<? extends TaskDriver>>> taskDriverTypeFactories) {
+                                       TypeFactories<PluginDependency<ConditionDriver.Factory<? extends ConditionDriver>>> conditionDriverTypeFactories,
+                                       TypeFactories<PluginDependency<DeviceDriver.Factory<? extends DeviceDriver>>> deviceDriverTypeFactories,
+                                       TypeFactories<PluginDependency<HardwareDriver.Factory<? extends HardwareDriver>>> hardwareDriverTypeFactories,
+                                       TypeFactories<PluginDependency<TaskDriver.Factory<? extends TaskDriver>>> taskDriverTypeFactories) {
         this.booleanTypeFactories = booleanTypeFactories;
         this.doubleTypeFactories = doubleTypeFactories;
         this.integerTypeFactories = integerTypeFactories;

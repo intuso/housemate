@@ -7,7 +7,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.intuso.housemate.pkg.server.jar.ioc.JarServerModule;
 import com.intuso.housemate.platform.pc.Properties;
-import com.intuso.housemate.plugin.manager.internal.PluginManager;
+import com.intuso.housemate.plugin.host.internal.PluginHost;
 import com.intuso.housemate.server.object.real.FactoryPluginListener;
 import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.Listeners;
@@ -92,7 +92,7 @@ public class ServerEnvironment {
 
         loadSharedJNILibs();
 
-        PluginManager pluginManager = injector.getInstance(PluginManager.class);
+        PluginHost pluginHost = injector.getInstance(PluginHost.class);
 
         // discover plugins from local dir
         File pluginDirectory = new File(properties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + PLUGINS_DIR_NAME);
@@ -104,7 +104,7 @@ public class ServerEnvironment {
             logger.debug("Loading plugins from " + pluginDirectory.getAbsolutePath());
             for(File pluginFile : pluginDirectory.listFiles(new PluginFileFilter())) {
                 try {
-                    pluginIds.put(pluginFile.getAbsolutePath(), pluginManager.addPlugin(createPluginInjector(injector, pluginFile, logger)));
+                    pluginIds.put(pluginFile.getAbsolutePath(), pluginHost.addPlugin(createPluginInjector(injector, pluginFile, logger)));
                 } catch(Throwable t) {
                     logger.warn("Failed to add plugin for file " + pluginFile.getAbsolutePath(), t);
                 }

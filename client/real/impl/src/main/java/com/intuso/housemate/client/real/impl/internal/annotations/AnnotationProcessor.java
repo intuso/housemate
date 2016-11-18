@@ -7,6 +7,7 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.real.impl.internal.type.RegisteredTypes;
 import com.intuso.housemate.plugin.api.internal.annotations.*;
+import com.intuso.housemate.plugin.api.internal.annotations.Parameter;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
