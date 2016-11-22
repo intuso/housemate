@@ -13,7 +13,7 @@
 	<description>Housemate Server runnable jar</description>
 
     <properties>
-        <jetty.version>8.1.7.v20120910</jetty.version>
+        <jetty.version>9.3.11.v20160721</jetty.version>
     </properties>
 
     <dependencies>
@@ -79,6 +79,36 @@
             <artifactId>jetty-util</artifactId>
             <version>${jetty.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-plus</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-annotations</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>apache-jsp</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
+        <!-- ActiveMQ Broker Web Console. NB not actually depended on, but good for debugging -->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-web-console</artifactId>
+            <type>war</type>
+            <version>${activemq.version}</version>
+        </dependency>
+        <!-- Required to make taglib stuff work  -->
+        <dependency>
+            <groupId>jstl</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
 
         <!-- JNI libraries that need to be loaded globally so they can be shared -->
         <dependency>

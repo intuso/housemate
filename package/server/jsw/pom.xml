@@ -20,6 +20,14 @@
 			<artifactId>housemate-package-server-jar</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+        <!-- ActiveMQ WebConsole -->
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-web-console</artifactId>
+            <type>war</type>
+            <version>${activemq.version}</version>
+        </dependency>
     </dependencies>
 
 	<build>
@@ -30,7 +38,63 @@
             </resource>
         </resources>
 
-        <plugins>
+        <plugins><!-- Copy dependency configs/resources in -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>activemq-webconsole</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+
+                                <!-- Copy the activemq webconsole war -->
+                                <artifactItem>
+                                    <groupId>org.apache.activemq</groupId>
+                                    <artifactId>activemq-web-console</artifactId>
+                                    <version>${activemq.version}</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <excludes>
+                                        WEB-INF/lib/activemq-broker-*.jar,
+                                        WEB-INF/lib/activemq-client-*.jar,
+                                        WEB-INF/lib/activemq-openwire-legacy-*.jar
+                                    </excludes>
+                                    <outputDirectory>${project.build.directory}/jsw/housemate/conf/activemq/webconsole</outputDirectory>
+                                </artifactItem>
+
+                                <!-- Copy our config for the activemq webconsole -->
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>housemate-package-server-jar</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <includes>activemq/**</includes>
+                                    <outputDirectory>${project.build.directory}/jsw/housemate/conf/</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>jstl-jar</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jsw/housemate/conf/activemq/webconsole/WEB-INF/lib</outputDirectory>
+                            <includeArtifactIds>jstl</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Wrap everything in a java service wrapper -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

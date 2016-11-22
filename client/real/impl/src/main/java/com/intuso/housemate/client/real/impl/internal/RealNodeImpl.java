@@ -58,9 +58,9 @@ public class RealNodeImpl
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        types.init(TYPES_ID, connection);
-        hardwares.init(HARDWARES_ID, connection);
-        addHardwareCommand.init(ADD_HARDWARE_ID, connection);
+        types.init(ChildUtil.name(name, TYPES_ID), connection);
+        hardwares.init(ChildUtil.name(name, HARDWARES_ID), connection);
+        addHardwareCommand.init(ChildUtil.name(name, ADD_HARDWARE_ID), connection);
     }
 
     @Override

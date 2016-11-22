@@ -1,6 +1,8 @@
 package com.intuso.housemate.pkg.server.jar.ioc;
 
 import com.google.inject.AbstractModule;
+import com.intuso.housemate.pkg.server.jar.ioc.activemq.BrokerWebConsoleModule;
+import com.intuso.housemate.pkg.server.jar.ioc.jetty.JettyModule;
 import com.intuso.housemate.platform.pc.ioc.PCModule;
 import com.intuso.housemate.server.ioc.ServerModule;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -29,5 +31,7 @@ public class JarServerModule extends AbstractModule {
         install(new PCModule()); // log and properties provider
         install(new SerialisersModule());
         install(new ServerModule(defaultProperties)); // main server module
+        install(new JettyModule(defaultProperties)); // web server
+        install(new BrokerWebConsoleModule(defaultProperties)); // active mq broker web console setup
     }
 }

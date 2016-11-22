@@ -5,6 +5,7 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.server.activemq.StoredMessageSubscriptionRecoveryPolicy;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.broker.jmx.ManagementContext;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
 import org.apache.activemq.broker.region.policy.PolicyMap;
 import org.apache.activemq.store.kahadb.KahaDBStore;
@@ -26,6 +27,12 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
 
         BrokerService brokerService = new BrokerService();
         brokerService.setBrokerName("housemate");
+
+        // enable management context for ui
+        brokerService.setUseJmx(true);
+        ManagementContext managementContext = new ManagementContext();
+        managementContext.setCreateConnector(false);
+        brokerService.setManagementContext(managementContext);
 
         try {
             brokerService.setPersistenceAdapter(new KahaDBStore());

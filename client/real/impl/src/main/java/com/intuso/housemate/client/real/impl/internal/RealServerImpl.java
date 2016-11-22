@@ -113,13 +113,13 @@ public class RealServerImpl
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        this.automations.init(AUTOMATIONS_ID, connection);
-        this.addAutomationCommand.init(ADD_AUTOMATION_ID, connection);
-        this.devices.init(DEVICES_ID, connection);
-        this.addDeviceCommand.init(ADD_DEVICE_ID, connection);
-        this.users.init(USERS_ID, connection);
-        this.addUserCommand.init(ADD_USER_ID, connection);
-        this.nodes.init(NODES_ID, connection);
+        this.automations.init(ChildUtil.name(name, AUTOMATIONS_ID), connection);
+        this.addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID), connection);
+        this.devices.init(ChildUtil.name(name, DEVICES_ID), connection);
+        this.addDeviceCommand.init(ChildUtil.name(name, ADD_DEVICE_ID), connection);
+        this.users.init(ChildUtil.name(name, USERS_ID), connection);
+        this.addUserCommand.init(ChildUtil.name(name, ADD_USER_ID), connection);
+        this.nodes.init(ChildUtil.name(name, NODES_ID), connection);
     }
 
     @Override
