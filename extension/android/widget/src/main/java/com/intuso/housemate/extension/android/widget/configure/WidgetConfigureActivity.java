@@ -54,7 +54,7 @@ public class WidgetConfigureActivity
         listAdapter = new DeviceListAdapter();
         ((ListView)findViewById(R.id.device_list)).setAdapter(listAdapter);
         ((ListView)findViewById(R.id.device_list)).setOnItemClickListener(this);
-        server = new AndroidProxyServer(getLogger(), getListenersFactory(), new AndroidObjectFactories(getListenersFactory()), getConnection());
+        server = new AndroidProxyServer(getConnection(), getLogger(), getListenersFactory(), new AndroidObjectFactories(getListenersFactory()));
         setStatus("Pick device to control");
         listenerRegistrations.add(server.getDevices().addObjectListener(new DeviceListListener(), true));
         listAdapter.notifyDataSetChanged();

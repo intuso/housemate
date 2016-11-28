@@ -23,7 +23,7 @@ public class AndroidProxyServer extends ProxyServer<AndroidProxyCommand,
     /**
      * @param logger    {@inheritDoc}
      */
-    public AndroidProxyServer(Logger logger, ListenersFactory listenersFactory, AndroidObjectFactories factories, Connection connection) {
-        super(logger, listenersFactory, factories.command(), factories.automations(), factories.devices(), factories.users(), factories.nodes(), connection);
+    public AndroidProxyServer(Connection connection, Logger logger, ListenersFactory listenersFactory, AndroidObjectFactories factories) {
+        super(connection, logger, listenersFactory, factories.command(), factories.automations(), factories.devices(), factories.users(), factories.nodes());
     }
 }

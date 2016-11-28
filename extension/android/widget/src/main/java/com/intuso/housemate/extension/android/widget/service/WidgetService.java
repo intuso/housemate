@@ -109,7 +109,7 @@ public class WidgetService extends HousemateService {
                 .setPriority(Notification.PRIORITY_MIN)
                 .build());
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        server = new AndroidProxyServer(getLogger(), getListenersFactory(), new AndroidObjectFactories(getListenersFactory()), getConnection());
+        server = new AndroidProxyServer(getConnection(), getLogger(), getListenersFactory(), new AndroidObjectFactories(getListenersFactory()));
         updateStatus();
         for (String key : Sets.newHashSet(getProperties().keySet())) {
             if (key.startsWith(PROPERTY_PREFIX)) {
