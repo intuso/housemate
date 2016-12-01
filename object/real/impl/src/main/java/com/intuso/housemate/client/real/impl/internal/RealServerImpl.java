@@ -23,7 +23,7 @@ public class RealServerImpl
         RealAutomationImpl, RealListPersistedImpl<RealAutomationImpl>,
         RealDeviceImpl, RealListPersistedImpl<RealDeviceImpl>,
         RealUserImpl, RealListPersistedImpl<RealUserImpl>,
-        RealNodeImplBase<?, ?, ?, ?, ?>, RealNodeListImpl,
+        ServerBaseNode<?, ?, ?, ?>, RealNodeListImpl,
         RealServerImpl>,
         AddAutomationCommand.Callback,
         AddDeviceCommand.Callback,
@@ -206,12 +206,12 @@ public class RealServerImpl
     }
 
     @Override
-    public void addNode(RealNodeImplBase node) {
+    public void addNode(ServerBaseNode node) {
         nodes.add(node);
     }
 
     @Override
-    public void removeNode(RealNodeImplBase node) {
+    public void removeNode(ServerBaseNode node) {
         nodes.remove(node.getId());
     }
 

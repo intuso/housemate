@@ -12,7 +12,7 @@ public interface RealNode<COMMAND extends RealCommand<?, ?, ?>,
 
     COMMAND getAddHardwareCommand();
 
-    interface Container<NODE extends RealNode<?, ?, ?, ?, ?>, NODES extends RealList<? extends NODE, ?>> extends Node.Container<NODES> {
+    interface Container<NODE extends Node<?, ?, ?, ?>, NODES extends RealList<? extends NODE, ?>> extends Node.Container<NODES> {
         void addNode(NODE node);
         void removeNode(NODE node);
     }

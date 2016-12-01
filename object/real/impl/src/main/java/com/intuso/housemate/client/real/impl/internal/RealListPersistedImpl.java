@@ -6,13 +6,14 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.housemate.client.api.internal.object.Serialiser;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.Session;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ import java.util.Map;
  */
 public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
         extends RealObject<List.Data, List.Listener<? super ELEMENT, ? super RealListPersistedImpl<ELEMENT>>>
-        implements RealList<ELEMENT, RealListPersistedImpl<ELEMENT>>, MessageListener {
+        implements RealList<ELEMENT, RealListPersistedImpl<ELEMENT>> {
 
     private final Map<String, ELEMENT> elements;
     private final ExistingObjectFactory<ELEMENT> existingObjectHandler;
@@ -28,7 +29,7 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
     private String name;
     private Connection connection;
     private Session session;
-    private MessageConsumer existingObjectConsumer;
+    private JMSUtil.Receiver<Object.Data> existingObjectReceiver;
 
     /**
      * @param logger {@inheritDoc}
@@ -61,8 +62,19 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
         this.name = name;
         this.connection = connection;
         this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        existingObjectConsumer = session.createConsumer(session.createTopic(ChildUtil.name(name, "*") + "?consumer.retroactive=true"));
-        existingObjectConsumer.setMessageListener(this);
+        existingObjectReceiver = new JMSUtil.Receiver<>(logger,
+                session.createConsumer(session.createTopic(ChildUtil.name(name, "*") + "?consumer.retroactive=true")),
+                Object.Data.class,
+                new JMSUtil.Receiver.Listener<Object.Data>() {
+                    @Override
+                    public void onMessage(Object.Data data, boolean wasPersisted) {
+                        if(!elements.containsKey(data.getId())) {
+                            ELEMENT element = existingObjectHandler.create(logger, data);
+                            if(element != null)
+                                add(element);
+                        }
+                    }
+                });
     }
 
     @Override
@@ -72,13 +84,13 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
         this.connection = null;
         for(ELEMENT element : elements.values())
             element.uninit();
-        if(existingObjectConsumer != null) {
+        if(existingObjectReceiver != null) {
             try {
-                existingObjectConsumer.close();
+                existingObjectReceiver.close();
             } catch(JMSException e) {
                 logger.error("Failed to close perform producer");
             }
-            existingObjectConsumer = null;
+            existingObjectReceiver = null;
         }
         if(session != null) {
             try {
@@ -130,33 +142,6 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
     @Override
     public Iterator<ELEMENT> iterator() {
         return elements.values().iterator();
-    }
-
-    @Override
-    public void onMessage(Message message) {
-        if(message instanceof StreamMessage) {
-            StreamMessage streamMessage = (StreamMessage) message;
-            try {
-                java.lang.Object messageObject = streamMessage.readObject();
-                if(messageObject instanceof byte[]) {
-                    java.lang.Object object = Serialiser.deserialise((byte[]) messageObject);
-                    if (object instanceof Object.Data) {
-                        // pass to the handler if the object doesn't already exist
-                        Object.Data data = (Object.Data) object;
-                        if(!elements.containsKey(data.getId())) {
-                            ELEMENT element = existingObjectHandler.create(logger, data);
-                            if(element != null)
-                                add(element);
-                        }
-                    } else
-                        logger.warn("Deserialised message object that wasn't a {}", Object.Data.class.getName());
-                } else
-                    logger.warn("Message data was not a byte[]");
-            } catch(JMSException e) {
-                logger.error("Failed to read object from message", e);
-            }
-        } else
-            logger.warn("Received message that wasn't a {}", StreamMessage.class.getName());
     }
 
     public interface Factory<ELEMENT extends RealObject<?, ?>> {

@@ -18,10 +18,10 @@ import java.util.Map;
 /**
  */
 public final class RealNodeListImpl
-        extends RealObject<List.Data, List.Listener<? super RealNodeImplBase<?, ?, ?, ?, ?>, ? super RealNodeListImpl>>
-        implements RealList<RealNodeImplBase<?, ?, ?, ?, ?>, RealNodeListImpl> {
+        extends RealObject<List.Data, List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl>>
+        implements RealList<ServerBaseNode<?, ?, ?, ?>, RealNodeListImpl> {
 
-    private final Map<String, RealNodeImplBase<?, ?, ?, ?, ?>> elements;
+    private final Map<String, ServerBaseNode<?, ?, ?, ?>> elements;
 
     private String name;
     private Connection connection;
@@ -41,10 +41,10 @@ public final class RealNodeListImpl
     }
 
     @Override
-    public ListenerRegistration addObjectListener(List.Listener<? super RealNodeImplBase<?, ?, ?, ?, ?>, ? super RealNodeListImpl> listener, boolean callForExistingElements) {
+    public ListenerRegistration addObjectListener(List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener, boolean callForExistingElements) {
         ListenerRegistration listenerRegistration = super.addObjectListener(listener);
         if(callForExistingElements)
-            for(RealNodeImplBase<?, ?, ?, ?, ?> node : this)
+            for(ServerBaseNode<?, ?, ?, ?> node : this)
                 listener.elementAdded(this, node);
         return listenerRegistration;
     }
@@ -54,7 +54,7 @@ public final class RealNodeListImpl
         super.initChildren(name, connection);
         this.name = name;
         this.connection = connection;
-        for(RealNodeImplBase<?, ?, ?, ?, ?> element : elements.values())
+        for(ServerBaseNode<?, ?, ?, ?> element : elements.values())
             element.init(ChildUtil.name(name, element.getId()), connection);
     }
 
@@ -63,12 +63,12 @@ public final class RealNodeListImpl
         super.uninitChildren();
         this.name = null;
         this.connection = null;
-        for(RealNodeImplBase<?, ?, ?, ?, ?> element : elements.values())
+        for(ServerBaseNode<?, ?, ?, ?> element : elements.values())
             element.uninit();
     }
 
     @Override
-    public void add(RealNodeImplBase<?, ?, ?, ?, ?> element) {
+    public void add(ServerBaseNode<?, ?, ?, ?> element) {
         if(elements.containsKey(element.getId()))
             throw new HousemateException("Element with id " + element.getId() + " already exists");
         elements.put(element.getId(), element);
@@ -79,23 +79,23 @@ public final class RealNodeListImpl
                 throw new HousemateException("Couldn't add element, failed to initialise it");
             }
         }
-        for(List.Listener<? super RealNodeImplBase<?, ?, ?, ?, ?>, ? super RealNodeListImpl> listener : listeners)
+        for(List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener : listeners)
             listener.elementAdded(this, element);
     }
 
     @Override
-    public RealNodeImplBase<?, ?, ?, ?, ?> remove(String id) {
-        RealNodeImplBase<?, ?, ?, ?, ?> element = elements.get(id);
+    public ServerBaseNode<?, ?, ?, ?> remove(String id) {
+        ServerBaseNode<?, ?, ?, ?> element = elements.get(id);
         if(element != null) {
             element.uninit();
-            for (List.Listener<? super RealNodeImplBase<?, ?, ?, ?, ?>, ? super RealNodeListImpl> listener : listeners)
+            for (List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener : listeners)
                 listener.elementRemoved(this, element);
         }
         return element;
     }
 
     @Override
-    public final RealNodeImplBase<?, ?, ?, ?, ?> get(String name) {
+    public final ServerBaseNode<?, ?, ?, ?> get(String name) {
         return elements.get(name);
     }
 
@@ -105,7 +105,7 @@ public final class RealNodeListImpl
     }
 
     @Override
-    public Iterator<RealNodeImplBase<?, ?, ?, ?, ?>> iterator() {
+    public Iterator<ServerBaseNode<?, ?, ?, ?>> iterator() {
         return elements.values().iterator();
     }
 

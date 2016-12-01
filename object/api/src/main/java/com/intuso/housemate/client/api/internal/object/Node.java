@@ -17,13 +17,13 @@ public interface Node<
 
     /**
      *
-     * Listener interface for server
+     * Listener interface for node
      */
     interface Listener<NODE extends Node> extends Object.Listener {}
 
     /**
      *
-     * Interface to show that the implementing object has a list of server
+     * Interface to show that the implementing object has a list of nodes
      */
     interface Container<NODES extends List<? extends Node<?, ?, ?, ?>, ?>> {
 

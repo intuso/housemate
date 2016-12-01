@@ -4,19 +4,20 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Command;
-import com.intuso.housemate.client.api.internal.object.Serialiser;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
-import javax.jms.*;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.Session;
 
 /**
  */
 public final class RealCommandImpl
         extends RealObject<Command.Data, Command.Listener<? super RealCommandImpl>>
-        implements RealCommand<RealValueImpl<Boolean>, RealListGeneratedImpl<RealParameterImpl<?>>, RealCommandImpl>, MessageListener {
+        implements RealCommand<RealValueImpl<Boolean>, RealListGeneratedImpl<RealParameterImpl<?>>, RealCommandImpl> {
 
     private final static String ENABLED_DESCRIPTION = "Whether the command is enabled or not";
 
@@ -25,8 +26,8 @@ public final class RealCommandImpl
     private final RealListGeneratedImpl<RealParameterImpl<?>> parameters;
 
     private Session session;
-    private MessageProducer performStatusProducer;
-    private MessageConsumer performConsumer;
+    private JMSUtil.Sender performStatusSender;
+    private JMSUtil.Receiver<PerformData> performReceiver;
 
     /**
      * @param logger {@inheritDoc}
@@ -64,10 +65,33 @@ public final class RealCommandImpl
         super.initChildren(name, connection);
         enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID), connection);
         parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID), connection);
-        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        performStatusProducer = session.createProducer(session.createTopic(ChildUtil.name(name, Command.PERFORM_STATUS_ID)));
-        performConsumer = session.createConsumer(session.createQueue(ChildUtil.name(name, Command.PERFORM_ID)));
-        performConsumer.setMessageListener(this);
+        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        performStatusSender = new JMSUtil.Sender(session, session.createProducer(session.createTopic(ChildUtil.name(name, Command.PERFORM_STATUS_ID))));
+        performReceiver = new JMSUtil.Receiver<>(logger,
+                session.createConsumer(session.createQueue(ChildUtil.name(name, Command.PERFORM_ID))),
+                PerformData.class,
+                new JMSUtil.Receiver.Listener<PerformData>() {
+                    @Override
+                    public void onMessage(final PerformData performData, boolean wasPersisted) {
+                        perform(performData.getInstanceMap(), new PerformListener<RealCommandImpl>() {
+
+                            @Override
+                            public void commandStarted(RealCommandImpl command) {
+                                performStatus(performData.getOpId(), false, null);
+                            }
+
+                            @Override
+                            public void commandFinished(RealCommandImpl command) {
+                                performStatus(performData.getOpId(), true, null);
+                            }
+
+                            @Override
+                            public void commandFailed(RealCommandImpl command, String error) {
+                                performStatus(performData.getOpId(), true, error);
+                            }
+                        });
+                    }
+                });
     }
 
     @Override
@@ -75,21 +99,21 @@ public final class RealCommandImpl
         super.uninitChildren();
         enabledValue.uninit();
         parameters.uninit();
-        if(performStatusProducer != null) {
+        if(performStatusSender != null) {
             try {
-                performStatusProducer.close();
+                performStatusSender.close();
             } catch(JMSException e) {
                 logger.error("Failed to close perform status producer");
             }
-            performStatusProducer = null;
+            performStatusSender = null;
         }
-        if(performConsumer != null) {
+        if(performReceiver != null) {
             try {
-                performConsumer.close();
+                performReceiver.close();
             } catch(JMSException e) {
                 logger.error("Failed to close perform producer");
             }
-            performConsumer = null;
+            performReceiver = null;
         }
         if(session != null) {
             try {
@@ -123,49 +147,9 @@ public final class RealCommandImpl
         }
     }
 
-    @Override
-    public void onMessage(Message message) {
-        if(message instanceof StreamMessage) {
-            StreamMessage streamMessage = (StreamMessage) message;
-            try {
-                java.lang.Object messageObject = streamMessage.readObject();
-                if(messageObject instanceof byte[]) {
-                    java.lang.Object object = Serialiser.deserialise((byte[]) messageObject);
-                    if (object instanceof Command.PerformData) {
-                        final PerformData performData = (PerformData) object;
-                        perform(performData.getInstanceMap(), new PerformListener<RealCommandImpl>() {
-
-                            @Override
-                            public void commandStarted(RealCommandImpl command) {
-                                performStatus(performData.getOpId(), false, null);
-                            }
-
-                            @Override
-                            public void commandFinished(RealCommandImpl command) {
-                                performStatus(performData.getOpId(), true, null);
-                            }
-
-                            @Override
-                            public void commandFailed(RealCommandImpl command, String error) {
-                                performStatus(performData.getOpId(), true, error);
-                            }
-                        });
-                    } else
-                        logger.warn("Deserialised message object that wasn't a {}", PerformData.class.getName());
-                } else
-                    logger.warn("Message data was not a byte[]");
-            } catch(JMSException e) {
-                logger.error("Failed to read object from message", e);
-            }
-        } else
-            logger.warn("Received message that wasn't a {}", StreamMessage.class.getName());
-    }
-
     private void performStatus(String opId, boolean finished, String error) {
         try {
-            StreamMessage streamMessage = session.createStreamMessage();
-            streamMessage.writeBytes(Serialiser.serialise(new Command.PerformStatusData(opId, finished, error)));
-            performStatusProducer.send(streamMessage);
+            performStatusSender.send(new Command.PerformStatusData(opId, finished, error), false);
         } catch(JMSException e) {
             logger.error("Failed to send perform status update ({}, {}, {})", opId, finished, error, e);
         }

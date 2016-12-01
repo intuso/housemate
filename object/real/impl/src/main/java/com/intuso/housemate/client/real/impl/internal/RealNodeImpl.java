@@ -15,7 +15,7 @@ import javax.jms.JMSException;
 public class RealNodeImpl
         extends RealObject<com.intuso.housemate.client.api.internal.object.Node.Data, com.intuso.housemate.client.api.internal.object.Node.Listener<? super RealNodeImpl>>
         implements RealNode<RealCommandImpl, RealListGeneratedImpl<RealTypeImpl<?>>, RealHardwareImpl, RealListPersistedImpl<RealHardwareImpl>, RealNodeImpl>,
-        RealNodeImplBase<RealCommandImpl, RealListGeneratedImpl<RealTypeImpl<?>>, RealHardwareImpl, RealListPersistedImpl<RealHardwareImpl>, RealNodeImpl>,
+        ServerBaseNode<RealCommandImpl, RealListGeneratedImpl<RealTypeImpl<?>>, RealListPersistedImpl<RealHardwareImpl>, RealNodeImpl>,
         AddHardwareCommand.Callback {
 
     private final RealListGeneratedImpl<RealTypeImpl<?>> types;
