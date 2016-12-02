@@ -1,7 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal;
 
-import com.intuso.housemate.client.v1_0.api.MessageConstants;
-import com.intuso.housemate.client.v1_0.api.object.Serialiser;
+import com.intuso.housemate.client.api.internal.MessageConstants;
+import com.intuso.housemate.client.api.internal.object.Serialiser;
 import org.slf4j.Logger;
 
 import javax.jms.*;
