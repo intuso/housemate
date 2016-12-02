@@ -1,9 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;
@@ -112,8 +110,7 @@ public class RealServerImpl
         this.nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID),
                 NODES_ID,
                 "Nodes",
-                "Nodes",
-                Lists.<RealNodeImpl>newArrayList());
+                "Nodes");
     }
 
     @Override
@@ -246,12 +243,5 @@ public class RealServerImpl
         protected void shutDown() throws Exception {
             server.stop();
         }
-    }
-
-    public interface Factory {
-        RealServerImpl create(Logger logger,
-                              @Assisted("id") String id,
-                              @Assisted("name") String name,
-                              @Assisted("description") String description);
     }
 }

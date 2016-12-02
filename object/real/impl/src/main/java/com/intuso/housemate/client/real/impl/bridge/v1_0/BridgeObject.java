@@ -1,6 +1,6 @@
 package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
-import com.google.common.base.Function;
+import com.intuso.housemate.client.api.bridge.v1_0.ObjectMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.v1_0.real.impl.JMSUtil;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -21,13 +21,13 @@ public abstract class BridgeObject<
     protected final Logger logger;
     protected VERSION_DATA data;
     protected final Class<VERSION_DATA> versionDataClass;
-    protected final Function<VERSION_DATA, INTERNAL_DATA> dataMapper;
+    protected final ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper;
     protected final Listeners<LISTENER> listeners;
     private Session session;
     private com.intuso.housemate.client.real.impl.internal.JMSUtil.Sender sender;
     private JMSUtil.Receiver<VERSION_DATA> receiver;
 
-    protected BridgeObject(Logger logger, Class<VERSION_DATA> versionDataClass, Function<VERSION_DATA, INTERNAL_DATA> dataMapper, ListenersFactory listenersFactory) {
+    protected BridgeObject(Logger logger, Class<VERSION_DATA> versionDataClass, ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper, ListenersFactory listenersFactory) {
         logger.debug("Creating");
         this.logger = logger;
         this.versionDataClass = versionDataClass;
@@ -46,7 +46,7 @@ public abstract class BridgeObject<
                     @Override
                     public void onMessage(VERSION_DATA data, boolean wasPersisted) {
                         try {
-                            sender.send(dataMapper.apply(data), wasPersisted);
+                            sender.send(dataMapper.map(data), wasPersisted);
                         } catch (JMSException e) {
                             logger.error("Failed to send data object", e);
                         }
@@ -89,7 +89,7 @@ public abstract class BridgeObject<
     protected void uninitChildren() {}
 
     @Override
-    public final String getId() {
+    public String getId() {
         return data.getId();
     }
 

@@ -1,8 +1,9 @@
 package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
-import com.google.common.base.Function;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.bridge.v1_0.TypeInstancesMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.ValueMapper;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -17,13 +18,9 @@ public class ValueBridge
 
     @Inject
     protected ValueBridge(@Assisted Logger logger,
-                          Function<com.intuso.housemate.client.v1_0.api.object.Value.Data, Value.Data> dataMapper,
-                          Function<com.intuso.housemate.client.v1_0.api.object.Type.Instances, Type.Instances> typeInstancesMapper,
+                          ValueMapper valueMapper,
+                          TypeInstancesMapper typeInstancesMapper,
                           ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Value.Data.class, dataMapper, typeInstancesMapper, listenersFactory);
-    }
-
-    public interface Factory {
-        ValueBridge create(Logger logger);
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Value.Data.class, valueMapper, typeInstancesMapper, listenersFactory);
     }
 }

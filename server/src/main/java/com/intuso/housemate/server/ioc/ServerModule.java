@@ -6,8 +6,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
-import com.intuso.housemate.client.api.bridge.ioc.ObjectAPIBridgeV1_0Module;
-import com.intuso.housemate.client.real.api.bridge.v1_0.ioc.ClientRealAPIBridgeV1_0Module;
+import com.intuso.housemate.client.api.bridge.ioc.ObjectApiBridgeModule;
+import com.intuso.housemate.client.real.api.bridge.ioc.RealApiBridgeModule;
 import com.intuso.housemate.client.real.impl.internal.ioc.ServerRootModule;
 import com.intuso.housemate.plugin.host.internal.ioc.PluginHostModule;
 import com.intuso.housemate.server.ServerService;
@@ -30,8 +30,8 @@ public class ServerModule extends AbstractModule {
     protected void configure() {
 
         // install api bridge modules
-        install(new ObjectAPIBridgeV1_0Module());
-        install(new ClientRealAPIBridgeV1_0Module());
+        install(new ObjectApiBridgeModule());
+        install(new RealApiBridgeModule());
 
         // install plugin modules
         install(new ServerRootModule());

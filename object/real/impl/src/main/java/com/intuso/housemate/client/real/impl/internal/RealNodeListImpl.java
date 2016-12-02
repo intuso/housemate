@@ -6,12 +6,18 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.impl.bridge.v1_0.NodeBridge;
+import com.intuso.housemate.client.v1_0.api.object.Node;
+import com.intuso.housemate.client.v1_0.api.object.Object;
+import com.intuso.housemate.client.v1_0.api.object.Server;
+import com.intuso.housemate.client.v1_0.real.impl.JMSUtil;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
+import javax.jms.Session;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -21,22 +27,29 @@ public final class RealNodeListImpl
         extends RealObject<List.Data, List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl>>
         implements RealList<ServerBaseNode<?, ?, ?, ?>, RealNodeListImpl> {
 
+    private final NodeBridge.Factory nodeV1_0Factory;
+
     private final Map<String, ServerBaseNode<?, ?, ?, ?>> elements;
 
     private String name;
     private Connection connection;
+    private Session session;
+    private com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<Node.Data> nodeV1_0Receiver;
 
     /**
      * @param logger {@inheritDoc}
      * @param listenersFactory
+     * @param nodeV1_0Factory
      */
     @Inject
     public RealNodeListImpl(@Assisted Logger logger,
                             @Assisted("id") String id,
                             @Assisted("name") String name,
                             @Assisted("description") String description,
-                            ListenersFactory listenersFactory) {
+                            ListenersFactory listenersFactory,
+                            NodeBridge.Factory nodeV1_0Factory) {
         super(logger, false, new List.Data(id, name, description), listenersFactory);
+        this.nodeV1_0Factory = nodeV1_0Factory;
         this.elements = Maps.newHashMap();
     }
 
@@ -54,13 +67,42 @@ public final class RealNodeListImpl
         super.initChildren(name, connection);
         this.name = name;
         this.connection = connection;
-        for(ServerBaseNode<?, ?, ?, ?> element : elements.values())
-            element.init(ChildUtil.name(name, element.getId()), connection);
+        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        final String nodesPathV1_0 = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, Object.VERSION, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Server.NODES_ID);
+        nodeV1_0Receiver = new JMSUtil.Receiver<>(
+                logger,
+                session.createConsumer(session.createTopic(com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*") + "?consumer.retroactive=true")),
+                Node.Data.class,
+                new JMSUtil.Receiver.Listener<Node.Data>() {
+                    @Override
+                    public void onMessage(Node.Data nodeData, boolean wasPersisted) {
+                        if(!elements.containsKey(nodeData.getId()))
+                            add(nodeV1_0Factory.create(nodeData.getId(), ChildUtil.logger(logger, nodeData.getId()), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, nodeData.getId())));
+                    }
+                }
+        );
+        // don't need to init the elements, there can't be any until we've subscribed
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
+        if(nodeV1_0Receiver != null) {
+            try {
+                nodeV1_0Receiver.close();
+            } catch(JMSException e) {
+                logger.error("Failed to close node 1.0 receiver");
+            }
+            nodeV1_0Receiver = null;
+        }
+        if(session != null) {
+            try {
+                session.close();
+            } catch(JMSException e) {
+                logger.error("Failed to close session");
+            }
+            session = null;
+        }
         this.name = null;
         this.connection = null;
         for(ServerBaseNode<?, ?, ?, ?> element : elements.values())
@@ -109,11 +151,10 @@ public final class RealNodeListImpl
         return elements.values().iterator();
     }
 
-    public interface Factory<ELEMENT extends RealObject<?, ?>> {
+    public interface Factory {
         RealNodeListImpl create(Logger logger,
                                 @Assisted("id") String id,
                                 @Assisted("name") String name,
-                                @Assisted("description") String description,
-                                Iterable<? extends ELEMENT> elements);
+                                @Assisted("description") String description);
     }
 }

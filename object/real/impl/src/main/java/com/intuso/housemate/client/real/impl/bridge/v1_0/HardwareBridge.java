@@ -1,8 +1,8 @@
 package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
-import com.google.common.base.Function;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.bridge.v1_0.HardwareMapper;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Hardware;
@@ -32,13 +32,13 @@ public class HardwareBridge
 
     @Inject
     protected HardwareBridge(@Assisted Logger logger,
-                             Function<com.intuso.housemate.client.v1_0.api.object.Hardware.Data, Hardware.Data> dataMapper,
+                             HardwareMapper hardwareMapper,
                              BridgeObject.Factory<CommandBridge> commandFactory,
                              BridgeObject.Factory<ValueBridge> valueFactory,
                              BridgeObject.Factory<PropertyBridge> propertyFactory,
                              BridgeObject.Factory<ListBridge<PropertyBridge>> propertiesFactory,
                              ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Hardware.Data.class, dataMapper, listenersFactory);
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Hardware.Data.class, hardwareMapper, listenersFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         runningValue = valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID));
@@ -148,9 +148,5 @@ public class HardwareBridge
     @Override
     public ListBridge<PropertyBridge> getProperties() {
         return properties;
-    }
-
-    public interface Factory {
-        HardwareBridge create(Logger logger);
     }
 }

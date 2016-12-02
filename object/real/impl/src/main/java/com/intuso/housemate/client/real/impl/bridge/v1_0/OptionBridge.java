@@ -1,8 +1,8 @@
 package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
-import com.google.common.base.Function;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.bridge.v1_0.OptionMapper;
 import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -22,10 +22,10 @@ public class OptionBridge
 
     @Inject
     protected OptionBridge(@Assisted Logger logger,
-                           Function<com.intuso.housemate.client.v1_0.api.object.Option.Data, Option.Data> dataMapper,
+                           OptionMapper optionMapper,
                            BridgeObject.Factory<ListBridge<SubTypeBridge>> subTypesFactory,
                            ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Option.Data.class, dataMapper, listenersFactory);
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Option.Data.class, optionMapper, listenersFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID));
     }
 
@@ -47,9 +47,5 @@ public class OptionBridge
     @Override
     public ListBridge<SubTypeBridge> getSubTypes() {
         return subTypes;
-    }
-
-    public interface Factory {
-        OptionBridge create(Logger logger);
     }
 }

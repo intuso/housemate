@@ -6,6 +6,8 @@ import com.intuso.housemate.client.v1_0.api.object.Type;
 
 /**
  * Created by tomc on 29/09/15.
+ *
+ * An interface because they type instance(s)(map) all inject each other -> circular dependency
  */
 public interface TypeInstanceMapper {
 

@@ -1,9 +1,9 @@
 package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.bridge.v1_0.ListMapper;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -24,10 +24,10 @@ public class ListBridge<ELEMENT extends BridgeObject<?, ?, ?>>
 
     @Inject
     protected ListBridge(@Assisted Logger logger,
-                         Function<com.intuso.housemate.client.v1_0.api.object.List.Data, List.Data> dataMapper,
+                         ListMapper listMapper,
                          BridgeObject.Factory<ELEMENT> elementFactory,
                          ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.List.Data.class, dataMapper, listenersFactory);
+        super(logger, com.intuso.housemate.client.v1_0.api.object.List.Data.class, listMapper, listenersFactory);
         this.elementFactory = elementFactory;
     }
 

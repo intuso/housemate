@@ -1,6 +1,7 @@
 package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
-import com.google.common.base.Function;
+import com.intuso.housemate.client.api.bridge.v1_0.ObjectMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.TypeInstancesMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
@@ -25,7 +26,7 @@ public abstract class ValueBaseBridge<
         extends BridgeObject<VERSION_DATA, INTERNAL_DATA, LISTENER>
         implements ValueBase<Type.Instances, TypeBridge, LISTENER, VALUE> {
 
-    private final Function<com.intuso.housemate.client.v1_0.api.object.Type.Instances, Type.Instances> typeInstancesMapper;
+    private final TypeInstancesMapper typeInstancesMapper;
 
     private Type.Instances value;
 
@@ -35,8 +36,8 @@ public abstract class ValueBaseBridge<
 
     protected ValueBaseBridge(Logger logger,
                               Class<VERSION_DATA> versionDataClass,
-                              Function<VERSION_DATA, INTERNAL_DATA> dataMapper,
-                              Function<com.intuso.housemate.client.v1_0.api.object.Type.Instances, Type.Instances> typeInstancesMapper,
+                              ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper,
+                              TypeInstancesMapper typeInstancesMapper,
                               ListenersFactory listenersFactory) {
         super(logger, versionDataClass, dataMapper, listenersFactory);
         this.typeInstancesMapper = typeInstancesMapper;
@@ -53,7 +54,7 @@ public abstract class ValueBaseBridge<
                 new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Type.Instances>() {
             @Override
             public void onMessage(com.intuso.housemate.client.v1_0.api.object.Type.Instances instances, boolean wasPersisted) {
-                value = typeInstancesMapper.apply(instances);
+                value = typeInstancesMapper.map(instances);
                 // todo call object listeners
             }
         });
@@ -96,9 +97,5 @@ public abstract class ValueBaseBridge<
     @Override
     public Type.Instances getValue() {
         return value;
-    }
-
-    public interface Factory {
-        ValueBaseBridge create(Logger logger);
     }
 }

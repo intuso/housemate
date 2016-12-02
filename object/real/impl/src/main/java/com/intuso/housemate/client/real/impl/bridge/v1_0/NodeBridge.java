@@ -1,8 +1,8 @@
 package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
-import com.google.common.base.Function;
-import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+import com.intuso.housemate.client.api.bridge.v1_0.NodeMapper;
 import com.intuso.housemate.client.api.internal.object.Node;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ServerBaseNode;
@@ -20,21 +20,24 @@ public class NodeBridge
         implements Node<CommandBridge, ListBridge<TypeBridge>, ListBridge<HardwareBridge>, NodeBridge>,
         ServerBaseNode<CommandBridge, ListBridge<TypeBridge>, ListBridge<HardwareBridge>, NodeBridge> {
 
+    private final String id;
     private final String versionName;
 
     private final ListBridge<TypeBridge> types;
     private final ListBridge<HardwareBridge> hardwares;
     private final CommandBridge addHardwareCommand;
 
-    @Inject
-    protected NodeBridge(@Assisted Logger logger,
-                         String versionName,
-                         Function<com.intuso.housemate.client.v1_0.api.object.Node.Data, Node.Data> dataMapper,
+    @AssistedInject
+    protected NodeBridge(@Assisted("id") String id,
+                         @Assisted Logger logger,
+                         @Assisted("versionName") String versionName,
+                         NodeMapper nodeMapper,
                          BridgeObject.Factory<ListBridge<TypeBridge>> typesFactory,
                          BridgeObject.Factory<ListBridge<HardwareBridge>> hardwaresFactory,
                          BridgeObject.Factory<CommandBridge> commandFactory,
                          ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Node.Data.class, dataMapper, listenersFactory);
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Node.Data.class, nodeMapper, listenersFactory);
+        this.id = id;
         this.versionName = versionName;
         types = typesFactory.create(ChildUtil.logger(logger, Node.TYPES_ID));
         hardwares = hardwaresFactory.create(ChildUtil.logger(logger, Node.HARDWARES_ID));
@@ -72,6 +75,11 @@ public class NodeBridge
     }
 
     @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
     public ListBridge<TypeBridge> getTypes() {
         return types;
     }
@@ -87,6 +95,6 @@ public class NodeBridge
     }
 
     public interface Factory {
-        NodeBridge create(Logger logger, String versionName);
+        NodeBridge create(@Assisted("id") String id, Logger logger, @Assisted("versionName") String versionName);
     }
 }

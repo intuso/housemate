@@ -9,7 +9,7 @@ import com.intuso.housemate.plugin.api.bridge.v1_0.driver.*;
 /**
  * Created by tomc on 06/11/15.
  */
-public class ClientRealAPIBridgeV1_0Module extends AbstractModule {
+public class RealApiBridgeV1_0Module extends AbstractModule {
     @Override
     protected void configure() {
 

@@ -1,8 +1,9 @@
 package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
-import com.google.common.base.Function;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.bridge.v1_0.PropertyMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.TypeInstancesMapper;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
@@ -24,11 +25,11 @@ public class PropertyBridge
 
     @Inject
     public PropertyBridge(@Assisted Logger logger,
-                          Function<com.intuso.housemate.client.v1_0.api.object.Property.Data, Property.Data> dataMapper,
-                          Function<com.intuso.housemate.client.v1_0.api.object.Type.Instances, Type.Instances> typeInstancesMapper,
+                          PropertyMapper propertyMapper,
+                          TypeInstancesMapper typeInstancesMapper,
                           BridgeObject.Factory<CommandBridge> commandFactory,
                           ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Property.Data.class, dataMapper, typeInstancesMapper, listenersFactory);
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Property.Data.class, propertyMapper, typeInstancesMapper, listenersFactory);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID));
     }
 

@@ -6,6 +6,7 @@ import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.client.real.api.internal.*;
+import com.intuso.housemate.client.real.impl.bridge.ioc.RealBridgeModule;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealServerImpl;
 import com.intuso.housemate.client.real.impl.internal.annotations.ioc.RealAnnotationsModule;
@@ -21,11 +22,16 @@ public class ServerRootModule extends AbstractModule {
     @Override
     protected void configure() {
 
+        // everything to do with internal objects
         install(new RealAnnotationsModule());
         install(new RealObjectsModule());
         install(new RealTypesModule());
         install(new RealUtilsModule());
 
+        // bridge versioned client to internal
+        install(new RealBridgeModule());
+
+        // server bindings
         bind(RealServer.class).to(RealServerImpl.class);
         bind(RealServerImpl.class).in(Scopes.SINGLETON);
 
@@ -34,6 +40,7 @@ public class ServerRootModule extends AbstractModule {
         bind(RealUser.Container.class).to(RealServerImpl.class);
         bind(RealNode.Container.class).to(RealServerImpl.class);
 
+        // bind the server service
         Multibinder.newSetBinder(binder(), Service.class).addBinding().to(RealServerImpl.Service.class);
     }
 
