@@ -32,8 +32,8 @@
     </properties>
 
     <modules>
+        <module>client</module>
         <module>extension</module>
-        <module>object</module>
         <module>package</module>
         <module>platform</module>
         <module>plugin</module>

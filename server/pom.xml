@@ -29,6 +29,11 @@
             <artifactId>housemate-plugin-host</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>housemate-client-proxy-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Properties -->
         <dependency>
