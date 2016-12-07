@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 /**
  * Created by tomc on 28/11/16.
@@ -30,7 +29,6 @@ public abstract class RealValueBaseBridge<
 
     private Type.Instances value;
 
-    private Session session;
     private JMSUtil.Sender valueSender;
     private com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<com.intuso.housemate.client.v1_0.api.object.Type.Instances> valueReceiver;
 
@@ -46,11 +44,8 @@ public abstract class RealValueBaseBridge<
     @Override
     protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
         super.initChildren(versionName, internalName, connection);
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        valueSender = new JMSUtil.Sender(session, session.createProducer(session.createTopic(ChildUtil.name(internalName, Value.VALUE_ID) + "?consumer.retroactive=true")));
-        valueReceiver = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createTopic(com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Value.VALUE_ID) + "?consumer.retroactive=true")),
-                com.intuso.housemate.client.v1_0.api.object.Type.Instances.class,
+        valueSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID) + "?consumer.retroactive=true");
+        valueReceiver = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Value.VALUE_ID), com.intuso.housemate.client.v1_0.api.object.Type.Instances.class,
                 new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Type.Instances>() {
             @Override
             public void onMessage(com.intuso.housemate.client.v1_0.api.object.Type.Instances instances, boolean wasPersisted) {
@@ -64,28 +59,12 @@ public abstract class RealValueBaseBridge<
     protected void uninitChildren() {
         super.uninitChildren();
         if(valueSender != null) {
-            try {
-                valueSender.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close value sender");
-            }
+            valueSender.close();
             valueSender = null;
         }
         if(valueReceiver != null) {
-            try {
-                valueReceiver.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close value receiver");
-            }
+            valueReceiver.close();
             valueReceiver = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
     }
 

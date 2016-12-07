@@ -41,7 +41,7 @@ public class ServerModule extends AbstractModule {
 
         // bind broker and connection
         bind(BrokerService.class).toProvider(BrokerServiceProvider.class).in(Scopes.SINGLETON);
-        bind(Connection.class).toProvider(ConnectionProvider.class);
+        bind(Connection.class).toProvider(ConnectionProvider.class).in(Scopes.SINGLETON);
 
         // bind everything as singletons that should be
         bind(FactoryPluginListener.class).in(Scopes.SINGLETON);

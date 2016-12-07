@@ -8,7 +8,6 @@ import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.proxy.api.bridge.v1_0.ioc.ProxyV1_0;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.housemate.client.proxy.api.internal.object.ProxyObject;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -56,7 +55,8 @@ public class ProxyServerBridge
     public void start() {
         try {
             init(com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(null, com.intuso.housemate.client.v1_0.api.object.Object.VERSION, com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject.PROXY),
-                    ChildUtil.name(null, Object.VERSION, ProxyObject.PROXY),
+                    // don't put "proxy" in the internal name - this way real and proxy link up together
+                    ChildUtil.name(null, Object.VERSION),
                     connection);
         } catch(JMSException e) {
             throw new HousemateException("Failed to initalise objects");

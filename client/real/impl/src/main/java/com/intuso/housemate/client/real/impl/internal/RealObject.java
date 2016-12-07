@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 public abstract class RealObject<DATA extends Object.Data,
         LISTENER extends com.intuso.housemate.client.api.internal.object.Object.Listener>
@@ -20,7 +19,7 @@ public abstract class RealObject<DATA extends Object.Data,
     protected final boolean persistent;
     protected final DATA data;
     protected final Listeners<LISTENER> listeners;
-    private Session session;
+
     private JMSUtil.Sender sender;
 
     protected RealObject(Logger logger, boolean persistent, DATA data, ListenersFactory listenersFactory) {
@@ -33,8 +32,7 @@ public abstract class RealObject<DATA extends Object.Data,
 
     public final void init(String name, Connection connection) throws JMSException {
         logger.debug("Init");
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        sender = new JMSUtil.Sender(session, session.createProducer(session.createTopic(name)));
+        sender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, name);
         initChildren(name, connection);
         sendData();
     }
@@ -45,20 +43,8 @@ public abstract class RealObject<DATA extends Object.Data,
         logger.debug("Uninit");
         uninitChildren();
         if(sender != null) {
-            try {
-                sender.close();
-            } catch (JMSException e) {
-                logger.error("Failed to close sender");
-            }
+            sender.close();
             sender = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
     }
 

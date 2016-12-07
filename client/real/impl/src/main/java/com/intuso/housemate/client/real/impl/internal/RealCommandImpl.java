@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 /**
  */
@@ -25,7 +24,6 @@ public final class RealCommandImpl
     private final RealValueImpl<Boolean> enabledValue;
     private final RealListGeneratedImpl<RealParameterImpl<?>> parameters;
 
-    private Session session;
     private JMSUtil.Sender performStatusSender;
     private JMSUtil.Receiver<PerformData> performReceiver;
 
@@ -65,11 +63,8 @@ public final class RealCommandImpl
         super.initChildren(name, connection);
         enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID), connection);
         parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID), connection);
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        performStatusSender = new JMSUtil.Sender(session, session.createProducer(session.createTopic(ChildUtil.name(name, Command.PERFORM_STATUS_ID))));
-        performReceiver = new JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createQueue(ChildUtil.name(name, Command.PERFORM_ID))),
-                PerformData.class,
+        performStatusSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, Command.PERFORM_STATUS_ID));
+        performReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Queue, ChildUtil.name(name, Command.PERFORM_ID), PerformData.class,
                 new JMSUtil.Receiver.Listener<PerformData>() {
                     @Override
                     public void onMessage(final PerformData performData, boolean wasPersisted) {
@@ -100,28 +95,12 @@ public final class RealCommandImpl
         enabledValue.uninit();
         parameters.uninit();
         if(performStatusSender != null) {
-            try {
-                performStatusSender.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close perform status sender");
-            }
+            performStatusSender.close();
             performStatusSender = null;
         }
         if(performReceiver != null) {
-            try {
-                performReceiver.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close perform receiver");
-            }
+            performReceiver.close();
             performReceiver = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
     }
 

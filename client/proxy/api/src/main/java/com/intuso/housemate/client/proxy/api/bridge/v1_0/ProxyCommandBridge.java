@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 import java.util.Map;
 
 /**
@@ -24,14 +23,15 @@ public class ProxyCommandBridge
         extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Command.Data, Command.Data, Command.Listener<? super ProxyCommandBridge>>
         implements Command<Type.InstanceMap, ProxyValueBridge, ProxyListBridge<ProxyParameterBridge>, ProxyCommandBridge> {
 
+    private final CommandMapper commandMapper;
+
     private final ProxyValueBridge enabledValue;
     private final ProxyListBridge<ProxyParameterBridge> parameters;
 
-    private Session session;
-    private com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Sender performSender;
-    private JMSUtil.Receiver<PerformData> performReceiver;
-    private JMSUtil.Sender performStatusSender;
-    private com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData> performStatusReceiver;
+    private JMSUtil.Sender performSender;
+    private com.intuso.housemate.client.v1_0.proxy.api.object.JMSUtil.Receiver<com.intuso.housemate.client.v1_0.api.object.Command.PerformData> performReceiver;
+    private com.intuso.housemate.client.v1_0.proxy.api.object.JMSUtil.Sender performStatusSender;
+    private JMSUtil.Receiver<PerformStatusData> performStatusReceiver;
 
     private int nextId;
     private final Map<String, PerformListener<? super ProxyCommandBridge>> listenerMap = Maps.newHashMap();
@@ -43,6 +43,7 @@ public class ProxyCommandBridge
                                  ProxyObjectBridge.Factory<ProxyValueBridge> valueFactory,
                                  ProxyObjectBridge.Factory<ProxyListBridge<ProxyParameterBridge>> parametersFactory) {
         super(logger, com.intuso.housemate.client.v1_0.api.object.Command.Data.class, commandMapper, listenersFactory);
+        this.commandMapper = commandMapper;
         enabledValue = valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID));
         parameters = parametersFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID));
     }
@@ -58,26 +59,28 @@ public class ProxyCommandBridge
                 com.intuso.housemate.client.proxy.api.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Command.PARAMETERS_ID),
                 ChildUtil.name(internalName, Command.PARAMETERS_ID),
                 connection);
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        performSender = new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Sender(session,
-                session.createProducer(session.createQueue(com.intuso.housemate.client.proxy.api.internal.ChildUtil.name(versionName, Command.PERFORM_ID))));
-        performReceiver = new JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createQueue(ChildUtil.name(internalName, Command.PERFORM_ID))),
-                PerformData.class,
-                new JMSUtil.Receiver.Listener<PerformData>() {
+        performSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Queue, ChildUtil.name(internalName, Command.PERFORM_ID));
+        performReceiver = new com.intuso.housemate.client.v1_0.proxy.api.object.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.v1_0.proxy.api.object.JMSUtil.Type.Queue, com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(versionName, Command.PERFORM_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformData.class,
+                new com.intuso.housemate.client.v1_0.proxy.api.object.JMSUtil.Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Command.PerformData>() {
                     @Override
-                    public void onMessage(PerformData performData, boolean wasPersisted) {
-                        // todo
+                    public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformData performData, boolean wasPersisted) {
+                        try {
+                            performSender.send(commandMapper.map(performData), wasPersisted);
+                        } catch (JMSException e) {
+                            logger.error("Failed to send perform message to command. Telling client it failed", e);
+                            try {
+                                performStatusSender.send(new PerformStatusData(performData.getOpId(), true, "Failed to send perform message to command"), false);
+                            } catch (JMSException e1) {
+                                logger.error("Failed to broadcast perform status message");
+                            }
+                        }
                     }
                 });
-        performStatusSender = new JMSUtil.Sender(session,
-                session.createProducer(session.createTopic(ChildUtil.name(internalName, Command.PERFORM_STATUS_ID))));
-        performStatusReceiver = new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createTopic(com.intuso.housemate.client.proxy.api.internal.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID) + "?consumer.retroactive=true")),
-                com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData.class,
-                new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData>() {
+        performStatusSender = new com.intuso.housemate.client.v1_0.proxy.api.object.JMSUtil.Sender(logger, connection, com.intuso.housemate.client.v1_0.proxy.api.object.JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID));
+        performStatusReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID), PerformStatusData.class,
+                new JMSUtil.Receiver.Listener<PerformStatusData>() {
             @Override
-            public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData performStatusData, boolean wasPersisted) {
+            public void onMessage(PerformStatusData performStatusData, boolean wasPersisted) {
                 if (listenerMap.containsKey(performStatusData.getOpId())) {
                     if (performStatusData.isFinished()) {
                         if (performStatusData.getError() == null)
@@ -87,8 +90,12 @@ public class ProxyCommandBridge
                     } else
                         listenerMap.get(performStatusData.getOpId()).commandStarted(ProxyCommandBridge.this);
                 }
+                try {
+                    performStatusSender.send(commandMapper.map(performStatusData), wasPersisted);
+                } catch (JMSException e) {
+                    logger.error("Failed to broadcast perform status message");
+                }
                 // todo call object listeners
-                // todo send status via sender
             }
         });
     }
@@ -99,28 +106,20 @@ public class ProxyCommandBridge
         enabledValue.uninit();
         parameters.uninit();
         if(performSender != null) {
-            try {
-                performSender.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close perform sender");
-            }
+            performSender.close();
             performSender = null;
         }
-        if(performStatusReceiver != null) {
-            try {
-                performStatusReceiver.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close performs status receiver");
-            }
-            performStatusReceiver = null;
+        if(performReceiver != null) {
+            performReceiver.close();
+            performReceiver = null;
         }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
+        if(performStatusSender != null) {
+            performStatusSender.close();
+            performStatusSender = null;
+        }
+        if(performStatusReceiver != null) {
+            performStatusReceiver.close();
+            performStatusReceiver = null;
         }
     }
 

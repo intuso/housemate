@@ -14,16 +14,40 @@ public class JMSUtil {
 
     public static class Sender {
 
+        private final Logger logger;
         private final Session session;
         private final MessageProducer producer;
 
-        public Sender(Session session, MessageProducer producer) {
-            this.session = session;
-            this.producer = producer;
+        public Sender(Logger logger, Connection connection, Type type, String name) throws JMSException {
+            this.logger = logger;
+            this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            switch (type) {
+                case Queue:
+                    this.producer = session.createProducer(session.createQueue(name));
+                    break;
+                case Topic:
+                    this.producer = session.createProducer(session.createTopic(name));
+                    break;
+                default:
+                    throw new JMSException("Unknown type " + type);
+            }
         }
 
-        public void close() throws JMSException {
-            producer.close();
+        public void close() {
+            if(producer != null) {
+                try {
+                    producer.close();
+                } catch (JMSException e) {
+                    logger.error("Failed to close producer");
+                }
+            }
+            if(session != null) {
+                try {
+                    session.close();
+                } catch(JMSException e) {
+                    logger.error("Failed to close session");
+                }
+            }
         }
 
         public void send(Serializable object, boolean persistent) throws JMSException {
@@ -40,37 +64,52 @@ public class JMSUtil {
     public static class Receiver<OBJECT extends Serializable> {
 
         private final Logger logger;
+        private final Session session;
         private final MessageConsumer consumer;
         private final Class<OBJECT> objectClass;
         private final Listener<OBJECT> listener;
 
-        public Receiver(final Logger logger, final MessageConsumer consumer, Class<OBJECT> objectClass, Listener<OBJECT> listener) throws JMSException {
+        public Receiver(final Logger logger, Connection connection, Type type, String name, Class<OBJECT> objectClass, Listener<OBJECT> listener) throws JMSException {
             this.logger = logger;
-            this.consumer = consumer;
+            this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            switch (type) {
+                case Queue:
+                    this.consumer = session.createConsumer(session.createQueue(name));
+                    break;
+                case Topic:
+                    this.consumer = session.createConsumer(session.createTopic(name + "?consumer.retroactive=true"));
+                    break;
+                default:
+                    throw new JMSException("Unknown type " + type);
+            }
             this.objectClass = objectClass;
             this.listener = listener;
-
-            // run in separate thread. Setting a message listener for ActiveMQ connections stops and starts the session if
-            // it's already running. However, this causes deadlock if this thread is from a message being processed.
-            // todo probably a better way of dealing with this issue!! maybe separate sessions for producer/consumer?
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        MessageListener messageListener = new MessageListenerImpl();
-                        Message message;
-                        while ((message = consumer.receiveNoWait()) != null)
-                            messageListener.onMessage(message);
-                        consumer.setMessageListener(messageListener);
-                    } catch(JMSException e) {
-                        logger.error("Failed to subscribe to queue/topic");
-                    }
-                }
-            }.start();
+            try {
+                MessageListener messageListener = new MessageListenerImpl();
+                Message message;
+                while ((message = consumer.receiveNoWait()) != null)
+                    messageListener.onMessage(message);
+                consumer.setMessageListener(messageListener);
+            } catch(JMSException e) {
+                logger.error("Failed to subscribe to queue/topic");
+            }
         }
 
-        public void close() throws JMSException {
-            consumer.close();
+        public void close() {
+            if(consumer != null) {
+                try {
+                    consumer.close();
+                } catch (JMSException e) {
+                    logger.error("Failed to close consumer");
+                }
+            }
+            if(session != null) {
+                try {
+                    session.close();
+                } catch(JMSException e) {
+                    logger.error("Failed to close session");
+                }
+            }
         }
 
         private class MessageListenerImpl implements MessageListener {
@@ -100,5 +139,10 @@ public class JMSUtil {
         public interface Listener<OBJECT extends Serializable> {
             void onMessage(OBJECT object, boolean wasPersisted);
         }
+    }
+
+    public enum Type {
+        Queue,
+        Topic
     }
 }

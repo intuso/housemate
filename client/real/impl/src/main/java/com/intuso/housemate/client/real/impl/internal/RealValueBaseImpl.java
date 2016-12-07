@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 import java.util.List;
 
 /**
@@ -25,7 +24,6 @@ public abstract class RealValueBaseImpl<O,
 
     private final RealTypeImpl<O> type;
 
-    private Session session;
     private JMSUtil.Sender valueSender;
 
     private Iterable<O> values;
@@ -45,28 +43,15 @@ public abstract class RealValueBaseImpl<O,
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        valueSender = new JMSUtil.Sender(session, session.createProducer(session.createTopic(ChildUtil.name(name, ValueBase.VALUE_ID))));
+        valueSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, ValueBase.VALUE_ID));
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
         if(valueSender != null) {
-            try {
-                valueSender.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close value sender");
-            }
+            valueSender.close();
             valueSender = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
     }
 

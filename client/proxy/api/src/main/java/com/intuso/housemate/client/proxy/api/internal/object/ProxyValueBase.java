@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 /**
  * @param <DATA> the type of the data
@@ -25,7 +24,6 @@ public abstract class ProxyValueBase<
         extends ProxyObject<DATA, LISTENER>
         implements ValueBase<Type.Instances, TYPE, LISTENER, VALUE> {
 
-    private Session session;
     private JMSUtil.Receiver<Type.Instances> valueReceiver;
 
     private Type.Instances value;
@@ -42,10 +40,7 @@ public abstract class ProxyValueBase<
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        valueReceiver = new JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createTopic(ChildUtil.name(name, Value.VALUE_ID) + "?consumer.retroactive=true")),
-                Type.Instances.class,
+        valueReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, Value.VALUE_ID), Type.Instances.class,
                 new JMSUtil.Receiver.Listener<Type.Instances>() {
             @Override
             public void onMessage(Type.Instances instances, boolean wasPersisted) {
@@ -59,20 +54,8 @@ public abstract class ProxyValueBase<
     protected void uninitChildren() {
         super.uninitChildren();
         if(valueReceiver != null) {
-            try {
-                valueReceiver.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close value receiver");
-            }
+            valueReceiver.close();
             valueReceiver = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
     }
 

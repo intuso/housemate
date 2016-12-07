@@ -33,7 +33,6 @@ public final class RealNodeListImpl
 
     private String name;
     private Connection connection;
-    private Session session;
     private com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<Node.Data> nodeV1_0Receiver;
 
     /**
@@ -69,10 +68,7 @@ public final class RealNodeListImpl
         this.connection = connection;
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         final String nodesPathV1_0 = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, Object.VERSION, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Server.NODES_ID);
-        nodeV1_0Receiver = new JMSUtil.Receiver<>(
-                logger,
-                session.createConsumer(session.createTopic(com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*") + "?consumer.retroactive=true")),
-                Node.Data.class,
+        nodeV1_0Receiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*"), Node.Data.class,
                 new JMSUtil.Receiver.Listener<Node.Data>() {
                     @Override
                     public void onMessage(Node.Data nodeData, boolean wasPersisted) {
@@ -95,20 +91,8 @@ public final class RealNodeListImpl
     protected void uninitChildren() {
         super.uninitChildren();
         if(nodeV1_0Receiver != null) {
-            try {
-                nodeV1_0Receiver.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close node 1.0 receiver");
-            }
+            nodeV1_0Receiver.close();
             nodeV1_0Receiver = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
         this.name = null;
         this.connection = null;
@@ -136,6 +120,7 @@ public final class RealNodeListImpl
     public ServerBaseNode<?, ?, ?, ?> remove(String id) {
         ServerBaseNode<?, ?, ?, ?> element = elements.get(id);
         if(element != null) {
+            // todo delete the element's queues/topics
             element.uninit();
             for (List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener : listeners)
                 listener.elementRemoved(this, element);

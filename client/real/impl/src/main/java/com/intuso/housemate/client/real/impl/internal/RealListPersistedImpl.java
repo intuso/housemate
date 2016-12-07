@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -28,7 +27,6 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
 
     private String name;
     private Connection connection;
-    private Session session;
     private JMSUtil.Receiver<Object.Data> existingObjectReceiver;
 
     /**
@@ -61,10 +59,7 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
         super.initChildren(name, connection);
         this.name = name;
         this.connection = connection;
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        existingObjectReceiver = new JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createTopic(ChildUtil.name(name, "*") + "?consumer.retroactive=true")),
-                Object.Data.class,
+        existingObjectReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, "*"), Object.Data.class,
                 new JMSUtil.Receiver.Listener<Object.Data>() {
                     @Override
                     public void onMessage(Object.Data data, boolean wasPersisted) {
@@ -85,20 +80,8 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
         for(ELEMENT element : elements.values())
             element.uninit();
         if(existingObjectReceiver != null) {
-            try {
-                existingObjectReceiver.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close existing object receiver");
-            }
+            existingObjectReceiver.close();
             existingObjectReceiver = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
     }
 
@@ -122,6 +105,7 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
     public ELEMENT remove(String id) {
         ELEMENT element = elements.get(id);
         if(element != null) {
+            // todo delete the element's queues/topics
             element.uninit();
             for (List.Listener<? super ELEMENT, ? super RealListPersistedImpl<ELEMENT>> listener : listeners)
                 listener.elementRemoved(this, element);

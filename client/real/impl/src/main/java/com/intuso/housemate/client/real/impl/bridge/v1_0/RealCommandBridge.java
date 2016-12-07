@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 import java.util.Map;
 
 /**
@@ -24,10 +23,11 @@ public class RealCommandBridge
         extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.Command.Data, Command.Data, Command.Listener<? super RealCommandBridge>>
         implements Command<Type.InstanceMap, RealValueBridge, RealListBridge<RealParameterBridge>, RealCommandBridge> {
 
+    private final CommandMapper commandMapper;
+
     private final RealValueBridge enabledValue;
     private final RealListBridge<RealParameterBridge> parameters;
 
-    private Session session;
     private com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Sender performSender;
     private JMSUtil.Receiver<Command.PerformData> performReceiver;
     private JMSUtil.Sender performStatusSender;
@@ -43,6 +43,7 @@ public class RealCommandBridge
                                 RealObjectBridge.Factory<RealValueBridge> valueFactory,
                                 RealObjectBridge.Factory<RealListBridge<RealParameterBridge>> parametersFactory) {
         super(logger, com.intuso.housemate.client.v1_0.api.object.Command.Data.class, commandMapper, listenersFactory);
+        this.commandMapper = commandMapper;
         enabledValue = valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID));
         parameters = parametersFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID));
     }
@@ -58,23 +59,25 @@ public class RealCommandBridge
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Command.PARAMETERS_ID),
                 ChildUtil.name(internalName, Command.PARAMETERS_ID),
                 connection);
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        performSender = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Sender(session,
-                session.createProducer(session.createQueue(com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_ID))));
-        performReceiver = new JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createQueue(ChildUtil.name(internalName, Command.PERFORM_ID))),
-                PerformData.class,
+        performSender = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Sender(logger, connection, com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Type.Queue, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_ID));
+        performReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Queue, ChildUtil.name(internalName, Command.PERFORM_ID), PerformData.class,
                 new JMSUtil.Receiver.Listener<PerformData>() {
                     @Override
                     public void onMessage(PerformData performData, boolean wasPersisted) {
-                        // todo
+                        try {
+                            performSender.send(commandMapper.map(performData), wasPersisted);
+                        } catch (JMSException e) {
+                            logger.error("Failed to send perform message to command. Telling client it failed", e);
+                            try {
+                                performStatusSender.send(new PerformStatusData(performData.getOpId(), true, "Failed to send perform message to command"), false);
+                            } catch (JMSException e1) {
+                                logger.error("Failed to broadcast perform status message");
+                            }
+                        }
                     }
                 });
-        performStatusSender = new JMSUtil.Sender(session,
-                session.createProducer(session.createTopic(ChildUtil.name(internalName, Command.PERFORM_STATUS_ID))));
-        performStatusReceiver = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createTopic(com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID) + "?consumer.retroactive=true")),
-                com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData.class,
+        performStatusSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID));
+        performStatusReceiver = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData.class,
                 new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData>() {
             @Override
             public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData performStatusData, boolean wasPersisted) {
@@ -87,8 +90,12 @@ public class RealCommandBridge
                     } else
                         listenerMap.get(performStatusData.getOpId()).commandStarted(RealCommandBridge.this);
                 }
+                try {
+                    performStatusSender.send(commandMapper.map(performStatusData), wasPersisted);
+                } catch (JMSException e) {
+                    logger.error("Failed to broadcast perform status message");
+                }
                 // todo call object listeners
-                // todo send status via sender
             }
         });
     }
@@ -99,44 +106,20 @@ public class RealCommandBridge
         enabledValue.uninit();
         parameters.uninit();
         if(performSender != null) {
-            try {
-                performSender.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close perform sender");
-            }
+            performSender.close();
             performSender = null;
         }
         if(performReceiver != null) {
-            try {
-                performReceiver.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close perform receiver");
-            }
+            performReceiver.close();
             performReceiver = null;
         }
         if(performStatusSender != null) {
-            try {
-                performStatusSender.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close perform status sender");
-            }
+            performStatusSender.close();
             performStatusSender = null;
         }
         if(performStatusReceiver != null) {
-            try {
-                performStatusReceiver.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close perform status receiver");
-            }
+            performStatusReceiver.close();
             performStatusReceiver = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
     }
 

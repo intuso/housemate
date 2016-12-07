@@ -91,6 +91,7 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
     public ELEMENT remove(String id) {
         ELEMENT element = elements.get(id);
         if(element != null) {
+            // todo delete the element's queues/topics
             element.uninit();
             for (List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>> listener : listeners)
                 listener.elementRemoved(this, element);

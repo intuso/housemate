@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 /**
  * @param <DATA> the type of the data
@@ -25,7 +24,6 @@ public abstract class ProxyObject<
     private final Class<DATA> dataClass;
 
     protected DATA data;
-    private Session session;
     private JMSUtil.Receiver<DATA> receiver;
 
     /**
@@ -60,10 +58,7 @@ public abstract class ProxyObject<
 
     protected final void init(String name, Connection connection) throws JMSException {
         logger.debug("Init");
-        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        receiver = new JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createTopic(name + "?consumer.retroactive=true")),
-                dataClass,
+        receiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, name, dataClass,
                 new JMSUtil.Receiver.Listener<DATA>() {
                     @Override
                     public void onMessage(DATA data, boolean wasPersisted) {
@@ -80,20 +75,8 @@ public abstract class ProxyObject<
         logger.debug("Uninit");
         uninitChildren();
         if(receiver != null) {
-            try {
-                receiver.close();
-            } catch (JMSException e) {
-                logger.error("Failed to close receiver");
-            }
+            receiver.close();
             receiver = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
     }
 

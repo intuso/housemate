@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 
 public abstract class ProxyObjectBridge<
         VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.Object.Data,
@@ -23,7 +22,6 @@ public abstract class ProxyObjectBridge<
     protected final Class<VERSION_DATA> versionDataClass;
     protected final ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper;
     protected final Listeners<LISTENER> listeners;
-    private Session session;
     private JMSUtil.Sender sender;
     private com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<VERSION_DATA> receiver;
 
@@ -37,11 +35,8 @@ public abstract class ProxyObjectBridge<
 
     public final void init(String versionName, String internalName, Connection connection) throws JMSException {
         logger.debug("Init");
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        sender = new JMSUtil.Sender(session, session.createProducer(session.createTopic(internalName)));
-        receiver = new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createTopic(versionName)),
-                versionDataClass,
+        sender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, internalName);
+        receiver = new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Type.Topic, versionName, versionDataClass,
                 new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver.Listener<VERSION_DATA>() {
                     @Override
                     public void onMessage(VERSION_DATA data, boolean wasPersisted) {
@@ -61,28 +56,12 @@ public abstract class ProxyObjectBridge<
         logger.debug("Uninit");
         uninitChildren();
         if(sender != null) {
-            try {
-                sender.close();
-            } catch (JMSException e) {
-                logger.error("Failed to close sender");
-            }
+            sender.close();
             sender = null;
         }
         if(receiver != null) {
-            try {
-                receiver.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close receiver");
-            }
+            receiver.close();
             receiver = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
     }
 

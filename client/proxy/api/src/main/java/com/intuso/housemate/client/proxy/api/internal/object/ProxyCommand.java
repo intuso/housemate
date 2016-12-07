@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 import java.util.Map;
 
 /**
@@ -28,7 +27,6 @@ public abstract class ProxyCommand<
     private final VALUE enabledValue;
     private final PARAMETERS parameters;
 
-    private Session session;
     private JMSUtil.Sender performSender;
     private JMSUtil.Receiver<PerformStatusData> performStatusReceiver;
 
@@ -52,11 +50,8 @@ public abstract class ProxyCommand<
         super.initChildren(name, connection);
         enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID), connection);
         parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID), connection);
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        performSender = new JMSUtil.Sender(session, session.createProducer(session.createQueue(ChildUtil.name(name, Command.PERFORM_ID))));
-        performStatusReceiver = new JMSUtil.Receiver<>(logger,
-                session.createConsumer(session.createTopic(ChildUtil.name(name, Command.PERFORM_STATUS_ID) + "?consumer.retroactive=true")),
-                PerformStatusData.class,
+        performSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Queue, ChildUtil.name(name, Command.PERFORM_ID));
+        performStatusReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, Command.PERFORM_STATUS_ID), PerformStatusData.class,
                 new JMSUtil.Receiver.Listener<PerformStatusData>() {
                     @Override
                     public void onMessage(PerformStatusData performStatusData, boolean wasPersisted) {
@@ -80,28 +75,12 @@ public abstract class ProxyCommand<
         enabledValue.uninit();
         parameters.uninit();
         if(performSender != null) {
-            try {
-                performSender.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close perform sender");
-            }
+            performSender.close();
             performSender = null;
         }
         if(performStatusReceiver != null) {
-            try {
-                performStatusReceiver.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close perform status receiver");
-            }
+            performStatusReceiver.close();
             performStatusReceiver = null;
-        }
-        if(session != null) {
-            try {
-                session.close();
-            } catch(JMSException e) {
-                logger.error("Failed to close session");
-            }
-            session = null;
         }
     }
 
@@ -142,7 +121,7 @@ public abstract class ProxyCommand<
             listenerMap.put(id, listener);
         }
         try {
-            performSender.send(values, true);
+            performSender.send(new PerformData(id, values), true);
         } catch(JMSException e) {
             if(listener != null) {
                 listenerMap.remove(id);
