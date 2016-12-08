@@ -4,6 +4,8 @@ import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 
 /**
+ * @param <COMMANDS> the type of the commands list
+ * @param <VALUES> the type of the values list
  * @param <PROPERTIES> the type of the properties list
  * @param <HARDWARE> the type of the device
  */
@@ -14,24 +16,30 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         ERROR_VALUE extends Value<?, ?, ?>,
         DRIVER_PROPERTY extends Property<?, ?, ?, ?>,
         DRIVER_LOADED_VALUE extends Value<?, ?, ?>,
+        COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
+        VALUES extends List<? extends Value<?, ?, ?>, ?>,
         PROPERTIES extends List<? extends Property<?, ?, ?, ?>, ?>,
-        HARDWARE extends Hardware<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, PROPERTIES, HARDWARE>>
+        HARDWARE extends Hardware<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, COMMANDS, VALUES, PROPERTIES, HARDWARE>>
         extends
         Object<Hardware.Listener<? super HARDWARE>>,
         Renameable<RENAME_COMMAND>,
-        com.intuso.housemate.client.api.internal.Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
+        Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
         Failable<ERROR_VALUE>,
         Removeable<REMOVE_COMMAND>,
         UsesDriver<DRIVER_PROPERTY, DRIVER_LOADED_VALUE>,
+        Command.Container<COMMANDS>,
+        Value.Container<VALUES>,
         Property.Container<PROPERTIES> {
 
+    String COMMANDS_ID = "commands";
+    String VALUES_ID = "values";
     String PROPERTIES_ID = "properties";
 
     /**
      *
      * Listener interface for devices
      */
-    interface Listener<HARDWARE extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>> extends Object.Listener,
+    interface Listener<HARDWARE extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> extends Object.Listener,
             Failable.Listener<HARDWARE>,
             Renameable.Listener<HARDWARE>,
             Runnable.Listener<HARDWARE>,
@@ -41,7 +49,7 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
      *
      * Interface to show that the implementing object has a list of devices
      */
-    interface Container<HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
+    interface Container<HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
 
         /**
          * Gets the hardware list

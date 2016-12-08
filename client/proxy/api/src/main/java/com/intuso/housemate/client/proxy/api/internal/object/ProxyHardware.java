@@ -15,13 +15,15 @@ import javax.jms.JMSException;
  * @param <HARDWARE> the type of the hardware
  */
 public abstract class ProxyHardware<
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
-            VALUE extends ProxyValue<?, VALUE>,
-            PROPERTY extends ProxyProperty<?, ?, PROPERTY>,
-            PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
-            HARDWARE extends ProxyHardware<COMMAND, VALUE, PROPERTY, PROPERTIES, HARDWARE>>
+        COMMAND extends ProxyCommand<?, ?, COMMAND>,
+        COMMANDS extends ProxyList<? extends ProxyCommand<?, ?, ?>, ?>,
+        VALUE extends ProxyValue<?, VALUE>,
+        VALUES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
+        PROPERTY extends ProxyProperty<?, ?, PROPERTY>,
+        PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
+        HARDWARE extends ProxyHardware<COMMAND, COMMANDS, VALUE, VALUES, PROPERTY, PROPERTIES, HARDWARE>>
         extends ProxyObject<Hardware.Data, Hardware.Listener<? super HARDWARE>>
-        implements Hardware<COMMAND, COMMAND, COMMAND, VALUE, VALUE, PROPERTY, VALUE, PROPERTIES, HARDWARE>,
+        implements Hardware<COMMAND, COMMAND, COMMAND, VALUE, VALUE, PROPERTY, VALUE, COMMANDS, VALUES, PROPERTIES, HARDWARE>,
         ProxyFailable<VALUE>,
         ProxyRemoveable<COMMAND>,
         ProxyRenameable<COMMAND>,
@@ -36,6 +38,8 @@ public abstract class ProxyHardware<
     private final VALUE errorValue;
     private final PROPERTY driverProperty;
     private final VALUE driverLoadedValue;
+    private final COMMANDS commands;
+    private final VALUES values;
     private final PROPERTIES properties;
 
     /**
@@ -44,7 +48,9 @@ public abstract class ProxyHardware<
     public ProxyHardware(Logger logger,
                          ListenersFactory listenersFactory,
                          ProxyObject.Factory<COMMAND> commandFactory,
+                         ProxyObject.Factory<COMMANDS> commandsFactory,
                          ProxyObject.Factory<VALUE> valueFactory,
+                         ProxyObject.Factory<VALUES> valuesFactory,
                          ProxyObject.Factory<PROPERTY> propertyFactory,
                          ProxyObject.Factory<PROPERTIES> propertiesFactory) {
         super(logger, Hardware.Data.class, listenersFactory);
@@ -56,6 +62,8 @@ public abstract class ProxyHardware<
         errorValue = valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID));
         driverProperty = propertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID));
         driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID));
+        commands = commandsFactory.create(ChildUtil.logger(logger, Hardware.COMMANDS_ID));
+        values = valuesFactory.create(ChildUtil.logger(logger, Hardware.VALUES_ID));
         properties = propertiesFactory.create(ChildUtil.logger(logger, Hardware.PROPERTIES_ID));
     }
 
@@ -70,6 +78,8 @@ public abstract class ProxyHardware<
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
         driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
+        commands.init(ChildUtil.name(name, Hardware.COMMANDS_ID), connection);
+        values.init(ChildUtil.name(name, Hardware.VALUES_ID), connection);
         properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID), connection);
     }
 
@@ -84,6 +94,8 @@ public abstract class ProxyHardware<
         errorValue.uninit();
         driverProperty.uninit();
         driverLoadedValue.uninit();
+        commands.uninit();
+        values.uninit();
         properties.uninit();
     }
 
@@ -144,6 +156,16 @@ public abstract class ProxyHardware<
     @Override
     public VALUE getDriverLoadedValue() {
         return driverLoadedValue;
+    }
+
+    @Override
+    public COMMANDS getCommands() {
+        return commands;
+    }
+
+    @Override
+    public VALUES getValues() {
+        return values;
     }
 
     @Override

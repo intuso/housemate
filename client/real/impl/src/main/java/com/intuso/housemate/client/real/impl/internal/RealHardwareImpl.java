@@ -24,9 +24,12 @@ import javax.jms.JMSException;
 public final class RealHardwareImpl
         extends RealObject<Hardware.Data, Hardware.Listener<? super RealHardwareImpl>>
         implements RealHardware<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealPropertyImpl<PluginDependency<HardwareDriver.Factory<?>>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
+        RealPropertyImpl<PluginDependency<HardwareDriver.Factory<?>>>, RealListGeneratedImpl<RealCommandImpl>,
+        RealListGeneratedImpl<RealValueImpl<?>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
         RealHardwareImpl> {
 
+    private final static String COMMANDS_DESCRIPTION = "The hardware's commands";
+    private final static String VALUES_DESCRIPTION = "The hardware's values";
     private final static String PROPERTIES_DESCRIPTION = "The hardware's properties";
 
     private final AnnotationProcessor annotationProcessor;
@@ -39,6 +42,8 @@ public final class RealHardwareImpl
     private final RealValueImpl<String> errorValue;
     private final RealPropertyImpl<PluginDependency<HardwareDriver.Factory<?>>> driverProperty;
     private final RealValueImpl<Boolean> driverLoadedValue;
+    private final RealListGeneratedImpl<RealCommandImpl> commands;
+    private final RealListGeneratedImpl<RealValueImpl<?>> values;
     private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
 
     private final RemoveCallback<RealHardwareImpl> removeCallback;
@@ -61,6 +66,8 @@ public final class RealHardwareImpl
                             RealParameterImpl.Factory<String> stringParameterFactory,
                             RealValueImpl.Factory<Boolean> booleanValueFactory,
                             RealValueImpl.Factory<String> stringValueFactory,
+                            RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
+                            RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                             RealPropertyImpl.Factory<PluginDependency<HardwareDriver.Factory<? extends HardwareDriver>>> driverPropertyFactory) {
         super(logger, true, new Hardware.Data(id, name, description), listenersFactory);
@@ -155,6 +162,16 @@ public final class RealHardwareImpl
                 1,
                 1,
                 Lists.newArrayList(false));
+        this.commands = commandsFactory.create(ChildUtil.logger(logger, Hardware.COMMANDS_ID),
+                Hardware.COMMANDS_ID,
+                Hardware.COMMANDS_ID,
+                COMMANDS_DESCRIPTION,
+                Lists.<RealCommandImpl>newArrayList());
+        this.values = valuesFactory.create(ChildUtil.logger(logger, Hardware.VALUES_ID),
+                Hardware.VALUES_ID,
+                Hardware.VALUES_ID,
+                VALUES_DESCRIPTION,
+                Lists.<RealValueImpl<?>>newArrayList());
         this.properties = propertiesFactory.create(ChildUtil.logger(logger, Hardware.PROPERTIES_ID),
                 Hardware.PROPERTIES_ID,
                 Hardware.PROPERTIES_ID,
@@ -185,6 +202,8 @@ public final class RealHardwareImpl
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
         driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
+        commands.init(ChildUtil.name(name, Hardware.COMMANDS_ID), connection);
+        values.init(ChildUtil.name(name, Hardware.VALUES_ID), connection);
         properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID), connection);
     }
 
@@ -199,6 +218,8 @@ public final class RealHardwareImpl
         errorValue.uninit();
         driverProperty.uninit();
         driverLoadedValue.uninit();
+        commands.uninit();
+        values.uninit();
         properties.uninit();
     }
 
@@ -215,6 +236,10 @@ public final class RealHardwareImpl
             PluginDependency<HardwareDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
                 driver = driverFactory.getDependency().create(logger, this);
+                for(RealCommandImpl command : annotationProcessor.findCommands(logger, driver))
+                    commands.add(command);
+                for(RealValueImpl<?> value : annotationProcessor.findValues(logger, driver))
+                    values.add(value);
                 for(RealPropertyImpl<?> property : annotationProcessor.findProperties(logger, driver))
                     properties.add(property);
                 errorValue.setValue((String) null);
@@ -230,6 +255,10 @@ public final class RealHardwareImpl
             driverLoadedValue.setValue(false);
             errorValue.setValue("Driver not loaded");
             driver = null;
+            for (RealCommandImpl command : Lists.newArrayList(commands))
+                commands.remove(command.getId());
+            for (RealValueImpl<?> value : Lists.newArrayList(values))
+                values.remove(value.getId());
             for (RealPropertyImpl<?> property : Lists.newArrayList(properties))
                 properties.remove(property.getId());
         }
@@ -292,6 +321,16 @@ public final class RealHardwareImpl
     }
 
     @Override
+    public RealListGeneratedImpl<RealCommandImpl> getCommands() {
+        return commands;
+    }
+
+    @Override
+    public RealListGeneratedImpl<RealValueImpl<?>> getValues() {
+        return values;
+    }
+
+    @Override
     public final RealListGeneratedImpl<RealPropertyImpl<?>> getProperties() {
         return properties;
     }
@@ -317,9 +356,9 @@ public final class RealHardwareImpl
 
     public interface Factory {
         RealHardwareImpl create(Logger logger,
-                                   @Assisted("id") String id,
-                                   @Assisted("name") String name,
-                                   @Assisted("description") String description,
-                                   RemoveCallback<RealHardwareImpl> removeCallback);
+                                @Assisted("id") String id,
+                                @Assisted("name") String name,
+                                @Assisted("description") String description,
+                                RemoveCallback<RealHardwareImpl> removeCallback);
     }
 }

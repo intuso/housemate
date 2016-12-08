@@ -18,7 +18,7 @@ public class ConnectionProvider implements Provider<Connection> {
             connection.start();
             return connection;
         } catch (JMSException e) {
-            throw new HousemateException("Failed to create connection to broker");
+            throw new HousemateException("Failed to create connection to broker", e);
         }
     }
 }

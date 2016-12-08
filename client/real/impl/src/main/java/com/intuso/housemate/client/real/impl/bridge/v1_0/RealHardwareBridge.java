@@ -18,7 +18,17 @@ import javax.jms.JMSException;
  */
 public class RealHardwareBridge
         extends RealObjectBridge<com.intuso.housemate.client.v1_0.api.object.Hardware.Data, Hardware.Data, Hardware.Listener<? super RealHardwareBridge>>
-        implements Hardware<RealCommandBridge, RealCommandBridge, RealCommandBridge, RealValueBridge, RealValueBridge, RealPropertyBridge, RealValueBridge, RealListBridge<RealPropertyBridge>, RealHardwareBridge> {
+        implements Hardware<RealCommandBridge,
+        RealCommandBridge,
+        RealCommandBridge,
+        RealValueBridge,
+        RealValueBridge,
+        RealPropertyBridge,
+        RealValueBridge,
+        RealListBridge<RealCommandBridge>,
+        RealListBridge<RealValueBridge>,
+        RealListBridge<RealPropertyBridge>,
+        RealHardwareBridge> {
 
     private final RealCommandBridge renameCommand;
     private final RealCommandBridge removeCommand;
@@ -28,6 +38,8 @@ public class RealHardwareBridge
     private final RealValueBridge errorValue;
     private final RealPropertyBridge driverProperty;
     private final RealValueBridge driverLoadedValue;
+    private final RealListBridge<RealCommandBridge> commands;
+    private final RealListBridge<RealValueBridge> values;
     private final RealListBridge<RealPropertyBridge> properties;
 
     @Inject
@@ -36,6 +48,8 @@ public class RealHardwareBridge
                                  RealObjectBridge.Factory<RealCommandBridge> commandFactory,
                                  RealObjectBridge.Factory<RealValueBridge> valueFactory,
                                  RealObjectBridge.Factory<RealPropertyBridge> propertyFactory,
+                                 RealObjectBridge.Factory<RealListBridge<RealCommandBridge>> commandsFactory,
+                                 RealObjectBridge.Factory<RealListBridge<RealValueBridge>> valuesFactory,
                                  RealObjectBridge.Factory<RealListBridge<RealPropertyBridge>> propertiesFactory,
                                  ListenersFactory listenersFactory) {
         super(logger, com.intuso.housemate.client.v1_0.api.object.Hardware.Data.class, hardwareMapper, listenersFactory);
@@ -47,6 +61,8 @@ public class RealHardwareBridge
         errorValue = valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID));
         driverProperty = propertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID));
         driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID));
+        commands = commandsFactory.create(ChildUtil.logger(logger, Hardware.COMMANDS_ID));
+        values = valuesFactory.create(ChildUtil.logger(logger, Hardware.VALUES_ID));
         properties = propertiesFactory.create(ChildUtil.logger(logger, Hardware.PROPERTIES_ID));
     }
 
@@ -85,6 +101,14 @@ public class RealHardwareBridge
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.UsesDriver.DRIVER_LOADED_ID),
                 ChildUtil.name(internalName, UsesDriver.DRIVER_LOADED_ID),
                 connection);
+        commands.init(
+                com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Hardware.COMMANDS_ID),
+                ChildUtil.name(internalName, Hardware.COMMANDS_ID),
+                connection);
+        values.init(
+                com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Hardware.VALUES_ID),
+                ChildUtil.name(internalName, Hardware.VALUES_ID),
+                connection);
         properties.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Hardware.PROPERTIES_ID),
                 ChildUtil.name(internalName, Hardware.PROPERTIES_ID),
@@ -102,6 +126,8 @@ public class RealHardwareBridge
         errorValue.uninit();
         driverProperty.uninit();
         driverLoadedValue.uninit();
+        commands.uninit();
+        values.uninit();
         properties.uninit();
     }
 
@@ -143,6 +169,16 @@ public class RealHardwareBridge
     @Override
     public RealValueBridge getDriverLoadedValue() {
         return driverLoadedValue;
+    }
+
+    @Override
+    public RealListBridge<RealCommandBridge> getCommands() {
+        return commands;
+    }
+
+    @Override
+    public RealListBridge<RealValueBridge> getValues() {
+        return values;
     }
 
     @Override

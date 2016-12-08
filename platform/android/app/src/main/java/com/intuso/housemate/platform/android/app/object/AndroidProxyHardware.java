@@ -13,7 +13,9 @@ import org.slf4j.Logger;
  */
 public class AndroidProxyHardware extends ProxyHardware<
         AndroidProxyCommand,
+        AndroidProxyList<AndroidProxyCommand>,
         AndroidProxyValue,
+        AndroidProxyList<AndroidProxyValue>,
         AndroidProxyProperty,
         AndroidProxyList<AndroidProxyProperty>,
         AndroidProxyHardware> {
@@ -22,6 +24,7 @@ public class AndroidProxyHardware extends ProxyHardware<
      * @param logger  {@inheritDoc}
      */
     protected AndroidProxyHardware(Logger logger, ListenersFactory listenersFactory, AndroidObjectFactories factories) {
-        super(logger, listenersFactory, factories.command(), factories.value(), factories.property(), factories.properties());
+        super(logger, listenersFactory, factories.command(), factories.commands(), factories.value(),
+                factories.values(), factories.property(), factories.properties());
     }
 }

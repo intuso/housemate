@@ -199,7 +199,11 @@ public class AnnotationProcessor {
         return feature;
     }
 
-    private List<RealValueImpl<?>> findValues(Logger logger, Object object, Class<?> clazz) {
+    public List<RealValueImpl<?>> findValues(Logger logger, Object object) {
+        return findValues(logger, object, object.getClass());
+    }
+
+    public List<RealValueImpl<?>> findValues(Logger logger, Object object, Class<?> clazz) {
         for(Class<?> interfaceClass : clazz.getClasses()) {
             if (interfaceClass.getAnnotation(Values.class) != null)
                 return findV1_0ObjectValues(logger, object, object.getClass(), interfaceClass);
