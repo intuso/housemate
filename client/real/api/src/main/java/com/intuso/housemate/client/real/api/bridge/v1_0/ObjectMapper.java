@@ -3,7 +3,7 @@ package com.intuso.housemate.client.real.api.bridge.v1_0;
 import com.google.common.base.Function;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.api.object.Object;
-import com.intuso.housemate.client.v1_0.real.api.*;
+import com.intuso.housemate.client.v1_0.real.api.object.*;
 
 /**
  * Created by tomc on 05/11/15.
@@ -45,7 +45,7 @@ public class ObjectMapper {
         if(object instanceof RealCommand)
             return commandMapper.map((RealCommand<?, ?, ?>)object);
         else if(object instanceof RealDevice)
-            return deviceMapper.map((RealDevice<?, ?, ?, ?, ?, ?, ?>)object);
+            return deviceMapper.map((RealDevice<?, ?, ?, ?, ?>)object);
         else if(object instanceof RealList)
             return listMapper.map((RealList<Object<?>, ?>)object, fromV1_0Function, toV1_0Function);
         else if(object instanceof RealParameter)
@@ -58,18 +58,18 @@ public class ObjectMapper {
     }
 
     public Object map(com.intuso.housemate.client.api.internal.object.Object<?> object) {
-        if(object instanceof com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>)
-            return commandMapper.map((com.intuso.housemate.client.real.api.internal.RealCommand)object);
-        else if(object instanceof com.intuso.housemate.client.real.api.internal.RealDevice)
-            return deviceMapper.map((com.intuso.housemate.client.real.api.internal.RealDevice<?, ?, ?, ?, ?, ?, ?>)object);
-        else if(object instanceof com.intuso.housemate.client.real.api.internal.RealList)
-            return listMapper.map((com.intuso.housemate.client.real.api.internal.RealList<com.intuso.housemate.client.api.internal.object.Object<?>, ?>)object, toV1_0Function, fromV1_0Function);
-        else if(object instanceof com.intuso.housemate.client.real.api.internal.RealParameter)
-            return parameterMapper.map((com.intuso.housemate.client.real.api.internal.RealParameter<?, ?, ?>)object);
-        else if(object instanceof com.intuso.housemate.client.real.api.internal.RealProperty)
-            return propertyMapper.map((com.intuso.housemate.client.real.api.internal.RealProperty<?, ?, ?, ?>)object);
-        else if(object instanceof com.intuso.housemate.client.real.api.internal.RealValue)
-            return valueMapper.map((com.intuso.housemate.client.real.api.internal.RealValue<?, ?, ?>)object);
+        if(object instanceof com.intuso.housemate.client.real.api.internal.object.RealCommand<?, ?, ?>)
+            return commandMapper.map((com.intuso.housemate.client.real.api.internal.object.RealCommand)object);
+        else if(object instanceof com.intuso.housemate.client.real.api.internal.object.RealDevice)
+            return deviceMapper.map((com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?>)object);
+        else if(object instanceof com.intuso.housemate.client.real.api.internal.object.RealList)
+            return listMapper.map((com.intuso.housemate.client.real.api.internal.object.RealList<com.intuso.housemate.client.api.internal.object.Object<?>, ?>)object, toV1_0Function, fromV1_0Function);
+        else if(object instanceof com.intuso.housemate.client.real.api.internal.object.RealParameter)
+            return parameterMapper.map((com.intuso.housemate.client.real.api.internal.object.RealParameter<?, ?, ?>)object);
+        else if(object instanceof com.intuso.housemate.client.real.api.internal.object.RealProperty)
+            return propertyMapper.map((com.intuso.housemate.client.real.api.internal.object.RealProperty<?, ?, ?, ?>)object);
+        else if(object instanceof com.intuso.housemate.client.real.api.internal.object.RealValue)
+            return valueMapper.map((com.intuso.housemate.client.real.api.internal.object.RealValue<?, ?, ?>)object);
         return null;
     }
 }

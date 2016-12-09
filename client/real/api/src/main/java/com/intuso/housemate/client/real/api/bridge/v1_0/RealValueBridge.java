@@ -7,8 +7,8 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.TypeInstancesMapper;
 import com.intuso.housemate.client.api.internal.object.Value;
-import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.housemate.client.real.api.internal.RealValue;
+import com.intuso.housemate.client.real.api.internal.object.RealType;
+import com.intuso.housemate.client.real.api.internal.object.RealValue;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
@@ -19,23 +19,23 @@ import java.util.List;
 public class RealValueBridge<FROM, TO>
         implements RealValue<TO, RealType<TO, ?>, RealValueBridge<FROM, TO>> {
 
-    private final com.intuso.housemate.client.v1_0.real.api.RealValue<FROM, ?, ?> value;
+    private final com.intuso.housemate.client.v1_0.real.api.object.RealValue<FROM, ?, ?> value;
     private final Function<? super FROM, ? extends TO> convertFrom;
     private final Function<? super TO, ? extends FROM> convertTo;
     private final TypeInstancesMapper typeInstancesMapper;
 
     @Inject
-    public RealValueBridge(@Assisted com.intuso.housemate.client.v1_0.real.api.RealValue<?, ?, ?> value,
+    public RealValueBridge(@Assisted com.intuso.housemate.client.v1_0.real.api.object.RealValue<?, ?, ?> value,
                            @Assisted("convertFrom") Function<?, ?> convertFrom,
                            @Assisted("convertTo") Function<?, ?> convertTo,
                            TypeInstancesMapper typeInstancesMapper) {
-        this.value = (com.intuso.housemate.client.v1_0.real.api.RealValue<FROM, ?, ?>) value;
+        this.value = (com.intuso.housemate.client.v1_0.real.api.object.RealValue<FROM, ?, ?>) value;
         this.convertFrom = (Function<? super FROM, ? extends TO>) convertFrom;
         this.convertTo = (Function<? super TO, ? extends FROM>) convertTo;
         this.typeInstancesMapper = typeInstancesMapper;
     }
 
-    public com.intuso.housemate.client.v1_0.real.api.RealValue<FROM, ?, ?> getMappedValue() {
+    public com.intuso.housemate.client.v1_0.real.api.object.RealValue<FROM, ?, ?> getMappedValue() {
         return value;
     }
 
@@ -86,6 +86,6 @@ public class RealValueBridge<FROM, TO>
     }
 
     public interface Factory {
-        RealValueBridge<?, ?> create(com.intuso.housemate.client.v1_0.real.api.RealValue<?, ?, ?> value, @Assisted("convertFrom") Function<?, ?> convertFrom, @Assisted("convertTo") Function<?, ?> convertTo);
+        RealValueBridge<?, ?> create(com.intuso.housemate.client.v1_0.real.api.object.RealValue<?, ?, ?> value, @Assisted("convertFrom") Function<?, ?> convertFrom, @Assisted("convertTo") Function<?, ?> convertTo);
     }
 }

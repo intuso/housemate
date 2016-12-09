@@ -25,7 +25,7 @@ import javax.jms.JMSException;
 public abstract class ProxyServer<
         COMMAND extends ProxyCommand<?, ?, ?>,
         AUTOMATIONS extends ProxyList<? extends ProxyAutomation<?, ?, ?, ?, ?>, ?>,
-        DEVICES extends ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?, ?>, ?>,
+        DEVICES extends ProxyList<? extends ProxyDevice<?, ?, ?, ?>, ?>,
         USERS extends ProxyList<? extends ProxyUser<?, ?, ?>, ?>,
         NODES extends ProxyList<? extends ProxyNode<?, ?, ?, ?>, ?>,
         SERVER extends ProxyServer<COMMAND, AUTOMATIONS, DEVICES, USERS, NODES, SERVER>>

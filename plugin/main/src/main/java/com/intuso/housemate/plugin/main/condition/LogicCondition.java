@@ -1,6 +1,6 @@
 package com.intuso.housemate.plugin.main.condition;
 
-import com.intuso.housemate.plugin.api.internal.driver.ConditionDriver;
+import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 
 import java.util.Map;
 

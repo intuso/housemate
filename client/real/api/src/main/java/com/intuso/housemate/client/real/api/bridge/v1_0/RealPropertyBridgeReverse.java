@@ -8,9 +8,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.TypeInstancesMapper;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.client.v1_0.api.object.Property;
-import com.intuso.housemate.client.v1_0.real.api.RealCommand;
-import com.intuso.housemate.client.v1_0.real.api.RealProperty;
-import com.intuso.housemate.client.v1_0.real.api.RealType;
+import com.intuso.housemate.client.v1_0.real.api.object.RealCommand;
+import com.intuso.housemate.client.v1_0.real.api.object.RealProperty;
+import com.intuso.housemate.client.v1_0.real.api.object.RealType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.List;
@@ -21,26 +21,26 @@ import java.util.List;
 public class RealPropertyBridgeReverse<FROM, TO>
         implements RealProperty<TO, RealType<TO, ?>, RealCommand<?, ?, ?>, RealPropertyBridgeReverse<FROM, TO>> {
 
-    private final com.intuso.housemate.client.real.api.internal.RealProperty<FROM, ?, ?, ?> property;
+    private final com.intuso.housemate.client.real.api.internal.object.RealProperty<FROM, ?, ?, ?> property;
     private final Function<? super FROM, ? extends TO> convertFrom;
     private final Function<? super TO, ? extends FROM> convertTo;
     private final CommandMapper commandMapper;
     private final TypeInstancesMapper typeInstancesMapper;
 
     @Inject
-    public RealPropertyBridgeReverse(@Assisted com.intuso.housemate.client.real.api.internal.RealProperty<?, ?, ?, ?> property,
+    public RealPropertyBridgeReverse(@Assisted com.intuso.housemate.client.real.api.internal.object.RealProperty<?, ?, ?, ?> property,
                                      @Assisted("convertFrom") Function<?, ?> convertFrom,
                                      @Assisted("convertTo") Function<?, ?> convertTo,
                                      CommandMapper commandMapper,
                                      TypeInstancesMapper typeInstancesMapper) {
-        this.property = (com.intuso.housemate.client.real.api.internal.RealProperty<FROM, ?, ?, ?>) property;
+        this.property = (com.intuso.housemate.client.real.api.internal.object.RealProperty<FROM, ?, ?, ?>) property;
         this.convertFrom = (Function<? super FROM, ? extends TO>) convertFrom;
         this.convertTo = (Function<? super TO, ? extends FROM>) convertTo;
         this.commandMapper = commandMapper;
         this.typeInstancesMapper = typeInstancesMapper;
     }
 
-    public com.intuso.housemate.client.real.api.internal.RealProperty<FROM, ?, ?, ?> getProperty() {
+    public com.intuso.housemate.client.real.api.internal.object.RealProperty<FROM, ?, ?, ?> getProperty() {
         return property;
     }
 
@@ -101,6 +101,6 @@ public class RealPropertyBridgeReverse<FROM, TO>
     }
 
     public interface Factory {
-        RealPropertyBridgeReverse<?, ?> create(com.intuso.housemate.client.real.api.internal.RealProperty<?, ?, ?, ?> value, @Assisted("convertFrom") Function<?, ?> convertFrom, @Assisted("convertTo") Function<?, ?> convertTo);
+        RealPropertyBridgeReverse<?, ?> create(com.intuso.housemate.client.real.api.internal.object.RealProperty<?, ?, ?, ?> value, @Assisted("convertFrom") Function<?, ?> convertFrom, @Assisted("convertTo") Function<?, ?> convertTo);
     }
 }

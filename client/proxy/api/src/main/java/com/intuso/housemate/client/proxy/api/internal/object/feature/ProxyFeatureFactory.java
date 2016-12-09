@@ -4,7 +4,7 @@ package com.intuso.housemate.client.proxy.api.internal.object.feature;
  * Base class for feature factories
  * @param <FEATURE> the feature type
  */
-public abstract class ProxyFeatureFactory<FEATURE extends com.intuso.housemate.client.proxy.api.internal.object.ProxyFeature<?, ?, ?>, BASE_RETURN_TYPE> {
+public abstract class ProxyFeatureFactory<FEATURE extends com.intuso.housemate.client.proxy.api.internal.object.ProxyFeature<?, ?, ?, ?, ?, ?, ?>, BASE_RETURN_TYPE> {
 
     /**
      * Get a feature of a device

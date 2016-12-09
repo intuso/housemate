@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
-import com.intuso.housemate.client.real.api.internal.RealList;
+import com.intuso.housemate.client.real.api.internal.object.RealList;
 import com.intuso.housemate.client.real.impl.bridge.v1_0.RealNodeBridge;
 import com.intuso.housemate.client.v1_0.api.object.Node;
 import com.intuso.housemate.client.v1_0.api.object.Object;

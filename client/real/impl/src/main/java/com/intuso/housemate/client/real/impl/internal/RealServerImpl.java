@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;
-import com.intuso.housemate.client.real.api.internal.RealServer;
+import com.intuso.housemate.client.real.api.internal.object.RealServer;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddDeviceCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddUserCommand;

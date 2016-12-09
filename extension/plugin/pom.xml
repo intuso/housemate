@@ -15,7 +15,9 @@
 
     <modules>
         <module>arduino-temp-sensor</module>
-        <module>rfxcom</module>
+        <module>homeeasyuk-api</module>
+        <module>homeeasyuk-device</module>
+        <module>rfxcom-hardware</module>
         <module>run-program</module>
         <module>tv-remote</module>
     </modules>

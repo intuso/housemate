@@ -3,8 +3,8 @@ package com.intuso.housemate.client.real.api.bridge.v1_0.ioc;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.intuso.housemate.client.real.api.bridge.v1_0.*;
-import com.intuso.housemate.client.v1_0.real.api.RealDevice;
-import com.intuso.housemate.plugin.api.bridge.v1_0.driver.*;
+import com.intuso.housemate.client.real.api.bridge.v1_0.driver.*;
+import com.intuso.housemate.client.v1_0.real.api.object.RealDevice;
 
 /**
  * Created by tomc on 06/11/15.
@@ -19,8 +19,8 @@ public class RealApiBridgeV1_0Module extends AbstractModule {
         // setup assisted inject factories
         install(new FactoryModuleBuilder().build(ConditionDriverFactoryBridge.Factory.class));
         install(new FactoryModuleBuilder().build(ConditionDriverFactoryBridgeReverse.Factory.class));
-        install(new FactoryModuleBuilder().build(DeviceDriverFactoryBridge.Factory.class));
-        install(new FactoryModuleBuilder().build(DeviceDriverFactoryBridgeReverse.Factory.class));
+        install(new FactoryModuleBuilder().build(FeatureDriverFactoryBridge.Factory.class));
+        install(new FactoryModuleBuilder().build(FeatureDriverFactoryBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(HardwareDriverFactoryBridge.Factory.class));
         install(new FactoryModuleBuilder().build(HardwareDriverFactoryBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(RealCommandBridge.Factory.class));

@@ -14,9 +14,9 @@
 
 	<dependencies>
 		<dependency>
-            <groupId>${project.groupId}</groupId>
-			<artifactId>housemate-plugin-1-0-api</artifactId>
-			<version>${intuso.housemate.plugin.version}</version>
+			<groupId>com.intuso.housemate</groupId>
+			<artifactId>housemate-client-1-0-real-api</artifactId>
+			<version>${intuso.housemate.client.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -3,13 +3,13 @@ package com.intuso.housemate.server.object.real;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
+import com.intuso.housemate.client.real.api.internal.driver.FeatureDriver;
+import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
+import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
+import com.intuso.housemate.client.real.api.internal.module.PluginListener;
+import com.intuso.housemate.client.real.api.internal.module.PluginResource;
 import com.intuso.housemate.client.real.impl.internal.type.*;
-import com.intuso.housemate.plugin.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.plugin.api.internal.driver.DeviceDriver;
-import com.intuso.housemate.plugin.api.internal.driver.HardwareDriver;
-import com.intuso.housemate.plugin.api.internal.driver.TaskDriver;
-import com.intuso.housemate.plugin.api.internal.module.PluginListener;
-import com.intuso.housemate.plugin.api.internal.module.PluginResource;
 import com.intuso.housemate.plugin.host.internal.PluginHost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +23,15 @@ public class FactoryPluginListener implements PluginListener {
 
     private final RegisteredTypes types;
     private final ConditionDriverType conditionDriverType;
-    private final DeviceDriverType deviceDriverType;
+    private final FeatureDriverType featureDriverType;
     private final HardwareDriverType hardwareDriverType;
     private final TaskDriverType taskDriverType;
 
     @Inject
-    public FactoryPluginListener(RegisteredTypes types, ConditionDriverType conditionDriverType, DeviceDriverType deviceDriverType, HardwareDriverType hardwareDriverType, TaskDriverType taskDriverType, PluginHost pluginHost) {
+    public FactoryPluginListener(RegisteredTypes types, ConditionDriverType conditionDriverType, FeatureDriverType featureDriverType, HardwareDriverType hardwareDriverType, TaskDriverType taskDriverType, PluginHost pluginHost) {
         this.types = types;
         this.conditionDriverType = conditionDriverType;
-        this.deviceDriverType = deviceDriverType;
+        this.featureDriverType = featureDriverType;
         this.hardwareDriverType = hardwareDriverType;
         this.taskDriverType = taskDriverType;
         pluginHost.addPluginListener(this, true);
@@ -86,18 +86,18 @@ public class FactoryPluginListener implements PluginListener {
     }
 
     private void addDeviceDriverFactories(Injector pluginInjector) {
-        for(PluginResource<? extends DeviceDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends DeviceDriver.Factory<?>>>>() {})) {
+        for(PluginResource<? extends FeatureDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends FeatureDriver.Factory<?>>>>() {})) {
             logger.debug("Adding device factory for type " + factoryResource.getTypeInfo().id());
-            deviceDriverType.factoryAvailable(factoryResource.getTypeInfo().id(),
+            featureDriverType.factoryAvailable(factoryResource.getTypeInfo().id(),
                     factoryResource.getTypeInfo().name(), factoryResource.getTypeInfo().description(),
                     factoryResource.getResource());
         }
     }
 
     private void removeDeviceDriverFactories(Injector pluginInjector) {
-        for(PluginResource<? extends DeviceDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends DeviceDriver.Factory<?>>>>() {})) {
+        for(PluginResource<? extends FeatureDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends FeatureDriver.Factory<?>>>>() {})) {
             logger.debug("Removing device factory for type " + factoryResource.getTypeInfo().id());
-            deviceDriverType.factoryUnavailable(factoryResource.getTypeInfo().id());
+            featureDriverType.factoryUnavailable(factoryResource.getTypeInfo().id());
         }
     }
 

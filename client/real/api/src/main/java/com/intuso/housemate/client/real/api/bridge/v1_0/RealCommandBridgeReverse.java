@@ -5,10 +5,10 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.TypeInstanceMapMapper;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.v1_0.api.object.Type;
-import com.intuso.housemate.client.v1_0.real.api.RealCommand;
-import com.intuso.housemate.client.v1_0.real.api.RealList;
-import com.intuso.housemate.client.v1_0.real.api.RealParameter;
-import com.intuso.housemate.client.v1_0.real.api.RealValue;
+import com.intuso.housemate.client.v1_0.real.api.object.RealCommand;
+import com.intuso.housemate.client.v1_0.real.api.object.RealList;
+import com.intuso.housemate.client.v1_0.real.api.object.RealParameter;
+import com.intuso.housemate.client.v1_0.real.api.object.RealValue;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -16,14 +16,14 @@ import com.intuso.utilities.listener.ListenerRegistration;
  */
 public class RealCommandBridgeReverse implements RealCommand<RealValue<Boolean, ?, ?>, RealList<? extends RealParameter<?, ?, ?>, ?>, RealCommandBridgeReverse> {
 
-    private final com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?> command;
+    private final com.intuso.housemate.client.real.api.internal.object.RealCommand<?, ?, ?> command;
     private final TypeInstanceMapMapper typeInstanceMapMapper;
     private final ValueMapper valueMapper;
     private final ListMapper listMapper;
     private final ParameterMapper parameterMapper;
 
     @Inject
-    public RealCommandBridgeReverse(@Assisted com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?> command,
+    public RealCommandBridgeReverse(@Assisted com.intuso.housemate.client.real.api.internal.object.RealCommand<?, ?, ?> command,
                                     TypeInstanceMapMapper typeInstanceMapMapper, ValueMapper valueMapper, ListMapper listMapper, ParameterMapper parameterMapper) {
         this.command = command;
         this.typeInstanceMapMapper = typeInstanceMapMapper;
@@ -32,7 +32,7 @@ public class RealCommandBridgeReverse implements RealCommand<RealValue<Boolean, 
         this.parameterMapper = parameterMapper;
     }
 
-    public com.intuso.housemate.client.real.api.internal.RealCommand getCommand() {
+    public com.intuso.housemate.client.real.api.internal.object.RealCommand getCommand() {
         return command;
     }
 
@@ -73,12 +73,12 @@ public class RealCommandBridgeReverse implements RealCommand<RealValue<Boolean, 
 
     @Override
     public RealList<? extends RealParameter<?, ?, ?>, ?> getParameters() {
-        return listMapper.map((com.intuso.housemate.client.real.api.internal.RealList<com.intuso.housemate.client.real.api.internal.RealParameter<?, ?, ?>, ?>)command.getParameters(),
+        return listMapper.map((com.intuso.housemate.client.real.api.internal.object.RealList<com.intuso.housemate.client.real.api.internal.object.RealParameter<?, ?, ?>, ?>)command.getParameters(),
                 parameterMapper.getToV1_0Function(),
                 parameterMapper.getFromV1_0Function());
     }
 
-    private class PerformListenerBridge implements Command.PerformListener<com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>> {
+    private class PerformListenerBridge implements Command.PerformListener<com.intuso.housemate.client.real.api.internal.object.RealCommand<?, ?, ?>> {
 
         private final PerformListener<? super RealCommandBridgeReverse> listener;
 
@@ -87,22 +87,22 @@ public class RealCommandBridgeReverse implements RealCommand<RealValue<Boolean, 
         }
 
         @Override
-        public void commandStarted(com.intuso.housemate.client.real.api.internal.RealCommand command) {
+        public void commandStarted(com.intuso.housemate.client.real.api.internal.object.RealCommand command) {
             listener.commandStarted(RealCommandBridgeReverse.this);
         }
 
         @Override
-        public void commandFinished(com.intuso.housemate.client.real.api.internal.RealCommand command) {
+        public void commandFinished(com.intuso.housemate.client.real.api.internal.object.RealCommand command) {
             listener.commandFinished(RealCommandBridgeReverse.this);
         }
 
         @Override
-        public void commandFailed(com.intuso.housemate.client.real.api.internal.RealCommand command, String error) {
+        public void commandFailed(com.intuso.housemate.client.real.api.internal.object.RealCommand command, String error) {
             listener.commandFailed(RealCommandBridgeReverse.this, error);
         }
     }
 
     public interface Factory {
-        RealCommandBridgeReverse create(com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?> command);
+        RealCommandBridgeReverse create(com.intuso.housemate.client.real.api.internal.object.RealCommand<?, ?, ?> command);
     }
 }

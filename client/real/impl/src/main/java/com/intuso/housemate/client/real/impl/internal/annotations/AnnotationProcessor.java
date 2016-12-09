@@ -4,10 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
+import com.intuso.housemate.client.real.api.internal.annotations.*;
+import com.intuso.housemate.client.real.api.internal.annotations.Parameter;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.real.impl.internal.type.RegisteredTypes;
-import com.intuso.housemate.plugin.api.internal.annotations.*;
-import com.intuso.housemate.plugin.api.internal.annotations.Parameter;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
@@ -159,44 +159,6 @@ public class AnnotationProcessor {
         }
         logger.warn("No equivalent getter found for initial value for " + Property.class.getSimpleName() + " method " + methodName + " of " + clazz.getName());
         return null;
-    }
-
-    public Iterable<RealFeatureImpl> findFeatures(Logger logger, Object object) {
-        return findFeatures(logger, object, object.getClass());
-    }
-
-    private Iterable<RealFeatureImpl> findFeatures(Logger logger, Object object, Class<?> clazz) {
-        List<RealFeatureImpl> features = Lists.newArrayList();
-        findFeatures(logger, object, clazz, features);
-        return features;
-    }
-
-    private void findFeatures(Logger logger, Object object, Class<?> clazz, List<RealFeatureImpl> features) {
-        for(Annotation annotation : clazz.getDeclaredAnnotations()) {
-            if(Feature.class.equals(annotation.annotationType())) {
-                features.add(processV1_0FeatureClass(logger, object, clazz));
-                return;
-            }
-        }
-        for(Class<?> interfaceClass : clazz.getInterfaces())
-            findFeatures(logger, object, interfaceClass, features);
-        if(clazz.getSuperclass() != null)
-            findFeatures(logger, object, clazz.getSuperclass(), features);
-    }
-
-    private RealFeatureImpl processV1_0FeatureClass(Logger logger, Object object, Class<?> clazz) {
-        TypeInfo typeInfo = clazz.getAnnotation(TypeInfo.class);
-        if(typeInfo == null)
-            throw new HousemateException("No " + TypeInfo.class.getName() + " on feature class " + clazz.getName());
-        RealFeatureImpl feature = featureFactory.create(ChildUtil.logger(logger, typeInfo.id()),
-                typeInfo.id(),
-                typeInfo.name(),
-                typeInfo.description());
-        for(RealCommandImpl command : findCommands(logger, object, clazz))
-            feature.getCommands().add(command);
-        for(RealValueImpl<?> value : findValues(logger, object, clazz))
-            feature.getValues().add(value);
-        return feature;
     }
 
     public List<RealValueImpl<?>> findValues(Logger logger, Object object) {

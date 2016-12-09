@@ -1,6 +1,8 @@
 package com.intuso.housemate.client.api.internal.object;
 
-import com.intuso.housemate.client.api.internal.*;
+import com.intuso.housemate.client.api.internal.Failable;
+import com.intuso.housemate.client.api.internal.Removeable;
+import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.Runnable;
 
 /**
@@ -16,39 +18,32 @@ public interface Device<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         START_STOP_COMMAND extends Command<?, ?, ?, ?>,
         RUNNING_VALUE extends Value<?, ?, ?>,
         ERROR_VALUE extends Value<?, ?, ?>,
-        DRIVER_PROPERTY extends Property<?, ?, ?, ?>,
-        DRIVER_LOADED_VALUE extends Value<?, ?, ?>,
-        PROPERTIES extends List<? extends Property<?, ?, ?, ?>, ?>,
-        FEATURES extends List<? extends Feature<?, ?, ?>, ?>,
-        DEVICE extends Device<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, PROPERTIES, FEATURES, DEVICE>>
+        FEATURES extends List<? extends Feature<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
+        DEVICE extends Device<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, FEATURES, DEVICE>>
         extends
         Object<Device.Listener<? super DEVICE>>,
         Renameable<RENAME_COMMAND>,
         com.intuso.housemate.client.api.internal.Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
         Failable<ERROR_VALUE>,
         Removeable<REMOVE_COMMAND>,
-        UsesDriver<DRIVER_PROPERTY, DRIVER_LOADED_VALUE>,
-        Property.Container<PROPERTIES>,
         Feature.Container<FEATURES> {
 
-    String PROPERTIES_ID = "properties";
     String FEATURES_ID = "features";
 
     /**
      *
      * Listener interface for devices
      */
-    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> extends Object.Listener,
+    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?>> extends Object.Listener,
             Failable.Listener<DEVICE>,
             Renameable.Listener<DEVICE>,
-            Runnable.Listener<DEVICE>,
-            UsesDriver.Listener<DEVICE> {}
+            Runnable.Listener<DEVICE> {}
 
     /**
      *
      * Interface to show that the implementing object has a list of devices
      */
-    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
+    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?>, ?>> {
 
         /**
          * Gets the devices list

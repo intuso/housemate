@@ -3,7 +3,7 @@ package com.intuso.housemate.client.real.api.bridge.v1_0;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.intuso.housemate.client.v1_0.api.object.Object;
-import com.intuso.housemate.client.v1_0.real.api.RealList;
+import com.intuso.housemate.client.v1_0.real.api.object.RealList;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.util.Iterator;
@@ -14,17 +14,17 @@ import java.util.Iterator;
 public class RealListBridgeReverse<FROM extends com.intuso.housemate.client.api.internal.object.Object<?>, TO extends Object<?>>
         implements RealList<TO, RealListBridgeReverse<FROM, TO>> {
 
-    private final com.intuso.housemate.client.real.api.internal.RealList<FROM, ?> list;
+    private final com.intuso.housemate.client.real.api.internal.object.RealList<FROM, ?> list;
     private final Function<? super FROM, ? extends TO> convertFrom;
     private final Function<? super TO, ? extends FROM> convertTo;
 
-    public RealListBridgeReverse(com.intuso.housemate.client.real.api.internal.RealList<FROM, ?> list, Function<? super FROM, ? extends TO> convertFrom, Function<? super TO, ? extends FROM> convertTo) {
+    public RealListBridgeReverse(com.intuso.housemate.client.real.api.internal.object.RealList<FROM, ?> list, Function<? super FROM, ? extends TO> convertFrom, Function<? super TO, ? extends FROM> convertTo) {
         this.list = list;
         this.convertFrom = convertFrom;
         this.convertTo = convertTo;
     }
 
-    public com.intuso.housemate.client.real.api.internal.RealList<FROM, ?> getList() {
+    public com.intuso.housemate.client.real.api.internal.object.RealList<FROM, ?> getList() {
         return list;
     }
 
@@ -78,7 +78,7 @@ public class RealListBridgeReverse<FROM extends com.intuso.housemate.client.api.
         return Iterators.transform(list.iterator(), convertFrom);
     }
 
-    private class ListenerBridge implements com.intuso.housemate.client.real.api.internal.RealList.Listener<FROM, com.intuso.housemate.client.real.api.internal.RealList<FROM, ?>> {
+    private class ListenerBridge implements com.intuso.housemate.client.real.api.internal.object.RealList.Listener<FROM, com.intuso.housemate.client.real.api.internal.object.RealList<FROM, ?>> {
 
         private final Listener<? super TO, ? super RealListBridgeReverse<FROM, TO>> listener;
 
@@ -87,12 +87,12 @@ public class RealListBridgeReverse<FROM extends com.intuso.housemate.client.api.
         }
 
         @Override
-        public void elementAdded(com.intuso.housemate.client.real.api.internal.RealList<FROM, ?> list, FROM element) {
+        public void elementAdded(com.intuso.housemate.client.real.api.internal.object.RealList<FROM, ?> list, FROM element) {
             listener.elementAdded(RealListBridgeReverse.this, convertFrom.apply(element));
         }
 
         @Override
-        public void elementRemoved(com.intuso.housemate.client.real.api.internal.RealList<FROM, ?> list, FROM element) {
+        public void elementRemoved(com.intuso.housemate.client.real.api.internal.object.RealList<FROM, ?> list, FROM element) {
             listener.elementRemoved(RealListBridgeReverse.this, convertFrom.apply(element));
         }
     }

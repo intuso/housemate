@@ -3,9 +3,9 @@ package com.intuso.housemate.client.real.impl.internal.type.ioc;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.intuso.housemate.client.real.api.internal.driver.*;
+import com.intuso.housemate.client.real.api.internal.type.Email;
 import com.intuso.housemate.client.real.impl.internal.type.TypeFactories;
-import com.intuso.housemate.plugin.api.internal.driver.*;
-import com.intuso.housemate.plugin.api.internal.type.Email;
 
 /**
  * Created by tomc on 23/05/16.
@@ -23,7 +23,7 @@ public class SystemTypeFactoriesProvider implements Provider<Iterable<TypeFactor
 
     // driver factory types
     private final TypeFactories<PluginDependency<ConditionDriver.Factory<?>>> conditionDriverTypeFactories;
-    private final TypeFactories<PluginDependency<DeviceDriver.Factory<?>>> deviceDriverTypeFactories;
+    private final TypeFactories<PluginDependency<FeatureDriver.Factory<?>>> deviceDriverTypeFactories;
     private final TypeFactories<PluginDependency<HardwareDriver.Factory<?>>> hardwareDriverTypeFactories;
     private final TypeFactories<PluginDependency<TaskDriver.Factory<?>>> taskDriverTypeFactories;
 
@@ -34,7 +34,7 @@ public class SystemTypeFactoriesProvider implements Provider<Iterable<TypeFactor
                                        TypeFactories<String> stringTypeFactories,
                                        TypeFactories<Email> emailTypeFactories,
                                        TypeFactories<PluginDependency<ConditionDriver.Factory<? extends ConditionDriver>>> conditionDriverTypeFactories,
-                                       TypeFactories<PluginDependency<DeviceDriver.Factory<? extends DeviceDriver>>> deviceDriverTypeFactories,
+                                       TypeFactories<PluginDependency<FeatureDriver.Factory<? extends FeatureDriver>>> deviceDriverTypeFactories,
                                        TypeFactories<PluginDependency<HardwareDriver.Factory<? extends HardwareDriver>>> hardwareDriverTypeFactories,
                                        TypeFactories<PluginDependency<TaskDriver.Factory<? extends TaskDriver>>> taskDriverTypeFactories) {
         this.booleanTypeFactories = booleanTypeFactories;

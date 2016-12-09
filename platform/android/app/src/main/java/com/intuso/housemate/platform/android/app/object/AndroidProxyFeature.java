@@ -11,14 +11,18 @@ import org.slf4j.Logger;
  * Time: 09:28
  * To change this template use File | Settings | File Templates.
  */
-public class AndroidProxyFeature extends ProxyFeature<AndroidProxyList<AndroidProxyCommand>,
+public class AndroidProxyFeature extends ProxyFeature<AndroidProxyCommand,
+        AndroidProxyList<AndroidProxyCommand>,
+        AndroidProxyValue,
         AndroidProxyList<AndroidProxyValue>,
+        AndroidProxyProperty,
+        AndroidProxyList<AndroidProxyProperty>,
         AndroidProxyFeature> {
 
     /**
      * @param logger  {@inheritDoc}
      */
     protected AndroidProxyFeature(Logger logger, ListenersFactory listenersFactory, AndroidObjectFactories factories) {
-        super(logger, listenersFactory, factories.commands(), factories.values());
+        super(logger, listenersFactory, factories.command(), factories.commands(), factories.value(), factories.values(), factories.property(), factories.properties());
     }
 }

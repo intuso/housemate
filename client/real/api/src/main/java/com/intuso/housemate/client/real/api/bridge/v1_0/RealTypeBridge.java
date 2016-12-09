@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.TypeInstanceMapper;
 import com.intuso.housemate.client.api.internal.object.Type;
-import com.intuso.housemate.client.real.api.internal.RealType;
+import com.intuso.housemate.client.real.api.internal.object.RealType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -13,23 +13,23 @@ import com.intuso.utilities.listener.ListenerRegistration;
  */
 public class RealTypeBridge<FROM, TO> implements RealType<TO, RealTypeBridge<FROM, TO>> {
 
-    private final com.intuso.housemate.client.v1_0.real.api.RealType<FROM, ?> type;
+    private final com.intuso.housemate.client.v1_0.real.api.object.RealType<FROM, ?> type;
     private final Function<? super FROM, ? extends TO> convertFrom;
     private final Function<? super TO, ? extends FROM> convertTo;
     private final TypeInstanceMapper typeInstanceMapper;
 
     @Inject
-    public RealTypeBridge(@Assisted com.intuso.housemate.client.v1_0.real.api.RealType<?, ?> type,
+    public RealTypeBridge(@Assisted com.intuso.housemate.client.v1_0.real.api.object.RealType<?, ?> type,
                           @Assisted("convertFrom") Function<?, ?> convertFrom,
                           @Assisted("convertTo") Function<?, ?> convertTo,
                           TypeInstanceMapper typeInstanceMapper) {
-        this.type = (com.intuso.housemate.client.v1_0.real.api.RealType<FROM, ?>) type;
+        this.type = (com.intuso.housemate.client.v1_0.real.api.object.RealType<FROM, ?>) type;
         this.convertFrom = (Function<? super FROM, ? extends TO>) convertFrom;
         this.convertTo = (Function<? super TO, ? extends FROM>) convertTo;
         this.typeInstanceMapper = typeInstanceMapper;
     }
 
-    public com.intuso.housemate.client.v1_0.real.api.RealType<FROM, ?> getType() {
+    public com.intuso.housemate.client.v1_0.real.api.object.RealType<FROM, ?> getType() {
         return type;
     }
 
@@ -64,6 +64,6 @@ public class RealTypeBridge<FROM, TO> implements RealType<TO, RealTypeBridge<FRO
     }
 
     public interface Factory {
-        RealTypeBridge<?, ?> create(com.intuso.housemate.client.v1_0.real.api.RealType<?, ?> type, @Assisted("convertFrom") Function<?, ?> convertFrom, @Assisted("convertTo") Function<?, ?> convertTo);
+        RealTypeBridge<?, ?> create(com.intuso.housemate.client.v1_0.real.api.object.RealType<?, ?> type, @Assisted("convertFrom") Function<?, ?> convertFrom, @Assisted("convertTo") Function<?, ?> convertTo);
     }
 }

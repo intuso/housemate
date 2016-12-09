@@ -2,18 +2,18 @@ package com.intuso.housemate.plugin.tvremote;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.plugin.v1_0.api.annotations.Property;
-import com.intuso.housemate.plugin.v1_0.api.annotations.TypeInfo;
-import com.intuso.housemate.plugin.v1_0.api.driver.DeviceDriver;
-import com.intuso.housemate.plugin.v1_0.api.feature.PlaybackControl;
-import com.intuso.housemate.plugin.v1_0.api.feature.PowerControl;
-import com.intuso.housemate.plugin.v1_0.api.feature.VolumeControl;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
+import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
+import com.intuso.housemate.client.v1_0.real.api.feature.PlaybackControl;
+import com.intuso.housemate.client.v1_0.real.api.feature.PowerControl;
+import com.intuso.housemate.client.v1_0.real.api.feature.VolumeControl;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 
 @TypeInfo(id = "tv-remote", name = "TV Remote", description = "TV Remote")
-public class TVRemote implements DeviceDriver, PowerControl, PlaybackControl, VolumeControl {
+public class TVRemote implements FeatureDriver, PowerControl, PlaybackControl, VolumeControl {
 
     // todo use remote IR sender
 
@@ -22,7 +22,7 @@ public class TVRemote implements DeviceDriver, PowerControl, PlaybackControl, Vo
     public String remoteName;
 
     @Inject
-    public TVRemote(@Assisted Logger logger, @Assisted DeviceDriver.Callback driverCallback) {}
+    public TVRemote(@Assisted Logger logger, @Assisted FeatureDriver.Callback driverCallback) {}
 
     @Override
     public void start() {}
@@ -84,7 +84,7 @@ public class TVRemote implements DeviceDriver, PowerControl, PlaybackControl, Vo
         try {
             Runtime.getRuntime().exec("irsend SEND_ONCE " + remoteName + " " + buttonName);
         } catch(IOException e) {
-            throw new DeviceException("Failed to perform TV remote command", e);
+            throw new FeatureException("Failed to perform TV remote command", e);
         }
     }
 }

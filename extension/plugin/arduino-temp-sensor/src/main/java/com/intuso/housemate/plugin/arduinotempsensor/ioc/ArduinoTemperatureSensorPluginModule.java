@@ -3,12 +3,12 @@ package com.intuso.housemate.plugin.arduinotempsensor.ioc;
 import com.google.common.collect.Lists;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.module.AnnotatedPluginModule;
+import com.intuso.housemate.client.v1_0.real.api.module.FeatureDrivers;
 import com.intuso.housemate.plugin.arduinotempsensor.ArduinoIndicator;
 import com.intuso.housemate.plugin.arduinotempsensor.ArduinoTemperatureSensor;
 import com.intuso.housemate.plugin.arduinotempsensor.SerialPortWrapper;
-import com.intuso.housemate.plugin.v1_0.api.annotations.TypeInfo;
-import com.intuso.housemate.plugin.v1_0.api.module.AnnotatedPluginModule;
-import com.intuso.housemate.plugin.v1_0.api.module.DeviceDrivers;
 import jssc.SerialPort;
 import org.slf4j.Logger;
 
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @TypeInfo(id = "com.intuso.housemate.plugin.arduino-temp-sensor", name = "Arduino Temperature Sensor plugin", description = "Plugin for temperature sensing using an Arduino")
-@DeviceDrivers({ArduinoTemperatureSensor.class,
+@FeatureDrivers({ArduinoTemperatureSensor.class,
         ArduinoIndicator.class})
 public class ArduinoTemperatureSensorPluginModule extends AnnotatedPluginModule {
 

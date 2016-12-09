@@ -180,7 +180,6 @@ public class HousemateTweeter {
             java.util.List<ListenerRegistration> registrations = new ArrayList<>();
             listeners.put(device, registrations);
             registrations.add(device.getFeatures().addObjectListener(new FeatureListListener(device, registrations), true));
-            registrations.add(device.getProperties().addObjectListener(new PropertyListListener(device, registrations), true));
             registrations.add(device.addObjectListener(deviceListener));
             tweet("\"" + device.getName() + "\" device added");
         }
@@ -206,10 +205,11 @@ public class HousemateTweeter {
             tweet("\"" + device.getName() + "\" device " + (description == null ? "not " : "") + "in error" + (description == null ? "" : ": " + description));
         }
 
-        @Override
+        // todo add a feature listener
+        /*@Override
         public void driverLoaded(SimpleProxyDevice device, boolean loaded) {
             tweet("\"" + device.getName() + "\" device's driver is " + (loaded ? "" : "not ") + "loaded");
-        }
+        }*/
 
         @Override
         public void running(SimpleProxyDevice device, boolean running) {
@@ -231,6 +231,7 @@ public class HousemateTweeter {
         public void elementAdded(SimpleProxyList<SimpleProxyFeature> list, SimpleProxyFeature feature) {
             feature.getCommands().addObjectListener(new CommandListListener(device, feature, deviceListenerRegistrations));
             feature.getValues().addObjectListener(new ValueListListener(device, feature, deviceListenerRegistrations));
+            feature.getProperties().addObjectListener(new PropertyListListener(device, feature, deviceListenerRegistrations));
             tweet("\"" + feature.getName() + "\" feature added");
         }
 
@@ -348,9 +349,9 @@ public class HousemateTweeter {
         private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
         private final PropertyListener listener;
 
-        private PropertyListListener(SimpleProxyDevice device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+        private PropertyListListener(SimpleProxyDevice device, SimpleProxyFeature feature, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
-            listener = new PropertyListener(device);
+            listener = new PropertyListener(device, feature);
         }
 
         @Override
@@ -370,9 +371,11 @@ public class HousemateTweeter {
     private class PropertyListener implements Property.Listener<SimpleProxyProperty> {
 
         private final SimpleProxyDevice device;
+        private final SimpleProxyFeature feature;
 
-        private PropertyListener(SimpleProxyDevice device) {
+        private PropertyListener(SimpleProxyDevice device, SimpleProxyFeature feature) {
             this.device = device;
+            this.feature = feature;
         }
 
         @Override
@@ -382,7 +385,7 @@ public class HousemateTweeter {
 
         @Override
         public void valueChanged(SimpleProxyProperty property) {
-            tweet("\"" + device.getName() + "\" property \"" + property.getName() + "\" is now set to \"" + property.getValue() + "\"");
+            tweet("\"" + device.getName() + "\" feature \"" + feature.getName() + "\" property \"" + property.getName() + "\" is now set to \"" + property.getValue() + "\"");
         }
     }
 }

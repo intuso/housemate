@@ -6,7 +6,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
-import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.client.real.api.internal.object.RealProperty;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 

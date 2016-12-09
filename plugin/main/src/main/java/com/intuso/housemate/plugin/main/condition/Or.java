@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.plugin.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import org.slf4j.Logger;
 
 import java.util.Collection;

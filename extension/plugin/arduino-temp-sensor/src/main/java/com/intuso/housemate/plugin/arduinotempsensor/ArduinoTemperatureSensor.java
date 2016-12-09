@@ -2,10 +2,10 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.plugin.v1_0.api.annotations.TypeInfo;
-import com.intuso.housemate.plugin.v1_0.api.annotations.Value;
-import com.intuso.housemate.plugin.v1_0.api.annotations.Values;
-import com.intuso.housemate.plugin.v1_0.api.driver.DeviceDriver;
+import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Values;
+import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -17,7 +17,7 @@ import java.io.*;
  */
 
 @TypeInfo(id = "arduino-temp-sensor", name = "Arduino Temperature Sensor", description = "Arduino Temperature Sensor")
-public class ArduinoTemperatureSensor implements DeviceDriver {
+public class ArduinoTemperatureSensor implements FeatureDriver {
 
     private final Logger logger;
     private final SerialPortWrapper serialPort;
@@ -32,7 +32,7 @@ public class ArduinoTemperatureSensor implements DeviceDriver {
     @Inject
     protected ArduinoTemperatureSensor(SerialPortWrapper serialPort,
                                        @Assisted Logger logger,
-                                       @Assisted DeviceDriver.Callback callback) {
+                                       @Assisted FeatureDriver.Callback callback) {
         this.logger = logger;
         this.serialPort = serialPort;
     }
@@ -45,7 +45,7 @@ public class ArduinoTemperatureSensor implements DeviceDriver {
             output = new PipedOutputStream(input);
             in = new BufferedReader(new InputStreamReader(input));
         } catch(IOException e) {
-            throw new DeviceException("Failed to set up Arduino connection for reading data", e);
+            throw new FeatureException("Failed to set up Arduino connection for reading data", e);
         }
         lineReader = new LineReader();
         lineReader.start();

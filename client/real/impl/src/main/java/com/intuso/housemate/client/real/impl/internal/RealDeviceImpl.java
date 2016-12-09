@@ -6,12 +6,8 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Device;
-import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
-import com.intuso.housemate.client.real.api.internal.RealDevice;
-import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationProcessor;
-import com.intuso.housemate.plugin.api.internal.driver.DeviceDriver;
-import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
+import com.intuso.housemate.client.real.api.internal.object.RealDevice;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -24,13 +20,9 @@ import javax.jms.JMSException;
 public final class RealDeviceImpl
         extends RealObject<Device.Data, Device.Listener<? super RealDeviceImpl>>
         implements RealDevice<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealPropertyImpl<PluginDependency<DeviceDriver.Factory<?>>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
         RealListGeneratedImpl<RealFeatureImpl>, RealDeviceImpl> {
 
-    private final static String PROPERTIES_DESCRIPTION = "The device's properties";
     private final static String FEATURES_DESCRIPTION = "The device's features";
-
-    private final AnnotationProcessor annotationProcessor;
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
@@ -38,14 +30,9 @@ public final class RealDeviceImpl
     private final RealCommandImpl startCommand;
     private final RealCommandImpl stopCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealPropertyImpl<PluginDependency<DeviceDriver.Factory<?>>> driverProperty;
-    private final RealValueImpl<Boolean> driverLoadedValue;
-    private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
     private final RealListGeneratedImpl<RealFeatureImpl> features;
 
     private final RemoveCallback<RealDeviceImpl> removeCallback;
-
-    private DeviceDriver driver;
 
     /**
      * @param logger {@inheritDoc}
@@ -58,16 +45,12 @@ public final class RealDeviceImpl
                           @Assisted("description") String description,
                           @Assisted RemoveCallback<RealDeviceImpl> removeCallback,
                           ListenersFactory listenersFactory,
-                          AnnotationProcessor annotationProcessor,
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory<String> stringParameterFactory,
                           RealValueImpl.Factory<Boolean> booleanValueFactory,
                           RealValueImpl.Factory<String> stringValueFactory,
-                          RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
-                          RealListGeneratedImpl.Factory<RealFeatureImpl> featuresFactory,
-                          RealPropertyImpl.Factory<PluginDependency<DeviceDriver.Factory<? extends DeviceDriver>>> driverPropertyFactory) {
+                          RealListGeneratedImpl.Factory<RealFeatureImpl> featuresFactory) {
         super(logger, true, new Device.Data(id, name, description), listenersFactory);
-        this.annotationProcessor = annotationProcessor;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -144,42 +127,11 @@ public final class RealDeviceImpl
                 1,
                 1,
                 Lists.<String>newArrayList());
-        this.driverProperty = driverPropertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
-                UsesDriver.DRIVER_ID,
-                UsesDriver.DRIVER_ID,
-                "The device's driver",
-                1,
-                1,
-                Lists.<PluginDependency<DeviceDriver.Factory<?>>>newArrayList());
-        this.driverLoadedValue = booleanValueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
-                UsesDriver.DRIVER_LOADED_ID,
-                UsesDriver.DRIVER_LOADED_ID,
-                "Whether the device's driver is loaded or not",
-                1,
-                1,
-                Lists.newArrayList(false));
-        this.properties = propertiesFactory.create(ChildUtil.logger(logger, Device.PROPERTIES_ID),
-                Device.PROPERTIES_ID,
-                Device.PROPERTIES_ID,
-                PROPERTIES_DESCRIPTION,
-                Lists.<RealPropertyImpl<?>>newArrayList());
         this.features = featuresFactory.create(ChildUtil.logger(logger, Device.FEATURES_ID),
                 Device.FEATURES_ID,
                 Device.FEATURES_ID,
                 FEATURES_DESCRIPTION,
                 Lists.<RealFeatureImpl>newArrayList());
-        driverProperty.addObjectListener(new Property.Listener<RealPropertyImpl<PluginDependency<DeviceDriver.Factory<?>>>>() {
-            @Override
-            public void valueChanging(RealPropertyImpl<PluginDependency<DeviceDriver.Factory<?>>> factoryRealProperty) {
-                uninitDriver();
-            }
-
-            @Override
-            public void valueChanged(RealPropertyImpl<PluginDependency<DeviceDriver.Factory<?>>> factoryRealProperty) {
-                initDriver();
-            }
-        });
-        initDriver();
     }
 
     @Override
@@ -191,9 +143,6 @@ public final class RealDeviceImpl
         startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
         stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
-        properties.init(ChildUtil.name(name, Device.PROPERTIES_ID), connection);
         features.init(ChildUtil.name(name, Device.FEATURES_ID), connection);
     }
 
@@ -206,49 +155,15 @@ public final class RealDeviceImpl
         startCommand.uninit();
         stopCommand.uninit();
         errorValue.uninit();
-        driverProperty.uninit();
-        driverLoadedValue.uninit();
-        properties.uninit();
         features.uninit();
     }
 
     private void setName(String newName) {
-        RealDeviceImpl.this.getData().setName(newName);
+        getData().setName(newName);
         for(Device.Listener<? super RealDeviceImpl> listener : listeners)
             listener.renamed(RealDeviceImpl.this, RealDeviceImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
-    }
-
-    private void initDriver() {
-        if(driver == null) {
-            PluginDependency<DeviceDriver.Factory<?>> driverFactory = driverProperty.getValue();
-            if(driverFactory != null) {
-                driver = driverFactory.getDependency().create(logger, this);
-                for(RealFeatureImpl feature : annotationProcessor.findFeatures(logger, driver))
-                    features.add(feature);
-                for(RealPropertyImpl<?> property : annotationProcessor.findProperties(logger, driver))
-                    properties.add(property);
-                errorValue.setValue((String) null);
-                driverLoadedValue.setValue(true);
-                _start();
-            }
-        }
-    }
-
-    private void uninitDriver() {
-        if(driver != null) {
-            _stop();
-            driverLoadedValue.setValue(false);
-            errorValue.setValue("Driver not loaded");
-            driver = null;
-            for (RealPropertyImpl<?> property : Lists.newArrayList(properties))
-                properties.remove(property.getId());
-        }
-    }
-
-    public <DRIVER extends DeviceDriver> DRIVER getDriver() {
-        return (DRIVER) driver;
     }
 
     @Override
@@ -264,20 +179,6 @@ public final class RealDeviceImpl
     @Override
     public RealValueImpl<String> getErrorValue() {
         return errorValue;
-    }
-
-    @Override
-    public RealPropertyImpl<PluginDependency<DeviceDriver.Factory<?>>> getDriverProperty() {
-        return driverProperty;
-    }
-
-    @Override
-    public RealValueImpl<Boolean> getDriverLoadedValue() {
-        return driverLoadedValue;
-    }
-
-    public boolean isDriverLoaded() {
-        return driverLoadedValue.getValue() != null ? driverLoadedValue.getValue() : false;
     }
 
     @Override
@@ -304,32 +205,16 @@ public final class RealDeviceImpl
     }
 
     @Override
-    public final RealListGeneratedImpl<RealPropertyImpl<?>> getProperties() {
-        return properties;
-    }
-
-    @Override
     public RealListGeneratedImpl<RealFeatureImpl> getFeatures() {
         return features;
     }
 
     protected final void _start() {
-        try {
-            if(isDriverLoaded())
-                driver.start();
-        } catch (Throwable t) {
-            getErrorValue().setValue("Could not start device: " + t.getMessage());
-        }
+        // todo start all features
     }
 
     protected final void _stop() {
-        if(isDriverLoaded())
-            driver.stop();
-    }
-
-    @Override
-    public void setError(String error) {
-        errorValue.setValue(error);
+        // todo stop all features
     }
 
     public interface Factory {

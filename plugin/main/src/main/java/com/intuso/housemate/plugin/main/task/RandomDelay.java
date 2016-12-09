@@ -2,10 +2,10 @@ package com.intuso.housemate.plugin.main.task;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.plugin.api.internal.annotations.Property;
-import com.intuso.housemate.plugin.api.internal.annotations.TypeInfo;
-import com.intuso.housemate.plugin.api.internal.driver.TaskDriver;
-import com.intuso.housemate.plugin.api.internal.type.TimeUnit;
+import com.intuso.housemate.client.real.api.internal.annotations.Property;
+import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
+import com.intuso.housemate.client.real.api.internal.type.TimeUnit;
 import org.slf4j.Logger;
 
 /**
