@@ -2,6 +2,7 @@ package com.intuso.housemate.client.real.api.bridge.v1_0;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.internal.object.RealCommand;
 import com.intuso.housemate.client.v1_0.real.api.object.RealDevice;
 import com.intuso.housemate.client.v1_0.real.api.object.RealFeature;
 import com.intuso.housemate.client.v1_0.real.api.object.RealList;
@@ -15,29 +16,30 @@ public class RealDeviceBridge
         com.intuso.housemate.client.real.api.internal.object.RealCommand<?, ?, ?>,
         com.intuso.housemate.client.real.api.internal.object.RealValue<Boolean, ?, ?>,
         com.intuso.housemate.client.real.api.internal.object.RealValue<String, ?, ?>,
+        com.intuso.housemate.client.real.api.internal.object.RealFeature<?, ?, ?, ?, ?, ?, ?, ?>,
         com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealFeature<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
                 RealDeviceBridge> {
 
-    private final RealDevice<?, ?, ?, ?, ?> device;
+    private final RealDevice<?, ?, ?, RealFeature<?, ?, ?, ?, ?, ?, ?, ?>, ?, ?> device;
     private final ListMapper listMapper;
     private final CommandMapper commandMapper;
     private final ValueMapper valueMapper;
     private final FeatureMapper featureMapper;
 
     @Inject
-    public RealDeviceBridge(@Assisted RealDevice<?, ?, ?, ?, ?> device,
+    public RealDeviceBridge(@Assisted RealDevice<?, ?, ?, ?, ?, ?> device,
                             ListMapper listMapper,
                             CommandMapper commandMapper,
                             ValueMapper valueMapper,
                             FeatureMapper featureMapper) {
-        this.device = device;
+        this.device = (RealDevice<?, ?, ?, RealFeature<?, ?, ?, ?, ?, ?, ?, ?>, ?, ?>) device;
         this.listMapper = listMapper;
         this.commandMapper = commandMapper;
         this.valueMapper = valueMapper;
         this.featureMapper = featureMapper;
     }
 
-    public RealDevice<?, ?, ?, ?, ?> getDevice() {
+    public RealDevice<?, ?, ?, ?, ?, ?> getDevice() {
         return device;
     }
 
@@ -98,38 +100,53 @@ public class RealDeviceBridge
                 featureMapper.getToV1_0Function());
     }
 
-    public static class Container implements com.intuso.housemate.client.real.api.internal.object.RealDevice.Container<com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?>, com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?>, ?>> {
+    @Override
+    public RealCommand<?, ?, ?> getAddFeatureCommand() {
+        return commandMapper.map(device.getAddFeatureCommand());
+    }
 
-        private final RealDevice.Container<RealDevice<?, ?, ?, ?, ?>, RealList<? extends RealDevice<?, ?, ?, ?, ?>, ?>> container;
+    @Override
+    public void addFeature(com.intuso.housemate.client.real.api.internal.object.RealFeature<?, ?, ?, ?, ?, ?, ?, ?> feature) {
+        device.addFeature(featureMapper.map(feature));
+    }
+
+    @Override
+    public void removeFeature(com.intuso.housemate.client.real.api.internal.object.RealFeature<?, ?, ?, ?, ?, ?, ?, ?> feature) {
+        device.removeFeature(featureMapper.map(feature));
+    }
+
+    public static class Container implements com.intuso.housemate.client.real.api.internal.object.RealDevice.Container<com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?, ?>, com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?, ?>, ?>> {
+
+        private final RealDevice.Container<RealDevice<?, ?, ?, ?, ?, ?>, RealList<? extends RealDevice<?, ?, ?, ?, ?, ?>, ?>> container;
         private final DeviceMapper deviceMapper;
         private final ListMapper listMapper;
 
         @Inject
-        public Container(RealDevice.Container<RealDevice<?, ?, ?, ?, ?>, RealList<? extends RealDevice<?, ?, ?, ?, ?>, ?>> container, DeviceMapper deviceMapper, ListMapper listMapper) {
+        public Container(RealDevice.Container<RealDevice<?, ?, ?, ?, ?, ?>, RealList<? extends RealDevice<?, ?, ?, ?, ?, ?>, ?>> container, DeviceMapper deviceMapper, ListMapper listMapper) {
             this.container = container;
             this.deviceMapper = deviceMapper;
             this.listMapper = listMapper;
         }
 
         @Override
-        public void addDevice(com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?> device) {
+        public void addDevice(com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?, ?> device) {
             container.addDevice(deviceMapper.map(device));
         }
 
         @Override
-        public void removeDevice(com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?> device) {
+        public void removeDevice(com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?, ?> device) {
             container.removeDevice(deviceMapper.map(device));
         }
 
         @Override
-        public com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?>, ?> getDevices() {
-            return listMapper.map((RealList<RealDevice<?, ?, ?, ?, ?>, ?>) container.getDevices(),
+        public com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?, ?>, ?> getDevices() {
+            return listMapper.map((RealList<RealDevice<?, ?, ?, ?, ?, ?>, ?>) container.getDevices(),
                     deviceMapper.getFromV1_0Function(),
                     deviceMapper.getToV1_0Function());
         }
     }
 
     public interface Factory {
-        RealDeviceBridge create(RealDevice<?, ?, ?, ?, ?> device);
+        RealDeviceBridge create(RealDevice<?, ?, ?, ?, ?, ?> device);
     }
 }

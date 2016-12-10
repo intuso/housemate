@@ -8,22 +8,22 @@ import com.intuso.housemate.client.api.internal.object.Device;
 public interface RealDevice<COMMAND extends RealCommand<?, ?, ?>,
         BOOLEAN_VALUE extends RealValue<Boolean, ?, ?>,
         STRING_VALUE extends RealValue<String, ?, ?>,
-        FEATURES extends RealList<? extends RealFeature<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
-        DEVICE extends RealDevice<COMMAND, BOOLEAN_VALUE, STRING_VALUE, FEATURES, DEVICE>>
+        FEATURE extends RealFeature<?, ?, ?, ?, ?, ?, ?, ?>,
+        FEATURES extends RealList<? extends FEATURE, ?>,
+        DEVICE extends RealDevice<COMMAND, BOOLEAN_VALUE, STRING_VALUE, FEATURE, FEATURES, DEVICE>>
         extends Device<
-        COMMAND,
-        COMMAND,
         COMMAND,
         BOOLEAN_VALUE,
         STRING_VALUE,
         FEATURES,
-        DEVICE> {
+        DEVICE>,
+        RealFeature.Container<FEATURE, FEATURES> {
 
-    interface Container<DEVICE extends RealDevice<?, ?, ?, ?, ?>, DEVICES extends RealList<? extends DEVICE, ?>> extends Device.Container<DEVICES>, RemoveCallback<DEVICE> {
+    interface Container<DEVICE extends RealDevice<?, ?, ?, ?, ?, ?>, DEVICES extends RealList<? extends DEVICE, ?>> extends Device.Container<DEVICES>, RemoveCallback<DEVICE> {
         void addDevice(DEVICE device);
     }
 
-    interface RemoveCallback<DEVICE extends RealDevice<?, ?, ?, ?, ?>> {
+    interface RemoveCallback<DEVICE extends RealDevice<?, ?, ?, ?, ?, ?>> {
         void removeDevice(DEVICE device);
     }
 }

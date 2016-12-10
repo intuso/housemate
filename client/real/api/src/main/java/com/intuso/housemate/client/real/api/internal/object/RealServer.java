@@ -6,7 +6,7 @@ import com.intuso.housemate.client.api.internal.object.Server;
 public interface RealServer<COMMAND extends RealCommand<?, ?, ?>,
         AUTOMATION extends RealAutomation<?, ?, ?, ?, ?, ?>,
         AUTOMATIONS extends RealList<? extends AUTOMATION, ?>,
-        DEVICE extends RealDevice<?, ?, ?, ?, ?>,
+        DEVICE extends RealDevice<?, ?, ?, ?, ?, ?>,
         DEVICES extends RealList<? extends DEVICE, ?>,
         USER extends RealUser<?, ?, ?>,
         USERS extends RealList<? extends USER, ?>,

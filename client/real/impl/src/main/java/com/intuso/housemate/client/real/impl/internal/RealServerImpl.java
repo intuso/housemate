@@ -66,7 +66,7 @@ public class RealServerImpl
                         return automationFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
                     }
                 });
-        this.addAutomationCommand = addAutomationCommandFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),
+        this.addAutomationCommand = addAutomationCommandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID),
                 ChildUtil.logger(logger, ADD_AUTOMATION_ID),
                 ADD_AUTOMATION_ID,
                 ADD_AUTOMATION_ID,
@@ -83,7 +83,7 @@ public class RealServerImpl
                         return deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
                     }
                 });
-        this.addDeviceCommand = addDeviceCommandFactory.create(ChildUtil.logger(logger, DEVICES_ID),
+        this.addDeviceCommand = addDeviceCommandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_ID),
                 ChildUtil.logger(logger, ADD_DEVICE_ID),
                 ADD_DEVICE_ID,
                 ADD_DEVICE_ID,
@@ -100,7 +100,7 @@ public class RealServerImpl
                         return userFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
                     }
                 });
-        this.addUserCommand = addUserCommandFactory.create(ChildUtil.logger(logger, USERS_ID),
+        this.addUserCommand = addUserCommandFactory.create(ChildUtil.logger(logger, ADD_USER_ID),
                 ChildUtil.logger(logger, ADD_USER_ID),
                 ADD_USER_ID,
                 ADD_USER_ID,
@@ -116,25 +116,25 @@ public class RealServerImpl
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        this.automations.init(ChildUtil.name(name, AUTOMATIONS_ID), connection);
-        this.addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID), connection);
-        this.devices.init(ChildUtil.name(name, DEVICES_ID), connection);
-        this.addDeviceCommand.init(ChildUtil.name(name, ADD_DEVICE_ID), connection);
-        this.users.init(ChildUtil.name(name, USERS_ID), connection);
-        this.addUserCommand.init(ChildUtil.name(name, ADD_USER_ID), connection);
-        this.nodes.init(ChildUtil.name(name, NODES_ID), connection);
+        automations.init(ChildUtil.name(name, AUTOMATIONS_ID), connection);
+        addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID), connection);
+        devices.init(ChildUtil.name(name, DEVICES_ID), connection);
+        addDeviceCommand.init(ChildUtil.name(name, ADD_DEVICE_ID), connection);
+        users.init(ChildUtil.name(name, USERS_ID), connection);
+        addUserCommand.init(ChildUtil.name(name, ADD_USER_ID), connection);
+        nodes.init(ChildUtil.name(name, NODES_ID), connection);
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
-        this.automations.uninit();
-        this.addAutomationCommand.uninit();
-        this.devices.uninit();
-        this.addDeviceCommand.uninit();
-        this.users.uninit();
-        this.addUserCommand.uninit();
-        this.nodes.uninit();
+        automations.uninit();
+        addAutomationCommand.uninit();
+        devices.uninit();
+        addDeviceCommand.uninit();
+        users.uninit();
+        addUserCommand.uninit();
+        nodes.uninit();
     }
 
     @Override

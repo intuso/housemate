@@ -6,35 +6,35 @@ import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.Runnable;
 
 /**
- * @param <RENAME_COMMAND> the type of the command for renaming the device
- * @param <REMOVE_COMMAND> the type of the command for removing the device
- * @param <START_STOP_COMMAND> the type of the command for stopping or starting
+ * @param <COMMAND> the type of the command
  * @param <RUNNING_VALUE> the type of the running value
  * @param <ERROR_VALUE> the type of the error value
  * @param <DEVICE> the type of the device
  */
-public interface Device<RENAME_COMMAND extends Command<?, ?, ?, ?>,
-        REMOVE_COMMAND extends Command<?, ?, ?, ?>,
-        START_STOP_COMMAND extends Command<?, ?, ?, ?>,
+public interface Device<
+        COMMAND extends Command<?, ?, ?, ?>,
         RUNNING_VALUE extends Value<?, ?, ?>,
         ERROR_VALUE extends Value<?, ?, ?>,
         FEATURES extends List<? extends Feature<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
-        DEVICE extends Device<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, FEATURES, DEVICE>>
+        DEVICE extends Device<COMMAND, RUNNING_VALUE, ERROR_VALUE, FEATURES, DEVICE>>
         extends
         Object<Device.Listener<? super DEVICE>>,
-        Renameable<RENAME_COMMAND>,
-        com.intuso.housemate.client.api.internal.Runnable<START_STOP_COMMAND, RUNNING_VALUE>,
+        Renameable<COMMAND>,
+        Runnable<COMMAND, RUNNING_VALUE>,
         Failable<ERROR_VALUE>,
-        Removeable<REMOVE_COMMAND>,
+        Removeable<COMMAND>,
         Feature.Container<FEATURES> {
 
     String FEATURES_ID = "features";
+    String ADD_FEATURE_ID = "add-feature";
+
+    COMMAND getAddFeatureCommand();
 
     /**
      *
      * Listener interface for devices
      */
-    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?, ?, ?>> extends Object.Listener,
+    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?>> extends Object.Listener,
             Failable.Listener<DEVICE>,
             Renameable.Listener<DEVICE>,
             Runnable.Listener<DEVICE> {}
@@ -43,7 +43,7 @@ public interface Device<RENAME_COMMAND extends Command<?, ?, ?, ?>,
      *
      * Interface to show that the implementing object has a list of devices
      */
-    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?, ?, ?, ?>, ?>> {
+    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?, ?>, ?>> {
 
         /**
          * Gets the devices list

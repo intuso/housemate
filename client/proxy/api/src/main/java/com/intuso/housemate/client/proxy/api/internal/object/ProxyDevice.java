@@ -23,7 +23,7 @@ public abstract class ProxyDevice<
         FEATURES extends ProxyList<? extends ProxyFeature<?, ?, ?, ?, ?, ?, ?>, ?>,
         DEVICE extends ProxyDevice<COMMAND, VALUE, FEATURES, DEVICE>>
         extends ProxyObject<Device.Data, Device.Listener<? super DEVICE>>
-        implements Device<COMMAND, COMMAND, COMMAND, VALUE, VALUE, FEATURES, DEVICE>,
+        implements Device<COMMAND, VALUE, VALUE, FEATURES, DEVICE>,
         ProxyFailable<VALUE>,
         ProxyRemoveable<COMMAND>,
         ProxyRenameable<COMMAND>,
@@ -36,6 +36,7 @@ public abstract class ProxyDevice<
     private final COMMAND stopCommand;
     private final VALUE errorValue;
     private final FEATURES features;
+    private final COMMAND addFeatureCommand;
 
     /**
      * @param logger {@inheritDoc}
@@ -48,11 +49,12 @@ public abstract class ProxyDevice<
         super(logger, Device.Data.class, listenersFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
-        runningValue = valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID));
+        runningValue = valueFactory.create(ChildUtil.logger(logger, com.intuso.housemate.client.v1_0.api.Runnable.RUNNING_ID));
         startCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.START_ID));
         stopCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.STOP_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID));
         features = featuresFactory.create(ChildUtil.logger(logger, Device.FEATURES_ID));
+        addFeatureCommand = commandFactory.create(ChildUtil.logger(logger, Device.ADD_FEATURE_ID));
     }
 
     @Override
@@ -65,6 +67,7 @@ public abstract class ProxyDevice<
         stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
         features.init(ChildUtil.name(name, Device.FEATURES_ID), connection);
+        addFeatureCommand.initChildren(ChildUtil.name(name, DEVICE.ADD_FEATURE_ID), connection);
     }
 
     @Override
@@ -77,6 +80,7 @@ public abstract class ProxyDevice<
         stopCommand.uninit();
         errorValue.uninit();
         features.uninit();
+        addFeatureCommand.uninit();
     }
 
     @Override
@@ -124,5 +128,10 @@ public abstract class ProxyDevice<
     @Override
     public final FEATURES getFeatures() {
         return features;
+    }
+
+    @Override
+    public COMMAND getAddFeatureCommand() {
+        return addFeatureCommand;
     }
 }

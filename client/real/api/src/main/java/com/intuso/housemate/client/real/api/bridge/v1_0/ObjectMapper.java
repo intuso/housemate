@@ -45,7 +45,7 @@ public class ObjectMapper {
         if(object instanceof RealCommand)
             return commandMapper.map((RealCommand<?, ?, ?>)object);
         else if(object instanceof RealDevice)
-            return deviceMapper.map((RealDevice<?, ?, ?, ?, ?>)object);
+            return deviceMapper.map((RealDevice<?, ?, ?, ?, ?, ?>)object);
         else if(object instanceof RealList)
             return listMapper.map((RealList<Object<?>, ?>)object, fromV1_0Function, toV1_0Function);
         else if(object instanceof RealParameter)
@@ -61,7 +61,7 @@ public class ObjectMapper {
         if(object instanceof com.intuso.housemate.client.real.api.internal.object.RealCommand<?, ?, ?>)
             return commandMapper.map((com.intuso.housemate.client.real.api.internal.object.RealCommand)object);
         else if(object instanceof com.intuso.housemate.client.real.api.internal.object.RealDevice)
-            return deviceMapper.map((com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?>)object);
+            return deviceMapper.map((com.intuso.housemate.client.real.api.internal.object.RealDevice<?, ?, ?, ?, ?, ?>)object);
         else if(object instanceof com.intuso.housemate.client.real.api.internal.object.RealList)
             return listMapper.map((com.intuso.housemate.client.real.api.internal.object.RealList<com.intuso.housemate.client.api.internal.object.Object<?>, ?>)object, toV1_0Function, fromV1_0Function);
         else if(object instanceof com.intuso.housemate.client.real.api.internal.object.RealParameter)
