@@ -20,8 +20,7 @@ import javax.jms.JMSException;
  */
 public class ProxyDeviceBridge
         extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Device.Data, Device.Data, Device.Listener<? super ProxyDeviceBridge>>
-        implements Device<ProxyCommandBridge,
-        ProxyCommandBridge,
+        implements Device<
         ProxyCommandBridge,
         ProxyValueBridge,
         ProxyValueBridge,
@@ -35,6 +34,7 @@ public class ProxyDeviceBridge
     private final ProxyCommandBridge stopCommand;
     private final ProxyValueBridge errorValue;
     private final ProxyListBridge<ProxyFeatureBridge> features;
+    private final ProxyCommandBridge addFeatureCommand;
 
     @Inject
     protected ProxyDeviceBridge(@Assisted Logger logger,
@@ -53,6 +53,7 @@ public class ProxyDeviceBridge
         stopCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.STOP_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID));
         features = featuresFactory.create(ChildUtil.logger(logger, Device.FEATURES_ID));
+        addFeatureCommand = commandFactory.create(ChildUtil.logger(logger, Device.ADD_FEATURE_ID));
     }
 
     @Override
@@ -86,6 +87,10 @@ public class ProxyDeviceBridge
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.FEATURES_ID),
                 ChildUtil.name(internalName, Device.FEATURES_ID),
                 connection);
+        addFeatureCommand.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_FEATURE_ID),
+                ChildUtil.name(internalName, Device.ADD_FEATURE_ID),
+                connection);
     }
 
     @Override
@@ -98,6 +103,7 @@ public class ProxyDeviceBridge
         stopCommand.uninit();
         errorValue.uninit();
         features.uninit();
+        addFeatureCommand.uninit();
     }
 
     @Override
@@ -133,5 +139,10 @@ public class ProxyDeviceBridge
     @Override
     public ProxyListBridge<ProxyFeatureBridge> getFeatures() {
         return features;
+    }
+
+    @Override
+    public ProxyCommandBridge getAddFeatureCommand() {
+        return addFeatureCommand;
     }
 }
