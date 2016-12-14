@@ -43,6 +43,7 @@ public final class PowerByCommandFeature implements FeatureDriver, StatefulPower
     /**
 	 * Turn the feature on
 	 */
+    @Override
     public void turnOn() {
         String command = onCommandProperty;
         if(command != null) {
@@ -59,6 +60,7 @@ public final class PowerByCommandFeature implements FeatureDriver, StatefulPower
 	/**
 	 * Turn the feature off
 	 */
+	@Override
     public void turnOff() {
         String command = offCommandProperty;
         if(command != null) {

@@ -19,6 +19,11 @@
 			<version>${intuso.housemate.client.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>com.intuso.housemate</groupId>
+			<artifactId>housemate-extension-plugin-homeeasyuk-hardwareapi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.rfxcom</groupId>
 			<artifactId>rfxtrx</artifactId>
 			<version>1.1.0-SNAPSHOT</version>

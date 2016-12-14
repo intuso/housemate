@@ -7,20 +7,20 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-	<artifactId>housemate-extension-plugin-homeeasyuk-feature</artifactId>
+	<artifactId>housemate-extension-plugin-homeeasyuk-hardwareapi</artifactId>
     <packaging>jar</packaging>
-	<name>Housemate Extension Plugin HomeEasy UK Feature</name>
-    <description>Housemate extension plugin for HomeEasy UK features</description>
+	<name>Housemate Extension Plugin HomeEasy UK Hardware API</name>
+    <description>Hardware API for HomeEasy UK</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.intuso.housemate</groupId>
-			<artifactId>housemate-extension-plugin-homeeasyuk-hardwareapi</artifactId>
-			<version>${project.version}</version>
+			<groupId>com.intuso.utilities</groupId>
+			<artifactId>utilities-listener</artifactId>
+			<version>${intuso.utilities.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.intuso.housemate</groupId>
-			<artifactId>housemate-client-1-0-proxy-simple</artifactId>
+			<artifactId>housemate-client-1-0-real-api</artifactId>
 			<version>${intuso.housemate.client.version}</version>
 		</dependency>
 	</dependencies>
