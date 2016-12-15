@@ -1,23 +1,23 @@
 package com.intuso.housemate.client.real.api.internal.type;
 
 import com.intuso.housemate.client.real.api.internal.annotations.Composite;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import com.intuso.housemate.client.real.api.internal.annotations.IntegerWrap;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 
 /**
  * Simple representation of a time
  */
-@TypeInfo(id = "time", name = "Time", description = "Time of day")
+@Id(value = "time", name = "Time", description = "Time of day")
 @Composite
 public class Time implements Comparable<Time> {
 
-    @TypeInfo(id = "hour", name = "Hour", description = "Hour of the day")
+    @Id(value = "hour", name = "Hour", description = "Hour of the day")
     private Hour hour;
 
-    @TypeInfo(id = "minute", name = "Minute", description = "Minute of the hour")
+    @Id(value = "minute", name = "Minute", description = "Minute of the hour")
     private Minute minute;
 
-    @TypeInfo(id = "second", name = "Second", description = "Second of the day")
+    @Id(value = "second", name = "Second", description = "Second of the day")
     private Second second;
 
     private Time() {}

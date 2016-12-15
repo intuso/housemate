@@ -3,8 +3,8 @@ package com.intuso.housemate.plugin.rfxcom;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.HardwareDriver;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKHardwareAPI;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 /**
  * Created by tomc on 16/03/15.
  */
-@TypeInfo(id = "rfxtrx433", name = "RFXtr433", description = "RFXCom 433MHz Transceiver")
+@Id(value = "rfxtrx433", name = "RFXtr433", description = "RFXCom 433MHz Transceiver")
 public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKHardwareAPI {
 
     private final Logger logger;
@@ -40,7 +40,7 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKHardwareAPI 
     }
 
     @Property(value = "string")
-    @TypeInfo(id = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names")
+    @Id(value = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names")
     public void setPattern(String pattern) {
         this.pattern = pattern;
         rfxtrx.setPatterns(Lists.newArrayList(Pattern.compile(pattern)));
@@ -51,7 +51,7 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKHardwareAPI 
     }
 
     @Property(value = "boolean")
-    @TypeInfo(id = "listen", name = "Listen for new devices", description = "Create a new device when a command is received for it")
+    @Id(value = "listen", name = "Listen for new devices", description = "Create a new device when a command is received for it")
     public void setListen(boolean listen) {
         this.listen = listen;
         // todo listen for new devices

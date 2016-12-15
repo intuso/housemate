@@ -1,6 +1,6 @@
 package com.intuso.housemate.plugin.rfxcom.ioc;
 
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
 import com.intuso.housemate.client.v1_0.real.api.module.AnnotatedPluginModule;
 import com.intuso.housemate.client.v1_0.real.api.module.FeatureDrivers;
 import com.intuso.housemate.client.v1_0.real.api.module.HardwareDrivers;
@@ -10,7 +10,7 @@ import com.intuso.housemate.plugin.rfxcom.old.lighting2.Lighting2ACAppliance;
 import com.intuso.housemate.plugin.rfxcom.old.lighting2.Lighting2HomeEasyEUAppliance;
 import com.intuso.housemate.plugin.rfxcom.old.temperaturesensor.*;
 
-@TypeInfo(id = "com.intuso.housemate.plugin.rfxcom.hardware", name = "RFXCom hardware plugin", description = "Plugin for an RFXCom Transceiver")
+@Id(value = "com.intuso.housemate.plugin.rfxcom.hardware", name = "RFXCom hardware plugin", description = "Plugin for an RFXCom Transceiver")
 @HardwareDrivers(RFXtrx433Hardware.class)
 @FeatureDrivers({Lighting1ARCAppliance.class,
         Lighting2ACAppliance.class,

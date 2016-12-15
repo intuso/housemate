@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Values;
 import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
@@ -16,7 +16,7 @@ import java.io.*;
 /**
  */
 
-@TypeInfo(id = "arduino-temp-sensor", name = "Arduino Temperature Sensor", description = "Arduino Temperature Sensor")
+@Id(value = "arduino-temp-sensor", name = "Arduino Temperature Sensor", description = "Arduino Temperature Sensor")
 public class ArduinoTemperatureSensor implements FeatureDriver {
 
     private final Logger logger;
@@ -111,7 +111,7 @@ public class ArduinoTemperatureSensor implements FeatureDriver {
     private interface TemperatureValues {
 
         @Value("double")
-        @TypeInfo(id = "temperature", name = "Temperature", description = "Current temperature")
+        @Id(value = "temperature", name = "Temperature", description = "Current temperature")
         void setTemperature(double temperature);
     }
 }

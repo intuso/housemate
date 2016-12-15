@@ -5,8 +5,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.real.api.internal.annotations.Composite;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import com.intuso.housemate.client.real.api.internal.annotations.Regex;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.type.RegexType;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
@@ -70,37 +70,37 @@ public class TypeBuilder {
     }
 
     private String getId(Class<?> typeClass) {
-        TypeInfo typeInfo = typeClass.getAnnotation(TypeInfo.class);
-        if(typeInfo == null)
-            throw new HousemateException(typeClass.getName() + " is missing " + TypeInfo.class + " annotation");
-        return typeInfo.id();
+        Id id = typeClass.getAnnotation(Id.class);
+        if(id == null)
+            throw new HousemateException(typeClass.getName() + " is missing " + Id.class + " annotation");
+        return id.value();
     }
 
     private String getName(Class<?> typeClass, String id) {
-        TypeInfo typeInfo = typeClass.getAnnotation(TypeInfo.class);
+        Id typeInfo = typeClass.getAnnotation(Id.class);
         if(typeInfo == null)
-            throw new HousemateException(typeClass.getName() + " is missing " + TypeInfo.class + " annotation");
+            throw new HousemateException(typeClass.getName() + " is missing " + Id.class + " annotation");
         return typeInfo.name().length() == 0 ? id : typeInfo.name();
     }
 
     private String getDescription(Class<?> typeClass, String name) {
-        TypeInfo typeInfo = typeClass.getAnnotation(TypeInfo.class);
-        if(typeInfo == null)
-            throw new HousemateException(typeClass.getName() + " is missing " + TypeInfo.class + " annotation");
-        return typeInfo.description().length() == 0 ? name : typeInfo.description();
+        Id id = typeClass.getAnnotation(Id.class);
+        if(id == null)
+            throw new HousemateException(typeClass.getName() + " is missing " + Id.class + " annotation");
+        return id.description().length() == 0 ? name : id.description();
     }
 
     private String getRegex(Class<?> typeClass) {
         Regex regex = typeClass.getAnnotation(Regex.class);
         if(regex == null)
-            throw new HousemateException(typeClass.getName() + " is missing " + TypeInfo.class + " annotation");
+            throw new HousemateException(typeClass.getName() + " is missing " + Id.class + " annotation");
         return regex.regex();
     }
 
     private RegexType.Factory<?> getRegexTypeFactory(Injector injector, Class<?> typeClass) {
         Regex regex = typeClass.getAnnotation(Regex.class);
         if(regex == null)
-            throw new HousemateException(typeClass.getName() + " is missing " + TypeInfo.class + " annotation");
+            throw new HousemateException(typeClass.getName() + " is missing " + Id.class + " annotation");
         return injector.getInstance(regex.factory());
     }
 

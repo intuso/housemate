@@ -3,8 +3,8 @@ package com.intuso.housemate.extension.plugin.homeeasyuk.feature;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyHardware;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.real.api.feature.StatefulPowerControl;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKHardwareAPI;
@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 /**
  * Created by tomc on 12/12/16.
  */
-@TypeInfo(id = "homeeasyuk-appliance", name = "HomeEasy UK Appliance", description = "Power something on and off as a HomeEasy UK appliance")
+@Id(value = "homeeasyuk-appliance", name = "HomeEasy UK Appliance", description = "Power something on and off as a HomeEasy UK appliance")
 public class HomeEasyUKFeature implements FeatureDriver, StatefulPowerControl, HomeEasyUKHardwareAPI.Appliance.Listener {
 
     private final Logger logger;
@@ -40,21 +40,21 @@ public class HomeEasyUKFeature implements FeatureDriver, StatefulPowerControl, H
     }
 
     @Property
-    @TypeInfo(id = "hardware", name = "Hardware", description = "Hardware providing communication to the HomeEasy UK appliance")
+    @Id(value = "hardware", name = "Hardware", description = "Hardware providing communication to the HomeEasy UK appliance")
     public void setHardware(SimpleProxyHardware hardware) {
         this.hardware = hardware;
         reconfigure(false);
     }
 
     @Property
-    @TypeInfo(id = "houseId", name = "House ID", description = "The house ID of the HomeEasy UK appliance")
+    @Id(value = "houseId", name = "House ID", description = "The house ID of the HomeEasy UK appliance")
     public void setHouseId(Integer houseId) {
         this.houseId = houseId;
         reconfigure(false);
     }
 
     @Property
-    @TypeInfo(id = "untiId", name = "Unit ID", description = "The unit ID of the HomeEasy UK appliance")
+    @Id(value = "untiId", name = "Unit ID", description = "The unit ID of the HomeEasy UK appliance")
     public void setUnitId(Integer unitId) {
         this.unitId = unitId;
         reconfigure(false);
@@ -92,7 +92,7 @@ public class HomeEasyUKFeature implements FeatureDriver, StatefulPowerControl, H
             callback.setError(null);
             applianceProxy = homeEasyUKHardwareProxyFactory.create(logger, hardware).appliance(houseId, unitId.byteValue());
             values.isOn(applianceProxy.isOn());
-            applianceListener = applianceProxy.listen(this);
+            applianceListener = applianceProxy.addListener(this);
         }
     }
 

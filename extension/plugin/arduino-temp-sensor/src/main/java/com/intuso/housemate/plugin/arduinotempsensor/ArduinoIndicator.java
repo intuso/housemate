@@ -2,8 +2,8 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.real.api.feature.StatefulPowerControl;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import java.io.IOException;
 
 /**
  */
-@TypeInfo(id = "arduino-indicator", name = "Arduino Indicator", description = "Arduino Indicator")
+@Id(value = "arduino-indicator", name = "Arduino Indicator", description = "Arduino Indicator")
 public class ArduinoIndicator implements FeatureDriver, StatefulPowerControl {
 
     // todo use remote hardware
@@ -20,11 +20,11 @@ public class ArduinoIndicator implements FeatureDriver, StatefulPowerControl {
     private final SerialPortWrapper serialPort;
 
     @Property("string")
-    @TypeInfo(id = "colour", name = "Colour", description = "Colour of the indicator")
+    @Id(value = "colour", name = "Colour", description = "Colour of the indicator")
     public String colour;
 
     @Property("integer")
-    @TypeInfo(id = "intensity", name = "Intensity", description = "Intensity of the indicator")
+    @Id(value = "intensity", name = "Intensity", description = "Intensity of the indicator")
     public int intensity;
 
     private final Logger logger;

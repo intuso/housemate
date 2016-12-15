@@ -126,7 +126,7 @@ public class HomeEasyUKHardwareProxy implements HomeEasyUKHardwareAPI {
         }
 
         @Override
-        public ListenerRegistration listen(Listener listener) {
+        public ListenerRegistration addListener(Listener listener) {
             if(valueListenerRegistration == null) {
                 ensureIsOnValue();
                 valueListenerRegistration = isOnValue.addObjectListener(this);

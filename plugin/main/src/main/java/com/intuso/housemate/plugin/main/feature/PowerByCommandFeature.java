@@ -3,8 +3,8 @@ package com.intuso.housemate.plugin.main.feature;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.FeatureDriver;
 import com.intuso.housemate.client.real.api.internal.feature.StatefulPowerControl;
 import org.slf4j.Logger;
@@ -14,15 +14,15 @@ import java.io.IOException;
 /**
  * Feature that allows On/Off functionality by performing a system command.
  */
-@TypeInfo(id = "power-by-command", name = "Power By Command", description = "Feature which runs a configured command to turn things on and off")
+@Id(value = "power-by-command", name = "Power By Command", description = "Feature which runs a configured command to turn things on and off")
 public final class PowerByCommandFeature implements FeatureDriver, StatefulPowerControl {
 
     @Property("string")
-    @TypeInfo(id = "on-command", name = "On Command", description = "The command to turn the feature on")
+    @Id(value = "on-command", name = "On Command", description = "The command to turn the feature on")
     private String onCommandProperty;
 
     @Property("string")
-    @TypeInfo(id = "off-command", name = "Off Command", description = "The command to turn the feature off")
+    @Id(value = "off-command", name = "Off Command", description = "The command to turn the feature off")
     private String offCommandProperty;
 
     private StatefulPowerControl.PowerValues powerValues;

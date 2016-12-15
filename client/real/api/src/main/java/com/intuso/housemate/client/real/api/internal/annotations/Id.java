@@ -7,8 +7,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
-public @interface TypeInfo {
-    String id();
+public @interface Id {
+    String value();
     String name() default "";
     String description() default "";
 }

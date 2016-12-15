@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.rfxcom.old.lighting2;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
 import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import org.slf4j.Logger;
  * Housemate device that controls a USB relay
  *
  */
-@TypeInfo(id = "rfxcom-lighting2-homeeasyeu", name = "Lighting2 HomeEasyEU", description = "RFXCom Lighting2 HomeEasy EU Appliance")
+@Id(value = "rfxcom-lighting2-homeeasyeu", name = "Lighting2 HomeEasyEU", description = "RFXCom Lighting2 HomeEasy EU Appliance")
 public class Lighting2HomeEasyEUAppliance extends com.intuso.housemate.plugin.rfxcom.old.lighting2.Lighting2Appliance {
 
 	@Inject

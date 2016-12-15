@@ -65,71 +65,71 @@ public class FactoryPluginListener implements PluginListener {
     private void removeTypes(Injector pluginInjector) {
         for(PluginResource<Class<?>> typeResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<Class<?>>>>() {})) {
             logger.debug("Removing type " + getClass().getName());
-            types.typeUnavailable(typeResource.getTypeInfo().id());
+            types.typeUnavailable(typeResource.getId().value());
         }
     }
 
     private void addConditionDriverFactories(Injector pluginInjector) {
         for(PluginResource<? extends ConditionDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends ConditionDriver.Factory<?>>>>() {})) {
-            logger.debug("Adding condition factory for type " + factoryResource.getTypeInfo().id());
-            conditionDriverType.factoryAvailable(factoryResource.getTypeInfo().id(),
-                    factoryResource.getTypeInfo().name(), factoryResource.getTypeInfo().description(),
+            logger.debug("Adding condition factory for type " + factoryResource.getId().value());
+            conditionDriverType.factoryAvailable(factoryResource.getId().value(),
+                    factoryResource.getId().name(), factoryResource.getId().description(),
                     factoryResource.getResource());
         }
     }
 
     private void removeConditionDriverFactories(Injector pluginInjector) {
         for(PluginResource<? extends ConditionDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends ConditionDriver.Factory<?>>>>() {})) {
-            logger.debug("Removing condition factory for type " + factoryResource.getTypeInfo().id());
-            conditionDriverType.factoryUnavailable(factoryResource.getTypeInfo().id());
+            logger.debug("Removing condition factory for type " + factoryResource.getId().value());
+            conditionDriverType.factoryUnavailable(factoryResource.getId().value());
         }
     }
 
     private void addDeviceDriverFactories(Injector pluginInjector) {
         for(PluginResource<? extends FeatureDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends FeatureDriver.Factory<?>>>>() {})) {
-            logger.debug("Adding device factory for type " + factoryResource.getTypeInfo().id());
-            featureDriverType.factoryAvailable(factoryResource.getTypeInfo().id(),
-                    factoryResource.getTypeInfo().name(), factoryResource.getTypeInfo().description(),
+            logger.debug("Adding device factory for type " + factoryResource.getId().value());
+            featureDriverType.factoryAvailable(factoryResource.getId().value(),
+                    factoryResource.getId().name(), factoryResource.getId().description(),
                     factoryResource.getResource());
         }
     }
 
     private void removeDeviceDriverFactories(Injector pluginInjector) {
         for(PluginResource<? extends FeatureDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends FeatureDriver.Factory<?>>>>() {})) {
-            logger.debug("Removing device factory for type " + factoryResource.getTypeInfo().id());
-            featureDriverType.factoryUnavailable(factoryResource.getTypeInfo().id());
+            logger.debug("Removing device factory for type " + factoryResource.getId().value());
+            featureDriverType.factoryUnavailable(factoryResource.getId().value());
         }
     }
 
     private void addHardwareDriverFactories(Injector pluginInjector) {
         for(PluginResource<? extends HardwareDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends HardwareDriver.Factory<?>>>>() {})) {
-            logger.debug("Adding hardware factory for type " + factoryResource.getTypeInfo().id());
-            hardwareDriverType.factoryAvailable(factoryResource.getTypeInfo().id(),
-                    factoryResource.getTypeInfo().name(), factoryResource.getTypeInfo().description(),
+            logger.debug("Adding hardware factory for type " + factoryResource.getId().value());
+            hardwareDriverType.factoryAvailable(factoryResource.getId().value(),
+                    factoryResource.getId().name(), factoryResource.getId().description(),
                     factoryResource.getResource());
         }
     }
 
     private void removeHardwareDriverFactories(Injector pluginInjector) {
         for(PluginResource<? extends HardwareDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends HardwareDriver.Factory<?>>>>() {})) {
-            logger.debug("Removing hardware factory for type " + factoryResource.getTypeInfo().id());
-            hardwareDriverType.factoryUnavailable(factoryResource.getTypeInfo().id());
+            logger.debug("Removing hardware factory for type " + factoryResource.getId().value());
+            hardwareDriverType.factoryUnavailable(factoryResource.getId().value());
         }
     }
 
     private void addTaskDriverFactories(Injector pluginInjector) {
         for(PluginResource<? extends TaskDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends TaskDriver.Factory<?>>>>() {})) {
-            logger.debug("Adding task factory for type " + factoryResource.getTypeInfo().id());
-            taskDriverType.factoryAvailable(factoryResource.getTypeInfo().id(),
-                    factoryResource.getTypeInfo().name(), factoryResource.getTypeInfo().description(),
+            logger.debug("Adding task factory for type " + factoryResource.getId().value());
+            taskDriverType.factoryAvailable(factoryResource.getId().value(),
+                    factoryResource.getId().name(), factoryResource.getId().description(),
                     factoryResource.getResource());
         }
     }
 
     private void removeTaskDriverFactories(Injector pluginInjector) {
         for(PluginResource<? extends TaskDriver.Factory<?>> factoryResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<? extends TaskDriver.Factory<?>>>>() {})) {
-            logger.debug("Removing task factory for type " + factoryResource.getTypeInfo().id());
-            taskDriverType.factoryUnavailable(factoryResource.getTypeInfo().id());
+            logger.debug("Removing task factory for type " + factoryResource.getId().value());
+            taskDriverType.factoryUnavailable(factoryResource.getId().value());
         }
     }
 }

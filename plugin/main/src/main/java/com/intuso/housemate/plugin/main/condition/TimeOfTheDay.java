@@ -2,8 +2,8 @@ package com.intuso.housemate.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.type.Time;
 import org.slf4j.Logger;
@@ -14,7 +14,7 @@ import java.util.Calendar;
  * Condition that is true during a set period of time
  *
  */
-@TypeInfo(id = "time-of-the-day", name = "Time of the Day", description = "Condition that is true for certain parts of the day")
+@Id(value = "time-of-the-day", name = "Time of the Day", description = "Condition that is true for certain parts of the day")
 public class TimeOfTheDay implements ConditionDriver {
 
     /**
@@ -36,14 +36,14 @@ public class TimeOfTheDay implements ConditionDriver {
      * String version of the time that, once passed, makes the condition unsatisfied. Default is the start of the day
      */
     @Property("time")
-    @TypeInfo(id = "before", name = "Before", description = "The condition is satisfied when the current time is before this time")
+    @Id(value = "before", name = "Before", description = "The condition is satisfied when the current time is before this time")
     private Time before;
 
     /**
      * String version of the time that, until reached, makes the condition unsatisfied
      */
     @Property("time")
-    @TypeInfo(id = "after", name = "After", description = "The condition is satisfied when the current time is after this time")
+    @Id(value = "after", name = "After", description = "The condition is satisfied when the current time is after this time")
     private Time after;
 
     private final Logger logger;

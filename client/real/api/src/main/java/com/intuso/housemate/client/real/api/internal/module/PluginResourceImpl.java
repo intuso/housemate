@@ -1,23 +1,22 @@
 package com.intuso.housemate.client.real.api.internal.module;
 
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 
 /**
  * Created by tomc on 06/11/15.
  */
 public class PluginResourceImpl<RESOURCE> implements PluginResource<RESOURCE> {
 
-    private final TypeInfo typeInfo;
+    private final Id id;
     private final RESOURCE resource;
 
-    public PluginResourceImpl(TypeInfo typeInfo, RESOURCE resource) {
-        this.typeInfo = typeInfo;
+    public PluginResourceImpl(Id id, RESOURCE resource) {
+        this.id = id;
         this.resource = resource;
     }
 
-    @Override
-    public TypeInfo getTypeInfo() {
-        return typeInfo;
+    public Id getId() {
+        return id;
     }
 
     @Override

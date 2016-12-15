@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import org.slf4j.Logger;
 
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.Map;
  * Part of a condition tree whose node is true iff all child nodes are true
  *
  */
-@TypeInfo(id = "and", name = "And", description = "True only when all child conditions are true")
+@Id(value = "and", name = "And", description = "True only when all child conditions are true")
 public class And extends LogicCondition {
 
 	private final Logger logger;

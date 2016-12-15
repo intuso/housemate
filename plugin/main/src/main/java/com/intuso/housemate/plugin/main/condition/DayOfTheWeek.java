@@ -2,8 +2,8 @@ package com.intuso.housemate.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.type.Day;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ import java.util.Set;
  * those specified by the user
  *
  */
-@TypeInfo(id = "day-of-the-week", name = "Day of the Week", description = "Condition that is true on certain days of the week")
+@Id(value = "day-of-the-week", name = "Day of the Week", description = "Condition that is true on certain days of the week")
 public class DayOfTheWeek implements ConditionDriver {
 
     private final Map<Day, Integer> DAY_MAP = new HashMap<Day, Integer>() {
@@ -38,7 +38,7 @@ public class DayOfTheWeek implements ConditionDriver {
 	 * then monday etc. Right-most bit is saturday
 	 */
     @Property("days")
-    @TypeInfo(id = "days", name = "Days", description = "The days that satisfy the condition")
+    @Id(value = "days", name = "Days", description = "The days that satisfy the condition")
 	private Set<Day> days;
 
     private final Logger logger;

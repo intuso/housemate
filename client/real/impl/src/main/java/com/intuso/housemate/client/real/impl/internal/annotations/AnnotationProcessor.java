@@ -44,14 +44,14 @@ public class AnnotationProcessor {
     private Iterable<RealCommandImpl> findV1_0Commands(Logger logger, Object object, Class<?> clazz) {
         List<RealCommandImpl> commands = Lists.newArrayList();
         for(Map.Entry<Method, Command> commandMethod : getAnnotatedMethods(clazz, Command.class).entrySet()) {
-            TypeInfo typeInfo = commandMethod.getKey().getAnnotation(TypeInfo.class);
-            if(typeInfo == null)
-                throw new HousemateException("No " + TypeInfo.class.getName() + " on command method " + commandMethod.getKey().getName() + " of class " + clazz);
+            Id id = commandMethod.getKey().getAnnotation(Id.class);
+            if(id == null)
+                throw new HousemateException("No " + Id.class.getName() + " on command method " + commandMethod.getKey().getName() + " of class " + clazz);
             List<RealParameterImpl<?>> parameters = parseV1_0Parameters(logger, clazz, commandMethod.getKey());
-            commands.add(commandFactory.create(ChildUtil.logger(logger, typeInfo.id()),
-                    typeInfo.id(),
-                    typeInfo.name(),
-                    typeInfo.description(),
+            commands.add(commandFactory.create(ChildUtil.logger(logger, id.value()),
+                    id.value(),
+                    id.name(),
+                    id.description(),
                     new MethodCommandPerformer(commandMethod.getKey(), object, parameters),
                     parameters));
         }
@@ -68,14 +68,14 @@ public class AnnotationProcessor {
                         + " is not annotated with " + Parameter.class.getName());
             if(!types.exists(parameterAnnotation.value()))
                 throw new HousemateException(parameterAnnotation.value() + " type does not exist");
-            TypeInfo typeInfo = getAnnotation(parameterAnnotations[a], TypeInfo.class);
-            if(typeInfo == null)
-                throw new HousemateException("No " + TypeInfo.class.getName() + " on parameter " + a + " of command method " + method.getName() + " of class " + clazz);
+            Id id = getAnnotation(parameterAnnotations[a], Id.class);
+            if(id == null)
+                throw new HousemateException("No " + Id.class.getName() + " on parameter " + a + " of command method " + method.getName() + " of class " + clazz);
             result.add(types.createParameter(parameterAnnotation.value(),
-                    ChildUtil.logger(logger, typeInfo.id()),
-                    typeInfo.id(),
-                    typeInfo.name(),
-                    typeInfo.description(),
+                    ChildUtil.logger(logger, id.value()),
+                    id.value(),
+                    id.name(),
+                    id.description(),
                     parameterAnnotation.minValues(),
                     parameterAnnotation.maxValues()));
         }
@@ -101,17 +101,17 @@ public class AnnotationProcessor {
             }
             if(!types.exists(propertyField.getValue().value()))
                 throw new HousemateException(propertyField.getValue().value() + " type does not exist");
-            TypeInfo typeInfo = propertyField.getKey().getAnnotation(TypeInfo.class);
-            if(typeInfo == null)
-                throw new HousemateException("No " + TypeInfo.class.getName() + " on property field" + propertyField.getKey().getName() + " of class " + clazz);
-            RealPropertyImpl<Object> property = types.createProperty(propertyField.getValue().value(), ChildUtil.logger(logger, typeInfo.id()),
-                    typeInfo.id(),
-                    typeInfo.name(),
-                    typeInfo.description(),
+            Id id = propertyField.getKey().getAnnotation(Id.class);
+            if(id == null)
+                throw new HousemateException("No " + Id.class.getName() + " on property field" + propertyField.getKey().getName() + " of class " + clazz);
+            RealPropertyImpl<Object> property = types.createProperty(propertyField.getValue().value(), ChildUtil.logger(logger, id.value()),
+                    id.value(),
+                    id.name(),
+                    id.description(),
                     propertyField.getValue().minValues(),
                     propertyField.getValue().maxValues(),
                     Lists.newArrayList(value));
-            property.addObjectListener(new FieldPropertySetter<>(ChildUtil.logger(logger, typeInfo.id()), propertyField.getKey(), object));
+            property.addObjectListener(new FieldPropertySetter<>(ChildUtil.logger(logger, id.value()), propertyField.getKey(), object));
             properties.add(property);
         }
         for(Map.Entry<Method, Property> propertyMethod : getAnnotatedMethods(clazz, Property.class).entrySet()) {
@@ -119,19 +119,19 @@ public class AnnotationProcessor {
                 throw new HousemateException(propertyMethod.getKey().getName() + " must take a single argument");
             if(!types.exists(propertyMethod.getValue().value()))
                 throw new HousemateException(propertyMethod.getValue().value() + " type does not exist");
-            TypeInfo typeInfo = propertyMethod.getKey().getAnnotation(TypeInfo.class);
-            if(typeInfo == null)
-                throw new HousemateException("No " + TypeInfo.class.getName() + " on property field" + propertyMethod.getKey().getName() + " of class " + clazz);
+            Id id = propertyMethod.getKey().getAnnotation(Id.class);
+            if(id == null)
+                throw new HousemateException("No " + Id.class.getName() + " on property field" + propertyMethod.getKey().getName() + " of class " + clazz);
             Object value = getV1_0InitialValue(logger, object, clazz, propertyMethod.getKey().getName());
             RealPropertyImpl<Object> property = types.createProperty(propertyMethod.getValue().value(),
-                    ChildUtil.logger(logger, typeInfo.id()),
-                    typeInfo.id(),
-                    typeInfo.name(),
-                    typeInfo.description(),
+                    ChildUtil.logger(logger, id.value()),
+                    id.value(),
+                    id.name(),
+                    id.description(),
                     propertyMethod.getValue().minValues(),
                     propertyMethod.getValue().maxValues(),
                     Lists.newArrayList(value));
-            property.addObjectListener(new MethodPropertySetter(ChildUtil.logger(logger, typeInfo.id()), propertyMethod.getKey(), object));
+            property.addObjectListener(new MethodPropertySetter(ChildUtil.logger(logger, id.value()), propertyMethod.getKey(), object));
             properties.add(property);
         }
         return properties;
@@ -203,12 +203,12 @@ public class AnnotationProcessor {
         for(Map.Entry<Method, Value> valueMethod : getAnnotatedMethods(clazz, Value.class).entrySet()) {
             if(!types.exists(valueMethod.getValue().value()))
                 throw new HousemateException(valueMethod.getValue().value() + " type does not exist");
-            TypeInfo typeInfo = valueMethod.getKey().getAnnotation(TypeInfo.class);
+            Id id = valueMethod.getKey().getAnnotation(Id.class);
             RealValueImpl<?> value = types.createValue(valueMethod.getValue().value(),
-                    ChildUtil.logger(logger, typeInfo.id()),
-                    typeInfo.id(),
-                    typeInfo.name(),
-                    typeInfo.description(),
+                    ChildUtil.logger(logger, id.value()),
+                    id.value(),
+                    id.name(),
+                    id.description(),
                     valueMethod.getValue().minValues(),
                     valueMethod.getValue().maxValues(),
                     Lists.newArrayList());

@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import org.slf4j.Logger;
 
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Map;
  * Condition which is true iff the sub-condition is false
  *
  */
-@TypeInfo(id = "not", name = "Not", description = "Negation of the child condition")
+@Id(value = "not", name = "Not", description = "Negation of the child condition")
 public class Not extends LogicCondition {
 
     private final Logger logger;

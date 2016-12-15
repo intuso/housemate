@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.intuso.housemate.client.real.api.bridge.v1_0.ioc.PluginV1_0BridgeModule;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import com.intuso.housemate.client.real.api.internal.module.PluginListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -87,14 +87,14 @@ public class PluginHost implements PluginFinder.Listener {
         Version version = detectVersion(pluginInjector);
         pluginInjector = version.createChildInjector(pluginInjector);
 
-        TypeInfo typeInfo = pluginInjector.getInstance(TypeInfo.class);
+        Id id = pluginInjector.getInstance(Id.class);
 
         // some plugins add more plugin listeners, so need prevent concurrent modification
         for(PluginListener listener : Lists.newArrayList(pluginListeners))
             listener.pluginAdded(pluginInjector);
 
-        pluginInjectors.put(typeInfo.id(), pluginInjector);
-        return typeInfo.id();
+        pluginInjectors.put(id.value(), pluginInjector);
+        return id.value();
     }
 
     @Override
@@ -126,11 +126,11 @@ public class PluginHost implements PluginFinder.Listener {
 
     private Version detectVersion(Injector pluginInjector) {
         try {
-            pluginInjector.getInstance(TypeInfo.class);
+            pluginInjector.getInstance(Id.class);
             return Version.Internal;
         } catch(Throwable t) {}
         try {
-            pluginInjector.getInstance(com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo.class);
+            pluginInjector.getInstance(com.intuso.housemate.client.v1_0.real.api.annotations.Id.class);
             return Version.V1_0;
         } catch(Throwable t) {}
         throw new HousematePluginException("Could not detect plugin api version");

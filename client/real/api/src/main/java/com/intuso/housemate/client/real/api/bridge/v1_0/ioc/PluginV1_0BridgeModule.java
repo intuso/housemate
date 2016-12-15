@@ -6,13 +6,13 @@ import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.intuso.housemate.client.real.api.bridge.v1_0.IdBridge;
 import com.intuso.housemate.client.real.api.bridge.v1_0.PluginResourceMapper;
-import com.intuso.housemate.client.real.api.bridge.v1_0.TypeInfoBridge;
 import com.intuso.housemate.client.real.api.bridge.v1_0.driver.ConditionDriverFactoryMapper;
 import com.intuso.housemate.client.real.api.bridge.v1_0.driver.FeatureDriverFactoryMapper;
 import com.intuso.housemate.client.real.api.bridge.v1_0.driver.HardwareDriverFactoryMapper;
 import com.intuso.housemate.client.real.api.bridge.v1_0.driver.TaskDriverFactoryMapper;
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
+import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
 import com.intuso.housemate.client.v1_0.real.api.driver.ConditionDriver;
 import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.real.api.driver.HardwareDriver;
@@ -31,8 +31,8 @@ public class PluginV1_0BridgeModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public com.intuso.housemate.client.real.api.internal.annotations.TypeInfo getTypeInfo(TypeInfo typeInfo) {
-        return new TypeInfoBridge(typeInfo);
+    public com.intuso.housemate.client.real.api.internal.annotations.Id getTypeInfo(Id id) {
+        return new IdBridge(id);
     }
 
     @Provides

@@ -5,7 +5,7 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.google.inject.*;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import com.intuso.housemate.client.real.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.real.api.internal.driver.FeatureDriver;
 import com.intuso.housemate.client.real.api.internal.driver.HardwareDriver;
@@ -26,8 +26,8 @@ public abstract class AnnotatedPluginModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public TypeInfo getTypeInfo() {
-        return getClass().getAnnotation(TypeInfo.class);
+    public Id getTypeInfo() {
+        return getClass().getAnnotation(Id.class);
     }
 
     @Provides
@@ -99,7 +99,7 @@ public abstract class AnnotatedPluginModule extends AbstractModule {
             @Override
             public PluginResource<Class<?>> apply(Class<?> resourceClass) {
                 return new PluginResourceImpl<Class<?>>(
-                        getClassAnnotation(resourceClass, TypeInfo.class),
+                        getClassAnnotation(resourceClass, Id.class),
                         resourceClass);
             }
         };
@@ -116,7 +116,7 @@ public abstract class AnnotatedPluginModule extends AbstractModule {
                 TypeLiteral<FACTORY_GENERIC> typeLiteral = (TypeLiteral<FACTORY_GENERIC>) TypeLiteral.get(type);
 
                 return new PluginResourceImpl<>(
-                        getClassAnnotation(resourceInstanceClass, TypeInfo.class),
+                        getClassAnnotation(resourceInstanceClass, Id.class),
                         injector.createChildInjector(new FactoryModuleBuilder().build(typeLiteral)).getInstance(Key.get(typeLiteral)));
             }
         };

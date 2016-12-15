@@ -2,8 +2,8 @@ package com.intuso.housemate.plugin.main.task;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import com.intuso.housemate.client.real.api.internal.annotations.Property;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.real.api.internal.type.TimeUnit;
 import org.slf4j.Logger;
@@ -12,21 +12,21 @@ import org.slf4j.Logger;
  * Task that waits for a specified amount of time
  *
  */
-@TypeInfo(id = "delay", name = "Delay", description = "Delays for a set amount of time")
+@Id(value = "delay", name = "Delay", description = "Delays for a set amount of time")
 public class Delay implements TaskDriver {
 
     /**
      * The time unit that the quantity is specified in
      */
     @Property("time-unit")
-    @TypeInfo(id = "unit", name = "Unit", description = "the unit of time to wait for")
+    @Id(value = "unit", name = "Unit", description = "the unit of time to wait for")
     private TimeUnit unit = TimeUnit.MINUTES;
 
     /**
      * The quantity of time to wait which, combined with the unit, gives the time to wait
      */
     @Property("integer")
-    @TypeInfo(id = "amount", name = "Amount", description = "the amount of time to wait")
+    @Id(value = "amount", name = "Amount", description = "the amount of time to wait")
     private Integer amount = 1;
 
     private final Logger logger;

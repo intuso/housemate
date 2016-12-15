@@ -4,7 +4,7 @@ import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.intuso.housemate.client.api.internal.TypeSerialiser;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import com.intuso.housemate.client.real.api.internal.module.AnnotatedPluginModule;
 import com.intuso.housemate.client.real.api.internal.module.ConditionDrivers;
 import com.intuso.housemate.client.real.api.internal.module.FeatureDrivers;
@@ -17,7 +17,7 @@ import com.intuso.housemate.plugin.main.task.RandomDelay;
 
 /**
  */
-@TypeInfo(id = "main-plugin",
+@Id(value = "main-plugin",
         name = "Main plugin",
         description = "Plugin containing the core types and factories")
 @FeatureDrivers({PowerByCommandFeature.class})

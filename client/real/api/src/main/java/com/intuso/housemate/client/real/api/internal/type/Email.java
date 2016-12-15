@@ -1,7 +1,7 @@
 package com.intuso.housemate.client.real.api.internal.type;
 
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import com.intuso.housemate.client.real.api.internal.annotations.Regex;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
 
 /**
  * Created with IntelliJ IDEA.
@@ -10,11 +10,11 @@ import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
  * Time: 08:49
  * To change this template use File | Settings | File Templates.
  */
-@TypeInfo(id = "email", name = "Email", description = "Email address")
+@Id(value = "email", name = "Email", description = "Email address")
 @Regex(regex = ".+@.+\\..+", factory = Email.Factory.class)
 public class Email implements RegexType {
 
-    public final static String TYPE_ID = Email.class.getAnnotation(TypeInfo.class).id();
+    public final static String TYPE_ID = Email.class.getAnnotation(Id.class).value();
 
     private final String email;
 

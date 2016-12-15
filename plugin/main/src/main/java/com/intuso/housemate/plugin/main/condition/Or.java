@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.internal.annotations.TypeInfo;
+import com.intuso.housemate.client.real.api.internal.annotations.Id;
 import org.slf4j.Logger;
 
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.Map;
  * Class which is true iff at least one of the sub-conditions is true
  *
  */
-@TypeInfo(id = "or", name = "Or", description = "True if any child condition is true")
+@Id(value = "or", name = "Or", description = "True if any child condition is true")
 public class Or extends LogicCondition {
 
     private final Logger logger;

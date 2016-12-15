@@ -1,7 +1,7 @@
 package com.intuso.housemate.plugin.rfxcom.old.lighting2;
 
+import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
 import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
-import com.intuso.housemate.client.v1_0.real.api.annotations.TypeInfo;
 import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.real.api.feature.StatefulPowerControl;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -70,7 +70,7 @@ public abstract class Lighting2Appliance implements FeatureDriver, StatefulPower
     }
 
     @Property("integer")
-    @TypeInfo(id = "house-id", name = "House ID", description = "House ID (in decimal)")
+    @Id(value = "house-id", name = "House ID", description = "House ID (in decimal)")
     public void setHouseId(int houseId) {
         handler.propertiesChanged(this.houseId, unitCode, houseId, unitCode);
         this.houseId = houseId;
@@ -82,7 +82,7 @@ public abstract class Lighting2Appliance implements FeatureDriver, StatefulPower
     }
 
     @Property("integer")
-    @TypeInfo(id = "unit-id", name = "Unit ID", description = "Unit ID")
+    @Id(value = "unit-id", name = "Unit ID", description = "Unit ID")
     public void setUnitCode(byte unitCode) {
         handler.propertiesChanged(houseId, this.unitCode, houseId, unitCode);
         this.unitCode = unitCode;

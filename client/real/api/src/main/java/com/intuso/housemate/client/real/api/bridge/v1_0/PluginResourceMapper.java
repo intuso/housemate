@@ -19,7 +19,7 @@ public class PluginResourceMapper {
 
     public <FROM, TO> com.intuso.housemate.client.real.api.internal.module.PluginResource<TO> map(PluginResource<FROM> pluginResource, Function<? super FROM, ? extends TO> convertResource) {
         return new com.intuso.housemate.client.real.api.internal.module.PluginResourceImpl<>(
-                new TypeInfoBridge(pluginResource.getTypeInfo()),
+                new IdBridge(pluginResource.getId()),
                 convertResource.apply(pluginResource.getResource()));
     }
 }

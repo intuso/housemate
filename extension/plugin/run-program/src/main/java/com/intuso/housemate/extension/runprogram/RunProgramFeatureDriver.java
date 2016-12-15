@@ -14,11 +14,11 @@ import java.io.InputStreamReader;
  * Housemate feature that will start and stop a program
  *
  */
-@TypeInfo(id = "run-program", name = "Run Program", description = "Run a program")
+@Id(value = "run-program", name = "Run Program", description = "Run a program")
 public class RunProgramFeatureDriver implements FeatureDriver {
 
     @Property("string")
-    @TypeInfo(id = "command", name = "Command", description = "The command for the program")
+    @Id(value = "command", name = "Command", description = "The command for the program")
     private String command;
 
     public MyValues values;
@@ -33,7 +33,7 @@ public class RunProgramFeatureDriver implements FeatureDriver {
     }
 
     @Command
-    @TypeInfo(id = "start", name = "Start", description = "Start the program")
+    @Id(value = "start", name = "Start", description = "Start the program")
     public void startProgram() {
         try {
             if(command ==  null || command.length() == 0)
@@ -45,7 +45,7 @@ public class RunProgramFeatureDriver implements FeatureDriver {
     }
 
     @Command
-    @TypeInfo(id = "stop", name = "Stop", description = "Stop the program")
+    @Id(value = "stop", name = "Stop", description = "Stop the program")
     public void stopProgram() {
         Integer pid = getFirstPID();
         if(pid != null) {
@@ -138,7 +138,7 @@ public class RunProgramFeatureDriver implements FeatureDriver {
     @Values
     public interface MyValues {
         @Value("boolean")
-        @TypeInfo(id = "running", name = "Running", description = "True if the program is currently running")
+        @Id(value = "running", name = "Running", description = "True if the program is currently running")
         void setRunning(boolean running);
     }
 

@@ -75,7 +75,7 @@ public class HomeEasyUKAppliance implements HomeEasyUKHardwareAPI.Appliance {
 	}
 
     @Override
-    public ListenerRegistration listen(Listener listener) {
+    public ListenerRegistration addListener(Listener listener) {
         return listeners.addListener(listener);
     }
 
