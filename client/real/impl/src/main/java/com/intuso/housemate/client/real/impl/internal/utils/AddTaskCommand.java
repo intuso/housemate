@@ -5,12 +5,12 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Type;
-import com.intuso.housemate.client.real.api.internal.driver.PluginDependency;
-import com.intuso.housemate.client.real.api.internal.driver.TaskDriver;
-import com.intuso.housemate.client.real.api.internal.object.RealProperty;
-import com.intuso.housemate.client.real.api.internal.object.RealTask;
+import com.intuso.housemate.client.real.api.internal.RealProperty;
+import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.v1_0.api.object.Command;
+import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
+import com.intuso.housemate.plugin.api.internal.driver.TaskDriver;
 import org.slf4j.Logger;
 
 /**

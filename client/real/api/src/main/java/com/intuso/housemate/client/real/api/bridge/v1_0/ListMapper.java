@@ -1,7 +1,7 @@
 package com.intuso.housemate.client.real.api.bridge.v1_0;
 
 import com.google.common.base.Function;
-import com.intuso.housemate.client.real.api.internal.object.RealList;
+import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 
 /**
@@ -10,7 +10,7 @@ import com.intuso.housemate.client.v1_0.api.object.Object;
 public class ListMapper {
 
     public <FROM extends Object<?>, TO extends com.intuso.housemate.client.api.internal.object.Object<?>> RealList<TO, ?>
-            map(com.intuso.housemate.client.v1_0.real.api.object.RealList<FROM, ?> list,
+            map(com.intuso.housemate.client.v1_0.real.api.RealList<FROM, ?> list,
                 Function<? super FROM, ? extends TO> convertFrom,
                 Function<? super TO, ? extends FROM> convertTo) {
         if(list == null)
@@ -20,7 +20,7 @@ public class ListMapper {
         return new RealListBridge<>(list, convertFrom, convertTo);
     }
 
-    public <FROM extends com.intuso.housemate.client.api.internal.object.Object<?>, TO extends Object<?>> com.intuso.housemate.client.v1_0.real.api.object.RealList<TO, ?>
+    public <FROM extends com.intuso.housemate.client.api.internal.object.Object<?>, TO extends Object<?>> com.intuso.housemate.client.v1_0.real.api.RealList<TO, ?>
             map(RealList<FROM, ?> list,
                 Function<? super FROM, ? extends TO> convertFrom,
                 Function<? super TO, ? extends FROM> convertTo) {

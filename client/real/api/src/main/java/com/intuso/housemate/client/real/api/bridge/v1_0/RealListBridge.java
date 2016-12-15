@@ -2,7 +2,7 @@ package com.intuso.housemate.client.real.api.bridge.v1_0;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
-import com.intuso.housemate.client.real.api.internal.object.RealList;
+import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.utilities.listener.ListenerRegistration;
 
@@ -14,17 +14,17 @@ import java.util.Iterator;
 public class RealListBridge<FROM extends Object, TO extends com.intuso.housemate.client.api.internal.object.Object<?>>
         implements RealList<TO, RealListBridge<FROM, TO>> {
 
-    private final com.intuso.housemate.client.v1_0.real.api.object.RealList<FROM, ?> list;
+    private final com.intuso.housemate.client.v1_0.real.api.RealList<FROM, ?> list;
     private final Function<? super FROM, ? extends TO> convertFrom;
     private final Function<? super TO, ? extends FROM> convertTo;
 
-    public RealListBridge(com.intuso.housemate.client.v1_0.real.api.object.RealList<FROM, ?> list, Function<? super FROM, ? extends TO> convertFrom, Function<? super TO, ? extends FROM> convertTo) {
+    public RealListBridge(com.intuso.housemate.client.v1_0.real.api.RealList<FROM, ?> list, Function<? super FROM, ? extends TO> convertFrom, Function<? super TO, ? extends FROM> convertTo) {
         this.list = list;
         this.convertFrom = convertFrom;
         this.convertTo = convertTo;
     }
 
-    public com.intuso.housemate.client.v1_0.real.api.object.RealList<FROM, ?> getList() {
+    public com.intuso.housemate.client.v1_0.real.api.RealList<FROM, ?> getList() {
         return list;
     }
 
@@ -78,7 +78,7 @@ public class RealListBridge<FROM extends Object, TO extends com.intuso.housemate
         return Iterators.transform(list.iterator(), convertFrom);
     }
 
-    private class ListenerBridge implements com.intuso.housemate.client.v1_0.real.api.object.RealList.Listener<FROM, com.intuso.housemate.client.v1_0.real.api.object.RealList<FROM, ?>> {
+    private class ListenerBridge implements com.intuso.housemate.client.v1_0.real.api.RealList.Listener<FROM, com.intuso.housemate.client.v1_0.real.api.RealList<FROM, ?>> {
 
         private final Listener<? super TO, ? super RealListBridge<FROM, TO>> listener;
 
@@ -87,12 +87,12 @@ public class RealListBridge<FROM extends Object, TO extends com.intuso.housemate
         }
 
         @Override
-        public void elementAdded(com.intuso.housemate.client.v1_0.real.api.object.RealList<FROM, ?> list, FROM element) {
+        public void elementAdded(com.intuso.housemate.client.v1_0.real.api.RealList<FROM, ?> list, FROM element) {
             listener.elementAdded(RealListBridge.this, convertFrom.apply(element));
         }
 
         @Override
-        public void elementRemoved(com.intuso.housemate.client.v1_0.real.api.object.RealList<FROM, ?> list, FROM element) {
+        public void elementRemoved(com.intuso.housemate.client.v1_0.real.api.RealList<FROM, ?> list, FROM element) {
             listener.elementRemoved(RealListBridge.this, convertFrom.apply(element));
         }
     }

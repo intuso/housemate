@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.intuso.housemate</groupId>
+        <artifactId>housemate-plugin</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+	<artifactId>housemate-plugin-api</artifactId>
+    <packaging>jar</packaging>
+	<name>Housemate Plugin API</name>
+    <description>Housemate Plugin API</description>
+
+	<dependencies>
+
+		<!-- Versioned APIs -->
+		<dependency>
+			<groupId>com.intuso.housemate</groupId>
+			<artifactId>housemate-plugin-1-0-api</artifactId>
+			<version>${intuso.housemate.plugin.version}</version>
+		</dependency>
+
+		<!-- Internal API dependencies -->
+		<dependency>
+			<groupId>com.intuso.utilities</groupId>
+			<artifactId>utilities-listener</artifactId>
+			<version>${intuso.utilities.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-assistedinject</artifactId>
+			<version>${guice.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-multibindings</artifactId>
+			<version>${guice.version}</version>
+		</dependency>
+	</dependencies>
+</project>

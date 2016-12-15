@@ -2,8 +2,8 @@ package com.intuso.housemate.plugin.rfxcom.old.lighting1;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
-import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
+import com.intuso.housemate.plugin.v1_0.api.annotations.Id;
+import com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver;
 import org.slf4j.Logger;
 
 /**

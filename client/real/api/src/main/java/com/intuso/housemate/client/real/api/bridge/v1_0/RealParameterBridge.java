@@ -3,8 +3,8 @@ package com.intuso.housemate.client.real.api.bridge.v1_0;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Parameter;
-import com.intuso.housemate.client.real.api.internal.object.RealParameter;
-import com.intuso.housemate.client.real.api.internal.object.RealType;
+import com.intuso.housemate.client.real.api.internal.RealParameter;
+import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -12,14 +12,14 @@ import com.intuso.utilities.listener.ListenerRegistration;
  */
 public class RealParameterBridge<FROM, TO> implements RealParameter<TO, RealType<TO, ?>, RealParameterBridge<FROM, TO>> {
 
-    private final com.intuso.housemate.client.v1_0.real.api.object.RealParameter<FROM, ?, ?> parameter;
+    private final com.intuso.housemate.client.v1_0.real.api.RealParameter<FROM, ?, ?> parameter;
 
     @Inject
-    public RealParameterBridge(@Assisted com.intuso.housemate.client.v1_0.real.api.object.RealParameter<FROM, ?, ?> parameter) {
+    public RealParameterBridge(@Assisted com.intuso.housemate.client.v1_0.real.api.RealParameter<FROM, ?, ?> parameter) {
         this.parameter = parameter;
     }
 
-    public com.intuso.housemate.client.v1_0.real.api.object.RealParameter<FROM, ?, ?> getParameter() {
+    public com.intuso.housemate.client.v1_0.real.api.RealParameter<FROM, ?, ?> getParameter() {
         return parameter;
     }
 

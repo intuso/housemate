@@ -3,10 +3,10 @@ package com.intuso.housemate.plugin.main.feature;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.real.api.internal.annotations.Id;
-import com.intuso.housemate.client.real.api.internal.annotations.Property;
-import com.intuso.housemate.client.real.api.internal.driver.FeatureDriver;
-import com.intuso.housemate.client.real.api.internal.feature.StatefulPowerControl;
+import com.intuso.housemate.plugin.api.internal.annotations.Id;
+import com.intuso.housemate.plugin.api.internal.annotations.Property;
+import com.intuso.housemate.plugin.api.internal.driver.FeatureDriver;
+import com.intuso.housemate.plugin.api.internal.feature.StatefulPowerControl;
 import org.slf4j.Logger;
 
 import java.io.IOException;

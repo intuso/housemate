@@ -8,10 +8,10 @@ import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Feature;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
-import com.intuso.housemate.client.real.api.internal.driver.FeatureDriver;
-import com.intuso.housemate.client.real.api.internal.driver.PluginDependency;
-import com.intuso.housemate.client.real.api.internal.object.RealFeature;
+import com.intuso.housemate.client.real.api.internal.RealFeature;
 import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationProcessor;
+import com.intuso.housemate.plugin.api.internal.driver.FeatureDriver;
+import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 

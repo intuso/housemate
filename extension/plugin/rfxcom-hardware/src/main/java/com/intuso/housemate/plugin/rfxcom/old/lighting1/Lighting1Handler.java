@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.rfxcom.old.lighting1;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
-import com.intuso.housemate.client.v1_0.real.api.object.RealDevice;
+import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.plugin.rfxcom.old.Handler;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.rfxcom.rfxtrx.util.lighting1.Lighting1;

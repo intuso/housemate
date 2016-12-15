@@ -1,7 +1,7 @@
 package com.intuso.housemate.plugin.rfxcom.old.temperaturesensor;
 
 import com.google.common.collect.Sets;
-import com.intuso.housemate.client.v1_0.real.api.object.RealDevice;
+import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.plugin.rfxcom.old.Handler;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensors;

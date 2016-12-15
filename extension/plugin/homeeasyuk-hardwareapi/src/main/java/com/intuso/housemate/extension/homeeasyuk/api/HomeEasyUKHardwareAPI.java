@@ -1,9 +1,9 @@
 package com.intuso.housemate.extension.homeeasyuk.api;
 
-import com.intuso.housemate.client.v1_0.real.api.annotations.Command;
-import com.intuso.housemate.client.v1_0.real.api.annotations.HardwareAPI;
-import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
-import com.intuso.housemate.client.v1_0.real.api.annotations.Value;
+import com.intuso.housemate.plugin.v1_0.api.annotations.Command;
+import com.intuso.housemate.plugin.v1_0.api.annotations.HardwareAPI;
+import com.intuso.housemate.plugin.v1_0.api.annotations.Id;
+import com.intuso.housemate.plugin.v1_0.api.annotations.Value;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**

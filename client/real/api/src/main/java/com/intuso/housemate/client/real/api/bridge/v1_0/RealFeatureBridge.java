@@ -3,27 +3,27 @@ package com.intuso.housemate.client.real.api.bridge.v1_0;
 import com.google.common.base.Function;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.real.api.bridge.v1_0.driver.FeatureDriverFactoryMapper;
-import com.intuso.housemate.client.real.api.bridge.v1_0.driver.FeatureDriverMapper;
-import com.intuso.housemate.client.real.api.bridge.v1_0.driver.PluginResourceMapper;
-import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
-import com.intuso.housemate.client.v1_0.real.api.driver.PluginDependency;
-import com.intuso.housemate.client.v1_0.real.api.object.*;
+import com.intuso.housemate.client.v1_0.real.api.*;
+import com.intuso.housemate.plugin.api.bridge.v1_0.driver.FeatureDriverFactoryMapper;
+import com.intuso.housemate.plugin.api.bridge.v1_0.driver.FeatureDriverMapper;
+import com.intuso.housemate.plugin.api.bridge.v1_0.driver.PluginResourceMapper;
+import com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver;
+import com.intuso.housemate.plugin.v1_0.api.driver.PluginDependency;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * Created by tomc on 03/11/15.
  */
 public class RealFeatureBridge
-        implements com.intuso.housemate.client.real.api.internal.object.RealFeature<
-        com.intuso.housemate.client.real.api.internal.object.RealCommand<?, ?, ?>,
-        com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealCommand<?, ?, ?>, ?>,
-        com.intuso.housemate.client.real.api.internal.object.RealValue<Boolean, ?, ?>,
-        com.intuso.housemate.client.real.api.internal.object.RealValue<String, ?, ?>,
-        com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealValue<?, ?, ?>, ?>,
-        com.intuso.housemate.client.real.api.internal.object.RealProperty<com.intuso.housemate.client.real.api.internal.driver.PluginDependency<com.intuso.housemate.client.real.api.internal.driver.FeatureDriver.Factory<?>>, ?, ?, ?>,
-        com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealProperty<?, ?, ?, ?>, ?>,
-        RealFeatureBridge> {
+        implements com.intuso.housemate.client.real.api.internal.RealFeature<
+                com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>,
+        com.intuso.housemate.client.real.api.internal.RealList<? extends com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>, ?>,
+        com.intuso.housemate.client.real.api.internal.RealValue<Boolean, ?, ?>,
+        com.intuso.housemate.client.real.api.internal.RealValue<String, ?, ?>,
+        com.intuso.housemate.client.real.api.internal.RealList<? extends com.intuso.housemate.client.real.api.internal.RealValue<?, ?, ?>, ?>,
+        com.intuso.housemate.client.real.api.internal.RealProperty<com.intuso.housemate.plugin.api.internal.driver.PluginDependency<com.intuso.housemate.plugin.api.internal.driver.FeatureDriver.Factory<?>>, ?, ?, ?>,
+        com.intuso.housemate.client.real.api.internal.RealList<? extends com.intuso.housemate.client.real.api.internal.RealProperty<?, ?, ?, ?>, ?>,
+                RealFeatureBridge> {
 
     private final RealFeature<?, ?, ?, ?, ?, ?, ?, ?> feature;
     private final ListMapper listMapper;
@@ -58,7 +58,7 @@ public class RealFeatureBridge
     }
 
     @Override
-    public <TO extends com.intuso.housemate.client.real.api.internal.driver.FeatureDriver> TO getDriver() {
+    public <TO extends com.intuso.housemate.plugin.api.internal.driver.FeatureDriver> TO getDriver() {
         return (TO) featureDriverMapper.map(feature.getDriver());
     }
 
@@ -93,44 +93,44 @@ public class RealFeatureBridge
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealValue<String, ?, ?> getErrorValue() {
+    public com.intuso.housemate.client.real.api.internal.RealValue<String, ?, ?> getErrorValue() {
         return valueMapper.map(feature.getErrorValue());
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealCommand getRemoveCommand() {
+    public com.intuso.housemate.client.real.api.internal.RealCommand getRemoveCommand() {
         return commandMapper.map(feature.getRemoveCommand());
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealCommand getRenameCommand() {
+    public com.intuso.housemate.client.real.api.internal.RealCommand getRenameCommand() {
         return commandMapper.map(feature.getRenameCommand());
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealCommand getStartCommand() {
+    public com.intuso.housemate.client.real.api.internal.RealCommand getStartCommand() {
         return commandMapper.map(feature.getStopCommand());
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealCommand getStopCommand() {
+    public com.intuso.housemate.client.real.api.internal.RealCommand getStopCommand() {
         return commandMapper.map(feature.getStopCommand());
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealValue<Boolean, ?, ?> getRunningValue() {
+    public com.intuso.housemate.client.real.api.internal.RealValue<Boolean, ?, ?> getRunningValue() {
         return valueMapper.map(feature.getRunningValue());
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealProperty<com.intuso.housemate.client.real.api.internal.driver.PluginDependency<com.intuso.housemate.client.real.api.internal.driver.FeatureDriver.Factory<?>>, ?, ?, ?> getDriverProperty() {
-        Function<FeatureDriver.Factory<?>, com.intuso.housemate.client.real.api.internal.driver.FeatureDriver.Factory<?>> ddfConvertFrom
+    public com.intuso.housemate.client.real.api.internal.RealProperty<com.intuso.housemate.plugin.api.internal.driver.PluginDependency<com.intuso.housemate.plugin.api.internal.driver.FeatureDriver.Factory<?>>, ?, ?, ?> getDriverProperty() {
+        Function<FeatureDriver.Factory<?>, com.intuso.housemate.plugin.api.internal.driver.FeatureDriver.Factory<?>> ddfConvertFrom
                 = featureDriverFactoryMapper.getFromV1_0Function();
-        Function<PluginDependency<FeatureDriver.Factory<?>>, com.intuso.housemate.client.real.api.internal.driver.PluginDependency<com.intuso.housemate.client.real.api.internal.driver.FeatureDriver.Factory<?>>> convertFrom
+        Function<PluginDependency<FeatureDriver.Factory<?>>, com.intuso.housemate.plugin.api.internal.driver.PluginDependency<com.intuso.housemate.plugin.api.internal.driver.FeatureDriver.Factory<?>>> convertFrom
                 = pluginResourceMapper.getFromV1_0Function(ddfConvertFrom);
-        Function<com.intuso.housemate.client.real.api.internal.driver.FeatureDriver.Factory<?>, FeatureDriver.Factory<?>> ddfConvertTo
+        Function<com.intuso.housemate.plugin.api.internal.driver.FeatureDriver.Factory<?>, FeatureDriver.Factory<?>> ddfConvertTo
                 = featureDriverFactoryMapper.getToV1_0Function();
-        Function<com.intuso.housemate.client.real.api.internal.driver.PluginDependency<com.intuso.housemate.client.real.api.internal.driver.FeatureDriver.Factory<?>>, PluginDependency<FeatureDriver.Factory<?>>> convertTo
+        Function<com.intuso.housemate.plugin.api.internal.driver.PluginDependency<com.intuso.housemate.plugin.api.internal.driver.FeatureDriver.Factory<?>>, PluginDependency<FeatureDriver.Factory<?>>> convertTo
                 = pluginResourceMapper.getToV1_0Function(ddfConvertTo);
         return propertyMapper.map(feature.getDriverProperty(),
                 convertFrom,
@@ -138,26 +138,26 @@ public class RealFeatureBridge
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealValue<Boolean, ?, ?> getDriverLoadedValue() {
+    public com.intuso.housemate.client.real.api.internal.RealValue<Boolean, ?, ?> getDriverLoadedValue() {
         return valueMapper.map(feature.getDriverLoadedValue());
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealCommand<?, ?, ?>, ?> getCommands() {
+    public com.intuso.housemate.client.real.api.internal.RealList<? extends com.intuso.housemate.client.real.api.internal.RealCommand<?, ?, ?>, ?> getCommands() {
         return listMapper.map((RealList<RealCommand<?, ?, ?>, ?>) feature.getCommands(),
                 commandMapper.getFromV1_0Function(),
                 commandMapper.getToV1_0Function());
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealValue<?, ?, ?>, ?> getValues() {
+    public com.intuso.housemate.client.real.api.internal.RealList<? extends com.intuso.housemate.client.real.api.internal.RealValue<?, ?, ?>, ?> getValues() {
         return listMapper.map((RealList<RealValue<?, ?, ?>, ?>) feature.getValues(),
                 valueMapper.getFromV1_0Function(),
                 valueMapper.getToV1_0Function());
     }
 
     @Override
-    public com.intuso.housemate.client.real.api.internal.object.RealList<? extends com.intuso.housemate.client.real.api.internal.object.RealProperty<?, ?, ?, ?>, ?> getProperties() {
+    public com.intuso.housemate.client.real.api.internal.RealList<? extends com.intuso.housemate.client.real.api.internal.RealProperty<?, ?, ?, ?>, ?> getProperties() {
         return listMapper.map((RealList<RealProperty<?, ?, ?, ?>, ?>) feature.getProperties(),
                 propertyMapper.getFromV1_0Function(),
                 propertyMapper.getToV1_0Function());

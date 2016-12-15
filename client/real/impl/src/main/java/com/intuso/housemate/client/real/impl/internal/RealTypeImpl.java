@@ -3,7 +3,7 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.client.api.internal.TypeSerialiser;
 import com.intuso.housemate.client.api.internal.object.Type;
-import com.intuso.housemate.client.real.api.internal.object.RealType;
+import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 

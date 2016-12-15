@@ -1,13 +1,13 @@
 package com.intuso.housemate.client.real.api.bridge.v1_0;
 
-import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
+import com.intuso.housemate.plugin.v1_0.api.annotations.Id;
 
 import java.lang.annotation.Annotation;
 
 /**
  * Created by tomc on 06/11/15.
  */
-public class IdBridge implements com.intuso.housemate.client.real.api.internal.annotations.Id {
+public class IdBridge implements com.intuso.housemate.plugin.api.internal.annotations.Id {
 
     private final Id id;
 
@@ -32,6 +32,6 @@ public class IdBridge implements com.intuso.housemate.client.real.api.internal.a
 
     @Override
     public Class<? extends Annotation> annotationType() {
-        return com.intuso.housemate.client.real.api.internal.annotations.Id.class;
+        return com.intuso.housemate.plugin.api.internal.annotations.Id.class;
     }
 }

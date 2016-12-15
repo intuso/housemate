@@ -3,11 +3,11 @@ package com.intuso.housemate.extension.plugin.homeeasyuk.feature;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyHardware;
-import com.intuso.housemate.client.v1_0.real.api.annotations.Id;
-import com.intuso.housemate.client.v1_0.real.api.annotations.Property;
-import com.intuso.housemate.client.v1_0.real.api.driver.FeatureDriver;
-import com.intuso.housemate.client.v1_0.real.api.feature.StatefulPowerControl;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKHardwareAPI;
+import com.intuso.housemate.plugin.v1_0.api.annotations.Id;
+import com.intuso.housemate.plugin.v1_0.api.annotations.Property;
+import com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver;
+import com.intuso.housemate.plugin.v1_0.api.feature.StatefulPowerControl;
 import com.intuso.utilities.listener.ListenerRegistration;
 import org.slf4j.Logger;
 

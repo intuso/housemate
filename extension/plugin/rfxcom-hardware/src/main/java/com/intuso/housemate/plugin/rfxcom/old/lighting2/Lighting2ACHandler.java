@@ -1,6 +1,6 @@
 package com.intuso.housemate.plugin.rfxcom.old.lighting2;
 
-import com.intuso.housemate.client.v1_0.real.api.object.RealDevice;
+import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.rfxcom.rfxtrx.RFXtrx;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2;
 import org.slf4j.Logger;

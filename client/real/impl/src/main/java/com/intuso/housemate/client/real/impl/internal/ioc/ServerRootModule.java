@@ -5,7 +5,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
-import com.intuso.housemate.client.real.api.internal.object.*;
+import com.intuso.housemate.client.real.api.internal.*;
 import com.intuso.housemate.client.real.impl.bridge.ioc.RealBridgeModule;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealServerImpl;
