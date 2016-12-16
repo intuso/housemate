@@ -9,7 +9,7 @@ import com.intuso.housemate.client.api.internal.object.Feature;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealFeature;
-import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationProcessor;
+import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationParser;
 import com.intuso.housemate.plugin.api.internal.driver.FeatureDriver;
 import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -31,7 +31,7 @@ public final class RealFeatureImpl
 
     private final static String PROPERTIES_DESCRIPTION = "The device's properties";
 
-    private final AnnotationProcessor annotationProcessor;
+    private final AnnotationParser annotationParser;
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
@@ -56,7 +56,7 @@ public final class RealFeatureImpl
                            @Assisted("description") String description,
                            @Assisted RemoveCallback<RealFeatureImpl> removeCallback,
                            ListenersFactory listenersFactory,
-                           AnnotationProcessor annotationProcessor,
+                           AnnotationParser annotationParser,
                            RealCommandImpl.Factory commandFactory,
                            RealParameterImpl.Factory<String> stringParameterFactory,
                            RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
@@ -66,7 +66,7 @@ public final class RealFeatureImpl
                            RealPropertyImpl.Factory<PluginDependency<FeatureDriver.Factory<? extends FeatureDriver>>> driverPropertyFactory,
                            RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory) {
         super(logger, false, new Feature.Data(id, name, description), listenersFactory);
-        this.annotationProcessor = annotationProcessor;
+        this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -191,11 +191,11 @@ public final class RealFeatureImpl
             PluginDependency<FeatureDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
                 driver = driverFactory.getDependency().create(logger, this);
-                for(RealCommandImpl command : annotationProcessor.findCommands(logger, driver))
+                for(RealCommandImpl command : annotationParser.findCommands(logger, "", driver))
                     commands.add(command);
-                for(RealValueImpl<?> value : annotationProcessor.findValues(logger, driver))
+                for(RealValueImpl<?> value : annotationParser.findValues(logger, "", driver))
                     values.add(value);
-                for(RealPropertyImpl<?> property : annotationProcessor.findProperties(logger, driver))
+                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", driver))
                     properties.add(property);
                 errorValue.setValue((String) null);
                 driverLoadedValue.setValue(true);

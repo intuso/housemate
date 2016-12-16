@@ -18,38 +18,32 @@ import java.util.Map;
 /**
  * Processor of annotated devices etc
  */
-public class AnnotationProcessor {
+public class AnnotationParserInternal implements AnnotationParser {
 
     private final RegisteredTypes types;
     private final RealCommandImpl.Factory commandFactory;
-    private final RealFeatureImpl.Factory featureFactory;
 
     @Inject
-    public AnnotationProcessor(RegisteredTypes types,
-                               RealCommandImpl.Factory commandFactory,
-                               RealFeatureImpl.Factory featureFactory) {
+    public AnnotationParserInternal(RegisteredTypes types,
+                                RealCommandImpl.Factory commandFactory) {
         this.types = types;
         this.commandFactory = commandFactory;
-        this.featureFactory = featureFactory;
     }
 
-    public Iterable<RealCommandImpl> findCommands(Logger logger, Object object) {
-        return findCommands(logger, object, object.getClass());
+    @Override
+    public Iterable<RealCommandImpl> findCommands(Logger logger, String idPrefix, Object object) {
+        return findCommands(logger, idPrefix, object, object.getClass());
     }
 
-    public Iterable<RealCommandImpl> findCommands(Logger logger, Object object, Class<?> clazz) {
-        return findV1_0Commands(logger, object, clazz);
-    }
-
-    private Iterable<RealCommandImpl> findV1_0Commands(Logger logger, Object object, Class<?> clazz) {
+    private Iterable<RealCommandImpl> findCommands(Logger logger, String idPrefix, Object object, Class<?> clazz) {
         List<RealCommandImpl> commands = Lists.newArrayList();
         for(Map.Entry<Method, Command> commandMethod : getAnnotatedMethods(clazz, Command.class).entrySet()) {
             Id id = commandMethod.getKey().getAnnotation(Id.class);
             if(id == null)
                 throw new HousemateException("No " + Id.class.getName() + " on command method " + commandMethod.getKey().getName() + " of class " + clazz);
-            List<RealParameterImpl<?>> parameters = parseV1_0Parameters(logger, clazz, commandMethod.getKey());
-            commands.add(commandFactory.create(ChildUtil.logger(logger, id.value()),
-                    id.value(),
+            List<RealParameterImpl<?>> parameters = parseParameters(logger, clazz, commandMethod.getKey());
+            commands.add(commandFactory.create(ChildUtil.logger(logger, idPrefix + id.value()),
+                    idPrefix + id.value(),
                     id.name(),
                     id.description(),
                     new MethodCommandPerformer(commandMethod.getKey(), object, parameters),
@@ -58,7 +52,7 @@ public class AnnotationProcessor {
         return commands;
     }
 
-    private List<RealParameterImpl<?>> parseV1_0Parameters(Logger logger, Class<?> clazz, Method method) {
+    private List<RealParameterImpl<?>> parseParameters(Logger logger, Class<?> clazz, Method method) {
         List<RealParameterImpl<?>> result = Lists.newArrayList();
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         for(int a = 0; a < parameterAnnotations.length; a++) {
@@ -82,15 +76,69 @@ public class AnnotationProcessor {
         return result;
     }
 
-    public Iterable<RealPropertyImpl<?>> findProperties(Logger logger, Object object) {
-        return findProperties(logger, object, object.getClass());
+    @Override
+    public Iterable<RealValueImpl<?>> findValues(Logger logger, String idPrefix, Object object) {
+        return findValues(logger, idPrefix, object, object.getClass());
     }
 
-    public Iterable<RealPropertyImpl<?>> findProperties(Logger logger, Object object, Class<?> clazz) {
-        return findV1_0Properties(logger, object, clazz);
+    public Iterable<RealValueImpl<?>> findValues(Logger logger, String idPrefix, Object object, Class<?> clazz) {
+        for(Class<?> interfaceClass : clazz.getClasses()) {
+            if (interfaceClass.getAnnotation(Values.class) != null)
+                return findObjectValues(logger, idPrefix, object, object.getClass(), interfaceClass);
+        }
+        return Lists.newArrayList();
     }
 
-    private Iterable<RealPropertyImpl<?>> findV1_0Properties(Logger logger, Object object, Class<?> clazz) {
+    private Iterable<RealValueImpl<?>> findObjectValues(Logger logger, String idPrefix, Object object, Class<?> lookInClass, Class<?> valuesClass) {
+        for(Field field : lookInClass.getDeclaredFields()) {
+            if(valuesClass.isAssignableFrom(field.getType())) {
+                return getValuesImpl(logger, idPrefix, object, field, valuesClass);
+            }
+        }
+        if(lookInClass.getSuperclass() != null)
+            return findObjectValues(logger, idPrefix, object, lookInClass.getSuperclass(), valuesClass);
+        return Lists.newArrayList();
+    }
+
+    private Iterable<RealValueImpl<?>> getValuesImpl(Logger logger, String idPrefix, Object object, Field field, Class<?> clazz) {
+        List<RealValueImpl<?>> values = Lists.newArrayList();
+        Map<Method, RealValueImpl<?>> valuesFunctions = Maps.newHashMap();
+        InvocationHandler invocationHandler = new ValuesInvocationHandler(valuesFunctions);
+        Object instance = Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, invocationHandler);
+        try {
+            field.setAccessible(true);
+            field.set(object, instance);
+        } catch(IllegalAccessException e) {
+            throw new HousemateException("Failed to assign proxy instance to field " + field.getName() + " of class " + object.getClass().getName(), e);
+        }
+        findValues(logger, idPrefix, values, valuesFunctions, clazz);
+        return values;
+    }
+
+    private void findValues(Logger logger, String idPrefix, List<RealValueImpl<?>> values, Map<Method, RealValueImpl<?>> valuesFunctions, Class<?> clazz) {
+        for(Map.Entry<Method, Value> valueMethod : getAnnotatedMethods(clazz, Value.class).entrySet()) {
+            if(!types.exists(valueMethod.getValue().value()))
+                throw new HousemateException(valueMethod.getValue().value() + " type does not exist");
+            Id id = valueMethod.getKey().getAnnotation(Id.class);
+            RealValueImpl<?> value = types.createValue(valueMethod.getValue().value(),
+                    ChildUtil.logger(logger, idPrefix + id.value()),
+                    idPrefix + id.value(),
+                    id.name(),
+                    id.description(),
+                    valueMethod.getValue().minValues(),
+                    valueMethod.getValue().maxValues(),
+                    Lists.newArrayList());
+            valuesFunctions.put(valueMethod.getKey(), value);
+            values.add(value);
+        }
+    }
+
+    @Override
+    public Iterable<RealPropertyImpl<?>> findProperties(Logger logger, String idPrefix, Object object) {
+        return findProperties(logger, idPrefix, object, object.getClass());
+    }
+
+    private Iterable<RealPropertyImpl<?>> findProperties(Logger logger, String idPrefix, Object object, Class<?> clazz) {
         List<RealPropertyImpl<?>> properties = Lists.newArrayList();
         for(Map.Entry<Field, Property> propertyField : getAnnotatedFields(clazz, Property.class).entrySet()) {
             Object value = null;
@@ -104,14 +152,14 @@ public class AnnotationProcessor {
             Id id = propertyField.getKey().getAnnotation(Id.class);
             if(id == null)
                 throw new HousemateException("No " + Id.class.getName() + " on property field" + propertyField.getKey().getName() + " of class " + clazz);
-            RealPropertyImpl<Object> property = types.createProperty(propertyField.getValue().value(), ChildUtil.logger(logger, id.value()),
-                    id.value(),
+            RealPropertyImpl<Object> property = types.createProperty(propertyField.getValue().value(), ChildUtil.logger(logger, idPrefix + id.value()),
+                    idPrefix + id.value(),
                     id.name(),
                     id.description(),
                     propertyField.getValue().minValues(),
                     propertyField.getValue().maxValues(),
                     Lists.newArrayList(value));
-            property.addObjectListener(new FieldPropertySetter<>(ChildUtil.logger(logger, id.value()), propertyField.getKey(), object));
+            property.addObjectListener(new FieldPropertySetter<>(ChildUtil.logger(logger, idPrefix + id.value()), propertyField.getKey(), object));
             properties.add(property);
         }
         for(Map.Entry<Method, Property> propertyMethod : getAnnotatedMethods(clazz, Property.class).entrySet()) {
@@ -122,22 +170,22 @@ public class AnnotationProcessor {
             Id id = propertyMethod.getKey().getAnnotation(Id.class);
             if(id == null)
                 throw new HousemateException("No " + Id.class.getName() + " on property field" + propertyMethod.getKey().getName() + " of class " + clazz);
-            Object value = getV1_0InitialValue(logger, object, clazz, propertyMethod.getKey().getName());
+            Object value = getInitialValue(logger, object, clazz, propertyMethod.getKey().getName());
             RealPropertyImpl<Object> property = types.createProperty(propertyMethod.getValue().value(),
-                    ChildUtil.logger(logger, id.value()),
-                    id.value(),
+                    ChildUtil.logger(logger, idPrefix + id.value()),
+                    idPrefix + id.value(),
                     id.name(),
                     id.description(),
                     propertyMethod.getValue().minValues(),
                     propertyMethod.getValue().maxValues(),
                     Lists.newArrayList(value));
-            property.addObjectListener(new MethodPropertySetter(ChildUtil.logger(logger, id.value()), propertyMethod.getKey(), object));
+            property.addObjectListener(new MethodPropertySetter(ChildUtil.logger(logger, idPrefix + id.value()), propertyMethod.getKey(), object));
             properties.add(property);
         }
         return properties;
     }
 
-    private Object getV1_0InitialValue(Logger logger, Object object, Class<?> clazz, String methodName) {
+    private Object getInitialValue(Logger logger, Object object, Class<?> clazz, String methodName) {
         if(methodName.startsWith("set")) {
             String fieldName = methodName.substring(3);
             String getterName = "get" + fieldName;
@@ -159,62 +207,6 @@ public class AnnotationProcessor {
         }
         logger.warn("No equivalent getter found for initial value for " + Property.class.getSimpleName() + " method " + methodName + " of " + clazz.getName());
         return null;
-    }
-
-    public List<RealValueImpl<?>> findValues(Logger logger, Object object) {
-        return findValues(logger, object, object.getClass());
-    }
-
-    public List<RealValueImpl<?>> findValues(Logger logger, Object object, Class<?> clazz) {
-        for(Class<?> interfaceClass : clazz.getClasses()) {
-            if (interfaceClass.getAnnotation(Values.class) != null)
-                return findV1_0ObjectValues(logger, object, object.getClass(), interfaceClass);
-        }
-        return Lists.newArrayList();
-    }
-
-    private List<RealValueImpl<?>> findV1_0ObjectValues(Logger logger, Object object, Class<?> lookInClass, Class<?> valuesClass) {
-        for(Field field : lookInClass.getDeclaredFields()) {
-            if(valuesClass.isAssignableFrom(field.getType())) {
-                return getV1_0ValuesImpl(logger, object, field, valuesClass);
-            }
-        }
-        if(lookInClass.getSuperclass() != null)
-            return findV1_0ObjectValues(logger, object, lookInClass.getSuperclass(), valuesClass);
-        return Lists.newArrayList();
-    }
-
-    private List<RealValueImpl<?>> getV1_0ValuesImpl(Logger logger, Object object, Field field, Class<?> clazz) {
-        List<RealValueImpl<?>> values = Lists.newArrayList();
-        Map<Method, RealValueImpl<?>> valuesFunctions = Maps.newHashMap();
-        InvocationHandler invocationHandler = new ValuesInvocationHandler(valuesFunctions);
-        Object instance = Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, invocationHandler);
-        try {
-            field.setAccessible(true);
-            field.set(object, instance);
-        } catch(IllegalAccessException e) {
-            throw new HousemateException("Failed to assign proxy instance to field " + field.getName() + " of class " + object.getClass().getName(), e);
-        }
-        findV1_0Values(logger, values, valuesFunctions, clazz);
-        return values;
-    }
-
-    private void findV1_0Values(Logger logger, List<RealValueImpl<?>> values, Map<Method, RealValueImpl<?>> valuesFunctions, Class<?> clazz) {
-        for(Map.Entry<Method, Value> valueMethod : getAnnotatedMethods(clazz, Value.class).entrySet()) {
-            if(!types.exists(valueMethod.getValue().value()))
-                throw new HousemateException(valueMethod.getValue().value() + " type does not exist");
-            Id id = valueMethod.getKey().getAnnotation(Id.class);
-            RealValueImpl<?> value = types.createValue(valueMethod.getValue().value(),
-                    ChildUtil.logger(logger, id.value()),
-                    id.value(),
-                    id.name(),
-                    id.description(),
-                    valueMethod.getValue().minValues(),
-                    valueMethod.getValue().maxValues(),
-                    Lists.newArrayList());
-            valuesFunctions.put(valueMethod.getKey(), value);
-            values.add(value);
-        }
     }
 
     private <A extends Annotation> Map<Method, A> getAnnotatedMethods(Class<?> objectClass, Class<A> annotationClass) {

@@ -9,7 +9,7 @@ import com.intuso.housemate.client.api.internal.object.Hardware;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealHardware;
-import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationProcessor;
+import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationParser;
 import com.intuso.housemate.plugin.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -32,7 +32,7 @@ public final class RealHardwareImpl
     private final static String VALUES_DESCRIPTION = "The hardware's values";
     private final static String PROPERTIES_DESCRIPTION = "The hardware's properties";
 
-    private final AnnotationProcessor annotationProcessor;
+    private final AnnotationParser annotationParser;
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
@@ -61,7 +61,7 @@ public final class RealHardwareImpl
                             @Assisted("description") String description,
                             @Assisted RemoveCallback<RealHardwareImpl> removeCallback,
                             ListenersFactory listenersFactory,
-                            AnnotationProcessor annotationProcessor,
+                            AnnotationParser annotationParser,
                             RealCommandImpl.Factory commandFactory,
                             RealParameterImpl.Factory<String> stringParameterFactory,
                             RealValueImpl.Factory<Boolean> booleanValueFactory,
@@ -71,7 +71,7 @@ public final class RealHardwareImpl
                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                             RealPropertyImpl.Factory<PluginDependency<HardwareDriver.Factory<? extends HardwareDriver>>> driverPropertyFactory) {
         super(logger, true, new Hardware.Data(id, name, description), listenersFactory);
-        this.annotationProcessor = annotationProcessor;
+        this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -236,11 +236,11 @@ public final class RealHardwareImpl
             PluginDependency<HardwareDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
                 driver = driverFactory.getDependency().create(logger, this);
-                for(RealCommandImpl command : annotationProcessor.findCommands(logger, driver))
+                for(RealCommandImpl command : annotationParser.findCommands(logger, "", driver))
                     commands.add(command);
-                for(RealValueImpl<?> value : annotationProcessor.findValues(logger, driver))
+                for(RealValueImpl<?> value : annotationParser.findValues(logger, "", driver))
                     values.add(value);
-                for(RealPropertyImpl<?> property : annotationProcessor.findProperties(logger, driver))
+                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", driver))
                     properties.add(property);
                 errorValue.setValue((String) null);
                 driverLoadedValue.setValue(true);

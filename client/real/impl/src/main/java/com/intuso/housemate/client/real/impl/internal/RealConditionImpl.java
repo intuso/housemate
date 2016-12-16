@@ -13,7 +13,7 @@ import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealCondition;
-import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationProcessor;
+import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.utils.AddConditionCommand;
 import com.intuso.housemate.plugin.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
@@ -36,7 +36,7 @@ public final class RealConditionImpl
 
     private final static String PROPERTIES_DESCRIPTION = "The condition's properties";
 
-    private final AnnotationProcessor annotationProcessor;
+    private final AnnotationParser annotationParser;
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
@@ -66,7 +66,7 @@ public final class RealConditionImpl
                              @Assisted("description") String description,
                              @Assisted final RemoveCallback<RealConditionImpl> removeCallback,
                              ListenersFactory listenersFactory,
-                             AnnotationProcessor annotationProcessor,
+                             AnnotationParser annotationParser,
                              RealCommandImpl.Factory commandFactory,
                              RealParameterImpl.Factory<String> stringParameterFactory,
                              RealValueImpl.Factory<Boolean> booleanValueFactory,
@@ -77,7 +77,7 @@ public final class RealConditionImpl
                              RealPropertyImpl.Factory<PluginDependency<ConditionDriver.Factory<? extends ConditionDriver>>> driverPropertyFactory,
                              AddConditionCommand.Factory addConditionCommandFactory) {
         super(logger, true, new Condition.Data(id, name, description), listenersFactory);
-        this.annotationProcessor = annotationProcessor;
+        this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -221,7 +221,7 @@ public final class RealConditionImpl
             PluginDependency<ConditionDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
                 driver = driverFactory.getDependency().create(logger, this);
-                for(RealPropertyImpl<?> property : annotationProcessor.findProperties(logger, driver))
+                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", driver))
                     properties.add(property);
                 errorValue.setValue((String) null);
                 driverLoadedValue.setValue(true);

@@ -11,7 +11,7 @@ import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Task;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealTask;
-import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationProcessor;
+import com.intuso.housemate.client.real.impl.internal.annotations.AnnotationParser;
 import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 import com.intuso.housemate.plugin.api.internal.driver.TaskDriver;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -31,7 +31,7 @@ public final class RealTaskImpl
 
     private final static String PROPERTIES_DESCRIPTION = "The task's properties";
 
-    private final AnnotationProcessor annotationProcessor;
+    private final AnnotationParser annotationParser;
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
@@ -56,7 +56,7 @@ public final class RealTaskImpl
                         @Assisted("description") String description,
                         @Assisted RemoveCallback<RealTaskImpl> removeCallback,
                         ListenersFactory listenersFactory,
-                        AnnotationProcessor annotationProcessor,
+                        AnnotationParser annotationParser,
                         RealCommandImpl.Factory commandFactory,
                         RealParameterImpl.Factory<String> stringParameterFactory,
                         RealValueImpl.Factory<Boolean> booleanValueFactory,
@@ -64,7 +64,7 @@ public final class RealTaskImpl
                         RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                         RealPropertyImpl.Factory<PluginDependency<TaskDriver.Factory<? extends TaskDriver>>> driverPropertyFactory) {
         super(logger, true, new Task.Data(id, name, description), listenersFactory);
-        this.annotationProcessor = annotationProcessor;
+        this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -181,7 +181,7 @@ public final class RealTaskImpl
             PluginDependency<TaskDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
                 driver = driverFactory.getDependency().create(logger, this);
-                for(RealPropertyImpl<?> property : annotationProcessor.findProperties(logger, driver))
+                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", driver))
                     properties.add(property);
                 errorValue.setValue((String) null);
                 driverLoadedValue.setValue(true);
