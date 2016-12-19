@@ -6,9 +6,9 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.intuso.housemate.client.api.internal.annotation.Id;
+import com.intuso.housemate.client.api.internal.plugin.PluginListener;
 import com.intuso.housemate.client.real.api.bridge.v1_0.ioc.PluginV1_0BridgeModule;
-import com.intuso.housemate.plugin.api.internal.annotations.Id;
-import com.intuso.housemate.plugin.api.internal.module.PluginListener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -130,7 +130,7 @@ public class PluginHost implements PluginFinder.Listener {
             return Version.Internal;
         } catch(Throwable t) {}
         try {
-            pluginInjector.getInstance(com.intuso.housemate.plugin.v1_0.api.annotations.Id.class);
+            pluginInjector.getInstance(com.intuso.housemate.client.v1_0.api.annotation.Id.class);
             return Version.V1_0;
         } catch(Throwable t) {}
         throw new HousematePluginException("Could not detect plugin api version");

@@ -5,7 +5,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.bridge.v1_0.TypeInstancesMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.object.TypeInstancesMapper;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.client.v1_0.api.object.Property;
 import com.intuso.housemate.client.v1_0.real.api.RealCommand;

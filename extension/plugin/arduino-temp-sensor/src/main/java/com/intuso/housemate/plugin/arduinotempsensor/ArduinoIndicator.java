@@ -2,10 +2,10 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.plugin.v1_0.api.annotations.Id;
-import com.intuso.housemate.plugin.v1_0.api.annotations.Property;
-import com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver;
-import com.intuso.housemate.plugin.v1_0.api.feature.StatefulPowerControl;
+import com.intuso.housemate.client.v1_0.api.annotation.Id;
+import com.intuso.housemate.client.v1_0.api.annotation.Property;
+import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
+import com.intuso.housemate.client.v1_0.api.feature.StatefulPowerControl;
 import org.slf4j.Logger;
 
 import java.io.IOException;

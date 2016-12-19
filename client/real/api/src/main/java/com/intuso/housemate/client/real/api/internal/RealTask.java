@@ -1,8 +1,8 @@
 package com.intuso.housemate.client.real.api.internal;
 
+import com.intuso.housemate.client.api.internal.driver.PluginDependency;
+import com.intuso.housemate.client.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.api.internal.object.Task;
-import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
-import com.intuso.housemate.plugin.api.internal.driver.TaskDriver;
 
 public interface RealTask<COMMAND extends RealCommand<?, ?, ?>,
         BOOLEAN_VALUE extends RealValue<Boolean, ?, ?>,

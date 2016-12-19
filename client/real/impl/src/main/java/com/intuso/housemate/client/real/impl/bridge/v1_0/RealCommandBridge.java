@@ -3,7 +3,7 @@ package com.intuso.housemate.client.real.impl.bridge.v1_0;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.bridge.v1_0.CommandMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.object.CommandMapper;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Type;

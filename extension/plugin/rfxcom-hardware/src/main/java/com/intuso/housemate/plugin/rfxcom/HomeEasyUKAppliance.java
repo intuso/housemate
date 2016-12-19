@@ -1,7 +1,7 @@
 package com.intuso.housemate.plugin.rfxcom;
 
+import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKHardwareAPI;
-import com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;

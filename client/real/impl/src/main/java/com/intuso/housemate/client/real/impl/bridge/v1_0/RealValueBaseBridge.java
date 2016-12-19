@@ -1,7 +1,7 @@
 package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
-import com.intuso.housemate.client.api.bridge.v1_0.ObjectMapper;
-import com.intuso.housemate.client.api.bridge.v1_0.TypeInstancesMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.object.TypeInstancesMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;

@@ -1,9 +1,9 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
+import com.intuso.housemate.client.api.internal.type.Email;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ioc.Types;
-import com.intuso.housemate.plugin.api.internal.type.Email;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 

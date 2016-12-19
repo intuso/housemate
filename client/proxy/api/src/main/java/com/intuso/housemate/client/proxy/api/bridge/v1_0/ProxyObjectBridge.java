@@ -1,6 +1,6 @@
 package com.intuso.housemate.client.proxy.api.bridge.v1_0;
 
-import com.intuso.housemate.client.api.bridge.v1_0.ObjectMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.v1_0.proxy.api.object.JMSUtil;
 import com.intuso.utilities.listener.ListenerRegistration;

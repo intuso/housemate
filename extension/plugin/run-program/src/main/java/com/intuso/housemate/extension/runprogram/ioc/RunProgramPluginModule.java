@@ -1,9 +1,9 @@
 package com.intuso.housemate.extension.runprogram.ioc;
 
+import com.intuso.housemate.client.v1_0.api.annotation.Id;
+import com.intuso.housemate.client.v1_0.api.plugin.AnnotatedPluginModule;
+import com.intuso.housemate.client.v1_0.api.plugin.FeatureDrivers;
 import com.intuso.housemate.extension.runprogram.RunProgramFeatureDriver;
-import com.intuso.housemate.plugin.v1_0.api.annotations.Id;
-import com.intuso.housemate.plugin.v1_0.api.module.AnnotatedPluginModule;
-import com.intuso.housemate.plugin.v1_0.api.module.FeatureDrivers;
 
 /**
  * Created with IntelliJ IDEA.

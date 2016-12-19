@@ -3,12 +3,12 @@ package com.intuso.housemate.client.real.api.bridge.v1_0;
 import com.google.common.base.Function;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.bridge.v1_0.driver.FeatureDriverFactoryMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.driver.FeatureDriverMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.driver.PluginResourceMapper;
+import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
+import com.intuso.housemate.client.api.internal.driver.PluginDependency;
 import com.intuso.housemate.client.real.api.internal.*;
-import com.intuso.housemate.plugin.api.bridge.v1_0.driver.FeatureDriverFactoryMapper;
-import com.intuso.housemate.plugin.api.bridge.v1_0.driver.FeatureDriverMapper;
-import com.intuso.housemate.plugin.api.bridge.v1_0.driver.PluginResourceMapper;
-import com.intuso.housemate.plugin.api.internal.driver.FeatureDriver;
-import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -21,7 +21,7 @@ public class RealFeatureBridgeReverse
         com.intuso.housemate.client.v1_0.real.api.RealValue<Boolean, ?, ?>,
         com.intuso.housemate.client.v1_0.real.api.RealValue<String, ?, ?>,
         com.intuso.housemate.client.v1_0.real.api.RealList<? extends com.intuso.housemate.client.v1_0.real.api.RealValue<?, ?, ?>, ?>,
-        com.intuso.housemate.client.v1_0.real.api.RealProperty<com.intuso.housemate.plugin.v1_0.api.driver.PluginDependency<com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver.Factory<?>>, ?, ?, ?>,
+        com.intuso.housemate.client.v1_0.real.api.RealProperty<com.intuso.housemate.client.v1_0.api.driver.PluginDependency<com.intuso.housemate.client.v1_0.api.driver.FeatureDriver.Factory<?>>, ?, ?, ?>,
         com.intuso.housemate.client.v1_0.real.api.RealList<? extends com.intuso.housemate.client.v1_0.real.api.RealProperty<?, ?, ?, ?>, ?>,
                 RealFeatureBridgeReverse> {
 
@@ -58,7 +58,7 @@ public class RealFeatureBridgeReverse
     }
 
     @Override
-    public <TO extends com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver> TO getDriver() {
+    public <TO extends com.intuso.housemate.client.v1_0.api.driver.FeatureDriver> TO getDriver() {
         return (TO) featureDriverMapper.map(feature.getDriver());
     }
 
@@ -123,14 +123,14 @@ public class RealFeatureBridgeReverse
     }
 
     @Override
-    public com.intuso.housemate.client.v1_0.real.api.RealProperty<com.intuso.housemate.plugin.v1_0.api.driver.PluginDependency<com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver.Factory<?>>, ?, ?, ?> getDriverProperty() {
-        Function<FeatureDriver.Factory<?>, com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver.Factory<?>> ddfConvertFrom
+    public com.intuso.housemate.client.v1_0.real.api.RealProperty<com.intuso.housemate.client.v1_0.api.driver.PluginDependency<com.intuso.housemate.client.v1_0.api.driver.FeatureDriver.Factory<?>>, ?, ?, ?> getDriverProperty() {
+        Function<FeatureDriver.Factory<?>, com.intuso.housemate.client.v1_0.api.driver.FeatureDriver.Factory<?>> ddfConvertFrom
                 = featureDriverFactoryMapper.getToV1_0Function();
-        Function<PluginDependency<FeatureDriver.Factory<?>>, com.intuso.housemate.plugin.v1_0.api.driver.PluginDependency<com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver.Factory<?>>> convertFrom
+        Function<PluginDependency<FeatureDriver.Factory<?>>, com.intuso.housemate.client.v1_0.api.driver.PluginDependency<com.intuso.housemate.client.v1_0.api.driver.FeatureDriver.Factory<?>>> convertFrom
                 = pluginResourceMapper.getToV1_0Function(ddfConvertFrom);
-        Function<com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver.Factory<?>, FeatureDriver.Factory<?>> ddfConvertTo
+        Function<com.intuso.housemate.client.v1_0.api.driver.FeatureDriver.Factory<?>, FeatureDriver.Factory<?>> ddfConvertTo
                 = featureDriverFactoryMapper.getFromV1_0Function();
-        Function<com.intuso.housemate.plugin.v1_0.api.driver.PluginDependency<com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver.Factory<?>>, PluginDependency<FeatureDriver.Factory<?>>> convertTo
+        Function<com.intuso.housemate.client.v1_0.api.driver.PluginDependency<com.intuso.housemate.client.v1_0.api.driver.FeatureDriver.Factory<?>>, PluginDependency<FeatureDriver.Factory<?>>> convertTo
                 = pluginResourceMapper.getFromV1_0Function(ddfConvertTo);
         return propertyMapper.map(feature.getDriverProperty(),
                 convertFrom,

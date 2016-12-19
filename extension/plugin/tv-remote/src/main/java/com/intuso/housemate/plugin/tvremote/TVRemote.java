@@ -2,12 +2,12 @@ package com.intuso.housemate.plugin.tvremote;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.plugin.v1_0.api.annotations.Id;
-import com.intuso.housemate.plugin.v1_0.api.annotations.Property;
-import com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver;
-import com.intuso.housemate.plugin.v1_0.api.feature.PlaybackControl;
-import com.intuso.housemate.plugin.v1_0.api.feature.PowerControl;
-import com.intuso.housemate.plugin.v1_0.api.feature.VolumeControl;
+import com.intuso.housemate.client.v1_0.api.annotation.Id;
+import com.intuso.housemate.client.v1_0.api.annotation.Property;
+import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
+import com.intuso.housemate.client.v1_0.api.feature.PlaybackControl;
+import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
+import com.intuso.housemate.client.v1_0.api.feature.VolumeControl;
 import org.slf4j.Logger;
 
 import java.io.IOException;

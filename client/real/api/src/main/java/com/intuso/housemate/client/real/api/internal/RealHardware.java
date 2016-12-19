@@ -1,8 +1,8 @@
 package com.intuso.housemate.client.real.api.internal;
 
+import com.intuso.housemate.client.api.internal.driver.HardwareDriver;
+import com.intuso.housemate.client.api.internal.driver.PluginDependency;
 import com.intuso.housemate.client.api.internal.object.Hardware;
-import com.intuso.housemate.plugin.api.internal.driver.HardwareDriver;
-import com.intuso.housemate.plugin.api.internal.driver.PluginDependency;
 
 /**
  * Base class for all hardwares

@@ -2,7 +2,7 @@ package com.intuso.housemate.client.real.impl.bridge.v1_0;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.bridge.v1_0.OptionMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.object.OptionMapper;
 import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.utilities.listener.ListenersFactory;

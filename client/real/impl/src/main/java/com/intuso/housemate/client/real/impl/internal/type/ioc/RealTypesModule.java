@@ -1,13 +1,15 @@
 package com.intuso.housemate.client.real.impl.internal.type.ioc;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.util.Types;
+import com.intuso.housemate.client.api.internal.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.driver.*;
+import com.intuso.housemate.client.api.internal.type.Email;
 import com.intuso.housemate.client.real.impl.internal.type.*;
-import com.intuso.housemate.plugin.api.internal.driver.*;
-import com.intuso.housemate.plugin.api.internal.type.Email;
 
 /**
  * Created by tomc on 13/05/16.
@@ -43,5 +45,8 @@ public class RealTypesModule extends AbstractModule {
         bind(TaskDriverType.class).in(Scopes.SINGLETON);
         bind(RegisteredTypes.class).in(Scopes.SINGLETON);
         bind(new TypeLiteral<Iterable<TypeFactories<?>>>() {}).toProvider(SystemTypeFactoriesProvider.class);
+
+        // bind implementations
+        bind(new TypeLiteral<TypeSerialiser<RealObjectType.Reference<?>>>() {}).to(new Key<RealObjectType.Serialiser<?>>() {}).in(Scopes.SINGLETON);
     }
 }

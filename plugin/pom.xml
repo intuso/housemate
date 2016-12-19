@@ -14,7 +14,6 @@
     <description>Plugin for the Housemate framework</description>
 
     <modules>
-        <module>api</module>
         <module>host</module>
         <module>main</module>
     </modules>

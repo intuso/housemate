@@ -2,7 +2,7 @@ package com.intuso.housemate.client.proxy.api.bridge.v1_0;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.bridge.v1_0.DeviceMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.object.DeviceMapper;
 import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;

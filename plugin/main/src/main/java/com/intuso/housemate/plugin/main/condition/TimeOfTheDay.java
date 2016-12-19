@@ -2,10 +2,10 @@ package com.intuso.housemate.plugin.main.condition;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.plugin.api.internal.annotations.Id;
-import com.intuso.housemate.plugin.api.internal.annotations.Property;
-import com.intuso.housemate.plugin.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.plugin.api.internal.type.Time;
+import com.intuso.housemate.client.api.internal.annotation.Id;
+import com.intuso.housemate.client.api.internal.annotation.Property;
+import com.intuso.housemate.client.api.internal.driver.ConditionDriver;
+import com.intuso.housemate.client.api.internal.type.Time;
 import org.slf4j.Logger;
 
 import java.util.Calendar;

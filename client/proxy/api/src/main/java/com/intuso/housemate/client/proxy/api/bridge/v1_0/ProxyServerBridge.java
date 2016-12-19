@@ -2,7 +2,7 @@ package com.intuso.housemate.client.proxy.api.bridge.v1_0;
 
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
-import com.intuso.housemate.client.api.bridge.v1_0.ServerMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.object.ServerMapper;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;

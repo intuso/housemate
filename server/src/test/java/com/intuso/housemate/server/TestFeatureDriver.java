@@ -2,11 +2,11 @@ package com.intuso.housemate.server;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.plugin.api.internal.annotations.Feature;
-import com.intuso.housemate.plugin.api.internal.annotations.Id;
-import com.intuso.housemate.plugin.api.internal.annotations.Value;
-import com.intuso.housemate.plugin.api.internal.annotations.Values;
-import com.intuso.housemate.plugin.api.internal.driver.FeatureDriver;
+import com.intuso.housemate.client.api.internal.annotation.Feature;
+import com.intuso.housemate.client.api.internal.annotation.Id;
+import com.intuso.housemate.client.api.internal.annotation.Value;
+import com.intuso.housemate.client.api.internal.annotation.Values;
+import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
 import org.slf4j.Logger;
 
 @Id(value = "test-feature", name = "Test Feature", description = "Test Feature")

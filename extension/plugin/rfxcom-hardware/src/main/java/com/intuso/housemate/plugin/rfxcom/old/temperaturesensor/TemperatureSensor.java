@@ -1,21 +1,21 @@
 package com.intuso.housemate.plugin.rfxcom.old.temperaturesensor;
 
-import com.intuso.housemate.plugin.v1_0.api.annotations.Id;
-import com.intuso.housemate.plugin.v1_0.api.annotations.Property;
-import com.intuso.housemate.plugin.v1_0.api.driver.FeatureDriver;
+import com.intuso.housemate.client.v1_0.api.annotation.Id;
+import com.intuso.housemate.client.v1_0.api.annotation.Property;
+import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
  * Housemate device that receives temperature updates from a sensor
  *
  */
-public abstract class TemperatureSensor implements FeatureDriver, com.intuso.housemate.plugin.v1_0.api.feature.TemperatureSensor {
+public abstract class TemperatureSensor implements FeatureDriver, com.intuso.housemate.client.v1_0.api.feature.TemperatureSensor {
 
 	private com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensor sensor;
     private ListenerRegistration listenerRegistration;
     private int sensorId = 0;
 
-    public com.intuso.housemate.plugin.v1_0.api.feature.TemperatureSensor.TemperatureValues temperatureValues;
+    public com.intuso.housemate.client.v1_0.api.feature.TemperatureSensor.TemperatureValues temperatureValues;
 
     private final TemperatureHandler handler;
     private final FeatureDriver.Callback driverCallback;
