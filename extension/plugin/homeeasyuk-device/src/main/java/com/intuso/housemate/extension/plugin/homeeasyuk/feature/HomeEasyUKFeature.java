@@ -5,38 +5,43 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
-import com.intuso.housemate.client.v1_0.api.feature.StatefulPowerControl;
+import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
+import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyHardware;
-import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKHardwareAPI;
+import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKAPI;
 import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
 /**
  * Created by tomc on 12/12/16.
  */
 @Id(value = "homeeasyuk-appliance", name = "HomeEasy UK Appliance", description = "Power something on and off as a HomeEasy UK appliance")
-public class HomeEasyUKFeature implements FeatureDriver, StatefulPowerControl, HomeEasyUKHardwareAPI.Appliance.Listener {
+public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, HomeEasyUKAPI.Appliance.Listener {
 
     private final Logger logger;
+    private final Listeners<Listener> listeners;
     private final FeatureDriver.Callback callback;
-    private final HomeEasyUKHardwareProxy.Factory homeEasyUKHardwareProxyFactory;
+    private final ProxyWrapper proxyWrapper;
 
     private SimpleProxyHardware hardware;
     private Integer houseId;
-    private Integer unitId;
+    private Byte unitCode;
 
-    private StatefulPowerControl.PowerValues values;
-
-    private HomeEasyUKHardwareAPI.Appliance applianceProxy;
+    private HomeEasyUKAPI hardwareProxy;
+    private HomeEasyUKAPI.Appliance applianceProxy;
     private ListenerRegistration applianceListener;
 
     @Inject
     public HomeEasyUKFeature(@Assisted Logger logger,
-                             @Assisted Callback callback,
-                             HomeEasyUKHardwareProxy.Factory homeEasyUKHardwareProxyFactory) {
+                             @Assisted FeatureDriver.Callback callback,
+                             ListenersFactory listenersFactory,
+                             ProxyWrapper proxyWrapper) {
         this.logger = logger;
+        this.listeners = listenersFactory.create();
         this.callback = callback;
-        this.homeEasyUKHardwareProxyFactory = homeEasyUKHardwareProxyFactory;
+        this.proxyWrapper = proxyWrapper;
     }
 
     @Property
@@ -55,13 +60,23 @@ public class HomeEasyUKFeature implements FeatureDriver, StatefulPowerControl, H
 
     @Property
     @Id(value = "untiId", name = "Unit ID", description = "The unit ID of the HomeEasy UK appliance")
-    public void setUnitId(Integer unitId) {
-        this.unitId = unitId;
+    public void setUnitCode(Byte unitCode) {
+        this.unitCode = unitCode;
         reconfigure(false);
     }
 
     @Override
-    public void start() {
+    public boolean isOn() {
+        return applianceProxy.isOn();
+    }
+
+    @Override
+    public ListenerRegistration addListener(Listener listener) {
+        return listeners.addListener(listener);
+    }
+
+    @Override
+    public void startFeature() {
         reconfigure(true);
     }
 
@@ -79,30 +94,38 @@ public class HomeEasyUKFeature implements FeatureDriver, StatefulPowerControl, H
             callback.setError("House ID must be between 0 and " + 0x03FFFFFF);
             if (fail)
                 throw new FeatureException("House ID must be between 0 and " + 0x03FFFFFF);
-        } else if(unitId == null) {
+        } else if(unitCode == null) {
             callback.setError("Unit ID proprety is not set");
             if (fail)
                 throw new FeatureException("Unit ID proprety is not set");
-        } else if(unitId < 1 || unitId > 16) {
+        } else if(unitCode < 1 || unitCode > 16) {
             // check the unit ID is a number between 1 and 16
             callback.setError("Unitcode must be between 1 and 16 (inclusive)");
             if (fail)
                 throw new FeatureException("Unit ID must be between 1 and 16 (inclusive)");
         } else {
             callback.setError(null);
-            applianceProxy = homeEasyUKHardwareProxyFactory.create(logger, hardware).appliance(houseId, unitId.byteValue());
-            values.isOn(applianceProxy.isOn());
-            applianceListener = applianceProxy.addListener(this);
+            hardwareProxy = proxyWrapper.build(logger, hardware, HomeEasyUKAPI.class, "");
+            hardwareProxy.initAppliance(houseId, unitCode);
+            applianceProxy = proxyWrapper.build(logger, hardware, HomeEasyUKAPI.Appliance.class, houseId.toString() + "-" + unitCode.toString());
+            for(Listener listener : listeners)
+                listener.on(applianceProxy.isOn());
+            applianceListener = applianceProxy.addCallback(this);
         }
     }
 
     @Override
-    public void stop() {
-        applianceProxy = null;
+    public void stopFeature() {
         if(applianceListener != null) {
             applianceListener.removeListener();
             applianceListener = null;
         }
+        if(applianceProxy != null) {
+            hardwareProxy.uninitAppliance(houseId, unitCode);
+            applianceProxy = null;
+        }
+        if(hardwareProxy != null)
+            hardwareProxy = null;
     }
 
     @Override
@@ -122,7 +145,8 @@ public class HomeEasyUKFeature implements FeatureDriver, StatefulPowerControl, H
     }
 
     @Override
-    public void on(boolean isOn) {
-        values.isOn(isOn);
+    public void on(boolean on) {
+        for(Listener listener : listeners)
+            listener.on(applianceProxy.isOn());
     }
 }

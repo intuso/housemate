@@ -1,34 +1,70 @@
 package com.intuso.housemate.client.api.internal.feature;
 
-import com.intuso.housemate.client.api.internal.annotation.Command;
-import com.intuso.housemate.client.api.internal.annotation.Feature;
-import com.intuso.housemate.client.api.internal.annotation.Id;
+import com.intuso.housemate.client.api.internal.annotation.*;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Interface to mark real devices that provide volume control
+ * API for controlling volume
  */
 @Feature
 @Id(value = "volume", name = "Volume", description = "Volume")
 public interface VolumeControl {
 
+    String ID = VolumeControl.class.getAnnotation(Id.class).value();
+
     /**
-     * Callback for when the volume should be muted
+     * Mute the device
      */
     @Command
     @Id(value = "mute", name = "Mute", description = "Mute")
     void mute();
 
     /**
-     * Callback for when the volume should be increased
+     * Turn the volume up
      */
     @Command
     @Id(value = "volume-up", name = "Volume Up", description = "Volume up")
     void volumeUp();
 
     /**
-     * Callback for when the volume should be decreased
+     * Turn the volume down
      */
     @Command
     @Id(value = "volume-down", name = "Volume Down", description = "Volume down")
     void volumeDown();
+
+    /**
+     * API for controlling volume with state
+     */
+    @Feature
+    @Id(value = "volume-stateful", name = "Volume", description = "Volume")
+    interface Stateful extends VolumeControl {
+
+        String ID = Stateful.class.getAnnotation(Id.class).value();
+
+        /**
+         * Get the volume
+         * @return the current volume
+         */
+        @Value("integer")
+        @Id(value = "volume", name = "Current Volume", description = "The device's current volume")
+        int getVolume();
+
+        /**
+         * Add a listener
+         */
+        @AddListener
+        ListenerRegistration addListener(Listener listener);
+    }
+
+    interface Listener {
+
+        /**
+         * Callback for when the volume has changed
+         * @param volume the new volume
+         */
+        @Value("integer")
+        @Id(value = "volume", name = "Current Volume", description = "The device's current volume")
+        void currentVolume(int volume);
+    }
 }

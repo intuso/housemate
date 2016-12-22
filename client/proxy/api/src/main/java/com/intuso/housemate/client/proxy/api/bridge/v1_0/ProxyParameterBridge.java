@@ -18,7 +18,7 @@ public class ProxyParameterBridge
     protected ProxyParameterBridge(@Assisted Logger logger,
                                    ParameterMapper parameterMapper,
                                    ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Parameter.Data.class, parameterMapper, listenersFactory);
+        super(logger, Parameter.Data.class, parameterMapper, listenersFactory);
     }
 
     @Override

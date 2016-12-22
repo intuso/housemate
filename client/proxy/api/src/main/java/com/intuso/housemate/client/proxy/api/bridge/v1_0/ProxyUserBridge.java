@@ -32,7 +32,7 @@ public class ProxyUserBridge
                               Factory<ProxyPropertyBridge> propertyFactory,
                               Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
                               ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.User.Data.class, userMapper, listenersFactory);
+        super(logger, User.Data.class, userMapper, listenersFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         emailProperty = propertyFactory.create(ChildUtil.logger(logger, User.EMAIL_ID));

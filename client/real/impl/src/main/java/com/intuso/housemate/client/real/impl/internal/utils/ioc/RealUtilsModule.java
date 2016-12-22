@@ -24,6 +24,10 @@ public class RealUtilsModule extends AbstractModule {
         bind(AddDeviceCommand.Factory.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(AddDeviceCommand.Performer.Factory.class));
 
+        // add feature command
+        bind(AddFeatureCommand.Factory.class).in(Scopes.SINGLETON);
+        install(new FactoryModuleBuilder().build(AddFeatureCommand.Performer.Factory.class));
+
         // add hardware command
         bind(AddHardwareCommand.Factory.class).in(Scopes.SINGLETON);
         install(new FactoryModuleBuilder().build(AddHardwareCommand.Performer.Factory.class));

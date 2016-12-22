@@ -25,10 +25,10 @@ public class TVRemote implements FeatureDriver, PowerControl, PlaybackControl, V
     public TVRemote(@Assisted Logger logger, @Assisted FeatureDriver.Callback driverCallback) {}
 
     @Override
-    public void start() {}
+    public void startFeature() {}
 
     @Override
-    public void stop() {}
+    public void stopFeature() {}
 
     @Override
     public void turnOn() {

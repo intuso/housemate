@@ -2,8 +2,13 @@ package com.intuso.housemate.extension.runprogram;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.v1_0.api.annotation.*;
+import com.intuso.housemate.client.v1_0.api.annotation.Id;
+import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
+import com.intuso.housemate.client.v1_0.api.feature.RunControl;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
@@ -15,26 +20,51 @@ import java.io.InputStreamReader;
  *
  */
 @Id(value = "run-program", name = "Run Program", description = "Run a program")
-public class RunProgramFeatureDriver implements FeatureDriver {
+public class RunProgramFeatureDriver implements FeatureDriver, RunControl.Stateful {
 
     @Property("string")
     @Id(value = "command", name = "Command", description = "The command for the program")
     private String command;
 
-    public MyValues values;
-
     private final Logger logger;
+    private final Listeners<Listener> listeners;
+
     private Monitor monitor = null;
+    private boolean isRunning = false;
 
     @Inject
     public RunProgramFeatureDriver(@Assisted Logger logger,
-                                   @Assisted FeatureDriver.Callback driverCallback) {
+                                   @Assisted FeatureDriver.Callback driverCallback,
+                                   ListenersFactory listenersFactory) {
         this.logger = logger;
+        this.listeners = listenersFactory.create();
     }
 
-    @Command
-    @Id(value = "start", name = "Start", description = "Start the program")
-    public void startProgram() {
+    @Override
+    public void startFeature() {
+        monitor = new Monitor();
+        monitor.start();
+    }
+
+    @Override
+    public void stopFeature() {
+        // stop the monitor
+        if(monitor != null)
+            monitor.interrupt();
+    }
+
+    @Override
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    @Override
+    public ListenerRegistration addListener(Listener listener) {
+        return listeners.addListener(listener);
+    }
+
+    @Override
+    public void start() {
         try {
             if(command ==  null || command.length() == 0)
                 throw new FeatureException("No command has been set");
@@ -44,9 +74,8 @@ public class RunProgramFeatureDriver implements FeatureDriver {
         }
     }
 
-    @Command
-    @Id(value = "stop", name = "Stop", description = "Stop the program")
-    public void stopProgram() {
+    @Override
+    public void stop() {
         Integer pid = getFirstPID();
         if(pid != null) {
             try {
@@ -122,37 +151,12 @@ public class RunProgramFeatureDriver implements FeatureDriver {
         }
     }
 
-    @Override
-    public void start() {
-        monitor = new Monitor();
-        monitor.start();
-    }
-
-    @Override
-    public void stop() {
-        // stop the monitor
-        if(monitor != null)
-            monitor.interrupt();
-    }
-
-    @Values
-    public interface MyValues {
-        @Value("boolean")
-        @Id(value = "running", name = "Running", description = "True if the program is currently running")
-        void setRunning(boolean running);
-    }
-
     /**
      * Thread that monitors whethe the program is running or not
      * @author Tom Clabon
      *
      */
     private class Monitor extends Thread {
-
-        /**
-         * True if the program us running
-         */
-        private boolean isRunning = false;
 
         @Override
         public void run() {
@@ -161,7 +165,8 @@ public class RunProgramFeatureDriver implements FeatureDriver {
                 is_running = getFirstPID() != null;
                 if(is_running != isRunning) {
                     isRunning = is_running;
-                    values.setRunning(is_running);
+                    for(Listener listener : listeners)
+                        listener.running(isRunning);
                 }
 
                 try {

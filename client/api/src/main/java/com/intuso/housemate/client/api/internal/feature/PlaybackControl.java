@@ -1,48 +1,84 @@
 package com.intuso.housemate.client.api.internal.feature;
 
-import com.intuso.housemate.client.api.internal.annotation.Command;
-import com.intuso.housemate.client.api.internal.annotation.Feature;
-import com.intuso.housemate.client.api.internal.annotation.Id;
+import com.intuso.housemate.client.api.internal.annotation.*;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Interface to mark real devices that provide playback control
+ * API for controlling playback
  */
 @Feature
 @Id(value = "playback", name = "Playback", description = "Playback")
 public interface PlaybackControl {
 
+    String ID = PlaybackControl.class.getAnnotation(Id.class).value();
+
     /**
-     * Callback to start playback
+     * Play
      */
     @Command
     @Id(value = "play", name = "Play", description = "Play")
     void play();
 
     /**
-     * Callback to pause playback
+     * Pause
      */
     @Command
     @Id(value = "pause", name = "Pause", description = "Pause")
     void pause();
 
     /**
-     * Callback to stop playback
+     * Stop
      */
     @Command
     @Id(value = "stop", name = "Stop", description = "Stop")
     void stopPlayback();
 
     /**
-     * Callback to skip the playback forwards
+     * Forward
      */
     @Command
     @Id(value = "forward", name = "Forward", description = "Forward")
     void forward();
 
     /**
-     * Callback to skip the playback backwards
+     * Rewind
      */
     @Command
     @Id(value = "rewind", name = "Rewind", description = "Rewind")
     void rewind();
+
+    /**
+     * API for controlling playback with state
+     */
+    @Feature
+    @Id(value = "playback-stateful", name = "Playback", description = "Playback")
+    interface Stateful extends PlaybackControl {
+
+        String ID = Stateful.class.getAnnotation(Id.class).value();
+
+        /**
+         * Get whether the device is currently playing
+         * @return true if the device is currently playing
+         */
+        @Value("boolean")
+        @Id(value = "playing", name = "Playing", description = "True if the device is currently playing")
+        boolean isPlaying();
+
+        /**
+         * Add a listener
+         */
+        @AddListener
+        ListenerRegistration addListener(Listener listener);
+    }
+
+    interface Listener {
+
+        /**
+         * Callback for when playback starts or stops
+         * @param playing true if the device is now playing
+         */
+        @Value("boolean")
+        @Id(value = "playing", name = "Playing", description = "True if the device is currently playing")
+        void playing(boolean playing);
+    }
 }

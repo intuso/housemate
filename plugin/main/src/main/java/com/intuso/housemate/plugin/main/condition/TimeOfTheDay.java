@@ -134,7 +134,7 @@ public class TimeOfTheDay implements ConditionDriver {
     }
 
     @Override
-    public void start() {
+    public void startCondition() {
         // start monitoring the time of the day
         monitor = new TimeMonitorThread();
         monitor.start();
@@ -142,7 +142,7 @@ public class TimeOfTheDay implements ConditionDriver {
     }
 
     @Override
-    public void stop() {
+    public void stopCondition() {
         if(monitor != null) {
             monitor.interrupt();
             monitor = null;

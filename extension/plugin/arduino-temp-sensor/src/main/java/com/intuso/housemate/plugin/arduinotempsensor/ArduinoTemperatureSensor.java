@@ -3,9 +3,11 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
-import com.intuso.housemate.client.v1_0.api.annotation.Value;
-import com.intuso.housemate.client.v1_0.api.annotation.Values;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
+import com.intuso.housemate.client.v1_0.api.feature.TemperatureSensor;
+import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.Listeners;
+import com.intuso.utilities.listener.ListenersFactory;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -17,28 +19,32 @@ import java.io.*;
  */
 
 @Id(value = "arduino-temp-sensor", name = "Arduino Temperature Sensor", description = "Arduino Temperature Sensor")
-public class ArduinoTemperatureSensor implements FeatureDriver {
+public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSensor {
 
     private final Logger logger;
+    private final Listeners<Listener> listeners;
     private final SerialPortWrapper serialPort;
     private final SerialPortEventListener eventListener = new EventListener();
+
     private PipedInputStream input;
     private PipedOutputStream output;
     private BufferedReader in;
     private LineReader lineReader;
 
-    private TemperatureValues temperatureValues;
+    private double temperature = 0.0;
 
     @Inject
-    protected ArduinoTemperatureSensor(SerialPortWrapper serialPort,
-                                       @Assisted Logger logger,
-                                       @Assisted FeatureDriver.Callback callback) {
+    protected ArduinoTemperatureSensor(@Assisted Logger logger,
+                                       @Assisted FeatureDriver.Callback callback,
+                                       SerialPortWrapper serialPort,
+                                       ListenersFactory listenersFactory) {
         this.logger = logger;
         this.serialPort = serialPort;
+        this.listeners = listenersFactory.create();
     }
 
     @Override
-    public void start() {
+    public void startFeature() {
         try {
             serialPort.addEventListener(eventListener, SerialPort.MASK_RXCHAR);
             input = new PipedInputStream();
@@ -52,7 +58,7 @@ public class ArduinoTemperatureSensor implements FeatureDriver {
     }
 
     @Override
-    public void stop() {
+    public void stopFeature() {
         try {
             serialPort.removeEventListener();
         } catch(IOException e) {
@@ -67,6 +73,16 @@ public class ArduinoTemperatureSensor implements FeatureDriver {
             }
             lineReader = null;
         }
+    }
+
+    @Override
+    public double getTemperature() {
+        return temperature;
+    }
+
+    @Override
+    public ListenerRegistration addListener(Listener listener) {
+        return listeners.addListener(listener);
     }
 
     private class EventListener implements SerialPortEventListener {
@@ -90,7 +106,11 @@ public class ArduinoTemperatureSensor implements FeatureDriver {
                 while(!isInterrupted() && (line = in.readLine()) != null) {
                     logger.debug("Read line");
                     try {
-                        temperatureValues.setTemperature(Double.parseDouble(line));
+                        // assign to temp value in case it changes again very quickly
+                        double t = Double.parseDouble(line);
+                        temperature = t;
+                        for(Listener listener : listeners)
+                            listener.temperature(t);
                         logger.debug("Set temperature");
                     } catch(NumberFormatException e) {
                         logger.warn("Could not parse temperature value \"" + line + "\"");
@@ -105,13 +125,5 @@ public class ArduinoTemperatureSensor implements FeatureDriver {
                 logger.error("Failed to close connection to the Arduino", e);
             }
         }
-    }
-
-    @Values
-    private interface TemperatureValues {
-
-        @Value("double")
-        @Id(value = "temperature", name = "Temperature", description = "Current temperature")
-        void setTemperature(double temperature);
     }
 }

@@ -1,11 +1,12 @@
 package com.intuso.housemate.extension.android.widget.handler;
 
-import com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPowerControl;
+import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
+import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
-import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureFactory;
-import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
 * Created with IntelliJ IDEA.
@@ -14,7 +15,9 @@ import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeat
 * Time: 19:13
 * To change this template use File | Settings | File Templates.
 */
-public abstract class WidgetHandler<FEATURE extends AndroidProxyFeatureImpl> {
+public abstract class WidgetHandler<FEATURE> {
+
+    private final Logger logger = LoggerFactory.getLogger(WidgetHandler.class);
 
     private static int LOAD_ID = 0;
 
@@ -28,24 +31,26 @@ public abstract class WidgetHandler<FEATURE extends AndroidProxyFeatureImpl> {
     }
 
     private final WidgetService widgetService;
-    private final AndroidProxyFeatureFactory proxyFeatureFactory;
+    private final ProxyWrapper proxyWrapper;
     private final String deviceId;
+    private final Class<FEATURE> featureClass;
 
     private WidgetService.Status serviceStatus;
     private Status status;
     private AndroidProxyDevice device;
     private FEATURE feature;
 
-    public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String deviceId, String featureId) {
-        if(featureId.equals(StatefulPowerControl.ID))
+    public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, ProxyWrapper proxyFeatureFactory, String deviceId, String featureId) {
+        if(featureId.equals(PowerControl.Stateful.ID))
             return new StatefulPowerControlWidgetHandler(widgetService, proxyFeatureFactory, deviceId);
         return null;
     }
 
-    WidgetHandler(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String deviceId) {
+    WidgetHandler(WidgetService widgetService, ProxyWrapper proxyWrapper, String deviceId, Class<FEATURE> featureClass) {
         this.widgetService = widgetService;
-        this.proxyFeatureFactory = proxyFeatureFactory;
+        this.proxyWrapper = proxyWrapper;
         this.deviceId = deviceId;
+        this.featureClass = featureClass;
     }
 
     protected WidgetService getWidgetService() {
@@ -91,7 +96,7 @@ public abstract class WidgetHandler<FEATURE extends AndroidProxyFeatureImpl> {
         if (device != null) {
             AndroidProxyFeature proxyFeature = device.getFeatures().get(getFeatureId());
             if(proxyFeature != null) {
-                feature = proxyFeatureFactory.getFeatureAs(proxyFeature);
+                feature = proxyWrapper.build(logger, proxyFeature, featureClass, "");
                 init();
                 status = Status.READY;
                 updateWidget();

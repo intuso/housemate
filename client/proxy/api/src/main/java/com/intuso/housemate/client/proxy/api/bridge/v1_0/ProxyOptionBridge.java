@@ -25,7 +25,7 @@ public class ProxyOptionBridge
                                 OptionMapper optionMapper,
                                 ProxyObjectBridge.Factory<ProxyListBridge<ProxySubTypeBridge>> subTypesFactory,
                                 ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Option.Data.class, optionMapper, listenersFactory);
+        super(logger, Option.Data.class, optionMapper, listenersFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID));
     }
 

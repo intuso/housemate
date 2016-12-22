@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
-import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -36,7 +35,7 @@ public class ConnectionService extends Service {
         // create a listeners factory
         listenersFactory = new ListenersFactory() {
             @Override
-            public <LISTENER extends Listener> Listeners<LISTENER> create() {
+            public <LISTENER> Listeners<LISTENER> create() {
                 return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
             }
         };

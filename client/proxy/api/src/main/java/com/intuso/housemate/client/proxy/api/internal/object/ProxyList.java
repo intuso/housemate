@@ -35,7 +35,7 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
+    protected void initChildren(final String name, final Connection connection) throws JMSException {
         super.initChildren(name, connection);
         // subscribe to all child topics and create children as new topics are discovered
         existingObjectReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, "*"), Object.Data.class,
@@ -43,9 +43,14 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
                     @Override
                     public void onMessage(Object.Data data, boolean wasPersisted) {
                         if(!elements.containsKey(data.getId())) {
-                            ELEMENT element = elementFactory.create(logger);
+                            ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()));
                             if(element != null) {
                                 elements.put(data.getId(), element);
+                                try {
+                                    element.initChildren(ChildUtil.name(name, data.getId()), connection);
+                                } catch (JMSException e) {
+                                    logger.error("Failed to init child {}", data.getId(), e);
+                                }
                                 for(List.Listener<? super ELEMENT, ? super LIST> listener : listeners)
                                     listener.elementAdded((LIST) ProxyList.this, element);
                             }

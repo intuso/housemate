@@ -338,7 +338,7 @@ public final class RealHardwareImpl
     protected final void _start() {
         try {
             if(isDriverLoaded())
-                driver.start();
+                driver.startHardware();
         } catch (Throwable t) {
             getErrorValue().setValue("Could not start hardware: " + t.getMessage());
         }
@@ -346,12 +346,22 @@ public final class RealHardwareImpl
 
     protected final void _stop() {
         if(isDriverLoaded())
-            driver.stop();
+            driver.stopHardware();
     }
 
     @Override
     public void setError(String error) {
         errorValue.setValue(error);
+    }
+
+    @Override
+    public void addObject(Object object, String prefix) {
+        for(RealCommandImpl command : annotationParser.findCommands(logger, "", object))
+            commands.add(command);
+        for(RealValueImpl<?> value : annotationParser.findValues(logger, "", object))
+            values.add(value);
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", object))
+            properties.add(property);
     }
 
     public interface Factory {

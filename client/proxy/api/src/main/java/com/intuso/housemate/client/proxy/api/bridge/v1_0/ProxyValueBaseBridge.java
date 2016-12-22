@@ -33,7 +33,7 @@ public abstract class ProxyValueBaseBridge<
     private com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<com.intuso.housemate.client.v1_0.api.object.Type.Instances> valueReceiver;
 
     protected ProxyValueBaseBridge(Logger logger,
-                                   Class<VERSION_DATA> versionDataClass,
+                                   Class<INTERNAL_DATA> versionDataClass,
                                    ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper,
                                    TypeInstancesMapper typeInstancesMapper,
                                    ListenersFactory listenersFactory) {

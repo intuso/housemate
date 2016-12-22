@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public interface Object<LISTENER extends Object.Listener> {
 
-    public final static String VERSION = "internal";
+    String VERSION = "internal";
 
     /**
      * Gets the object's id
@@ -41,7 +41,7 @@ public interface Object<LISTENER extends Object.Listener> {
      *
      * Base listener interface for objects
      */
-    interface Listener extends com.intuso.utilities.listener.Listener {}
+    interface Listener {}
 
     /**
      * Base data object for any Housemate object

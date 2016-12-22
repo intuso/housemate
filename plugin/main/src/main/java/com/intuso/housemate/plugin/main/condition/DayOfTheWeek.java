@@ -75,7 +75,7 @@ public class DayOfTheWeek implements ConditionDriver {
 	}
 	
 	@Override
-	public void start() {
+	public void startCondition() {
 		// start monitoring the day of the week
         logger.debug("Condition satisfied when day is " + days);
 		monitor = new DayMonitorThread();
@@ -84,7 +84,7 @@ public class DayOfTheWeek implements ConditionDriver {
 	}
 	
 	@Override
-	public void stop() {
+	public void stopCondition() {
         if(monitor != null) {
 		    monitor.interrupt();
 		    monitor = null;

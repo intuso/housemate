@@ -18,13 +18,13 @@ public class TaskDriverBridgeReverse implements TaskDriver {
     }
 
     @Override
-    public void start() {
-        taskDriver.start();
+    public void startTask() {
+        taskDriver.startTask();
     }
 
     @Override
-    public void stop() {
-        taskDriver.stop();
+    public void stopTask() {
+        taskDriver.stopTask();
     }
 
     @Override

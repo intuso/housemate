@@ -7,11 +7,12 @@ import org.slf4j.Logger;
  */
 public interface HardwareDriver {
 
-    void start();
-    void stop();
+    void startHardware();
+    void stopHardware();
 
     interface Callback {
         void setError(String error);
+        void addObject(Object object, String prefix);
     }
 
     interface Factory<DRIVER extends HardwareDriver> {

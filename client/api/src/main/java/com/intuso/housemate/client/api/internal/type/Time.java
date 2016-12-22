@@ -12,13 +12,16 @@ import com.intuso.housemate.client.api.internal.annotation.IntegerWrap;
 public class Time implements Comparable<Time> {
 
     @Id(value = "hour", name = "Hour", description = "Hour of the day")
-    private Hour hour;
+    @IntegerWrap(min = 0, max = 23)
+    private int hour;
 
     @Id(value = "minute", name = "Minute", description = "Minute of the hour")
-    private Minute minute;
+    @IntegerWrap(min = 0, max = 59)
+    private int minute;
 
     @Id(value = "second", name = "Second", description = "Second of the day")
-    private Second second;
+    @IntegerWrap(min = 0, max = 59)
+    private int second;
 
     private Time() {}
 
@@ -28,15 +31,6 @@ public class Time implements Comparable<Time> {
      * @param second the number of seconds since the beginning of the minute
      */
     public Time(int hour, int minute, int second) {
-        this(new Hour(hour), new Minute(minute), new Second(second));
-    }
-
-    /**
-     * @param hour the number of hours since midnight
-     * @param minute the number of minutes since the beginning of the hour
-     * @param second the number of seconds since the beginning of the minute
-     */
-    public Time(Hour hour, Minute minute, Second second) {
         this.hour = hour;
         this.minute = minute;
         this.second = second;
@@ -46,7 +40,7 @@ public class Time implements Comparable<Time> {
      * Gets the number of hours since midnight
      * @return the number of hours since midnight
      */
-    public Hour getHour() {
+    public int getHour() {
         return hour;
     }
 
@@ -54,7 +48,7 @@ public class Time implements Comparable<Time> {
      * Gets the number of minutes since the beginning of the hour
      * @return the number of minutes since the beginning of the hour
      */
-    public Minute getMinute() {
+    public int getMinute() {
         return minute;
     }
 
@@ -62,7 +56,7 @@ public class Time implements Comparable<Time> {
      * Gets the number of seconds since the beginning of the minute
      * @return the number of seconds since the beginning of the minute
      */
-    public Second getSecond() {
+    public int getSecond() {
         return second;
     }
 
@@ -73,9 +67,9 @@ public class Time implements Comparable<Time> {
      */
     public long minus(Time time) {
         long result = 0;
-        result += 60 * 60 * 1000 * (hour.get() - time.hour.get());
-        result += 60 * 1000 * (minute.get() - time.minute.get());
-        result += 1000 * (second.get() - time.second.get());
+        result += 60 * 60 * 1000 * (hour - time.hour);
+        result += 60 * 1000 * (minute - time.minute);
+        result += 1000 * (second - time.second);
         return result;
     }
 
@@ -88,70 +82,10 @@ public class Time implements Comparable<Time> {
     public int compareTo(Time time) {
         if(time == null)
             return -1;
-        if(hour.get() != time.hour.get())
-            return hour.get() - time.hour.get();
-        if(minute.get() != time.minute.get())
-            return minute.get() - time.minute.get();
-        return second.get() - time.second.get();
-    }
-
-    @IntegerWrap(min = 0, max = 23)
-    public static class Hour {
-
-        private int hour;
-
-        public Hour() {}
-
-        public Hour(int hour) {
-            this.hour = hour;
-        }
-
-        public void set(int hour) {
-            this.hour = hour;
-        }
-
-        public int get() {
-            return hour;
-        }
-    }
-
-    @IntegerWrap(min = 0, max = 59)
-    public static class Minute {
-
-        private int minute;
-
-        public Minute() {}
-
-        public Minute(int minute) {
-            this.minute = minute;
-        }
-
-        public void set(int hour) {
-            this.minute = hour;
-        }
-
-        public int get() {
-            return minute;
-        }
-    }
-
-    @IntegerWrap(min = 0, max = 59)
-    public static class Second {
-
-        private int second;
-
-        public Second() {}
-
-        public Second(int second) {
-            this.second = second;
-        }
-
-        public void set(int hour) {
-            this.second = hour;
-        }
-
-        public int get() {
-            return second;
-        }
+        if(hour != time.hour)
+            return hour - time.hour;
+        if(minute != time.minute)
+            return minute - time.minute;
+        return second - time.second;
     }
 }

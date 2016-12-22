@@ -1,7 +1,7 @@
 package com.intuso.housemate.plugin.rfxcom;
 
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
-import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKHardwareAPI;
+import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKAPI;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -16,21 +16,21 @@ import java.io.IOException;
  * Housemate device that controls a HomeEasy Appliance
  *
  */
-public class HomeEasyUKAppliance implements HomeEasyUKHardwareAPI.Appliance {
+public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
 
-    private final Listeners<Listener> listeners;
+    private final Listeners<Listener> callbacks;
 
     private Lighting2Appliance lighting2Appliance;
     private ListenerRegistration listenerRegistration;
     private boolean isOn = false;
 
-    public HomeEasyUKAppliance(ListenersFactory listenersFactory, RFXtrx rfXtrx, int houseId, byte unitId) {
-        this.listeners = listenersFactory.create();
+    public HomeEasyUKApplianceImpl(ListenersFactory listenersFactory, RFXtrx rfXtrx, int houseId, byte unitCode) {
+        this.callbacks = listenersFactory.create();
         if(listenerRegistration != null) {
             listenerRegistration.removeListener();
             listenerRegistration = null;
         }
-        lighting2Appliance = new Lighting2Appliance(new Lighting2House(new Lighting2(rfXtrx, com.rfxcom.rfxtrx.message.Lighting2.SubType.AC), houseId), unitId);
+        lighting2Appliance = new Lighting2Appliance(new Lighting2House(new Lighting2(rfXtrx, com.rfxcom.rfxtrx.message.Lighting2.SubType.AC), houseId), unitCode);
         listenerRegistration = lighting2Appliance.addCallback(new com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance.Callback() {
 
             @Override
@@ -75,13 +75,13 @@ public class HomeEasyUKAppliance implements HomeEasyUKHardwareAPI.Appliance {
 	}
 
     @Override
-    public ListenerRegistration addListener(Listener listener) {
-        return listeners.addListener(listener);
+    public ListenerRegistration addCallback(Listener listener) {
+        return callbacks.addListener(listener);
     }
 
 	private void setIsOn(boolean isOn) {
         this.isOn = isOn;
-        for(Listener listener : listeners)
+        for(Listener listener : callbacks)
             listener.on(isOn);
     }
 }

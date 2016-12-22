@@ -18,13 +18,13 @@ public class TaskDriverBridge implements com.intuso.housemate.client.api.interna
     }
 
     @Override
-    public void start() {
-        taskDriver.start();
+    public void startTask() {
+        taskDriver.startTask();
     }
 
     @Override
-    public void stop() {
-        taskDriver.stop();
+    public void stopTask() {
+        taskDriver.stopTask();
     }
 
     @Override

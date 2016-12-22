@@ -6,7 +6,6 @@ import com.google.inject.Injector;
 import com.intuso.housemate.pkg.server.jar.ioc.JarServerModule;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.server.object.real.FactoryPluginListener;
-import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -35,7 +34,7 @@ public class ServerEnvironment {
 
         ListenersFactory listenersFactory = new ListenersFactory() {
             @Override
-            public <LISTENER extends Listener> Listeners<LISTENER> create() {
+            public <LISTENER> Listeners<LISTENER> create() {
                 return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
             }
         };

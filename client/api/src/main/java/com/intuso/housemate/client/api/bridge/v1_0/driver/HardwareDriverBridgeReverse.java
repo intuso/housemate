@@ -18,12 +18,12 @@ public class HardwareDriverBridgeReverse implements HardwareDriver {
     }
 
     @Override
-    public void start() {
-        hardwareDriver.start();
+    public void startHardware() {
+        hardwareDriver.startHardware();
     }
 
     @Override
-    public void stop() {
-        hardwareDriver.stop();
+    public void stopHardware() {
+        hardwareDriver.stopHardware();
     }
 }

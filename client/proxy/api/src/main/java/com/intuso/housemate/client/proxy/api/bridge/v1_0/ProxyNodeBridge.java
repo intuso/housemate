@@ -29,7 +29,7 @@ public class ProxyNodeBridge
                               ProxyObjectBridge.Factory<ProxyListBridge<ProxyHardwareBridge>> hardwaresFactory,
                               ProxyObjectBridge.Factory<ProxyCommandBridge> commandFactory,
                               ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Node.Data.class, nodeMapper, listenersFactory);
+        super(logger, Node.Data.class, nodeMapper, listenersFactory);
         types = typesFactory.create(ChildUtil.logger(logger, Node.TYPES_ID));
         hardwares = hardwaresFactory.create(ChildUtil.logger(logger, Node.HARDWARES_ID));
         addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, Node.ADD_HARDWARE_ID));

@@ -18,12 +18,12 @@ public abstract class LogicCondition implements ConditionDriver {
     }
 
     @Override
-    public final void start() {
+    public final void startCondition() {
         conditionCallback.conditionSatisfied(checkIfSatisfied(conditionCallback.getChildSatisfied()));
     }
 
     @Override
-    public final void stop() {
+    public final void stopCondition() {
         // do nothing
     }
 

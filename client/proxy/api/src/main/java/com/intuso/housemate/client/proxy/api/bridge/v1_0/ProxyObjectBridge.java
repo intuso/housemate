@@ -19,27 +19,27 @@ public abstract class ProxyObjectBridge<
 
     protected final Logger logger;
     protected VERSION_DATA data;
-    protected final Class<VERSION_DATA> versionDataClass;
+    protected final Class<INTERNAL_DATA> internalDataClass;
     protected final ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper;
     protected final Listeners<LISTENER> listeners;
     private JMSUtil.Sender sender;
-    private com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<VERSION_DATA> receiver;
+    private com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<INTERNAL_DATA> receiver;
 
-    protected ProxyObjectBridge(Logger logger, Class<VERSION_DATA> versionDataClass, ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper, ListenersFactory listenersFactory) {
+    protected ProxyObjectBridge(Logger logger, Class<INTERNAL_DATA> internalDataClass, ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper, ListenersFactory listenersFactory) {
         logger.debug("Creating");
         this.logger = logger;
-        this.versionDataClass = versionDataClass;
+        this.internalDataClass = internalDataClass;
         this.dataMapper = dataMapper;
         this.listeners = listenersFactory.create();
     }
 
     public final void init(String versionName, String internalName, Connection connection) throws JMSException {
-        logger.debug("Init");
-        sender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, internalName);
-        receiver = new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Type.Topic, versionName, versionDataClass,
-                new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver.Listener<VERSION_DATA>() {
+        logger.debug("Init {} -> {}", internalName, versionName);
+        sender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, versionName);
+        receiver = new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Type.Topic, internalName, internalDataClass,
+                new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver.Listener<INTERNAL_DATA>() {
                     @Override
-                    public void onMessage(VERSION_DATA data, boolean wasPersisted) {
+                    public void onMessage(INTERNAL_DATA data, boolean wasPersisted) {
                         try {
                             sender.send(dataMapper.map(data), wasPersisted);
                         } catch (JMSException e) {

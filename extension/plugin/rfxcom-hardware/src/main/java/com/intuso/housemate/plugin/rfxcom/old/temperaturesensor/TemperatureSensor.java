@@ -15,7 +15,7 @@ public abstract class TemperatureSensor implements FeatureDriver, com.intuso.hou
     private ListenerRegistration listenerRegistration;
     private int sensorId = 0;
 
-    public com.intuso.housemate.client.v1_0.api.feature.TemperatureSensor.TemperatureValues temperatureValues;
+    public Listener listener;
 
     private final TemperatureHandler handler;
     private final FeatureDriver.Callback driverCallback;
@@ -43,7 +43,7 @@ public abstract class TemperatureSensor implements FeatureDriver, com.intuso.hou
 
             @Override
             public void newTemperature(double temperature) {
-                temperatureValues.setTemperature(temperature);
+                listener.temperature(temperature);
             }
         });
 	}
@@ -61,14 +61,24 @@ public abstract class TemperatureSensor implements FeatureDriver, com.intuso.hou
         this.sensorId = sensorId;
         propertyChanged();
     }
-	
-	@Override
-	public void start() {
+
+    @Override
+    public double getTemperature() {
+        return 0; // todo
+    }
+
+    @Override
+    public ListenerRegistration addListener(Listener listener) {
+        return null; // todo
+    }
+
+    @Override
+	public void startFeature() {
 		propertyChanged();
 	}
 
 	@Override
-	public void stop() {
+	public void stopFeature() {
 		sensor = null;
 	}
 

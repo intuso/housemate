@@ -66,7 +66,7 @@ public class StatefulPlaybackControl extends Composite implements FeatureWidget,
 
     @Override
     public GWTProxyValue getIsPlayingValue() {
-        return feature.getValues() != null ? feature.getValues().get("is-playing") : null;
+        return feature.getValues() != null ? feature.getValues().get("playing") : null;
     }
 
     @Override

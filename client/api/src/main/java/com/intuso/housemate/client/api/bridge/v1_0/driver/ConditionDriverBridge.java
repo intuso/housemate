@@ -18,13 +18,13 @@ public class ConditionDriverBridge implements com.intuso.housemate.client.api.in
     }
 
     @Override
-    public void start() {
-        conditionDriver.start();
+    public void startCondition() {
+        conditionDriver.startCondition();
     }
 
     @Override
-    public void stop() {
-        conditionDriver.stop();
+    public void stopCondition() {
+        conditionDriver.stopCondition();
     }
 
     @Override

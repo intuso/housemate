@@ -18,7 +18,7 @@ public class ProxySubTypeBridge
     protected ProxySubTypeBridge(@Assisted Logger logger,
                                  SubTypeMapper subTypeMapper,
                                  ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.SubType.Data.class, subTypeMapper, listenersFactory);
+        super(logger, SubType.Data.class, subTypeMapper, listenersFactory);
     }
 
     @Override

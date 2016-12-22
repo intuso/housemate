@@ -7,8 +7,8 @@ import org.slf4j.Logger;
  */
 public interface TaskDriver {
 
-    void start();
-    void stop();
+    void startTask();
+    void stopTask();
     void execute();
 
     interface Callback {

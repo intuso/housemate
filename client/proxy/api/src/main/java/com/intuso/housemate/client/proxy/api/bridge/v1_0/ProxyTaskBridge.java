@@ -36,7 +36,7 @@ public class ProxyTaskBridge
                               Factory<ProxyPropertyBridge> propertyFactory,
                               Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
                               ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Task.Data.class, taskMapper, listenersFactory);
+        super(logger, Task.Data.class, taskMapper, listenersFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID));

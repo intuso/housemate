@@ -40,7 +40,7 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
                                  @Assisted("description") String description,
                                  @Assisted ExistingObjectFactory<ELEMENT> existingObjectHandler,
                                  ListenersFactory listenersFactory) {
-        super(logger, false, new List.Data(id, name, description), listenersFactory);
+        super(logger, true, new List.Data(id, name, description), listenersFactory);
         this.elements = Maps.newHashMap();
         this.existingObjectHandler = existingObjectHandler;
     }

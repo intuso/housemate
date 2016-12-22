@@ -3,7 +3,7 @@ package com.intuso.housemate.plugin.rfxcom.old.lighting1;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
-import com.intuso.housemate.client.v1_0.api.feature.StatefulPowerControl;
+import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.io.IOException;
  * Housemate device that controls a HomeEasy Appliance
  *
  */
-public abstract class Lighting1Appliance implements FeatureDriver, StatefulPowerControl {
+public abstract class Lighting1Appliance implements FeatureDriver, PowerControl.Stateful {
 
 	private com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance lighting1Appliance;
     private ListenerRegistration listenerRegistration;
@@ -22,9 +22,9 @@ public abstract class Lighting1Appliance implements FeatureDriver, StatefulPower
     private final Lighting1Handler handler;
     private final FeatureDriver.Callback driverCallback;
 
-    protected PowerValues powerValues;
+    protected Listener listener;
 
-    protected Lighting1Appliance(Lighting1Handler handler, Callback driverCallback) {
+    protected Lighting1Appliance(Lighting1Handler handler, FeatureDriver.Callback driverCallback) {
         this.handler = handler;
         this.driverCallback = driverCallback;
     }
@@ -53,12 +53,12 @@ public abstract class Lighting1Appliance implements FeatureDriver, StatefulPower
 
             @Override
             public void turnedOn(com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance a) {
-                powerValues.isOn(true);
+                listener.on(true);
             }
 
             @Override
             public void turnedOff(com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance a) {
-                powerValues.isOn(false);
+                listener.on(false);
             }
         });
 	}
@@ -95,7 +95,7 @@ public abstract class Lighting1Appliance implements FeatureDriver, StatefulPower
             throw new FeatureException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting1Appliance.turnOn();
-            powerValues.isOn(true);
+            listener.on(true);
 		} catch (IOException e) {
 			throw new FeatureException("Could not turn appliance on", e);
 		}
@@ -107,23 +107,33 @@ public abstract class Lighting1Appliance implements FeatureDriver, StatefulPower
             throw new FeatureException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting1Appliance.turnOff();
-            powerValues.isOn(false);
+            listener.on(false);
 		} catch (IOException e) {
 			throw new FeatureException("Could not turn appliance off", e);
 		}
 	}
 
-    public PowerValues getPowerValues() {
-        return powerValues;
+    public boolean isOn() {
+        return true; // todo
     }
 
     @Override
-	public void start() {
+    public ListenerRegistration addListener(Listener listener) {
+        return null;
+        // todo;
+    }
+
+    public Listener getListener() {
+        return listener;
+    }
+
+    @Override
+	public void startFeature() {
 		propertyChanged();
 	}
 
 	@Override
-    public void stop() {
+    public void stopFeature() {
 		lighting1Appliance = null;
 	}
 }

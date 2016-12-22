@@ -47,7 +47,7 @@ public class ServerRootModule extends AbstractModule {
     @Provides
     @Server
     public Logger getServerLogger() {
-        return LoggerFactory.getLogger("com.intuso.housemate.objects.real");
+        return ChildUtil.logger(LoggerFactory.getLogger("server"));
     }
 
     @Provides

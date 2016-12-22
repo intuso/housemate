@@ -34,7 +34,7 @@ public abstract class RealObjectBridge<
     }
 
     public final void init(String versionName, String internalName, Connection connection) throws JMSException {
-        logger.debug("Init");
+        logger.debug("Init {} -> {}", versionName, internalName);
         sender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, internalName);
         receiver = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Type.Topic, versionName, versionDataClass,
                 new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver.Listener<VERSION_DATA>() {

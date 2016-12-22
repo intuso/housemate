@@ -21,6 +21,6 @@ public class ProxyValueBridge
                                ValueMapper valueMapper,
                                TypeInstancesMapper typeInstancesMapper,
                                ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Value.Data.class, valueMapper, typeInstancesMapper, listenersFactory);
+        super(logger, Value.Data.class, valueMapper, typeInstancesMapper, listenersFactory);
     }
 }

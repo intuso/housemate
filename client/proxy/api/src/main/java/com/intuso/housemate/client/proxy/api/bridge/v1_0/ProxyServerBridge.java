@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ServerMapper;
 import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.proxy.api.bridge.v1_0.ioc.ProxyV1_0;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
@@ -41,7 +40,7 @@ public class ProxyServerBridge
                                 Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
                                 Factory<ProxyListBridge<ProxyUserBridge>> usersFactory,
                                 ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Server.Data.class, serverMapper, listenersFactory);
+        super(logger, Server.Data.class, serverMapper, listenersFactory);
         this.connection = connection;
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_AUTOMATION_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, Server.AUTOMATIONS_ID));
@@ -54,9 +53,9 @@ public class ProxyServerBridge
 
     public void start() {
         try {
-            init(com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(null, com.intuso.housemate.client.v1_0.api.object.Object.VERSION, com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject.PROXY),
+            init(com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(null, com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject.PROXY, com.intuso.housemate.client.v1_0.api.object.Object.VERSION),
                     // don't put "proxy" in the internal name - this way real and proxy link up together
-                    ChildUtil.name(null, Object.VERSION),
+                    ChildUtil.name("server"),
                     connection);
         } catch(JMSException e) {
             throw new HousemateException("Failed to initalise objects");

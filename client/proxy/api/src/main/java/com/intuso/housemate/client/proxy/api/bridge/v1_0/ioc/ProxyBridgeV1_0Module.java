@@ -6,10 +6,12 @@ import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
-import com.intuso.housemate.client.proxy.api.bridge.ioc.Proxy;
 import com.intuso.housemate.client.proxy.api.bridge.v1_0.*;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.api.object.Object;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,7 +60,7 @@ public class ProxyBridgeV1_0Module extends AbstractModule {
 
     @Provides
     @ProxyV1_0
-    public Logger getServerLogger(@Proxy Logger logger) {
-        return ChildUtil.logger(logger, "v1_0");
+    public Logger getServerLogger() {
+        return ChildUtil.logger(LoggerFactory.getLogger("bridge"), ProxyObject.PROXY, Object.VERSION);
     }
 }

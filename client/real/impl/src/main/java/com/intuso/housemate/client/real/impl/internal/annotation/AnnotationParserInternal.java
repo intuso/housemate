@@ -5,13 +5,15 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.annotation.*;
-import com.intuso.housemate.client.api.internal.annotation.Parameter;
 import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.real.impl.internal.type.RegisteredTypes;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
 
@@ -82,40 +84,18 @@ public class AnnotationParserInternal implements AnnotationParser {
     }
 
     public Iterable<RealValueImpl<?>> findValues(Logger logger, String idPrefix, Object object, Class<?> clazz) {
-        for(Class<?> interfaceClass : clazz.getClasses()) {
-            if (interfaceClass.getAnnotation(Values.class) != null)
-                return findObjectValues(logger, idPrefix, object, object.getClass(), interfaceClass);
-        }
-        return Lists.newArrayList();
-    }
-
-    private Iterable<RealValueImpl<?>> findObjectValues(Logger logger, String idPrefix, Object object, Class<?> lookInClass, Class<?> valuesClass) {
-        for(Field field : lookInClass.getDeclaredFields()) {
-            if(valuesClass.isAssignableFrom(field.getType())) {
-                return getValuesImpl(logger, idPrefix, object, field, valuesClass);
-            }
-        }
-        if(lookInClass.getSuperclass() != null)
-            return findObjectValues(logger, idPrefix, object, lookInClass.getSuperclass(), valuesClass);
-        return Lists.newArrayList();
-    }
-
-    private Iterable<RealValueImpl<?>> getValuesImpl(Logger logger, String idPrefix, Object object, Field field, Class<?> clazz) {
         List<RealValueImpl<?>> values = Lists.newArrayList();
-        Map<Method, RealValueImpl<?>> valuesFunctions = Maps.newHashMap();
-        InvocationHandler invocationHandler = new ValuesInvocationHandler(valuesFunctions);
-        Object instance = Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, invocationHandler);
-        try {
-            field.setAccessible(true);
-            field.set(object, instance);
-        } catch(IllegalAccessException e) {
-            throw new HousemateException("Failed to assign proxy instance to field " + field.getName() + " of class " + object.getClass().getName(), e);
-        }
-        findValues(logger, idPrefix, values, valuesFunctions, clazz);
-        return values;
+        for(Method addListenerMethod : getAnnotatedMethods(clazz, AddListener.class).keySet())
+            findAddListenerMethodValues(logger, idPrefix, object, clazz, addListenerMethod, values);
+        return Lists.newArrayList();
     }
 
-    private void findValues(Logger logger, String idPrefix, List<RealValueImpl<?>> values, Map<Method, RealValueImpl<?>> valuesFunctions, Class<?> clazz) {
+    private void findAddListenerMethodValues(Logger logger, String idPrefix, Object object, Class<?> clazz, Method addListenerMethod, List<RealValueImpl<?>> values) {
+        if(addListenerMethod.getParameterTypes().length != 1) {
+            logger.warn("{} annotated method {} on {} should have a single parameter", AddListener.class.getName(), addListenerMethod.getName(), clazz.getName());
+            return;
+        }
+        Map<Method, RealValueImpl<?>> valuesFunctions = Maps.newHashMap();
         for(Map.Entry<Method, Value> valueMethod : getAnnotatedMethods(clazz, Value.class).entrySet()) {
             if(!types.exists(valueMethod.getValue().value()))
                 throw new HousemateException(valueMethod.getValue().value() + " type does not exist");
@@ -131,6 +111,12 @@ public class AnnotationParserInternal implements AnnotationParser {
             valuesFunctions.put(valueMethod.getKey(), value);
             values.add(value);
         }
+        Object listener = Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, new ValuesInvocationHandler(valuesFunctions));
+        try {
+            addListenerMethod.invoke(object, listener);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            logger.error("Failed to invoke {} method {} on {}", AddListener.class.getName(), addListenerMethod.getName(), clazz.getName(), e);
+        }
     }
 
     @Override
@@ -145,7 +131,7 @@ public class AnnotationParserInternal implements AnnotationParser {
             try {
                 value = propertyField.getKey().get(object);
             } catch(IllegalAccessException e) {
-                logger.warn("Failed to get initial value of annotated property field " + propertyField.getKey().getName());
+                logger.warn("Failed to get initial value of annotated property field {}", propertyField.getKey().getName());
             }
             if(!types.exists(propertyField.getValue().value()))
                 throw new HousemateException(propertyField.getValue().value() + " type does not exist");
@@ -194,7 +180,7 @@ public class AnnotationParserInternal implements AnnotationParser {
                 return getter.invoke(object);
             } catch(NoSuchMethodException e) { // do nothing
             } catch(InvocationTargetException|IllegalAccessException e) {
-                logger.error("Problem getting property initial value using getter " + getterName + " of " + clazz.getName());
+                logger.error("Problem getting property initial value using getter {} of {}", getterName, clazz.getName());
             }
             String isGetterName = "is" + fieldName;
             try {
@@ -202,10 +188,10 @@ public class AnnotationParserInternal implements AnnotationParser {
                 return isGetter.invoke(object);
             } catch(NoSuchMethodException e) { // do nothing
             } catch(InvocationTargetException|IllegalAccessException e) {
-                logger.error("Problem getting property initial value using isGetter " + isGetterName + " of " + clazz.getName());
+                logger.error("Problem getting property initial value using isGetter {} of {}", isGetterName, clazz.getName());
             }
         }
-        logger.warn("No equivalent getter found for initial value for " + Property.class.getSimpleName() + " method " + methodName + " of " + clazz.getName());
+        logger.warn("No equivalent getter found for initial value for {} method {} of {}", Property.class.getName(), methodName, clazz.getName());
         return null;
     }
 

@@ -43,7 +43,7 @@ public class ProxyAutomationBridge
                                     Factory<ProxyListBridge<ProxyConditionBridge>> conditionsFactory,
                                     Factory<ProxyListBridge<ProxyTaskBridge>> tasksFactory,
                                     ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Automation.Data.class, automationMapper, listenersFactory);
+        super(logger, Automation.Data.class, automationMapper, listenersFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         runningValue = valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID));

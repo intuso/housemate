@@ -18,12 +18,12 @@ public class FeatureDriverBridgeReverse implements FeatureDriver {
     }
 
     @Override
-    public void start() {
-        featureDriver.start();
+    public void startFeature() {
+        featureDriver.startFeature();
     }
 
     @Override
-    public void stop() {
-        featureDriver.stop();
+    public void stopFeature() {
+        featureDriver.stopFeature();
     }
 }

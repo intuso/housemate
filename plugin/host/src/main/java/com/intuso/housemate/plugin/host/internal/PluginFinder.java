@@ -10,7 +10,7 @@ import java.io.File;
 public interface PluginFinder {
     ListenerRegistration addListener(Listener listener, boolean callForExisting);
 
-    interface Listener extends com.intuso.utilities.listener.Listener {
+    interface Listener {
         String pluginFound(File pluginFile);
         void pluginRemoved(String pluginId);
     }

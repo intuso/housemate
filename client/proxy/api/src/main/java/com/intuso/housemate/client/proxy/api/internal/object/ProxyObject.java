@@ -57,7 +57,7 @@ public abstract class ProxyObject<
     }
 
     protected final void init(String name, Connection connection) throws JMSException {
-        logger.debug("Init");
+        logger.debug("Init {}", name);
         receiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, name, dataClass,
                 new JMSUtil.Receiver.Listener<DATA>() {
                     @Override

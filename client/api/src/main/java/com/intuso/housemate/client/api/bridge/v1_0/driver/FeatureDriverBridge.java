@@ -18,12 +18,12 @@ public class FeatureDriverBridge implements com.intuso.housemate.client.api.inte
     }
 
     @Override
-    public void start() {
-        featureDriver.start();
+    public void startFeature() {
+        featureDriver.startFeature();
     }
 
     @Override
-    public void stop() {
-        featureDriver.stop();
+    public void stopFeature() {
+        featureDriver.stopFeature();
     }
 }

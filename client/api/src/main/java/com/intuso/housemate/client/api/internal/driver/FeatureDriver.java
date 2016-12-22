@@ -7,8 +7,8 @@ import org.slf4j.Logger;
  */
 public interface FeatureDriver {
 
-    void start();
-    void stop();
+    void startFeature();
+    void stopFeature();
 
     interface Callback {
         void setError(String error);

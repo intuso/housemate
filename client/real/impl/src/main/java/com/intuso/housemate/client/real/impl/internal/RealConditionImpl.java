@@ -313,7 +313,7 @@ public final class RealConditionImpl
     protected final void _start() {
         try {
             if(isDriverLoaded())
-                driver.start();
+                driver.startCondition();
         } catch (Throwable t) {
             getErrorValue().setValue("Could not start condition: " + t.getMessage());
         }
@@ -321,7 +321,7 @@ public final class RealConditionImpl
 
     protected final void _stop() {
         if(isDriverLoaded())
-            driver.stop();
+            driver.stopCondition();
     }
 
     @Override
@@ -352,7 +352,7 @@ public final class RealConditionImpl
             childSatisfied.put(childCondition.getId(), childCondition.isSatisfied());
         }
         if(isDriverLoaded())
-            driver.start();
+            driver.startCondition();
     }
 
     @Override
@@ -362,7 +362,7 @@ public final class RealConditionImpl
         for(RealCondition childCondition : childConditions)
             childCondition.stop();
         if(isDriverLoaded())
-            driver.stop();
+            driver.stopCondition();
     }
 
     @Override

@@ -48,7 +48,7 @@ public class StatefulPowerControl extends CommandToggleSwitch implements Feature
 
     @Override
     public GWTProxyValue getIsOnValue() {
-        return feature.getValues() != null ? feature.getValues().get("is-on") : null;
+        return feature.getValues() != null ? feature.getValues().get("on") : null;
     }
 
     @Override

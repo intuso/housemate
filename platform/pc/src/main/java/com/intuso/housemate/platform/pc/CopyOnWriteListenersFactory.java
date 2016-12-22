@@ -1,6 +1,5 @@
 package com.intuso.housemate.platform.pc;
 
-import com.intuso.utilities.listener.Listener;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
 
@@ -15,7 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class CopyOnWriteListenersFactory implements ListenersFactory {
     @Override
-    public <LISTENER extends Listener> Listeners<LISTENER> create() {
+    public <LISTENER> Listeners<LISTENER> create() {
         return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
     }
 }

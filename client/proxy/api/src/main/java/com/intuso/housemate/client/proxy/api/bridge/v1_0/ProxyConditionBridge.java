@@ -39,7 +39,7 @@ public class ProxyConditionBridge
                                    Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
                                    Factory<ProxyListBridge<ProxyConditionBridge>> conditionsFactory,
                                    ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Condition.Data.class, conditionMapper, listenersFactory);
+        super(logger, Condition.Data.class, conditionMapper, listenersFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         satisfiedValue = valueFactory.create(ChildUtil.logger(logger, Condition.SATISFIED_ID));

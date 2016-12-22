@@ -125,14 +125,14 @@ public class JMSUtil {
                             if (objectClass.isAssignableFrom(object.getClass()))
                                 listener.onMessage((OBJECT) object, message.getBooleanProperty(MessageConstants.STORE));
                             else
-                                logger.warn("Deserialised message object that wasn't a {}", objectClass.getName());
+                                logger.warn("Deserialised message object that wasn't a {} but a {}", objectClass.getName(), object.getClass().getName());
                         } else
                             logger.warn("Message data was not a {}", byte[].class.getName());
                     } catch (JMSException e) {
                         logger.error("Could not read object from received message", e);
                     }
                 } else
-                    logger.error("Received message that wasn't a {}", StreamMessage.class.getName());
+                    logger.error("Received message that wasn't a {} but a {}", StreamMessage.class.getName(), message.getClass().getName());
             }
         }
 

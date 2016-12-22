@@ -12,12 +12,13 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
+import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
+import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapperV1_0;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.handler.WidgetHandler;
 import com.intuso.housemate.platform.android.app.HousemateService;
 import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
-import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,7 +59,7 @@ public class WidgetService extends HousemateService {
     private final Binder binder = new Binder();
 
     private final HashBiMap<Integer, WidgetHandler<?>> widgetHandlers = HashBiMap.create();
-    private final AndroidProxyFeatureFactory proxyFeatureFactory;
+    private final ProxyWrapper proxyWrapper;
 
     private AndroidProxyServer server;
     private AppWidgetManager appWidgetManager;
@@ -83,7 +84,7 @@ public class WidgetService extends HousemateService {
     }
 
     public WidgetService() {
-        this.proxyFeatureFactory = new AndroidProxyFeatureFactory();
+        this.proxyWrapper = new ProxyWrapperV1_0();
     }
 
     public synchronized PendingIntent makePendingIntent(WidgetHandler widgetHandler, String action) {
@@ -180,7 +181,7 @@ public class WidgetService extends HousemateService {
                 int widgetId = intent.getIntExtra(WIDGET_ID, 0);
                 String deviceId = intent.getStringExtra(DEVICE_ID);
                 String featureId = intent.getStringExtra(FEATURE_ID);
-                addWidgetHandler(widgetId, WidgetHandler.createFeatureWidget(WidgetService.this, proxyFeatureFactory, deviceId, featureId), true);
+                addWidgetHandler(widgetId, WidgetHandler.createFeatureWidget(WidgetService.this, proxyWrapper, deviceId, featureId), true);
             }
         }
         return START_STICKY;
@@ -224,6 +225,6 @@ public class WidgetService extends HousemateService {
         String[] parts = value.split(PROPERTY_VALUE_DELIMITER);
         if(parts.length != 2)
             return null;
-        return WidgetHandler.createFeatureWidget(this, proxyFeatureFactory, parts[1], parts[2]);
+        return WidgetHandler.createFeatureWidget(this, proxyWrapper, parts[1], parts[2]);
     }
 }

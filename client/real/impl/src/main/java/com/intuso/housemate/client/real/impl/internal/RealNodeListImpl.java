@@ -14,10 +14,10 @@ import com.intuso.housemate.client.v1_0.real.impl.JMSUtil;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.Session;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -66,9 +66,8 @@ public final class RealNodeListImpl
         super.initChildren(name, connection);
         this.name = name;
         this.connection = connection;
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        final String nodesPathV1_0 = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, Object.VERSION, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Server.NODES_ID);
-        nodeV1_0Receiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*"), Node.Data.class,
+        final String nodesPathV1_0 = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID);
+        nodeV1_0Receiver = new JMSUtil.Receiver<>(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID), connection, JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*"), Node.Data.class,
                 new JMSUtil.Receiver.Listener<Node.Data>() {
                     @Override
                     public void onMessage(Node.Data nodeData, boolean wasPersisted) {

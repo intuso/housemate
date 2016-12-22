@@ -215,7 +215,7 @@ public class RealServerImpl
     public void start() {
         try {
             // don't put "real" in the name - this way real and proxy link up together
-            init(ChildUtil.name(null, Object.VERSION), connection);
+            init("server", connection);
         } catch(JMSException e) {
             throw new HousemateException("Failed to initalise objects");
         }

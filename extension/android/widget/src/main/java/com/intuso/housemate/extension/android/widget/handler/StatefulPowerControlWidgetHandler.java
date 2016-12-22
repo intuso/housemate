@@ -2,15 +2,12 @@ package com.intuso.housemate.extension.android.widget.handler;
 
 import android.widget.RemoteViews;
 import android.widget.Toast;
+import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
 import com.intuso.housemate.client.v1_0.api.object.Command;
-import com.intuso.housemate.client.v1_0.api.object.Value;
-import com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPowerControl;
+import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
-import com.intuso.housemate.platform.android.app.object.AndroidProxyValue;
-import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureFactory;
-import com.intuso.housemate.platform.android.app.object.feature.AndroidProxyFeatureImpl;
 import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
@@ -21,29 +18,24 @@ import com.intuso.utilities.listener.ListenerRegistration;
  * To change this template use File | Settings | File Templates.
  */
 public class StatefulPowerControlWidgetHandler
-        extends WidgetHandler<AndroidProxyFeatureImpl.StatefulPowerControl>
+        extends WidgetHandler<PowerControl.Stateful>
         implements Command.PerformListener<AndroidProxyCommand> {
 
     private ListenerRegistration listenerRegistration;
 
-    public StatefulPowerControlWidgetHandler(WidgetService widgetService, AndroidProxyFeatureFactory proxyFeatureFactory, String deviceId) {
-        super(widgetService, proxyFeatureFactory, deviceId);
+    public StatefulPowerControlWidgetHandler(WidgetService widgetService, ProxyWrapper proxyWrapper, String deviceId) {
+        super(widgetService, proxyWrapper, deviceId, PowerControl.Stateful.class);
     }
 
     @Override
     public String getFeatureId() {
-        return StatefulPowerControl.ID;
+        return PowerControl.Stateful.ID;
     }
 
     protected void init() {
-        listenerRegistration = getFeature().getIsOnValue().addObjectListener(new Value.Listener<AndroidProxyValue>() {
+        listenerRegistration = getFeature().addListener(new PowerControl.Listener() {
             @Override
-            public void valueChanging(AndroidProxyValue value) {
-                // do nothing
-            }
-
-            @Override
-            public void valueChanged(AndroidProxyValue value) {
+            public void on(boolean isOn) {
                 updateWidget();
             }
         });
@@ -108,9 +100,9 @@ public class StatefulPowerControlWidgetHandler
     @Override
     public void handleAction(String action) {
         if("on".equals(action))
-            getFeature().getOnCommand().perform(this);
+            getFeature().turnOn();
         else if("off".equals(action))
-            getFeature().getOffCommand().perform(this);
+            getFeature().turnOff();
     }
 
     @Override

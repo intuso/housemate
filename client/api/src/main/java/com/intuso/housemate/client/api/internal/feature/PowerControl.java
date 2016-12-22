@@ -1,27 +1,63 @@
 package com.intuso.housemate.client.api.internal.feature;
 
-import com.intuso.housemate.client.api.internal.annotation.Command;
-import com.intuso.housemate.client.api.internal.annotation.Feature;
-import com.intuso.housemate.client.api.internal.annotation.Id;
+import com.intuso.housemate.client.api.internal.annotation.*;
+import com.intuso.utilities.listener.ListenerRegistration;
 
 /**
- * Interface to mark real devices that provide power control
+ * API for controlling power
  */
 @Feature
 @Id(value = "power", name = "Power", description = "Power")
 public interface PowerControl {
 
+    String ID = PowerControl.class.getAnnotation(Id.class).value();
+
     /**
-     * Callback to turn the device on
+     * Turn on
      */
     @Command
     @Id(value = "on", name = "Turn On", description = "Turn the device on")
     void turnOn();
 
     /**
-     * Callback to turn the device off
+     * Turn off
      */
     @Command
     @Id(value = "off", name = "Turn Off", description = "Turn the device off")
     void turnOff();
+
+    /**
+     * API for controlling power with state
+     */
+    @Feature
+    @Id(value = "power-stateful", name = "Power", description = "Power")
+    interface Stateful extends PowerControl {
+
+        String ID = Stateful.class.getAnnotation(Id.class).value();
+
+        /**
+         * Get whether the device is current on
+         * @return true if the device is currently on
+         */
+        @Value
+        @Id(value = "on", name = "On", description = "True if the device is currently on")
+        boolean isOn();
+
+        /**
+         * Add a listener
+         */
+        @AddListener
+        ListenerRegistration addListener(Listener listener);
+    }
+
+    interface Listener {
+
+        /**
+         * Callback for when the device has been turned on or off
+         * @param on true if the device is now on
+         */
+        @Value("boolean")
+        @Id(value = "on", name = "On", description = "True if the device is now on")
+        void on(boolean on);
+    }
 }

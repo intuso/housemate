@@ -37,19 +37,18 @@ public class StoredMessageSubscriptionRecoveryPolicy implements SubscriptionReco
 
     public boolean add(ConnectionContext context, MessageReference node) throws Exception {
         final Message message = node.getMessage();
-        final Object storeValue = message.getProperty(MessageConstants.STORE);
-        // store property set to true
-        final boolean store = storeValue != null && Boolean.parseBoolean(storeValue.toString());
-        if (store) {
-            initFile(message.getDestination());
-            message.removeProperty(MessageConstants.STORE);
-            if (message.getContent().getLength() > 0) {
-                // non zero length message content
-                storedMessage = message.copy();
-                store();
-            } else {
-                // clear stored message
-                storedMessage = null;
+        if(message instanceof ActiveMQMessage) {
+            ActiveMQMessage activeMQMessage = (ActiveMQMessage) message;
+            if (activeMQMessage.getBooleanProperty(MessageConstants.STORE)) {
+                initFile(message.getDestination());
+                if (message.getContent().getLength() > 0) {
+                    // non zero length message content
+                    storedMessage = message.copy();
+                    store();
+                } else {
+                    // clear stored message
+                    storedMessage = null;
+                }
             }
         }
         return true;

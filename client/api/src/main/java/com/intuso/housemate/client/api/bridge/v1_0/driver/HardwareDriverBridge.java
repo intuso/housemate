@@ -18,12 +18,12 @@ public class HardwareDriverBridge implements com.intuso.housemate.client.api.int
     }
 
     @Override
-    public void start() {
-        hardwareDriver.start();
+    public void startHardware() {
+        hardwareDriver.startHardware();
     }
 
     @Override
-    public void stop() {
-        hardwareDriver.stop();
+    public void stopHardware() {
+        hardwareDriver.stopHardware();
     }
 }

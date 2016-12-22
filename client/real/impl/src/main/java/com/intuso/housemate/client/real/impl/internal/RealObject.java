@@ -31,10 +31,10 @@ public abstract class RealObject<DATA extends Object.Data,
     }
 
     public final void init(String name, Connection connection) throws JMSException {
-        logger.debug("Init");
+        logger.debug("Init {}", name);
         sender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, name);
-        initChildren(name, connection);
         sendData();
+        initChildren(name, connection);
     }
 
     protected void initChildren(String name, Connection connection) throws JMSException {}

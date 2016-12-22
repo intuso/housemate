@@ -34,12 +34,12 @@ public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?>>
                               ListMapper listMapper,
                               ProxyObjectBridge.Factory<ELEMENT> elementFactory,
                               ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.List.Data.class, listMapper, listenersFactory);
+        super(logger, List.Data.class, listMapper, listenersFactory);
         this.elementFactory = elementFactory;
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
+    protected void initChildren(final String versionName, final String internalName, final Connection connection) throws JMSException {
         super.initChildren(versionName, internalName, connection);
         // subscribe to all child topics and create children as new topics are discovered
         existingObjectReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, "*"), Object.Data.class,
@@ -47,9 +47,14 @@ public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?>>
                     @Override
                     public void onMessage(Object.Data data, boolean wasPersisted) {
                         if(!elements.containsKey(data.getId())) {
-                            ELEMENT element = elementFactory.create(logger);
+                            ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()));
                             if(element != null) {
                                 elements.put(data.getId(), element);
+                                try {
+                                    element.init(com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(versionName, data.getId()), ChildUtil.name(internalName, data.getId()), connection);
+                                } catch (JMSException e) {
+                                    logger.error("Failed to init child {}", data.getId(), e);
+                                }
                                 for(List.Listener<? super ELEMENT, ? super ProxyListBridge<ELEMENT>> listener : listeners)
                                     listener.elementAdded(ProxyListBridge.this, element);
                             }

@@ -29,7 +29,7 @@ public class ProxyPropertyBridge
                                TypeInstancesMapper typeInstancesMapper,
                                ProxyObjectBridge.Factory<ProxyCommandBridge> commandFactory,
                                ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Property.Data.class, propertyMapper, typeInstancesMapper, listenersFactory);
+        super(logger, Property.Data.class, propertyMapper, typeInstancesMapper, listenersFactory);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID));
     }
 

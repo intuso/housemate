@@ -11,7 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.google.common.collect.Lists;
-import com.intuso.housemate.client.v1_0.proxy.api.object.feature.StatefulPowerControl;
+import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.HousemateActivity;
@@ -34,7 +34,7 @@ public class WidgetConfigureActivity
         extends HousemateActivity
         implements AdapterView.OnItemClickListener {
 
-    private final String featureId = StatefulPowerControl.ID;
+    private final String featureId = PowerControl.Stateful.ID;
 
     private AndroidProxyServer server;
     private List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();

@@ -42,12 +42,12 @@ public class Delay implements TaskDriver {
     }
 
     @Override
-    public void start() {
+    public void startTask() {
 
     }
 
     @Override
-    public void stop() {
+    public void stopTask() {
 
     }
 

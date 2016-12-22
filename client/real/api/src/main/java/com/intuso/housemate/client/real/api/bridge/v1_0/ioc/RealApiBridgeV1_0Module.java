@@ -3,7 +3,6 @@ package com.intuso.housemate.client.real.api.bridge.v1_0.ioc;
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.intuso.housemate.client.real.api.bridge.v1_0.*;
-import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 
 /**
  * Created by tomc on 06/11/15.
@@ -11,9 +10,6 @@ import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 public class RealApiBridgeV1_0Module extends AbstractModule {
     @Override
     protected void configure() {
-
-        // bind bridging implementations
-        bind(RealDevice.Container.class).to(RealDeviceBridgeReverse.Container.class);
 
         // setup assisted inject factories
         install(new FactoryModuleBuilder().build(RealCommandBridge.Factory.class));

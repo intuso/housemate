@@ -41,7 +41,7 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
+    protected void initChildren(final String versionName, final String internalName, final Connection connection) throws JMSException {
         super.initChildren(versionName, internalName, connection);
         // subscribe to all child topics and create children as new topics are discovered
         this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -53,6 +53,11 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
                             ELEMENT element = elementFactory.create(logger);
                             if(element != null) {
                                 elements.put(data.getId(), element);
+                                try {
+                                    element.initChildren(ChildUtil.name(versionName, data.getId()), com.intuso.housemate.client.real.impl.internal.ChildUtil.name(internalName, data.getId()), connection);
+                                } catch (JMSException e) {
+                                    logger.error("Failed to init child {}", data.getId(), e);
+                                }
                                 for(List.Listener<? super ELEMENT, ? super RealListBridge<ELEMENT>> listener : listeners)
                                     listener.elementAdded(RealListBridge.this, element);
                             }

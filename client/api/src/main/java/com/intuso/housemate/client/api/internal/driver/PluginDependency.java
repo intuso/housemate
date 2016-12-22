@@ -11,7 +11,7 @@ public interface PluginDependency<DEPENDENCY> {
 
     ListenerRegistration addListener(Listener<DEPENDENCY> listener);
 
-    interface Listener<DEPENDENCY> extends com.intuso.utilities.listener.Listener {
+    interface Listener<DEPENDENCY> {
         void dependencyAvailable(DEPENDENCY DEPENDENCY);
         void dependencyUnavailable();
     }

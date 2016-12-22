@@ -118,7 +118,7 @@ public class RealDeviceBridgeReverse
 
     public static class Container implements com.intuso.housemate.client.v1_0.real.api.RealDevice.Container<com.intuso.housemate.client.v1_0.real.api.RealDevice<?, ?, ?, ?, ?, ?>, com.intuso.housemate.client.v1_0.real.api.RealList<? extends com.intuso.housemate.client.v1_0.real.api.RealDevice<?, ?, ?, ?, ?, ?>, ?>> {
 
-        private final RealDevice.Container<RealDevice<?, ?, ?, ?, ?, ?>, RealList<? extends RealDevice<?, ?, ?, ?, ?, ?>, ?>> container;
+        private final RealDevice.Container container;
         private final DeviceMapper deviceMapper;
         private final ListMapper listMapper;
 

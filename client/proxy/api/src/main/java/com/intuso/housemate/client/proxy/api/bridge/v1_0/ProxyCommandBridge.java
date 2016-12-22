@@ -42,7 +42,7 @@ public class ProxyCommandBridge
                                  ListenersFactory listenersFactory,
                                  ProxyObjectBridge.Factory<ProxyValueBridge> valueFactory,
                                  ProxyObjectBridge.Factory<ProxyListBridge<ProxyParameterBridge>> parametersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Command.Data.class, commandMapper, listenersFactory);
+        super(logger, Command.Data.class, commandMapper, listenersFactory);
         this.commandMapper = commandMapper;
         enabledValue = valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID));
         parameters = parametersFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID));

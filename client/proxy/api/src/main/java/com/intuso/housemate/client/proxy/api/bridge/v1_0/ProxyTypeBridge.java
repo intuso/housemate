@@ -18,6 +18,6 @@ public class ProxyTypeBridge
     protected ProxyTypeBridge(@Assisted Logger logger,
                               TypeMapper typeMapper,
                               ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Type.Data.class, typeMapper, listenersFactory);
+        super(logger, Type.Data.class, typeMapper, listenersFactory);
     }
 }
