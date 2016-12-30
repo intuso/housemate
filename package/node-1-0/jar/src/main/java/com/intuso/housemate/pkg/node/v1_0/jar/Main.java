@@ -1,11 +1,10 @@
-package com.intuso.housemate.pkg.server.jar;
+package com.intuso.housemate.pkg.node.v1_0.jar;
 
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.intuso.housemate.pkg.server.jar.ioc.JarServerModule;
+import com.intuso.housemate.pkg.node.v1_0.jar.ioc.NodePackageJarModule;
 import com.intuso.housemate.platform.pc.Properties;
-import com.intuso.housemate.server.object.real.FactoryPluginListener;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -17,20 +16,17 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Platform implementation for a server. Works the same was as the PC implementation in terms of getting properties
- * and overriding based on command line arguments, Main difference is that the Comms implementation is different
- * and some methods are unsupported as they should not be used by the server.
- *
+ * Created by tomc on 30/12/16.
  */
-public class ServerEnvironment {
+public class Main {
 
-    private final static Logger logger = LoggerFactory.getLogger(ServerEnvironment.class);
+    private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
     /**
-	 * Create a environment instance
-	 * @param args the command line args that the server was run with
-	 */
-	public ServerEnvironment(String args[]) {
+     * Create a environment instance
+     * @param args the command line args that the server was run with
+     */
+    public Main(String args[]) {
 
         ListenersFactory listenersFactory = new ListenersFactory() {
             @Override
@@ -42,20 +38,30 @@ public class ServerEnvironment {
         WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
         PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, args);
 
-        Injector injector = Guice.createInjector(new JarServerModule(defaultProperties, properties));
+        Injector injector = Guice.createInjector(new NodePackageJarModule(defaultProperties, properties));
 
-        // force factory listener to be created and register itself for new plugins
-        injector.getInstance(FactoryPluginListener.class);
-
-        logger.debug("Starting server");
-        ServiceManager serviceManager = injector.getInstance(ServiceManager.class);
+        logger.debug("Starting node");
+        final ServiceManager serviceManager = injector.getInstance(ServiceManager.class);
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                logger.debug("Stopping node");
+                serviceManager.stopAsync();
+                serviceManager.awaitStopped();
+                logger.debug("Stopped node");
+            }
+        });
         serviceManager.startAsync();
         serviceManager.awaitHealthy();
-        logger.debug("Started server");
+        logger.debug("Started node");
     }
 
     private void loadSharedJNILibs() {
         SerialPortList.getPortNames();
         //CommPortIdentifier.getPortIdentifiers();
+    }
+
+    public static void main(String args[]) {
+        new Main(args);
     }
 }

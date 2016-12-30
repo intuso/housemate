@@ -15,12 +15,12 @@ import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
  * Time: 10:22
  * To change this template use File | Settings | File Templates.
  */
-public class JarServerModule extends AbstractModule {
+public class ServerPackageJarModule extends AbstractModule {
 
     private final WriteableMapPropertyRepository defaultProperties;
     private final PropertyRepository properties;
 
-    public JarServerModule(WriteableMapPropertyRepository defaultProperties, PropertyRepository properties) {
+    public ServerPackageJarModule(WriteableMapPropertyRepository defaultProperties, PropertyRepository properties) {
         this.defaultProperties = defaultProperties;
         this.properties = properties;
     }

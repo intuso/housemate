@@ -4,18 +4,17 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>housemate</artifactId>
+        <artifactId>housemate-package</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>housemate-package</artifactId>
+    <artifactId>housemate-package-node-1-0</artifactId>
     <packaging>pom</packaging>
-    <name>Housemate Package</name>
-    <description>Deployable packages for the Housemate framework</description>
+    <name>Housemate Package Node 1.0</name>
+    <description>Deployable packages for a Housemate Node 1.0</description>
 
     <modules>
-        <module>node-1-0</module>
-        <module>server</module>
+        <module>jar</module>
     </modules>
 
 </project>

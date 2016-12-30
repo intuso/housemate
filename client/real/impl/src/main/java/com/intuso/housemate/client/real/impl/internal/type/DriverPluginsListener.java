@@ -1,4 +1,4 @@
-package com.intuso.housemate.server.object.real;
+package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -9,17 +9,15 @@ import com.intuso.housemate.client.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.api.internal.plugin.PluginListener;
 import com.intuso.housemate.client.api.internal.plugin.PluginResource;
-import com.intuso.housemate.client.real.impl.internal.type.*;
-import com.intuso.housemate.plugin.host.internal.PluginHost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by tomc on 19/03/15.
  */
-public class FactoryPluginListener implements PluginListener {
+public class DriverPluginsListener implements PluginListener {
 
-    private final static Logger logger = LoggerFactory.getLogger(FactoryPluginListener.class);
+    private final static Logger logger = LoggerFactory.getLogger(DriverPluginsListener.class);
 
     private final RegisteredTypes types;
     private final ConditionDriverType conditionDriverType;
@@ -28,13 +26,12 @@ public class FactoryPluginListener implements PluginListener {
     private final TaskDriverType taskDriverType;
 
     @Inject
-    public FactoryPluginListener(RegisteredTypes types, ConditionDriverType conditionDriverType, FeatureDriverType featureDriverType, HardwareDriverType hardwareDriverType, TaskDriverType taskDriverType, PluginHost pluginHost) {
+    public DriverPluginsListener(RegisteredTypes types, ConditionDriverType conditionDriverType, FeatureDriverType featureDriverType, HardwareDriverType hardwareDriverType, TaskDriverType taskDriverType) {
         this.types = types;
         this.conditionDriverType = conditionDriverType;
         this.featureDriverType = featureDriverType;
         this.hardwareDriverType = hardwareDriverType;
         this.taskDriverType = taskDriverType;
-        pluginHost.addPluginListener(this, true);
     }
 
     @Override

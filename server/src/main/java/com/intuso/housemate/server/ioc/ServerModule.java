@@ -12,7 +12,6 @@ import com.intuso.housemate.client.real.api.bridge.ioc.RealApiBridgeModule;
 import com.intuso.housemate.client.real.impl.internal.ioc.ServerRootModule;
 import com.intuso.housemate.plugin.host.internal.ioc.PluginHostModule;
 import com.intuso.housemate.server.ServerService;
-import com.intuso.housemate.server.object.real.FactoryPluginListener;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.apache.activemq.broker.BrokerService;
 
@@ -43,8 +42,7 @@ public class ServerModule extends AbstractModule {
         bind(BrokerService.class).toProvider(BrokerServiceProvider.class).in(Scopes.SINGLETON);
         bind(Connection.class).toProvider(ConnectionProvider.class).in(Scopes.SINGLETON);
 
-        // bind everything as singletons that should be
-        bind(FactoryPluginListener.class).in(Scopes.SINGLETON);
+        // bind the main server service
         Multibinder.newSetBinder(binder(), Service.class).addBinding().to(ServerService.class).in(Scopes.SINGLETON);
     }
 

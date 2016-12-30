@@ -5,9 +5,11 @@ import com.google.inject.Key;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.multibindings.Multibinder;
 import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.TypeSerialiser;
 import com.intuso.housemate.client.api.internal.driver.*;
+import com.intuso.housemate.client.api.internal.plugin.PluginListener;
 import com.intuso.housemate.client.api.internal.type.Email;
 import com.intuso.housemate.client.real.impl.internal.type.*;
 
@@ -48,5 +50,9 @@ public class RealTypesModule extends AbstractModule {
 
         // bind implementations
         bind(new TypeLiteral<TypeSerialiser<RealObjectType.Reference<?>>>() {}).to(new Key<RealObjectType.Serialiser<?>>() {}).in(Scopes.SINGLETON);
+
+        // bind driver plugin listener
+        bind(DriverPluginsListener.class).in(Scopes.SINGLETON);
+        Multibinder.newSetBinder(binder(), PluginListener.class).addBinding().to(DriverPluginsListener.class);
     }
 }

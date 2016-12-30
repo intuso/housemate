@@ -23,6 +23,7 @@ import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,14 +39,22 @@ public class PluginHost implements PluginFinder.Listener {
     private final Injector injector;
     private final PluginFinder pluginFinder;
     private ListenerRegistration pluginFinderListenerRegistration;
-    private final Listeners<PluginListener> pluginListeners;
+    private final Listeners<PluginListener> internalListeners;
+    private final Listeners<com.intuso.housemate.client.v1_0.api.plugin.PluginListener> v1_0Listeners;
     private final Map<String, Injector> pluginInjectors = Maps.newHashMap();
 
     @Inject
-    public PluginHost(Injector injector, ListenersFactory listenersFactory, PluginFinder pluginFinder) {
+    public PluginHost(Injector injector, ListenersFactory listenersFactory, PluginFinder pluginFinder,
+                      Set<PluginListener> internalListeners,
+                      Set<com.intuso.housemate.client.v1_0.api.plugin.PluginListener> v1_0Listeners) {
         this.injector = injector;
         this.pluginFinder = pluginFinder;
-        this.pluginListeners = listenersFactory.create();
+        this.internalListeners = listenersFactory.create();
+        for(PluginListener listener : internalListeners)
+            this.internalListeners.addListener(listener);
+        this.v1_0Listeners = listenersFactory.create();
+        for(com.intuso.housemate.client.v1_0.api.plugin.PluginListener listener : v1_0Listeners)
+            this.v1_0Listeners.addListener(listener);
     }
 
     public synchronized void start() {
@@ -60,14 +69,6 @@ public class PluginHost implements PluginFinder.Listener {
         }
         for(String id : Sets.newHashSet(pluginInjectors.keySet()))
             pluginRemoved(id);
-    }
-
-    public ListenerRegistration addPluginListener(PluginListener listener, boolean callForExisting) {
-        ListenerRegistration result = pluginListeners.addListener(listener);
-        if(callForExisting)
-            for(Injector pluginInjector : pluginInjectors.values())
-                listener.pluginAdded(pluginInjector);
-        return result;
     }
 
     @Override
@@ -90,8 +91,14 @@ public class PluginHost implements PluginFinder.Listener {
         Id id = pluginInjector.getInstance(Id.class);
 
         // some plugins add more plugin listeners, so need prevent concurrent modification
-        for(PluginListener listener : Lists.newArrayList(pluginListeners))
-            listener.pluginAdded(pluginInjector);
+        switch (version) {
+            case Internal:
+                for (PluginListener listener : Lists.newArrayList(internalListeners))
+                    listener.pluginAdded(pluginInjector);
+            case V1_0:
+                for (com.intuso.housemate.client.v1_0.api.plugin.PluginListener listener : Lists.newArrayList(v1_0Listeners))
+                    listener.pluginAdded(pluginInjector);
+        }
 
         pluginInjectors.put(id.value(), pluginInjector);
         return id.value();
@@ -101,9 +108,12 @@ public class PluginHost implements PluginFinder.Listener {
     public void pluginRemoved(String id) {
         logger.debug("Removing plugin : " + id);
         Injector pluginInjector = pluginInjectors.remove(id);
-        if(pluginInjector != null)
-            for(PluginListener listener : pluginListeners)
+        if(pluginInjector != null) {
+            for (PluginListener listener : internalListeners)
                 listener.pluginRemoved(pluginInjector);
+            for (com.intuso.housemate.client.v1_0.api.plugin.PluginListener listener : v1_0Listeners)
+                listener.pluginRemoved(pluginInjector);
+        }
     }
 
     private Injector createPluginInjector(Injector injector, File file, Logger logger) {
