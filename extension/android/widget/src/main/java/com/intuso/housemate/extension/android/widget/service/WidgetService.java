@@ -84,7 +84,7 @@ public class WidgetService extends HousemateService {
     }
 
     public WidgetService() {
-        this.proxyWrapper = new ProxyWrapperV1_0();
+        this.proxyWrapper = new ProxyWrapperV1_0(getListenersFactory(), getTypeSerialiserRepository());
     }
 
     public synchronized PendingIntent makePendingIntent(WidgetHandler widgetHandler, String action) {

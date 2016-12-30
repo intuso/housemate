@@ -1,6 +1,7 @@
 package com.intuso.housemate.platform.android.app;
 
 import android.app.Activity;
+import com.intuso.housemate.client.v1_0.api.type.TypeSerialiser;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -24,6 +25,7 @@ public abstract class HousemateActivity extends Activity {
 
     private Logger logger;
     private ListenersFactory listenersFactory;
+    private TypeSerialiser.Repository typeSerialiserRepository;
     private PropertyRepository properties;
     private Connection connection;
 
@@ -35,6 +37,18 @@ public abstract class HousemateActivity extends Activity {
             @Override
             public <LISTENER> Listeners<LISTENER> create() {
                 return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
+            }
+        };
+        typeSerialiserRepository = new TypeSerialiser.Repository() {
+            // todo at least register all the "system" types eg String
+            @Override
+            public <O> TypeSerialiser<O> forClass(Class<?> clazz) {
+                return null; // todo
+            }
+
+            @Override
+            public <O> TypeSerialiser<O> forId(String id) {
+                return null; // todo
             }
         };
         properties = new SharedPreferencesPropertyRepository(listenersFactory, getApplicationContext());
@@ -66,6 +80,10 @@ public abstract class HousemateActivity extends Activity {
 
     public ListenersFactory getListenersFactory() {
         return listenersFactory;
+    }
+
+    public TypeSerialiser.Repository getTypeSerialiserRepository() {
+        return typeSerialiserRepository;
     }
 
     public PropertyRepository getProperties() {

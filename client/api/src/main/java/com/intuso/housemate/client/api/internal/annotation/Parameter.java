@@ -20,7 +20,7 @@ public @interface Parameter {
      */
     String value() default "";
 
-    int minValues() default 0;
+    int minValues() default -1;
 
     int maxValues() default -1;
 }
