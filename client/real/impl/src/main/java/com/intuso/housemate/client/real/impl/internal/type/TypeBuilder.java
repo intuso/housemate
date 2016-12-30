@@ -11,7 +11,7 @@ import com.intuso.housemate.client.api.internal.type.RegexType;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
-import com.intuso.housemate.client.real.impl.internal.ioc.Types;
+import com.intuso.housemate.client.real.impl.internal.ioc.Type;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class TypeBuilder {
     private final RealCompositeType.Factory compositeTypeFactory;
 
     @Inject
-    public TypeBuilder(@Types Logger typesLogger, RealCompositeType.Factory compositeTypeFactory, EnumChoiceType.Factory enumChoiceTypeFactory, RealRegexType.Factory regexTypeFactory) {
+    public TypeBuilder(@Type Logger typesLogger, RealCompositeType.Factory compositeTypeFactory, EnumChoiceType.Factory enumChoiceTypeFactory, RealRegexType.Factory regexTypeFactory) {
         this.typesLogger = typesLogger;
         this.regexTypeFactory = regexTypeFactory;
         this.compositeTypeFactory = compositeTypeFactory;

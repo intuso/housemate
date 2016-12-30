@@ -5,7 +5,7 @@ import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
-import com.intuso.housemate.client.real.impl.internal.ioc.Types;
+import com.intuso.housemate.client.real.impl.internal.ioc.Type;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -19,7 +19,7 @@ public class FeatureDriverType extends FactoryType<FeatureDriver.Factory<?>> {
     public final static String TYPE_DESCRIPTION = "Available types for new feature";
 
     @Inject
-    protected FeatureDriverType(@Types Logger logger, ListenersFactory listenersFactory,
+    protected FeatureDriverType(@Type Logger logger, ListenersFactory listenersFactory,
                                 RealOptionImpl.Factory optionFactory, RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
         super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, listenersFactory, optionFactory, optionsFactory);
     }

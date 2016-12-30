@@ -3,7 +3,7 @@ package com.intuso.housemate.client.real.impl.internal.type;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.type.Email;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.housemate.client.real.impl.internal.ioc.Types;
+import com.intuso.housemate.client.real.impl.internal.ioc.Type;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -23,7 +23,7 @@ public class EmailType extends RealRegexType<Email> {
      * @param listenersFactory
      */
     @Inject
-    public EmailType(@Types Logger logger, ListenersFactory listenersFactory, Email.Factory emailFactory) {
+    public EmailType(@Type Logger logger, ListenersFactory listenersFactory, Email.Factory emailFactory) {
         super(ChildUtil.logger(logger, ID), ID, NAME, "Email address of the form <username>@<host>", ".+@.+\\..+", emailFactory, listenersFactory);
     }
 

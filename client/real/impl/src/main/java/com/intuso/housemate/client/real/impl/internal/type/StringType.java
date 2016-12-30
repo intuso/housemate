@@ -3,7 +3,7 @@ package com.intuso.housemate.client.real.impl.internal.type;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.TypeSerialiser;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.housemate.client.real.impl.internal.ioc.Types;
+import com.intuso.housemate.client.real.impl.internal.ioc.Type;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -25,7 +25,7 @@ public class StringType extends RealSimpleType<String> {
     };
 
     @Inject
-    public StringType(@Types Logger logger, ListenersFactory listenersFactory) {
+    public StringType(@Type Logger logger, ListenersFactory listenersFactory) {
         super(ChildUtil.logger(logger, Simple.String.getId()), Simple.String, SERIALISER, listenersFactory);
     }
 }
