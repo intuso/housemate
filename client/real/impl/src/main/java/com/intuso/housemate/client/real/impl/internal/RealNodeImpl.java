@@ -4,7 +4,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.real.api.internal.RealNode;
-import com.intuso.housemate.client.real.impl.internal.type.RegisteredTypes;
+import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddHardwareCommand;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
@@ -28,12 +28,12 @@ public class RealNodeImpl
                         @Assisted("name") String name,
                         @Assisted("description") String description,
                         ListenersFactory listenersFactory,
-                        RegisteredTypes registeredTypes,
+                        TypeRepository typeRepository,
                         final RealHardwareImpl.Factory hardwareFactory,
                         RealListPersistedImpl.Factory<RealHardwareImpl> hardwaresFactory,
                         AddHardwareCommand.Factory addHardwareCommandFactory) {
         super(logger, true, new com.intuso.housemate.client.api.internal.object.Node.Data(id, name, description), listenersFactory);
-        this.types = registeredTypes.createList(ChildUtil.logger(logger, TYPES_ID),
+        this.types = typeRepository.createList(ChildUtil.logger(logger, TYPES_ID),
                 TYPES_ID,
                 "Types",
                 "Types");

@@ -35,14 +35,14 @@ public class TimeOfTheDay implements ConditionDriver {
     /**
      * String version of the time that, once passed, makes the condition unsatisfied. Default is the start of the day
      */
-    @Property("time")
+    @Property
     @Id(value = "before", name = "Before", description = "The condition is satisfied when the current time is before this time")
     private Time before;
 
     /**
      * String version of the time that, until reached, makes the condition unsatisfied
      */
-    @Property("time")
+    @Property
     @Id(value = "after", name = "After", description = "The condition is satisfied when the current time is after this time")
     private Time after;
 

@@ -60,7 +60,7 @@ public interface PlaybackControl {
          * Get whether the device is currently playing
          * @return true if the device is currently playing
          */
-        @Value("boolean")
+        @Value
         @Id(value = "playing", name = "Playing", description = "True if the device is currently playing")
         boolean isPlaying();
 
@@ -77,7 +77,7 @@ public interface PlaybackControl {
          * Callback for when playback starts or stops
          * @param playing true if the device is now playing
          */
-        @Value("boolean")
+        @Value
         @Id(value = "playing", name = "Playing", description = "True if the device is currently playing")
         void playing(boolean playing);
     }

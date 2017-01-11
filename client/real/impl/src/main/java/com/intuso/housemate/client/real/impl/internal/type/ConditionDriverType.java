@@ -21,6 +21,6 @@ public class ConditionDriverType extends FactoryType<ConditionDriver.Factory<?>>
     @Inject
     protected ConditionDriverType(@Type Logger logger, ListenersFactory listenersFactory,
                                   RealOptionImpl.Factory optionFactory, RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, listenersFactory, optionFactory, optionsFactory);
+        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, ConditionDriver.class, listenersFactory, optionFactory, optionsFactory);
     }
 }

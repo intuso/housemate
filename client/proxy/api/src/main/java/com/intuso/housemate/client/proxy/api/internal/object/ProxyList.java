@@ -21,6 +21,7 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
         implements List<ELEMENT, LIST> {
 
     private final Map<String, ELEMENT> elements = Maps.newHashMap();
+    private final Map<String, java.lang.Object> newElementLocks = Maps.newHashMap();
     private final ProxyObject.Factory<ELEMENT> elementFactory;
 
     private JMSUtil.Receiver<Object.Data> existingObjectReceiver;
@@ -46,6 +47,14 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
                             ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()));
                             if(element != null) {
                                 elements.put(data.getId(), element);
+                                synchronized (newElementLocks) {
+                                    java.lang.Object idLock = newElementLocks.remove(data.getId());
+                                    if(idLock != null) {
+                                        synchronized (idLock) {
+                                            idLock.notifyAll();
+                                        }
+                                    }
+                                }
                                 try {
                                     element.initChildren(ChildUtil.name(name, data.getId()), connection);
                                 } catch (JMSException e) {
@@ -71,6 +80,43 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
 
     @Override
     public final ELEMENT get(String id) {
+        return elements.get(id);
+    }
+
+    public final ELEMENT getWhenLoaded(String id) throws InterruptedException {
+        return getWhenLoaded(id, 1000);
+    }
+
+    public final ELEMENT getWhenLoaded(String id, long timeout) throws InterruptedException {
+
+        if(elements.containsKey(id))
+            return elements.get(id);
+
+        // get/create a lock to wait on for the object to be created
+        java.lang.Object idLock = newElementLocks.get(id);
+        if(idLock == null) {
+            synchronized (newElementLocks) {
+
+                // check again in case created since last check
+                if(elements.containsKey(id))
+                    return elements.get(id);
+
+                idLock = newElementLocks.get(id);
+                // check again in case created before we got lock
+                if(idLock == null) {
+                    idLock = new java.lang.Object();
+                    newElementLocks.put(id, idLock);
+                }
+            }
+        }
+        synchronized (idLock) {
+            // check again in case created since last check
+            if(elements.containsKey(id))
+                return elements.get(id);
+
+            idLock.wait(timeout);
+        }
+
         return elements.get(id);
     }
 

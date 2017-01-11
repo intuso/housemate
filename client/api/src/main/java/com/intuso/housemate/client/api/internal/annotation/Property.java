@@ -16,7 +16,7 @@ public @interface Property {
      * The property's type
      * @return the property's type
      */
-    String value() default "";
+    String restriction() default "";
 
     int minValues() default 0;
 

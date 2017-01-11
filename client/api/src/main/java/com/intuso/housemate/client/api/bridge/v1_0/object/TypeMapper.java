@@ -19,8 +19,8 @@ public class TypeMapper implements ObjectMapper<Type.Data, com.intuso.housemate.
             return new Type.ObjectData(data.getId(), data.getName(), data.getDescription());
         else if(data instanceof com.intuso.housemate.client.api.internal.object.Type.RegexData)
             return new Type.RegexData(data.getId(), data.getName(), data.getDescription(), ((com.intuso.housemate.client.api.internal.object.Type.RegexData) data).getRegexPattern());
-        else if(data instanceof com.intuso.housemate.client.api.internal.object.Type.SimpleData)
-            return new Type.SimpleData(Type.Simple.valueOf(((com.intuso.housemate.client.api.internal.object.Type.SimpleData) data).getSimple().name()));
+        else if(data instanceof com.intuso.housemate.client.api.internal.object.Type.PrimitiveData)
+            return new Type.PrimitiveData(data.getId(), data.getName(), data.getDescription());
         else
             return null;
     }
@@ -37,8 +37,8 @@ public class TypeMapper implements ObjectMapper<Type.Data, com.intuso.housemate.
             return new com.intuso.housemate.client.api.internal.object.Type.ObjectData(data.getId(), data.getName(), data.getDescription());
         else if(data instanceof Type.RegexData)
             return new com.intuso.housemate.client.api.internal.object.Type.RegexData(data.getId(), data.getName(), data.getDescription(), ((Type.RegexData) data).getRegexPattern());
-        else if(data instanceof Type.SimpleData)
-            return new com.intuso.housemate.client.api.internal.object.Type.SimpleData(com.intuso.housemate.client.api.internal.object.Type.Simple.valueOf(((Type.SimpleData) data).getSimple().name()));
+        else if(data instanceof Type.PrimitiveData)
+            return new com.intuso.housemate.client.api.internal.object.Type.PrimitiveData(data.getId(), data.getName(), data.getDescription());
         else
             return null;
     }

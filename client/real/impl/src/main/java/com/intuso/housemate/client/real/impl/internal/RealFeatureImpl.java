@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
@@ -10,8 +11,10 @@ import com.intuso.housemate.client.api.internal.driver.PluginDependency;
 import com.intuso.housemate.client.api.internal.object.Feature;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealFeature;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
+import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -58,13 +61,13 @@ public final class RealFeatureImpl
                            ListenersFactory listenersFactory,
                            AnnotationParser annotationParser,
                            RealCommandImpl.Factory commandFactory,
-                           RealParameterImpl.Factory<String> stringParameterFactory,
+                           RealParameterImpl.Factory parameterFactory,
+                           RealPropertyImpl.Factory propertyFactory,
+                           RealValueImpl.Factory valueFactory,
                            RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
-                           RealValueImpl.Factory<Boolean> booleanValueFactory,
-                           RealValueImpl.Factory<String> stringValueFactory,
                            RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
-                           RealPropertyImpl.Factory<PluginDependency<FeatureDriver.Factory<? extends FeatureDriver>>> driverPropertyFactory,
-                           RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory) {
+                           RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
+                           TypeRepository typeRepository) {
         super(logger, false, new Feature.Data(id, name, description), listenersFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
@@ -82,10 +85,11 @@ public final class RealFeatureImpl
                         }
                     }
                 },
-                Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
+                Lists.newArrayList(parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
                         Renameable.NAME_ID,
                         Renameable.NAME_ID,
                         "The new name",
+                        typeRepository.getType(new TypeSpec(String.class)),
                         1,
                         1)));
         this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
@@ -101,10 +105,11 @@ public final class RealFeatureImpl
                     }
                 },
                 Lists.<RealParameterImpl<?>>newArrayList());
-        this.runningValue = booleanValueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID),
+        this.runningValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID),
                 Runnable.RUNNING_ID,
                 Runnable.RUNNING_ID,
                 "Whether the device is running or not",
+                typeRepository.getType(new TypeSpec(Boolean.class)),
                 1,
                 1,
                 Lists.newArrayList(false));
@@ -136,24 +141,27 @@ public final class RealFeatureImpl
                     }
                 },
                 Lists.<RealParameterImpl<?>>newArrayList());
-        this.errorValue = stringValueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID),
+        this.errorValue = (RealValueImpl<String>) valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID),
                 Failable.ERROR_ID,
                 Failable.ERROR_ID,
                 "Current error for the device",
+                typeRepository.getType(new TypeSpec(String.class)),
                 1,
                 1,
                 Lists.<String>newArrayList());
-        this.driverProperty = driverPropertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
+        this.driverProperty = (RealPropertyImpl<PluginDependency<FeatureDriver.Factory<?>>>) propertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
                 UsesDriver.DRIVER_ID,
                 UsesDriver.DRIVER_ID,
                 "The device's driver",
+                typeRepository.getType(new TypeSpec(Types.newParameterizedType(PluginDependency.class, FeatureDriver.class))),
                 1,
                 1,
                 Lists.<PluginDependency<FeatureDriver.Factory<?>>>newArrayList());
-        this.driverLoadedValue = booleanValueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
+        this.driverLoadedValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
                 UsesDriver.DRIVER_LOADED_ID,
                 UsesDriver.DRIVER_LOADED_ID,
                 "Whether the device's driver is loaded or not",
+                typeRepository.getType(new TypeSpec(Boolean.class)),
                 1,
                 1,
                 Lists.newArrayList(false));

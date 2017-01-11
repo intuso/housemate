@@ -20,11 +20,11 @@ import java.io.IOException;
 @Id(value = "power-by-command", name = "Power By Command", description = "Feature which runs a configured command to turn things on and off")
 public final class PowerByCommandFeature implements FeatureDriver, PowerControl.Stateful {
 
-    @Property("string")
+    @Property
     @Id(value = "on-command", name = "On Command", description = "The command to turn the feature on")
     private String onCommandProperty;
 
-    @Property("string")
+    @Property
     @Id(value = "off-command", name = "Off Command", description = "The command to turn the feature off")
     private String offCommandProperty;
 

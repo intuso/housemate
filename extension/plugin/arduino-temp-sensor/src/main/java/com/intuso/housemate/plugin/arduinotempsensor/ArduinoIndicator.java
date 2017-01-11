@@ -24,11 +24,11 @@ public class ArduinoIndicator implements FeatureDriver, PowerControl.Stateful {
     private final Listeners<Listener> listeners;
     private final SerialPortWrapper serialPort;
 
-    @Property("string")
+    @Property
     @Id(value = "colour", name = "Colour", description = "Colour of the indicator")
     public String colour;
 
-    @Property("integer")
+    @Property
     @Id(value = "intensity", name = "Intensity", description = "Intensity of the indicator")
     public int intensity;
 

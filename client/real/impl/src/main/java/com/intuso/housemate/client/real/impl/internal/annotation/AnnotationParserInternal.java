@@ -5,8 +5,9 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.annotation.*;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.*;
-import com.intuso.housemate.client.real.impl.internal.type.RegisteredTypes;
+import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
@@ -22,14 +23,20 @@ import java.util.Map;
  */
 public class AnnotationParserInternal implements AnnotationParser {
 
-    private final RegisteredTypes types;
+    private final TypeRepository types;
     private final RealCommandImpl.Factory commandFactory;
+    private final RealParameterImpl.Factory parameterFactory;
+    private final RealPropertyImpl.Factory propertyFactory;
+    private final RealValueImpl.Factory valueFactory;
 
     @Inject
-    public AnnotationParserInternal(RegisteredTypes types,
-                                RealCommandImpl.Factory commandFactory) {
+    public AnnotationParserInternal(TypeRepository types,
+                                RealCommandImpl.Factory commandFactory, RealParameterImpl.Factory parameterFactory, RealPropertyImpl.Factory propertyFactory, RealValueImpl.Factory valueFactory) {
         this.types = types;
         this.commandFactory = commandFactory;
+        this.parameterFactory = parameterFactory;
+        this.propertyFactory = propertyFactory;
+        this.valueFactory = valueFactory;
     }
 
     @Override
@@ -57,23 +64,21 @@ public class AnnotationParserInternal implements AnnotationParser {
     private List<RealParameterImpl<?>> parseParameters(Logger logger, Class<?> clazz, Method method) {
         List<RealParameterImpl<?>> result = Lists.newArrayList();
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-        for(int a = 0; a < parameterAnnotations.length; a++) {
-            Parameter parameterAnnotation = getAnnotation(parameterAnnotations[a], Parameter.class);
-            if(parameterAnnotation == null)
-                throw new HousemateException("Parameter " + a + " of command method " + method.getName()
-                        + " is not annotated with " + Parameter.class.getName());
-            if(!types.exists(parameterAnnotation.value()))
-                throw new HousemateException(parameterAnnotation.value() + " type does not exist");
-            Id id = getAnnotation(parameterAnnotations[a], Id.class);
+        for(int p = 0; p < parameterAnnotations.length; p++) {
+            Parameter parameter = getAnnotation(parameterAnnotations[p], Parameter.class);
+            if(parameter == null)
+                parameter = new ParameterDefaultImpl();
+            Id id = getAnnotation(parameterAnnotations[p], Id.class);
             if(id == null)
-                throw new HousemateException("No " + Id.class.getName() + " on parameter " + a + " of command method " + method.getName() + " of class " + clazz);
-            result.add(types.createParameter(parameterAnnotation.value(),
+                throw new HousemateException("No " + Id.class.getName() + " on parameter " + p + " of command method " + method.getName() + " of class " + clazz);
+            result.add(parameterFactory.create(
                     ChildUtil.logger(logger, id.value()),
                     id.value(),
                     id.name(),
                     id.description(),
-                    parameterAnnotation.minValues(),
-                    parameterAnnotation.maxValues()));
+                    types.getType(new TypeSpec(method.getParameterTypes()[p], parameter.restriction())),
+                    parameter.minValues(),
+                    parameter.maxValues()));
         }
         return result;
     }
@@ -96,15 +101,16 @@ public class AnnotationParserInternal implements AnnotationParser {
             return;
         }
         Map<Method, RealValueImpl<?>> valuesFunctions = Maps.newHashMap();
-        for(Map.Entry<Method, Value> valueMethod : getAnnotatedMethods(clazz, Value.class).entrySet()) {
-            if(!types.exists(valueMethod.getValue().value()))
-                throw new HousemateException(valueMethod.getValue().value() + " type does not exist");
+        for(Map.Entry<Method, Value> valueMethod : getAnnotatedMethods(addListenerMethod.getParameterTypes()[0], Value.class).entrySet()) {
             Id id = valueMethod.getKey().getAnnotation(Id.class);
-            RealValueImpl<?> value = types.createValue(valueMethod.getValue().value(),
+            if(valueMethod.getKey().getParameterTypes().length != 1)
+                throw new HousemateException(clazz.getName() + " value method should have a single argument");
+            RealValueImpl<?> value = valueFactory.create(
                     ChildUtil.logger(logger, idPrefix + id.value()),
                     idPrefix + id.value(),
                     id.name(),
                     id.description(),
+                    types.getType(new TypeSpec(valueMethod.getKey().getParameterTypes()[0], valueMethod.getValue().restriction())),
                     valueMethod.getValue().minValues(),
                     valueMethod.getValue().maxValues(),
                     Lists.newArrayList());
@@ -133,15 +139,15 @@ public class AnnotationParserInternal implements AnnotationParser {
             } catch(IllegalAccessException e) {
                 logger.warn("Failed to get initial value of annotated property field {}", propertyField.getKey().getName());
             }
-            if(!types.exists(propertyField.getValue().value()))
-                throw new HousemateException(propertyField.getValue().value() + " type does not exist");
             Id id = propertyField.getKey().getAnnotation(Id.class);
             if(id == null)
                 throw new HousemateException("No " + Id.class.getName() + " on property field" + propertyField.getKey().getName() + " of class " + clazz);
-            RealPropertyImpl<Object> property = types.createProperty(propertyField.getValue().value(), ChildUtil.logger(logger, idPrefix + id.value()),
+            RealPropertyImpl<Object> property = (RealPropertyImpl<Object>) propertyFactory.create(
+                    ChildUtil.logger(logger, idPrefix + id.value()),
                     idPrefix + id.value(),
                     id.name(),
                     id.description(),
+                    types.getType(new TypeSpec(propertyField.getKey().getType(), propertyField.getValue().restriction())),
                     propertyField.getValue().minValues(),
                     propertyField.getValue().maxValues(),
                     Lists.newArrayList(value));
@@ -151,17 +157,16 @@ public class AnnotationParserInternal implements AnnotationParser {
         for(Map.Entry<Method, Property> propertyMethod : getAnnotatedMethods(clazz, Property.class).entrySet()) {
             if(propertyMethod.getKey().getParameterTypes().length != 1)
                 throw new HousemateException(propertyMethod.getKey().getName() + " must take a single argument");
-            if(!types.exists(propertyMethod.getValue().value()))
-                throw new HousemateException(propertyMethod.getValue().value() + " type does not exist");
             Id id = propertyMethod.getKey().getAnnotation(Id.class);
             if(id == null)
                 throw new HousemateException("No " + Id.class.getName() + " on property field" + propertyMethod.getKey().getName() + " of class " + clazz);
             Object value = getInitialValue(logger, object, clazz, propertyMethod.getKey().getName());
-            RealPropertyImpl<Object> property = types.createProperty(propertyMethod.getValue().value(),
+            RealPropertyImpl<Object> property = (RealPropertyImpl<Object>) propertyFactory.create(
                     ChildUtil.logger(logger, idPrefix + id.value()),
                     idPrefix + id.value(),
                     id.name(),
                     id.description(),
+                    types.getType(new TypeSpec(propertyMethod.getKey().getParameterTypes()[0], propertyMethod.getValue().restriction())),
                     propertyMethod.getValue().minValues(),
                     propertyMethod.getValue().maxValues(),
                     Lists.newArrayList(value));
@@ -232,5 +237,28 @@ public class AnnotationParserInternal implements AnnotationParser {
             if(annotation.annotationType().equals(annotationClass))
                 return (A)annotation;
         return null;
+    }
+
+    private class ParameterDefaultImpl implements Parameter {
+
+        @Override
+        public String restriction() {
+            return "";
+        }
+
+        @Override
+        public int minValues() {
+            return -1;
+        }
+
+        @Override
+        public int maxValues() {
+            return -1;
+        }
+
+        @Override
+        public Class<? extends Annotation> annotationType() {
+            return Parameter.class;
+        }
     }
 }

@@ -17,7 +17,7 @@ public class TVRemote implements FeatureDriver, PowerControl, PlaybackControl, V
 
     // todo use remote IR sender
 
-    @Property("string")
+    @Property
     @Id(value = "remote-name", name = "Remote Name", description = "The name of the remote you want to use")
     public String remoteName;
 

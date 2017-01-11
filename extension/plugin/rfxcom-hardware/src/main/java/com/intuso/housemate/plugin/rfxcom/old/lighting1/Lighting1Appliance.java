@@ -69,7 +69,7 @@ public abstract class Lighting1Appliance implements FeatureDriver, PowerControl.
         return houseId;
     }
 
-    @Property("integer")
+    @Property
     @Id(value = "house-id", name = "House ID", description = "House ID (in decimal)")
     public void setHouseId(byte houseId) {
         handler.propertiesChanged(this.houseId, unitCode, houseId, unitCode);
@@ -81,7 +81,7 @@ public abstract class Lighting1Appliance implements FeatureDriver, PowerControl.
         return unitCode;
     }
 
-    @Property("integer")
+    @Property
     @Id(value = "unit-id", name = "Unit ID", description = "Unit ID")
     public void setUnitCode(byte unitCode) {
         handler.propertiesChanged(houseId, this.unitCode, houseId, unitCode);

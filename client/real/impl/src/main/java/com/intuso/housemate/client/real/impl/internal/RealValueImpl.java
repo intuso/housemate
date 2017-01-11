@@ -23,21 +23,22 @@ public final class RealValueImpl<O>
                          @Assisted("id") String id,
                          @Assisted("name") String name,
                          @Assisted("description") String description,
+                         @Assisted RealTypeImpl type,
                          @Assisted("min") int minValues,
                          @Assisted("max") int maxValues,
-                         @Assisted Iterable<O> values,
-                         ListenersFactory listenersFactory,
-                         RealTypeImpl<O> type) {
+                         @Assisted Iterable values,
+                         ListenersFactory listenersFactory) {
         super(logger, new Value.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory, type, values);
     }
 
-    public interface Factory<O> {
-        RealValueImpl<O> create(Logger logger,
+    public interface Factory {
+        RealValueImpl<?> create(Logger logger,
                                 @Assisted("id") String id,
                                 @Assisted("name") String name,
                                 @Assisted("description") String description,
+                                RealTypeImpl type,
                                 @Assisted("min") int minValues,
                                 @Assisted("max") int maxValues,
-                                Iterable<O> values);
+                                Iterable values);
     }
 }

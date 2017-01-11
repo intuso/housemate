@@ -1,6 +1,8 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
+import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Option;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
@@ -34,10 +36,11 @@ public abstract class RealChoiceType<O>
                              String id,
                              String name,
                              String description,
+                             TypeSpec typeSpec,
                              ListenersFactory listenersFactory,
                              RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory,
                              Iterable<RealOptionImpl> options) {
-        super(logger, new ChoiceData(id, name, description), listenersFactory);
+        super(logger, new ChoiceData(id, name, description), typeSpec, listenersFactory);
         this.options = optionsFactory.create(logger,
                 OPTIONS,
                 OPTIONS,
@@ -61,5 +64,14 @@ public abstract class RealChoiceType<O>
     @Override
     public RealListGeneratedImpl<RealOptionImpl> getOptions() {
         return options;
+    }
+
+    public interface Factory {
+        <O> RealChoiceType<O> create(Logger logger,
+                                     @Assisted("id") String id,
+                                     @Assisted("name") String name,
+                                     @Assisted("description") String description,
+                                     TypeSpec typeSpec,
+                                     Iterable<RealOptionImpl> options);
     }
 }

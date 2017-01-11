@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
@@ -12,8 +13,10 @@ import com.intuso.housemate.client.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Task;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
+import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -58,11 +61,11 @@ public final class RealTaskImpl
                         ListenersFactory listenersFactory,
                         AnnotationParser annotationParser,
                         RealCommandImpl.Factory commandFactory,
-                        RealParameterImpl.Factory<String> stringParameterFactory,
-                        RealValueImpl.Factory<Boolean> booleanValueFactory,
-                        RealValueImpl.Factory<String> stringValueFactory,
+                        RealParameterImpl.Factory parameterFactory,
+                        RealPropertyImpl.Factory propertyFactory,
+                        RealValueImpl.Factory valueFactory,
                         RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
-                        RealPropertyImpl.Factory<PluginDependency<TaskDriver.Factory<? extends TaskDriver>>> driverPropertyFactory) {
+                        TypeRepository typeRepository) {
         super(logger, true, new Task.Data(id, name, description), listenersFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
@@ -80,10 +83,11 @@ public final class RealTaskImpl
                         }
                     }
                 },
-                Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
+                Lists.newArrayList(parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
                         Renameable.NAME_ID,
                         Renameable.NAME_ID,
                         "The new name",
+                        typeRepository.getType(new TypeSpec(String.class)),
                         1,
                         1)));
         this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
@@ -97,24 +101,27 @@ public final class RealTaskImpl
                     }
                 },
                 Lists.<RealParameterImpl<?>>newArrayList());
-        this.errorValue = stringValueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID),
+        this.errorValue = (RealValueImpl<String>) valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID),
                 Failable.ERROR_ID,
                 Failable.ERROR_ID,
                 "Current error for the task",
+                typeRepository.getType(new TypeSpec(String.class)),
                 1,
                 1,
                 Lists.<String>newArrayList());
-        this.driverProperty = driverPropertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
+        this.driverProperty = (RealPropertyImpl<PluginDependency<TaskDriver.Factory<?>>>) propertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
                 UsesDriver.DRIVER_ID,
                 UsesDriver.DRIVER_ID,
                 "The task's driver",
+                typeRepository.getType(new TypeSpec(Types.newParameterizedType(PluginDependency.class, TaskDriver.class))),
                 1,
                 1,
                 Lists.<PluginDependency<TaskDriver.Factory<?>>>newArrayList());
-        this.driverLoadedValue = booleanValueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
+        this.driverLoadedValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
                 UsesDriver.DRIVER_LOADED_ID,
                 UsesDriver.DRIVER_LOADED_ID,
                 "Whether the task's driver is loaded or not",
+                typeRepository.getType(new TypeSpec(Boolean.class)),
                 1,
                 1,
                 Lists.newArrayList(false));
@@ -123,10 +130,11 @@ public final class RealTaskImpl
                 Task.PROPERTIES_ID,
                 PROPERTIES_DESCRIPTION,
                 Lists.<RealPropertyImpl<?>>newArrayList());
-        this.executingValue = booleanValueFactory.create(ChildUtil.logger(logger, Task.EXECUTING_ID),
+        this.executingValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, Task.EXECUTING_ID),
                 Task.EXECUTING_ID,
                 Task.EXECUTING_ID,
                 "Whether the task is executing or not",
+                typeRepository.getType(new TypeSpec(Boolean.class)),
                 1,
                 1,
                 Lists.newArrayList(false));

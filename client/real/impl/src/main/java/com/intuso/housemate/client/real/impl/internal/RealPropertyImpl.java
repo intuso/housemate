@@ -34,13 +34,13 @@ public class RealPropertyImpl<O>
                             @Assisted("id") String id,
                             @Assisted("name") String name,
                             @Assisted("description") String description,
+                            @Assisted RealTypeImpl type,
                             @Assisted("min") int minValues,
                             @Assisted("max") int maxValues,
-                            @Assisted Iterable<O> values,
+                            @Assisted Iterable values,
                             ListenersFactory listenersFactory,
                             RealCommandImpl.Factory commandFactory,
-                            RealParameterImpl.Factory<O> parameterFactory,
-                            RealTypeImpl<O> type) {
+                            RealParameterImpl.Factory parameterFactory) {
         super(logger, new Property.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory, type, values);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID),
                 Property.SET_COMMAND_ID,
@@ -53,10 +53,12 @@ public class RealPropertyImpl<O>
                         RealPropertyImpl.this.setValues(values);
                     }
                 },
-                Lists.newArrayList(parameterFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID, Property.VALUE_PARAM),
+                Lists.newArrayList(parameterFactory.create(
+                        ChildUtil.logger(logger, Property.SET_COMMAND_ID, Property.VALUE_PARAM),
                         Property.VALUE_PARAM,
                         Property.VALUE_PARAM,
                         "The new value for the property",
+                        type,
                         minValues,
                         maxValues)));
     }
@@ -87,13 +89,14 @@ public class RealPropertyImpl<O>
         return setCommand;
     }
 
-    public interface Factory<O> {
-        RealPropertyImpl<O> create(Logger logger,
+    public interface Factory {
+        RealPropertyImpl<?> create(Logger logger,
                                    @Assisted("id") String id,
                                    @Assisted("name") String name,
                                    @Assisted("description") String description,
+                                   RealTypeImpl type,
                                    @Assisted("min") int minValues,
                                    @Assisted("max") int maxValues,
-                                   Iterable<O> values);
+                                   Iterable values);
     }
 }

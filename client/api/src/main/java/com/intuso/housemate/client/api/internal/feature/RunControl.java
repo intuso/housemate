@@ -39,7 +39,7 @@ public interface RunControl {
          * Get whether the device is running
          * @return true if the device is currently running
          */
-        @Value("boolean")
+        @Value
         @Id(value = "running", name = "Running", description = "True if the device is currently running")
         boolean isRunning();
 
@@ -56,7 +56,7 @@ public interface RunControl {
          * Callback when running starts or stops
          * @param running true if the device is now running
          */
-        @Value("boolean")
+        @Value
         @Id(value = "running", name = "Running", description = "True if the device is currently running")
         void running(boolean running);
     }

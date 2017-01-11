@@ -5,7 +5,8 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.api.internal.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.type.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
@@ -39,7 +40,7 @@ public class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
                           ListenersFactory listenersFactory,
                           RealOptionImpl.Factory optionFactory,
                           RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(logger, id, name, description, listenersFactory, optionsFactory, convertValuesToOptions(logger, optionFactory, enumClass));
+        super(logger, id, name, description, new TypeSpec(enumClass), listenersFactory, optionsFactory, convertValuesToOptions(logger, optionFactory, enumClass));
         this.serialiser = new EnumInstanceSerialiser<>(enumClass);
     }
 
@@ -61,7 +62,7 @@ public class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
     private static <E extends Enum<E>> List<RealOptionImpl> convertValuesToOptions(final Logger logger,
                                                                                    final RealOptionImpl.Factory optionFactory,
                                                                                    Class<? extends Enum> enumClass) {
-        return Lists.transform(Arrays.asList(enumClass.getEnumConstants()), new Function<Enum, RealOptionImpl>() {
+        return Lists.transform(Arrays.<Enum>asList(enumClass.getEnumConstants()), new Function<Enum, RealOptionImpl>() {
             @Override
             public RealOptionImpl apply(Enum value) {
                 return optionFactory.create(ChildUtil.logger(logger, value.name()), value.name(), value.name(), value.name(), Lists.<RealSubTypeImpl<?>>newArrayList());

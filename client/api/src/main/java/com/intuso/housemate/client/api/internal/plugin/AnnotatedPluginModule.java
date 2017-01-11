@@ -32,13 +32,47 @@ public abstract class AnnotatedPluginModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public Iterable<PluginResource<Class<?>>> getTypes(Injector injector) {
-        Types types = getClass().getAnnotation(Types.class);
+    public Iterable<ChoiceType> getChoiceTypes() {
+        ChoiceTypes types = getClass().getAnnotation(ChoiceTypes.class);
         if(types == null)
             return Lists.newArrayList();
-        return FluentIterable.from(Lists.newArrayList(types.value()))
-                .transform(asResource(injector))
-                .toList();
+        return Lists.newArrayList(types.value());
+    }
+
+    @Provides
+    @Singleton
+    public Iterable<CompositeType> getCompositeTypes() {
+        CompositeTypes types = getClass().getAnnotation(CompositeTypes.class);
+        if(types == null)
+            return Lists.newArrayList();
+        return Lists.newArrayList(types.value());
+    }
+
+    @Provides
+    @Singleton
+    public Iterable<DoubleRangeType> getDoubleRangeTypes() {
+        DoubleRangeTypes types = getClass().getAnnotation(DoubleRangeTypes.class);
+        if(types == null)
+            return Lists.newArrayList();
+        return Lists.newArrayList(types.value());
+    }
+
+    @Provides
+    @Singleton
+    public Iterable<IntegerRangeType> getIntegerRangeTypes() {
+        IntegerRangeTypes types = getClass().getAnnotation(IntegerRangeTypes.class);
+        if(types == null)
+            return Lists.newArrayList();
+        return Lists.newArrayList(types.value());
+    }
+
+    @Provides
+    @Singleton
+    public Iterable<RegexType> getRegexTypes() {
+        RegexTypes types = getClass().getAnnotation(RegexTypes.class);
+        if(types == null)
+            return Lists.newArrayList();
+        return Lists.newArrayList(types.value());
     }
 
     @Provides
@@ -94,19 +128,8 @@ public abstract class AnnotatedPluginModule extends AbstractModule {
         };
     }
 
-    private Function<Class<?>, PluginResource<Class<?>>> asResource(final Injector injector) {
-        return new Function<Class<?>, PluginResource<Class<?>>>() {
-            @Override
-            public PluginResource<Class<?>> apply(Class<?> resourceClass) {
-                return new PluginResourceImpl<Class<?>>(
-                        getClassAnnotation(resourceClass, Id.class),
-                        resourceClass);
-            }
-        };
-    }
-
     private <RESOURCE, FACTORY_RAW, FACTORY_GENERIC> Function<Class<? extends RESOURCE>, PluginResource<? extends FACTORY_GENERIC>>
-            asFactoryResource(final Class<RESOURCE> resourceClass, final Class<FACTORY_RAW> factoryClass, final Injector injector) {
+    asFactoryResource(final Class<RESOURCE> resourceClass, final Class<FACTORY_RAW> factoryClass, final Injector injector) {
         return new Function<Class<? extends RESOURCE>, PluginResource<? extends FACTORY_GENERIC>>() {
             @Override
             public PluginResource<? extends FACTORY_GENERIC> apply(Class<? extends RESOURCE> resourceInstanceClass) {

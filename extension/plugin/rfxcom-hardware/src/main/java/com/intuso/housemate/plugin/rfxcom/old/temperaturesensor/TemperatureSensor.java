@@ -54,7 +54,7 @@ public abstract class TemperatureSensor implements FeatureDriver, com.intuso.hou
         return sensorId;
     }
 
-    @Property("integer")
+    @Property
     @Id(value = "sensor-id", name = "Sensor ID", description = "Sensor ID (in decimal)")
     public void setSensorId(int sensorId) {
         handler.propertiesChanged(this.sensorId, sensorId);

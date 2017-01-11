@@ -22,7 +22,7 @@ import java.io.InputStreamReader;
 @Id(value = "run-program", name = "Run Program", description = "Run a program")
 public class RunProgramFeatureDriver implements FeatureDriver, RunControl.Stateful {
 
-    @Property("string")
+    @Property
     @Id(value = "command", name = "Command", description = "The command for the program")
     private String command;
 

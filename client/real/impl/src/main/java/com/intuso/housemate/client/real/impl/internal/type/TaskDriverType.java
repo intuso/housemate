@@ -20,6 +20,6 @@ public class TaskDriverType extends FactoryType<TaskDriver.Factory<?>> {
 
     @Inject
     protected TaskDriverType(@Type Logger logger, ListenersFactory listenersFactory, RealOptionImpl.Factory optionFactory, RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, listenersFactory, optionFactory, optionsFactory);
+        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, TaskDriver.class, listenersFactory, optionFactory, optionsFactory);
     }
 }

@@ -46,7 +46,7 @@ public interface VolumeControl {
          * Get the volume
          * @return the current volume
          */
-        @Value("integer")
+        @Value()
         @Id(value = "volume", name = "Current Volume", description = "The device's current volume")
         int getVolume();
 
@@ -63,7 +63,7 @@ public interface VolumeControl {
          * Callback for when the volume has changed
          * @param volume the new volume
          */
-        @Value("integer")
+        @Value()
         @Id(value = "volume", name = "Current Volume", description = "The device's current volume")
         void currentVolume(int volume);
     }

@@ -4,11 +4,14 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
-import com.intuso.housemate.client.api.internal.driver.PluginDependency;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
-import com.intuso.housemate.client.real.impl.internal.*;
+import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
+import com.intuso.housemate.client.real.impl.internal.RealDeviceImpl;
+import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
+import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import org.slf4j.Logger;
 
@@ -31,18 +34,17 @@ public class AddDeviceCommand {
     public static class Factory {
 
         private final RealCommandImpl.Factory commandFactory;
-        private final RealParameterImpl.Factory<String> stringParameterFactory;
-        private final RealParameterImpl.Factory<PluginDependency<FeatureDriver.Factory<?>>> deviceDriverParameterFactory;
+        private final TypeRepository typeRepository;
+        private final RealParameterImpl.Factory parameterFactory;
         private final Performer.Factory performerFactory;
 
         @Inject
         public Factory(RealCommandImpl.Factory commandFactory,
-                       RealParameterImpl.Factory<String> stringParameterFactory,
-                       RealParameterImpl.Factory<PluginDependency<FeatureDriver.Factory<? extends FeatureDriver>>> deviceDriverParameterFactory,
-                       Performer.Factory performerFactory) {
+                       TypeRepository typeRepository,
+                       RealParameterImpl.Factory parameterFactory, Performer.Factory performerFactory) {
             this.commandFactory = commandFactory;
-            this.stringParameterFactory = stringParameterFactory;
-            this.deviceDriverParameterFactory = deviceDriverParameterFactory;
+            this.typeRepository = typeRepository;
+            this.parameterFactory = parameterFactory;
             this.performerFactory = performerFactory;
         }
 
@@ -54,16 +56,19 @@ public class AddDeviceCommand {
                                       Callback callback,
                                       RealDevice.RemoveCallback<RealDeviceImpl> removeCallback) {
             return commandFactory.create(logger, id, name, description, performerFactory.create(baseLogger, callback, removeCallback),
-                    Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, NAME_PARAMETER_ID),
-                            NAME_PARAMETER_ID,
-                            NAME_PARAMETER_NAME,
-                            NAME_PARAMETER_DESCRIPTION,
-                            1,
-                            1),
-                            stringParameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, DESCRIPTION_PARAMETER_ID),
+                    Lists.newArrayList(
+                            parameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, NAME_PARAMETER_ID),
+                                    NAME_PARAMETER_ID,
+                                    NAME_PARAMETER_NAME,
+                                    NAME_PARAMETER_DESCRIPTION,
+                                    typeRepository.getType(new TypeSpec(String.class)),
+                                    1,
+                                    1),
+                            parameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, DESCRIPTION_PARAMETER_ID),
                                     DESCRIPTION_PARAMETER_ID,
                                     DESCRIPTION_PARAMETER_NAME,
                                     DESCRIPTION_PARAMETER_DESCRIPTION,
+                                    typeRepository.getType(new TypeSpec(String.class)),
                                     1,
                                     1)));
         }
@@ -74,17 +79,14 @@ public class AddDeviceCommand {
         private final Logger logger;
         private final Callback callback;
         private final RealDevice.RemoveCallback<RealDeviceImpl> removeCallback;
-        private final RealTypeImpl<PluginDependency<FeatureDriver.Factory<? extends FeatureDriver>>> deviceDriverType;
         private final RealDeviceImpl.Factory deviceFactory;
 
         @Inject
         public Performer(@Assisted Logger logger,
                          @Assisted Callback callback,
                          @Assisted RealDevice.RemoveCallback<RealDeviceImpl> removeCallback,
-                         RealTypeImpl<PluginDependency<FeatureDriver.Factory<? extends FeatureDriver>>> deviceDriverType,
                          RealDeviceImpl.Factory deviceFactory) {
             this.logger = logger;
-            this.deviceDriverType = deviceDriverType;
             this.callback = callback;
             this.deviceFactory = deviceFactory;
             this.removeCallback = removeCallback;

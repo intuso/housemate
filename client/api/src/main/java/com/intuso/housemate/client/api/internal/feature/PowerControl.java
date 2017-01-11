@@ -56,7 +56,7 @@ public interface PowerControl {
          * Callback for when the device has been turned on or off
          * @param on true if the device is now on
          */
-        @Value("boolean")
+        @Value
         @Id(value = "on", name = "On", description = "True if the device is now on")
         void on(boolean on);
     }

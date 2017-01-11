@@ -37,7 +37,7 @@ public class DayOfTheWeek implements ConditionDriver {
 	 * The days that the condition is satisfied for. Left-most bit isn't used, next one is sunday,
 	 * then monday etc. Right-most bit is saturday
 	 */
-    @Property("days")
+    @Property
     @Id(value = "days", name = "Days", description = "The days that satisfy the condition")
 	private Set<Day> days;
 

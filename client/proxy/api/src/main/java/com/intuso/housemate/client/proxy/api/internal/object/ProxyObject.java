@@ -23,7 +23,7 @@ public abstract class ProxyObject<
     protected final Listeners<LISTENER> listeners;
     private final Class<DATA> dataClass;
 
-    protected DATA data;
+    protected DATA data = null;
     private JMSUtil.Receiver<DATA> receiver;
 
     /**
@@ -83,6 +83,10 @@ public abstract class ProxyObject<
     protected void uninitChildren() {}
 
     protected void dataUpdated() {}
+
+    public boolean isLoaded() {
+        return data != null;
+    }
 
     public interface Factory<OBJECT extends ProxyObject<?, ?>> {
         OBJECT create(Logger logger);

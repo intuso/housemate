@@ -1,8 +1,9 @@
 package com.intuso.housemate.client.real.impl.internal;
 
 import com.google.common.collect.Lists;
-import com.intuso.housemate.client.api.internal.TypeSerialiser;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.type.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealType;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
@@ -17,6 +18,8 @@ public abstract class RealTypeImpl<O>
         extends RealObject<Type.Data, Type.Listener<? super RealTypeImpl<O>>>
         implements RealType<O, RealTypeImpl<O>> {
 
+    private final TypeSpec spec;
+
     /**
      * @param logger {@inheritDoc}
      * @param data {@inheritDoc}
@@ -24,8 +27,14 @@ public abstract class RealTypeImpl<O>
      */
     protected RealTypeImpl(Logger logger,
                            Type.Data data,
+                           TypeSpec spec,
                            ListenersFactory listenersFactory) {
         super(logger, false, data, listenersFactory);
+        this.spec = spec;
+    }
+
+    public TypeSpec getSpec() {
+        return spec;
     }
 
     public static <O> Instances serialiseAll(TypeSerialiser<O> serialiser, O ... typedValues) {

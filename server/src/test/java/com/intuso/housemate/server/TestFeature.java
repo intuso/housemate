@@ -18,7 +18,7 @@ interface TestFeature {
     ListenerRegistration addListener(Listener listener);
 
     interface Listener {
-        @Value("double")
+        @Value
         @Id(value = "value", name = "Value", description = "Value")
         void doubleValue(double value);
     }

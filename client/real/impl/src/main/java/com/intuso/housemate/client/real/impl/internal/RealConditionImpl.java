@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
@@ -14,8 +15,10 @@ import com.intuso.housemate.client.api.internal.object.Condition;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealCondition;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
+import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddConditionCommand;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -68,14 +71,14 @@ public final class RealConditionImpl
                              ListenersFactory listenersFactory,
                              AnnotationParser annotationParser,
                              RealCommandImpl.Factory commandFactory,
-                             RealParameterImpl.Factory<String> stringParameterFactory,
-                             RealValueImpl.Factory<Boolean> booleanValueFactory,
-                             RealValueImpl.Factory<String> stringValueFactory,
+                             RealParameterImpl.Factory parameterFactory,
+                             RealPropertyImpl.Factory propertyFactory,
+                             RealValueImpl.Factory valueFactory,
                              RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                              final RealConditionImpl.Factory conditionFactory,
                              final RealListPersistedImpl.Factory<RealConditionImpl> conditionsFactory,
-                             RealPropertyImpl.Factory<PluginDependency<ConditionDriver.Factory<? extends ConditionDriver>>> driverPropertyFactory,
-                             AddConditionCommand.Factory addConditionCommandFactory) {
+                             AddConditionCommand.Factory addConditionCommandFactory,
+                             TypeRepository typeRepository) {
         super(logger, true, new Condition.Data(id, name, description), listenersFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
@@ -93,10 +96,11 @@ public final class RealConditionImpl
                         }
                     }
                 },
-                Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
+                Lists.newArrayList(parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
                         Renameable.NAME_ID,
                         Renameable.NAME_ID,
                         "The new name",
+                        typeRepository.getType(new TypeSpec(String.class)),
                         1,
                         1)));
         this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
@@ -110,24 +114,27 @@ public final class RealConditionImpl
                     }
                 },
                 Lists.<RealParameterImpl<?>>newArrayList());
-        this.errorValue = stringValueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID),
+        this.errorValue = (RealValueImpl<String>) valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID),
                 Failable.ERROR_ID,
                 Failable.ERROR_ID,
                 "Current error for the condition",
+                typeRepository.getType(new TypeSpec(String.class)),
                 1,
                 1,
                 Lists.<String>newArrayList());
-        this.driverProperty = driverPropertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
+        this.driverProperty = (RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>>) propertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID),
                 UsesDriver.DRIVER_ID,
                 UsesDriver.DRIVER_ID,
                 "The condition's driver",
+                typeRepository.getType(new TypeSpec(Types.newParameterizedType(PluginDependency.class, ConditionDriver.class))),
                 1,
                 1,
                 Lists.<PluginDependency<ConditionDriver.Factory<?>>>newArrayList());
-        this.driverLoadedValue = booleanValueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
+        this.driverLoadedValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID),
                 UsesDriver.DRIVER_LOADED_ID,
                 UsesDriver.DRIVER_LOADED_ID,
                 "Whether the condition's driver is loaded or not",
+                typeRepository.getType(new TypeSpec(Boolean.class)),
                 1,
                 1,
                 Lists.newArrayList(false));
@@ -136,10 +143,11 @@ public final class RealConditionImpl
                 Condition.PROPERTIES_ID,
                 PROPERTIES_DESCRIPTION,
                 Lists.<RealPropertyImpl<?>>newArrayList());
-        this.satisfiedValue = booleanValueFactory.create(ChildUtil.logger(logger, Condition.SATISFIED_ID),
+        this.satisfiedValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, Condition.SATISFIED_ID),
                 Condition.SATISFIED_ID,
                 Condition.SATISFIED_ID,
                 "Whether the condition is satisfied or not",
+                typeRepository.getType(new TypeSpec(Boolean.class)),
                 1,
                 1,
                 Lists.newArrayList(false));
@@ -392,9 +400,9 @@ public final class RealConditionImpl
 
     public interface Factory {
         RealConditionImpl create(Logger logger,
-                                    @Assisted("id") String id,
-                                    @Assisted("name") String name,
-                                    @Assisted("description") String description,
-                                    RemoveCallback<RealConditionImpl> removeCallback);
+                                 @Assisted("id") String id,
+                                 @Assisted("name") String name,
+                                 @Assisted("description") String description,
+                                 RemoveCallback<RealConditionImpl> removeCallback);
     }
 }

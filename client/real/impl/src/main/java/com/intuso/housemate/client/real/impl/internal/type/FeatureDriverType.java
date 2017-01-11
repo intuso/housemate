@@ -21,6 +21,6 @@ public class FeatureDriverType extends FactoryType<FeatureDriver.Factory<?>> {
     @Inject
     protected FeatureDriverType(@Type Logger logger, ListenersFactory listenersFactory,
                                 RealOptionImpl.Factory optionFactory, RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, listenersFactory, optionFactory, optionsFactory);
+        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, FeatureDriver.class, listenersFactory, optionFactory, optionsFactory);
     }
 }

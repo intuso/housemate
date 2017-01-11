@@ -27,36 +27,6 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
         TYPES getTypes();
     }
 
-    enum Simple {
-
-        String("string", "String", "Some text"),
-        Integer("integer", "Integer", "A whole number"),
-        Double("double", "Double", "A number"),
-        Boolean("boolean", "Boolean", "True or false");
-
-        private final String id;
-        private final String name;
-        private final String description;
-
-        Simple(String id, String name, String description) {
-            this.id = id;
-            this.name = name;
-            this.description = description;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-    }
-
     /**
      * Base data object for a type
      */
@@ -183,38 +153,16 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
      *
      * Data object for a simple type
      */
-    final class SimpleData extends Data {
+    final class PrimitiveData extends Data {
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "type-simple";
+        public final static String OBJECT_TYPE = "type-primitive";
 
-        /**
-         * Enumeration of all simple types
-         */
+        public PrimitiveData() {}
 
-        private Simple simple;
-
-        public SimpleData() {}
-
-        /**
-         * @param simple the type of the type
-         */
-        public SimpleData(Simple simple) {
-            super(OBJECT_TYPE, simple.getId(), simple.getName(), simple.getDescription());
-            this.simple = simple;
-        }
-
-        /**
-         * Get the type of the type
-         * @return the type of the type
-         */
-        public final Simple getSimple() {
-            return simple;
-        }
-
-        public void setSimple(Simple simple) {
-            this.simple = simple;
+        public PrimitiveData(String id, String name, String description) {
+            super(OBJECT_TYPE, id, name, description);
         }
     }
 

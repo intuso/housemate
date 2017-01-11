@@ -18,7 +18,6 @@ public class PCModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        install(new PCRegexMatcherModule());
         bind(ListenersFactory.class).to(CopyOnWriteListenersFactory.class);
         bind(PluginFinder.class).to(PCPluginFinder.class);
         bind(PCPluginFinder.class).in(Scopes.SINGLETON);

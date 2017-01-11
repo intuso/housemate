@@ -7,8 +7,9 @@ import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.User;
-import com.intuso.housemate.client.api.internal.type.Email;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealUser;
+import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -20,11 +21,11 @@ import javax.jms.JMSException;
  */
 public final class RealUserImpl
         extends RealObject<User.Data, User.Listener<? super RealUserImpl>>
-        implements RealUser<RealCommandImpl, RealPropertyImpl<Email>, RealUserImpl> {
+        implements RealUser<RealCommandImpl, RealPropertyImpl<String>, RealUserImpl> {
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
-    private final RealPropertyImpl<Email> emailProperty;
+    private final RealPropertyImpl<String> emailProperty;
 
     private final RemoveCallback<RealUserImpl> removeCallback;
 
@@ -40,8 +41,10 @@ public final class RealUserImpl
                         @Assisted RemoveCallback<RealUserImpl> removeCallback,
                         ListenersFactory listenersFactory,
                         RealCommandImpl.Factory commandFactory,
-                        RealParameterImpl.Factory<String> stringParameterFactory,
-                        RealPropertyImpl.Factory<Email> emailPropertyFactory) {
+                        RealParameterImpl.Factory parameterFactory,
+                        RealPropertyImpl.Factory propertyFactory,
+                        RealValueImpl.Factory valueFactory,
+                        TypeRepository typeRepository) {
         super(logger, true, new User.Data(id, name, description), listenersFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -58,10 +61,11 @@ public final class RealUserImpl
                         }
                     }
                 },
-                Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
+                Lists.newArrayList(parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
                         Renameable.NAME_ID,
                         Renameable.NAME_ID,
                         "The new name",
+                        typeRepository.getType(new TypeSpec(String.class)),
                         1,
                         1)));
         this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
@@ -75,13 +79,14 @@ public final class RealUserImpl
                     }
                 },
                 Lists.<RealParameterImpl<?>>newArrayList());
-        this.emailProperty = emailPropertyFactory.create(ChildUtil.logger(logger, User.EMAIL_ID),
+        this.emailProperty = (RealPropertyImpl<String>) propertyFactory.create(ChildUtil.logger(logger, User.EMAIL_ID),
                 User.EMAIL_ID,
                 User.EMAIL_ID,
                 User.EMAIL_ID,
+                typeRepository.getType(new TypeSpec(String.class, "email")),
                 1,
                 1,
-                Lists.<Email>newArrayList());
+                Lists.<String>newArrayList());
     }
 
     @Override
@@ -119,7 +124,7 @@ public final class RealUserImpl
     }
 
     @Override
-    public RealPropertyImpl<Email> getEmailProperty() {
+    public RealPropertyImpl<String> getEmailProperty() {
         return emailProperty;
     }
 

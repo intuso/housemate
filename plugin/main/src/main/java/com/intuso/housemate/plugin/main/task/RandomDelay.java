@@ -19,14 +19,14 @@ public class RandomDelay implements TaskDriver {
     /**
      * The time unit that the quantity is specified in
      */
-    @Property("time-unit")
+    @Property
     @Id(value = "unit", name = "Unit", description = "the unit of time to wait for")
     private TimeUnit unit = TimeUnit.MINUTES;
 
     /**
      * The quantity of time to wait which, combined with the unit, gives the time to wait
      */
-    @Property("integer")
+    @Property
     @Id(value = "max-amount", name = "Max amount", description = "the maximum amount of time to wait")
     private Integer maxAmount = 1;
 

@@ -4,12 +4,11 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.intuso.housemate.client.api.internal.TypeSerialiser;
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.client.api.internal.type.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.RealServerImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
-import com.intuso.housemate.client.real.impl.internal.ioc.Type;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
@@ -34,8 +33,8 @@ public final class RealObjectType<O extends Object<?>>
      * @param server the root to get the object from
      */
     @Inject
-    public RealObjectType(@Type Logger logger, ListenersFactory listenersFactory, RealServerImpl server) {
-        super(ChildUtil.logger(logger, ID), new ObjectData(ID, NAME, "Path to an object"), listenersFactory);
+    public RealObjectType(Logger logger, String id, String name, String description, TypeSpec typeSpec, ListenersFactory listenersFactory, RealServerImpl server) {
+        super(logger, new ObjectData(id, name, description), typeSpec, listenersFactory);
         serialiser = new Serialiser<>(server);
     }
 

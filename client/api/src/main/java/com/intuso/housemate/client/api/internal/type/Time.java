@@ -1,26 +1,21 @@
 package com.intuso.housemate.client.api.internal.type;
 
-import com.intuso.housemate.client.api.internal.annotation.Composite;
 import com.intuso.housemate.client.api.internal.annotation.Id;
-import com.intuso.housemate.client.api.internal.annotation.IntegerWrap;
+import com.intuso.housemate.client.v1_0.api.annotation.SubType;
 
 /**
  * Simple representation of a time
  */
 @Id(value = "time", name = "Time", description = "Time of day")
-@Composite
 public class Time implements Comparable<Time> {
 
-    @Id(value = "hour", name = "Hour", description = "Hour of the day")
-    @IntegerWrap(min = 0, max = 23)
+    @SubType(restriction = "hour", minValues = 1, maxValues = 1)
     private int hour;
 
-    @Id(value = "minute", name = "Minute", description = "Minute of the hour")
-    @IntegerWrap(min = 0, max = 59)
+    @SubType(restriction = "minute", minValues = 1, maxValues = 1)
     private int minute;
 
-    @Id(value = "second", name = "Second", description = "Second of the day")
-    @IntegerWrap(min = 0, max = 59)
+    @SubType(restriction = "second", minValues = 1, maxValues = 1)
     private int second;
 
     private Time() {}

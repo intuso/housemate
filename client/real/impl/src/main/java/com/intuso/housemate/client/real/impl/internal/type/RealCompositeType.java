@@ -2,8 +2,9 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.internal.TypeSerialiser;
 import com.intuso.housemate.client.api.internal.object.SubType;
+import com.intuso.housemate.client.api.internal.type.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
@@ -43,10 +44,11 @@ public final class RealCompositeType<O>
                                 @Assisted("id") String id,
                                 @Assisted("name") String name,
                                 @Assisted("description") String description,
+                                @Assisted TypeSpec typeSpec,
                                 @Assisted Iterable<RealSubTypeImpl<?>> subTypes,
                                 ListenersFactory listenersFactory,
                                 RealListGeneratedImpl.Factory<RealSubTypeImpl<?>> subTypesFactory) {
-        super(logger, new CompositeData(id, name, description), listenersFactory);
+        super(logger, new CompositeData(id, name, description), typeSpec, listenersFactory);
         this.serialiser = new Serialiser<>();
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID),
                 SUB_TYPES_ID,
@@ -100,6 +102,7 @@ public final class RealCompositeType<O>
                                     @Assisted("id") String id,
                                     @Assisted("name") String name,
                                     @Assisted("description") String description,
+                                    TypeSpec typeSpec,
                                     Iterable<RealSubTypeImpl<?>> options);
     }
 }

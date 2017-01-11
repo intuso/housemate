@@ -41,7 +41,7 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
         rfxtrx = new RFXtrx(logger, Lists.<Pattern>newArrayList());
     }
 
-    @Property(value = "string")
+    @Property
     @Id(value = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names")
     public void setPattern(String pattern) {
         this.pattern = pattern;
@@ -52,7 +52,7 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
         return pattern;
     }
 
-    @Property(value = "boolean")
+    @Property
     @Id(value = "listen", name = "Listen for new devices", description = "Create a new device when a command is received for it")
     public void setListen(boolean listen) {
         this.listen = listen;

@@ -26,10 +26,10 @@ public final class RealSubTypeImpl<O>
                            @Assisted("id") String id,
                            @Assisted("name") String name,
                            @Assisted("description") String description,
+                           @Assisted RealTypeImpl type,
                            @Assisted("min") int minValues,
                            @Assisted("max") int maxValues,
-                           ListenersFactory listenersFactory,
-                           RealTypeImpl<O> type) {
+                           ListenersFactory listenersFactory) {
         super(logger, false, new SubType.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory);
         this.type = type;
     }
@@ -39,11 +39,12 @@ public final class RealSubTypeImpl<O>
         return type;
     }
 
-    public interface Factory<O> {
-        RealSubTypeImpl<O> create(Logger logger,
+    public interface Factory {
+        RealSubTypeImpl<?> create(Logger logger,
                                   @Assisted("id") String id,
                                   @Assisted("name") String name,
                                   @Assisted("description") String description,
+                                  RealTypeImpl type,
                                   @Assisted("min") int minValues,
                                   @Assisted("max") int maxValues);
     }

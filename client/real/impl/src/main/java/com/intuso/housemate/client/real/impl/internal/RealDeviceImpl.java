@@ -7,7 +7,9 @@ import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
+import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddFeatureCommand;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
@@ -49,11 +51,11 @@ public final class RealDeviceImpl
                           @Assisted RemoveCallback<RealDeviceImpl> removeCallback,
                           ListenersFactory listenersFactory,
                           RealCommandImpl.Factory commandFactory,
-                          RealParameterImpl.Factory<String> stringParameterFactory,
-                          RealValueImpl.Factory<Boolean> booleanValueFactory,
-                          RealValueImpl.Factory<String> stringValueFactory,
+                          RealParameterImpl.Factory parameterFactory,
+                          RealValueImpl.Factory valueFactory,
                           RealListGeneratedImpl.Factory<RealFeatureImpl> featuresFactory,
-                          AddFeatureCommand.Factory addFeatureCommandFactory) {
+                          AddFeatureCommand.Factory addFeatureCommandFactory,
+                          TypeRepository typeRepository) {
         super(logger, true, new Device.Data(id, name, description), listenersFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -70,10 +72,11 @@ public final class RealDeviceImpl
                         }
                     }
                 },
-                Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
+                Lists.newArrayList(parameterFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID, Renameable.NAME_ID),
                         Renameable.NAME_ID,
                         Renameable.NAME_ID,
                         "The new name",
+                        typeRepository.getType(new TypeSpec(String.class)),
                         1,
                         1)));
         this.removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID),
@@ -89,10 +92,11 @@ public final class RealDeviceImpl
                     }
                 },
                 Lists.<RealParameterImpl<?>>newArrayList());
-        this.runningValue = booleanValueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID),
+        this.runningValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID),
                 Runnable.RUNNING_ID,
                 Runnable.RUNNING_ID,
                 "Whether the device is running or not",
+                typeRepository.getType(new TypeSpec(Boolean.class)),
                 1,
                 1,
                 Lists.newArrayList(false));
@@ -124,10 +128,11 @@ public final class RealDeviceImpl
                     }
                 },
                 Lists.<RealParameterImpl<?>>newArrayList());
-        this.errorValue = stringValueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID),
+        this.errorValue = (RealValueImpl<String>) valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID),
                 Failable.ERROR_ID,
                 Failable.ERROR_ID,
                 "Current error for the device",
+                typeRepository.getType(new TypeSpec(String.class)),
                 1,
                 1,
                 Lists.<String>newArrayList());

@@ -110,6 +110,22 @@ public class RealObjectsModule extends AbstractModule {
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealOptionImpl.Factory>() {}));
 
+        // parameter
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealParameterImpl.Factory>() {}));
+
+        // property
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealPropertyImpl.Factory>() {}));
+
+        // subtype
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealSubTypeImpl.Factory>() {}));
+
+        // value
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealValueImpl.Factory>() {}));
+
         // users
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealUserImpl.Factory>() {}));

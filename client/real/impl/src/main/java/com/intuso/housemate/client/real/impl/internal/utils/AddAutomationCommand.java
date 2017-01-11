@@ -5,11 +5,13 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealAutomation;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealAutomationImpl;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
+import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import org.slf4j.Logger;
 
@@ -32,15 +34,18 @@ public class AddAutomationCommand {
     public static class Factory {
 
         private final RealCommandImpl.Factory commandFactory;
-        private final RealParameterImpl.Factory<String> stringParameterFactory;
+        private final RealParameterImpl.Factory parameterFactory;
+        private final TypeRepository typeRepository;
         private final Performer.Factory performerFactory;
 
         @Inject
         public Factory(RealCommandImpl.Factory commandFactory,
-                       RealParameterImpl.Factory<String> stringParameterFactory,
+                       RealParameterImpl.Factory parameterFactory,
+                       TypeRepository typeRepository,
                        Performer.Factory performerFactory) {
             this.commandFactory = commandFactory;
-            this.stringParameterFactory = stringParameterFactory;
+            this.parameterFactory = parameterFactory;
+            this.typeRepository = typeRepository;
             this.performerFactory = performerFactory;
         }
 
@@ -52,16 +57,19 @@ public class AddAutomationCommand {
                                       Callback callback,
                                       RealAutomation.RemoveCallback<RealAutomationImpl> removeCallback) {
             return commandFactory.create(logger, id, name, description, performerFactory.create(baseLogger, callback, removeCallback),
-                    Lists.newArrayList(stringParameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, NAME_PARAMETER_ID),
+                    Lists.newArrayList(
+                            parameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, NAME_PARAMETER_ID),
                                     NAME_PARAMETER_ID,
                                     NAME_PARAMETER_NAME,
                                     NAME_PARAMETER_DESCRIPTION,
+                                    typeRepository.getType(new TypeSpec(String.class)),
                                     1,
                                     1),
-                            stringParameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, DESCRIPTION_PARAMETER_ID),
+                            parameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, DESCRIPTION_PARAMETER_ID),
                                     DESCRIPTION_PARAMETER_ID,
                                     DESCRIPTION_PARAMETER_NAME,
                                     DESCRIPTION_PARAMETER_DESCRIPTION,
+                                    typeRepository.getType(new TypeSpec(String.class)),
                                     1,
                                     1)));
         }

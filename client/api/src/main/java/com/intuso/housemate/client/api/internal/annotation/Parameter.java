@@ -18,7 +18,7 @@ public @interface Parameter {
      * The parameter's type
      * @return the parameter's type
      */
-    String value() default "";
+    String restriction() default "";
 
     int minValues() default -1;
 

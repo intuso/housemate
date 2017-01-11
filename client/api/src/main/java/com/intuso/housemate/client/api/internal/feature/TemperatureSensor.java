@@ -19,7 +19,7 @@ public interface TemperatureSensor {
      * Get the temperature of the device
      * @return the temperature
      */
-    @Value("double")
+    @Value
     @Id(value = "temperature", name = "Temperature", description = "The current temperature")
     double getTemperature();
 
@@ -35,7 +35,7 @@ public interface TemperatureSensor {
          * Callback for when the temperature of the device has changed
          * @param temperature the new temperature
          */
-        @Value("double")
+        @Value
         @Id(value = "temperature", name = "Temperature", description = "The current temperature")
         void temperature(double temperature);
     }

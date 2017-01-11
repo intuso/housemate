@@ -16,7 +16,7 @@ public @interface Value {
      * The value's type
      * @return the value's type
      */
-    String value() default "";
+    String restriction() default "";
 
     int minValues() default 0;
 

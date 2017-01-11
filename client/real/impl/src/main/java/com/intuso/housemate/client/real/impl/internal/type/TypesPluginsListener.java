@@ -9,25 +9,33 @@ import com.intuso.housemate.client.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.api.internal.driver.TaskDriver;
 import com.intuso.housemate.client.api.internal.plugin.PluginListener;
 import com.intuso.housemate.client.api.internal.plugin.PluginResource;
+import com.intuso.housemate.client.api.internal.plugin.RegexType;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.client.real.impl.internal.ioc.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by tomc on 19/03/15.
  */
-public class DriverPluginsListener implements PluginListener {
+public class TypesPluginsListener implements PluginListener {
 
-    private final static Logger logger = LoggerFactory.getLogger(DriverPluginsListener.class);
+    private final static Logger logger = LoggerFactory.getLogger(TypesPluginsListener.class);
 
-    private final RegisteredTypes types;
+    private final Logger typeLogger;
+    private final TypeRepository types;
+    private final RealRegexType.Factory regexTypeFactory;
     private final ConditionDriverType conditionDriverType;
     private final FeatureDriverType featureDriverType;
     private final HardwareDriverType hardwareDriverType;
     private final TaskDriverType taskDriverType;
 
     @Inject
-    public DriverPluginsListener(RegisteredTypes types, ConditionDriverType conditionDriverType, FeatureDriverType featureDriverType, HardwareDriverType hardwareDriverType, TaskDriverType taskDriverType) {
+    public TypesPluginsListener(@Type Logger typeLogger, TypeRepository types, RealRegexType.Factory regexTypeFactory, ConditionDriverType conditionDriverType, FeatureDriverType featureDriverType, HardwareDriverType hardwareDriverType, TaskDriverType taskDriverType) {
+        this.typeLogger = typeLogger;
         this.types = types;
+        this.regexTypeFactory = regexTypeFactory;
         this.conditionDriverType = conditionDriverType;
         this.featureDriverType = featureDriverType;
         this.hardwareDriverType = hardwareDriverType;
@@ -53,16 +61,22 @@ public class DriverPluginsListener implements PluginListener {
     }
 
     private void addTypes(Injector pluginInjector) {
-        for(PluginResource<Class<?>> typeResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<Class<?>>>>() {})) {
-            logger.debug("Adding type " + getClass().getName());
-            types.typeAvailable(pluginInjector, typeResource.getResource());
+        for(RegexType regexType : pluginInjector.getInstance(new Key<Iterable<RegexType>>() {})) {
+            logger.debug("Adding regex type " + getClass().getName());
+            types.typeAvailable(regexTypeFactory.create(
+                    ChildUtil.logger(typeLogger, new TypeSpec(String.class, regexType.id().value()).toString()),
+                    regexType.id().value(),
+                    regexType.id().name(),
+                    regexType.id().description(),
+                    regexType.regex()
+            ));
         }
     }
 
     private void removeTypes(Injector pluginInjector) {
-        for(PluginResource<Class<?>> typeResource : pluginInjector.getInstance(new Key<Iterable<PluginResource<Class<?>>>>() {})) {
-            logger.debug("Removing type " + getClass().getName());
-            types.typeUnavailable(typeResource.getId().value());
+        for(RegexType regexType : pluginInjector.getInstance(new Key<Iterable<RegexType>>() {})) {
+            logger.debug("Adding regex type " + getClass().getName());
+            types.typeUnavailable(new TypeSpec(String.class, regexType.id().value()));
         }
     }
 
