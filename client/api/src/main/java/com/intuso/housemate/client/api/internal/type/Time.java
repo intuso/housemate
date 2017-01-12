@@ -1,7 +1,7 @@
 package com.intuso.housemate.client.api.internal.type;
 
 import com.intuso.housemate.client.api.internal.annotation.Id;
-import com.intuso.housemate.client.v1_0.api.annotation.SubType;
+import com.intuso.housemate.client.api.internal.annotation.SubType;
 
 /**
  * Simple representation of a time
