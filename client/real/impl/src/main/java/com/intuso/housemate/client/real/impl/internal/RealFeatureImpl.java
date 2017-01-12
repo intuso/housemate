@@ -68,7 +68,7 @@ public final class RealFeatureImpl
                            RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                            RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                            TypeRepository typeRepository) {
-        super(logger, false, new Feature.Data(id, name, description), listenersFactory);
+        super(logger, new Feature.Data(id, name, description), listenersFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),

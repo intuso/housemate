@@ -73,7 +73,7 @@ public final class RealHardwareImpl
                             RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                             RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory) {
-        super(logger, true, new Hardware.Data(id, name, description), listenersFactory);
+        super(logger, new Hardware.Data(id, name, description), listenersFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),

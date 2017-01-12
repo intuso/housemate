@@ -44,7 +44,7 @@ public abstract class RealValueBaseBridge<
     @Override
     protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
         super.initChildren(versionName, internalName, connection);
-        valueSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID) + "?consumer.retroactive=true");
+        valueSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID));
         valueReceiver = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Value.VALUE_ID), com.intuso.housemate.client.v1_0.api.object.Type.Instances.class,
                 new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Type.Instances>() {
             @Override

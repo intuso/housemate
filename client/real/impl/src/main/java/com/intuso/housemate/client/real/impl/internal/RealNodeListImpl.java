@@ -47,7 +47,7 @@ public final class RealNodeListImpl
                             @Assisted("description") String description,
                             ListenersFactory listenersFactory,
                             RealNodeBridge.Factory nodeV1_0Factory) {
-        super(logger, false, new List.Data(id, name, description), listenersFactory);
+        super(logger, new List.Data(id, name, description), listenersFactory);
         this.nodeV1_0Factory = nodeV1_0Factory;
         this.elements = Maps.newHashMap();
     }

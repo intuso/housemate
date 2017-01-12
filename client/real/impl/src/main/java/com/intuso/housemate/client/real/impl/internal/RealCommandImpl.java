@@ -45,7 +45,7 @@ public final class RealCommandImpl
                               RealValueImpl.Factory valueFactory,
                               RealListGeneratedImpl.Factory<RealParameterImpl<?>> parametersFactory,
                               TypeRepository typeRepository) {
-        super(logger, false, new Command.Data(id, name, description), listenersFactory);
+        super(logger, new Command.Data(id, name, description), listenersFactory);
         this.performer = performer;
         this.enabledValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID),
                 Command.ENABLED_ID,

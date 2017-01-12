@@ -38,7 +38,7 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
                                  @Assisted("description") String description,
                                  @Assisted Iterable<? extends ELEMENT> elements,
                                  ListenersFactory listenersFactory) {
-        super(logger, false, new List.Data(id, name, description), listenersFactory);
+        super(logger, new List.Data(id, name, description), listenersFactory);
         this.elements = Maps.newHashMap();
         for(ELEMENT element : elements)
             this.elements.put(element.getId(), element);

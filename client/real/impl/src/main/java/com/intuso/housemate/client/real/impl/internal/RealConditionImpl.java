@@ -79,7 +79,7 @@ public final class RealConditionImpl
                              final RealListPersistedImpl.Factory<RealConditionImpl> conditionsFactory,
                              AddConditionCommand.Factory addConditionCommandFactory,
                              TypeRepository typeRepository) {
-        super(logger, true, new Condition.Data(id, name, description), listenersFactory);
+        super(logger, new Condition.Data(id, name, description), listenersFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),

@@ -53,7 +53,7 @@ public class RealServerImpl
                           AddAutomationCommand.Factory addAutomationCommandFactory,
                           AddDeviceCommand.Factory addDeviceCommandFactory,
                           AddUserCommand.Factory addUserCommandFactory) {
-        super(logger, true, new Server.Data( "server", "server", "server"), listenersFactory);
+        super(logger, new Server.Data( "server", "server", "server"), listenersFactory);
         this.connection = connection;
         this.nodeFactory = nodeFactory;
         this.automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),

@@ -56,7 +56,7 @@ public final class RealDeviceImpl
                           RealListGeneratedImpl.Factory<RealFeatureImpl> featuresFactory,
                           AddFeatureCommand.Factory addFeatureCommandFactory,
                           TypeRepository typeRepository) {
-        super(logger, true, new Device.Data(id, name, description), listenersFactory);
+        super(logger, new Device.Data(id, name, description), listenersFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,

@@ -32,7 +32,7 @@ public class RealNodeImpl
                         final RealHardwareImpl.Factory hardwareFactory,
                         RealListPersistedImpl.Factory<RealHardwareImpl> hardwaresFactory,
                         AddHardwareCommand.Factory addHardwareCommandFactory) {
-        super(logger, true, new com.intuso.housemate.client.api.internal.object.Node.Data(id, name, description), listenersFactory);
+        super(logger, new com.intuso.housemate.client.api.internal.object.Node.Data(id, name, description), listenersFactory);
         this.types = typeRepository.createList(ChildUtil.logger(logger, TYPES_ID),
                 TYPES_ID,
                 "Types",

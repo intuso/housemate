@@ -66,7 +66,7 @@ public final class RealTaskImpl
                         RealValueImpl.Factory valueFactory,
                         RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                         TypeRepository typeRepository) {
-        super(logger, true, new Task.Data(id, name, description), listenersFactory);
+        super(logger, new Task.Data(id, name, description), listenersFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),

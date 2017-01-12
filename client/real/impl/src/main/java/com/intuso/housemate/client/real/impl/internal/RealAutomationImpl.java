@@ -118,7 +118,7 @@ public final class RealAutomationImpl
                               AddConditionCommand.Factory addConditionCommandFactory,
                               AddTaskCommand.Factory addTaskCommandFactory,
                               TypeRepository typeRepository) {
-        super(logger, true, new Automation.Data(id, name, description), listenersFactory);
+        super(logger, new Automation.Data(id, name, description), listenersFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,

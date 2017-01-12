@@ -16,14 +16,12 @@ public abstract class RealObject<DATA extends Object.Data,
     public final static String REAL = "real";
 
     protected final Logger logger;
-    protected final boolean persistent;
     protected final DATA data;
     protected final Listeners<LISTENER> listeners;
 
     private JMSUtil.Sender sender;
 
-    protected RealObject(Logger logger, boolean persistent, DATA data, ListenersFactory listenersFactory) {
-        this.persistent = persistent;
+    protected RealObject(Logger logger, DATA data, ListenersFactory listenersFactory) {
         logger.debug("Creating");
         this.logger = logger;
         this.data = data;
@@ -77,7 +75,7 @@ public abstract class RealObject<DATA extends Object.Data,
     protected final void sendData() {
         if(sender != null) {
             try {
-                sender.send(data, persistent);
+                sender.send(data, true);
             } catch (JMSException e) {
                 logger.error("Failed to send data object", e);
             }

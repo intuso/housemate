@@ -35,7 +35,7 @@ public abstract class RealValueBaseImpl<O,
      * @param type the type of the value's value
      */
     public RealValueBaseImpl(Logger logger, DATA data, ListenersFactory listenersFactory, RealTypeImpl<O> type, Iterable<O> values) {
-        super(logger, false, data, listenersFactory);
+        super(logger, data, listenersFactory);
         this.type = type;
         this.values = values;
     }
