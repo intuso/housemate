@@ -129,7 +129,7 @@ public class PluginHost implements PluginFinder.Listener {
             logger.error("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not get URL for file");
             return Lists.newArrayList();
         } catch(IOException e) {
-            logger.error("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not load mainifest file");
+            logger.error("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not load manifest file");
             return Lists.newArrayList();
         }
     }
