@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Stopping Intuso Housemate"
-systemctl stop housemate
+echo "Stopping Intuso Housemate Server"
+systemctl stop housemate-server
 
 exit 0

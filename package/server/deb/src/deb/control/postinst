@@ -1,8 +1,8 @@
 #!/bin/sh
 
 systemctl daemon-reload
-echo "Starting Intuso Housemate"
-systemctl enable housemate
-systemctl start housemate
+echo "Starting Intuso Housemate Server"
+systemctl enable housemate-server
+systemctl start housemate-server
 
 exit 0

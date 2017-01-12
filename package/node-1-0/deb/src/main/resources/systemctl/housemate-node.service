@@ -1,0 +1,9 @@
+[Unit]
+Description=Intuso Housemate Node
+
+[Service]
+User=hm
+ExecStart=/usr/bin/java -jar /usr/share/intuso/housemate/housemate-package-node-1-0-jar-${project.version}-jar-with-dependencies.jar -conf.dir /etc/intuso/housemate/node
+
+[Install]
+WantedBy=multi-user.target

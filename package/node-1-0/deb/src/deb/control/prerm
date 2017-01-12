@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "Stopping Intuso Housemate Node"
+systemctl stop housemate-node
+
+exit 0

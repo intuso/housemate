@@ -1,0 +1,8 @@
+#!/bin/sh
+
+systemctl daemon-reload
+echo "Starting Intuso Housemate Node"
+systemctl enable housemate-node
+systemctl start housemate-node
+
+exit 0

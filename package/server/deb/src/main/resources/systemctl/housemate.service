@@ -1,9 +1,0 @@
-[Unit]
-Description=Intuso Housemate
-
-[Service]
-User=hm
-ExecStart=/usr/bin/java -jar /usr/share/intuso/housemate/housemate-package-server-jar-${project.version}-jar-with-dependencies.jar -conf.dir /etc/intuso/housemate
-
-[Install]
-WantedBy=multi-user.target

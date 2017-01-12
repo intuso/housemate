@@ -14,7 +14,9 @@
     <description>Deployable packages for a Housemate Node 1.0</description>
 
     <modules>
+        <module>deb</module>
         <module>jar</module>
+        <module>jsw</module>
     </modules>
 
 </project>

@@ -3,21 +3,21 @@
 
     <parent>
         <groupId>com.intuso.housemate</groupId>
-        <artifactId>housemate-package-server</artifactId>
+        <artifactId>housemate-package-node-1-0</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>housemate-package-server-deb</artifactId>
+    <artifactId>housemate-package-node-1-0-deb</artifactId>
     <packaging>jar</packaging>
-    <name>Housemate Package Server Deb</name>
-    <description>Housemate Server Debian Package</description>
+    <name>Housemate Package Node 1.0 Deb</name>
+    <description>Housemate Node 1.0 Debian Package</description>
 
     <dependencies>
 
         <!-- Jar module -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-package-server-jar</artifactId>
+            <artifactId>housemate-package-node-1-0-jar</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -48,7 +48,7 @@
                             <changesOut>${project.build.directory}/housemate-${project.version}.changes</changesOut>
                             <dataSet>
                                 <data>
-                                    <src>${project.basedir}/../jar/target/housemate-package-server-jar-${project.version}-jar-with-dependencies.jar</src>
+                                    <src>${project.basedir}/../jar/target/housemate-package-node-1-0-jar-${project.version}-jar-with-dependencies.jar</src>
                                     <type>file</type>
                                     <mapper>
                                         <type>perm</type>
@@ -82,7 +82,7 @@
                                     </mapper>
                                 </data>
                                 <data>
-                                    <src>${project.build.directory}/classes/systemctl/housemate-server.service</src>
+                                    <src>${project.build.directory}/classes/systemctl/housemate-node.service</src>
                                     <type>file</type>
                                     <mapper>
                                         <type>perm</type>
