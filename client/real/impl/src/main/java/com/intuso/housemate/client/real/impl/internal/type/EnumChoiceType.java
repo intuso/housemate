@@ -4,9 +4,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.api.internal.type.TypeSerialiser;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.api.internal.type.serialiser.EnumSerialiser;
+import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
@@ -41,7 +41,7 @@ public class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
                           RealOptionImpl.Factory optionFactory,
                           RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
         super(logger, id, name, description, new TypeSpec(enumClass), listenersFactory, optionsFactory, convertValuesToOptions(logger, optionFactory, enumClass));
-        this.serialiser = new EnumInstanceSerialiser<>(enumClass);
+        this.serialiser = new EnumSerialiser<>(enumClass);
     }
 
     @Override
@@ -68,36 +68,6 @@ public class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
                 return optionFactory.create(ChildUtil.logger(logger, value.name()), value.name(), value.name(), value.name(), Lists.<RealSubTypeImpl<?>>newArrayList());
             }
         });
-    }
-
-    /**
-     * Serialiser for enum values
-     * @param <E> the enum type
-     */
-    public static class EnumInstanceSerialiser<E extends Enum<E>> implements TypeSerialiser<E> {
-
-        private final Class<E> enumClass;
-
-        /**
-         * @param enumClass the class of the enum
-         */
-        public EnumInstanceSerialiser(Class<E> enumClass) {
-            this.enumClass = enumClass;
-        }
-
-        @Override
-        public Instance serialise(E value) {
-            return value != null ? new Instance(value.name()) : null;
-        }
-
-        @Override
-        public E deserialise(Instance value) {
-            try {
-                return value != null && value.getValue() != null ? Enum.valueOf(enumClass, value.getValue()) : null;
-            } catch(Throwable t) {
-                throw new HousemateException("Could not convert \"" + value + "\" to instance of enum " + enumClass.getName());
-            }
-        }
     }
 
     public interface Factory {

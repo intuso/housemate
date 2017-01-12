@@ -1,6 +1,6 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
-import com.intuso.housemate.client.api.internal.type.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.utilities.listener.ListenersFactory;

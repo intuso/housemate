@@ -1,6 +1,7 @@
-package com.intuso.housemate.client.api.internal.type;
+package com.intuso.housemate.client.api.internal.type.serialiser;
 
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.type.TypeSpec;
 
 /**
  * Converts to and from an object to a {@link Type.Instance} representation of that object

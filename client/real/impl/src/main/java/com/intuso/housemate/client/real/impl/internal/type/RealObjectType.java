@@ -5,7 +5,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.housemate.client.api.internal.type.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.RealServerImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
