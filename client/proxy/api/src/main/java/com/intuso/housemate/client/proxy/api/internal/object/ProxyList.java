@@ -56,7 +56,7 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
                                     }
                                 }
                                 try {
-                                    element.initChildren(ChildUtil.name(name, data.getId()), connection);
+                                    element.init(ChildUtil.name(name, data.getId()), connection);
                                 } catch (JMSException e) {
                                     logger.error("Failed to init child {}", data.getId(), e);
                                 }

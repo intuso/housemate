@@ -67,7 +67,7 @@ public abstract class ProxyDevice<
         stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
         features.init(ChildUtil.name(name, Device.FEATURES_ID), connection);
-        addFeatureCommand.initChildren(ChildUtil.name(name, DEVICE.ADD_FEATURE_ID), connection);
+        addFeatureCommand.init(ChildUtil.name(name, DEVICE.ADD_FEATURE_ID), connection);
     }
 
     @Override
