@@ -31,9 +31,9 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         Value.Container<VALUES>,
         Property.Container<PROPERTIES> {
 
-    String COMMANDS_ID = "commands";
-    String VALUES_ID = "values";
-    String PROPERTIES_ID = "properties";
+    String COMMANDS_ID = "command";
+    String VALUES_ID = "value";
+    String PROPERTIES_ID = "property";
 
     /**
      *

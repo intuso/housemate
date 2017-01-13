@@ -25,7 +25,7 @@ public interface Device<
         Removeable<COMMAND>,
         Feature.Container<FEATURES> {
 
-    String FEATURES_ID = "features";
+    String FEATURES_ID = "feature";
     String ADD_FEATURE_ID = "add-feature";
 
     COMMAND getAddFeatureCommand();

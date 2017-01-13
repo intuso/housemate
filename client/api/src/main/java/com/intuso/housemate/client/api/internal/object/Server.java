@@ -13,10 +13,10 @@ public interface Server<
         User.Container<USERS>,
         Node.Container<NODES> {
 
-    String AUTOMATIONS_ID = "automations";
-    String DEVICES_ID = "devices";
-    String USERS_ID = "users";
-    String NODES_ID = "nodes";
+    String AUTOMATIONS_ID = "automation";
+    String DEVICES_ID = "device";
+    String USERS_ID = "user";
+    String NODES_ID = "node";
     String ADD_AUTOMATION_ID = "add-automation";
     String ADD_DEVICE_ID = "add-device";
     String ADD_USER_ID = "add-user";

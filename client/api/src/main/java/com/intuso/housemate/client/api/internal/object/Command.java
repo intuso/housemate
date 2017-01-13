@@ -17,7 +17,7 @@ public interface Command<
         Parameter.Container<PARAMETERS> {
 
     String ENABLED_ID = "enabled";
-    String PARAMETERS_ID = "parameters";
+    String PARAMETERS_ID = "parameter";
     String PERFORM_ID = "perform";
     String PERFORM_STATUS_ID = "performStatus";
 

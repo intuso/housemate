@@ -9,8 +9,8 @@ public interface Node<
         Type.Container<TYPES>,
         Hardware.Container<HARDWARES> {
 
-    String TYPES_ID = "types";
-    String HARDWARES_ID = "hardwares";
+    String TYPES_ID = "type";
+    String HARDWARES_ID = "hardware";
     String ADD_HARDWARE_ID = "add-hardware";
 
     COMMAND getAddHardwareCommand();
