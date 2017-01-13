@@ -15,6 +15,8 @@ import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import org.slf4j.Logger;
 
+import java.util.UUID;
+
 /**
 * Created by tomc on 19/03/15.
 */
@@ -100,7 +102,8 @@ public class AddFeatureCommand {
             Type.Instances description = values.getChildren().get(DESCRIPTION_PARAMETER_ID);
             if(description == null || description.getFirstValue() == null)
                 throw new HousemateException("No description specified");
-            RealFeatureImpl feature = featureFactory.create(ChildUtil.logger(logger, name.getFirstValue()), name.getFirstValue(), name.getFirstValue(), description.getFirstValue(), removeCallback);
+            String id = UUID.randomUUID().toString();
+            RealFeatureImpl feature = featureFactory.create(ChildUtil.logger(logger, id), id, name.getFirstValue(), description.getFirstValue(), removeCallback);
             callback.addFeature(feature);
         }
 
