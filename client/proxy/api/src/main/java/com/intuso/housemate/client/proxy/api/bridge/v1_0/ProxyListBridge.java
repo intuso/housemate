@@ -79,6 +79,14 @@ public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?>>
     }
 
     @Override
+    public ELEMENT getByName(String name) {
+        for (ELEMENT element : this)
+            if (name.equalsIgnoreCase(element.getName()))
+                return element;
+        return null;
+    }
+
+    @Override
     public int size() {
         return elements.size();
     }

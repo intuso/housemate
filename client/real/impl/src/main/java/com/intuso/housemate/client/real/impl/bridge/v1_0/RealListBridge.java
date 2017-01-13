@@ -45,16 +45,16 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
         super.initChildren(versionName, internalName, connection);
         // subscribe to all child topics and create children as new topics are discovered
         this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        existingObjectReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, "*"), Object.Data.class,
+        existingObjectReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(versionName, "*"), Object.Data.class,
                 new JMSUtil.Receiver.Listener<Object.Data>() {
                     @Override
                     public void onMessage(Object.Data data, boolean wasPersisted) {
                         if(!elements.containsKey(data.getId())) {
-                            ELEMENT element = elementFactory.create(logger);
+                            ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()));
                             if(element != null) {
                                 elements.put(data.getId(), element);
                                 try {
-                                    element.initChildren(ChildUtil.name(versionName, data.getId()), com.intuso.housemate.client.real.impl.internal.ChildUtil.name(internalName, data.getId()), connection);
+                                    element.init(ChildUtil.name(versionName, data.getId()), com.intuso.housemate.client.real.impl.internal.ChildUtil.name(internalName, data.getId()), connection);
                                 } catch (JMSException e) {
                                     logger.error("Failed to init child {}", data.getId(), e);
                                 }
@@ -79,6 +79,14 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
     @Override
     public final ELEMENT get(String id) {
         return elements.get(id);
+    }
+
+    @Override
+    public ELEMENT getByName(String name) {
+        for (ELEMENT element : this)
+            if (name.equalsIgnoreCase(element.getName()))
+                return element;
+        return null;
     }
 
     @Override

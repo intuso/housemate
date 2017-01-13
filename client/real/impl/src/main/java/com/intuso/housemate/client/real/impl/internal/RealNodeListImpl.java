@@ -128,8 +128,16 @@ public final class RealNodeListImpl
     }
 
     @Override
-    public final ServerBaseNode<?, ?, ?, ?> get(String name) {
-        return elements.get(name);
+    public final ServerBaseNode<?, ?, ?, ?> get(String id) {
+        return elements.get(id);
+    }
+
+    @Override
+    public ServerBaseNode<?, ?, ?, ?> getByName(String name) {
+        for (ServerBaseNode<?, ?, ?, ?> element : this)
+            if (name.equalsIgnoreCase(element.getName()))
+                return element;
+        return null;
     }
 
     @Override

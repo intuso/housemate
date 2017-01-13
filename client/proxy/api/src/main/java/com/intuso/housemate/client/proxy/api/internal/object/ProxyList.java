@@ -83,6 +83,14 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
         return elements.get(id);
     }
 
+    @Override
+    public ELEMENT getByName(String name) {
+        for (ELEMENT element : this)
+            if (name.equalsIgnoreCase(element.getName()))
+                return element;
+        return null;
+    }
+
     public final ELEMENT getWhenLoaded(String id) throws InterruptedException {
         return getWhenLoaded(id, 1000);
     }

@@ -114,8 +114,16 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
     }
 
     @Override
-    public final ELEMENT get(String name) {
-        return elements.get(name);
+    public final ELEMENT get(String id) {
+        return elements.get(id);
+    }
+
+    @Override
+    public ELEMENT getByName(String name) {
+        for (ELEMENT element : this)
+            if (name.equalsIgnoreCase(element.getName()))
+                return element;
+        return null;
     }
 
     @Override

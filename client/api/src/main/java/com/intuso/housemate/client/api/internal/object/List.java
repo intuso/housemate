@@ -11,11 +11,19 @@ public interface List<ELEMENT,
         Iterable<ELEMENT> {
 
     /**
-     * Get an element from the list by name
-     * @param name the name of the element to get
-     * @return the element for that name, or null if there is none
+     * Get an element from the list by id
+     * @param id the id of the element to get
+     * @return the element with the given id, or null if there is none
      */
-    ELEMENT get(String name);
+    ELEMENT get(String id);
+
+    /**
+     * Get an element from the list by name. Many elements could have the same name. This will return the first one. For
+     * other behaviour, you should iterate the list
+     * @param name the name of the element to get
+     * @return the first element with the given name, or null if there is none
+     */
+    ELEMENT getByName(String name);
 
     /**
      * Get the number of elements in the list

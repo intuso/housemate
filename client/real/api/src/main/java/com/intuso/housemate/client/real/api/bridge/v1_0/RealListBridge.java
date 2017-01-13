@@ -39,8 +39,13 @@ public class RealListBridge<FROM extends Object, TO extends com.intuso.housemate
     }
 
     @Override
-    public TO get(String name) {
-        return convertFrom.apply(list.get(name));
+    public TO get(String id) {
+        return convertFrom.apply(list.get(id));
+    }
+
+    @Override
+    public TO getByName(String name) {
+        return convertFrom.apply(list.getByName(name));
     }
 
     @Override
