@@ -25,9 +25,9 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginDependency<FACTOR
     private final RealOptionImpl.Factory optionFactory;
     private final BiMap<String, Entry<FACTORY>> factories = HashBiMap.create();
 
-    protected FactoryType(Logger logger, String id, String name, String description, java.lang.reflect.Type factoryType, ListenersFactory listenersFactory,
+    protected FactoryType(Logger logger, String id, String name, String description, TypeSpec typeSpec, ListenersFactory listenersFactory,
                           RealOptionImpl.Factory optionFactory, RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(logger, id, name, description, new TypeSpec(factoryType), listenersFactory, optionsFactory, Arrays.<RealOptionImpl>asList());
+        super(logger, id, name, description, typeSpec, listenersFactory, optionsFactory, Arrays.<RealOptionImpl>asList());
         this.listenersFactory = listenersFactory;
         this.optionFactory = optionFactory;
     }

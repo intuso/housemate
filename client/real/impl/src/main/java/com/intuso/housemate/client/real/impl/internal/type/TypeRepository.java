@@ -30,13 +30,22 @@ public final class TypeRepository implements TypeSerialiser.Repository {
                           IntegerType integerType,
                           StringType stringType,
                           // regex types
-                          EmailType emailType) {
+                          EmailType emailType,
+                          // factory types
+                          ConditionDriverType conditionDriverType,
+                          FeatureDriverType featureDriverType,
+                          HardwareDriverType hardwareDriverType,
+                          TaskDriverType taskDriverType) {
         this.typesFactory = typesFactory;
         typeAvailable(booleanType);
         typeAvailable(doubleType);
         typeAvailable(integerType);
         typeAvailable(stringType);
         typeAvailable(emailType);
+        typeAvailable(conditionDriverType);
+        typeAvailable(featureDriverType);
+        typeAvailable(hardwareDriverType);
+        typeAvailable(taskDriverType);
     }
 
     public RealListGeneratedImpl<RealTypeImpl<?>> createList(Logger logger, String id, String name, String description) {
