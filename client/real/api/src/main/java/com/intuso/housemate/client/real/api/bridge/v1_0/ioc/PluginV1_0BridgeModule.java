@@ -6,18 +6,19 @@ import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.intuso.housemate.client.api.bridge.v1_0.annotation.IdBridge;
 import com.intuso.housemate.client.api.bridge.v1_0.driver.ConditionDriverFactoryMapper;
 import com.intuso.housemate.client.api.bridge.v1_0.driver.FeatureDriverFactoryMapper;
 import com.intuso.housemate.client.api.bridge.v1_0.driver.HardwareDriverFactoryMapper;
 import com.intuso.housemate.client.api.bridge.v1_0.driver.TaskDriverFactoryMapper;
-import com.intuso.housemate.client.real.api.bridge.v1_0.IdBridge;
+import com.intuso.housemate.client.api.bridge.v1_0.plugin.*;
 import com.intuso.housemate.client.real.api.bridge.v1_0.PluginResourceMapper;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.driver.ConditionDriver;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
 import com.intuso.housemate.client.v1_0.api.driver.TaskDriver;
-import com.intuso.housemate.client.v1_0.api.plugin.PluginResource;
+import com.intuso.housemate.client.v1_0.api.plugin.*;
 
 /**
  * Created by tomc on 26/10/15.
@@ -37,13 +38,57 @@ public class PluginV1_0BridgeModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public Iterable<com.intuso.housemate.client.api.internal.plugin.PluginResource<Class<?>>> getTypes(PluginResourceMapper pluginResourceMapper, Iterable<PluginResource<Class<?>>> types) {
-        return Lists.newArrayList(Iterables.transform((Iterable)types, pluginResourceMapper.getFromV1_0Function(new Function<Class<?>, Class<?>>() {
+    public Iterable<com.intuso.housemate.client.api.internal.plugin.ChoiceType> getChoiceTypes(Iterable<ChoiceType> regexTypes) {
+        return Lists.newArrayList(Iterables.transform(regexTypes, new Function<ChoiceType, com.intuso.housemate.client.api.internal.plugin.ChoiceType>() {
             @Override
-            public Class<?> apply(Class<?> typeClass) {
-                return typeClass;
+            public com.intuso.housemate.client.api.internal.plugin.ChoiceType apply(ChoiceType choiceType) {
+                return new ChoiceTypeBridge(choiceType);
             }
-        })));
+        }));
+    }
+
+    @Provides
+    @Singleton
+    public Iterable<com.intuso.housemate.client.api.internal.plugin.CompositeType> getCompositeTypes(Iterable<CompositeType> regexTypes) {
+        return Lists.newArrayList(Iterables.transform(regexTypes, new Function<CompositeType, com.intuso.housemate.client.api.internal.plugin.CompositeType>() {
+            @Override
+            public com.intuso.housemate.client.api.internal.plugin.CompositeType apply(CompositeType compositeType) {
+                return new CompositeTypeBridge(compositeType);
+            }
+        }));
+    }
+
+    @Provides
+    @Singleton
+    public Iterable<com.intuso.housemate.client.api.internal.plugin.DoubleRangeType> getDoubleRangeTypes(Iterable<DoubleRangeType> DoubleRangeTypes) {
+        return Lists.newArrayList(Iterables.transform(DoubleRangeTypes, new Function<DoubleRangeType, com.intuso.housemate.client.api.internal.plugin.DoubleRangeType>() {
+            @Override
+            public com.intuso.housemate.client.api.internal.plugin.DoubleRangeType apply(DoubleRangeType doubleRangeType) {
+                return new DoubleRangeTypeBridge(doubleRangeType);
+            }
+        }));
+    }
+
+    @Provides
+    @Singleton
+    public Iterable<com.intuso.housemate.client.api.internal.plugin.IntegerRangeType> getIntegerRangeTypes(Iterable<IntegerRangeType> IntegerRangeTypes) {
+        return Lists.newArrayList(Iterables.transform(IntegerRangeTypes, new Function<IntegerRangeType, com.intuso.housemate.client.api.internal.plugin.IntegerRangeType>() {
+            @Override
+            public com.intuso.housemate.client.api.internal.plugin.IntegerRangeType apply(IntegerRangeType integerRangeType) {
+                return new IntegerRangeTypeBridge(integerRangeType);
+            }
+        }));
+    }
+
+    @Provides
+    @Singleton
+    public Iterable<com.intuso.housemate.client.api.internal.plugin.RegexType> getRegexTypes(Iterable<RegexType> regexTypes) {
+        return Lists.newArrayList(Iterables.transform(regexTypes, new Function<RegexType, com.intuso.housemate.client.api.internal.plugin.RegexType>() {
+            @Override
+            public com.intuso.housemate.client.api.internal.plugin.RegexType apply(RegexType regexType) {
+                return new RegexTypeBridge(regexType);
+            }
+        }));
     }
 
     @Provides

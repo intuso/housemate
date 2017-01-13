@@ -1,4 +1,4 @@
-package com.intuso.housemate.client.real.api.bridge.v1_0;
+package com.intuso.housemate.client.api.bridge.v1_0.annotation;
 
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 

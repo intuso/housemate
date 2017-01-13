@@ -1,6 +1,7 @@
 package com.intuso.housemate.client.real.api.bridge.v1_0;
 
 import com.google.common.base.Function;
+import com.intuso.housemate.client.api.bridge.v1_0.annotation.IdBridge;
 import com.intuso.housemate.client.api.internal.plugin.PluginResourceImpl;
 import com.intuso.housemate.client.v1_0.api.plugin.PluginResource;
 
