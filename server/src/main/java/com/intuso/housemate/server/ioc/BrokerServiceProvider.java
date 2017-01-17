@@ -4,10 +4,12 @@ import com.google.inject.Provider;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.server.activemq.StoredMessageSubscriptionRecoveryPolicy;
+import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.jmx.ManagementContext;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
 import org.apache.activemq.broker.region.policy.PolicyMap;
+import org.apache.activemq.broker.util.DestinationPathSeparatorBroker;
 import org.apache.activemq.store.kahadb.KahaDBStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,9 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
     public BrokerService get() {
 
         BrokerService brokerService = new BrokerService();
+        brokerService.setPlugins(new BrokerPlugin[] {
+                new DestinationPathSeparatorBroker() // use / as a separator rather than .
+        });
         brokerService.setBrokerName("housemate");
 
         // enable management context for ui

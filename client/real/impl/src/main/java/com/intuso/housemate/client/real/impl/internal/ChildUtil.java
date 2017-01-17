@@ -10,21 +10,26 @@ import org.slf4j.LoggerFactory;
 public class ChildUtil {
 
     private final static Joiner DOT_JOINER = Joiner.on(".");
+    private final static Joiner SLASH_JOINER = Joiner.on("/");
 
     private ChildUtil() {}
 
     public static String name(String parent, String... childNames) {
+        return name(DOT_JOINER, parent, childNames);
+    }
+
+    private static String name(Joiner joiner, String parent, String... childNames) {
         if(parent == null && childNames.length == 0)
             return "";
         else if(parent == null)
-            return DOT_JOINER.join(childNames);
+            return joiner.join(childNames);
         else if(childNames.length == 0)
             return parent;
         else
-            return parent + "." + DOT_JOINER.join(childNames);
+            return joiner.join(parent, joiner.join(childNames));
     }
 
     public static Logger logger(Logger parent, String... childNames) {
-        return LoggerFactory.getLogger(name(parent.getName(), childNames));
+        return LoggerFactory.getLogger(name(SLASH_JOINER, parent.getName(), childNames));
     }
 }
