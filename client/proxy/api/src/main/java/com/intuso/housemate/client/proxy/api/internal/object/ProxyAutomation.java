@@ -1,9 +1,5 @@
 package com.intuso.housemate.client.proxy.api.internal.object;
 
-import com.intuso.housemate.client.api.internal.Failable;
-import com.intuso.housemate.client.api.internal.Removeable;
-import com.intuso.housemate.client.api.internal.Renameable;
-import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Automation;
 import com.intuso.housemate.client.proxy.api.internal.*;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -20,11 +16,11 @@ import javax.jms.JMSException;
  * @param <AUTOMATION> the type of the automation
  */
 public abstract class ProxyAutomation<
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
-            VALUE extends ProxyValue<?, VALUE>,
-            CONDITIONS extends ProxyList<? extends ProxyCondition<?, ?, ?, ?, ?, ?>, ?>,
-            TASKS extends ProxyList<? extends ProxyTask<?, ?, ?, ?, ?>, ?>,
-            AUTOMATION extends ProxyAutomation<COMMAND, VALUE, CONDITIONS, TASKS, AUTOMATION>>
+        COMMAND extends ProxyCommand<?, ?, COMMAND>,
+        VALUE extends ProxyValue<?, VALUE>,
+        CONDITIONS extends ProxyList<? extends ProxyCondition<?, ?, ?, ?, ?, ?>, ?>,
+        TASKS extends ProxyList<? extends ProxyTask<?, ?, ?, ?, ?>, ?>,
+        AUTOMATION extends ProxyAutomation<COMMAND, VALUE, CONDITIONS, TASKS, AUTOMATION>>
         extends ProxyObject<Automation.Data, Automation.Listener<? super AUTOMATION>>
         implements Automation<COMMAND, COMMAND, VALUE, COMMAND, VALUE, COMMAND, CONDITIONS, TASKS, AUTOMATION>,
         ProxyFailable<VALUE>,
@@ -55,35 +51,35 @@ public abstract class ProxyAutomation<
                            ProxyObject.Factory<CONDITIONS> conditionsFactory,
                            ProxyObject.Factory<TASKS> tasksFactory) {
         super(logger, Automation.Data.class, listenersFactory);
-        renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
-        removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
-        runningValue = valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID));
-        startCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.START_ID));
-        stopCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.STOP_ID));
-        errorValue = valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID));
-        conditions = conditionsFactory.create(ChildUtil.logger(logger, Automation.CONDITIONS_ID));
-        addConditionCommand = commandFactory.create(ChildUtil.logger(logger, Automation.ADD_CONDITION_ID));
-        satisfiedTasks = tasksFactory.create(ChildUtil.logger(logger, Automation.SATISFIED_TASKS_ID));
-        addSatisfiedTaskCommand = commandFactory.create(ChildUtil.logger(logger, Automation.ADD_SATISFIED_TASK_ID));
-        unsatisfiedTasks = tasksFactory.create(ChildUtil.logger(logger, Automation.UNSATISFIED_TASKS_ID));
-        addUnsatisfiedTaskCommand = commandFactory.create(ChildUtil.logger(logger, Automation.ADD_UNSATISFIED_TASK_ID));
+        renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
+        removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
+        runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID));
+        startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID));
+        stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID));
+        errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
+        conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID));
+        addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID));
+        satisfiedTasks = tasksFactory.create(ChildUtil.logger(logger, SATISFIED_TASKS_ID));
+        addSatisfiedTaskCommand = commandFactory.create(ChildUtil.logger(logger, ADD_SATISFIED_TASK_ID));
+        unsatisfiedTasks = tasksFactory.create(ChildUtil.logger(logger, UNSATISFIED_TASKS_ID));
+        addUnsatisfiedTaskCommand = commandFactory.create(ChildUtil.logger(logger, ADD_UNSATISFIED_TASK_ID));
     }
 
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
-        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), connection);
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
-        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        conditions.init(ChildUtil.name(name, Automation.CONDITIONS_ID), connection);
-        addConditionCommand.init(ChildUtil.name(name, Automation.ADD_CONDITION_ID), connection);
-        satisfiedTasks.init(ChildUtil.name(name, Automation.SATISFIED_TASKS_ID), connection);
-        addSatisfiedTaskCommand.init(ChildUtil.name(name, Automation.ADD_SATISFIED_TASK_ID), connection);
-        unsatisfiedTasks.init(ChildUtil.name(name, Automation.UNSATISFIED_TASKS_ID), connection);
-        addUnsatisfiedTaskCommand.init(ChildUtil.name(name, Automation.ADD_UNSATISFIED_TASK_ID), connection);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
+        runningValue.init(ChildUtil.name(name, RUNNING_ID), connection);
+        startCommand.init(ChildUtil.name(name, START_ID), connection);
+        stopCommand.init(ChildUtil.name(name, STOP_ID), connection);
+        errorValue.init(ChildUtil.name(name, ERROR_ID), connection);
+        conditions.init(ChildUtil.name(name, CONDITIONS_ID), connection);
+        addConditionCommand.init(ChildUtil.name(name, ADD_CONDITION_ID), connection);
+        satisfiedTasks.init(ChildUtil.name(name, SATISFIED_TASKS_ID), connection);
+        addSatisfiedTaskCommand.init(ChildUtil.name(name, ADD_SATISFIED_TASK_ID), connection);
+        unsatisfiedTasks.init(ChildUtil.name(name, UNSATISFIED_TASKS_ID), connection);
+        addUnsatisfiedTaskCommand.init(ChildUtil.name(name, ADD_UNSATISFIED_TASK_ID), connection);
     }
 
     @Override
@@ -173,5 +169,34 @@ public abstract class ProxyAutomation<
     @Override
     public COMMAND getAddUnsatisfiedTaskCommand() {
         return addUnsatisfiedTaskCommand;
+    }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(RUNNING_ID.equals(id))
+            return runningValue;
+        else if(START_ID.equals(id))
+            return startCommand;
+        else if(STOP_ID.equals(id))
+            return stopCommand;
+        else if(ERROR_ID.equals(id))
+            return errorValue;
+        else if(CONDITIONS_ID.equals(id))
+            return conditions;
+        else if(ADD_CONDITION_ID.equals(id))
+            return addConditionCommand;
+        else if(SATISFIED_TASKS_ID.equals(id))
+            return satisfiedTasks;
+        else if(ADD_SATISFIED_TASK_ID.equals(id))
+            return addSatisfiedTaskCommand;
+        else if(UNSATISFIED_TASKS_ID.equals(id))
+            return unsatisfiedTasks;
+        else if(ADD_UNSATISFIED_TASK_ID.equals(id))
+            return addUnsatisfiedTaskCommand;
+        return null;
     }
 }

@@ -16,8 +16,8 @@ import javax.jms.JMSException;
  * @param <PROPERTY> the type of the property
  */
 public abstract class ProxyProperty<TYPE extends ProxyType<?>,
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
-            PROPERTY extends ProxyProperty<TYPE, COMMAND, PROPERTY>>
+        COMMAND extends ProxyCommand<?, ?, COMMAND>,
+        PROPERTY extends ProxyProperty<TYPE, COMMAND, PROPERTY>>
         extends ProxyValueBase<Property.Data, TYPE, Property.Listener<? super PROPERTY>, PROPERTY>
         implements Property<Type.Instances, TYPE, COMMAND, PROPERTY> {
 
@@ -30,13 +30,13 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
                          ListenersFactory listenersFactory,
                          ProxyObject.Factory<COMMAND> commandFactory) {
         super(logger, Property.Data.class, listenersFactory);
-        setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID));
+        setCommand = commandFactory.create(ChildUtil.logger(logger, SET_COMMAND_ID));
     }
 
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        setCommand.init(ChildUtil.name(name, Property.SET_COMMAND_ID), connection);
+        setCommand.init(ChildUtil.name(name, SET_COMMAND_ID), connection);
     }
 
     @Override
@@ -53,7 +53,14 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
     @Override
     public void set(final Type.Instances value, Command.PerformListener<? super COMMAND> listener) {
         Type.InstanceMap values = new Type.InstanceMap();
-        values.getChildren().put(Property.VALUE_ID, value);
+        values.getChildren().put(VALUE_ID, value);
         getSetCommand().perform(values, listener);
+    }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        if(SET_COMMAND_ID.equals(id))
+            return setCommand;
+        return null;
     }
 }

@@ -23,4 +23,9 @@ public abstract class ProxySubType<TYPE extends ProxyType<?>,
     public TYPE getType() {
         return null; // todo get the type from somewhere
     }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        return null;
+    }
 }

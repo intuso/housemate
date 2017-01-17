@@ -8,7 +8,7 @@ import org.slf4j.Logger;
  * @param <PARAMETER> the type of the parameter
  */
 public abstract class ProxyParameter<TYPE extends ProxyType<?>,
-            PARAMETER extends ProxyParameter<TYPE, PARAMETER>>
+        PARAMETER extends ProxyParameter<TYPE, PARAMETER>>
         extends ProxyObject<Parameter.Data, Parameter.Listener<? super PARAMETER>>
         implements Parameter<TYPE, PARAMETER> {
 
@@ -22,5 +22,10 @@ public abstract class ProxyParameter<TYPE extends ProxyType<?>,
     @Override
     public TYPE getType() {
         return null; // todo get the type from somewhere
+    }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        return null;
     }
 }

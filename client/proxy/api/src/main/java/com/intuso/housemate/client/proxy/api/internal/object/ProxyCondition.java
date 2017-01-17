@@ -1,9 +1,5 @@
 package com.intuso.housemate.client.proxy.api.internal.object;
 
-import com.intuso.housemate.client.api.internal.Failable;
-import com.intuso.housemate.client.api.internal.Removeable;
-import com.intuso.housemate.client.api.internal.Renameable;
-import com.intuso.housemate.client.api.internal.UsesDriver;
 import com.intuso.housemate.client.api.internal.object.Condition;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.api.internal.ProxyFailable;
@@ -23,12 +19,12 @@ import javax.jms.JMSException;
  * @param <CONDITIONS> the type of the conditions list
  */
 public abstract class ProxyCondition<
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
-            VALUE extends ProxyValue<?, VALUE>,
-            PROPERTY extends ProxyProperty<?, ?, PROPERTY>,
-            PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
-            CONDITION extends ProxyCondition<COMMAND, VALUE, PROPERTY, PROPERTIES, CONDITION, CONDITIONS>,
-            CONDITIONS extends ProxyList<CONDITION, ?>>
+        COMMAND extends ProxyCommand<?, ?, COMMAND>,
+        VALUE extends ProxyValue<?, VALUE>,
+        PROPERTY extends ProxyProperty<?, ?, PROPERTY>,
+        PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
+        CONDITION extends ProxyCondition<COMMAND, VALUE, PROPERTY, PROPERTIES, CONDITION, CONDITIONS>,
+        CONDITIONS extends ProxyList<CONDITION, ?>>
         extends ProxyObject<Condition.Data, Condition.Listener<? super CONDITION>>
         implements Condition<COMMAND, COMMAND, VALUE, PROPERTY, VALUE, VALUE, PROPERTIES, COMMAND, CONDITIONS, CONDITION>,
         ProxyRemoveable<COMMAND>,
@@ -56,29 +52,29 @@ public abstract class ProxyCondition<
                           ProxyObject.Factory<PROPERTIES> propertiesFactory,
                           ProxyObject.Factory<CONDITIONS> conditionsFactory) {
         super(logger, Condition.Data.class, listenersFactory);
-        renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
-        removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
-        errorValue = valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID));
-        driverProperty = propertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID));
-        driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID));
-        properties = propertiesFactory.create(ChildUtil.logger(logger, Condition.PROPERTIES_ID));
-        conditions = conditionsFactory.create(ChildUtil.logger(logger, Condition.CONDITIONS_ID));
-        addConditionCommand = commandFactory.create(ChildUtil.logger(logger, Condition.ADD_CONDITION_ID));
-        satisfiedValue = valueFactory.create(ChildUtil.logger(logger, Condition.SATISFIED_ID));
+        renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
+        removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
+        errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
+        driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID));
+        driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID));
+        properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID));
+        conditions = conditionsFactory.create(ChildUtil.logger(logger, CONDITIONS_ID));
+        addConditionCommand = commandFactory.create(ChildUtil.logger(logger, ADD_CONDITION_ID));
+        satisfiedValue = valueFactory.create(ChildUtil.logger(logger, SATISFIED_ID));
     }
 
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
-        properties.init(ChildUtil.name(name, Condition.PROPERTIES_ID), connection);
-        conditions.init(ChildUtil.name(name, Condition.CONDITIONS_ID), connection);
-        addConditionCommand.init(ChildUtil.name(name, Condition.ADD_CONDITION_ID), connection);
-        satisfiedValue.init(ChildUtil.name(name, Condition.SATISFIED_ID), connection);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
+        errorValue.init(ChildUtil.name(name, ERROR_ID), connection);
+        driverProperty.init(ChildUtil.name(name, DRIVER_ID), connection);
+        driverLoadedValue.init(ChildUtil.name(name, DRIVER_LOADED_ID), connection);
+        properties.init(ChildUtil.name(name, PROPERTIES_ID), connection);
+        conditions.init(ChildUtil.name(name, CONDITIONS_ID), connection);
+        addConditionCommand.init(ChildUtil.name(name, ADD_CONDITION_ID), connection);
+        satisfiedValue.init(ChildUtil.name(name, SATISFIED_ID), connection);
     }
 
     @Override
@@ -155,5 +151,28 @@ public abstract class ProxyCondition<
     @Override
     public final VALUE getSatisfiedValue() {
         return satisfiedValue;
+    }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(ERROR_ID.equals(id))
+            return errorValue;
+        else if(DRIVER_ID.equals(id))
+            return driverProperty;
+        else if(DRIVER_LOADED_ID.equals(id))
+            return driverLoadedValue;
+        else if(PROPERTIES_ID.equals(id))
+            return properties;
+        else if(CONDITIONS_ID.equals(id))
+            return conditions;
+        else if(ADD_CONDITION_ID.equals(id))
+            return addConditionCommand;
+        else if(SATISFIED_ID.equals(id))
+            return satisfiedValue;
+        return null;
     }
 }

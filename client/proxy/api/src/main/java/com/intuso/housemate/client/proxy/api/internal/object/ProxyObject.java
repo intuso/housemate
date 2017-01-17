@@ -88,6 +88,8 @@ public abstract class ProxyObject<
         return data != null;
     }
 
+    public abstract ProxyObject<?, ?> getChild(String id);
+
     public interface Factory<OBJECT extends ProxyObject<?, ?>> {
         OBJECT create(Logger logger);
     }

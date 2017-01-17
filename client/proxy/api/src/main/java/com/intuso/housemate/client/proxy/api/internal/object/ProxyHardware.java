@@ -1,7 +1,5 @@
 package com.intuso.housemate.client.proxy.api.internal.object;
 
-import com.intuso.housemate.client.api.internal.*;
-import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Hardware;
 import com.intuso.housemate.client.proxy.api.internal.*;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -54,33 +52,33 @@ public abstract class ProxyHardware<
                          ProxyObject.Factory<PROPERTY> propertyFactory,
                          ProxyObject.Factory<PROPERTIES> propertiesFactory) {
         super(logger, Hardware.Data.class, listenersFactory);
-        renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
-        removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
-        runningValue = valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID));
-        startCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.START_ID));
-        stopCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.STOP_ID));
-        errorValue = valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID));
-        driverProperty = propertyFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_ID));
-        driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, UsesDriver.DRIVER_LOADED_ID));
-        commands = commandsFactory.create(ChildUtil.logger(logger, Hardware.COMMANDS_ID));
-        values = valuesFactory.create(ChildUtil.logger(logger, Hardware.VALUES_ID));
-        properties = propertiesFactory.create(ChildUtil.logger(logger, Hardware.PROPERTIES_ID));
+        renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
+        removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
+        runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID));
+        startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID));
+        stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID));
+        errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
+        driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID));
+        driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID));
+        commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID));
+        values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID));
+        properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID));
     }
 
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
-        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), connection);
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
-        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
-        commands.init(ChildUtil.name(name, Hardware.COMMANDS_ID), connection);
-        values.init(ChildUtil.name(name, Hardware.VALUES_ID), connection);
-        properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID), connection);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
+        runningValue.init(ChildUtil.name(name, RUNNING_ID), connection);
+        startCommand.init(ChildUtil.name(name, START_ID), connection);
+        stopCommand.init(ChildUtil.name(name, STOP_ID), connection);
+        errorValue.init(ChildUtil.name(name, ERROR_ID), connection);
+        driverProperty.init(ChildUtil.name(name, DRIVER_ID), connection);
+        driverLoadedValue.init(ChildUtil.name(name, DRIVER_LOADED_ID), connection);
+        commands.init(ChildUtil.name(name, COMMANDS_ID), connection);
+        values.init(ChildUtil.name(name, VALUES_ID), connection);
+        properties.init(ChildUtil.name(name, PROPERTIES_ID), connection);
     }
 
     @Override
@@ -171,5 +169,32 @@ public abstract class ProxyHardware<
     @Override
     public final PROPERTIES getProperties() {
         return properties;
+    }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(RUNNING_ID.equals(id))
+            return runningValue;
+        else if(START_ID.equals(id))
+            return startCommand;
+        else if(STOP_ID.equals(id))
+            return stopCommand;
+        else if(ERROR_ID.equals(id))
+            return errorValue;
+        else if(DRIVER_ID.equals(id))
+            return driverProperty;
+        else if(DRIVER_LOADED_ID.equals(id))
+            return driverLoadedValue;
+        else if(COMMANDS_ID.equals(id))
+            return commands;
+        else if(PROPERTIES_ID.equals(id))
+            return properties;
+        else if(VALUES_ID.equals(id))
+            return values;
+        return null;
     }
 }

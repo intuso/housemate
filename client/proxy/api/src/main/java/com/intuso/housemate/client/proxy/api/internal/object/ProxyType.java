@@ -17,4 +17,9 @@ public abstract class ProxyType<TYPE extends ProxyType<TYPE>>
     public ProxyType(Logger logger, ListenersFactory listenersFactory) {
         super(logger, Type.Data.class, listenersFactory);
     }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        return null;
+    }
 }

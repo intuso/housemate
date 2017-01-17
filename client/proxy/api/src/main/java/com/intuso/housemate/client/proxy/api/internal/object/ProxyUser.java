@@ -1,7 +1,5 @@
 package com.intuso.housemate.client.proxy.api.internal.object;
 
-import com.intuso.housemate.client.api.internal.Removeable;
-import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.User;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.api.internal.ProxyRemoveable;
@@ -16,9 +14,9 @@ import javax.jms.JMSException;
  * @param <USER> the type of the user
  */
 public abstract class ProxyUser<
-            COMMAND extends ProxyCommand<?, ?, COMMAND>,
-            PROPERTY extends ProxyProperty<?, ?, PROPERTY>,
-            USER extends ProxyUser<COMMAND, PROPERTY, USER>>
+        COMMAND extends ProxyCommand<?, ?, COMMAND>,
+        PROPERTY extends ProxyProperty<?, ?, PROPERTY>,
+        USER extends ProxyUser<COMMAND, PROPERTY, USER>>
         extends ProxyObject<User.Data, User.Listener<? super USER>>
         implements User<COMMAND, COMMAND, PROPERTY, USER>,
         ProxyRemoveable<COMMAND> {
@@ -35,17 +33,17 @@ public abstract class ProxyUser<
                      ProxyObject.Factory<COMMAND> commandFactory,
                      ProxyObject.Factory<PROPERTY> propertyFactory) {
         super(logger, User.Data.class, listenersFactory);
-        renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
-        removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
-        emailProperty = propertyFactory.create(ChildUtil.logger(logger, User.EMAIL_ID));
+        renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
+        removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
+        emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID));
     }
 
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
-        emailProperty.init(ChildUtil.name(name, User.EMAIL_ID), connection);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
+        emailProperty.init(ChildUtil.name(name, EMAIL_ID), connection);
     }
 
     @Override
@@ -69,5 +67,16 @@ public abstract class ProxyUser<
     @Override
     public PROPERTY getEmailProperty() {
         return emailProperty;
+    }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        if(RENAME_ID.equals(id))
+            return renameCommand;
+        else if(REMOVE_ID.equals(id))
+            return removeCommand;
+        else if(EMAIL_ID.equals(id))
+            return emailProperty;
+        return null;
     }
 }

@@ -18,9 +18,9 @@ import java.util.Map;
  * @param <COMMAND> the type of the command
  */
 public abstract class ProxyCommand<
-            VALUE extends ProxyValue<?, VALUE>,
-            PARAMETERS extends ProxyList<? extends ProxyParameter<?, ?>, ?>,
-            COMMAND extends ProxyCommand<VALUE, PARAMETERS, COMMAND>>
+        VALUE extends ProxyValue<?, VALUE>,
+        PARAMETERS extends ProxyList<? extends ProxyParameter<?, ?>, ?>,
+        COMMAND extends ProxyCommand<VALUE, PARAMETERS, COMMAND>>
         extends ProxyObject<Command.Data, Command.Listener<? super COMMAND>>
         implements Command<Type.InstanceMap, VALUE, PARAMETERS, COMMAND> {
 
@@ -41,17 +41,17 @@ public abstract class ProxyCommand<
                            ProxyObject.Factory<VALUE> valueFactory,
                            ProxyObject.Factory<PARAMETERS> parametersFactory) {
         super(logger, Command.Data.class, listenersFactory);
-        enabledValue = valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID));
-        parameters = parametersFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID));
+        enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID));
+        parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID));
     }
 
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID), connection);
-        parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID), connection);
-        performSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Queue, ChildUtil.name(name, Command.PERFORM_ID));
-        performStatusReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, Command.PERFORM_STATUS_ID), PerformStatusData.class,
+        enabledValue.init(ChildUtil.name(name, ENABLED_ID), connection);
+        parameters.init(ChildUtil.name(name, PARAMETERS_ID), connection);
+        performSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Queue, ChildUtil.name(name, PERFORM_ID));
+        performStatusReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, PERFORM_STATUS_ID), PerformStatusData.class,
                 new JMSUtil.Receiver.Listener<PerformStatusData>() {
                     @Override
                     public void onMessage(PerformStatusData performStatusData, boolean wasPersisted) {
@@ -129,5 +129,14 @@ public abstract class ProxyCommand<
             }
             throw new HousemateException("Failed to send perform message", e);
         }
+    }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        if(ENABLED_ID.equals(id))
+            return enabledValue;
+        else if(PARAMETERS_ID.equals(id))
+            return parameters;
+        return null;
     }
 }

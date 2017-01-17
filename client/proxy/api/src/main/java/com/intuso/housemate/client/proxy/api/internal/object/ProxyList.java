@@ -43,9 +43,9 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
                 new JMSUtil.Receiver.Listener<Object.Data>() {
                     @Override
                     public void onMessage(Object.Data data, boolean wasPersisted) {
-                        if(!elements.containsKey(data.getId())) {
+                        if (!elements.containsKey(data.getId())) {
                             ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()));
-                            if(element != null) {
+                            if (element != null) {
                                 elements.put(data.getId(), element);
                                 synchronized (newElementLocks) {
                                     java.lang.Object idLock = newElementLocks.remove(data.getId());
@@ -60,7 +60,7 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
                                 } catch (JMSException e) {
                                     logger.error("Failed to init child {}", data.getId(), e);
                                 }
-                                for(List.Listener<? super ELEMENT, ? super LIST> listener : listeners)
+                                for (List.Listener<? super ELEMENT, ? super LIST> listener : listeners)
                                     listener.elementAdded((LIST) ProxyList.this, element);
                             }
                         }
@@ -70,11 +70,13 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
 
     @Override
     protected void uninitChildren() {
-        for(ELEMENT ELEMENT : elements.values())
-            ELEMENT.uninit();
-        if(existingObjectReceiver != null) {
-            existingObjectReceiver.close();
-            existingObjectReceiver = null;
+        synchronized (elements) {
+            for (ELEMENT ELEMENT : elements.values())
+                ELEMENT.uninit();
+            if (existingObjectReceiver != null) {
+                existingObjectReceiver.close();
+                existingObjectReceiver = null;
+            }
         }
     }
 
@@ -143,5 +145,10 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
         for(ELEMENT element : elements.values())
             listener.elementAdded((LIST) this, element);
         return this.addObjectListener(listener);
+    }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        return get(id);
     }
 }

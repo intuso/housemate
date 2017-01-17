@@ -32,17 +32,17 @@ public abstract class ProxyNode<
                      Factory<TYPES> typesFactory,
                      Factory<HARDWARES> hardwaresFactory) {
         super(logger, Node.Data.class, listenersFactory);
-        types = typesFactory.create(ChildUtil.logger(logger, Node.TYPES_ID));
-        hardwares = hardwaresFactory.create(ChildUtil.logger(logger, Node.HARDWARES_ID));
-        addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, Node.ADD_HARDWARE_ID));
+        types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID));
+        hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID));
+        addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID));
     }
 
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        types.init(ChildUtil.name(name, Node.TYPES_ID), connection);
-        hardwares.init(ChildUtil.name(name, Node.HARDWARES_ID), connection);
-        addHardwareCommand.init(ChildUtil.name(name, Node.ADD_HARDWARE_ID), connection);
+        types.init(ChildUtil.name(name, TYPES_ID), connection);
+        hardwares.init(ChildUtil.name(name, HARDWARES_ID), connection);
+        addHardwareCommand.init(ChildUtil.name(name, ADD_HARDWARE_ID), connection);
     }
 
     @Override
@@ -66,5 +66,16 @@ public abstract class ProxyNode<
     @Override
     public COMMAND getAddHardwareCommand() {
         return addHardwareCommand;
+    }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        if(ADD_HARDWARE_ID.equals(id))
+            return addHardwareCommand;
+        else if(HARDWARES_ID.equals(id))
+            return hardwares;
+        else if(TYPES_ID.equals(id))
+            return types;
+        return null;
     }
 }

@@ -21,4 +21,9 @@ public abstract class ProxyValue<
     public ProxyValue(Logger logger, ListenersFactory listenersFactory) {
         super(logger, Value.Data.class, listenersFactory);
     }
+
+    @Override
+    public ProxyObject<?, ?> getChild(String id) {
+        return null;
+    }
 }
