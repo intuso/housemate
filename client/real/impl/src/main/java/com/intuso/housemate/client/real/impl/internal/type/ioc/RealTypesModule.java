@@ -33,8 +33,10 @@ public class RealTypesModule extends AbstractModule {
         // bind implementations
         bind(new TypeLiteral<TypeSerialiser<RealObjectType.Reference<?>>>() {}).to(new Key<RealObjectType.Serialiser<?>>() {}).in(Scopes.SINGLETON);
 
-        // bind driver plugin listener
-        bind(TypesPluginsListener.class).in(Scopes.SINGLETON);
-        Multibinder.newSetBinder(binder(), PluginListener.class).addBinding().to(TypesPluginsListener.class);
+        // bind plugin listeners
+        bind(TypesInternalPluginsListener.class).in(Scopes.SINGLETON);
+        Multibinder.newSetBinder(binder(), PluginListener.class).addBinding().to(TypesInternalPluginsListener.class);
+        bind(TypesV1_0PluginsListener.class).in(Scopes.SINGLETON);
+        Multibinder.newSetBinder(binder(), com.intuso.housemate.client.v1_0.api.plugin.PluginListener.class).addBinding().to(TypesV1_0PluginsListener.class);
     }
 }

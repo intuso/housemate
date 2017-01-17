@@ -1,7 +1,5 @@
 package com.intuso.housemate.plugin.main.condition;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.annotation.Property;
 import com.intuso.housemate.client.api.internal.driver.ConditionDriver;
@@ -46,20 +44,13 @@ public class TimeOfTheDay implements ConditionDriver {
     @Id(value = "after", name = "After", description = "The condition is satisfied when the current time is after this time")
     private Time after;
 
-    private final Logger logger;
-    private final ConditionDriver.Callback callback;
+    private Logger logger;
+    private ConditionDriver.Callback callback;
 
     /**
      * thread that runs to tell listener when condition is (un)satisfied
      */
     private Thread monitor;
-
-    @Inject
-    public TimeOfTheDay(@Assisted Logger logger,
-                        @Assisted ConditionDriver.Callback callback) {
-        this.logger = logger;
-        this.callback = callback;
-    }
 
     @Override
     public boolean hasChildConditions() {
@@ -134,7 +125,9 @@ public class TimeOfTheDay implements ConditionDriver {
     }
 
     @Override
-    public void startCondition() {
+    public void init(Logger logger, ConditionDriver.Callback callback) {
+        this.logger = logger;
+        this.callback = callback;
         // start monitoring the time of the day
         monitor = new TimeMonitorThread();
         monitor.start();
@@ -142,11 +135,13 @@ public class TimeOfTheDay implements ConditionDriver {
     }
 
     @Override
-    public void stopCondition() {
+    public void uninit() {
         if(monitor != null) {
             monitor.interrupt();
             monitor = null;
         }
+        this.logger = null;
+        this.callback = null;
     }
 
     /**

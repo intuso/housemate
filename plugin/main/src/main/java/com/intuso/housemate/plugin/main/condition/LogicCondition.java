@@ -1,16 +1,11 @@
 package com.intuso.housemate.plugin.main.condition;
 
 import com.intuso.housemate.client.api.internal.driver.ConditionDriver;
+import org.slf4j.Logger;
 
 import java.util.Map;
 
 public abstract class LogicCondition implements ConditionDriver {
-
-    private final ConditionDriver.Callback conditionCallback;
-
-    public LogicCondition(ConditionDriver.Callback conditionCallback) {
-        this.conditionCallback = conditionCallback;
-    }
 
     @Override
     public boolean hasChildConditions() {
@@ -18,12 +13,12 @@ public abstract class LogicCondition implements ConditionDriver {
     }
 
     @Override
-    public final void startCondition() {
-        conditionCallback.conditionSatisfied(checkIfSatisfied(conditionCallback.getChildSatisfied()));
+    public void init(Logger logger, ConditionDriver.Callback callback) {
+        callback.conditionSatisfied(checkIfSatisfied(callback.getChildSatisfied()));
     }
 
     @Override
-    public final void stopCondition() {
+    public void uninit() {
         // do nothing
     }
 

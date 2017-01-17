@@ -7,11 +7,12 @@ import java.io.File;
 /**
  * Created by tomc on 21/11/16.
  */
-public interface PluginFinder {
+public interface PluginFileFinder {
+
     ListenerRegistration addListener(Listener listener, boolean callForExisting);
 
     interface Listener {
-        String pluginFound(File pluginFile);
-        void pluginRemoved(String pluginId);
+        String fileFound(File pluginFile);
+        void fileRemoved(String pluginId);
     }
 }

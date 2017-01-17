@@ -7,8 +7,8 @@ import org.slf4j.Logger;
  */
 public interface HardwareDriver {
 
-    void startHardware();
-    void stopHardware();
+    void init(Logger logger, HardwareDriver.Callback callback);
+    void uninit();
 
     interface Callback {
         void setError(String error);

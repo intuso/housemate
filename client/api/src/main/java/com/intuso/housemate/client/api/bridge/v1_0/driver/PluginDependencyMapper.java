@@ -6,7 +6,7 @@ import com.intuso.housemate.client.v1_0.api.driver.PluginDependency;
 /**
  * Created by tomc on 05/11/15.
  */
-public class PluginResourceMapper {
+public class PluginDependencyMapper {
 
     public <FROM, TO> Function<com.intuso.housemate.client.api.internal.driver.PluginDependency<FROM>, PluginDependency<TO>> getToV1_0Function(final Function<? super FROM, ? extends TO> convertFrom) {
         return new Function<com.intuso.housemate.client.api.internal.driver.PluginDependency<FROM>, PluginDependency<TO>>() {

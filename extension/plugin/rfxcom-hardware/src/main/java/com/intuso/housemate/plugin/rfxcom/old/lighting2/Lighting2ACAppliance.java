@@ -1,11 +1,8 @@
 package com.intuso.housemate.plugin.rfxcom.old.lighting2;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
-import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance;
-import org.slf4j.Logger;
 
 /**
  * Housemate feature that controls a lighting 2 AC appliance over RFXCom
@@ -15,8 +12,8 @@ import org.slf4j.Logger;
 public class Lighting2ACAppliance extends com.intuso.housemate.plugin.rfxcom.old.lighting2.Lighting2Appliance {
 
 	@Inject
-	public Lighting2ACAppliance(@Assisted Logger logger, @Assisted FeatureDriver.Callback driverCallback) {
-		super(Lighting2ACHandler.INSTANCE, driverCallback);
+	public Lighting2ACAppliance() {
+		super(Lighting2ACHandler.INSTANCE);
 	}
 
     public Lighting2Appliance createAppliance(int houseId, byte unitCode) {

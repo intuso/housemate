@@ -1,7 +1,6 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.feature.TemperatureSensor;
@@ -21,7 +20,7 @@ import java.io.*;
 @Id(value = "arduino-temp-sensor", name = "Arduino Temperature Sensor", description = "Arduino Temperature Sensor")
 public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSensor {
 
-    private final Logger logger;
+    private Logger logger;
     private final Listeners<Listener> listeners;
     private final SerialPortWrapper serialPort;
     private final SerialPortEventListener eventListener = new EventListener();
@@ -34,17 +33,15 @@ public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSenso
     private double temperature = 0.0;
 
     @Inject
-    protected ArduinoTemperatureSensor(@Assisted Logger logger,
-                                       @Assisted FeatureDriver.Callback callback,
-                                       SerialPortWrapper serialPort,
+    protected ArduinoTemperatureSensor(SerialPortWrapper serialPort,
                                        ListenersFactory listenersFactory) {
-        this.logger = logger;
         this.serialPort = serialPort;
         this.listeners = listenersFactory.create();
     }
 
     @Override
-    public void startFeature() {
+    public void init(Logger logger, FeatureDriver.Callback callback) {
+        this.logger = logger;
         try {
             serialPort.addEventListener(eventListener, SerialPort.MASK_RXCHAR);
             input = new PipedInputStream();
@@ -58,7 +55,7 @@ public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSenso
     }
 
     @Override
-    public void stopFeature() {
+    public void uninit() {
         try {
             serialPort.removeEventListener();
         } catch(IOException e) {
@@ -73,6 +70,7 @@ public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSenso
             }
             lineReader = null;
         }
+        this.logger = null;
     }
 
     @Override

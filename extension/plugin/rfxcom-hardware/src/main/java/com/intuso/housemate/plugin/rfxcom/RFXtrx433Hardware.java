@@ -2,7 +2,6 @@ package com.intuso.housemate.plugin.rfxcom;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
@@ -19,33 +18,23 @@ import java.util.regex.Pattern;
 @Id(value = "rfxtrx433", name = "RFXtr433", description = "RFXCom 433MHz Transceiver")
 public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
 
-    private final Logger logger;
-    private final HardwareDriver.Callback callback;
-
     private final ListenersFactory listenersFactory;
-
-    private final RFXtrx rfxtrx;
+    private HardwareDriver.Callback callback;
+    private RFXtrx rfxtrx;
     private String pattern = ".*ttyUSB.*";
     private boolean listen = true;
 
     @Inject
-    public RFXtrx433Hardware(@Assisted Logger logger,
-                             @Assisted HardwareDriver.Callback callback,
-                             ListenersFactory listenersFactory) {
-        this.logger = logger;
-        this.callback = callback;
-
+    public RFXtrx433Hardware(ListenersFactory listenersFactory) {
         this.listenersFactory = listenersFactory;
-
-        // setup the connection to the USB device
-        rfxtrx = new RFXtrx(logger, Lists.<Pattern>newArrayList());
     }
 
     @Property
     @Id(value = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names")
     public void setPattern(String pattern) {
         this.pattern = pattern;
-        rfxtrx.setPatterns(Lists.newArrayList(Pattern.compile(pattern)));
+        if(rfxtrx != null)
+            rfxtrx.setPatterns(Lists.newArrayList(Pattern.compile(pattern)));
     }
 
     public String getPattern() {
@@ -60,13 +49,18 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
     }
 
     @Override
-    public void startHardware() {
+    public void init(Logger logger, HardwareDriver.Callback callback) {
+        // setup the connection to the USB device
+        this.callback = callback;
+        rfxtrx = new RFXtrx(logger, Lists.newArrayList(Pattern.compile(pattern)));
         rfxtrx.openPortSafe();
     }
 
     @Override
-    public void stopHardware() {
+    public void uninit() {
         rfxtrx.closePort();
+        rfxtrx = null;
+        this.callback = null;
     }
 
     @Override

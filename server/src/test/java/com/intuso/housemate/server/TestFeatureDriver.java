@@ -1,7 +1,6 @@
 package com.intuso.housemate.server;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
 import com.intuso.utilities.listener.ListenerRegistration;
@@ -15,19 +14,17 @@ public class TestFeatureDriver implements FeatureDriver, TestFeature {
     private final Listeners<Listener> listeners;
 
     @Inject
-    public TestFeatureDriver(@Assisted Logger logger,
-                             @Assisted FeatureDriver.Callback callback,
-                             ListenersFactory listenersFactory) {
+    public TestFeatureDriver(ListenersFactory listenersFactory) {
         this.listeners = listenersFactory.create();
     }
 
     @Override
-    public void startFeature() {
+    public void init(Logger logger, FeatureDriver.Callback callback) {
         // init stuff here
     }
 
     @Override
-    public void stopFeature() {
+    public void uninit() {
         // uninit stuff here
     }
 

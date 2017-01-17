@@ -4,6 +4,7 @@ import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.utilities.listener.ListenerRegistration;
+import org.slf4j.Logger;
 
 /**
  * Housemate device that receives temperature updates from a sensor
@@ -18,21 +19,21 @@ public abstract class TemperatureSensor implements FeatureDriver, com.intuso.hou
     public Listener listener;
 
     private final TemperatureHandler handler;
-    private final FeatureDriver.Callback driverCallback;
 
-	public TemperatureSensor(TemperatureHandler handler, FeatureDriver.Callback driverCallback) {
+    private FeatureDriver.Callback callback;
+
+	public TemperatureSensor(TemperatureHandler handler) {
         this.handler = handler;
-		this.driverCallback = driverCallback;
 	}
 
     public void propertyChanged() {
         // check the port value is a positive number
         if(sensorId < 0 || sensorId > 0xFFFF) {
-            driverCallback.setError("Id must be between 0 and " + 0xFFFF);
+            callback.setError("Id must be between 0 and " + 0xFFFF);
             return;
         }
 
-        driverCallback.setError(null);
+        callback.setError(null);
 
         if(listenerRegistration != null) {
             listenerRegistration.removeListener();
@@ -73,12 +74,18 @@ public abstract class TemperatureSensor implements FeatureDriver, com.intuso.hou
     }
 
     @Override
-	public void startFeature() {
-		propertyChanged();
+	public void init(Logger logger, FeatureDriver.Callback callback) {
+		this.callback = callback;
+        propertyChanged();
 	}
 
 	@Override
-	public void stopFeature() {
+	public void uninit() {
+        callback = null;
+        if(listenerRegistration != null) {
+            listenerRegistration.removeListener();
+            listenerRegistration = null;
+        }
 		sensor = null;
 	}
 

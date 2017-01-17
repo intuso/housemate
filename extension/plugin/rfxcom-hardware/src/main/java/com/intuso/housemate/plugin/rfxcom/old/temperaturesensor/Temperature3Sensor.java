@@ -1,10 +1,7 @@
 package com.intuso.housemate.plugin.rfxcom.old.temperaturesensor;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
-import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
-import org.slf4j.Logger;
 
 /**
  * Housemate device that controls a USB relay
@@ -14,8 +11,8 @@ import org.slf4j.Logger;
 public class Temperature3Sensor extends TemperatureSensor {
 
 	@Inject
-	public Temperature3Sensor(@Assisted Logger logger, @Assisted FeatureDriver.Callback driverCallback) {
-		super(Temperature3Handler.INSTANCE, driverCallback);
+	public Temperature3Sensor() {
+		super(Temperature3Handler.INSTANCE);
 	}
 
     public com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensor createSensor(int sensorId) {

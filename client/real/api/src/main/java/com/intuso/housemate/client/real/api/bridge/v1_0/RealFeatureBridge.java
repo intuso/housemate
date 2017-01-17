@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.driver.FeatureDriverFactoryMapper;
 import com.intuso.housemate.client.api.bridge.v1_0.driver.FeatureDriverMapper;
-import com.intuso.housemate.client.api.bridge.v1_0.driver.PluginResourceMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.driver.PluginDependencyMapper;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.driver.PluginDependency;
 import com.intuso.housemate.client.v1_0.real.api.*;
@@ -30,7 +30,7 @@ public class RealFeatureBridge
     private final CommandMapper commandMapper;
     private final ValueMapper valueMapper;
     private final PropertyMapper propertyMapper;
-    private final PluginResourceMapper pluginResourceMapper;
+    private final PluginDependencyMapper pluginDependencyMapper;
     private final FeatureDriverMapper featureDriverMapper;
     private final FeatureDriverFactoryMapper featureDriverFactoryMapper;
 
@@ -40,7 +40,7 @@ public class RealFeatureBridge
                              CommandMapper commandMapper,
                              ValueMapper valueMapper,
                              PropertyMapper propertyMapper,
-                             PluginResourceMapper pluginResourceMapper,
+                             PluginDependencyMapper pluginDependencyMapper,
                              FeatureDriverMapper featureDriverMapper,
                              FeatureDriverFactoryMapper featureDriverFactoryMapper) {
         this.feature = feature;
@@ -48,7 +48,7 @@ public class RealFeatureBridge
         this.commandMapper = commandMapper;
         this.valueMapper = valueMapper;
         this.propertyMapper = propertyMapper;
-        this.pluginResourceMapper = pluginResourceMapper;
+        this.pluginDependencyMapper = pluginDependencyMapper;
         this.featureDriverMapper = featureDriverMapper;
         this.featureDriverFactoryMapper = featureDriverFactoryMapper;
     }
@@ -127,11 +127,11 @@ public class RealFeatureBridge
         Function<FeatureDriver.Factory<?>, com.intuso.housemate.client.api.internal.driver.FeatureDriver.Factory<?>> ddfConvertFrom
                 = featureDriverFactoryMapper.getFromV1_0Function();
         Function<PluginDependency<FeatureDriver.Factory<?>>, com.intuso.housemate.client.api.internal.driver.PluginDependency<com.intuso.housemate.client.api.internal.driver.FeatureDriver.Factory<?>>> convertFrom
-                = pluginResourceMapper.getFromV1_0Function(ddfConvertFrom);
+                = pluginDependencyMapper.getFromV1_0Function(ddfConvertFrom);
         Function<com.intuso.housemate.client.api.internal.driver.FeatureDriver.Factory<?>, FeatureDriver.Factory<?>> ddfConvertTo
                 = featureDriverFactoryMapper.getToV1_0Function();
         Function<com.intuso.housemate.client.api.internal.driver.PluginDependency<com.intuso.housemate.client.api.internal.driver.FeatureDriver.Factory<?>>, PluginDependency<FeatureDriver.Factory<?>>> convertTo
-                = pluginResourceMapper.getToV1_0Function(ddfConvertTo);
+                = pluginDependencyMapper.getToV1_0Function(ddfConvertTo);
         return propertyMapper.map(feature.getDriverProperty(),
                 convertFrom,
                 convertTo);

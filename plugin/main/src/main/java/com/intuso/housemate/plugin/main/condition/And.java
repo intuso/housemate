@@ -1,7 +1,5 @@
 package com.intuso.housemate.plugin.main.condition;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import org.slf4j.Logger;
 
@@ -15,14 +13,14 @@ import java.util.Map;
 @Id(value = "and", name = "And", description = "True only when all child conditions are true")
 public class And extends LogicCondition {
 
-	private final Logger logger;
+	private Logger logger;
 
-    @Inject
-	public And(@Assisted Logger logger, @Assisted Callback conditionCallback) {
-		super(conditionCallback);
-        this.logger = logger;
-    }
-	
+	@Override
+	public void init(Logger logger, Callback callback) {
+		this.logger = logger;
+		super.init(logger, callback);
+	}
+
 	/**
 	 * Check if all of the sub-conditions are satisfied or not
 	 * @return true iff all of the sub-conditions are satisfied

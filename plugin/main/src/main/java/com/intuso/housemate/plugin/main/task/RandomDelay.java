@@ -1,7 +1,5 @@
 package com.intuso.housemate.plugin.main.task;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.annotation.Property;
 import com.intuso.housemate.client.api.internal.driver.TaskDriver;
@@ -30,25 +28,15 @@ public class RandomDelay implements TaskDriver {
     @Id(value = "max-amount", name = "Max amount", description = "the maximum amount of time to wait")
     private Integer maxAmount = 1;
 
-    private final Logger logger;
+    private Logger logger;
 
-    /**
-     * Create a new delay task
-     * @param logger
-     */
-    @Inject
-    public RandomDelay(@Assisted Logger logger,
-                 @Assisted TaskDriver.Callback callback) {
+    @Override
+    public void init(Logger logger, Callback callback) {
         this.logger = logger;
     }
 
     @Override
-    public void startTask() {
-
-    }
-
-    @Override
-    public void stopTask() {
+    public void uninit() {
 
     }
 

@@ -6,6 +6,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
@@ -23,7 +24,7 @@ import javax.jms.JMSException;
 public final class RealDeviceImpl
         extends RealObject<Device.Data, Device.Listener<? super RealDeviceImpl>>
         implements RealDevice<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealFeatureImpl, RealListGeneratedImpl<RealFeatureImpl>, RealDeviceImpl>,
+        RealFeatureImpl, RealListPersistedImpl<RealFeatureImpl>, RealDeviceImpl>,
         AddFeatureCommand.Callback {
 
     private final static String FEATURES_DESCRIPTION = "The device's features";
@@ -34,7 +35,7 @@ public final class RealDeviceImpl
     private final RealCommandImpl startCommand;
     private final RealCommandImpl stopCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealListGeneratedImpl<RealFeatureImpl> features;
+    private final RealListPersistedImpl<RealFeatureImpl> features;
     private final RealCommandImpl addFeatureCommand;
 
     private final RemoveCallback<RealDeviceImpl> removeCallback;
@@ -53,7 +54,8 @@ public final class RealDeviceImpl
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
                           RealValueImpl.Factory valueFactory,
-                          RealListGeneratedImpl.Factory<RealFeatureImpl> featuresFactory,
+                          final RealFeatureImpl.Factory featureFactory,
+                          RealListPersistedImpl.Factory<RealFeatureImpl> featuresFactory,
                           AddFeatureCommand.Factory addFeatureCommandFactory,
                           TypeRepository typeRepository) {
         super(logger, new Device.Data(id, name, description), listenersFactory);
@@ -140,7 +142,12 @@ public final class RealDeviceImpl
                 Device.FEATURES_ID,
                 Device.FEATURES_ID,
                 FEATURES_DESCRIPTION,
-                Lists.<RealFeatureImpl>newArrayList());
+                new RealListPersistedImpl.ExistingObjectFactory<RealFeatureImpl>() {
+                    @Override
+                    public RealFeatureImpl create(Logger parentLogger, Object.Data data) {
+                        return featureFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealDeviceImpl.this);
+                    }
+                });
         this.addFeatureCommand = addFeatureCommandFactory.create(ChildUtil.logger(logger, ADD_FEATURE_ID),
                 ChildUtil.logger(logger, ADD_FEATURE_ID),
                 ADD_FEATURE_ID,
@@ -223,7 +230,7 @@ public final class RealDeviceImpl
     }
 
     @Override
-    public RealListGeneratedImpl<RealFeatureImpl> getFeatures() {
+    public RealListPersistedImpl<RealFeatureImpl> getFeatures() {
         return features;
     }
 

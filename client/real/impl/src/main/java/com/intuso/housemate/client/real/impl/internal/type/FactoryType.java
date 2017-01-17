@@ -38,12 +38,12 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginDependency<FACTOR
         return (Entry<SUB_FACTORY>) factories.get(key);
     }
 
-    public void factoryAvailable(String id, String name, String description, FACTORY factory) {
+    public void addFactory(String id, String name, String description, FACTORY factory) {
         getFactoryEntry(id, true).factoryAvailable(factory);
         options.add(optionFactory.create(logger, id, name, description, Lists.<RealSubTypeImpl<?>>newArrayList()));
     }
 
-    public void factoryUnavailable(String id) {
+    public void removeFactory(String id) {
         getFactoryEntry(id, true).factoryUnavailable();
         getOptions().remove(id);
     }

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
-import com.intuso.housemate.client.v1_0.api.plugin.AnnotatedPluginModule;
+import com.intuso.housemate.client.v1_0.api.plugin.AnnotatedPlugin;
 import com.intuso.housemate.client.v1_0.api.plugin.FeatureDrivers;
 import com.intuso.housemate.plugin.arduinotempsensor.ArduinoIndicator;
 import com.intuso.housemate.plugin.arduinotempsensor.ArduinoTemperatureSensor;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 @Id(value = "com.intuso.housemate.plugin.arduino-temp-sensor", name = "Arduino Temperature Sensor plugin", description = "Plugin for temperature sensing using an Arduino")
 @FeatureDrivers({ArduinoTemperatureSensor.class,
         ArduinoIndicator.class})
-public class ArduinoTemperatureSensorPluginModule extends AnnotatedPluginModule {
+public class ArduinoTemperatureSensorPlugin extends AnnotatedPlugin {
 
     private final static List<Pattern> PATTERNS = Lists.newArrayList(
             Pattern.compile(".*ttyACM.*")

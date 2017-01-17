@@ -1,7 +1,6 @@
 package com.intuso.housemate.extension.plugin.homeeasyuk.feature;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
@@ -20,10 +19,11 @@ import org.slf4j.Logger;
 @Id(value = "homeeasyuk-appliance", name = "HomeEasy UK Appliance", description = "Power something on and off as a HomeEasy UK appliance")
 public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, HomeEasyUKAPI.Appliance.Listener {
 
-    private final Logger logger;
     private final Listeners<Listener> listeners;
-    private final FeatureDriver.Callback callback;
     private final ProxyWrapper proxyWrapper;
+
+    private Logger logger;
+    private FeatureDriver.Callback callback;
 
     private SimpleProxyHardware hardware;
     private Integer houseId;
@@ -34,13 +34,9 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
     private ListenerRegistration applianceListener;
 
     @Inject
-    public HomeEasyUKFeature(@Assisted Logger logger,
-                             @Assisted FeatureDriver.Callback callback,
-                             ListenersFactory listenersFactory,
+    public HomeEasyUKFeature(ListenersFactory listenersFactory,
                              ProxyWrapper proxyWrapper) {
-        this.logger = logger;
         this.listeners = listenersFactory.create();
-        this.callback = callback;
         this.proxyWrapper = proxyWrapper;
     }
 
@@ -76,7 +72,9 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
     }
 
     @Override
-    public void startFeature() {
+    public void init(Logger logger, FeatureDriver.Callback callback) {
+        this.logger = logger;
+        this.callback = callback;
         reconfigure(true);
     }
 
@@ -115,7 +113,7 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
     }
 
     @Override
-    public void stopFeature() {
+    public void uninit() {
         if(applianceListener != null) {
             applianceListener.removeListener();
             applianceListener = null;

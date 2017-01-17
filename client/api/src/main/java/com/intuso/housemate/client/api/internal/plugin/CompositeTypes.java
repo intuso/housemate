@@ -16,6 +16,5 @@ public @interface CompositeTypes {
      * The list of the composite types the plugin provides
      * @return the list of the composite types the plugin provides
      */
-    CompositeType[] value();
-
+    Class<?>[] value();
 }

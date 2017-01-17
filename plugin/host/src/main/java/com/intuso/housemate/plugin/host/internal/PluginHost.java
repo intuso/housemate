@@ -4,11 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.intuso.housemate.client.api.internal.annotation.Id;
+import com.intuso.housemate.client.api.internal.plugin.Plugin;
 import com.intuso.housemate.client.api.internal.plugin.PluginListener;
-import com.intuso.housemate.client.real.api.bridge.v1_0.ioc.PluginV1_0BridgeModule;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
 import com.intuso.utilities.listener.ListenersFactory;
@@ -17,13 +14,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,23 +25,21 @@ import java.util.Set;
  * Time: 09:13
  * To change this template use File | Settings | File Templates.
  */
-public class PluginHost implements PluginFinder.Listener {
+public class PluginHost implements PluginFileFinder.Listener {
 
     private final static Logger logger = LoggerFactory.getLogger(PluginHost.class);
 
-    private final Injector injector;
-    private final PluginFinder pluginFinder;
+    private final PluginFileFinder pluginFileFinder;
     private ListenerRegistration pluginFinderListenerRegistration;
     private final Listeners<PluginListener> internalListeners;
     private final Listeners<com.intuso.housemate.client.v1_0.api.plugin.PluginListener> v1_0Listeners;
-    private final Map<String, Injector> pluginInjectors = Maps.newHashMap();
+    private final Map<String, Plugins> loadedPlugins = Maps.newHashMap();
 
     @Inject
-    public PluginHost(Injector injector, ListenersFactory listenersFactory, PluginFinder pluginFinder,
+    public PluginHost(ListenersFactory listenersFactory, PluginFileFinder pluginFileFinder,
                       Set<PluginListener> internalListeners,
                       Set<com.intuso.housemate.client.v1_0.api.plugin.PluginListener> v1_0Listeners) {
-        this.injector = injector;
-        this.pluginFinder = pluginFinder;
+        this.pluginFileFinder = pluginFileFinder;
         this.internalListeners = listenersFactory.create();
         for(PluginListener listener : internalListeners)
             this.internalListeners.addListener(listener);
@@ -59,7 +50,7 @@ public class PluginHost implements PluginFinder.Listener {
 
     public synchronized void start() {
         stop();
-        pluginFinderListenerRegistration = pluginFinder.addListener(this, true);
+        pluginFinderListenerRegistration = pluginFileFinder.addListener(this, true);
     }
 
     public synchronized void stop() {
@@ -67,99 +58,52 @@ public class PluginHost implements PluginFinder.Listener {
             pluginFinderListenerRegistration.removeListener();
             pluginFinderListenerRegistration = null;
         }
-        for(String id : Sets.newHashSet(pluginInjectors.keySet()))
-            pluginRemoved(id);
+        for(String id : Sets.newHashSet(loadedPlugins.keySet()))
+            fileRemoved(id);
     }
 
     @Override
-    public String pluginFound(File pluginFile) {
+    public String fileFound(File pluginFile) {
+        logger.debug("Loading plugins from " + pluginFile.getAbsolutePath());
         try {
-            return addPlugin(createPluginInjector(injector, pluginFile, logger));
-        } catch(Throwable t) {
-            logger.warn("Failed to add plugin for file " + pluginFile.getAbsolutePath(), t);
-            return null;
-        }
-    }
-
-    public String addPlugin(Injector pluginInjector) {
-
-        logger.debug("Adding plugin");
-
-        Version version = detectVersion(pluginInjector);
-        pluginInjector = version.createChildInjector(pluginInjector);
-
-        Id id = pluginInjector.getInstance(Id.class);
-
-        // some plugins add more plugin listeners, so need prevent concurrent modification
-        switch (version) {
-            case Internal:
-                for (PluginListener listener : Lists.newArrayList(internalListeners))
-                    listener.pluginAdded(pluginInjector);
-            case V1_0:
-                for (com.intuso.housemate.client.v1_0.api.plugin.PluginListener listener : Lists.newArrayList(v1_0Listeners))
-                    listener.pluginAdded(pluginInjector);
-        }
-
-        pluginInjectors.put(id.value(), pluginInjector);
-        return id.value();
-    }
-
-    @Override
-    public void pluginRemoved(String id) {
-        logger.debug("Removing plugin : " + id);
-        Injector pluginInjector = pluginInjectors.remove(id);
-        if(pluginInjector != null) {
-            for (PluginListener listener : internalListeners)
-                listener.pluginRemoved(pluginInjector);
-            for (com.intuso.housemate.client.v1_0.api.plugin.PluginListener listener : v1_0Listeners)
-                listener.pluginRemoved(pluginInjector);
-        }
-    }
-
-    private Injector createPluginInjector(Injector injector, File file, Logger logger) {
-        return injector.createChildInjector(getPluginModules(file, logger));
-    }
-
-    private List<Module> getPluginModules(File file, Logger logger) {
-        logger.debug("Loading plugins from " + file.getAbsolutePath());
-        try {
-            ClassLoader cl = new URLClassLoader(new URL[] {file.toURI().toURL()}, getClass().getClassLoader());
-            return Lists.newArrayList(ServiceLoader.load(Module.class, cl));
-        } catch(MalformedURLException e) {
-            logger.error("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not get URL for file");
-            return Lists.newArrayList();
+            ClassLoader cl = new URLClassLoader(new URL[] {pluginFile.toURI().toURL()}, getClass().getClassLoader());
+            Plugins plugins = new Plugins(pluginFile.getAbsolutePath(), cl);
+            for(Plugin plugin : plugins.internalPlugins)
+                for(PluginListener pluginListener : internalListeners)
+                    pluginListener.pluginAdded(plugin);
+            for(com.intuso.housemate.client.v1_0.api.plugin.Plugin plugin : plugins.v1_0Plugins)
+                for(com.intuso.housemate.client.v1_0.api.plugin.PluginListener pluginListener : v1_0Listeners)
+                    pluginListener.pluginAdded(plugin);
         } catch(IOException e) {
-            logger.error("Failed to load  plugin from " + file.getAbsolutePath() + ". Could not load manifest file");
-            return Lists.newArrayList();
+            logger.error("Failed to load  plugin from " + pluginFile.getAbsolutePath() + ". Could not get URL for file");
+        }
+        return UUID.randomUUID().toString();
+    }
+
+    @Override
+    public void fileRemoved(String id) {
+        Plugins plugins = loadedPlugins.remove(id);
+        if(plugins != null) {
+            logger.debug("Unloading plugins from removed file " + plugins.filePath);
+            for(Plugin plugin : plugins.internalPlugins)
+                for(PluginListener pluginListener : internalListeners)
+                    pluginListener.pluginRemoved(plugin);
+            for(com.intuso.housemate.client.v1_0.api.plugin.Plugin plugin : plugins.v1_0Plugins)
+                for(com.intuso.housemate.client.v1_0.api.plugin.PluginListener pluginListener : v1_0Listeners)
+                    pluginListener.pluginRemoved(plugin);
         }
     }
 
-    private Version detectVersion(Injector pluginInjector) {
-        try {
-            pluginInjector.getInstance(Id.class);
-            return Version.Internal;
-        } catch(Throwable t) {}
-        try {
-            pluginInjector.getInstance(com.intuso.housemate.client.v1_0.api.annotation.Id.class);
-            return Version.V1_0;
-        } catch(Throwable t) {}
-        throw new HousematePluginException("Could not detect plugin api version");
-    }
+    private class Plugins {
 
-    enum Version {
-        Internal {
-            @Override
-            public Injector createChildInjector(Injector injector) {
-                return injector;
-            }
-        },
-        V1_0 {
-            @Override
-            public Injector createChildInjector(Injector injector) {
-                return injector.createChildInjector(new PluginV1_0BridgeModule());
-            }
-        };
+        private final String filePath;
+        private final List<Plugin> internalPlugins;
+        private final List<com.intuso.housemate.client.v1_0.api.plugin.Plugin> v1_0Plugins;
 
-        public abstract Injector createChildInjector(Injector injector);
+        public Plugins(String filePath, ClassLoader cl) {
+            this.filePath = filePath;
+            internalPlugins = Lists.newArrayList(ServiceLoader.load(Plugin.class, cl));
+            v1_0Plugins = Lists.newArrayList(ServiceLoader.load(com.intuso.housemate.client.v1_0.api.plugin.Plugin.class, cl));
+        }
     }
 }

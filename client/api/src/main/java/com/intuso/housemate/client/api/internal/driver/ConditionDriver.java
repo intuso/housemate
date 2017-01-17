@@ -10,8 +10,8 @@ import java.util.Map;
 public interface ConditionDriver {
 
     boolean hasChildConditions();
-    void startCondition();
-    void stopCondition();
+    void init(Logger logger, ConditionDriver.Callback callback);
+    void uninit();
 
     interface Callback {
         void setError(String error);

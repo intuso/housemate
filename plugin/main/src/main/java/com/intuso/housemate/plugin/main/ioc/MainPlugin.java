@@ -1,7 +1,7 @@
 package com.intuso.housemate.plugin.main.ioc;
 
 import com.intuso.housemate.client.api.internal.annotation.Id;
-import com.intuso.housemate.client.api.internal.plugin.AnnotatedPluginModule;
+import com.intuso.housemate.client.api.internal.plugin.AnnotatedPlugin;
 import com.intuso.housemate.client.api.internal.plugin.ConditionDrivers;
 import com.intuso.housemate.client.api.internal.plugin.FeatureDrivers;
 import com.intuso.housemate.client.api.internal.plugin.TaskDrivers;
@@ -23,4 +23,4 @@ import com.intuso.housemate.plugin.main.task.RandomDelay;
         TimeOfTheDay.class})
 @TaskDrivers({Delay.class,
         RandomDelay.class})
-public class MainPluginModule extends AnnotatedPluginModule {}
+public class MainPlugin extends AnnotatedPlugin {}

@@ -1,7 +1,5 @@
 package com.intuso.housemate.plugin.tvremote;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
@@ -21,14 +19,11 @@ public class TVRemote implements FeatureDriver, PowerControl, PlaybackControl, V
     @Id(value = "remote-name", name = "Remote Name", description = "The name of the remote you want to use")
     public String remoteName;
 
-    @Inject
-    public TVRemote(@Assisted Logger logger, @Assisted FeatureDriver.Callback driverCallback) {}
+    @Override
+    public void init(Logger logger, FeatureDriver.Callback driverCallback) {}
 
     @Override
-    public void startFeature() {}
-
-    @Override
-    public void stopFeature() {}
+    public void uninit() {}
 
     @Override
     public void turnOn() {

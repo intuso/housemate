@@ -5,6 +5,7 @@ import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
 import com.intuso.utilities.listener.ListenerRegistration;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 
@@ -20,29 +21,28 @@ public abstract class Lighting1Appliance implements FeatureDriver, PowerControl.
     private byte unitCode = 1;
 
     private final Lighting1Handler handler;
-    private final FeatureDriver.Callback driverCallback;
+    private FeatureDriver.Callback callback;
 
     protected Listener listener;
 
-    protected Lighting1Appliance(Lighting1Handler handler, FeatureDriver.Callback driverCallback) {
+    protected Lighting1Appliance(Lighting1Handler handler) {
         this.handler = handler;
-        this.driverCallback = driverCallback;
     }
 
     public void propertyChanged() {
         // check the port value is a positive number
         if(houseId < 0x41 || houseId > 0x50) {
-            driverCallback.setError("House id must be between " + 0x41 + " and " + 0x50);
+            callback.setError("House id must be between " + 0x41 + " and " + 0x50);
             return;
         }
 			
 		// check the relay value is a number between 1 and 8
 		if(unitCode < 1 || unitCode > 16) {
-            driverCallback.setError("Unitcode must be between 1 and 16 (inclusive)");
+            callback.setError("Unitcode must be between 1 and 16 (inclusive)");
             return;
         }
 
-        driverCallback.setError(null);
+        callback.setError(null);
 
         if(listenerRegistration != null) {
             listenerRegistration.removeListener();
@@ -128,12 +128,18 @@ public abstract class Lighting1Appliance implements FeatureDriver, PowerControl.
     }
 
     @Override
-	public void startFeature() {
-		propertyChanged();
-	}
+    public void init(Logger logger, FeatureDriver.Callback callback) {
+        this.callback = callback;
+        propertyChanged();
+    }
 
-	@Override
-    public void stopFeature() {
-		lighting1Appliance = null;
-	}
+    @Override
+    public void uninit() {
+        callback = null;
+        if(listenerRegistration != null) {
+            listenerRegistration.removeListener();
+            listenerRegistration = null;
+        }
+        lighting1Appliance = null;
+    }
 }

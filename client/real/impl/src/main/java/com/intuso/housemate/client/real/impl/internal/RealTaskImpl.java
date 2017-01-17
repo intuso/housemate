@@ -266,7 +266,7 @@ public final class RealTaskImpl
     protected final void _start() {
         try {
             if(isDriverLoaded())
-                driver.startTask();
+                driver.init(logger, this);
         } catch (Throwable t) {
             getErrorValue().setValue("Could not start task: " + t.getMessage());
         }
@@ -274,23 +274,12 @@ public final class RealTaskImpl
 
     protected final void _stop() {
         if(isDriverLoaded())
-            driver.stopTask();
+            driver.uninit();
     }
 
     @Override
     public void setError(String error) {
         errorValue.setValue(error);
-    }
-
-    public final void start() {
-        if(isDriverLoaded())
-            driver.startTask();
-    }
-
-
-    public final void stop() {
-        if(isDriverLoaded())
-            driver.stopTask();
     }
 
     /**

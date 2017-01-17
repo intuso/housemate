@@ -1,7 +1,7 @@
 package com.intuso.housemate.plugin.rfxcom.ioc;
 
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
-import com.intuso.housemate.client.v1_0.api.plugin.AnnotatedPluginModule;
+import com.intuso.housemate.client.v1_0.api.plugin.AnnotatedPlugin;
 import com.intuso.housemate.client.v1_0.api.plugin.FeatureDrivers;
 import com.intuso.housemate.client.v1_0.api.plugin.HardwareDrivers;
 import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
@@ -20,4 +20,4 @@ import com.intuso.housemate.plugin.rfxcom.old.temperaturesensor.*;
         Temperature3Sensor.class,
         Temperature4Sensor.class,
         Temperature5Sensor.class})
-public class RFXComPluginModule extends AnnotatedPluginModule {}
+public class RFXComPlugin extends AnnotatedPlugin {}

@@ -1,7 +1,6 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
@@ -20,7 +19,7 @@ public class ArduinoIndicator implements FeatureDriver, PowerControl.Stateful {
 
     // todo use remote hardware
 
-    private final Logger logger;
+    private Logger logger;
     private final Listeners<Listener> listeners;
     private final SerialPortWrapper serialPort;
 
@@ -35,20 +34,21 @@ public class ArduinoIndicator implements FeatureDriver, PowerControl.Stateful {
     boolean on = true;
 
     @Inject
-    protected ArduinoIndicator(@Assisted Logger logger,
-                               @Assisted FeatureDriver.Callback driverCallback,
-                               SerialPortWrapper serialPort,
+    protected ArduinoIndicator(SerialPortWrapper serialPort,
                                ListenersFactory listenersFactory) {
-        this.logger = logger;
         this.listeners = listenersFactory.create();
         this.serialPort = serialPort;
     }
 
     @Override
-    public void startFeature() {}
+    public void init(Logger logger, FeatureDriver.Callback driverCallback) {
+        this.logger = logger;
+    }
 
     @Override
-    public void stopFeature() {}
+    public void uninit() {
+        this.logger = null;
+    }
 
     @Override
     public void turnOn() {

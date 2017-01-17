@@ -1,7 +1,6 @@
 package com.intuso.housemate.plugin.main.feature;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.annotation.Property;
@@ -33,19 +32,17 @@ public final class PowerByCommandFeature implements FeatureDriver, PowerControl.
     private boolean on = false;
 
     @Inject
-	public PowerByCommandFeature(@Assisted Logger logger,
-                                 @Assisted FeatureDriver.Callback callback,
-                                 ListenersFactory listenersFactory) {
+	public PowerByCommandFeature(ListenersFactory listenersFactory) {
         this.listeners = listenersFactory.create();
     }
 
     @Override
-    public void startFeature() {
+    public void init(Logger logger, Callback callback) {
 
     }
 
     @Override
-    public void stopFeature() {
+    public void uninit() {
 
     }
 

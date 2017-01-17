@@ -346,7 +346,7 @@ public final class RealHardwareImpl
     protected final void _start() {
         try {
             if(isDriverLoaded())
-                driver.startHardware();
+                driver.init(logger, this);
         } catch (Throwable t) {
             getErrorValue().setValue("Could not start hardware: " + t.getMessage());
         }
@@ -354,7 +354,7 @@ public final class RealHardwareImpl
 
     protected final void _stop() {
         if(isDriverLoaded())
-            driver.stopHardware();
+            driver.uninit();
     }
 
     @Override

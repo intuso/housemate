@@ -1,7 +1,5 @@
 package com.intuso.housemate.plugin.main.condition;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import org.slf4j.Logger;
 
@@ -15,12 +13,12 @@ import java.util.Map;
 @Id(value = "or", name = "Or", description = "True if any child condition is true")
 public class Or extends LogicCondition {
 
-    private final Logger logger;
+    private Logger logger;
 
-    @Inject
-    public Or(@Assisted Logger logger, @Assisted Callback conditionCallback) {
-        super(conditionCallback);
+    @Override
+    public void init(Logger logger, Callback callback) {
         this.logger = logger;
+        super.init(logger, callback);
     }
 
     /**

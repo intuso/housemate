@@ -330,7 +330,7 @@ public final class RealFeatureImpl
     protected final void _start() {
         try {
             if(isDriverLoaded())
-                driver.startFeature();
+                driver.init(logger, this);
         } catch (Throwable t) {
             getErrorValue().setValue("Could not start device: " + t.getMessage());
         }
@@ -338,7 +338,7 @@ public final class RealFeatureImpl
 
     protected final void _stop() {
         if(isDriverLoaded())
-            driver.stopFeature();
+            driver.uninit();
     }
 
     public interface Factory {

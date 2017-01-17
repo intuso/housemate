@@ -1,7 +1,6 @@
 package com.intuso.housemate.extension.runprogram;
 
 import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
@@ -26,31 +25,30 @@ public class RunProgramFeatureDriver implements FeatureDriver, RunControl.Statef
     @Id(value = "command", name = "Command", description = "The command for the program")
     private String command;
 
-    private final Logger logger;
+    private Logger logger;
     private final Listeners<Listener> listeners;
 
     private Monitor monitor = null;
     private boolean isRunning = false;
 
     @Inject
-    public RunProgramFeatureDriver(@Assisted Logger logger,
-                                   @Assisted FeatureDriver.Callback driverCallback,
-                                   ListenersFactory listenersFactory) {
-        this.logger = logger;
+    public RunProgramFeatureDriver(ListenersFactory listenersFactory) {
         this.listeners = listenersFactory.create();
     }
 
     @Override
-    public void startFeature() {
+    public void init(Logger logger, FeatureDriver.Callback callback) {
+        this.logger = logger;
         monitor = new Monitor();
         monitor.start();
     }
 
     @Override
-    public void stopFeature() {
+    public void uninit() {
         // stop the monitor
         if(monitor != null)
             monitor.interrupt();
+        logger = null;
     }
 
     @Override

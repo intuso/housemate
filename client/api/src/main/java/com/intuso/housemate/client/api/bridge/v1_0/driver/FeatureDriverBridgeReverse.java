@@ -1,6 +1,7 @@
 package com.intuso.housemate.client.api.bridge.v1_0.driver;
 
-import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
+import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
+import org.slf4j.Logger;
 
 /**
  * Created by tomc on 05/11/15.
@@ -18,12 +19,26 @@ public class FeatureDriverBridgeReverse implements FeatureDriver {
     }
 
     @Override
-    public void startFeature() {
-        featureDriver.startFeature();
+    public void init(Logger logger, Callback callback) {
+        featureDriver.init(logger, new CallbackBridge(callback));
     }
 
     @Override
-    public void stopFeature() {
-        featureDriver.stopFeature();
+    public void uninit() {
+        featureDriver.uninit();
+    }
+
+    public class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.FeatureDriver.Callback {
+
+        private final Callback callback;
+
+        public CallbackBridge(Callback callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void setError(String error) {
+            callback.setError(error);
+        }
     }
 }

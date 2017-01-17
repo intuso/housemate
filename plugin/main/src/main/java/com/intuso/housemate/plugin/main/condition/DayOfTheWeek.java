@@ -1,7 +1,5 @@
 package com.intuso.housemate.plugin.main.condition;
 
-import com.google.inject.Inject;
-import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.annotation.Property;
 import com.intuso.housemate.client.api.internal.driver.ConditionDriver;
@@ -41,20 +39,13 @@ public class DayOfTheWeek implements ConditionDriver {
     @Id(value = "days", name = "Days", description = "The days that satisfy the condition")
 	private Set<Day> days;
 
-    private final Logger logger;
-    private final ConditionDriver.Callback callback;
+    private Logger logger;
+    private ConditionDriver.Callback callback;
     
 	/**
 	 * thread to monitor the day of the week
 	 */
 	private Thread monitor;
-
-    @Inject
-	public DayOfTheWeek(@Assisted Logger logger,
-                        @Assisted ConditionDriver.Callback callback) {
-		this.logger = logger;
-        this.callback = callback;
-    }
 
     @Override
     public boolean hasChildConditions() {
@@ -75,7 +66,9 @@ public class DayOfTheWeek implements ConditionDriver {
 	}
 	
 	@Override
-	public void startCondition() {
+	public void init(Logger logger, ConditionDriver.Callback callback) {
+		this.logger = logger;
+		this.callback = callback;
 		// start monitoring the day of the week
         logger.debug("Condition satisfied when day is " + days);
 		monitor = new DayMonitorThread();
@@ -84,11 +77,13 @@ public class DayOfTheWeek implements ConditionDriver {
 	}
 	
 	@Override
-	public void stopCondition() {
+	public void uninit() {
         if(monitor != null) {
 		    monitor.interrupt();
 		    monitor = null;
         }
+		this.logger = null;
+		this.callback = null;
 	}
 	
 	/**
