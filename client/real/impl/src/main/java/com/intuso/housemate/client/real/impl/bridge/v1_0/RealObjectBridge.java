@@ -68,6 +68,11 @@ public abstract class RealObjectBridge<
     protected void uninitChildren() {}
 
     @Override
+    public String getObjectClass() {
+        return data.getObjectClass();
+    }
+
+    @Override
     public String getId() {
         return data.getId();
     }

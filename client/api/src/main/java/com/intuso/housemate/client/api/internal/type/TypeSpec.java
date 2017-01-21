@@ -16,7 +16,7 @@ public final class TypeSpec {
 
     public TypeSpec(Type type, String restriction) {
         this.type = type;
-        this.restriction = restriction;
+        this.restriction = restriction == null || "".equals(restriction) ? null : restriction;
     }
 
     public Type getType() {

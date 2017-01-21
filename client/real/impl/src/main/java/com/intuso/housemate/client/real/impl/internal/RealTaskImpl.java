@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.util.Types;
+import com.intuso.housemate.client.api.bridge.v1_0.driver.TaskDriverBridge;
 import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
@@ -149,7 +150,6 @@ public final class RealTaskImpl
                 initDriver();
             }
         });
-        initDriver();
     }
 
     @Override
@@ -189,7 +189,12 @@ public final class RealTaskImpl
             PluginDependency<TaskDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
                 driver = driverFactory.getDependency().create(logger, this);
-                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", driver))
+                Object annotatedObject;
+                if(driver instanceof TaskDriverBridge)
+                    annotatedObject = ((TaskDriverBridge) driver).getTaskDriver();
+                else
+                    annotatedObject = driver;
+                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
                     properties.add(property);
                 errorValue.setValue((String) null);
                 driverLoadedValue.setValue(true);

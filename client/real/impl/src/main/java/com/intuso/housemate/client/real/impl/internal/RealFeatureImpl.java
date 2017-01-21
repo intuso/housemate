@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.util.Types;
+import com.intuso.housemate.client.api.bridge.v1_0.driver.FeatureDriverBridge;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
@@ -191,7 +192,6 @@ public final class RealFeatureImpl
                 initDriver();
             }
         });
-        initDriver();
     }
 
     private void initDriver() {
@@ -199,11 +199,16 @@ public final class RealFeatureImpl
             PluginDependency<FeatureDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
                 driver = driverFactory.getDependency().create(logger, this);
-                for(RealCommandImpl command : annotationParser.findCommands(logger, "", driver))
+                Object annotatedObject;
+                if(driver instanceof FeatureDriverBridge)
+                    annotatedObject = ((FeatureDriverBridge) driver).getFeatureDriver();
+                else
+                    annotatedObject = driver;
+                for(RealCommandImpl command : annotationParser.findCommands(logger, "", annotatedObject))
                     commands.add(command);
-                for(RealValueImpl<?> value : annotationParser.findValues(logger, "", driver))
+                for(RealValueImpl<?> value : annotationParser.findValues(logger, "", annotatedObject))
                     values.add(value);
-                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", driver))
+                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
                     properties.add(property);
                 errorValue.setValue((String) null);
                 driverLoadedValue.setValue(true);

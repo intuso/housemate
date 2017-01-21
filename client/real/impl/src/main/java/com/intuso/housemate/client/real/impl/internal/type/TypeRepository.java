@@ -1,16 +1,14 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
+import com.intuso.housemate.client.api.internal.driver.*;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
-import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
+import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
-import org.slf4j.Logger;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,13 +16,10 @@ import java.util.Map;
  */
 public final class TypeRepository implements TypeSerialiser.Repository {
 
-    private final RealListGeneratedImpl.Factory<RealTypeImpl<?>> typesFactory;
-    private final List<RealListGeneratedImpl<RealTypeImpl<?>>> lists = Lists.newArrayList();
     private final Map<TypeSpec, RealTypeImpl<?>> types = Maps.newHashMap();
 
     @Inject
-    public TypeRepository(RealListGeneratedImpl.Factory<RealTypeImpl<?>> typesFactory,
-                          // primitive types
+    public TypeRepository(// primitive types
                           BooleanType booleanType,
                           DoubleType doubleType,
                           IntegerType integerType,
@@ -36,22 +31,18 @@ public final class TypeRepository implements TypeSerialiser.Repository {
                           FeatureDriverType featureDriverType,
                           HardwareDriverType hardwareDriverType,
                           TaskDriverType taskDriverType) {
-        this.typesFactory = typesFactory;
-        typeAvailable(booleanType);
-        typeAvailable(doubleType);
-        typeAvailable(integerType);
-        typeAvailable(stringType);
-        typeAvailable(emailType);
-        typeAvailable(conditionDriverType);
-        typeAvailable(featureDriverType);
-        typeAvailable(hardwareDriverType);
-        typeAvailable(taskDriverType);
-    }
-
-    public RealListGeneratedImpl<RealTypeImpl<?>> createList(Logger logger, String id, String name, String description) {
-        RealListGeneratedImpl<RealTypeImpl<?>> result = typesFactory.create(logger, id, name, description, types.values());
-        lists.add(result);
-        return result;
+        typeAvailable(new TypeSpec(Boolean.class), booleanType);
+        typeAvailable(new TypeSpec(boolean.class), booleanType);
+        typeAvailable(new TypeSpec(Double.class), doubleType);
+        typeAvailable(new TypeSpec(double.class), doubleType);
+        typeAvailable(new TypeSpec(Integer.class), integerType);
+        typeAvailable(new TypeSpec(int.class), integerType);
+        typeAvailable(new TypeSpec(String.class), stringType);
+        typeAvailable(new TypeSpec(String.class, "email"), emailType);
+        typeAvailable(new TypeSpec(Types.newParameterizedType(PluginDependency.class, ConditionDriver.class)), conditionDriverType);
+        typeAvailable(new TypeSpec(Types.newParameterizedType(PluginDependency.class, FeatureDriver.class)), featureDriverType);
+        typeAvailable(new TypeSpec(Types.newParameterizedType(PluginDependency.class, HardwareDriver.class)), hardwareDriverType);
+        typeAvailable(new TypeSpec(Types.newParameterizedType(PluginDependency.class, TaskDriver.class)), taskDriverType);
     }
 
     public <O> RealTypeImpl<O> getType(TypeSpec typeSpec) {
@@ -65,19 +56,14 @@ public final class TypeRepository implements TypeSerialiser.Repository {
         return (TypeSerialiser<O>) types.get(typeSpec);
     }
 
-    public synchronized void typeAvailable(RealTypeImpl<?> typeImpl) {
-        if(types.containsKey(typeImpl.getSpec()))
+    public synchronized void typeAvailable(TypeSpec typeSpec, RealTypeImpl<?> typeImpl) {
+        if(types.containsKey(typeSpec))
             throw new HousemateException("Duplicate type found when registering type " + typeImpl.getId());
-        types.put(typeImpl.getSpec(), typeImpl);
-        for(RealListGeneratedImpl<RealTypeImpl<?>> list : lists)
-            list.add(typeImpl);
+        types.put(typeSpec, typeImpl);
     }
 
     public synchronized void typeUnavailable(TypeSpec typeSpec) {
-        if(types.containsKey(typeSpec)) {
+        if(types.containsKey(typeSpec))
             types.remove(typeSpec);
-            for (RealListGeneratedImpl<RealTypeImpl<?>> list : lists)
-                list.remove(typeSpec.toString());
-        }
     }
 }

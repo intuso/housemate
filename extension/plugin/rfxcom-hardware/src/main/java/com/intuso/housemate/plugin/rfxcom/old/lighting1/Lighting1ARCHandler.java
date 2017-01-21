@@ -1,6 +1,5 @@
 package com.intuso.housemate.plugin.rfxcom.old.lighting1;
 
-import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.rfxcom.rfxtrx.RFXtrx;
 import com.rfxcom.rfxtrx.util.lighting1.Lighting1;
 import org.slf4j.Logger;
@@ -12,8 +11,8 @@ public class Lighting1ARCHandler extends Lighting1Handler {
 
     static Lighting1ARCHandler INSTANCE;
 
-    public Lighting1ARCHandler(Logger logger, RFXtrx rfxtrx, RealDevice.Container deviceContainer) {
-        super(logger, Lighting1.forARC(rfxtrx), deviceContainer);
+    public Lighting1ARCHandler(Logger logger, RFXtrx rfxtrx) {
+        super(logger, Lighting1.forARC(rfxtrx));
         INSTANCE = this;
     }
 

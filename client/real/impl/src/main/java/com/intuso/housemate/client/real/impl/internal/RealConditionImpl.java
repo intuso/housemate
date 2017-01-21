@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.util.Types;
+import com.intuso.housemate.client.api.bridge.v1_0.driver.ConditionDriverBridge;
 import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
@@ -185,7 +186,6 @@ public final class RealConditionImpl
                 initDriver();
             }
         });
-        initDriver();
     }
 
     @Override
@@ -229,7 +229,12 @@ public final class RealConditionImpl
             PluginDependency<ConditionDriver.Factory<?>> driverFactory = driverProperty.getValue();
             if(driverFactory != null) {
                 driver = driverFactory.getDependency().create(logger, this);
-                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", driver))
+                java.lang.Object annotatedObject;
+                if(driver instanceof ConditionDriverBridge)
+                    annotatedObject = ((ConditionDriverBridge) driver).getConditionDriver();
+                else
+                    annotatedObject = driver;
+                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
                     properties.add(property);
                 errorValue.setValue((String) null);
                 driverLoadedValue.setValue(true);

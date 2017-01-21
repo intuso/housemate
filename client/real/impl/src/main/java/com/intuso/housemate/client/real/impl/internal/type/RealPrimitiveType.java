@@ -1,7 +1,6 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
-import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
@@ -19,8 +18,8 @@ public class RealPrimitiveType<O> extends RealTypeImpl<O> {
      * @param serialiser the serialiser for the type
      * @param listenersFactory
      */
-    protected RealPrimitiveType(Logger logger, PrimitiveData data, TypeSpec typeSpec, TypeSerialiser<O> serialiser, ListenersFactory listenersFactory) {
-        super(logger, data, typeSpec, listenersFactory);
+    protected RealPrimitiveType(Logger logger, PrimitiveData data, TypeSerialiser<O> serialiser, ListenersFactory listenersFactory) {
+        super(logger, data, listenersFactory);
         this.serialiser = serialiser;
     }
 

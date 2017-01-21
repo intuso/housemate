@@ -1,7 +1,6 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
-import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.api.internal.type.serialiser.StringSerialiser;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ioc.Type;
@@ -16,8 +15,7 @@ public class StringType extends RealPrimitiveType<String> {
     @Inject
     public StringType(@Type Logger logger, ListenersFactory listenersFactory) {
         super(ChildUtil.logger(logger, String.class.getName()),
-                new PrimitiveData(String.class.getName(), "String", "Some text"),
-                new TypeSpec(String.class),
+                new PrimitiveData("string", "String", "Some text"),
                 StringSerialiser.INSTANCE,
                 listenersFactory);
     }

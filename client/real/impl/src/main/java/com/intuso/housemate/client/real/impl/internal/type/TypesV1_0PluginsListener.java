@@ -21,6 +21,7 @@ import com.intuso.housemate.client.v1_0.api.driver.TaskDriver;
 import com.intuso.housemate.client.v1_0.api.plugin.Plugin;
 import com.intuso.housemate.client.v1_0.api.plugin.PluginListener;
 import com.intuso.housemate.client.v1_0.api.plugin.RegexType;
+import com.intuso.housemate.client.v1_0.api.type.serialiser.StringSerialiser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,7 @@ public class TypesV1_0PluginsListener implements PluginListener {
     private final Logger typeLogger;
     private final Injector injector;
     private final TypeRepository types;
+    private final TypeSerialisersV1_0Repository v1_0Serialisers;
     private final RealRegexType.Factory regexTypeFactory;
     private final ConditionDriverType conditionDriverType;
     private final FeatureDriverType featureDriverType;
@@ -47,10 +49,11 @@ public class TypesV1_0PluginsListener implements PluginListener {
     private final TaskDriverFactoryBridge.Factory taskDriverFactoryBridgeFactory;
 
     @Inject
-    public TypesV1_0PluginsListener(@Type Logger typeLogger, Injector injector, TypeRepository types, RealRegexType.Factory regexTypeFactory, ConditionDriverType conditionDriverType, FeatureDriverType featureDriverType, HardwareDriverType hardwareDriverType, TaskDriverType taskDriverType, ConditionDriverFactoryBridge.Factory conditionDriverFactoryBridgeFactory, FeatureDriverFactoryBridge.Factory featureDriverFactoryBridgeFactory, HardwareDriverFactoryBridge.Factory hardwareDriverFactoryBridgeFactory, TaskDriverFactoryBridge.Factory taskDriverFactoryBridgeFactory) {
+    public TypesV1_0PluginsListener(@Type Logger typeLogger, Injector injector, TypeRepository types, TypeSerialisersV1_0Repository v1_0Serialisers, RealRegexType.Factory regexTypeFactory, ConditionDriverType conditionDriverType, FeatureDriverType featureDriverType, HardwareDriverType hardwareDriverType, TaskDriverType taskDriverType, ConditionDriverFactoryBridge.Factory conditionDriverFactoryBridgeFactory, FeatureDriverFactoryBridge.Factory featureDriverFactoryBridgeFactory, HardwareDriverFactoryBridge.Factory hardwareDriverFactoryBridgeFactory, TaskDriverFactoryBridge.Factory taskDriverFactoryBridgeFactory) {
         this.typeLogger = typeLogger;
         this.injector = injector;
         this.types = types;
+        this.v1_0Serialisers = v1_0Serialisers;
         this.regexTypeFactory = regexTypeFactory;
         this.conditionDriverType = conditionDriverType;
         this.featureDriverType = featureDriverType;
@@ -83,13 +86,16 @@ public class TypesV1_0PluginsListener implements PluginListener {
     private void addTypes(Plugin plugin) {
         for(RegexType regexType : plugin.getRegexTypes()) {
             logger.debug("Adding regex type " + getClass().getName());
-            types.typeAvailable(regexTypeFactory.create(
-                    ChildUtil.logger(typeLogger, new TypeSpec(String.class, regexType.id().value()).toString()),
-                    regexType.id().value(),
-                    regexType.id().name(),
-                    regexType.id().description(),
-                    regexType.regex()
-            ));
+            types.typeAvailable(
+                    new TypeSpec(String.class, regexType.id().value()),
+                    regexTypeFactory.create(
+                            ChildUtil.logger(typeLogger, "string:" + regexType.id().value()),
+                            "string:" + regexType.id().value(),
+                            regexType.id().name(),
+                            regexType.id().description(),
+                            regexType.regex()
+                    ));
+            v1_0Serialisers.serialiserAvailable(new com.intuso.housemate.client.v1_0.api.type.TypeSpec(String.class, regexType.id().value()), new StringSerialiser());
         }
     }
 
@@ -97,6 +103,7 @@ public class TypesV1_0PluginsListener implements PluginListener {
         for(RegexType regexType : plugin.getRegexTypes()) {
             logger.debug("Adding regex type " + getClass().getName());
             types.typeUnavailable(new TypeSpec(String.class, regexType.id().value()));
+            v1_0Serialisers.serialiserUnavailable(new com.intuso.housemate.client.v1_0.api.type.TypeSpec(String.class, regexType.id().value()));
         }
     }
 

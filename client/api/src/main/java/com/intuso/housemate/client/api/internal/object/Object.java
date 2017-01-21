@@ -13,6 +13,12 @@ public interface Object<LISTENER extends Object.Listener> {
     String VERSION = "internal";
 
     /**
+     * Gets the object's type
+     * @return the object's type
+     */
+    String getObjectClass();
+
+    /**
      * Gets the object's id
      * @return the object's id
      */
@@ -50,7 +56,7 @@ public interface Object<LISTENER extends Object.Listener> {
 
         private static final long serialVersionUID = -1L;
 
-        private String objectType;
+        private String objectClass;
         private String id;
         private String name;
         private String description;
@@ -62,8 +68,8 @@ public interface Object<LISTENER extends Object.Listener> {
          * @param name object's name
          * @param description object's description
          */
-        public Data(String objectType, String id, String name, String description) {
-            this.objectType = objectType;
+        public Data(String objectClass, String id, String name, String description) {
+            this.objectClass = objectClass;
             this.id = id;
             this.name = name;
             this.description = description;
@@ -73,12 +79,12 @@ public interface Object<LISTENER extends Object.Listener> {
          * Gets the type of the object
          * @return the type of the object
          */
-        public String getObjectType() {
-            return objectType;
+        public String getObjectClass() {
+            return objectClass;
         }
 
-        public void setObjectType(String objectType) {
-            this.objectType = objectType;
+        public void setObjectClass(String objectClass) {
+            this.objectClass = objectClass;
         }
 
         /**

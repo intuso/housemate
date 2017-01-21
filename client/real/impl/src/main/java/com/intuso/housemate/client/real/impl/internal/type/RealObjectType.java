@@ -4,24 +4,23 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.intuso.housemate.client.api.internal.object.Object;
+import com.google.inject.assistedinject.Assisted;
+import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
-import com.intuso.housemate.client.api.internal.type.TypeSpec;
-import com.intuso.housemate.client.real.impl.internal.RealServerImpl;
+import com.intuso.housemate.client.proxy.api.internal.object.ProxyObject;
+import com.intuso.housemate.client.proxy.api.internal.object.ProxyServer;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.utilities.listener.ListenersFactory;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Type for an object from the object tree
  */
-public final class RealObjectType<O extends Object<?>>
-        extends RealTypeImpl<RealObjectType.Reference<O>> {
-
-    public final static String ID = "object";
-    public final static String NAME = "Object";
+public abstract class RealObjectType<O extends ProxyObject<?, ?>>
+        extends RealTypeImpl<ObjectReference<O>> {
 
     private final static Joiner JOINER = Joiner.on("/");
     private final static Splitter SPLITTER = Splitter.on("/");
@@ -33,109 +32,63 @@ public final class RealObjectType<O extends Object<?>>
      * @param server the root to get the object from
      */
     @Inject
-    public RealObjectType(Logger logger, String id, String name, String description, TypeSpec typeSpec, ListenersFactory listenersFactory, RealServerImpl server) {
-        super(logger, new ObjectData(id, name, description), typeSpec, listenersFactory);
-        serialiser = new Serialiser<>(server);
+    public RealObjectType(@Assisted Logger logger,
+                          @Assisted("id") String id,
+                          @Assisted("name") String name,
+                          @Assisted("description") String description,
+                          @Assisted Set<String> allowedTypes,
+                          ListenersFactory listenersFactory,
+                          ProxyServer<?, ?, ?, ?, ?, ?> server) {
+        super(logger, new ObjectData(id, name, description), listenersFactory);
+        serialiser = new Serialiser<>(server, allowedTypes);
     }
 
     @Override
-    public Instance serialise(Reference<O> o) {
+    public Instance serialise(ObjectReference<O> o) {
         return serialiser.serialise(o);
     }
 
     @Override
-    public Reference<O> deserialise(Instance instance) {
+    public ObjectReference<O> deserialise(Instance instance) {
         return serialiser.deserialise(instance);
-    }
-
-    /**
-     * Reference for an object containing the object's path, and the object if it exists
-     * @param <O>
-     */
-    public static class Reference<O extends Object<?>> {
-
-        private final String[] path;
-        private O object;
-
-        /**
-         * @param path the path to the object
-         */
-        public Reference(String[] path) {
-            this(path, null);
-        }
-
-        /**
-         * @param object the object
-         */
-        public Reference(O object) {
-            this(object == null ? null : /* todo object.getPath()*/null, object);
-        }
-
-        /**
-         * @param path the object's path
-         * @param object the object
-         */
-        private Reference(String[] path, O object) {
-            this.path = path;
-            this.object = object;
-        }
-
-        /**
-         * Gets the path
-         * @return the path
-         */
-        public String[] getPath() {
-            return path;
-        }
-
-        /**
-         * Gets the object
-         * @return the object
-         */
-        public O getObject() {
-            return object;
-        }
-
-        /**
-         * Sets the object
-         * @param object the object
-         */
-        public void setObject(O object) {
-            // todo check the object's path matches the path inside this reference
-            this.object = object;
-        }
     }
 
     /**
      * Serialiser for an object reference
      * @param <O> the type of the object to serialise
      */
-    public static class Serialiser<O extends Object<?>> implements TypeSerialiser<Reference<O>> {
+    public static class Serialiser<O extends ProxyObject<?, ?>> implements TypeSerialiser<ObjectReference<O>> {
 
-        private final RealServerImpl server;
+        private final ProxyServer<?, ?, ?, ?, ?, ?> server;
+        private final Set<String> allowedTypes;
 
         /**
          * @param server the root to get the object from
+         * @param allowedTypes
          */
         @Inject
-        public Serialiser(RealServerImpl server) {
+        public Serialiser(ProxyServer<?, ?, ?, ?, ?, ?> server, Set<String> allowedTypes) {
             this.server = server;
+            this.allowedTypes = allowedTypes;
         }
 
         @Override
-        public Instance serialise(Reference<O> o) {
+        public Instance serialise(ObjectReference<O> o) {
             if(o == null)
                 return null;
             return new Instance(JOINER.join(o.getPath()));
         }
 
         @Override
-        public Reference<O> deserialise(Instance value) {
+        public ObjectReference<O> deserialise(Instance value) {
             if(value == null || value.getValue() == null)
                 return null;
             List<String> pathList = Lists.newArrayList(SPLITTER.split(value.getValue()));
             String[] path = pathList.toArray(new String[pathList.size()]);
-            return new Reference(path, /* todo (O) RemoteObject.getChild((RemoteObject) root, path, 1)*/null);
+            O object = server.<O>find(path);
+            if(object != null && !allowedTypes.contains(object.getObjectClass()))
+                object = null;
+            return new ObjectReference<>(path, object);
         }
     }
 }

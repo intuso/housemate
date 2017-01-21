@@ -4,7 +4,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.api.internal.type.serialiser.EnumSerialiser;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
@@ -40,7 +39,7 @@ public class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
                           ListenersFactory listenersFactory,
                           RealOptionImpl.Factory optionFactory,
                           RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(logger, id, name, description, new TypeSpec(enumClass), listenersFactory, optionsFactory, convertValuesToOptions(logger, optionFactory, enumClass));
+        super(logger, id, name, description, convertValuesToOptions(logger, optionFactory, enumClass), listenersFactory, optionsFactory);
         this.serialiser = new EnumSerialiser<>(enumClass);
     }
 

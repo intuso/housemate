@@ -117,7 +117,7 @@ public class AnnotationParserV1_0 implements AnnotationParser {
             valuesFunctions.put(valueMethod.getKey(), value);
             values.add(value);
         }
-        Object listener = Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, new ValuesInvocationHandler(valuesFunctions));
+        Object listener = Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{addListenerMethod.getParameterTypes()[0]}, new ValuesInvocationHandler(valuesFunctions));
         try {
             addListenerMethod.invoke(object, listener);
         } catch (IllegalAccessException | InvocationTargetException e) {

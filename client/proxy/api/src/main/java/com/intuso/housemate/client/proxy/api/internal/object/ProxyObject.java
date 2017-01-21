@@ -37,6 +37,11 @@ public abstract class ProxyObject<
     }
 
     @Override
+    public String getObjectClass() {
+        return data == null ? null : data.getObjectClass();
+    }
+
+    @Override
     public String getId() {
         return data == null ? null : data.getId();
     }

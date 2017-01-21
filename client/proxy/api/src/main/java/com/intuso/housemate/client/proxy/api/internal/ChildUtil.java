@@ -15,7 +15,7 @@ public class ChildUtil {
     private ChildUtil() {}
 
     public static String name(String parent, String... childNames) {
-        return name(DOT_JOINER, parent, childNames);
+        return name(SLASH_JOINER, parent, childNames);
     }
 
     private static String name(Joiner joiner, String parent, String... childNames) {
@@ -30,6 +30,6 @@ public class ChildUtil {
     }
 
     public static Logger logger(Logger parent, String... childNames) {
-        return LoggerFactory.getLogger(name(SLASH_JOINER, parent.getName(), childNames));
+        return LoggerFactory.getLogger(name(DOT_JOINER, parent.getName(), childNames));
     }
 }

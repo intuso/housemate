@@ -2,7 +2,6 @@ package com.intuso.housemate.plugin.rfxcom.old.lighting2;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
-import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.intuso.housemate.plugin.rfxcom.old.Handler;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2;
@@ -17,16 +16,14 @@ public abstract class Lighting2Handler implements Handler {
     static Lighting2Handler INSTANCE;
 
     private final Logger logger;
-    private final RealDevice.Container deviceContainer;
     private final Lighting2 lighting2;
     private ListenerRegistration messageListenerRegistration;
     private final SetMultimap<Integer, Byte> knownAppliances = HashMultimap.create();
     private final CallbackImpl callback = new CallbackImpl();
 
-    public Lighting2Handler(Logger logger, Lighting2 lighting2, RealDevice.Container deviceContainer) {
+    public Lighting2Handler(Logger logger, Lighting2 lighting2) {
         INSTANCE = this;
         this.logger = logger;
-        this.deviceContainer = deviceContainer;
         this.lighting2 = lighting2;
     }
 

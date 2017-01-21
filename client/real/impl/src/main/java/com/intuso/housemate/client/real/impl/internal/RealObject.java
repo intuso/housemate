@@ -49,6 +49,11 @@ public abstract class RealObject<DATA extends Object.Data,
     protected void uninitChildren() {}
 
     @Override
+    public final String getObjectClass() {
+        return data.getObjectClass();
+    }
+
+    @Override
     public final String getId() {
         return data.getId();
     }

@@ -1,10 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.Inject;
-import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
-import com.intuso.housemate.client.api.internal.driver.PluginDependency;
-import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
@@ -24,8 +21,6 @@ public class FeatureDriverType extends FactoryType<FeatureDriver.Factory<?>> {
     @Inject
     protected FeatureDriverType(@Type Logger logger, ListenersFactory listenersFactory,
                                 RealOptionImpl.Factory optionFactory, RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION,
-                new TypeSpec(Types.newParameterizedType(PluginDependency.class, FeatureDriver.class)),
-                listenersFactory, optionFactory, optionsFactory);
+        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, listenersFactory, optionFactory, optionsFactory);
     }
 }

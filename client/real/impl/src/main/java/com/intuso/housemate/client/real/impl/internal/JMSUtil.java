@@ -51,19 +51,67 @@ public class JMSUtil {
         }
 
         public void send(Serializable object, boolean persistent) throws JMSException {
-            if(producer != null) {
-                StreamMessage streamMessage = session.createStreamMessage();
-                if(persistent)
-                    streamMessage.setBooleanProperty(MessageConstants.STORE, true);
-                streamMessage.writeBytes(Serialiser.serialise(object));
-                producer.send(streamMessage);
-            }
+            StreamMessage streamMessage = session.createStreamMessage();
+            if(persistent)
+                streamMessage.setBooleanProperty(MessageConstants.STORE, true);
+            streamMessage.writeBytes(Serialiser.serialise(object));
+            producer.send(streamMessage);
+            logger.trace("Sent {} on {}", object, producer.getDestination());
         }
+    }
+
+    public static <OBJECT> OBJECT getPersisted(Logger logger, Connection connection, Type type, String name, Class<OBJECT> objectClass) throws JMSException {
+        Session session = null;
+        try {
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            MessageConsumer consumer = null;
+            try {
+                switch (type) {
+                    case Queue:
+                        consumer = session.createConsumer(session.createQueue(name));
+                        break;
+                    case Topic:
+                        consumer = session.createConsumer(session.createTopic(name + "?consumer.retroactive=true"));
+                        break;
+                    default:
+                        throw new JMSException("Unknown type " + type);
+                }
+                Message persisted = consumer.receiveNoWait();
+                return persisted == null ? null : deserialise(logger, persisted, objectClass);
+            } finally {
+                if (consumer != null)
+                    consumer.close();
+            }
+        } finally {
+            session.close();
+        }
+    }
+
+    private static <OBJECT> OBJECT deserialise(Logger logger, Message message, Class<OBJECT> objectClass) {
+        if (message instanceof StreamMessage) {
+            StreamMessage streamMessage = (StreamMessage) message;
+            try {
+                java.lang.Object messageObject = streamMessage.readObject();
+                if (messageObject instanceof byte[]) {
+                    java.lang.Object object = Serialiser.deserialise((byte[]) messageObject);
+                    if (objectClass.isAssignableFrom(object.getClass()))
+                        return (OBJECT) object;
+                    else
+                        logger.warn("Deserialised message object that wasn't a {} but a {}", objectClass.getName(), object.getClass().getName());
+                } else
+                    logger.warn("Message data was not a {}", byte[].class.getName());
+            } catch (JMSException e) {
+                logger.error("Could not read object from received message", e);
+            }
+        } else
+            logger.error("Received message that wasn't a {} but a {}", StreamMessage.class.getName(), message.getClass().getName());
+        return null;
     }
 
     public static class Receiver<OBJECT extends Serializable> {
 
         private final Logger logger;
+        private final Destination destination;
         private final Session session;
         private final MessageConsumer consumer;
         private final Class<OBJECT> objectClass;
@@ -74,14 +122,15 @@ public class JMSUtil {
             this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             switch (type) {
                 case Queue:
-                    this.consumer = session.createConsumer(session.createQueue(name));
+                    this.destination = session.createQueue(name);
                     break;
                 case Topic:
-                    this.consumer = session.createConsumer(session.createTopic(name + "?consumer.retroactive=true"));
+                    this.destination = session.createTopic(name + "?consumer.retroactive=true");
                     break;
                 default:
                     throw new JMSException("Unknown type " + type);
             }
+            this.consumer = session.createConsumer(destination);
             this.objectClass = objectClass;
             this.listener = listener;
             try {
@@ -116,23 +165,17 @@ public class JMSUtil {
 
             @Override
             public void onMessage(Message message) {
-                if (message instanceof StreamMessage) {
-                    StreamMessage streamMessage = (StreamMessage) message;
+                logger.trace("Received message on {}", destination);
+                OBJECT object = deserialise(logger, message, objectClass);
+                if(object != null) {
                     try {
-                        java.lang.Object messageObject = streamMessage.readObject();
-                        if (messageObject instanceof byte[]) {
-                            java.lang.Object object = Serialiser.deserialise((byte[]) messageObject);
-                            if (objectClass.isAssignableFrom(object.getClass()))
-                                listener.onMessage((OBJECT) object, message.getBooleanProperty(MessageConstants.STORE));
-                            else
-                                logger.warn("Deserialised message object that wasn't a {} but a {}", objectClass.getName(), object.getClass().getName());
-                        } else
-                            logger.warn("Message data was not a {}", byte[].class.getName());
+                        listener.onMessage(object, message.getBooleanProperty(MessageConstants.STORE));
                     } catch (JMSException e) {
-                        logger.error("Could not read object from received message", e);
+                        logger.error("Could not check if message was persisted, assuming not", e);
+                        listener.onMessage(object, false);
                     }
                 } else
-                    logger.error("Received message that wasn't a {} but a {}", StreamMessage.class.getName(), message.getClass().getName());
+                    logger.warn("Received a message but deserialised it to null");
             }
         }
 

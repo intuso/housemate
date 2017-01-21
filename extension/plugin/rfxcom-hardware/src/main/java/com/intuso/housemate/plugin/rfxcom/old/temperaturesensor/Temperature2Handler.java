@@ -1,6 +1,5 @@
 package com.intuso.housemate.plugin.rfxcom.old.temperaturesensor;
 
-import com.intuso.housemate.client.v1_0.real.api.RealDevice;
 import com.rfxcom.rfxtrx.RFXtrx;
 import com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensors;
 import org.slf4j.Logger;
@@ -12,8 +11,8 @@ public class Temperature2Handler extends TemperatureHandler {
 
     static Temperature2Handler INSTANCE;
 
-    public Temperature2Handler(Logger logger, RFXtrx rfxtrx, RealDevice.Container deviceContainer) {
-        super(logger, TemperatureSensors.forTemp2(rfxtrx), deviceContainer);
+    public Temperature2Handler(Logger logger, RFXtrx rfxtrx) {
+        super(logger, TemperatureSensors.forTemp2(rfxtrx));
         INSTANCE = this;
     }
 

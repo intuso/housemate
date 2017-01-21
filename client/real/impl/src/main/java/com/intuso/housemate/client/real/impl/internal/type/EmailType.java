@@ -17,12 +17,14 @@ public class EmailType extends RealRegexType {
 
     public final static String ID = "email";
     public final static String NAME = "Email";
+    public final static String DESCRIPTION = "Email address of the form <username>@<host>";
+    public final static String REGEX = ".+@.+\\..+";
 
     /**
      * @param listenersFactory
      */
     @Inject
     public EmailType(@Type Logger logger, ListenersFactory listenersFactory) {
-        super(ChildUtil.logger(logger, ID), ID, NAME, "Email address of the form <username>@<host>", ".+@.+\\..+", listenersFactory);
+        super(ChildUtil.logger(logger, ID), ID, NAME, DESCRIPTION, REGEX, listenersFactory);
     }
 }

@@ -6,4 +6,4 @@ import com.intuso.housemate.client.v1_0.api.plugin.FeatureDrivers;
 
 @Id(value = "com.intuso.housemate.extension.plugin.homeeasyuk.feature", name = "HomeEasy UK feature plugin", description = "Plugin for HomeEasy UK featues")
 @FeatureDrivers(com.intuso.housemate.extension.plugin.homeeasyuk.feature.HomeEasyUKFeature.class)
-public class HomeEasyUKFeature extends AnnotatedPlugin {}
+public class HomeEasyUKFeaturePlugin extends AnnotatedPlugin {}
