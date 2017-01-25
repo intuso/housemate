@@ -6,6 +6,7 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.v1_0.api.type.TypeSpec;
 import com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.v1_0.real.impl.type.BooleanType;
+import com.intuso.housemate.client.v1_0.real.impl.type.ByteType;
 import com.intuso.housemate.client.v1_0.real.impl.type.DoubleType;
 import com.intuso.housemate.client.v1_0.real.impl.type.EmailType;
 import com.intuso.housemate.client.v1_0.real.impl.type.IntegerType;
@@ -23,6 +24,7 @@ public final class TypeSerialisersV1_0Repository implements TypeSerialiser.Repos
     @Inject
     public TypeSerialisersV1_0Repository(// primitive types
                                          BooleanType booleanType,
+                                         ByteType byteType,
                                          DoubleType doubleType,
                                          IntegerType integerType,
                                          StringType stringType,
@@ -30,6 +32,8 @@ public final class TypeSerialisersV1_0Repository implements TypeSerialiser.Repos
                                          EmailType emailType) {
         serialiserAvailable(new TypeSpec(Boolean.class), booleanType);
         serialiserAvailable(new TypeSpec(boolean.class), booleanType);
+        serialiserAvailable(new TypeSpec(Byte.class), byteType);
+        serialiserAvailable(new TypeSpec(byte.class), byteType);
         serialiserAvailable(new TypeSpec(Double.class), doubleType);
         serialiserAvailable(new TypeSpec(double.class), doubleType);
         serialiserAvailable(new TypeSpec(Integer.class), integerType);

@@ -66,12 +66,12 @@ public interface Feature<RENAME_COMMAND extends Command<?, ?, ?, ?>,
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "feature";
+        public final static String OBJECT_CLASS = "feature";
 
         public Data() {}
 
         public Data(String id, String name, String description) {
-            super(OBJECT_TYPE, id, name, description);
+            super(OBJECT_CLASS, id, name, description);
         }
     }
 }

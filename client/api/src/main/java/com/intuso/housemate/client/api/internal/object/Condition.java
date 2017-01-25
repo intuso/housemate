@@ -86,12 +86,12 @@ public interface Condition<REMOVE_COMMAND extends Command<?, ?, ?, ?>,
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "condition";
+        public final static String OBJECT_CLASS = "condition";
 
         public Data() {}
 
         public Data(String id, String name, String description) {
-            super(OBJECT_TYPE, id, name, description);
+            super(OBJECT_CLASS, id, name, description);
         }
     }
 }

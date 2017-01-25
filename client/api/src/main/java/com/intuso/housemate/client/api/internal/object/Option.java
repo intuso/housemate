@@ -36,12 +36,12 @@ public interface Option<SUB_TYPES extends List<? extends SubType<?, ?>, ?>,
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "option";
+        public final static String OBJECT_CLASS = "option";
 
         public Data() {}
 
         public Data(String id, String name, String description) {
-            super(OBJECT_TYPE, id, name, description);
+            super(OBJECT_CLASS, id, name, description);
         }
     }
 }

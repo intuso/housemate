@@ -6,7 +6,7 @@ import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
 import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
-import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyHardware;
+import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyHardware;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKAPI;
 import com.intuso.utilities.listener.ListenerRegistration;
 import com.intuso.utilities.listener.Listeners;
@@ -25,7 +25,7 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
     private Logger logger;
     private FeatureDriver.Callback callback;
 
-    private ProxyHardware<?, ?, ?, ?, ?, ?, ?> hardware;
+    private SimpleProxyHardware hardware;
     private Integer houseId;
     private Byte unitCode;
 
@@ -42,7 +42,7 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
 
     @Property
     @Id(value = "hardware", name = "Hardware", description = "Hardware providing communication to the HomeEasy UK appliance")
-    public void setHardware(ProxyHardware<?, ?, ?, ?, ?, ?, ?> hardware) {
+    public void setHardware(SimpleProxyHardware hardware) {
         this.hardware = hardware;
         reconfigure(false);
     }

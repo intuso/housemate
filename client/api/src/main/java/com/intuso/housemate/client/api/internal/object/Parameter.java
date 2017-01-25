@@ -39,7 +39,7 @@ public interface Parameter<TYPE extends Type<?>,
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "parameter";
+        public final static String OBJECT_CLASS = "parameter";
 
         private String typePath;
         private int minValues;
@@ -48,7 +48,7 @@ public interface Parameter<TYPE extends Type<?>,
         public Data() {}
 
         public Data(String id, String name, String description, String typePath, int minValues, int maxValues) {
-            super(OBJECT_TYPE, id, name, description);
+            super(OBJECT_CLASS, id, name, description);
             this.typePath = typePath;
             this.minValues = minValues;
             this.maxValues = maxValues;

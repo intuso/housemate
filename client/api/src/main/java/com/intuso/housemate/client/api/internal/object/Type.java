@@ -53,7 +53,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "type-choice";
+        public final static String OBJECT_CLASS = "type-choice";
 
         public ChoiceData() {}
 
@@ -63,7 +63,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
          * @param description {@inheritDoc}
          */
         public ChoiceData(String id, String name, String description) {
-            super(OBJECT_TYPE, id, name, description);
+            super(OBJECT_CLASS, id, name, description);
         }
     }
 
@@ -75,7 +75,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "type-regex";
+        public final static String OBJECT_CLASS = "type-regex";
 
         private String regexPattern;
 
@@ -88,7 +88,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
          * @param regexPattern the regex pattern that values of this type must match
          */
         public RegexData(String id, String name, String description, String regexPattern) {
-            super(OBJECT_TYPE, id, name, description);
+            super(OBJECT_CLASS, id, name, description);
             this.regexPattern = regexPattern;
         }
 
@@ -113,7 +113,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "type-compound";
+        public final static String OBJECT_CLASS = "type-compound";
 
         public CompositeData() {}
 
@@ -123,7 +123,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
          * @param description {@inheritDoc}
          */
         public CompositeData(String id, String name, String description) {
-            super(OBJECT_TYPE, id, name, description);
+            super(OBJECT_CLASS, id, name, description);
         }
     }
 
@@ -135,7 +135,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "type-object";
+        public final static String OBJECT_CLASS = "type-object";
 
         public ObjectData() {}
 
@@ -145,7 +145,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
          * @param description {@inheritDoc}
          */
         public ObjectData(String id, String name, String description) {
-            super(OBJECT_TYPE, id, name,  description);
+            super(OBJECT_CLASS, id, name,  description);
         }
     }
 
@@ -157,12 +157,12 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "type-primitive";
+        public final static String OBJECT_CLASS = "type-primitive";
 
         public PrimitiveData() {}
 
         public PrimitiveData(String id, String name, String description) {
-            super(OBJECT_TYPE, id, name, description);
+            super(OBJECT_CLASS, id, name, description);
         }
     }
 

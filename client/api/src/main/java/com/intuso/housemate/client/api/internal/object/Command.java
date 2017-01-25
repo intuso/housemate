@@ -108,12 +108,12 @@ public interface Command<
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "command";
+        public final static String OBJECT_CLASS = "command";
 
         public Data() {}
 
         public Data(String id, String name, String description) {
-            super(OBJECT_TYPE, id, name, description);
+            super(OBJECT_CLASS, id, name, description);
         }
     }
 

@@ -48,12 +48,12 @@ public interface Value<DATA_TYPE,
 
         private static final long serialVersionUID = -1L;
 
-        public final static String OBJECT_TYPE = "value";
+        public final static String OBJECT_CLASS = "value";
 
         public Data() {}
 
         public Data(String id, String name, String description, String type, int minValues, int maxValues) {
-            super(OBJECT_TYPE, id, name,  description, type, minValues, maxValues);
+            super(OBJECT_CLASS, id, name,  description, type, minValues, maxValues);
         }
     }
 }

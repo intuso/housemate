@@ -25,7 +25,7 @@
         <!-- Proxy api for accessing the whole tree, eg for object references -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-client-proxy-api</artifactId>
+            <artifactId>housemate-client-proxy-simple</artifactId>
             <version>${project.version}</version>
         </dependency>
 

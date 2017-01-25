@@ -76,7 +76,7 @@ public class AnnotationParserInternal implements AnnotationParser {
                     id.value(),
                     id.name(),
                     id.description(),
-                    types.getType(new TypeSpec(method.getParameterTypes()[p], parameter.restriction())),
+                    types.getType(new TypeSpec(method.getGenericParameterTypes()[p], parameter.restriction())),
                     parameter.minValues(),
                     parameter.maxValues()));
         }
@@ -96,28 +96,28 @@ public class AnnotationParserInternal implements AnnotationParser {
     }
 
     private void findAddListenerMethodValues(Logger logger, String idPrefix, Object object, Class<?> clazz, Method addListenerMethod, List<RealValueImpl<?>> values) {
-        if(addListenerMethod.getParameterTypes().length != 1) {
+        if(addListenerMethod.getGenericParameterTypes().length != 1) {
             logger.warn("{} annotated method {} on {} should have a single parameter", AddListener.class.getName(), addListenerMethod.getName(), clazz.getName());
             return;
         }
         Map<Method, RealValueImpl<?>> valuesFunctions = Maps.newHashMap();
         for(Map.Entry<Method, Value> valueMethod : getAnnotatedMethods(addListenerMethod.getParameterTypes()[0], Value.class).entrySet()) {
             Id id = valueMethod.getKey().getAnnotation(Id.class);
-            if(valueMethod.getKey().getParameterTypes().length != 1)
+            if(valueMethod.getKey().getGenericParameterTypes().length != 1)
                 throw new HousemateException(clazz.getName() + " value method should have a single argument");
             RealValueImpl<?> value = valueFactory.create(
                     ChildUtil.logger(logger, idPrefix + id.value()),
                     idPrefix + id.value(),
                     id.name(),
                     id.description(),
-                    types.getType(new TypeSpec(valueMethod.getKey().getParameterTypes()[0], valueMethod.getValue().restriction())),
+                    types.getType(new TypeSpec(valueMethod.getKey().getGenericParameterTypes()[0], valueMethod.getValue().restriction())),
                     valueMethod.getValue().minValues(),
                     valueMethod.getValue().maxValues(),
                     Lists.newArrayList());
             valuesFunctions.put(valueMethod.getKey(), value);
             values.add(value);
         }
-        Object listener = Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, new ValuesInvocationHandler(valuesFunctions));
+        Object listener = Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{addListenerMethod.getParameterTypes()[0]}, new ValuesInvocationHandler(valuesFunctions));
         try {
             addListenerMethod.invoke(object, listener);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -155,7 +155,7 @@ public class AnnotationParserInternal implements AnnotationParser {
             properties.add(property);
         }
         for(Map.Entry<Method, Property> propertyMethod : getAnnotatedMethods(clazz, Property.class).entrySet()) {
-            if(propertyMethod.getKey().getParameterTypes().length != 1)
+            if(propertyMethod.getKey().getGenericParameterTypes().length != 1)
                 throw new HousemateException(propertyMethod.getKey().getName() + " must take a single argument");
             Id id = propertyMethod.getKey().getAnnotation(Id.class);
             if(id == null)
@@ -166,7 +166,7 @@ public class AnnotationParserInternal implements AnnotationParser {
                     idPrefix + id.value(),
                     id.name(),
                     id.description(),
-                    types.getType(new TypeSpec(propertyMethod.getKey().getParameterTypes()[0], propertyMethod.getValue().restriction())),
+                    types.getType(new TypeSpec(propertyMethod.getKey().getGenericParameterTypes()[0], propertyMethod.getValue().restriction())),
                     propertyMethod.getValue().minValues(),
                     propertyMethod.getValue().maxValues(),
                     Lists.newArrayList(value));
