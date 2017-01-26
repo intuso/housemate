@@ -1,7 +1,6 @@
 package com.intuso.housemate.client.proxy.api.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -57,7 +56,7 @@ public abstract class ProxyObject<
     }
 
     @Override
-    public MemberRegistration addObjectListener(LISTENER listener) {
+    public ManagedCollection.Registration addObjectListener(LISTENER listener) {
         return listeners.add(listener);
     }
 

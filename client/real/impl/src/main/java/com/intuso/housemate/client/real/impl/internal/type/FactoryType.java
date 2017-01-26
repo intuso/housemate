@@ -8,7 +8,6 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -72,7 +71,7 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginDependency<FACTOR
         }
 
         @Override
-        public MemberRegistration addListener(Listener<FACTORY> listener) {
+        public ManagedCollection.Registration addListener(Listener<FACTORY> listener) {
             return listeners.add(listener);
         }
 

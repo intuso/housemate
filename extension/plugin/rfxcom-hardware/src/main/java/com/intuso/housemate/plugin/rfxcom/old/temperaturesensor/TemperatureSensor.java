@@ -3,7 +3,7 @@ package com.intuso.housemate.plugin.rfxcom.old.temperaturesensor;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 import org.slf4j.Logger;
 
 /**
@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 public abstract class TemperatureSensor implements FeatureDriver, com.intuso.housemate.client.v1_0.api.feature.TemperatureSensor {
 
 	private com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensor sensor;
-    private MemberRegistration listenerRegistration;
+    private ManagedCollection.Registration listenerRegistration;
     private int sensorId = 0;
 
     public Listener listener;
@@ -36,7 +36,7 @@ public abstract class TemperatureSensor implements FeatureDriver, com.intuso.hou
         callback.setError(null);
 
         if(listenerRegistration != null) {
-            listenerRegistration.removeListener();
+            listenerRegistration.remove();
             listenerRegistration = null;
         }
         sensor = createSensor(sensorId);
@@ -69,7 +69,7 @@ public abstract class TemperatureSensor implements FeatureDriver, com.intuso.hou
     }
 
     @Override
-    public MemberRegistration addListener(Listener listener) {
+    public ManagedCollection.Registration addListener(Listener listener) {
         return null; // todo
     }
 
@@ -83,7 +83,7 @@ public abstract class TemperatureSensor implements FeatureDriver, com.intuso.hou
 	public void uninit() {
         callback = null;
         if(listenerRegistration != null) {
-            listenerRegistration.removeListener();
+            listenerRegistration.remove();
             listenerRegistration = null;
         }
 		sensor = null;

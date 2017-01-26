@@ -11,7 +11,7 @@ import com.intuso.housemate.client.v1_0.api.object.Node;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.api.object.Server;
 import com.intuso.housemate.client.v1_0.real.impl.JMSUtil;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +53,8 @@ public final class RealNodeListImpl
     }
 
     @Override
-    public MemberRegistration addObjectListener(List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener, boolean callForExistingElements) {
-        MemberRegistration listenerRegistration = super.addObjectListener(listener);
+    public ManagedCollection.Registration addObjectListener(List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener, boolean callForExistingElements) {
+        ManagedCollection.Registration listenerRegistration = super.addObjectListener(listener);
         if(callForExistingElements)
             for(ServerBaseNode<?, ?, ?, ?> node : this)
                 listener.elementAdded(this, node);

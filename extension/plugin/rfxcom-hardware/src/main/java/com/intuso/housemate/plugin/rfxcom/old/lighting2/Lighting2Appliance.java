@@ -4,7 +4,7 @@ import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.io.IOException;
 public abstract class Lighting2Appliance implements FeatureDriver, PowerControl.Stateful {
 
 	private com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance lighting2Appliance;
-    private MemberRegistration listenerRegistration;
+    private ManagedCollection.Registration listenerRegistration;
     private int houseId = 0;
     private byte unitCode = 1;
 
@@ -45,7 +45,7 @@ public abstract class Lighting2Appliance implements FeatureDriver, PowerControl.
         callback.setError(null);
 
         if(listenerRegistration != null) {
-            listenerRegistration.removeListener();
+            listenerRegistration.remove();
             listenerRegistration = null;
         }
         lighting2Appliance = createAppliance(houseId, (byte) unitCode);
@@ -118,7 +118,7 @@ public abstract class Lighting2Appliance implements FeatureDriver, PowerControl.
     }
 
     @Override
-    public MemberRegistration addListener(Listener listener) {
+    public ManagedCollection.Registration addListener(Listener listener) {
         return null;
         // todo;
     }
@@ -137,7 +137,7 @@ public abstract class Lighting2Appliance implements FeatureDriver, PowerControl.
     public void uninit() {
         callback = null;
         if(listenerRegistration != null) {
-            listenerRegistration.removeListener();
+            listenerRegistration.remove();
             listenerRegistration = null;
         }
 		lighting2Appliance = null;

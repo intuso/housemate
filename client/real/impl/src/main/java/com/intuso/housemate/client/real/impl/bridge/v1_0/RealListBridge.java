@@ -8,7 +8,7 @@ import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.real.impl.ChildUtil;
 import com.intuso.housemate.client.v1_0.real.impl.JMSUtil;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -100,7 +100,7 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
     }
 
     @Override
-    public MemberRegistration addObjectListener(List.Listener<? super ELEMENT, ? super RealListBridge<ELEMENT>> listener, boolean callForExistingElements) {
+    public ManagedCollection.Registration addObjectListener(List.Listener<? super ELEMENT, ? super RealListBridge<ELEMENT>> listener, boolean callForExistingElements) {
         for(ELEMENT element : elements.values())
             listener.elementAdded(this, element);
         return this.addObjectListener(listener);

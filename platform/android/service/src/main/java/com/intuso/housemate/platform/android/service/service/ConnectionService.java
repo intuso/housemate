@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -28,7 +27,7 @@ public class ConnectionService extends Service {
 
     private PropertyRepository properties;
     private Logger logger;
-    private MemberRegistration routerListenerRegistration;
+    private ManagedCollection.Registration routerListenerRegistration;
 
     public ConnectionService() {
 
@@ -64,7 +63,7 @@ public class ConnectionService extends Service {
     public void onDestroy() {
         super.onDestroy();
         logger.debug("Connection Service destroyed");
-        routerListenerRegistration.removeListener();
+        routerListenerRegistration.remove();
     }
 
     @Override

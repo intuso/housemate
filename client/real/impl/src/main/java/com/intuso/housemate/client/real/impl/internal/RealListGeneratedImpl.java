@@ -6,7 +6,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.real.api.internal.RealList;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -45,8 +45,8 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
     }
 
     @Override
-    public MemberRegistration addObjectListener(List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>> listener, boolean callForExistingElements) {
-        MemberRegistration listenerRegistration = super.addObjectListener(listener);
+    public ManagedCollection.Registration addObjectListener(List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>> listener, boolean callForExistingElements) {
+        ManagedCollection.Registration listenerRegistration = super.addObjectListener(listener);
         if(callForExistingElements)
             for(ELEMENT element : this)
                 listener.elementAdded(this, element);

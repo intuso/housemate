@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.feature.TemperatureSensor;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import jssc.SerialPort;
@@ -79,7 +78,7 @@ public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSenso
     }
 
     @Override
-    public MemberRegistration addListener(Listener listener) {
+    public ManagedCollection.Registration addListener(Listener listener) {
         return listeners.add(listener);
     }
 

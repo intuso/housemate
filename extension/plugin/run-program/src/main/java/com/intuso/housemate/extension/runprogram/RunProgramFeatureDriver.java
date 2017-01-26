@@ -5,7 +5,6 @@ import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.feature.RunControl;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -57,7 +56,7 @@ public class RunProgramFeatureDriver implements FeatureDriver, RunControl.Statef
     }
 
     @Override
-    public MemberRegistration addListener(Listener listener) {
+    public ManagedCollection.Registration addListener(Listener listener) {
         return listeners.add(listener);
     }
 

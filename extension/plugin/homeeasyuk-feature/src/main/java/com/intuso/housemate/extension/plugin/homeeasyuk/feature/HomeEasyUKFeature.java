@@ -10,7 +10,6 @@ import com.intuso.housemate.client.v1_0.api.type.ObjectReference;
 import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyHardware;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKAPI;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
 
     private HomeEasyUKAPI hardwareProxy;
     private HomeEasyUKAPI.Appliance applianceProxy;
-    private MemberRegistration applianceListener;
+    private ManagedCollection.Registration applianceListener;
 
     @Inject
     public HomeEasyUKFeature(ManagedCollectionFactory managedCollectionFactory,
@@ -69,7 +68,7 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
     }
 
     @Override
-    public MemberRegistration addListener(Listener listener) {
+    public ManagedCollection.Registration addListener(Listener listener) {
         return listeners.add(listener);
     }
 
@@ -122,7 +121,7 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
     @Override
     public void uninit() {
         if(applianceListener != null) {
-            applianceListener.removeListener();
+            applianceListener.remove();
             applianceListener = null;
         }
         if(applianceProxy != null) {

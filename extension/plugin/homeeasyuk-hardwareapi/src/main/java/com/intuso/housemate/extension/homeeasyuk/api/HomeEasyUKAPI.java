@@ -1,7 +1,7 @@
 package com.intuso.housemate.extension.homeeasyuk.api;
 
 import com.intuso.housemate.client.v1_0.api.annotation.*;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 
 /**
  * Created by tomc on 08/12/16.
@@ -31,7 +31,7 @@ public interface HomeEasyUKAPI {
         void turnOff();
 
         @AddListener
-        MemberRegistration addCallback(Listener listener);
+        ManagedCollection.Registration addCallback(Listener listener);
 
         interface Listener {
 

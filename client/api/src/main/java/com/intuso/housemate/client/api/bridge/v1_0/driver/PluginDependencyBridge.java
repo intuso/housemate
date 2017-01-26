@@ -2,7 +2,7 @@ package com.intuso.housemate.client.api.bridge.v1_0.driver;
 
 import com.google.common.base.Function;
 import com.intuso.housemate.client.v1_0.api.driver.PluginDependency;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 
 /**
  * Created by tomc on 05/11/15.
@@ -27,7 +27,7 @@ public class PluginDependencyBridge<FROM, TO> implements com.intuso.housemate.cl
     }
 
     @Override
-    public MemberRegistration addListener(Listener<TO> listener) {
+    public ManagedCollection.Registration addListener(Listener<TO> listener) {
         return pluginDependency.addListener(new ListenerBridge(listener));
     }
 

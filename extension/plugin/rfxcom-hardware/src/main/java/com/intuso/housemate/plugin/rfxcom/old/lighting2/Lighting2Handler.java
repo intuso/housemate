@@ -3,7 +3,7 @@ package com.intuso.housemate.plugin.rfxcom.old.lighting2;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import com.intuso.housemate.plugin.rfxcom.old.Handler;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2House;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ public abstract class Lighting2Handler implements Handler {
 
     private final Logger logger;
     private final Lighting2 lighting2;
-    private MemberRegistration messageListenerRegistration;
+    private ManagedCollection.Registration messageListenerRegistration;
     private final SetMultimap<Integer, Byte> knownAppliances = HashMultimap.create();
     private final CallbackImpl callback = new CallbackImpl();
 
@@ -30,7 +30,7 @@ public abstract class Lighting2Handler implements Handler {
     @Override
     public void listen(boolean listen) {
         if(!listen && messageListenerRegistration != null) {
-            messageListenerRegistration.removeListener();
+            messageListenerRegistration.remove();
             messageListenerRegistration = null;
         } else if(listen && messageListenerRegistration == null)
             messageListenerRegistration = lighting2.addCallback(callback);

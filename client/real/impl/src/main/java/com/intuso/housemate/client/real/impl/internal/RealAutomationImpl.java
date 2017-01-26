@@ -16,7 +16,7 @@ import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddConditionCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddTaskCommand;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -95,7 +95,7 @@ public final class RealAutomationImpl
         }
     };
 
-    private MemberRegistration conditionListenerRegistration;
+    private ManagedCollection.Registration conditionListenerRegistration;
 
     /**
      * @param logger {@inheritDoc}
@@ -410,7 +410,7 @@ public final class RealAutomationImpl
         for(RealConditionImpl condition : conditions)
             condition.stop();
         if(conditionListenerRegistration != null) {
-            conditionListenerRegistration.removeListener();
+            conditionListenerRegistration.remove();
             conditionListenerRegistration = null;
         }
     }

@@ -2,7 +2,6 @@ package com.intuso.housemate.plugin.rfxcom;
 
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKAPI;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.rfxcom.rfxtrx.RFXtrx;
@@ -21,13 +20,13 @@ public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
     private final ManagedCollection<Listener> callbacks;
 
     private Lighting2Appliance lighting2Appliance;
-    private MemberRegistration listenerRegistration;
+    private ManagedCollection.Registration listenerRegistration;
     private boolean isOn = false;
 
     public HomeEasyUKApplianceImpl(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx, int houseId, byte unitCode) {
         this.callbacks = managedCollectionFactory.create();
         if(listenerRegistration != null) {
-            listenerRegistration.removeListener();
+            listenerRegistration.remove();
             listenerRegistration = null;
         }
         lighting2Appliance = new Lighting2Appliance(new Lighting2House(new Lighting2(rfXtrx, com.rfxcom.rfxtrx.message.Lighting2.SubType.AC), houseId), unitCode);
@@ -75,7 +74,7 @@ public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
 	}
 
     @Override
-    public MemberRegistration addCallback(Listener listener) {
+    public ManagedCollection.Registration addCallback(Listener listener) {
         return callbacks.add(listener);
     }
 

@@ -3,7 +3,6 @@ package com.intuso.housemate.platform.pc;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.plugin.host.internal.PluginFileFinder;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -43,8 +42,8 @@ public class PCPluginFileFinder implements PluginFileFinder {
     }
 
     @Override
-    public MemberRegistration addListener(Listener listener, boolean callForExisting) {
-        MemberRegistration result = listeners.add(listener);
+    public ManagedCollection.Registration addListener(Listener listener, boolean callForExisting) {
+        ManagedCollection.Registration result = listeners.add(listener);
         for(File pluginFile : listenerPluginIds.keySet())
             listenerPluginIds.get(pluginFile).put(listener, listener.fileFound(pluginFile));
         return result;

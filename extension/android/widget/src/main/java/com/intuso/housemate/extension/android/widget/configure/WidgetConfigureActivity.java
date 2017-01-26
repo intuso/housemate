@@ -19,7 +19,7 @@ import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyList;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class WidgetConfigureActivity
     private final String featureId = PowerControl.Stateful.ID;
 
     private AndroidProxyServer server;
-    private List<MemberRegistration> listenerRegistrations = Lists.newArrayList();
+    private List<ManagedCollection.Registration> listenerRegistrations = Lists.newArrayList();
     private DeviceListAdapter listAdapter;
 
     @Override
@@ -63,8 +63,8 @@ public class WidgetConfigureActivity
 
     @Override
     protected void onStop() {
-        for(MemberRegistration listenerRegistration : listenerRegistrations)
-            listenerRegistration.removeListener();
+        for(ManagedCollection.Registration listenerRegistration : listenerRegistrations)
+            listenerRegistration.remove();
         super.onStop();
     }
 

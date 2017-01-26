@@ -14,11 +14,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.intuso.housemate.platform.android.service.R;
 import com.intuso.housemate.platform.android.service.service.ConnectionService;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 
 public class HousemateActivity extends Activity implements ServiceConnection {
 
-    private MemberRegistration routerRegistration;
+    private ManagedCollection.Registration routerRegistration;
     private boolean bound = false;
 
     @Override
@@ -79,7 +79,7 @@ public class HousemateActivity extends Activity implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName name) {
         bound = false;
-        routerRegistration.removeListener();
+        routerRegistration.remove();
         routerRegistration = null;
     }
 }

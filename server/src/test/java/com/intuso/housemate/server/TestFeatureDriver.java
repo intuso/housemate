@@ -3,7 +3,6 @@ package com.intuso.housemate.server;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ public class TestFeatureDriver implements FeatureDriver, TestFeature {
     }
 
     @Override
-    public MemberRegistration addListener(Listener listener) {
+    public ManagedCollection.Registration addListener(Listener listener) {
         return listeners.add(listener);
     }
 

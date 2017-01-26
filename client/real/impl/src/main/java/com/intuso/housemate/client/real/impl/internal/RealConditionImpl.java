@@ -21,7 +21,7 @@ import com.intuso.housemate.client.real.api.internal.RealCondition;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddConditionCommand;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -53,7 +53,7 @@ public final class RealConditionImpl
     private final RealCommandImpl addConditionCommand;
 
     private final Map<String, Boolean> childSatisfied = Maps.newHashMap();
-    private final Map<String, MemberRegistration> childListenerRegistrations = Maps.newHashMap();
+    private final Map<String, ManagedCollection.Registration> childListenerRegistrations = Maps.newHashMap();
 
     private final RemoveCallback<RealConditionImpl> removeCallback;
 
@@ -372,7 +372,7 @@ public final class RealConditionImpl
     @Override
     public final void stop() {
         for(String id : childSatisfied.keySet())
-            childListenerRegistrations.get(id).removeListener();
+            childListenerRegistrations.get(id).remove();
         for(RealCondition childCondition : childConditions)
             childCondition.stop();
         if(isDriverLoaded())

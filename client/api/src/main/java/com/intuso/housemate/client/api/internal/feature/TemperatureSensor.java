@@ -4,7 +4,7 @@ import com.intuso.housemate.client.api.internal.annotation.AddListener;
 import com.intuso.housemate.client.api.internal.annotation.Feature;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.annotation.Value;
-import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 
 /**
  * API for temperature monitoring
@@ -27,7 +27,7 @@ public interface TemperatureSensor {
      * Add a listener
      */
     @AddListener
-    MemberRegistration addListener(Listener listener);
+    ManagedCollection.Registration addListener(Listener listener);
 
     interface Listener {
 

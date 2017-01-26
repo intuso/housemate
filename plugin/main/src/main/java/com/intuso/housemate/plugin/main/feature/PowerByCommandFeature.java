@@ -6,7 +6,6 @@ import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.annotation.Property;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
 import com.intuso.housemate.client.api.internal.feature.PowerControl;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ public final class PowerByCommandFeature implements FeatureDriver, PowerControl.
     }
 
     @Override
-    public MemberRegistration addListener(Listener listener) {
+    public ManagedCollection.Registration addListener(Listener listener) {
         return listeners.add(listener);
     }
 

@@ -7,7 +7,6 @@ import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.plugin.Plugin;
 import com.intuso.housemate.client.api.internal.plugin.PluginListener;
-import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.listener.ManagedCollection;
 import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -31,7 +30,7 @@ public class PluginHost extends AbstractIdleService implements PluginFileFinder.
     private final static Logger logger = LoggerFactory.getLogger(PluginHost.class);
 
     private final PluginFileFinder pluginFileFinder;
-    private MemberRegistration pluginFinderListenerRegistration;
+    private ManagedCollection.Registration pluginFinderListenerRegistration;
     private final ManagedCollection<PluginListener> internalListeners;
     private final ManagedCollection<com.intuso.housemate.client.v1_0.api.plugin.PluginListener> v1_0Listeners;
     private final Map<String, Plugins> loadedPlugins = Maps.newHashMap();
@@ -57,7 +56,7 @@ public class PluginHost extends AbstractIdleService implements PluginFileFinder.
     @Override
     public synchronized void shutDown() {
         if(pluginFinderListenerRegistration != null) {
-            pluginFinderListenerRegistration.removeListener();
+            pluginFinderListenerRegistration.remove();
             pluginFinderListenerRegistration = null;
         }
         for(String id : Sets.newHashSet(loadedPlugins.keySet()))
