@@ -7,7 +7,7 @@ import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -25,7 +25,7 @@ public class RealPropertyImpl<O>
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      * @param type the property's type
      * @param values the property's initial value
      */
@@ -38,10 +38,10 @@ public class RealPropertyImpl<O>
                             @Assisted("min") int minValues,
                             @Assisted("max") int maxValues,
                             @Assisted Iterable values,
-                            ListenersFactory listenersFactory,
+                            ManagedCollectionFactory managedCollectionFactory,
                             RealCommandImpl.Factory commandFactory,
                             RealParameterImpl.Factory parameterFactory) {
-        super(logger, new Property.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory, type, values);
+        super(logger, new Property.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory, type, values);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID),
                 Property.SET_COMMAND_ID,
                 Property.SET_COMMAND_ID,

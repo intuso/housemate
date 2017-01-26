@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.SubType;
 import com.intuso.housemate.client.real.api.internal.RealSubType;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**
@@ -18,7 +18,7 @@ public final class RealSubTypeImpl<O>
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      * @param type
      */
     @Inject
@@ -29,8 +29,8 @@ public final class RealSubTypeImpl<O>
                            @Assisted RealTypeImpl type,
                            @Assisted("min") int minValues,
                            @Assisted("max") int maxValues,
-                           ListenersFactory listenersFactory) {
-        super(logger, new SubType.Data(id, name, description, type.getId(), minValues, maxValues), listenersFactory);
+                           ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, new SubType.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory);
         this.type = type;
     }
 

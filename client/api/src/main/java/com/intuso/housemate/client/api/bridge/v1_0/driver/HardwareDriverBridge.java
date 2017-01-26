@@ -45,5 +45,10 @@ public class HardwareDriverBridge implements com.intuso.housemate.client.api.int
         public void addObject(Object object, String prefix) {
             callback.addObject(object, prefix);
         }
+
+        @Override
+        public void removeObject(Object object) {
+            callback.removeObject(object);
+        }
     }
 }

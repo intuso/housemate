@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.proxy.api.internal.object.ProxyAutomation;
 import com.intuso.housemate.client.proxy.api.internal.object.ProxyObject;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**
@@ -23,11 +23,11 @@ public final class SimpleProxyAutomation extends ProxyAutomation<
 
     @Inject
     public SimpleProxyAutomation(@Assisted Logger logger,
-                                 ListenersFactory listenersFactory,
+                                 ManagedCollectionFactory managedCollectionFactory,
                                  ProxyObject.Factory<SimpleProxyCommand> commandFactory,
                                  ProxyObject.Factory<SimpleProxyValue> valueFactory,
                                  ProxyObject.Factory<SimpleProxyList<SimpleProxyCondition>> conditionsFactory,
                                  ProxyObject.Factory<SimpleProxyList<SimpleProxyTask>> tasksFactory) {
-        super(logger, listenersFactory, commandFactory, valueFactory, conditionsFactory, tasksFactory);
+        super(logger, managedCollectionFactory, commandFactory, valueFactory, conditionsFactory, tasksFactory);
     }
 }

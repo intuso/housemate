@@ -7,7 +7,7 @@ import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Hardware;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -51,8 +51,8 @@ public class ProxyHardwareBridge
                                   ProxyObjectBridge.Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory,
                                   ProxyObjectBridge.Factory<ProxyPropertyBridge> propertyFactory,
                                   ProxyObjectBridge.Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
-                                  ListenersFactory listenersFactory) {
-        super(logger, Hardware.Data.class, hardwareMapper, listenersFactory);
+                                  ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, Hardware.Data.class, hardwareMapper, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         runningValue = valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID));

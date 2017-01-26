@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.proxy.api.internal.object.ProxyList;
 import com.intuso.housemate.client.proxy.api.internal.object.ProxyObject;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**
@@ -18,8 +18,8 @@ public final class SimpleProxyList<ELEMENT extends ProxyObject<?, ?>> extends Pr
 
     @Inject
     public SimpleProxyList(@Assisted Logger logger,
-                           ListenersFactory listenersFactory,
+                           ManagedCollectionFactory managedCollectionFactory,
                            ProxyObject.Factory<ELEMENT> elementFactory) {
-        super(logger, listenersFactory, elementFactory);
+        super(logger, managedCollectionFactory, elementFactory);
     }
 }

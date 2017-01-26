@@ -6,7 +6,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.slf4j.Logger;
@@ -21,18 +21,18 @@ import org.slf4j.LoggerFactory;
  */
 public class TestModule extends AbstractModule {
 
-    private final ListenersFactory listenersFactory;
+    private final ManagedCollectionFactory managedCollectionFactory;
     private final PropertyRepository defaultProperties;
 
-    public TestModule(ListenersFactory listenersFactory, PropertyRepository defaultProperties) {
-        this.listenersFactory = listenersFactory;
+    public TestModule(ManagedCollectionFactory managedCollectionFactory, PropertyRepository defaultProperties) {
+        this.managedCollectionFactory = managedCollectionFactory;
         this.defaultProperties = defaultProperties;
     }
 
     @Override
     protected void configure() {
-        bind(ListenersFactory.class).toInstance(listenersFactory);
-        bind(PropertyRepository.class).toInstance(WriteableMapPropertyRepository.newEmptyRepository(listenersFactory, defaultProperties));
+        bind(ManagedCollectionFactory.class).toInstance(managedCollectionFactory);
+        bind(PropertyRepository.class).toInstance(WriteableMapPropertyRepository.newEmptyRepository(managedCollectionFactory, defaultProperties));
         install(new FactoryModuleBuilder().build(new Key<FeatureDriver.Factory<TestFeatureDriver>>() {}));
     }
 

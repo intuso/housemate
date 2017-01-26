@@ -1,15 +1,17 @@
 package com.intuso.housemate.plugin.rfxcom;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKAPI;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.rfxcom.rfxtrx.RFXtrx;
 import org.slf4j.Logger;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -18,15 +20,17 @@ import java.util.regex.Pattern;
 @Id(value = "rfxtrx433", name = "RFXtr433", description = "RFXCom 433MHz Transceiver")
 public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
 
-    private final ListenersFactory listenersFactory;
+    private final ManagedCollectionFactory managedCollectionFactory;
+    private final Map<Integer, Map<Byte, HomeEasyUKApplianceImpl>> appliances = Maps.newHashMap();
+
     private HardwareDriver.Callback callback;
     private RFXtrx rfxtrx;
     private String pattern = ".*ttyUSB.*";
     private boolean listen = true;
 
     @Inject
-    public RFXtrx433Hardware(ListenersFactory listenersFactory) {
-        this.listenersFactory = listenersFactory;
+    public RFXtrx433Hardware(ManagedCollectionFactory managedCollectionFactory) {
+        this.managedCollectionFactory = managedCollectionFactory;
     }
 
     @Property
@@ -65,11 +69,20 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
 
     @Override
     public void initAppliance(int houseId, byte unitCode) {
-        callback.addObject(new HomeEasyUKApplianceImpl(listenersFactory, rfxtrx, houseId, unitCode), "" + houseId + unitCode);
+        HomeEasyUKApplianceImpl appliance = new HomeEasyUKApplianceImpl(managedCollectionFactory, rfxtrx, houseId, unitCode);
+        if(appliances.get(houseId) == null)
+            appliances.put(houseId, Maps.<Byte, HomeEasyUKApplianceImpl>newHashMap());
+        appliances.get(houseId).put(unitCode, appliance);
+        callback.addObject(appliance, "" + houseId + unitCode);
     }
 
     @Override
     public void uninitAppliance(int houseId, byte unitCode) {
-
+        if(appliances.containsKey(houseId) && appliances.get(houseId).containsKey(unitCode)) {
+            HomeEasyUKApplianceImpl appliance = appliances.get(houseId).get(unitCode);
+            if(appliances.get(houseId).size() == 0)
+                appliances.remove(houseId);
+            callback.removeObject(appliance);
+        }
     }
 }

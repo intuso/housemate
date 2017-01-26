@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.intuso.utilities</groupId>
-			<artifactId>utilities-listener</artifactId>
+			<artifactId>utilities-collection</artifactId>
 			<version>${intuso.utilities.version}</version>
 		</dependency>
 		<dependency>

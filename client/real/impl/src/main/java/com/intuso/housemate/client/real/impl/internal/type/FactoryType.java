@@ -8,9 +8,9 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
@@ -20,20 +20,20 @@ import java.util.Arrays;
  */
 public class FactoryType<FACTORY> extends RealChoiceType<PluginDependency<FACTORY>> {
 
-    private final ListenersFactory listenersFactory;
+    private final ManagedCollectionFactory managedCollectionFactory;
     private final RealOptionImpl.Factory optionFactory;
     private final BiMap<String, Entry<FACTORY>> factories = HashBiMap.create();
 
-    protected FactoryType(Logger logger, String id, String name, String description, ListenersFactory listenersFactory,
+    protected FactoryType(Logger logger, String id, String name, String description, ManagedCollectionFactory managedCollectionFactory,
                           RealOptionImpl.Factory optionFactory, RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(logger, id, name, description, Arrays.<RealOptionImpl>asList(), listenersFactory, optionsFactory);
-        this.listenersFactory = listenersFactory;
+        super(logger, id, name, description, Arrays.<RealOptionImpl>asList(), managedCollectionFactory, optionsFactory);
+        this.managedCollectionFactory = managedCollectionFactory;
         this.optionFactory = optionFactory;
     }
 
     public <SUB_FACTORY extends FACTORY> Entry<SUB_FACTORY> getFactoryEntry(String key, boolean autoCreate) {
         if(!factories.containsKey(key) && autoCreate)
-            factories.put(key, new Entry<FACTORY>(listenersFactory));
+            factories.put(key, new Entry<FACTORY>(managedCollectionFactory));
         return (Entry<SUB_FACTORY>) factories.get(key);
     }
 
@@ -60,10 +60,10 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginDependency<FACTOR
     public static class Entry<FACTORY> implements PluginDependency<FACTORY> {
 
         private FACTORY factory;
-        private final Listeners<Listener<FACTORY>> listeners;
+        private final ManagedCollection<Listener<FACTORY>> listeners;
 
-        public Entry(ListenersFactory listenersFactory) {
-            this.listeners = listenersFactory.create();
+        public Entry(ManagedCollectionFactory managedCollectionFactory) {
+            this.listeners = managedCollectionFactory.create();
         }
 
         @Override
@@ -72,8 +72,8 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginDependency<FACTOR
         }
 
         @Override
-        public ListenerRegistration addListener(Listener<FACTORY> listener) {
-            return listeners.addListener(listener);
+        public MemberRegistration addListener(Listener<FACTORY> listener) {
+            return listeners.add(listener);
         }
 
         private void factoryAvailable(FACTORY factory) {

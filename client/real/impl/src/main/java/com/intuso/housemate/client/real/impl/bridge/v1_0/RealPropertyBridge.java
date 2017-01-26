@@ -8,7 +8,7 @@ import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -28,8 +28,8 @@ public class RealPropertyBridge
                               PropertyMapper propertyMapper,
                               TypeInstancesMapper typeInstancesMapper,
                               RealObjectBridge.Factory<RealCommandBridge> commandFactory,
-                              ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Property.Data.class, propertyMapper, typeInstancesMapper, listenersFactory);
+                              ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Property.Data.class, propertyMapper, typeInstancesMapper, managedCollectionFactory);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID));
     }
 

@@ -7,7 +7,7 @@ import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyHardware;
 import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyServer;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ioc.Type;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**
@@ -21,11 +21,11 @@ public class HardwareType extends RealObjectType<SimpleProxyHardware> {
 
     /**
      * @param logger
-     * @param listenersFactory
+     * @param managedCollectionFactory
      * @param server           the root to get the object from
      */
     @Inject
-    public HardwareType(@Type Logger logger, ListenersFactory listenersFactory, SimpleProxyServer server) {
-        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Sets.newHashSet(Hardware.Data.OBJECT_CLASS), listenersFactory, server);
+    public HardwareType(@Type Logger logger, ManagedCollectionFactory managedCollectionFactory, SimpleProxyServer server) {
+        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Sets.newHashSet(Hardware.Data.OBJECT_CLASS), managedCollectionFactory, server);
     }
 }

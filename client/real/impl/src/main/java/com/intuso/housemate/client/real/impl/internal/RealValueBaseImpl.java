@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.real.api.internal.RealValueBase;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -31,12 +31,12 @@ public abstract class RealValueBaseImpl<O,
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      * @param data {@inheritDoc}
      * @param type the type of the value's value
      */
-    public RealValueBaseImpl(Logger logger, DATA data, ListenersFactory listenersFactory, RealTypeImpl<O> type, Iterable<O> values) {
-        super(logger, data, listenersFactory);
+    public RealValueBaseImpl(Logger logger, DATA data, ManagedCollectionFactory managedCollectionFactory, RealTypeImpl<O> type, Iterable<O> values) {
+        super(logger, data, managedCollectionFactory);
         this.type = type;
         this.values = values;
     }

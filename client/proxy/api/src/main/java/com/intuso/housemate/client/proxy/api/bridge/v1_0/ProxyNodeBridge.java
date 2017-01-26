@@ -5,7 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.NodeMapper;
 import com.intuso.housemate.client.api.internal.object.Node;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -28,8 +28,8 @@ public class ProxyNodeBridge
                               ProxyObjectBridge.Factory<ProxyListBridge<ProxyTypeBridge>> typesFactory,
                               ProxyObjectBridge.Factory<ProxyListBridge<ProxyHardwareBridge>> hardwaresFactory,
                               ProxyObjectBridge.Factory<ProxyCommandBridge> commandFactory,
-                              ListenersFactory listenersFactory) {
-        super(logger, Node.Data.class, nodeMapper, listenersFactory);
+                              ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, Node.Data.class, nodeMapper, managedCollectionFactory);
         types = typesFactory.create(ChildUtil.logger(logger, Node.TYPES_ID));
         hardwares = hardwaresFactory.create(ChildUtil.logger(logger, Node.HARDWARES_ID));
         addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, Node.ADD_HARDWARE_ID));

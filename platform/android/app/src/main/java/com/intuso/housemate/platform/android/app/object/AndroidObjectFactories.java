@@ -1,7 +1,7 @@
 package com.intuso.housemate.platform.android.app.object;
 
 import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**
@@ -9,7 +9,7 @@ import org.slf4j.Logger;
  */
 public class AndroidObjectFactories {
 
-    private final ListenersFactory listenersFactory;
+    private final ManagedCollectionFactory managedCollectionFactory;
 
     private final ProxyObject.Factory<AndroidProxyAutomation> automation = new Automation();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyAutomation>> automations = new Automations();
@@ -42,8 +42,8 @@ public class AndroidObjectFactories {
     private final ProxyObject.Factory<AndroidProxyValue> value = new Value();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyValue>> values = new Values();
 
-    public AndroidObjectFactories(ListenersFactory listenersFactory) {
-        this.listenersFactory = listenersFactory;
+    public AndroidObjectFactories(ManagedCollectionFactory managedCollectionFactory) {
+        this.managedCollectionFactory = managedCollectionFactory;
     }
 
     public ProxyObject.Factory<AndroidProxyAutomation> automation() {
@@ -170,7 +170,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyAutomation create(Logger logger) {
-            return new AndroidProxyAutomation(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyAutomation(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -178,7 +178,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyAutomation> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, automation);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, automation);
         }
     }
 
@@ -186,7 +186,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyCommand create(Logger logger) {
-            return new AndroidProxyCommand(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyCommand(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -194,7 +194,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyCommand> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, command);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, command);
         }
     }
 
@@ -202,7 +202,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyCondition create(Logger logger) {
-            return new AndroidProxyCondition(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyCondition(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -210,7 +210,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyCondition> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, condition);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, condition);
         }
     }
 
@@ -218,7 +218,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyDevice create(Logger logger) {
-            return new AndroidProxyDevice(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyDevice(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -226,7 +226,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyDevice> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, device);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, device);
         }
     }
 
@@ -234,7 +234,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyFeature create(Logger logger) {
-            return new AndroidProxyFeature(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyFeature(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -242,7 +242,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyFeature> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, feature);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, feature);
         }
     }
 
@@ -250,7 +250,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyHardware create(Logger logger) {
-            return new AndroidProxyHardware(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyHardware(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -258,7 +258,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyHardware> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, hardware);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, hardware);
         }
     }
 
@@ -266,7 +266,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyNode create(Logger logger) {
-            return new AndroidProxyNode(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyNode(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -274,7 +274,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyNode> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, node);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, node);
         }
     }
 
@@ -282,7 +282,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyOption create(Logger logger) {
-            return new AndroidProxyOption(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyOption(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -290,7 +290,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyOption> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, option);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, option);
         }
     }
 
@@ -298,7 +298,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyParameter create(Logger logger) {
-            return new AndroidProxyParameter(logger, listenersFactory);
+            return new AndroidProxyParameter(logger, managedCollectionFactory);
         }
     }
 
@@ -306,7 +306,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyParameter> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, parameter);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, parameter);
         }
     }
 
@@ -314,7 +314,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyProperty create(Logger logger) {
-            return new AndroidProxyProperty(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyProperty(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -322,7 +322,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyProperty> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, property);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, property);
         }
     }
 
@@ -330,7 +330,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxySubType create(Logger logger) {
-            return new AndroidProxySubType(logger, listenersFactory);
+            return new AndroidProxySubType(logger, managedCollectionFactory);
         }
     }
 
@@ -338,7 +338,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxySubType> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, subType);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, subType);
         }
     }
 
@@ -346,7 +346,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyTask create(Logger logger) {
-            return new AndroidProxyTask(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyTask(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -354,7 +354,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyTask> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory,task);
+            return new AndroidProxyList<>(logger, managedCollectionFactory,task);
         }
     }
 
@@ -362,7 +362,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyType create(Logger logger) {
-            return new AndroidProxyType(logger, listenersFactory);
+            return new AndroidProxyType(logger, managedCollectionFactory);
         }
     }
 
@@ -370,7 +370,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyType> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, type);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, type);
         }
     }
 
@@ -378,7 +378,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyUser create(Logger logger) {
-            return new AndroidProxyUser(logger, listenersFactory, AndroidObjectFactories.this);
+            return new AndroidProxyUser(logger, managedCollectionFactory, AndroidObjectFactories.this);
         }
     }
 
@@ -386,7 +386,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyUser> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, user);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, user);
         }
     }
 
@@ -394,7 +394,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyValue create(Logger logger) {
-            return new AndroidProxyValue(logger, listenersFactory);
+            return new AndroidProxyValue(logger, managedCollectionFactory);
         }
     }
 
@@ -402,7 +402,7 @@ public class AndroidObjectFactories {
 
         @Override
         public AndroidProxyList<AndroidProxyValue> create(Logger logger) {
-            return new AndroidProxyList<>(logger, listenersFactory, value);
+            return new AndroidProxyList<>(logger, managedCollectionFactory, value);
         }
     }
 }

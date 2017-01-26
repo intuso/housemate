@@ -8,8 +8,8 @@ import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.api.internal.object.JMSUtil;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -33,8 +33,8 @@ public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?>>
     protected ProxyListBridge(@Assisted Logger logger,
                               ListMapper listMapper,
                               ProxyObjectBridge.Factory<ELEMENT> elementFactory,
-                              ListenersFactory listenersFactory) {
-        super(logger, List.Data.class, listMapper, listenersFactory);
+                              ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, List.Data.class, listMapper, managedCollectionFactory);
         this.elementFactory = elementFactory;
     }
 
@@ -97,7 +97,7 @@ public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?>>
     }
 
     @Override
-    public ListenerRegistration addObjectListener(List.Listener<? super ELEMENT, ? super ProxyListBridge<ELEMENT>> listener, boolean callForExistingElements) {
+    public MemberRegistration addObjectListener(List.Listener<? super ELEMENT, ? super ProxyListBridge<ELEMENT>> listener, boolean callForExistingElements) {
         for(ELEMENT element : elements.values())
             listener.elementAdded(this, element);
         return this.addObjectListener(listener);

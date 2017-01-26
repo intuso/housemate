@@ -84,7 +84,7 @@ public class WidgetService extends HousemateService {
     }
 
     public WidgetService() {
-        this.proxyWrapper = new ProxyWrapperV1_0(getListenersFactory(), getTypeSerialiserRepository());
+        this.proxyWrapper = new ProxyWrapperV1_0(getManagedCollectionFactory(), getTypeSerialiserRepository());
     }
 
     public synchronized PendingIntent makePendingIntent(WidgetHandler widgetHandler, String action) {
@@ -110,7 +110,7 @@ public class WidgetService extends HousemateService {
                 .setPriority(Notification.PRIORITY_MIN)
                 .build());
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        server = new AndroidProxyServer(getConnection(), getLogger(), getListenersFactory(), new AndroidObjectFactories(getListenersFactory()));
+        server = new AndroidProxyServer(getConnection(), getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory()));
         updateStatus();
         for (String key : Sets.newHashSet(getProperties().keySet())) {
             if (key.startsWith(PROPERTY_PREFIX)) {

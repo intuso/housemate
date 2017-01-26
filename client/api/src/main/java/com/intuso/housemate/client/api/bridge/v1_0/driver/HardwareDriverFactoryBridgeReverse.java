@@ -46,6 +46,11 @@ public class HardwareDriverFactoryBridgeReverse implements HardwareDriver.Factor
         public void addObject(Object object, String prefix) {
             callback.addObject(object, prefix);
         }
+
+        @Override
+        public void removeObject(Object object) {
+            callback.removeObject(object);
+        }
     }
 
     public interface Factory {

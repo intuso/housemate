@@ -16,8 +16,8 @@ import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddConditionCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddTaskCommand;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -95,11 +95,11 @@ public final class RealAutomationImpl
         }
     };
 
-    private ListenerRegistration conditionListenerRegistration;
+    private MemberRegistration conditionListenerRegistration;
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      */
     @Inject
     public RealAutomationImpl(@Assisted final Logger logger,
@@ -107,7 +107,7 @@ public final class RealAutomationImpl
                               @Assisted("name") String name,
                               @Assisted("description") String description,
                               @Assisted RemoveCallback<RealAutomationImpl> removeCallback,
-                              ListenersFactory listenersFactory,
+                              ManagedCollectionFactory managedCollectionFactory,
                               RealCommandImpl.Factory commandFactory,
                               RealParameterImpl.Factory parameterFactory,
                               RealValueImpl.Factory valueFactory,
@@ -118,7 +118,7 @@ public final class RealAutomationImpl
                               AddConditionCommand.Factory addConditionCommandFactory,
                               AddTaskCommand.Factory addTaskCommandFactory,
                               TypeRepository typeRepository) {
-        super(logger, new Automation.Data(id, name, description), listenersFactory);
+        super(logger, new Automation.Data(id, name, description), managedCollectionFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,

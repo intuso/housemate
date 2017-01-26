@@ -5,7 +5,7 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -37,10 +37,10 @@ public abstract class ProxyCommand<
      * @param logger {@inheritDoc}
      */
     protected ProxyCommand(Logger logger,
-                           ListenersFactory listenersFactory,
+                           ManagedCollectionFactory managedCollectionFactory,
                            ProxyObject.Factory<VALUE> valueFactory,
                            ProxyObject.Factory<PARAMETERS> parametersFactory) {
-        super(logger, Command.Data.class, listenersFactory);
+        super(logger, Command.Data.class, managedCollectionFactory);
         enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID));
         parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID));
     }

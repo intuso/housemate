@@ -1,15 +1,20 @@
 package com.intuso.housemate.extension.homeeasyuk.api;
 
 import com.intuso.housemate.client.v1_0.api.annotation.*;
-import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.MemberRegistration;
 
 /**
  * Created by tomc on 08/12/16.
  */
 public interface HomeEasyUKAPI {
 
-    void initAppliance(int houseId, byte unitCode);
-    void uninitAppliance(int houseId, byte unitCode);
+    @Command
+    @Id("init-homeeasy-appliance")
+    void initAppliance(@Parameter @Id("house-id") int houseId, @Parameter @Id("unit-code") byte unitCode);
+
+    @Command
+    @Id("uninit-homeeasy-appliance")
+    void uninitAppliance(@Parameter @Id("house-id") int houseId, @Parameter @Id("unit-code") byte unitCode);
 
     interface Appliance {
 
@@ -26,7 +31,7 @@ public interface HomeEasyUKAPI {
         void turnOff();
 
         @AddListener
-        ListenerRegistration addCallback(Listener listener);
+        MemberRegistration addCallback(Listener listener);
 
         interface Listener {
 

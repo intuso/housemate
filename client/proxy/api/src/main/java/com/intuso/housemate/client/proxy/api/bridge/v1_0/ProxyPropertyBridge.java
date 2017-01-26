@@ -8,7 +8,7 @@ import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -28,8 +28,8 @@ public class ProxyPropertyBridge
                                PropertyMapper propertyMapper,
                                TypeInstancesMapper typeInstancesMapper,
                                ProxyObjectBridge.Factory<ProxyCommandBridge> commandFactory,
-                               ListenersFactory listenersFactory) {
-        super(logger, Property.Data.class, propertyMapper, typeInstancesMapper, listenersFactory);
+                               ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, Property.Data.class, propertyMapper, typeInstancesMapper, managedCollectionFactory);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID));
     }
 

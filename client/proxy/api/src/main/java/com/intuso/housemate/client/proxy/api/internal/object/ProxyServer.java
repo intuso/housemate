@@ -7,7 +7,7 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.api.internal.ProxyRenameable;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -47,13 +47,13 @@ public abstract class ProxyServer<
     @Inject
     public ProxyServer(Connection connection,
                        Logger logger,
-                       ListenersFactory listenersFactory,
+                       ManagedCollectionFactory managedCollectionFactory,
                        Factory<COMMAND> commandFactory,
                        Factory<AUTOMATIONS> automationsFactory,
                        Factory<DEVICES> devicesFactory,
                        Factory<USERS> usersFactory,
                        Factory<NODES> nodesFactory) {
-        super(logger, Server.Data.class, listenersFactory);
+        super(logger, Server.Data.class, managedCollectionFactory);
         this.connection = connection;
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID));

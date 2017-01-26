@@ -45,5 +45,10 @@ public class HardwareDriverBridgeReverse implements HardwareDriver {
         public void addObject(Object object, String prefix) {
             callback.addObject(object, prefix);
         }
+
+        @Override
+        public void removeObject(Object object) {
+            callback.removeObject(object);
+        }
     }
 }

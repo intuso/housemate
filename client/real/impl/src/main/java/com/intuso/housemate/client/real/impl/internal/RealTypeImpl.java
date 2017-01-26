@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
@@ -20,12 +20,12 @@ public abstract class RealTypeImpl<O>
     /**
      * @param logger {@inheritDoc}
      * @param data {@inheritDoc}
-     * @param listenersFactory {@inheritDoc}
+     * @param managedCollectionFactory {@inheritDoc}
      */
     protected RealTypeImpl(Logger logger,
                            Type.Data data,
-                           ListenersFactory listenersFactory) {
-        super(logger, data, listenersFactory);
+                           ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, data, managedCollectionFactory);
     }
 
     public static <O> Instances serialiseAll(TypeSerialiser<O> serialiser, O ... typedValues) {

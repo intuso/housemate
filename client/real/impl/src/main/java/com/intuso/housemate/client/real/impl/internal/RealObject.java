@@ -1,9 +1,9 @@
 package com.intuso.housemate.client.real.impl.internal;
 
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -17,15 +17,15 @@ public abstract class RealObject<DATA extends Object.Data,
 
     protected final Logger logger;
     protected final DATA data;
-    protected final Listeners<LISTENER> listeners;
+    protected final ManagedCollection<LISTENER> listeners;
 
     private JMSUtil.Sender sender;
 
-    protected RealObject(Logger logger, DATA data, ListenersFactory listenersFactory) {
+    protected RealObject(Logger logger, DATA data, ManagedCollectionFactory managedCollectionFactory) {
         logger.debug("Creating");
         this.logger = logger;
         this.data = data;
-        this.listeners = listenersFactory.create();
+        this.listeners = managedCollectionFactory.create();
     }
 
     public final void init(String name, Connection connection) throws JMSException {
@@ -69,8 +69,8 @@ public abstract class RealObject<DATA extends Object.Data,
     }
 
     @Override
-    public ListenerRegistration addObjectListener(LISTENER listener) {
-        return listeners.addListener(listener);
+    public MemberRegistration addObjectListener(LISTENER listener) {
+        return listeners.add(listener);
     }
 
     protected final DATA getData() {

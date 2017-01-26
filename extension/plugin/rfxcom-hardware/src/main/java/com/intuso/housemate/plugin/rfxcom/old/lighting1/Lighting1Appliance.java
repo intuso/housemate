@@ -4,7 +4,7 @@ import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
-import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.MemberRegistration;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.io.IOException;
 public abstract class Lighting1Appliance implements FeatureDriver, PowerControl.Stateful {
 
 	private com.rfxcom.rfxtrx.util.lighting1.Lighting1Appliance lighting1Appliance;
-    private ListenerRegistration listenerRegistration;
+    private MemberRegistration listenerRegistration;
     private byte houseId = 0;
     private byte unitCode = 1;
 
@@ -118,7 +118,7 @@ public abstract class Lighting1Appliance implements FeatureDriver, PowerControl.
     }
 
     @Override
-    public ListenerRegistration addListener(Listener listener) {
+    public MemberRegistration addListener(Listener listener) {
         return null;
         // todo;
     }

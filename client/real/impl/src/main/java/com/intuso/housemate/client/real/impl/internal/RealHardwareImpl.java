@@ -1,6 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.util.Types;
@@ -16,11 +17,12 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealHardware;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
+import java.util.Map;
 
 /**
  * Base class for all hardwares
@@ -52,11 +54,15 @@ public final class RealHardwareImpl
 
     private final RemoveCallback<RealHardwareImpl> removeCallback;
 
+    private final Map<Object, Iterable<RealCommandImpl>> objectCommands = Maps.newHashMap();
+    private final Map<Object, Iterable<RealValueImpl<?>>> objectValues = Maps.newHashMap();
+    private final Map<Object, Iterable<RealPropertyImpl<?>>> objectProperties = Maps.newHashMap();
+
     private HardwareDriver driver;
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      */
     @Inject
     public RealHardwareImpl(@Assisted Logger logger,
@@ -64,7 +70,7 @@ public final class RealHardwareImpl
                             @Assisted("name") String name,
                             @Assisted("description") String description,
                             @Assisted RemoveCallback<RealHardwareImpl> removeCallback,
-                            ListenersFactory listenersFactory,
+                            ManagedCollectionFactory managedCollectionFactory,
                             AnnotationParser annotationParser,
                             RealCommandImpl.Factory commandFactory,
                             RealParameterImpl.Factory parameterFactory,
@@ -74,7 +80,7 @@ public final class RealHardwareImpl
                             RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                             RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory) {
-        super(logger, new Hardware.Data(id, name, description), listenersFactory);
+        super(logger, new Hardware.Data(id, name, description), managedCollectionFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -208,11 +214,12 @@ public final class RealHardwareImpl
         startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
         stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
         commands.init(ChildUtil.name(name, Hardware.COMMANDS_ID), connection);
         values.init(ChildUtil.name(name, Hardware.VALUES_ID), connection);
         properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID), connection);
+        // at the end as init'ing it might init the driver and set values, add commands/properties etc
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
     }
 
     @Override
@@ -369,12 +376,30 @@ public final class RealHardwareImpl
 
     @Override
     public void addObject(Object object, String prefix) {
-        for(RealCommandImpl command : annotationParser.findCommands(logger, "", object))
+        if(objectCommands.containsKey(object) || objectValues.containsKey(object) || objectProperties.containsKey(object))
+            throw new HousemateException("Object is already added");
+        objectCommands.put(object, annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), "", object));
+        for(RealCommandImpl command : objectCommands.get(object))
             commands.add(command);
-        for(RealValueImpl<?> value : annotationParser.findValues(logger, "", object))
+        objectValues.put(object, annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), "", object));
+        for(RealValueImpl<?> value : objectValues.get(object))
             values.add(value);
-        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", object))
+        objectProperties.put(object, annotationParser.findProperties(ChildUtil.logger(logger, PROPERTIES_ID), "", object));
+        for(RealPropertyImpl<?> property : objectProperties.get(object))
             properties.add(property);
+    }
+
+    @Override
+    public void removeObject(Object object) {
+        if(objectCommands.containsKey(object))
+            for(RealCommandImpl command : objectCommands.remove(object))
+                commands.add(command);
+        if(objectValues.containsKey(object))
+            for(RealValueImpl<?> value : objectValues.remove(object))
+                values.add(value);
+        if(objectProperties.containsKey(object))
+            for(RealPropertyImpl<?> property : objectProperties.remove(object))
+                properties.add(property);
     }
 
     public interface Factory {

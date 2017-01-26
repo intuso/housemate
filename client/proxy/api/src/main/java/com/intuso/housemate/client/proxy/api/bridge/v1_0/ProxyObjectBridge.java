@@ -3,9 +3,9 @@ package com.intuso.housemate.client.proxy.api.bridge.v1_0;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.v1_0.proxy.api.object.JMSUtil;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -21,16 +21,16 @@ public abstract class ProxyObjectBridge<
     protected VERSION_DATA data;
     protected final Class<INTERNAL_DATA> internalDataClass;
     protected final ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper;
-    protected final Listeners<LISTENER> listeners;
+    protected final ManagedCollection<LISTENER> listeners;
     private JMSUtil.Sender sender;
     private com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<INTERNAL_DATA> receiver;
 
-    protected ProxyObjectBridge(Logger logger, Class<INTERNAL_DATA> internalDataClass, ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper, ListenersFactory listenersFactory) {
+    protected ProxyObjectBridge(Logger logger, Class<INTERNAL_DATA> internalDataClass, ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper, ManagedCollectionFactory managedCollectionFactory) {
         logger.debug("Creating");
         this.logger = logger;
         this.internalDataClass = internalDataClass;
         this.dataMapper = dataMapper;
-        this.listeners = listenersFactory.create();
+        this.listeners = managedCollectionFactory.create();
     }
 
     public final void init(String versionName, String internalName, Connection connection) throws JMSException {
@@ -88,8 +88,8 @@ public abstract class ProxyObjectBridge<
     }
 
     @Override
-    public ListenerRegistration addObjectListener(LISTENER listener) {
-        return listeners.addListener(listener);
+    public MemberRegistration addObjectListener(LISTENER listener) {
+        return listeners.add(listener);
     }
 
     public interface Factory<OBJECT extends ProxyObjectBridge<?, ?, ?>> {

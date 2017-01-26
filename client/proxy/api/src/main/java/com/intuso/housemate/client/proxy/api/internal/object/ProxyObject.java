@@ -1,9 +1,9 @@
 package com.intuso.housemate.client.proxy.api.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -20,7 +20,7 @@ public abstract class ProxyObject<
     public final static String PROXY = "proxy";
 
     protected final Logger logger;
-    protected final Listeners<LISTENER> listeners;
+    protected final ManagedCollection<LISTENER> listeners;
     private final Class<DATA> dataClass;
 
     protected DATA data = null;
@@ -29,11 +29,11 @@ public abstract class ProxyObject<
     /**
      * @param logger the log
      */
-    protected ProxyObject(Logger logger, Class<DATA> dataClass, ListenersFactory listenersFactory) {
+    protected ProxyObject(Logger logger, Class<DATA> dataClass, ManagedCollectionFactory managedCollectionFactory) {
         logger.debug("Creating");
         this.logger = logger;
         this.dataClass = dataClass;
-        this.listeners = listenersFactory.create();
+        this.listeners = managedCollectionFactory.create();
     }
 
     @Override
@@ -57,8 +57,8 @@ public abstract class ProxyObject<
     }
 
     @Override
-    public ListenerRegistration addObjectListener(LISTENER listener) {
-        return listeners.addListener(listener);
+    public MemberRegistration addObjectListener(LISTENER listener) {
+        return listeners.add(listener);
     }
 
     protected final void init(String name, Connection connection) throws JMSException {

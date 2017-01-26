@@ -3,7 +3,7 @@ package com.intuso.housemate.client.proxy.internal.simple;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.proxy.api.internal.object.ProxyParameter;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**
@@ -17,7 +17,7 @@ public final class SimpleProxyParameter extends ProxyParameter<SimpleProxyType, 
 
     @Inject
     public SimpleProxyParameter(@Assisted Logger logger,
-                                ListenersFactory listenersFactory) {
-        super(logger, listenersFactory);
+                                ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, managedCollectionFactory);
     }
 }

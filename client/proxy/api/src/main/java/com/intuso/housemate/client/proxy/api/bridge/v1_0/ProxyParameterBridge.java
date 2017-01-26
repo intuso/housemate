@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ParameterMapper;
 import com.intuso.housemate.client.api.internal.object.Parameter;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**
@@ -17,8 +17,8 @@ public class ProxyParameterBridge
     @Inject
     protected ProxyParameterBridge(@Assisted Logger logger,
                                    ParameterMapper parameterMapper,
-                                   ListenersFactory listenersFactory) {
-        super(logger, Parameter.Data.class, parameterMapper, listenersFactory);
+                                   ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, Parameter.Data.class, parameterMapper, managedCollectionFactory);
     }
 
     @Override

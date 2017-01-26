@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.type.serialiser.StringSerialiser;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ioc.Type;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**
@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 public class StringType extends RealPrimitiveType<String> {
 
     @Inject
-    public StringType(@Type Logger logger, ListenersFactory listenersFactory) {
+    public StringType(@Type Logger logger, ManagedCollectionFactory managedCollectionFactory) {
         super(ChildUtil.logger(logger, String.class.getName()),
                 new PrimitiveData("string", "String", "Some text"),
                 StringSerialiser.INSTANCE,
-                listenersFactory);
+                managedCollectionFactory);
     }
 }

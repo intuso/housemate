@@ -19,7 +19,7 @@ import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyList;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
-import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.MemberRegistration;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class WidgetConfigureActivity
     private final String featureId = PowerControl.Stateful.ID;
 
     private AndroidProxyServer server;
-    private List<ListenerRegistration> listenerRegistrations = Lists.newArrayList();
+    private List<MemberRegistration> listenerRegistrations = Lists.newArrayList();
     private DeviceListAdapter listAdapter;
 
     @Override
@@ -54,7 +54,7 @@ public class WidgetConfigureActivity
         listAdapter = new DeviceListAdapter();
         ((ListView)findViewById(R.id.device_list)).setAdapter(listAdapter);
         ((ListView)findViewById(R.id.device_list)).setOnItemClickListener(this);
-        server = new AndroidProxyServer(getConnection(), getLogger(), getListenersFactory(), new AndroidObjectFactories(getListenersFactory()));
+        server = new AndroidProxyServer(getConnection(), getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory()));
         setStatus("Pick device to control");
         listenerRegistrations.add(server.getDevices().addObjectListener(new DeviceListListener(), true));
         listAdapter.notifyDataSetChanged();
@@ -63,7 +63,7 @@ public class WidgetConfigureActivity
 
     @Override
     protected void onStop() {
-        for(ListenerRegistration listenerRegistration : listenerRegistrations)
+        for(MemberRegistration listenerRegistration : listenerRegistrations)
             listenerRegistration.removeListener();
         super.onStop();
     }

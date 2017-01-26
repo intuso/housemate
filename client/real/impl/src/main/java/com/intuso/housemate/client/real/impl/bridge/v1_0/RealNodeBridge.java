@@ -6,7 +6,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.NodeMapper;
 import com.intuso.housemate.client.api.internal.object.Node;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ServerBaseNode;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -35,8 +35,8 @@ public class RealNodeBridge
                              RealObjectBridge.Factory<RealListBridge<RealTypeBridge>> typesFactory,
                              RealObjectBridge.Factory<RealListBridge<RealHardwareBridge>> hardwaresFactory,
                              RealObjectBridge.Factory<RealCommandBridge> commandFactory,
-                             ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Node.Data.class, nodeMapper, listenersFactory);
+                             ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Node.Data.class, nodeMapper, managedCollectionFactory);
         this.id = id;
         this.versionName = versionName;
         types = typesFactory.create(ChildUtil.logger(logger, Node.TYPES_ID));

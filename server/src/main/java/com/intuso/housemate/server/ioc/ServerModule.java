@@ -5,14 +5,12 @@ import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
-import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.client.api.bridge.ioc.ClientApiBridgeModule;
 import com.intuso.housemate.client.proxy.api.bridge.ioc.ProxyBridgeModule;
 import com.intuso.housemate.client.proxy.api.internal.annotation.ioc.ProxyWrapperModule;
 import com.intuso.housemate.client.proxy.internal.simple.ioc.SimpleProxyServerModule;
 import com.intuso.housemate.client.real.impl.internal.ioc.ServerRootModule;
 import com.intuso.housemate.plugin.host.internal.ioc.PluginHostModule;
-import com.intuso.housemate.server.ServerService;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.apache.activemq.broker.BrokerService;
 
@@ -23,8 +21,10 @@ import java.util.Set;
  */
 public class ServerModule extends AbstractModule {
 
+    public final static String SERVER_NAME = "server.name";
+
     public ServerModule(WriteableMapPropertyRepository defaultProperties) {
-        defaultProperties.set(ServerService.SERVER_NAME, "My Server");
+        defaultProperties.set(SERVER_NAME, "My Server");
     }
 
     @Override
@@ -51,9 +51,6 @@ public class ServerModule extends AbstractModule {
         // bind broker and connection
         bind(BrokerService.class).toProvider(BrokerServiceProvider.class).in(Scopes.SINGLETON);
         bind(Connection.class).toProvider(ConnectionProvider.class).in(Scopes.SINGLETON);
-
-        // bind the main server service
-        Multibinder.newSetBinder(binder(), Service.class).addBinding().to(ServerService.class).in(Scopes.SINGLETON);
     }
 
     @Provides

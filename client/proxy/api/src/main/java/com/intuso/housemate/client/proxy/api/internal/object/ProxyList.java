@@ -4,8 +4,8 @@ import com.google.common.collect.Maps;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -30,8 +30,8 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
      * @param logger {@inheritDoc}
      * @param elementFactory
      */
-    public ProxyList(Logger logger, ListenersFactory listenersFactory, Factory<ELEMENT> elementFactory) {
-        super(logger, List.Data.class, listenersFactory);
+    public ProxyList(Logger logger, ManagedCollectionFactory managedCollectionFactory, Factory<ELEMENT> elementFactory) {
+        super(logger, List.Data.class, managedCollectionFactory);
         this.elementFactory = elementFactory;
     }
 
@@ -141,7 +141,7 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
     }
 
     @Override
-    public ListenerRegistration addObjectListener(List.Listener<? super ELEMENT, ? super LIST> listener, boolean callForExistingElements) {
+    public MemberRegistration addObjectListener(List.Listener<? super ELEMENT, ? super LIST> listener, boolean callForExistingElements) {
         for(ELEMENT element : elements.values())
             listener.elementAdded((LIST) this, element);
         return this.addObjectListener(listener);

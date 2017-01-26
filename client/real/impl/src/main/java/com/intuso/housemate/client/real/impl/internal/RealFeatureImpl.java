@@ -16,7 +16,7 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealFeature;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -59,7 +59,7 @@ public final class RealFeatureImpl
                            @Assisted("name") String name,
                            @Assisted("description") String description,
                            @Assisted RemoveCallback<RealFeatureImpl> removeCallback,
-                           ListenersFactory listenersFactory,
+                           ManagedCollectionFactory managedCollectionFactory,
                            AnnotationParser annotationParser,
                            RealCommandImpl.Factory commandFactory,
                            RealParameterImpl.Factory parameterFactory,
@@ -69,7 +69,7 @@ public final class RealFeatureImpl
                            RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                            RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                            TypeRepository typeRepository) {
-        super(logger, new Feature.Data(id, name, description), listenersFactory);
+        super(logger, new Feature.Data(id, name, description), managedCollectionFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -243,11 +243,12 @@ public final class RealFeatureImpl
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
         commands.init(ChildUtil.name(name, Feature.COMMANDS_ID), connection);
         values.init(ChildUtil.name(name, Feature.VALUES_ID), connection);
         properties.init(ChildUtil.name(name, Feature.PROPERTIES_ID), connection);
+        // at the end as init'ing it might init the driver and set values, add commands/properties etc
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
     }
 
     @Override

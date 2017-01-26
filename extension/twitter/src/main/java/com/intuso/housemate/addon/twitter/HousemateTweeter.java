@@ -9,7 +9,7 @@ import com.intuso.housemate.client.v1_0.api.object.Device;
 import com.intuso.housemate.client.v1_0.api.object.Property;
 import com.intuso.housemate.client.v1_0.api.object.Value;
 import com.intuso.housemate.client.v1_0.proxy.simple.*;
-import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.MemberRegistration;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import org.slf4j.Logger;
 import twitter4j.Twitter;
@@ -52,7 +52,7 @@ public class HousemateTweeter {
 
     private final Logger logger;
 
-    private final Map<SimpleProxyDevice, java.util.List<ListenerRegistration>> listeners;
+    private final Map<SimpleProxyDevice, java.util.List<MemberRegistration>> listeners;
     private ServerListListener serverListListener = new ServerListListener();
     private DeviceListListener deviceListListener = new DeviceListListener();
     private DeviceListener deviceListener = new DeviceListener();
@@ -177,7 +177,7 @@ public class HousemateTweeter {
     private class DeviceListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<SimpleProxyDevice, SimpleProxyList<SimpleProxyDevice>> {
         @Override
         public void elementAdded(SimpleProxyList<SimpleProxyDevice> list, SimpleProxyDevice device) {
-            java.util.List<ListenerRegistration> registrations = new ArrayList<>();
+            java.util.List<MemberRegistration> registrations = new ArrayList<>();
             listeners.put(device, registrations);
             registrations.add(device.getFeatures().addObjectListener(new FeatureListListener(device, registrations), true));
             registrations.add(device.addObjectListener(deviceListener));
@@ -187,7 +187,7 @@ public class HousemateTweeter {
         @Override
         public void elementRemoved(SimpleProxyList<SimpleProxyDevice> list, SimpleProxyDevice device) {
             if(listeners.get(device) != null)
-                for(ListenerRegistration registration : listeners.remove(device))
+                for(MemberRegistration registration : listeners.remove(device))
                     registration.removeListener();
             tweet("\"" + device.getName() + "\" device removed");
         }
@@ -219,10 +219,10 @@ public class HousemateTweeter {
 
     private class FeatureListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<SimpleProxyFeature, SimpleProxyList<SimpleProxyFeature>> {
 
-        private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
+        private final java.util.List<MemberRegistration> deviceListenerRegistrations;
         private final SimpleProxyDevice device;
 
-        private FeatureListListener(SimpleProxyDevice device, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+        private FeatureListListener(SimpleProxyDevice device, java.util.List<MemberRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             this.device = device;
         }
@@ -243,18 +243,18 @@ public class HousemateTweeter {
 
     private class CommandListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<SimpleProxyCommand, SimpleProxyList<SimpleProxyCommand>> {
 
-        private final Map<SimpleProxyCommand, ListenerRegistration> commandListenerRegistrations = Maps.newHashMap();
-        private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
+        private final Map<SimpleProxyCommand, MemberRegistration> commandListenerRegistrations = Maps.newHashMap();
+        private final java.util.List<MemberRegistration> deviceListenerRegistrations;
         private final CommandListener listener;
 
-        private CommandListListener(SimpleProxyDevice device, SimpleProxyFeature feature, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+        private CommandListListener(SimpleProxyDevice device, SimpleProxyFeature feature, java.util.List<MemberRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new CommandListener(device, feature);
         }
 
         @Override
         public void elementAdded(SimpleProxyList<SimpleProxyCommand> list, SimpleProxyCommand element) {
-            ListenerRegistration listenerRegistration = element.addObjectListener(listener);
+            MemberRegistration listenerRegistration = element.addObjectListener(listener);
             deviceListenerRegistrations.add(listenerRegistration);
             commandListenerRegistrations.put(element, listenerRegistration);
         }
@@ -299,18 +299,18 @@ public class HousemateTweeter {
 
     private class ValueListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<SimpleProxyValue, SimpleProxyList<SimpleProxyValue>> {
 
-        private final Map<SimpleProxyValue, ListenerRegistration> valueListenerRegistrations = Maps.newHashMap();
-        private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
+        private final Map<SimpleProxyValue, MemberRegistration> valueListenerRegistrations = Maps.newHashMap();
+        private final java.util.List<MemberRegistration> deviceListenerRegistrations;
         private final ValueListener listener;
 
-        private ValueListListener(SimpleProxyDevice device, SimpleProxyFeature feature, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+        private ValueListListener(SimpleProxyDevice device, SimpleProxyFeature feature, java.util.List<MemberRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new ValueListener(device, feature);
         }
 
         @Override
         public void elementAdded(SimpleProxyList<SimpleProxyValue> list, SimpleProxyValue element) {
-            ListenerRegistration listenerRegistration = element.addObjectListener(listener);
+            MemberRegistration listenerRegistration = element.addObjectListener(listener);
             deviceListenerRegistrations.add(listenerRegistration);
             valueListenerRegistrations.put(element, listenerRegistration);
         }
@@ -345,18 +345,18 @@ public class HousemateTweeter {
 
     private class PropertyListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<SimpleProxyProperty, SimpleProxyList<SimpleProxyProperty>> {
 
-        private final Map<SimpleProxyProperty, ListenerRegistration> propertyListenerRegistrations = Maps.newHashMap();
-        private final java.util.List<ListenerRegistration> deviceListenerRegistrations;
+        private final Map<SimpleProxyProperty, MemberRegistration> propertyListenerRegistrations = Maps.newHashMap();
+        private final java.util.List<MemberRegistration> deviceListenerRegistrations;
         private final PropertyListener listener;
 
-        private PropertyListListener(SimpleProxyDevice device, SimpleProxyFeature feature, java.util.List<ListenerRegistration> deviceListenerRegistrations) {
+        private PropertyListListener(SimpleProxyDevice device, SimpleProxyFeature feature, java.util.List<MemberRegistration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new PropertyListener(device, feature);
         }
 
         @Override
         public void elementAdded(SimpleProxyList<SimpleProxyProperty> list, SimpleProxyProperty element) {
-            ListenerRegistration listenerRegistration = element.addObjectListener(listener);
+            MemberRegistration listenerRegistration = element.addObjectListener(listener);
             deviceListenerRegistrations.add(listenerRegistration);
             propertyListenerRegistrations.put(element, listenerRegistration);
         }

@@ -1,7 +1,7 @@
 package com.intuso.housemate.platform.android.app.object;
 
 import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyServer;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -23,7 +23,7 @@ public class AndroidProxyServer extends ProxyServer<AndroidProxyCommand,
     /**
      * @param logger    {@inheritDoc}
      */
-    public AndroidProxyServer(Connection connection, Logger logger, ListenersFactory listenersFactory, AndroidObjectFactories factories) {
-        super(connection, logger, listenersFactory, factories.command(), factories.automations(), factories.devices(), factories.users(), factories.nodes());
+    public AndroidProxyServer(Connection connection, Logger logger, ManagedCollectionFactory managedCollectionFactory, AndroidObjectFactories factories) {
+        super(connection, logger, managedCollectionFactory, factories.command(), factories.automations(), factories.devices(), factories.users(), factories.nodes());
     }
 }

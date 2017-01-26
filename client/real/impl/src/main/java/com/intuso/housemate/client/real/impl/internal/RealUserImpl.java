@@ -10,7 +10,7 @@ import com.intuso.housemate.client.api.internal.object.User;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealUser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -31,7 +31,7 @@ public final class RealUserImpl
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      */
     @Inject
     public RealUserImpl(@Assisted final Logger logger,
@@ -39,13 +39,13 @@ public final class RealUserImpl
                         @Assisted("name") String name,
                         @Assisted("description") String description,
                         @Assisted RemoveCallback<RealUserImpl> removeCallback,
-                        ListenersFactory listenersFactory,
+                        ManagedCollectionFactory managedCollectionFactory,
                         RealCommandImpl.Factory commandFactory,
                         RealParameterImpl.Factory parameterFactory,
                         RealPropertyImpl.Factory propertyFactory,
                         RealValueImpl.Factory valueFactory,
                         TypeRepository typeRepository) {
-        super(logger, new User.Data(id, name, description), listenersFactory);
+        super(logger, new User.Data(id, name, description), managedCollectionFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,

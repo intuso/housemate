@@ -9,7 +9,7 @@ import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddDeviceCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddUserCommand;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -41,7 +41,7 @@ public class RealServerImpl
     @Inject
     public RealServerImpl(Connection connection,
                           @com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
-                          ListenersFactory listenersFactory,
+                          ManagedCollectionFactory managedCollectionFactory,
                           final RealAutomationImpl.Factory automationFactory,
                           RealListPersistedImpl.Factory<RealAutomationImpl> automationsFactory,
                           final RealDeviceImpl.Factory deviceFactory,
@@ -53,7 +53,7 @@ public class RealServerImpl
                           AddAutomationCommand.Factory addAutomationCommandFactory,
                           AddDeviceCommand.Factory addDeviceCommandFactory,
                           AddUserCommand.Factory addUserCommandFactory) {
-        super(logger, new Server.Data( "server", "server", "server"), listenersFactory);
+        super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory);
         this.connection = connection;
         this.nodeFactory = nodeFactory;
         this.automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),

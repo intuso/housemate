@@ -3,7 +3,7 @@ package com.intuso.housemate.client.proxy.api.internal.object;
 import com.intuso.housemate.client.api.internal.object.User;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.api.internal.ProxyRemoveable;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -29,10 +29,10 @@ public abstract class ProxyUser<
      * @param logger {@inheritDoc}
      */
     public ProxyUser(Logger logger,
-                     ListenersFactory listenersFactory,
+                     ManagedCollectionFactory managedCollectionFactory,
                      ProxyObject.Factory<COMMAND> commandFactory,
                      ProxyObject.Factory<PROPERTY> propertyFactory) {
-        super(logger, User.Data.class, listenersFactory);
+        super(logger, User.Data.class, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID));

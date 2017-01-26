@@ -8,7 +8,7 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -32,7 +32,7 @@ public final class RealCommandImpl
     /**
      * @param logger {@inheritDoc}
      * @param parameters the command's parameters
-     * @param listenersFactory
+     * @param managedCollectionFactory
      */
     @Inject
     protected RealCommandImpl(@Assisted Logger logger,
@@ -41,11 +41,11 @@ public final class RealCommandImpl
                               @Assisted("description") String description,
                               @Assisted Performer performer,
                               @Assisted Iterable<? extends RealParameterImpl<?>> parameters,
-                              ListenersFactory listenersFactory,
+                              ManagedCollectionFactory managedCollectionFactory,
                               RealValueImpl.Factory valueFactory,
                               RealListGeneratedImpl.Factory<RealParameterImpl<?>> parametersFactory,
                               TypeRepository typeRepository) {
-        super(logger, new Command.Data(id, name, description), listenersFactory);
+        super(logger, new Command.Data(id, name, description), managedCollectionFactory);
         this.performer = performer;
         this.enabledValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID),
                 Command.ENABLED_ID,

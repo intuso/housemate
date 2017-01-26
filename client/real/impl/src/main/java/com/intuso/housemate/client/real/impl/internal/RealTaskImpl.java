@@ -18,7 +18,7 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -51,7 +51,7 @@ public final class RealTaskImpl
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      */
     @Inject
     public RealTaskImpl(@Assisted final Logger logger,
@@ -59,7 +59,7 @@ public final class RealTaskImpl
                         @Assisted("name") String name,
                         @Assisted("description") String description,
                         @Assisted RemoveCallback<RealTaskImpl> removeCallback,
-                        ListenersFactory listenersFactory,
+                        ManagedCollectionFactory managedCollectionFactory,
                         AnnotationParser annotationParser,
                         RealCommandImpl.Factory commandFactory,
                         RealParameterImpl.Factory parameterFactory,
@@ -67,7 +67,7 @@ public final class RealTaskImpl
                         RealValueImpl.Factory valueFactory,
                         RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                         TypeRepository typeRepository) {
-        super(logger, new Task.Data(id, name, description), listenersFactory);
+        super(logger, new Task.Data(id, name, description), managedCollectionFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -158,10 +158,11 @@ public final class RealTaskImpl
         renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
         removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
         properties.init(ChildUtil.name(name, Task.PROPERTIES_ID), connection);
         executingValue.init(ChildUtil.name(name, Task.EXECUTING_ID), connection);
+        // at the end as init'ing it might init the driver and set values, add commands/properties etc
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
     }
 
     @Override

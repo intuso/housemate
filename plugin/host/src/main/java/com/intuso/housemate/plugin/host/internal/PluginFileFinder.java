@@ -1,6 +1,6 @@
 package com.intuso.housemate.plugin.host.internal;
 
-import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.MemberRegistration;
 
 import java.io.File;
 
@@ -9,7 +9,7 @@ import java.io.File;
  */
 public interface PluginFileFinder {
 
-    ListenerRegistration addListener(Listener listener, boolean callForExisting);
+    MemberRegistration addListener(Listener listener, boolean callForExisting);
 
     interface Listener {
         String fileFound(File pluginFile);

@@ -7,7 +7,7 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.proxy.api.bridge.v1_0.ioc.ProxyV1_0;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -39,8 +39,8 @@ public class ProxyServerBridge
                                 Factory<ProxyListBridge<ProxyDeviceBridge>> devicesFactory,
                                 Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
                                 Factory<ProxyListBridge<ProxyUserBridge>> usersFactory,
-                                ListenersFactory listenersFactory) {
-        super(logger, Server.Data.class, serverMapper, listenersFactory);
+                                ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, Server.Data.class, serverMapper, managedCollectionFactory);
         this.connection = connection;
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_AUTOMATION_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, Server.AUTOMATIONS_ID));

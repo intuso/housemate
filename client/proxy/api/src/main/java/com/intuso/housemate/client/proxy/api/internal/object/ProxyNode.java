@@ -2,7 +2,7 @@ package com.intuso.housemate.client.proxy.api.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Node;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -27,11 +27,11 @@ public abstract class ProxyNode<
     private final COMMAND addHardwareCommand;
 
     public ProxyNode(Logger logger,
-                     ListenersFactory listenersFactory,
+                     ManagedCollectionFactory managedCollectionFactory,
                      Factory<COMMAND> commandFactory,
                      Factory<TYPES> typesFactory,
                      Factory<HARDWARES> hardwaresFactory) {
-        super(logger, Node.Data.class, listenersFactory);
+        super(logger, Node.Data.class, managedCollectionFactory);
         types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID));
         hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID));
         addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID));

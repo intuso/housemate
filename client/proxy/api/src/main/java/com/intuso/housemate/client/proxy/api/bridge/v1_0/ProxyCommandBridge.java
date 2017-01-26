@@ -9,7 +9,7 @@ import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.api.internal.object.JMSUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -39,10 +39,10 @@ public class ProxyCommandBridge
     @Inject
     protected ProxyCommandBridge(@Assisted Logger logger,
                                  CommandMapper commandMapper,
-                                 ListenersFactory listenersFactory,
+                                 ManagedCollectionFactory managedCollectionFactory,
                                  ProxyObjectBridge.Factory<ProxyValueBridge> valueFactory,
                                  ProxyObjectBridge.Factory<ProxyListBridge<ProxyParameterBridge>> parametersFactory) {
-        super(logger, Command.Data.class, commandMapper, listenersFactory);
+        super(logger, Command.Data.class, commandMapper, managedCollectionFactory);
         this.commandMapper = commandMapper;
         enabledValue = valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID));
         parameters = parametersFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID));

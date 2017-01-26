@@ -5,7 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.OptionMapper;
 import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -24,8 +24,8 @@ public class RealOptionBridge
     protected RealOptionBridge(@Assisted Logger logger,
                                OptionMapper optionMapper,
                                RealObjectBridge.Factory<RealListBridge<RealSubTypeBridge>> subTypesFactory,
-                               ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Option.Data.class, optionMapper, listenersFactory);
+                               ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Option.Data.class, optionMapper, managedCollectionFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID));
     }
 

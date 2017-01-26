@@ -92,7 +92,7 @@ public class AnnotationParserV1_0 implements AnnotationParser {
         List<RealValueImpl<?>> values = Lists.newArrayList();
         for(Method addListenerMethod : getAnnotatedMethods(clazz, AddListener.class).keySet())
             findAddListenerMethodValues(logger, idPrefix, object, clazz, addListenerMethod, values);
-        return Lists.newArrayList();
+        return values;
     }
 
     private void findAddListenerMethodValues(Logger logger, String idPrefix, Object object, Class<?> clazz, Method addListenerMethod, List<RealValueImpl<?>> values) {

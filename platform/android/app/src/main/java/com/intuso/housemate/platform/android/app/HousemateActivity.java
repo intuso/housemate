@@ -5,8 +5,8 @@ import com.intuso.housemate.client.v1_0.api.HousemateException;
 import com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.v1_0.api.type.TypeSpec;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class HousemateActivity extends Activity {
 
     private Logger logger;
-    private ListenersFactory listenersFactory;
+    private ManagedCollectionFactory managedCollectionFactory;
     private TypeSerialiser.Repository typeSerialiserRepository;
     private PropertyRepository properties;
     private Connection connection;
@@ -35,10 +35,10 @@ public abstract class HousemateActivity extends Activity {
     protected void onStart() {
         super.onStart();
         logger = LoggerFactory.getLogger(this.getClass());
-        listenersFactory = new ListenersFactory() {
+        managedCollectionFactory = new ManagedCollectionFactory() {
             @Override
-            public <LISTENER> Listeners<LISTENER> create() {
-                return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
+            public <LISTENER> ManagedCollection<LISTENER> create() {
+                return new ManagedCollection<>(new CopyOnWriteArrayList<LISTENER>());
             }
         };
         typeSerialiserRepository = new TypeSerialiser.Repository() {
@@ -48,7 +48,7 @@ public abstract class HousemateActivity extends Activity {
                 throw new HousemateException("Unknown type requested: " + typeSpec.toString());
             }
         };
-        properties = new SharedPreferencesPropertyRepository(listenersFactory, getApplicationContext());
+        properties = new SharedPreferencesPropertyRepository(managedCollectionFactory, getApplicationContext());
         try {
             connection = new ActiveMQConnectionFactory("tcp://" + properties.get("server.host") + ":" + properties.get("server.port")).createConnection();
         } catch (JMSException e) {
@@ -75,8 +75,8 @@ public abstract class HousemateActivity extends Activity {
         return logger;
     }
 
-    public ListenersFactory getListenersFactory() {
-        return listenersFactory;
+    public ManagedCollectionFactory getManagedCollectionFactory() {
+        return managedCollectionFactory;
     }
 
     public TypeSerialiser.Repository getTypeSerialiserRepository() {

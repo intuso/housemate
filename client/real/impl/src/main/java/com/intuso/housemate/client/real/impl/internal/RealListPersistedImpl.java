@@ -7,8 +7,8 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.real.api.internal.RealList;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -31,7 +31,7 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      */
     @Inject
     public RealListPersistedImpl(@Assisted Logger logger,
@@ -39,15 +39,15 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
                                  @Assisted("name") String name,
                                  @Assisted("description") String description,
                                  @Assisted ExistingObjectFactory<ELEMENT> existingObjectHandler,
-                                 ListenersFactory listenersFactory) {
-        super(logger, new List.Data(id, name, description), listenersFactory);
+                                 ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, new List.Data(id, name, description), managedCollectionFactory);
         this.elements = Maps.newHashMap();
         this.existingObjectHandler = existingObjectHandler;
     }
 
     @Override
-    public ListenerRegistration addObjectListener(List.Listener<? super ELEMENT, ? super RealListPersistedImpl<ELEMENT>> listener, boolean callForExistingElements) {
-        ListenerRegistration listenerRegistration = super.addObjectListener(listener);
+    public MemberRegistration addObjectListener(List.Listener<? super ELEMENT, ? super RealListPersistedImpl<ELEMENT>> listener, boolean callForExistingElements) {
+        MemberRegistration listenerRegistration = super.addObjectListener(listener);
         if(callForExistingElements)
             for(ELEMENT element : this)
                 listener.elementAdded(this, element);

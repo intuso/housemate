@@ -10,7 +10,7 @@ import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
      * @param id the type's id
      * @param name the type's name
      * @param description the type's description
-     * @param listenersFactory
+     * @param managedCollectionFactory
      */
     @Inject
     public EnumChoiceType(@Assisted Logger logger,
@@ -36,10 +36,10 @@ public class EnumChoiceType<E extends Enum<E>> extends RealChoiceType<E> {
                           @Assisted("name") String name,
                           @Assisted("description") String description,
                           @Assisted Class enumClass,
-                          ListenersFactory listenersFactory,
+                          ManagedCollectionFactory managedCollectionFactory,
                           RealOptionImpl.Factory optionFactory,
                           RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(logger, id, name, description, convertValuesToOptions(logger, optionFactory, enumClass), listenersFactory, optionsFactory);
+        super(logger, id, name, description, convertValuesToOptions(logger, optionFactory, enumClass), managedCollectionFactory, optionsFactory);
         this.serialiser = new EnumSerialiser<>(enumClass);
     }
 

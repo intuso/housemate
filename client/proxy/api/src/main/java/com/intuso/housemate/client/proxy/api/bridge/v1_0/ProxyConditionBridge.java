@@ -7,7 +7,7 @@ import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Condition;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -38,8 +38,8 @@ public class ProxyConditionBridge
                                    Factory<ProxyPropertyBridge> propertyFactory,
                                    Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
                                    Factory<ProxyListBridge<ProxyConditionBridge>> conditionsFactory,
-                                   ListenersFactory listenersFactory) {
-        super(logger, Condition.Data.class, conditionMapper, listenersFactory);
+                                   ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, Condition.Data.class, conditionMapper, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         satisfiedValue = valueFactory.create(ChildUtil.logger(logger, Condition.SATISFIED_ID));

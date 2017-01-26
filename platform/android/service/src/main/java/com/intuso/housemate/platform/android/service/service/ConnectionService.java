@@ -4,9 +4,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.slf4j.Logger;
@@ -23,25 +23,25 @@ public class ConnectionService extends Service {
 
     private final Binder binder = new Binder();
 
-    private final ListenersFactory listenersFactory;
+    private final ManagedCollectionFactory managedCollectionFactory;
     private final PropertyRepository defaultProperties;
 
     private PropertyRepository properties;
     private Logger logger;
-    private ListenerRegistration routerListenerRegistration;
+    private MemberRegistration routerListenerRegistration;
 
     public ConnectionService() {
 
         // create a listeners factory
-        listenersFactory = new ListenersFactory() {
+        managedCollectionFactory = new ManagedCollectionFactory() {
             @Override
-            public <LISTENER> Listeners<LISTENER> create() {
-                return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
+            public <LISTENER> ManagedCollection<LISTENER> create() {
+                return new ManagedCollection<>(new CopyOnWriteArrayList<LISTENER>());
             }
         };
 
         // setup the default properties
-        defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
+        defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(managedCollectionFactory);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ConnectionService extends Service {
         super.onCreate();
 
         // create all the required objects
-        properties = new SharedPreferencesPropertyRepository(listenersFactory, defaultProperties, getApplicationContext());
+        properties = new SharedPreferencesPropertyRepository(managedCollectionFactory, defaultProperties, getApplicationContext());
         logger = LoggerFactory.getLogger(ConnectionService.class);
 
         logger.debug("Connection Service created");

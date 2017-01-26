@@ -8,7 +8,7 @@ import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealSubTypeImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -35,7 +35,7 @@ public final class RealCompositeType<O>
      * @param id the compound type's id
      * @param name the compound type's name
      * @param description the compound type's description
-     * @param listenersFactory
+     * @param managedCollectionFactory
      * @param subTypes the compound type's sub types
      */
     @Inject
@@ -44,9 +44,9 @@ public final class RealCompositeType<O>
                                 @Assisted("name") String name,
                                 @Assisted("description") String description,
                                 @Assisted Iterable<RealSubTypeImpl<?>> subTypes,
-                                ListenersFactory listenersFactory,
+                                ManagedCollectionFactory managedCollectionFactory,
                                 RealListGeneratedImpl.Factory<RealSubTypeImpl<?>> subTypesFactory) {
-        super(logger, new CompositeData(id, name, description), listenersFactory);
+        super(logger, new CompositeData(id, name, description), managedCollectionFactory);
         this.serialiser = new Serialiser<>();
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID),
                 SUB_TYPES_ID,

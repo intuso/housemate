@@ -2,9 +2,9 @@ package com.intuso.housemate.plugin.rfxcom;
 
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKAPI;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.rfxcom.rfxtrx.RFXtrx;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance;
@@ -18,14 +18,14 @@ import java.io.IOException;
  */
 public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
 
-    private final Listeners<Listener> callbacks;
+    private final ManagedCollection<Listener> callbacks;
 
     private Lighting2Appliance lighting2Appliance;
-    private ListenerRegistration listenerRegistration;
+    private MemberRegistration listenerRegistration;
     private boolean isOn = false;
 
-    public HomeEasyUKApplianceImpl(ListenersFactory listenersFactory, RFXtrx rfXtrx, int houseId, byte unitCode) {
-        this.callbacks = listenersFactory.create();
+    public HomeEasyUKApplianceImpl(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx, int houseId, byte unitCode) {
+        this.callbacks = managedCollectionFactory.create();
         if(listenerRegistration != null) {
             listenerRegistration.removeListener();
             listenerRegistration = null;
@@ -75,8 +75,8 @@ public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
 	}
 
     @Override
-    public ListenerRegistration addCallback(Listener listener) {
-        return callbacks.addListener(listener);
+    public MemberRegistration addCallback(Listener listener) {
+        return callbacks.add(listener);
     }
 
 	private void setIsOn(boolean isOn) {

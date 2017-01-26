@@ -7,7 +7,7 @@ import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Hardware;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -51,8 +51,8 @@ public class RealHardwareBridge
                                  RealObjectBridge.Factory<RealListBridge<RealCommandBridge>> commandsFactory,
                                  RealObjectBridge.Factory<RealListBridge<RealValueBridge>> valuesFactory,
                                  RealObjectBridge.Factory<RealListBridge<RealPropertyBridge>> propertiesFactory,
-                                 ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Hardware.Data.class, hardwareMapper, listenersFactory);
+                                 ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Hardware.Data.class, hardwareMapper, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         runningValue = valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID));

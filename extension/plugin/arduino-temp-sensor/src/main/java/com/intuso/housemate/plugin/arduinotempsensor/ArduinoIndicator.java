@@ -5,9 +5,9 @@ import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class ArduinoIndicator implements FeatureDriver, PowerControl.Stateful {
     // todo use remote hardware
 
     private Logger logger;
-    private final Listeners<Listener> listeners;
+    private final ManagedCollection<Listener> listeners;
     private final SerialPortWrapper serialPort;
 
     @Property
@@ -35,8 +35,8 @@ public class ArduinoIndicator implements FeatureDriver, PowerControl.Stateful {
 
     @Inject
     protected ArduinoIndicator(SerialPortWrapper serialPort,
-                               ListenersFactory listenersFactory) {
-        this.listeners = listenersFactory.create();
+                               ManagedCollectionFactory managedCollectionFactory) {
+        this.listeners = managedCollectionFactory.create();
         this.serialPort = serialPort;
     }
 
@@ -80,7 +80,7 @@ public class ArduinoIndicator implements FeatureDriver, PowerControl.Stateful {
     }
 
     @Override
-    public ListenerRegistration addListener(Listener listener) {
-        return listeners.addListener(listener);
+    public MemberRegistration addListener(Listener listener) {
+        return listeners.add(listener);
     }
 }

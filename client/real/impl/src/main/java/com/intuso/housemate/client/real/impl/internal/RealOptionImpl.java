@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.real.api.internal.RealOption;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -19,7 +19,7 @@ public final class RealOptionImpl
     /**
      * @param logger {@inheritDoc}
      * @param subTypes the option's sub types
-     * @param listenersFactory
+     * @param managedCollectionFactory
      */
     @Inject
     public RealOptionImpl(@Assisted Logger logger,
@@ -27,9 +27,9 @@ public final class RealOptionImpl
                           @Assisted("name") String name,
                           @Assisted("description") String description,
                           @Assisted Iterable<RealSubTypeImpl<?>> subTypes,
-                          ListenersFactory listenersFactory,
+                          ManagedCollectionFactory managedCollectionFactory,
                           RealListGeneratedImpl.Factory<RealSubTypeImpl<?>> subTypesFactory) {
-        super(logger, new Option.Data(id, name, description), listenersFactory);
+        super(logger, new Option.Data(id, name, description), managedCollectionFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID),
                 Option.SUB_TYPES_ID,
                 "Sub Types",

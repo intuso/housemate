@@ -2,7 +2,7 @@ package com.intuso.housemate.client.proxy.api.internal.object;
 
 import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -24,9 +24,9 @@ public abstract class ProxyOption<
      * @param logger {@inheritDoc}
      */
     public ProxyOption(Logger logger,
-                       ListenersFactory listenersFactory,
+                       ManagedCollectionFactory managedCollectionFactory,
                        ProxyObject.Factory<SUB_TYPES> subTypesFactory) {
-        super(logger, Option.Data.class, listenersFactory);
+        super(logger, Option.Data.class, managedCollectionFactory);
         subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID));
     }
 

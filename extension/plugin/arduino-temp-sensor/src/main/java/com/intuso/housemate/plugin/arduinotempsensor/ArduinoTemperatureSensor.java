@@ -4,9 +4,9 @@ import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.feature.TemperatureSensor;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -21,7 +21,7 @@ import java.io.*;
 public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSensor {
 
     private Logger logger;
-    private final Listeners<Listener> listeners;
+    private final ManagedCollection<Listener> listeners;
     private final SerialPortWrapper serialPort;
     private final SerialPortEventListener eventListener = new EventListener();
 
@@ -34,9 +34,9 @@ public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSenso
 
     @Inject
     protected ArduinoTemperatureSensor(SerialPortWrapper serialPort,
-                                       ListenersFactory listenersFactory) {
+                                       ManagedCollectionFactory managedCollectionFactory) {
         this.serialPort = serialPort;
-        this.listeners = listenersFactory.create();
+        this.listeners = managedCollectionFactory.create();
     }
 
     @Override
@@ -79,8 +79,8 @@ public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSenso
     }
 
     @Override
-    public ListenerRegistration addListener(Listener listener) {
-        return listeners.addListener(listener);
+    public MemberRegistration addListener(Listener listener) {
+        return listeners.add(listener);
     }
 
     private class EventListener implements SerialPortEventListener {

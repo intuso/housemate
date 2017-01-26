@@ -10,7 +10,7 @@ import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.proxy.api.internal.object.ProxyObject;
 import com.intuso.housemate.client.proxy.api.internal.object.ProxyServer;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?>>
     private final Serialiser<O> serialiser;
 
     /**
-     * @param listenersFactory
+     * @param managedCollectionFactory
      * @param server the root to get the object from
      */
     @Inject
@@ -37,9 +37,9 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?>>
                           @Assisted("name") String name,
                           @Assisted("description") String description,
                           @Assisted Set<String> allowedTypes,
-                          ListenersFactory listenersFactory,
+                          ManagedCollectionFactory managedCollectionFactory,
                           ProxyServer<?, ?, ?, ?, ?, ?> server) {
-        super(logger, new ObjectData(id, name, description), listenersFactory);
+        super(logger, new ObjectData(id, name, description), managedCollectionFactory);
         serialiser = new Serialiser<>(server, allowedTypes);
     }
 

@@ -21,8 +21,8 @@ import com.intuso.housemate.client.real.api.internal.RealCondition;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddConditionCommand;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -53,7 +53,7 @@ public final class RealConditionImpl
     private final RealCommandImpl addConditionCommand;
 
     private final Map<String, Boolean> childSatisfied = Maps.newHashMap();
-    private final Map<String, ListenerRegistration> childListenerRegistrations = Maps.newHashMap();
+    private final Map<String, MemberRegistration> childListenerRegistrations = Maps.newHashMap();
 
     private final RemoveCallback<RealConditionImpl> removeCallback;
 
@@ -61,7 +61,7 @@ public final class RealConditionImpl
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      */
     @Inject
     public RealConditionImpl(@Assisted final Logger logger,
@@ -69,7 +69,7 @@ public final class RealConditionImpl
                              @Assisted("name") String name,
                              @Assisted("description") String description,
                              @Assisted final RemoveCallback<RealConditionImpl> removeCallback,
-                             ListenersFactory listenersFactory,
+                             ManagedCollectionFactory managedCollectionFactory,
                              AnnotationParser annotationParser,
                              RealCommandImpl.Factory commandFactory,
                              RealParameterImpl.Factory parameterFactory,
@@ -80,7 +80,7 @@ public final class RealConditionImpl
                              final RealListPersistedImpl.Factory<RealConditionImpl> conditionsFactory,
                              AddConditionCommand.Factory addConditionCommandFactory,
                              TypeRepository typeRepository) {
-        super(logger, new Condition.Data(id, name, description), listenersFactory);
+        super(logger, new Condition.Data(id, name, description), managedCollectionFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -194,12 +194,13 @@ public final class RealConditionImpl
         renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
         removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
         properties.init(ChildUtil.name(name, Condition.PROPERTIES_ID), connection);
         satisfiedValue.init(ChildUtil.name(name, Condition.SATISFIED_ID), connection);
         childConditions.init(ChildUtil.name(name, Condition.PROPERTIES_ID), connection);
         addConditionCommand.init(ChildUtil.name(name, Condition.PROPERTIES_ID), connection);
+        // at the end as init'ing it might init the driver and set values, add commands/properties etc
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
     }
 
     @Override

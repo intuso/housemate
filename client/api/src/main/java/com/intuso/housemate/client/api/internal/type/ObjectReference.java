@@ -1,6 +1,8 @@
 package com.intuso.housemate.client.api.internal.type;
 
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
 
 /**
  * Reference for an object containing the object's path, and the object if it exists
@@ -10,6 +12,7 @@ public class ObjectReference<O extends Object<?>> {
 
     private final String[] path;
     private O object;
+    private ManagedCollection<Listener> listeners;
 
     /**
      * @param path the path to the object
@@ -50,5 +53,14 @@ public class ObjectReference<O extends Object<?>> {
     public void setObject(O object) {
         // todo check the object's path matches the path inside this reference
         this.object = object;
+    }
+
+    public MemberRegistration addListener(Listener listener) {
+        return listeners.add(listener);
+    }
+
+    public interface Listener {
+        void available();
+        void unavailable();
     }
 }

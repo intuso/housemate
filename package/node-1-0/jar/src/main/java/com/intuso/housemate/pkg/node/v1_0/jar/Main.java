@@ -5,8 +5,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.intuso.housemate.pkg.node.v1_0.jar.ioc.NodePackageJarModule;
 import com.intuso.housemate.platform.pc.Properties;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import jssc.SerialPortList;
@@ -28,15 +28,15 @@ public class Main {
      */
     public Main(String args[]) {
 
-        ListenersFactory listenersFactory = new ListenersFactory() {
+        ManagedCollectionFactory managedCollectionFactory = new ManagedCollectionFactory() {
             @Override
-            public <LISTENER> Listeners<LISTENER> create() {
-                return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
+            public <LISTENER> ManagedCollection<LISTENER> create() {
+                return new ManagedCollection<>(new CopyOnWriteArrayList<LISTENER>());
             }
         };
 
-        WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
-        PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, args);
+        WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(managedCollectionFactory);
+        PropertyRepository properties = Properties.create(managedCollectionFactory, defaultProperties, args);
 
         Injector injector = Guice.createInjector(new NodePackageJarModule(defaultProperties, properties));
 

@@ -1,6 +1,6 @@
 package com.intuso.housemate.platform.pc;
 
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.reader.commandline.CommandLinePropertyRepository;
 import com.intuso.utilities.properties.reader.file.FilePropertyRepository;
@@ -27,7 +27,7 @@ public class Properties {
 
     private Properties() {}
 
-    public static PropertyRepository create(ListenersFactory listenersFactory, PropertyRepository parent, String[] args) {
+    public static PropertyRepository create(ManagedCollectionFactory managedCollectionFactory, PropertyRepository parent, String[] args) {
 
         // set the defaults
         parent.set(HOUSEMATE_CONFIG_DIR, System.getProperty("user.home") + File.separator + ".housemate");
@@ -36,7 +36,7 @@ public class Properties {
         parent.set(APPLICATION_PROPS_FILE, "housemate.props");
 
         // read the command lines args now so we can use them to setup the file properties
-        CommandLinePropertyRepository clProperties = new CommandLinePropertyRepository(listenersFactory, parent, args);
+        CommandLinePropertyRepository clProperties = new CommandLinePropertyRepository(managedCollectionFactory, parent, args);
 
         // read system file properties
         File configDirectory = new File(clProperties.get(HOUSEMATE_CONFIG_DIR));
@@ -54,7 +54,7 @@ public class Properties {
         try {
             if(!props_file.exists())
                 props_file.createNewFile();
-            systemProperties = new FilePropertyRepository(listenersFactory, parent, props_file);
+            systemProperties = new FilePropertyRepository(managedCollectionFactory, parent, props_file);
         } catch (FileNotFoundException e) {
             logger.warn("Could not find system properties file \"" + props_file.getAbsolutePath() + "\"");
         } catch (IOException e) {
@@ -72,7 +72,7 @@ public class Properties {
         try {
             if(!props_file.exists())
                 props_file.createNewFile();
-            applicationProperties = new FilePropertyRepository(listenersFactory,
+            applicationProperties = new FilePropertyRepository(managedCollectionFactory,
                     systemProperties != null ? systemProperties : parent, props_file);
         } catch (FileNotFoundException e) {
             System.out.println("WARN: Could not find application properties file \"" + props_file.getAbsolutePath() + "\"");
@@ -82,7 +82,7 @@ public class Properties {
         }
 
         // wrap the defaults and file properties with the command line properties
-        return new CommandLinePropertyRepository(listenersFactory,
+        return new CommandLinePropertyRepository(managedCollectionFactory,
                 applicationProperties != null ? applicationProperties :
                     systemProperties != null ? systemProperties : parent, args);
     }

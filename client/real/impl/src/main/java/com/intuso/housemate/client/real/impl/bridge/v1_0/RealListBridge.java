@@ -8,8 +8,8 @@ import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.real.impl.ChildUtil;
 import com.intuso.housemate.client.v1_0.real.impl.JMSUtil;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -35,8 +35,8 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
     protected RealListBridge(@Assisted Logger logger,
                              ListMapper listMapper,
                              RealObjectBridge.Factory<ELEMENT> elementFactory,
-                             ListenersFactory listenersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.List.Data.class, listMapper, listenersFactory);
+                             ManagedCollectionFactory managedCollectionFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.List.Data.class, listMapper, managedCollectionFactory);
         this.elementFactory = elementFactory;
     }
 
@@ -100,7 +100,7 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
     }
 
     @Override
-    public ListenerRegistration addObjectListener(List.Listener<? super ELEMENT, ? super RealListBridge<ELEMENT>> listener, boolean callForExistingElements) {
+    public MemberRegistration addObjectListener(List.Listener<? super ELEMENT, ? super RealListBridge<ELEMENT>> listener, boolean callForExistingElements) {
         for(ELEMENT element : elements.values())
             listener.elementAdded(this, element);
         return this.addObjectListener(listener);

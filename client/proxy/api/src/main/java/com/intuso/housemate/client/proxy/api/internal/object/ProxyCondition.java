@@ -5,7 +5,7 @@ import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.api.internal.ProxyFailable;
 import com.intuso.housemate.client.proxy.api.internal.ProxyRemoveable;
 import com.intuso.housemate.client.proxy.api.internal.ProxyUsesDriver;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -45,13 +45,13 @@ public abstract class ProxyCondition<
      * @param logger {@inheritDoc}
      */
     public ProxyCondition(Logger logger,
-                          ListenersFactory listenersFactory,
+                          ManagedCollectionFactory managedCollectionFactory,
                           ProxyObject.Factory<COMMAND> commandFactory,
                           ProxyObject.Factory<VALUE> valueFactory,
                           ProxyObject.Factory<PROPERTY> propertyFactory,
                           ProxyObject.Factory<PROPERTIES> propertiesFactory,
                           ProxyObject.Factory<CONDITIONS> conditionsFactory) {
-        super(logger, Condition.Data.class, listenersFactory);
+        super(logger, Condition.Data.class, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));

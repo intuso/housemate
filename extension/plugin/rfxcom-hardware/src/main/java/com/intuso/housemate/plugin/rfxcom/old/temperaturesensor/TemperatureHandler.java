@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.rfxcom.old.temperaturesensor;
 
 import com.google.common.collect.Sets;
 import com.intuso.housemate.plugin.rfxcom.old.Handler;
-import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.MemberRegistration;
 import com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensors;
 import org.slf4j.Logger;
 
@@ -15,7 +15,7 @@ public abstract class TemperatureHandler implements Handler {
 
     private final Logger logger;
     private final TemperatureSensors temperatureSensors;
-    private ListenerRegistration messageListenerRegistration;
+    private MemberRegistration messageListenerRegistration;
     private final CallbackImpl callback = new CallbackImpl();
     private final Set<Integer> knownSensors = Sets.newHashSet();
 

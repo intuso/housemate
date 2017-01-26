@@ -12,7 +12,7 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddFeatureCommand;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
@@ -42,7 +42,7 @@ public final class RealDeviceImpl
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      */
     @Inject
     public RealDeviceImpl(@Assisted final Logger logger,
@@ -50,7 +50,7 @@ public final class RealDeviceImpl
                           @Assisted("name") String name,
                           @Assisted("description") String description,
                           @Assisted RemoveCallback<RealDeviceImpl> removeCallback,
-                          ListenersFactory listenersFactory,
+                          ManagedCollectionFactory managedCollectionFactory,
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
                           RealValueImpl.Factory valueFactory,
@@ -58,7 +58,7 @@ public final class RealDeviceImpl
                           RealListPersistedImpl.Factory<RealFeatureImpl> featuresFactory,
                           AddFeatureCommand.Factory addFeatureCommandFactory,
                           TypeRepository typeRepository) {
-        super(logger, new Device.Data(id, name, description), listenersFactory);
+        super(logger, new Device.Data(id, name, description), managedCollectionFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,

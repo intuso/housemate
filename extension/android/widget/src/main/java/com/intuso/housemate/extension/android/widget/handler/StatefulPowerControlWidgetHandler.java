@@ -8,7 +8,7 @@ import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
-import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.MemberRegistration;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,7 +21,7 @@ public class StatefulPowerControlWidgetHandler
         extends WidgetHandler<PowerControl.Stateful>
         implements Command.PerformListener<AndroidProxyCommand> {
 
-    private ListenerRegistration listenerRegistration;
+    private MemberRegistration listenerRegistration;
 
     public StatefulPowerControlWidgetHandler(WidgetService widgetService, ProxyWrapper proxyWrapper, String deviceId) {
         super(widgetService, proxyWrapper, deviceId, PowerControl.Stateful.class);

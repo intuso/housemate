@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import com.google.inject.Inject;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
 import java.util.Set;
@@ -16,12 +16,12 @@ public class SharedPreferencesPropertyRepository
     private final SharedPreferences sharedPreferences;
 
     @Inject
-    public SharedPreferencesPropertyRepository(ListenersFactory listenersFactory, Context context) {
-        this(listenersFactory, null, context);
+    public SharedPreferencesPropertyRepository(ManagedCollectionFactory managedCollectionFactory, Context context) {
+        this(managedCollectionFactory, null, context);
     }
 
-    public SharedPreferencesPropertyRepository(ListenersFactory listenersFactory, PropertyRepository parent, Context context) {
-        super(listenersFactory, parent);
+    public SharedPreferencesPropertyRepository(ManagedCollectionFactory managedCollectionFactory, PropertyRepository parent, Context context) {
+        super(managedCollectionFactory, parent);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }

@@ -11,8 +11,8 @@ import com.intuso.housemate.client.v1_0.api.object.Node;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.api.object.Server;
 import com.intuso.housemate.client.v1_0.real.impl.JMSUtil;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public final class RealNodeListImpl
 
     /**
      * @param logger {@inheritDoc}
-     * @param listenersFactory
+     * @param managedCollectionFactory
      * @param nodeV1_0Factory
      */
     @Inject
@@ -45,16 +45,16 @@ public final class RealNodeListImpl
                             @Assisted("id") String id,
                             @Assisted("name") String name,
                             @Assisted("description") String description,
-                            ListenersFactory listenersFactory,
+                            ManagedCollectionFactory managedCollectionFactory,
                             RealNodeBridge.Factory nodeV1_0Factory) {
-        super(logger, new List.Data(id, name, description), listenersFactory);
+        super(logger, new List.Data(id, name, description), managedCollectionFactory);
         this.nodeV1_0Factory = nodeV1_0Factory;
         this.elements = Maps.newHashMap();
     }
 
     @Override
-    public ListenerRegistration addObjectListener(List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener, boolean callForExistingElements) {
-        ListenerRegistration listenerRegistration = super.addObjectListener(listener);
+    public MemberRegistration addObjectListener(List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener, boolean callForExistingElements) {
+        MemberRegistration listenerRegistration = super.addObjectListener(listener);
         if(callForExistingElements)
             for(ServerBaseNode<?, ?, ?, ?> node : this)
                 listener.elementAdded(this, node);

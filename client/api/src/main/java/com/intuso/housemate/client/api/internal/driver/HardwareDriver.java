@@ -13,6 +13,7 @@ public interface HardwareDriver {
     interface Callback {
         void setError(String error);
         void addObject(Object object, String prefix);
+        void removeObject(Object object);
     }
 
     interface Factory<DRIVER extends HardwareDriver> {

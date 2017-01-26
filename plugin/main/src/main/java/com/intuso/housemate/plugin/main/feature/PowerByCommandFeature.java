@@ -6,9 +6,9 @@ import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.annotation.Property;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
 import com.intuso.housemate.client.api.internal.feature.PowerControl;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -27,13 +27,13 @@ public final class PowerByCommandFeature implements FeatureDriver, PowerControl.
     @Id(value = "off-command", name = "Off Command", description = "The command to turn the feature off")
     private String offCommandProperty;
 
-    private final Listeners<Listener> listeners;
+    private final ManagedCollection<Listener> listeners;
 
     private boolean on = false;
 
     @Inject
-	public PowerByCommandFeature(ListenersFactory listenersFactory) {
-        this.listeners = listenersFactory.create();
+	public PowerByCommandFeature(ManagedCollectionFactory managedCollectionFactory) {
+        this.listeners = managedCollectionFactory.create();
     }
 
     @Override
@@ -52,8 +52,8 @@ public final class PowerByCommandFeature implements FeatureDriver, PowerControl.
     }
 
     @Override
-    public ListenerRegistration addListener(Listener listener) {
-        return listeners.addListener(listener);
+    public MemberRegistration addListener(Listener listener) {
+        return listeners.add(listener);
     }
 
     /**

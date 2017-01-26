@@ -3,7 +3,7 @@ package com.intuso.housemate.plugin.rfxcom.old.temperaturesensor;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
-import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.MemberRegistration;
 import org.slf4j.Logger;
 
 /**
@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 public abstract class TemperatureSensor implements FeatureDriver, com.intuso.housemate.client.v1_0.api.feature.TemperatureSensor {
 
 	private com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensor sensor;
-    private ListenerRegistration listenerRegistration;
+    private MemberRegistration listenerRegistration;
     private int sensorId = 0;
 
     public Listener listener;
@@ -69,7 +69,7 @@ public abstract class TemperatureSensor implements FeatureDriver, com.intuso.hou
     }
 
     @Override
-    public ListenerRegistration addListener(Listener listener) {
+    public MemberRegistration addListener(Listener listener) {
         return null; // todo
     }
 

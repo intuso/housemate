@@ -1,5 +1,6 @@
 package com.intuso.housemate.plugin.host.internal.ioc;
 
+import com.google.common.util.concurrent.Service;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.Multibinder;
@@ -15,5 +16,8 @@ public class PluginHostModule extends AbstractModule {
         Multibinder.newSetBinder(binder(), PluginListener.class);
         Multibinder.newSetBinder(binder(), com.intuso.housemate.client.v1_0.api.plugin.PluginListener.class);
         bind(PluginHost.class).in(Scopes.SINGLETON);
+
+        // bind the ervice
+        Multibinder.newSetBinder(binder(), Service.class).addBinding().to(PluginHost.class).in(Scopes.SINGLETON);
     }
 }

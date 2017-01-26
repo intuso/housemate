@@ -1,7 +1,7 @@
 package com.intuso.housemate.server;
 
 import com.intuso.housemate.client.api.internal.annotation.*;
-import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.MemberRegistration;
 
 /**
  * Created by tomc on 20/12/16.
@@ -15,7 +15,7 @@ interface TestFeature {
     void setValue(double value);
 
     @AddListener
-    ListenerRegistration addListener(Listener listener);
+    MemberRegistration addListener(Listener listener);
 
     interface Listener {
         @Value

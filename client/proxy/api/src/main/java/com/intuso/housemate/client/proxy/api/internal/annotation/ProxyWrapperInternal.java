@@ -10,8 +10,8 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.proxy.api.internal.object.*;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
@@ -26,18 +26,36 @@ import java.util.concurrent.CountDownLatch;
  */
 public class ProxyWrapperInternal implements ProxyWrapper {
 
-    private final ListenersFactory listenersFactory;
+    private final ManagedCollectionFactory managedCollectionFactory;
     private final TypeSerialiser.Repository typeSerialiserRepository;
 
     @Inject
-    public ProxyWrapperInternal(ListenersFactory listenersFactory, TypeSerialiser.Repository typeSerialiserRepository) {
+    public ProxyWrapperInternal(ManagedCollectionFactory managedCollectionFactory, TypeSerialiser.Repository typeSerialiserRepository) {
         this.typeSerialiserRepository = typeSerialiserRepository;
-        this.listenersFactory = listenersFactory;
+        this.managedCollectionFactory = managedCollectionFactory;
     }
 
     @Override
     public <T> T build(Logger logger, ProxyObject<?, ?> object, Class<T> clazz, String prefix) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[] {clazz}, new InvocationHandlerImpl(object, clazz));
+    }
+
+    private Object defaultValueFor(Class<?> clazz) {
+        if(boolean.class.equals(clazz))
+            return false;
+        else if(byte.class.equals(clazz))
+            return (byte) 0;
+        else if(double.class.equals(clazz))
+            return 0.0;
+        else if(float.class.equals(clazz))
+            return 0.0f;
+        else if(int.class.equals(clazz))
+            return 0;
+        else if(long.class.equals(clazz))
+            return 0L;
+        else if(short.class.equals(clazz))
+            return (short) 0;
+        return null;
     }
 
     private class InvocationHandlerImpl implements InvocationHandler {
@@ -55,8 +73,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
         public synchronized Object invoke(Object o, Method method, Object[] args) throws Throwable {
             if(!handlers.containsKey(method))
                 handlers.put(method, createHandler(method));
-            handlers.get(method).handle(args);
-            return null;
+            return handlers.get(method).handle(args);
         }
 
         MethodInvocationHandler createHandler(Method method) {
@@ -65,6 +82,8 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 return createCommandHandler(method);
             else if(method.getAnnotation(Property.class) != null)
                 return createPropertyHandler(method, method.getAnnotation(Property.class));
+            else if(method.getAnnotation(Value.class) != null)
+                return createValueHandler(method, id, method.getAnnotation(Value.class));
             else if(method.getAnnotation(com.intuso.housemate.client.api.internal.annotation.AddListener.class) != null)
                 return createAddListenerHandler(method);
             return new Problem("Don't know how to handle invocation of " + clazz.getName() + " method " + method.toString() + ". Expecting one of the following annotations:\n" + Command.class.getName() + "\n" + Property.class.getName() + "\n" + AddListener.class.getName());
@@ -115,6 +134,20 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                     new PropertyValueSerialiser(property.minValues(), property.maxValues(), typeSerialiser));
         }
 
+        MethodInvocationHandler createValueHandler(Method method, Id id, Value value) {
+            if(method.getParameterTypes().length != 0)
+                return new Problem(clazz.getName() + " value method should not have any arguments");
+            if(id == null)
+                return new Problem(clazz.getName() + " value method " + method.toString() + " has no " + Id.class.getName() + " annotation");
+            if(!(object instanceof ProxyValue.Container))
+                return new Problem(clazz.getName() + " has a value method " + method.toString() + " but the object being wrapped is not a " + ProxyValue.Container.class.getName());
+            TypeSerialiser typeSerialiser = typeSerialiserRepository.getSerialiser(new TypeSpec(method.getGenericReturnType(), value.restriction()));
+            return new ValueGetter(
+                    ((ProxyValue.Container<? extends ProxyList<? extends ProxyValue<?, ?>, ?>>) object).getValues(),
+                    id.value(),
+                    new ValueDeserialiser(List.class.isAssignableFrom(method.getReturnType()), typeSerialiser, defaultValueFor(method.getReturnType())));
+        }
+
         MethodInvocationHandler createAddListenerHandler(Method method) {
 
             // check there is only a single argument
@@ -126,13 +159,13 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 return new Problem(clazz.getName() + " has an add listener method " + method.toString() + " but the object being wrapped is not a " + ProxyValue.Container.class.getName());
 
             // find all the value methods, and listen to those values
-            Listeners listeners = listenersFactory.create();
+            ManagedCollection listeners = managedCollectionFactory.create();
             findValuesIn(method.getParameterTypes()[0], listeners, ((ProxyValue.Container<ProxyList<ProxyValue<?, ?>, ?>>) object).getValues());
 
             return new AddListener(listeners);
         }
 
-        private void findValuesIn(Class<?> clazz, final Listeners listeners, final ProxyList<ProxyValue<?, ?>, ?> values) {
+        private void findValuesIn(Class<?> clazz, final ManagedCollection listeners, final ProxyList<ProxyValue<?, ?>, ?> values) {
             for(Method method : clazz.getDeclaredMethods()) {
                 if (method.getAnnotation(Value.class) != null) {
                     Value value = method.getAnnotation(Value.class);
@@ -142,7 +175,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                     if(id == null)
                         throw new HousemateException(clazz.getName() + " value method " + method.toString() + " has no " + Id.class.getName() + " annotation");
                     TypeSerialiser typeSerialiser = typeSerialiserRepository.getSerialiser(new TypeSpec(method.getParameterTypes()[0], value.restriction()));
-                    addValueListener(listeners, method, values, id.value(), new ValueDeserialiser(List.class.isAssignableFrom(method.getParameterTypes()[0]), typeSerialiser));
+                    addValueListener(listeners, method, values, id.value(), new ValueDeserialiser(List.class.isAssignableFrom(method.getParameterTypes()[0]), typeSerialiser, defaultValueFor(method.getParameterTypes()[0])));
                 }
             }
             if(clazz.getSuperclass() != null)
@@ -151,7 +184,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 findValuesIn(interfaceClass, listeners, values);
         }
 
-        private void addValueListener(final Listeners listeners, final Method method, final ProxyList<ProxyValue<?, ?>, ?> values, final String id, final ValueDeserialiser valueDeserialiser) {
+        private void addValueListener(final ManagedCollection listeners, final Method method, final ProxyList<ProxyValue<?, ?>, ?> values, final String id, final ValueDeserialiser valueDeserialiser) {
             values.addObjectListener(new com.intuso.housemate.client.api.internal.object.List.Listener<ProxyValue<?, ?>, ProxyList<ProxyValue<?, ?>, ?>>() {
 
                 @Override
@@ -169,11 +202,11 @@ public class ProxyWrapperInternal implements ProxyWrapper {
 
         private class ValueListenerCallback implements com.intuso.housemate.client.api.internal.object.Value.Listener<ProxyValue<?, ?>> {
 
-            private final Listeners listeners;
+            private final ManagedCollection listeners;
             private final Method method;
             private final ValueDeserialiser valueDeserialiser;
 
-            private ValueListenerCallback(Listeners listeners, Method method, ValueDeserialiser valueDeserialiser) {
+            private ValueListenerCallback(ManagedCollection listeners, Method method, ValueDeserialiser valueDeserialiser) {
                 this.listeners = listeners;
                 this.method = method;
                 this.valueDeserialiser = valueDeserialiser;
@@ -316,7 +349,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
             public Object handle(Object[] args) {
                 final CountDownLatch latch = new CountDownLatch(1);
                 ProxyProperty<?, ?, ?> property = properties.get(propertyId);
-                if(propertyId == null)
+                if(property == null)
                     throw new HousemateException("Could not find property " + propertyId);
                 Type.InstanceMap values = new Type.InstanceMap();
                 values.getChildren().put("value", valueSerialiser.serialise(args[0]));
@@ -382,17 +415,39 @@ public class ProxyWrapperInternal implements ProxyWrapper {
             }
         }
 
+        private class ValueGetter implements MethodInvocationHandler {
+
+            private final ProxyList<? extends ProxyValue<?, ?>, ?> values;
+            private final String valueId;
+            private final ValueDeserialiser valueDeserialiser;
+
+            private ValueGetter(ProxyList<? extends ProxyValue<?, ?>, ?> values, String valueId, ValueDeserialiser valueDeserialiser) {
+                this.values = values;
+                this.valueId = valueId;
+                this.valueDeserialiser = valueDeserialiser;
+            }
+
+            @Override
+            public Object handle(Object[] args) {
+                ProxyValue<?, ?> value = values.get(valueId);
+                if(value == null)
+                    throw new HousemateException("Could not find value " + valueId);
+                Type.Instances values = value.getValue();
+                return valueDeserialiser.deserialise(values);
+            }
+        }
+
         private class AddListener implements MethodInvocationHandler {
 
-            private final Listeners listeners;
+            private final ManagedCollection listeners;
 
-            public AddListener(Listeners listeners) {
+            public AddListener(ManagedCollection listeners) {
                 this.listeners = listeners;
             }
 
             @Override
             public Object handle(Object[] args) {
-                return listeners.addListener(args[0]);
+                return listeners.add(args[0]);
             }
         }
 
@@ -400,22 +455,25 @@ public class ProxyWrapperInternal implements ProxyWrapper {
 
             private final boolean isList;
             private final TypeSerialiser serialiser;
+            private final Object defaultValue;
 
-            private ValueDeserialiser(boolean isList, TypeSerialiser serialiser) {
+            private ValueDeserialiser(boolean isList, TypeSerialiser serialiser, Object defaultValue) {
                 this.isList = isList;
                 this.serialiser = serialiser;
+                this.defaultValue = defaultValue;
             }
 
             public Object deserialise(Type.Instances instances) {
                 List<Object> result = Lists.newArrayList();
-                for(Type.Instance instance : instances.getElements())
-                    result.add(serialiser.deserialise(instance));
+                if(instances != null && instances.getElements() != null)
+                    for(Type.Instance instance : instances.getElements())
+                        result.add(serialiser.deserialise(instance));
                 if(!isList) {
                     if(result.size() == 0)
-                        return null;
-                    else if(result.size() == 1)
-                        return result.get(0);
-                    else
+                        return defaultValue;
+                    else if(result.size() == 1) {
+                        return result.get(0) == null ? defaultValue : result.get(0);
+                    } else
                         throw new HousemateException("Cannot convert list of multiple values to a single value");
                 }
                 return result;

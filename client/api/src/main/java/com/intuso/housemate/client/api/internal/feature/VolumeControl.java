@@ -1,7 +1,7 @@
 package com.intuso.housemate.client.api.internal.feature;
 
 import com.intuso.housemate.client.api.internal.annotation.*;
-import com.intuso.utilities.listener.ListenerRegistration;
+import com.intuso.utilities.listener.MemberRegistration;
 
 /**
  * API for controlling volume
@@ -54,7 +54,7 @@ public interface VolumeControl {
          * Add a listener
          */
         @AddListener
-        ListenerRegistration addListener(Listener listener);
+        MemberRegistration addListener(Listener listener);
     }
 
     interface Listener {

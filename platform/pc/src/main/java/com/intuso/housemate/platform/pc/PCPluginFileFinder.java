@@ -3,9 +3,9 @@ package com.intuso.housemate.platform.pc;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.intuso.housemate.plugin.host.internal.PluginFileFinder;
-import com.intuso.utilities.listener.ListenerRegistration;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.listener.MemberRegistration;
+import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.listener.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +25,11 @@ public class PCPluginFileFinder implements PluginFileFinder {
     private final static Logger logger = LoggerFactory.getLogger(PCPluginFileFinder.class);
 
     private final Map<File, WeakHashMap<Listener, String>> listenerPluginIds = Maps.newHashMap();
-    private final Listeners<Listener> listeners;
+    private final ManagedCollection<Listener> listeners;
 
     @Inject
-    public PCPluginFileFinder(ListenersFactory listenersFactory, PropertyRepository properties) {
-        this.listeners = listenersFactory.create();
+    public PCPluginFileFinder(ManagedCollectionFactory managedCollectionFactory, PropertyRepository properties) {
+        this.listeners = managedCollectionFactory.create();
         File pluginDirectory = new File(properties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + PLUGINS_DIR_NAME);
         if(!pluginDirectory.exists())
             pluginDirectory.mkdir();
@@ -43,8 +43,8 @@ public class PCPluginFileFinder implements PluginFileFinder {
     }
 
     @Override
-    public ListenerRegistration addListener(Listener listener, boolean callForExisting) {
-        ListenerRegistration result = listeners.addListener(listener);
+    public MemberRegistration addListener(Listener listener, boolean callForExisting) {
+        MemberRegistration result = listeners.add(listener);
         for(File pluginFile : listenerPluginIds.keySet())
             listenerPluginIds.get(pluginFile).put(listener, listener.fileFound(pluginFile));
         return result;
