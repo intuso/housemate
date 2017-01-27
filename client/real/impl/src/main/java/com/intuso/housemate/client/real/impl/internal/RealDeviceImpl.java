@@ -250,11 +250,13 @@ public final class RealDeviceImpl
     }
 
     protected final void _start() {
-        // todo start all features
+        for(RealFeatureImpl feature : features)
+            feature._start();
     }
 
     protected final void _stop() {
-        // todo stop all features
+        for(RealFeatureImpl feature : features)
+            feature._stop();
     }
 
     public interface Factory {

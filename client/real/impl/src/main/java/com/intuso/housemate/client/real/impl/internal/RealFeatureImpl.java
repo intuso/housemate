@@ -16,6 +16,7 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealFeature;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -51,6 +52,7 @@ public final class RealFeatureImpl
 
     private final RealFeature.RemoveCallback<RealFeatureImpl> removeCallback;
 
+    private ManagedCollection.Registration driverAvailableListenerRegsitration;
     private FeatureDriver driver;
 
     @Inject
@@ -185,44 +187,73 @@ public final class RealFeatureImpl
             @Override
             public void valueChanging(RealPropertyImpl<PluginDependency<FeatureDriver.Factory<?>>> factoryRealProperty) {
                 uninitDriver();
+                uninitDriverListener();
             }
 
             @Override
-            public void valueChanged(RealPropertyImpl<PluginDependency<FeatureDriver.Factory<?>>> factoryRealProperty) {
-                initDriver();
+            public void valueChanged(RealPropertyImpl<PluginDependency<FeatureDriver.Factory<?>>> property) {
+                if(property.getValue() != null) {
+                    initDriverListener();
+                    if (property.getValue().getDependency() != null)
+                        initDriver(property.getValue().getDependency());
+                }
             }
         });
     }
 
-    private void initDriver() {
-        if(driver == null) {
-            PluginDependency<FeatureDriver.Factory<?>> driverFactory = driverProperty.getValue();
-            if(driverFactory != null) {
-                driver = driverFactory.getDependency().create(logger, this);
-                Object annotatedObject;
-                if(driver instanceof FeatureDriverBridge)
-                    annotatedObject = ((FeatureDriverBridge) driver).getFeatureDriver();
-                else
-                    annotatedObject = driver;
-                for(RealCommandImpl command : annotationParser.findCommands(logger, "", annotatedObject))
-                    commands.add(command);
-                for(RealValueImpl<?> value : annotationParser.findValues(logger, "", annotatedObject))
-                    values.add(value);
-                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
-                    properties.add(property);
-                errorValue.setValue((String) null);
-                driverLoadedValue.setValue(true);
-                _start();
+    private void initDriverListener() {
+        PluginDependency<FeatureDriver.Factory<?>> driverFactory = driverProperty.getValue();
+        driverAvailableListenerRegsitration = driverFactory.addListener(new PluginDependency.Listener<FeatureDriver.Factory<?>>() {
+            @Override
+            public void dependencyAvailable(FeatureDriver.Factory<?> dependency) {
+                initDriver(dependency);
             }
+
+            @Override
+            public void dependencyUnavailable() {
+                uninitDriver();
+            }
+        });
+    }
+
+    private void uninitDriverListener() {
+        if(driverAvailableListenerRegsitration != null) {
+            driverAvailableListenerRegsitration.remove();
+            driverAvailableListenerRegsitration = null;
         }
+    }
+
+    private void initDriver(FeatureDriver.Factory<?> driverFactory) {
+        if(driver != null)
+            uninit();
+        driver = driverFactory.create(logger, this);
+        Object annotatedObject;
+        if(driver instanceof FeatureDriverBridge)
+            annotatedObject = ((FeatureDriverBridge) driver).getFeatureDriver();
+        else
+            annotatedObject = driver;
+        for(RealCommandImpl command : annotationParser.findCommands(logger, "", annotatedObject))
+            commands.add(command);
+        for(RealValueImpl<?> value : annotationParser.findValues(logger, "", annotatedObject))
+            values.add(value);
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
+            properties.add(property);
+        errorValue.setValue(null);
+        driverLoadedValue.setValue(true);
+        if(isRunning())
+            driver.init(logger, this);
     }
 
     private void uninitDriver() {
         if(driver != null) {
-            _stop();
+            driver.uninit();
             driverLoadedValue.setValue(false);
             errorValue.setValue("Driver not loaded");
             driver = null;
+            for (RealCommandImpl command : Lists.newArrayList(commands))
+                commands.remove(command.getId());
+            for (RealValueImpl<?> value : Lists.newArrayList(values))
+                values.remove(value.getId());
             for (RealPropertyImpl<?> property : Lists.newArrayList(properties))
                 properties.remove(property.getId());
         }
@@ -335,7 +366,7 @@ public final class RealFeatureImpl
 
     protected final void _start() {
         try {
-            if(isDriverLoaded())
+            if(driver != null)
                 driver.init(logger, this);
         } catch (Throwable t) {
             getErrorValue().setValue("Could not start device: " + t.getMessage());
@@ -343,7 +374,7 @@ public final class RealFeatureImpl
     }
 
     protected final void _stop() {
-        if(isDriverLoaded())
+        if(driver != null)
             driver.uninit();
     }
 

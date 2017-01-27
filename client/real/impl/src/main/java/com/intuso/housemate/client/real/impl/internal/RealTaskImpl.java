@@ -18,6 +18,7 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -47,6 +48,7 @@ public final class RealTaskImpl
 
     private final RemoveCallback<RealTaskImpl> removeCallback;
 
+    private ManagedCollection.Registration driverAvailableListenerRegsitration;
     private TaskDriver driver;
 
     /**
@@ -143,13 +145,67 @@ public final class RealTaskImpl
             @Override
             public void valueChanging(RealPropertyImpl<PluginDependency<TaskDriver.Factory<?>>> factoryRealProperty) {
                 uninitDriver();
+                uninitDriverListener();
             }
 
             @Override
-            public void valueChanged(RealPropertyImpl<PluginDependency<TaskDriver.Factory<?>>> factoryRealProperty) {
-                initDriver();
+            public void valueChanged(RealPropertyImpl<PluginDependency<TaskDriver.Factory<?>>> property) {
+                if(property.getValue() != null) {
+                    initDriverListener();
+                    if (property.getValue().getDependency() != null)
+                        initDriver(property.getValue().getDependency());
+                }
             }
         });
+    }
+
+    private void initDriverListener() {
+        PluginDependency<TaskDriver.Factory<?>> driverFactory = driverProperty.getValue();
+        driverAvailableListenerRegsitration = driverFactory.addListener(new PluginDependency.Listener<TaskDriver.Factory<?>>() {
+            @Override
+            public void dependencyAvailable(TaskDriver.Factory<?> dependency) {
+                initDriver(dependency);
+            }
+
+            @Override
+            public void dependencyUnavailable() {
+                uninitDriver();
+            }
+        });
+    }
+
+    private void uninitDriverListener() {
+        if(driverAvailableListenerRegsitration != null) {
+            driverAvailableListenerRegsitration.remove();
+            driverAvailableListenerRegsitration = null;
+        }
+    }
+
+    private void initDriver(TaskDriver.Factory<?> driverFactory) {
+        if(driver != null)
+            uninit();
+        driver = driverFactory.create(logger, this);
+        Object annotatedObject;
+        if(driver instanceof TaskDriverBridge)
+            annotatedObject = ((TaskDriverBridge) driver).getTaskDriver();
+        else
+            annotatedObject = driver;
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
+            properties.add(property);
+        errorValue.setValue(null);
+        driverLoadedValue.setValue(true);
+        driver.init(logger, this);
+    }
+
+    private void uninitDriver() {
+        if(driver != null) {
+            driver.uninit();
+            driverLoadedValue.setValue(false);
+            errorValue.setValue("Driver not loaded");
+            driver = null;
+            for (RealPropertyImpl<?> property : Lists.newArrayList(properties))
+                properties.remove(property.getId());
+        }
     }
 
     @Override
@@ -183,36 +239,6 @@ public final class RealTaskImpl
             listener.renamed(RealTaskImpl.this, RealTaskImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
-    }
-
-    private void initDriver() {
-        if(driver == null) {
-            PluginDependency<TaskDriver.Factory<?>> driverFactory = driverProperty.getValue();
-            if(driverFactory != null) {
-                driver = driverFactory.getDependency().create(logger, this);
-                Object annotatedObject;
-                if(driver instanceof TaskDriverBridge)
-                    annotatedObject = ((TaskDriverBridge) driver).getTaskDriver();
-                else
-                    annotatedObject = driver;
-                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
-                    properties.add(property);
-                errorValue.setValue((String) null);
-                driverLoadedValue.setValue(true);
-                _start();
-            }
-        }
-    }
-
-    private void uninitDriver() {
-        if(driver != null) {
-            _stop();
-            driverLoadedValue.setValue(false);
-            errorValue.setValue("Driver not loaded");
-            driver = null;
-            for (RealPropertyImpl<?> property : Lists.newArrayList(properties))
-                properties.remove(property.getId());
-        }
     }
 
     @Override

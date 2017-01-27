@@ -73,7 +73,7 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
         if(appliances.get(houseId) == null)
             appliances.put(houseId, Maps.<Byte, HomeEasyUKApplianceImpl>newHashMap());
         appliances.get(houseId).put(unitCode, appliance);
-        callback.addObject(appliance, "" + houseId + unitCode);
+        callback.addObject(appliance, Integer.toString(houseId) + "-" + Byte.toString(unitCode) + "-");
     }
 
     @Override

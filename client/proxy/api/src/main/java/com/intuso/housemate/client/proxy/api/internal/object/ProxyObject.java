@@ -109,7 +109,7 @@ public abstract class ProxyObject<
             String id = reference.getPath()[pathIndex];
             ProxyObject<?, ?> child = getChild(id);
             if(child != null)
-                child.manageReference(reference, pathIndex++);
+                child.manageReference(reference, pathIndex + 1);
             else {
                 if(!missingReferences.containsKey(id))
                     missingReferences.put(id, Maps.<ObjectReferenceImpl, Integer>newHashMap());
@@ -119,7 +119,7 @@ public abstract class ProxyObject<
     }
 
     protected Map<ObjectReferenceImpl, Integer> getMissingReferences(String id) {
-        return missingReferences.remove(id);
+        return missingReferences.containsKey(id) ? missingReferences.remove(id) : Maps.<ObjectReferenceImpl, Integer>newHashMap();
     }
 
     public interface Factory<OBJECT extends ProxyObject<?, ?>> {

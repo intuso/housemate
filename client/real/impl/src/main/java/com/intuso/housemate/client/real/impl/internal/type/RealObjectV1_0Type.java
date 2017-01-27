@@ -106,6 +106,8 @@ public abstract class RealObjectV1_0Type<O extends ProxyObject<?, ?>>
             this.listeners = managedCollectionFactory.create();
             this.original = original;
             this.allowedClasses = allowedClasses;
+            if(original.getObject() != null)
+                available(original.getObject());
         }
 
         @Override

@@ -53,7 +53,7 @@ public class FactoryType<FACTORY> extends RealChoiceType<PluginDependency<FACTOR
 
     @Override
     public Entry<FACTORY> deserialise(Type.Instance value) {
-        return value != null && value.getValue() != null ? factories.get(value.getValue()) : null;
+        return value != null && value.getValue() != null ? getFactoryEntry(value.getValue(), true) : null;
     }
 
     public static class Entry<FACTORY> implements PluginDependency<FACTORY> {

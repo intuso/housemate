@@ -12,7 +12,7 @@ public interface PluginDependency<DEPENDENCY> {
     ManagedCollection.Registration addListener(Listener<DEPENDENCY> listener);
 
     interface Listener<DEPENDENCY> {
-        void dependencyAvailable(DEPENDENCY DEPENDENCY);
+        void dependencyAvailable(DEPENDENCY dependency);
         void dependencyUnavailable();
     }
 }

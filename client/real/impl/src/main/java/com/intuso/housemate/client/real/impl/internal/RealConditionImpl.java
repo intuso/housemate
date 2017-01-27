@@ -57,6 +57,7 @@ public final class RealConditionImpl
 
     private final RemoveCallback<RealConditionImpl> removeCallback;
 
+    private ManagedCollection.Registration driverAvailableListenerRegsitration;
     private ConditionDriver driver;
 
     /**
@@ -179,13 +180,67 @@ public final class RealConditionImpl
             @Override
             public void valueChanging(RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>> factoryRealProperty) {
                 uninitDriver();
+                uninitDriverListener();
             }
 
             @Override
-            public void valueChanged(RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>> factoryRealProperty) {
-                initDriver();
+            public void valueChanged(RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>> property) {
+                if(property.getValue() != null) {
+                    initDriverListener();
+                    if (property.getValue().getDependency() != null)
+                        initDriver(property.getValue().getDependency());
+                }
             }
         });
+    }
+
+    private void initDriverListener() {
+        PluginDependency<ConditionDriver.Factory<?>> driverFactory = driverProperty.getValue();
+        driverAvailableListenerRegsitration = driverFactory.addListener(new PluginDependency.Listener<ConditionDriver.Factory<?>>() {
+            @Override
+            public void dependencyAvailable(ConditionDriver.Factory<?> dependency) {
+                initDriver(dependency);
+            }
+
+            @Override
+            public void dependencyUnavailable() {
+                uninitDriver();
+            }
+        });
+    }
+
+    private void uninitDriverListener() {
+        if(driverAvailableListenerRegsitration != null) {
+            driverAvailableListenerRegsitration.remove();
+            driverAvailableListenerRegsitration = null;
+        }
+    }
+
+    private void initDriver(ConditionDriver.Factory<?> driverFactory) {
+        if(driver != null)
+            uninit();
+        driver = driverFactory.create(logger, this);
+        java.lang.Object annotatedObject;
+        if(driver instanceof ConditionDriverBridge)
+            annotatedObject = ((ConditionDriverBridge) driver).getConditionDriver();
+        else
+            annotatedObject = driver;
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
+            properties.add(property);
+        errorValue.setValue(null);
+        driverLoadedValue.setValue(true);
+        driver.init(logger, this);
+    }
+
+    private void uninitDriver() {
+        if(driver != null) {
+            driver.uninit();
+            driverLoadedValue.setValue(false);
+            errorValue.setValue("Driver not loaded");
+            driver = null;
+            for (RealPropertyImpl<?> property : Lists.newArrayList(properties))
+                properties.remove(property.getId());
+        }
     }
 
     @Override
@@ -223,36 +278,6 @@ public final class RealConditionImpl
             listener.renamed(RealConditionImpl.this, RealConditionImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
-    }
-
-    private void initDriver() {
-        if(driver == null) {
-            PluginDependency<ConditionDriver.Factory<?>> driverFactory = driverProperty.getValue();
-            if(driverFactory != null) {
-                driver = driverFactory.getDependency().create(logger, this);
-                java.lang.Object annotatedObject;
-                if(driver instanceof ConditionDriverBridge)
-                    annotatedObject = ((ConditionDriverBridge) driver).getConditionDriver();
-                else
-                    annotatedObject = driver;
-                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
-                    properties.add(property);
-                errorValue.setValue((String) null);
-                driverLoadedValue.setValue(true);
-                _start();
-            }
-        }
-    }
-
-    private void uninitDriver() {
-        if(driver != null) {
-            _stop();
-            driverLoadedValue.setValue(false);
-            errorValue.setValue("Driver not loaded");
-            driver = null;
-            for (RealPropertyImpl<?> property : Lists.newArrayList(properties))
-                properties.remove(property.getId());
-        }
     }
 
     @Override

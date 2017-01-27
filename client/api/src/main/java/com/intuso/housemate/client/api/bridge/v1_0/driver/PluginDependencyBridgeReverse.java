@@ -40,8 +40,8 @@ public class PluginDependencyBridgeReverse<FROM, TO> implements PluginDependency
         }
 
         @Override
-        public void dependencyAvailable(FROM resource) {
-            listener.dependencyAvailable(convertFrom.apply(resource));
+        public void dependencyAvailable(FROM dependency) {
+            listener.dependencyAvailable(convertFrom.apply(dependency));
         }
 
         @Override

@@ -17,6 +17,7 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealHardware;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -58,6 +59,7 @@ public final class RealHardwareImpl
     private final Map<Object, Iterable<RealValueImpl<?>>> objectValues = Maps.newHashMap();
     private final Map<Object, Iterable<RealPropertyImpl<?>>> objectProperties = Maps.newHashMap();
 
+    private ManagedCollection.Registration driverAvailableListenerRegsitration;
     private HardwareDriver driver;
 
     /**
@@ -196,13 +198,76 @@ public final class RealHardwareImpl
             @Override
             public void valueChanging(RealPropertyImpl<PluginDependency<HardwareDriver.Factory<?>>> factoryRealProperty) {
                 uninitDriver();
+                uninitDriverListener();
             }
 
             @Override
-            public void valueChanged(RealPropertyImpl<PluginDependency<HardwareDriver.Factory<?>>> factoryRealProperty) {
-                initDriver();
+            public void valueChanged(RealPropertyImpl<PluginDependency<HardwareDriver.Factory<?>>> property) {
+                if(property.getValue() != null) {
+                    initDriverListener();
+                    if (property.getValue().getDependency() != null)
+                        initDriver(property.getValue().getDependency());
+                }
             }
         });
+    }
+
+    private void initDriverListener() {
+        PluginDependency<HardwareDriver.Factory<?>> driverFactory = driverProperty.getValue();
+        driverAvailableListenerRegsitration = driverFactory.addListener(new PluginDependency.Listener<HardwareDriver.Factory<?>>() {
+            @Override
+            public void dependencyAvailable(HardwareDriver.Factory<?> dependency) {
+                initDriver(dependency);
+            }
+
+            @Override
+            public void dependencyUnavailable() {
+                uninitDriver();
+            }
+        });
+    }
+
+    private void uninitDriverListener() {
+        if(driverAvailableListenerRegsitration != null) {
+            driverAvailableListenerRegsitration.remove();
+            driverAvailableListenerRegsitration = null;
+        }
+    }
+
+    private void initDriver(HardwareDriver.Factory<?> driverFactory) {
+        if(driver != null)
+            uninit();
+        driver = driverFactory.create(logger, this);
+        Object annotatedObject;
+        if(driver instanceof HardwareDriverBridge)
+            annotatedObject = ((HardwareDriverBridge) driver).getHardwareDriver();
+        else
+            annotatedObject = driver;
+        for(RealCommandImpl command : annotationParser.findCommands(logger, "", annotatedObject))
+            commands.add(command);
+        for(RealValueImpl<?> value : annotationParser.findValues(logger, "", annotatedObject))
+            values.add(value);
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
+            properties.add(property);
+        errorValue.setValue(null);
+        driverLoadedValue.setValue(true);
+        if(isRunning())
+            driver.init(logger, this);
+    }
+
+    private void uninitDriver() {
+        if(driver != null) {
+            driver.uninit();
+            driverLoadedValue.setValue(false);
+            errorValue.setValue("Driver not loaded");
+            driver = null;
+            for (RealCommandImpl command : Lists.newArrayList(commands))
+                commands.remove(command.getId());
+            for (RealValueImpl<?> value : Lists.newArrayList(values))
+                values.remove(value.getId());
+            for (RealPropertyImpl<?> property : Lists.newArrayList(properties))
+                properties.remove(property.getId());
+        }
     }
 
     @Override
@@ -244,44 +309,6 @@ public final class RealHardwareImpl
             listener.renamed(RealHardwareImpl.this, RealHardwareImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
-    }
-
-    private void initDriver() {
-        if(driver == null) {
-            PluginDependency<HardwareDriver.Factory<?>> driverFactory = driverProperty.getValue();
-            if(driverFactory != null) {
-                driver = driverFactory.getDependency().create(logger, this);
-                Object annotatedObject;
-                if(driver instanceof HardwareDriverBridge)
-                    annotatedObject = ((HardwareDriverBridge) driver).getHardwareDriver();
-                else
-                    annotatedObject = driver;
-                for(RealCommandImpl command : annotationParser.findCommands(logger, "", annotatedObject))
-                    commands.add(command);
-                for(RealValueImpl<?> value : annotationParser.findValues(logger, "", annotatedObject))
-                    values.add(value);
-                for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
-                    properties.add(property);
-                errorValue.setValue((String) null);
-                driverLoadedValue.setValue(true);
-                _start();
-            }
-        }
-    }
-
-    private void uninitDriver() {
-        if(driver != null) {
-            _stop();
-            driverLoadedValue.setValue(false);
-            errorValue.setValue("Driver not loaded");
-            driver = null;
-            for (RealCommandImpl command : Lists.newArrayList(commands))
-                commands.remove(command.getId());
-            for (RealValueImpl<?> value : Lists.newArrayList(values))
-                values.remove(value.getId());
-            for (RealPropertyImpl<?> property : Lists.newArrayList(properties))
-                properties.remove(property.getId());
-        }
     }
 
     public <DRIVER extends HardwareDriver> DRIVER getDriver() {
@@ -378,13 +405,13 @@ public final class RealHardwareImpl
     public void addObject(Object object, String prefix) {
         if(objectCommands.containsKey(object) || objectValues.containsKey(object) || objectProperties.containsKey(object))
             throw new HousemateException("Object is already added");
-        objectCommands.put(object, annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), "", object));
+        objectCommands.put(object, annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), prefix, object));
         for(RealCommandImpl command : objectCommands.get(object))
             commands.add(command);
-        objectValues.put(object, annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), "", object));
+        objectValues.put(object, annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), prefix, object));
         for(RealValueImpl<?> value : objectValues.get(object))
             values.add(value);
-        objectProperties.put(object, annotationParser.findProperties(ChildUtil.logger(logger, PROPERTIES_ID), "", object));
+        objectProperties.put(object, annotationParser.findProperties(ChildUtil.logger(logger, PROPERTIES_ID), prefix, object));
         for(RealPropertyImpl<?> property : objectProperties.get(object))
             properties.add(property);
     }
