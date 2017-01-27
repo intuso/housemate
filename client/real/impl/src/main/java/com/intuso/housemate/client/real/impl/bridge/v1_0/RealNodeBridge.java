@@ -6,7 +6,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.NodeMapper;
 import com.intuso.housemate.client.api.internal.object.Node;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ServerBaseNode;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;

@@ -6,8 +6,8 @@ import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.annotation.Property;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
 import com.intuso.housemate.client.api.internal.feature.PowerControl;
-import com.intuso.utilities.listener.ManagedCollection;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.io.IOException;

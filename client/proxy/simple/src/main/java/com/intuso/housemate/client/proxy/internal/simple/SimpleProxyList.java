@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.proxy.api.internal.object.ProxyList;
 import com.intuso.housemate.client.proxy.api.internal.object.ProxyObject;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**

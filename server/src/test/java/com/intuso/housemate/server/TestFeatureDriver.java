@@ -3,8 +3,8 @@ package com.intuso.housemate.server;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
-import com.intuso.utilities.listener.ManagedCollection;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 @Id(value = "test-feature", name = "Test Feature", description = "Test Feature")

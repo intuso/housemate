@@ -16,7 +16,7 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealFeature;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;

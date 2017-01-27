@@ -3,7 +3,7 @@ package com.intuso.housemate.web.client;
 import com.google.common.collect.Sets;
 import com.google.gwt.user.client.Cookies;
 import com.google.inject.Inject;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.collection.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
 import java.util.Set;
@@ -18,8 +18,8 @@ import java.util.Set;
 public class GWTPropertyRepository extends PropertyRepository {
 
     @Inject
-    public GWTPropertyRepository(ListenersFactory listenersFactory) {
-        super(listenersFactory, null);
+    public GWTPropertyRepository(ListenersFactory managedCollectionFactory) {
+        super(managedCollectionFactory, null);
     }
 
     @Override

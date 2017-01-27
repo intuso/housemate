@@ -11,8 +11,8 @@ import com.intuso.housemate.client.v1_0.api.object.Node;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.api.object.Server;
 import com.intuso.housemate.client.v1_0.real.impl.JMSUtil;
-import com.intuso.utilities.listener.ManagedCollection;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

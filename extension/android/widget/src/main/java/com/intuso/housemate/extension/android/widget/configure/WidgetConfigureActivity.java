@@ -19,7 +19,7 @@ import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyList;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 
 import java.util.List;
 

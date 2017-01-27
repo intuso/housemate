@@ -12,7 +12,7 @@ import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddFeatureCommand;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;

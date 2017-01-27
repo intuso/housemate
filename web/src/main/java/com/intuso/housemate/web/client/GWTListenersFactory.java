@@ -1,9 +1,9 @@
 package com.intuso.housemate.web.client;
 
 import com.google.common.collect.Lists;
-import com.intuso.utilities.listener.Listener;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.collection.Listener;
+import com.intuso.utilities.collection.Listeners;
+import com.intuso.utilities.collection.ListenersFactory;
 
 /**
  * Created with IntelliJ IDEA.

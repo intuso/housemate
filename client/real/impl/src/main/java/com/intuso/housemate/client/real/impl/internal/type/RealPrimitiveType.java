@@ -2,7 +2,7 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**

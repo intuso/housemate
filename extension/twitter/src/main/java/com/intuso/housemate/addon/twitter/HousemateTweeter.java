@@ -9,7 +9,7 @@ import com.intuso.housemate.client.v1_0.api.object.Device;
 import com.intuso.housemate.client.v1_0.api.object.Property;
 import com.intuso.housemate.client.v1_0.api.object.Value;
 import com.intuso.housemate.client.v1_0.proxy.simple.*;
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import org.slf4j.Logger;
 import twitter4j.Twitter;

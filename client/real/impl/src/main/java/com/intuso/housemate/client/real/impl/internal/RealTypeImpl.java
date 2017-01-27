@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.real.api.internal.RealType;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.util.Arrays;

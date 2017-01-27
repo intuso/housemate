@@ -1,6 +1,6 @@
 package com.intuso.housemate.platform.pc;
 
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.reader.commandline.CommandLinePropertyRepository;
 import com.intuso.utilities.properties.reader.file.FilePropertyRepository;

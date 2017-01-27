@@ -7,8 +7,8 @@ import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.plugin.Plugin;
 import com.intuso.housemate.client.api.internal.plugin.PluginListener;
-import com.intuso.utilities.listener.ManagedCollection;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.type.serialiser.IntegerSerialiser;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ioc.Type;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**

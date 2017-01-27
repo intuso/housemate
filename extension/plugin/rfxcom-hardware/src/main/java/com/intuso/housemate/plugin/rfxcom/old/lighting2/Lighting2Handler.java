@@ -3,7 +3,7 @@ package com.intuso.housemate.plugin.rfxcom.old.lighting2;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 import com.intuso.housemate.plugin.rfxcom.old.Handler;
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2House;
 import org.slf4j.Logger;

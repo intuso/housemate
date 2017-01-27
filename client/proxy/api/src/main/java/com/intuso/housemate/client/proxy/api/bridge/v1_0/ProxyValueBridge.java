@@ -6,7 +6,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.TypeInstancesMapper;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ValueMapper;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**

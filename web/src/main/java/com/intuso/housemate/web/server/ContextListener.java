@@ -14,9 +14,9 @@ import com.intuso.housemate.persistence.v1_0.api.Persistence;
 import com.intuso.housemate.persistence.v1_0.filesystem.ioc.FileSystemPersistenceModule;
 import com.intuso.housemate.platform.pc.Properties;
 import com.intuso.housemate.platform.pc.ioc.PCClientModule;
-import com.intuso.utilities.listener.Listener;
-import com.intuso.utilities.listener.Listeners;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.collection.Listener;
+import com.intuso.utilities.collection.Listeners;
+import com.intuso.utilities.collection.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.slf4j.Logger;
@@ -43,14 +43,14 @@ public class ContextListener extends GuiceServletContextListener {
     }
 
     private static Injector createInjector() {
-        ListenersFactory listenersFactory = new ListenersFactory() {
+        ListenersFactory managedCollectionFactory = new ListenersFactory() {
             @Override
             public <LISTENER extends Listener> Listeners<LISTENER> create() {
                 return new Listeners<>(new CopyOnWriteArrayList<LISTENER>());
             }
         };
-        WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(listenersFactory);
-        PropertyRepository properties = Properties.create(listenersFactory, defaultProperties, new String[] {});
+        WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(managedCollectionFactory);
+        PropertyRepository properties = Properties.create(managedCollectionFactory, defaultProperties, new String[] {});
         return Guice.createInjector(
                 new PCClientModule(properties),
                 new JavabinSerialiserClientModule(),

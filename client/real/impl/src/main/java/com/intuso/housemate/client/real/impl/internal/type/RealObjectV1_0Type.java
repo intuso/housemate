@@ -10,7 +10,8 @@ import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.housemate.client.v1_0.api.type.ObjectReference;
 import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
 import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyServer;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public abstract class RealObjectV1_0Type<O extends ProxyObject<?, ?>>
                               ManagedCollectionFactory managedCollectionFactory,
                               ProxyServer<?, ?, ?, ?, ?, ?> server) {
         super(logger, new ObjectData(id, name, description), managedCollectionFactory);
-        serialiser = new Serialiser<>(server, allowedTypes);
+        serialiser = new Serialiser<>(managedCollectionFactory, server, allowedTypes);
     }
 
     @Override
@@ -59,17 +60,20 @@ public abstract class RealObjectV1_0Type<O extends ProxyObject<?, ?>>
      */
     public static class Serialiser<O extends ProxyObject<?, ?>> implements TypeSerialiser<ObjectReference<O>> {
 
+        private final ManagedCollectionFactory managedCollectionFactory;
         private final ProxyServer<?, ?, ?, ?, ?, ?> server;
-        private final Set<String> allowedTypes;
+        private final Set<String> allowedClasses;
 
         /**
+         * @param managedCollectionFactory
          * @param server the root to get the object from
-         * @param allowedTypes
+         * @param allowedClasses
          */
         @Inject
-        public Serialiser(ProxyServer<?, ?, ?, ?, ?, ?> server, Set<String> allowedTypes) {
+        public Serialiser(ManagedCollectionFactory managedCollectionFactory, ProxyServer<?, ?, ?, ?, ?, ?> server, Set<String> allowedClasses) {
+            this.managedCollectionFactory = managedCollectionFactory;
             this.server = server;
-            this.allowedTypes = allowedTypes;
+            this.allowedClasses = allowedClasses;
         }
 
         @Override
@@ -85,10 +89,66 @@ public abstract class RealObjectV1_0Type<O extends ProxyObject<?, ?>>
                 return null;
             List<String> pathList = Lists.newArrayList(SPLITTER.split(value.getValue()));
             String[] path = pathList.toArray(new String[pathList.size()]);
-            O object = server.find(path, false);
-            if(object != null && !allowedTypes.contains(object.getObjectClass()))
-                object = null;
-            return new ObjectReference<>(path, object);
+            return new RestrictedTypeObjectReference<>(managedCollectionFactory, server.<O>reference(path), allowedClasses);
+        }
+    }
+
+    private static class RestrictedTypeObjectReference<O extends ProxyObject<?, ?>> implements ObjectReference<O>, ObjectReference.Listener<O> {
+
+        private final ManagedCollection<Listener<O>> listeners;
+        private final ObjectReference<O> original;
+        private final Set<String> allowedClasses;
+        private O object;
+
+        private RestrictedTypeObjectReference(ManagedCollectionFactory managedCollectionFactory,
+                                              ObjectReference<O> original,
+                                              Set<String> allowedClasses) {
+            this.listeners = managedCollectionFactory.create();
+            this.original = original;
+            this.allowedClasses = allowedClasses;
+        }
+
+        @Override
+        public String[] getPath() {
+            return original.getPath();
+        }
+
+        @Override
+        public O getObject() {
+            return object;
+        }
+
+        @Override
+        public ManagedCollection.Registration addListener(Listener<O> listener) {
+            return listeners.add(listener);
+        }
+
+        @Override
+        public void available(O object) {
+            O o = allowedClasses.contains(object.getObjectClass()) ? object : null;
+            if(o != null && this.object != null) {
+                if(!o.equals(this.object)) {
+                    this.object = o;
+                    for (Listener<O> listener : listeners)
+                        listener.available(this.object);
+                }
+            } else if(o != null) {
+                this.object = o;
+                for(Listener<O> listener : listeners)
+                    listener.available(this.object);
+            } else if(this.object != null) {
+                this.object = null;
+                for(Listener<O> listener : listeners)
+                    listener.unavailable();
+            }
+            // else noth null so do nothing
+        }
+
+        @Override
+        public void unavailable() {
+            this.object = null;
+            for(Listener<O> listener : listeners)
+                listener.unavailable();
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.intuso.housemate.client.api.internal.driver;
 
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 
 /**
  * Created by tomc on 29/10/15.

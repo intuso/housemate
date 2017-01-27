@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.rfxcom.old.temperaturesensor;
 
 import com.google.common.collect.Sets;
 import com.intuso.housemate.plugin.rfxcom.old.Handler;
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 import com.rfxcom.rfxtrx.util.temperaturesensor.TemperatureSensors;
 import org.slf4j.Logger;
 

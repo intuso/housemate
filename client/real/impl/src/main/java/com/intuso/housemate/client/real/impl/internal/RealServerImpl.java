@@ -9,7 +9,7 @@ import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddDeviceCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddUserCommand;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;

@@ -7,7 +7,7 @@ import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyHardware;
 import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyServer;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ioc.Type;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**

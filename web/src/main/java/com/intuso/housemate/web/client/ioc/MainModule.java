@@ -27,7 +27,7 @@ import com.intuso.housemate.web.client.object.*;
 import com.intuso.housemate.web.client.place.HousematePlaceController;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryHandler;
 import com.intuso.housemate.web.client.place.HousematePlaceHistoryMapper;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.collection.ListenersFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import org.slf4j.Logger;
 

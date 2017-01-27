@@ -2,8 +2,8 @@ package com.intuso.housemate.plugin.rfxcom;
 
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKAPI;
-import com.intuso.utilities.listener.ManagedCollection;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.rfxcom.rfxtrx.RFXtrx;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2;
 import com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance;

@@ -1,7 +1,7 @@
 package com.intuso.housemate.platform.pc;
 
-import com.intuso.utilities.listener.ManagedCollection;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 

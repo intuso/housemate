@@ -6,7 +6,7 @@ import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;

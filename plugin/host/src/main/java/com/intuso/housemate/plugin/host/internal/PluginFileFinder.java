@@ -1,6 +1,6 @@
 package com.intuso.housemate.plugin.host.internal;
 
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 
 import java.io.File;
 

@@ -8,7 +8,7 @@ import com.intuso.housemate.client.v1_0.data.api.Message;
 import com.intuso.housemate.client.v1_0.data.api.payload.Payload;
 import com.intuso.housemate.web.client.NotConnectedException;
 import com.intuso.housemate.web.client.service.CommsServiceAsync;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.collection.ListenersFactory;
 import org.slf4j.Logger;
 
 /**
@@ -66,8 +66,8 @@ public class GWTRouter extends BaseRouter<GWTRouter> {
      * Create a new comms instance
      */
     @Inject
-    public GWTRouter(Logger logger, ListenersFactory listenersFactory, CommsServiceAsync commsService) {
-        super(logger, listenersFactory);
+    public GWTRouter(Logger logger, ListenersFactory managedCollectionFactory, CommsServiceAsync commsService) {
+        super(logger, managedCollectionFactory);
         this.commsService = commsService;
     }
 

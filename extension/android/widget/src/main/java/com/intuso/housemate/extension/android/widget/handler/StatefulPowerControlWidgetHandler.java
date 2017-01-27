@@ -8,7 +8,7 @@ import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 
 /**
  * Created with IntelliJ IDEA.

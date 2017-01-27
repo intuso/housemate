@@ -14,7 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.intuso.housemate.platform.android.service.R;
 import com.intuso.housemate.platform.android.service.service.ConnectionService;
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 
 public class HousemateActivity extends Activity implements ServiceConnection {
 

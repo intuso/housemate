@@ -8,7 +8,7 @@ import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.api.internal.object.JMSUtil;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;

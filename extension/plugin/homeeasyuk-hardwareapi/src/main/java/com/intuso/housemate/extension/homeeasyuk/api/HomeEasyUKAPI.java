@@ -1,7 +1,7 @@
 package com.intuso.housemate.extension.homeeasyuk.api;
 
 import com.intuso.housemate.client.v1_0.api.annotation.*;
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 
 /**
  * Created by tomc on 08/12/16.

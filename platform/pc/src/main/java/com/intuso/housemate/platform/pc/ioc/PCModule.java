@@ -5,7 +5,7 @@ import com.google.inject.Scopes;
 import com.intuso.housemate.platform.pc.CopyOnWriteManagedCollectionFactory;
 import com.intuso.housemate.platform.pc.PCPluginFileFinder;
 import com.intuso.housemate.plugin.host.internal.PluginFileFinder;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 
 /**
  * Created with IntelliJ IDEA.

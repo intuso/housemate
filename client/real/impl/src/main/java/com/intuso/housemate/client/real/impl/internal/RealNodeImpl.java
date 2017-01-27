@@ -6,7 +6,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.real.api.internal.RealNode;
 import com.intuso.housemate.client.real.impl.internal.utils.AddHardwareCommand;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;

@@ -2,7 +2,7 @@ package com.intuso.housemate.client.api.bridge.v1_0.driver;
 
 import com.google.common.base.Function;
 import com.intuso.housemate.client.v1_0.api.driver.PluginDependency;
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 
 /**
  * Created by tomc on 05/11/15.

@@ -10,8 +10,8 @@ import com.intuso.housemate.client.v1_0.api.type.ObjectReference;
 import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyHardware;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKAPI;
-import com.intuso.utilities.listener.ManagedCollection;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**

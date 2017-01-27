@@ -7,7 +7,7 @@ import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
 import com.intuso.housemate.extension.homeeasyuk.api.HomeEasyUKAPI;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.rfxcom.rfxtrx.RFXtrx;
 import org.slf4j.Logger;
 

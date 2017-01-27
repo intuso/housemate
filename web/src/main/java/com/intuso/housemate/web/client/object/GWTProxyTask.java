@@ -7,7 +7,7 @@ import com.intuso.housemate.client.v1_0.proxy.api.LoggerUtil;
 import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyObject;
 import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyTask;
 import com.intuso.housemate.web.client.ioc.GWTGinjector;
-import com.intuso.utilities.listener.ListenersFactory;
+import com.intuso.utilities.collection.ListenersFactory;
 import org.slf4j.Logger;
 
 /**
@@ -23,10 +23,10 @@ public class GWTProxyTask extends ProxyTask<
 
     @Inject
     public GWTProxyTask(Logger logger,
-                        ListenersFactory listenersFactory,
+                        ListenersFactory managedCollectionFactory,
                         GWTGinjector injector,
                         @Assisted Data data) {
-        super(logger, listenersFactory, data);
+        super(logger, managedCollectionFactory, data);
         this.injector = injector;
     }
 

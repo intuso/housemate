@@ -1,7 +1,7 @@
 package com.intuso.housemate.server;
 
 import com.intuso.housemate.client.api.internal.annotation.*;
-import com.intuso.utilities.listener.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollection;
 
 /**
  * Created by tomc on 20/12/16.

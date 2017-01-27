@@ -7,7 +7,7 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.proxy.api.bridge.v1_0.ioc.ProxyV1_0;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
-import com.intuso.utilities.listener.ManagedCollectionFactory;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import javax.jms.Connection;
