@@ -1,9 +1,0 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:h="urn:import:com.intuso.housemate.web.client.bootstrap.widget"
-             xmlns:g="urn:import:com.google.gwt.user.client.ui"
-        >
-    <g:FlowPanel>
-        <h:value.BooleanValueDisplay ui:field="value" trueIcon="RECYCLE"/>
-        <h:object.SettingsButton ui:field="settings"/>
-    </g:FlowPanel>
-</ui:UiBinder>

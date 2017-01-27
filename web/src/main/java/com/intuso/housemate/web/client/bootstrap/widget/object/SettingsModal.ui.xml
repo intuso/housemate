@@ -1,9 +1,0 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b='urn:import:org.gwtbootstrap3.client.ui'>
-    <g:SimplePanel>
-        <b:Modal ui:field="modal" title="Command parameters" closable="true" fade="true" dataBackdrop="STATIC" dataKeyboard="true">
-            <b:ModalBody ui:field="modalBody"/>
-        </b:Modal>
-    </g:SimplePanel>
-</ui:UiBinder>
