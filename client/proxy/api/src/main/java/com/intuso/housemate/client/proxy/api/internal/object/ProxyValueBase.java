@@ -39,6 +39,7 @@ public abstract class ProxyValueBase<
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
+        value = JMSUtil.getPersisted(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, VALUE_ID), Type.Instances.class);
         valueReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, VALUE_ID), Type.Instances.class,
                 new JMSUtil.Receiver.Listener<Type.Instances>() {
                     @Override
