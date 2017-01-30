@@ -106,8 +106,9 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?>>
             this.listeners = managedCollectionFactory.create();
             this.original = original;
             this.allowedClasses = allowedClasses;
+            original.addListener(this);
             if(original.getObject() != null)
-                available(original.getObject());
+                object = allowedClasses.contains(original.getObject().getObjectClass()) ? original.getObject() : null;
         }
 
         @Override
@@ -143,7 +144,7 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?>>
                 for(Listener<O> listener : listeners)
                     listener.unavailable();
             }
-            // else noth null so do nothing
+            // else both null so do nothing
         }
 
         @Override
