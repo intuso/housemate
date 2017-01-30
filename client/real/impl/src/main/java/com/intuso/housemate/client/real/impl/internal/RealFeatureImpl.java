@@ -384,6 +384,7 @@ public final class RealFeatureImpl
                 driver.init(logger, this);
         } catch (Throwable t) {
             getErrorValue().setValue("Could not start device: " + t.getMessage());
+            throw t;
         }
     }
 
