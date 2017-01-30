@@ -96,7 +96,7 @@ public abstract class WidgetHandler<FEATURE> {
         if (device != null) {
             AndroidProxyFeature proxyFeature = device.getFeatures().get(getFeatureId());
             if(proxyFeature != null) {
-                feature = proxyWrapper.build(logger, proxyFeature, featureClass, "");
+                feature = proxyWrapper.build(logger, proxyFeature, featureClass, "", 3000L);
                 init();
                 status = Status.READY;
                 updateWidget();

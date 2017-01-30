@@ -111,9 +111,9 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
                 throw new FeatureException("Unit ID must be between 1 and 16 (inclusive)");
         } else {
             callback.setError(null);
-            hardwareProxy = proxyWrapper.build(logger, hardware.getObject(), HomeEasyUKAPI.class, "");
+            hardwareProxy = proxyWrapper.build(logger, hardware.getObject(), HomeEasyUKAPI.class, "", 3000L);
             hardwareProxy.initAppliance(houseId, unitCode);
-            applianceProxy = proxyWrapper.build(logger, hardware.getObject(), HomeEasyUKAPI.Appliance.class, Integer.toString(houseId) + "-" + Byte.toString(unitCode) + "-");
+            applianceProxy = proxyWrapper.build(logger, hardware.getObject(), HomeEasyUKAPI.Appliance.class, Integer.toString(houseId) + "-" + Byte.toString(unitCode) + "-", 3000L);
             for(Listener listener : listeners)
                 listener.on(applianceProxy.isOn());
             applianceListener = applianceProxy.addCallback(this);

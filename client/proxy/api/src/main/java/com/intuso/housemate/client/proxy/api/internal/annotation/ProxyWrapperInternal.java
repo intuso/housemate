@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by tomc on 16/12/16.
@@ -36,8 +37,8 @@ public class ProxyWrapperInternal implements ProxyWrapper {
     }
 
     @Override
-    public <T> T build(Logger logger, ProxyObject<?, ?> object, Class<T> clazz, String prefix) {
-        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[] {clazz}, new InvocationHandlerImpl(object, clazz, prefix));
+    public <T> T build(Logger logger, ProxyObject<?, ?> object, Class<T> clazz, String prefix, long commandTimeout) {
+        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[] {clazz}, new InvocationHandlerImpl(object, clazz, prefix, commandTimeout));
     }
 
     private Object defaultValueFor(Class<?> clazz) {
@@ -64,11 +65,13 @@ public class ProxyWrapperInternal implements ProxyWrapper {
         private final Class<?> clazz;
         private final String prefix;
         private final Map<Method, MethodInvocationHandler> handlers = Maps.newHashMap();
+        private final long commandTimeout;
 
-        private InvocationHandlerImpl(ProxyObject<?, ?> object, Class<?> clazz, String prefix) {
+        private InvocationHandlerImpl(ProxyObject<?, ?> object, Class<?> clazz, String prefix, long commandTimeout) {
             this.object = object;
             this.clazz = clazz;
             this.prefix = prefix != null ? prefix : "";
+            this.commandTimeout = commandTimeout;
         }
 
         @Override
@@ -285,9 +288,11 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 });
 
                 try {
-                    latch.await();
+                    latch.await(commandTimeout, TimeUnit.MILLISECONDS);
+                    if(latch.getCount() > 0)
+                        throw new HousemateException("Timed out waiting for command to complete");
                 } catch (InterruptedException e) {
-                    throw new HousemateException("Failed to wait for command to complete before returning", e);
+                    throw new HousemateException("Interrupted waiting for command to complete", e);
                 }
 
                 return null;
