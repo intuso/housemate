@@ -168,10 +168,13 @@ public final class RealDeviceImpl
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
         features.init(ChildUtil.name(name, Device.FEATURES_ID), connection);
         addFeatureCommand.init(ChildUtil.name(name, ADD_FEATURE_ID), connection);
+        if(isRunning())
+            _start();
     }
 
     @Override
     protected void uninitChildren() {
+        _stop();
         super.uninitChildren();
         renameCommand.uninit();
         removeCommand.uninit();

@@ -274,16 +274,18 @@ public final class RealFeatureImpl
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
         commands.init(ChildUtil.name(name, Feature.COMMANDS_ID), connection);
         values.init(ChildUtil.name(name, Feature.VALUES_ID), connection);
         properties.init(ChildUtil.name(name, Feature.PROPERTIES_ID), connection);
-        // at the end as init'ing it might init the driver and set values, add commands/properties etc
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
+        if(isRunning())
+            _start();
     }
 
     @Override
     protected void uninitChildren() {
+        _stop();
         super.uninitChildren();
         driverProperty.uninit();
         driverLoadedValue.uninit();

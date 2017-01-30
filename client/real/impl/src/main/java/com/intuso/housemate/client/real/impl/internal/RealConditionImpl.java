@@ -249,17 +249,17 @@ public final class RealConditionImpl
         renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
         removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
         properties.init(ChildUtil.name(name, Condition.PROPERTIES_ID), connection);
         satisfiedValue.init(ChildUtil.name(name, Condition.SATISFIED_ID), connection);
         childConditions.init(ChildUtil.name(name, Condition.PROPERTIES_ID), connection);
         addConditionCommand.init(ChildUtil.name(name, Condition.PROPERTIES_ID), connection);
-        // at the end as init'ing it might init the driver and set values, add commands/properties etc
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
     }
 
     @Override
     protected void uninitChildren() {
+        _stop();
         super.uninitChildren();
         renameCommand.uninit();
         removeCommand.uninit();

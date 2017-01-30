@@ -279,16 +279,18 @@ public final class RealHardwareImpl
         startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
         stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
         commands.init(ChildUtil.name(name, Hardware.COMMANDS_ID), connection);
         values.init(ChildUtil.name(name, Hardware.VALUES_ID), connection);
         properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID), connection);
-        // at the end as init'ing it might init the driver and set values, add commands/properties etc
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
+        if(isRunning())
+            _start();
     }
 
     @Override
     protected void uninitChildren() {
+        _stop();
         super.uninitChildren();
         renameCommand.uninit();
         removeCommand.uninit();

@@ -266,10 +266,13 @@ public final class RealAutomationImpl
         addSatisfiedTaskCommand.init(ChildUtil.name(name, Automation.ADD_SATISFIED_TASK_ID), connection);
         unsatisfiedTasks.init(ChildUtil.name(name, Automation.UNSATISFIED_TASKS_ID), connection);
         addUnsatisfiedTaskCommand.init(ChildUtil.name(name, Automation.ADD_UNSATISFIED_TASK_ID), connection);
+        if(isRunning())
+            _start();
     }
 
     @Override
     protected void uninitChildren() {
+        _stop();
         super.uninitChildren();
         renameCommand.uninit();
         removeCommand.uninit();
