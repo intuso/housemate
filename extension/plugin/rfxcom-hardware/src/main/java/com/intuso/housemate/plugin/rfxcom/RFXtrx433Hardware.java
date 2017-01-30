@@ -23,14 +23,16 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
     private final ManagedCollectionFactory managedCollectionFactory;
     private final Map<Integer, Map<Byte, HomeEasyUKApplianceImpl>> appliances = Maps.newHashMap();
 
+    private final RFXtrx rfxtrx;
+
     private HardwareDriver.Callback callback;
-    private RFXtrx rfxtrx;
     private String pattern = ".*ttyUSB.*";
     private boolean listen = true;
 
     @Inject
-    public RFXtrx433Hardware(ManagedCollectionFactory managedCollectionFactory) {
+    public RFXtrx433Hardware(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
         this.managedCollectionFactory = managedCollectionFactory;
+        this.rfxtrx = rfXtrx;
     }
 
     @Property
@@ -56,14 +58,12 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
     public void init(Logger logger, HardwareDriver.Callback callback) {
         // setup the connection to the USB device
         this.callback = callback;
-        rfxtrx = new RFXtrx(logger, Lists.newArrayList(Pattern.compile(pattern)));
         rfxtrx.openPortSafe();
     }
 
     @Override
     public void uninit() {
         rfxtrx.closePort();
-        rfxtrx = null;
         this.callback = null;
     }
 
