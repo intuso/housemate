@@ -29,8 +29,8 @@ public abstract class ProxyValueBaseBridge<
 
     private Type.Instances value;
 
-    private JMSUtil.Sender valueSender;
-    private com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<com.intuso.housemate.client.v1_0.api.object.Type.Instances> valueReceiver;
+    private com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Sender valueSender;
+    private JMSUtil.Receiver<Type.Instances> valueReceiver;
 
     protected ProxyValueBaseBridge(Logger logger,
                                    Class<INTERNAL_DATA> versionDataClass,
@@ -44,12 +44,17 @@ public abstract class ProxyValueBaseBridge<
     @Override
     protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
         super.initChildren(versionName, internalName, connection);
-        valueSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID));
-        valueReceiver = new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, com.intuso.housemate.client.proxy.api.internal.ChildUtil.name(versionName, Value.VALUE_ID), com.intuso.housemate.client.v1_0.api.object.Type.Instances.class,
-                new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Type.Instances>() {
+        valueSender = new com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Sender(logger, connection, com.intuso.housemate.client.proxy.api.internal.object.JMSUtil.Type.Topic, com.intuso.housemate.client.proxy.api.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Value.VALUE_ID));
+        valueReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID), Type.Instances.class,
+                new JMSUtil.Receiver.Listener<Type.Instances>() {
             @Override
-            public void onMessage(com.intuso.housemate.client.v1_0.api.object.Type.Instances instances, boolean wasPersisted) {
-                value = typeInstancesMapper.map(instances);
+            public void onMessage(Type.Instances instances, boolean wasPersisted) {
+                value = instances;
+                try {
+                    valueSender.send(typeInstancesMapper.map(instances), wasPersisted);
+                } catch (JMSException e) {
+                    logger.error("Failed to send new value");
+                }
                 // todo call object listeners
             }
         });
