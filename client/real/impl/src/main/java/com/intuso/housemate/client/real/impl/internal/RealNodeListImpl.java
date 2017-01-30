@@ -117,7 +117,7 @@ public final class RealNodeListImpl
 
     @Override
     public ServerBaseNode<?, ?, ?, ?> remove(String id) {
-        ServerBaseNode<?, ?, ?, ?> element = elements.get(id);
+        ServerBaseNode<?, ?, ?, ?> element = elements.remove(id);
         if(element != null) {
             // todo delete the element's queues/topics
             element.uninit();

@@ -103,7 +103,7 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
 
     @Override
     public ELEMENT remove(String id) {
-        ELEMENT element = elements.get(id);
+        ELEMENT element = elements.remove(id);
         if(element != null) {
             // todo delete the element's queues/topics
             element.uninit();
