@@ -45,6 +45,7 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
     @Property
     @Id(value = "hardware", name = "Hardware", description = "Hardware providing communication to the HomeEasy UK appliance")
     public void setHardware(ObjectReference<SimpleProxyHardware> hardware) {
+        uninit();
         if(hardwareListenerRegistration != null) {
             hardwareListenerRegistration.remove();
             hardwareListenerRegistration = null;
@@ -52,21 +53,23 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
         this.hardware = hardware;
         if(this.hardware != null)
             hardwareListenerRegistration = this.hardware.addListener(this);
-        reconfigure(false);
+        init(false);
     }
 
     @Property
     @Id(value = "house-id", name = "House ID", description = "The house ID of the HomeEasy UK appliance")
     public void setHouseId(int houseId) {
+        uninit();
         this.houseId = houseId;
-        reconfigure(false);
+        init(false);
     }
 
     @Property
     @Id(value = "unit-id", name = "Unit ID", description = "The unit ID of the HomeEasy UK appliance")
     public void setUnitCode(byte unitCode) {
+        uninit();
         this.unitCode = unitCode;
-        reconfigure(false);
+        init(false);
     }
 
     @Override
@@ -83,14 +86,14 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
     public void init(Logger logger, FeatureDriver.Callback callback) {
         this.logger = logger;
         this.callback = callback;
-        reconfigure(true);
+        init(true);
     }
 
-    private void reconfigure(boolean fail) {
+    private void init(boolean fail) {
         // check whether it has been initialised or not
         if(callback == null)
             return;
-        uninit();
+
         if(hardware == null) {
             callback.setError("Hardware property is not set");
             if (fail)
@@ -158,11 +161,11 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
 
     @Override
     public void available(SimpleProxyHardware object) {
-        reconfigure(false);
+        init(false);
     }
 
     @Override
     public void unavailable() {
-        reconfigure(false);
+        uninit();
     }
 }
