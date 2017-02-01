@@ -17,6 +17,8 @@ public class AndroidObjectFactories {
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyCommand>> commands = new Commands();
     private final ProxyObject.Factory<AndroidProxyCondition> condition = new Condition();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyCondition>> conditions = new Conditions();
+    private final ProxyObject.Factory<AndroidProxyConnectedDevice> connectedDevice = new ConnectedDevice();
+    private final ProxyObject.Factory<AndroidProxyList<AndroidProxyConnectedDevice>> connectedDevices = new ConnectedDevices();
     private final ProxyObject.Factory<AndroidProxyDevice> device = new Device();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyDevice>> devices = new Devices();
     private final ProxyObject.Factory<AndroidProxyFeature> feature = new Feature();
@@ -68,6 +70,14 @@ public class AndroidObjectFactories {
 
     public ProxyObject.Factory<AndroidProxyList<AndroidProxyCondition>> conditions() {
         return conditions;
+    }
+
+    public ProxyObject.Factory<AndroidProxyConnectedDevice> connectedDevice() {
+        return connectedDevice;
+    }
+
+    public ProxyObject.Factory<AndroidProxyList<AndroidProxyConnectedDevice>> connectedDevices() {
+        return connectedDevices;
     }
 
     public ProxyObject.Factory<AndroidProxyDevice> device() {
@@ -211,6 +221,22 @@ public class AndroidObjectFactories {
         @Override
         public AndroidProxyList<AndroidProxyCondition> create(Logger logger) {
             return new AndroidProxyList<>(logger, managedCollectionFactory, condition);
+        }
+    }
+
+    public class ConnectedDevice implements ProxyObject.Factory<AndroidProxyConnectedDevice> {
+
+        @Override
+        public AndroidProxyConnectedDevice create(Logger logger) {
+            return new AndroidProxyConnectedDevice(logger, managedCollectionFactory, AndroidObjectFactories.this);
+        }
+    }
+
+    public class ConnectedDevices implements ProxyObject.Factory<AndroidProxyList<AndroidProxyConnectedDevice>> {
+
+        @Override
+        public AndroidProxyList<AndroidProxyConnectedDevice> create(Logger logger) {
+            return new AndroidProxyList<>(logger, managedCollectionFactory, connectedDevice);
         }
     }
 

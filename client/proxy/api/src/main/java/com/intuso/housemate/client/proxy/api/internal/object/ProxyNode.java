@@ -17,7 +17,7 @@ import javax.jms.JMSException;
 public abstract class ProxyNode<
         COMMAND extends ProxyCommand<?, ?, ?>,
         TYPES extends ProxyList<? extends ProxyType<?>, ?>,
-        HARDWARES extends ProxyList<? extends ProxyHardware<?, ?, ?, ?, ?, ?, ?>, ?>,
+        HARDWARES extends ProxyList<? extends ProxyHardware<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         NODE extends ProxyNode<COMMAND, TYPES, HARDWARES, NODE>>
         extends ProxyObject<Node.Data, Node.Listener<? super NODE>>
         implements Node<COMMAND, TYPES, HARDWARES, NODE> {

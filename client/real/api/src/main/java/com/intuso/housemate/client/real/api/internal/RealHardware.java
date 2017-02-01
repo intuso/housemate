@@ -14,7 +14,8 @@ public interface RealHardware<COMMAND extends RealCommand<?, ?, ?>,
         COMMANDS extends RealList<? extends RealCommand<?, ?, ?>, ?>,
         VALUES extends RealList<? extends RealValue<?, ?, ?>, ?>,
         PROPERTIES extends RealList<? extends RealProperty<?, ?, ?, ?>, ?>,
-        HARDWARE extends RealHardware<COMMAND, BOOLEAN_VALUE, STRING_VALUE, DRIVER_PROPERTY, COMMANDS, VALUES, PROPERTIES, HARDWARE>>
+        DEVICES extends RealList<? extends RealConnectedDevice<?, ?, ?, ?, ?>, ?>,
+        HARDWARE extends RealHardware<COMMAND, BOOLEAN_VALUE, STRING_VALUE, DRIVER_PROPERTY, COMMANDS, VALUES, PROPERTIES, DEVICES, HARDWARE>>
         extends Hardware<COMMAND,
         COMMAND,
         COMMAND,
@@ -25,6 +26,7 @@ public interface RealHardware<COMMAND extends RealCommand<?, ?, ?>,
         COMMANDS,
         VALUES,
         PROPERTIES,
+        DEVICES,
         HARDWARE>,
         HardwareDriver.Callback {
 
@@ -34,11 +36,11 @@ public interface RealHardware<COMMAND extends RealCommand<?, ?, ?>,
 
     boolean isRunning();
 
-    interface Container<HARDWARE extends RealHardware<?, ?, ?, ?, ?, ?, ?, ?>, HARDWARES extends RealList<? extends HARDWARE, ?>> extends Hardware.Container<HARDWARES>, RemoveCallback<HARDWARE> {
+    interface Container<HARDWARE extends RealHardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HARDWARES extends RealList<? extends HARDWARE, ?>> extends Hardware.Container<HARDWARES>, RemoveCallback<HARDWARE> {
         void addHardware(HARDWARE hardware);
     }
 
-    interface RemoveCallback<HARDWARE extends RealHardware<?, ?, ?, ?, ?, ?, ?, ?>> {
+    interface RemoveCallback<HARDWARE extends RealHardware<?, ?, ?, ?, ?, ?, ?, ?, ?>> {
         void removeHardware(HARDWARE hardware);
     }
 }

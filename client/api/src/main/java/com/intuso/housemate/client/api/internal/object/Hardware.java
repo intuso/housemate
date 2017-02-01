@@ -19,7 +19,8 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
         VALUES extends List<? extends Value<?, ?, ?>, ?>,
         PROPERTIES extends List<? extends Property<?, ?, ?, ?>, ?>,
-        HARDWARE extends Hardware<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, COMMANDS, VALUES, PROPERTIES, HARDWARE>>
+        DEVICES extends List<? extends ConnectedDevice<?, ?, ?, ?, ?>, ?>,
+        HARDWARE extends Hardware<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, COMMANDS, VALUES, PROPERTIES, DEVICES, HARDWARE>>
         extends
         Object<Hardware.Listener<? super HARDWARE>>,
         Renameable<RENAME_COMMAND>,
@@ -29,17 +30,19 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         UsesDriver<DRIVER_PROPERTY, DRIVER_LOADED_VALUE>,
         Command.Container<COMMANDS>,
         Value.Container<VALUES>,
-        Property.Container<PROPERTIES> {
+        Property.Container<PROPERTIES>,
+        ConnectedDevice.Container<DEVICES> {
 
     String COMMANDS_ID = "command";
     String VALUES_ID = "value";
     String PROPERTIES_ID = "property";
+    String DEVICES_ID = "device";
 
     /**
      *
      * Listener interface for devices
      */
-    interface Listener<HARDWARE extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> extends Object.Listener,
+    interface Listener<HARDWARE extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>> extends Object.Listener,
             Failable.Listener<HARDWARE>,
             Renameable.Listener<HARDWARE>,
             Runnable.Listener<HARDWARE>,
@@ -49,7 +52,7 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
      *
      * Interface to show that the implementing object has a list of devices
      */
-    interface Container<HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
+    interface Container<HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
 
         /**
          * Gets the hardware list

@@ -10,7 +10,7 @@ import javax.jms.JMSException;
  */
 public interface ServerBaseNode<COMMAND extends Command<?, ?, ?, ?>,
         TYPES extends List<? extends Type<?>, ?>,
-        HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
+        HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         NODE extends ServerBaseNode<COMMAND, TYPES, HARDWARES, NODE>>
         extends Node<COMMAND, TYPES, HARDWARES, NODE> {
     void init(String name, Connection connection) throws JMSException;

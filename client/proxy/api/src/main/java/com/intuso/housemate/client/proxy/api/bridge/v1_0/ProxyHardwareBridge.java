@@ -28,6 +28,7 @@ public class ProxyHardwareBridge
         ProxyListBridge<ProxyCommandBridge>,
         ProxyListBridge<ProxyValueBridge>,
         ProxyListBridge<ProxyPropertyBridge>,
+        ProxyListBridge<ProxyConnectedDeviceBridge>,
         ProxyHardwareBridge> {
 
     private final ProxyCommandBridge renameCommand;
@@ -41,6 +42,7 @@ public class ProxyHardwareBridge
     private final ProxyListBridge<ProxyCommandBridge> commands;
     private final ProxyListBridge<ProxyValueBridge> values;
     private final ProxyListBridge<ProxyPropertyBridge> properties;
+    private final ProxyListBridge<ProxyConnectedDeviceBridge> devices;
 
     @Inject
     protected ProxyHardwareBridge(@Assisted Logger logger,
@@ -51,6 +53,7 @@ public class ProxyHardwareBridge
                                   ProxyObjectBridge.Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory,
                                   ProxyObjectBridge.Factory<ProxyPropertyBridge> propertyFactory,
                                   ProxyObjectBridge.Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
+                                  ProxyObjectBridge.Factory<ProxyListBridge<ProxyConnectedDeviceBridge>> devicesFactory,
                                   ManagedCollectionFactory managedCollectionFactory) {
         super(logger, Hardware.Data.class, hardwareMapper, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
@@ -64,6 +67,7 @@ public class ProxyHardwareBridge
         commands = commandsFactory.create(ChildUtil.logger(logger, Hardware.COMMANDS_ID));
         values = valuesFactory.create(ChildUtil.logger(logger, Hardware.VALUES_ID));
         properties = propertiesFactory.create(ChildUtil.logger(logger, Hardware.PROPERTIES_ID));
+        devices = devicesFactory.create(ChildUtil.logger(logger, Hardware.DEVICES_ID));
     }
 
     @Override
@@ -113,6 +117,10 @@ public class ProxyHardwareBridge
                 com.intuso.housemate.client.proxy.api.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Hardware.PROPERTIES_ID),
                 ChildUtil.name(internalName, Hardware.PROPERTIES_ID),
                 connection);
+        devices.init(
+                com.intuso.housemate.client.proxy.api.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Hardware.DEVICES_ID),
+                ChildUtil.name(internalName, Hardware.DEVICES_ID),
+                connection);
     }
 
     @Override
@@ -129,6 +137,7 @@ public class ProxyHardwareBridge
         commands.uninit();
         values.uninit();
         properties.uninit();
+        devices.uninit();
     }
 
     @Override
@@ -184,5 +193,10 @@ public class ProxyHardwareBridge
     @Override
     public ProxyListBridge<ProxyPropertyBridge> getProperties() {
         return properties;
+    }
+
+    @Override
+    public ProxyListBridge<ProxyConnectedDeviceBridge> getConnectedDevices() {
+        return devices;
     }
 }

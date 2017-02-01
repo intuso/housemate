@@ -108,7 +108,9 @@ public class ProxyFeatureBridge
         commands.uninit();
         values.uninit();
         properties.uninit();
-    }@Override
+    }
+
+    @Override
     public ProxyCommandBridge getRenameCommand() {
         return renameCommand;
     }

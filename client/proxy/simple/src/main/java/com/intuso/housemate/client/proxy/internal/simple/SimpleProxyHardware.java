@@ -21,6 +21,7 @@ public final class SimpleProxyHardware extends ProxyHardware<
         SimpleProxyList<SimpleProxyValue>,
         SimpleProxyProperty,
         SimpleProxyList<SimpleProxyProperty>,
+        SimpleProxyList<SimpleProxyConnectedDevice>,
         SimpleProxyHardware> {
 
     @Inject
@@ -31,7 +32,8 @@ public final class SimpleProxyHardware extends ProxyHardware<
                                ProxyObject.Factory<SimpleProxyValue> valueFactory,
                                ProxyObject.Factory<SimpleProxyList<SimpleProxyValue>> valuesFactory,
                                ProxyObject.Factory<SimpleProxyProperty> propertyFactory,
-                               ProxyObject.Factory<SimpleProxyList<SimpleProxyProperty>> propertiesFactory) {
-        super(logger, managedCollectionFactory, commandFactory, commandsFactory, valueFactory, valuesFactory, propertyFactory, propertiesFactory);
+                               ProxyObject.Factory<SimpleProxyList<SimpleProxyProperty>> propertiesFactory,
+                               ProxyObject.Factory<SimpleProxyList<SimpleProxyConnectedDevice>> devicesFactory) {
+        super(logger, managedCollectionFactory, commandFactory, commandsFactory, valueFactory, valuesFactory, propertyFactory, propertiesFactory, devicesFactory);
     }
 }

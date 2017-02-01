@@ -19,9 +19,10 @@ public abstract class ProxyHardware<
         VALUES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
         PROPERTY extends ProxyProperty<?, ?, PROPERTY>,
         PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
-        HARDWARE extends ProxyHardware<COMMAND, COMMANDS, VALUE, VALUES, PROPERTY, PROPERTIES, HARDWARE>>
+        DEVICES extends ProxyList<? extends ProxyConnectedDevice<?, ?, ?, ?, ?>, ?>,
+        HARDWARE extends ProxyHardware<COMMAND, COMMANDS, VALUE, VALUES, PROPERTY, PROPERTIES, DEVICES, HARDWARE>>
         extends ProxyObject<Hardware.Data, Hardware.Listener<? super HARDWARE>>
-        implements Hardware<COMMAND, COMMAND, COMMAND, VALUE, VALUE, PROPERTY, VALUE, COMMANDS, VALUES, PROPERTIES, HARDWARE>,
+        implements Hardware<COMMAND, COMMAND, COMMAND, VALUE, VALUE, PROPERTY, VALUE, COMMANDS, VALUES, PROPERTIES, DEVICES, HARDWARE>,
         ProxyFailable<VALUE>,
         ProxyRemoveable<COMMAND>,
         ProxyRenameable<COMMAND>,
@@ -39,6 +40,7 @@ public abstract class ProxyHardware<
     private final COMMANDS commands;
     private final VALUES values;
     private final PROPERTIES properties;
+    private final DEVICES devices;
 
     /**
      * @param logger {@inheritDoc}
@@ -50,7 +52,8 @@ public abstract class ProxyHardware<
                          ProxyObject.Factory<VALUE> valueFactory,
                          ProxyObject.Factory<VALUES> valuesFactory,
                          ProxyObject.Factory<PROPERTY> propertyFactory,
-                         ProxyObject.Factory<PROPERTIES> propertiesFactory) {
+                         ProxyObject.Factory<PROPERTIES> propertiesFactory,
+                         ProxyObject.Factory<DEVICES> devicesFactory) {
         super(logger, Hardware.Data.class, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
@@ -63,6 +66,7 @@ public abstract class ProxyHardware<
         commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID));
         values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID));
         properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID));
+        devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID));
     }
 
     @Override
@@ -79,6 +83,7 @@ public abstract class ProxyHardware<
         commands.init(ChildUtil.name(name, COMMANDS_ID), connection);
         values.init(ChildUtil.name(name, VALUES_ID), connection);
         properties.init(ChildUtil.name(name, PROPERTIES_ID), connection);
+        devices.init(ChildUtil.name(name, DEVICES_ID), connection);
     }
 
     @Override
@@ -95,6 +100,7 @@ public abstract class ProxyHardware<
         commands.uninit();
         values.uninit();
         properties.uninit();
+        devices.uninit();
     }
 
     @Override
@@ -169,6 +175,11 @@ public abstract class ProxyHardware<
     @Override
     public final PROPERTIES getProperties() {
         return properties;
+    }
+
+    @Override
+    public final DEVICES getConnectedDevices() {
+        return devices;
     }
 
     @Override

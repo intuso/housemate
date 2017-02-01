@@ -20,12 +20,14 @@ public class SimpleProxyModule extends AbstractModule {
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyAutomation>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyCommand>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyCondition>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyConnectedDevice>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyDevice>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyFeature>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyHardware>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyList<SimpleProxyAutomation>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyList<SimpleProxyCommand>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyList<SimpleProxyCondition>>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyList<SimpleProxyConnectedDevice>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyList<SimpleProxyDevice>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyList<SimpleProxyFeature>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObject.Factory<SimpleProxyList<SimpleProxyHardware>>>() {}));
