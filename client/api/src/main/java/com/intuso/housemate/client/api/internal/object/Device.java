@@ -15,7 +15,7 @@ public interface Device<
         COMMAND extends Command<?, ?, ?, ?>,
         RUNNING_VALUE extends Value<?, ?, ?>,
         ERROR_VALUE extends Value<?, ?, ?>,
-        FEATURES extends List<? extends Feature<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
+        FEATURES extends List<? extends Feature<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         DEVICE extends Device<COMMAND, RUNNING_VALUE, ERROR_VALUE, FEATURES, DEVICE>>
         extends
         Object<Device.Listener<? super DEVICE>>,
