@@ -54,7 +54,7 @@ public abstract class ProxyList<ELEMENT extends ProxyObject<?, ?>, LIST extends 
                                 for (List.Listener<? super ELEMENT, ? super LIST> listener : listeners)
                                     listener.elementAdded((LIST) ProxyList.this, element);
                                 for(Map.Entry<ObjectReferenceImpl, Integer> reference : getMissingReferences(data.getId()).entrySet())
-                                    manageReference(reference.getKey(), reference.getValue());
+                                    reference(reference.getKey(), reference.getValue());
                             }
                         }
                     }

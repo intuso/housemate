@@ -5,7 +5,6 @@ import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Server;
-import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.api.internal.ProxyRenameable;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -35,7 +34,6 @@ public abstract class ProxyServer<
         ProxyRenameable<COMMAND> {
 
     private final Connection connection;
-    private final ManagedCollectionFactory managedCollectionFactory;
 
     private final COMMAND renameCommand;
     private final AUTOMATIONS automations;
@@ -57,7 +55,6 @@ public abstract class ProxyServer<
                        Factory<NODES> nodesFactory) {
         super(logger, Server.Data.class, managedCollectionFactory);
         this.connection = connection;
-        this.managedCollectionFactory = managedCollectionFactory;
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID));
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID));
@@ -162,12 +159,6 @@ public abstract class ProxyServer<
         else if(USERS_ID.equals(id))
             return users;
         return null;
-    }
-
-    public <O extends ProxyObject<?, ?>> ObjectReference<O> reference(String[] path) {
-        ObjectReferenceImpl<O> reference = new ObjectReferenceImpl<>(managedCollectionFactory, path);
-        manageReference(reference, 0);
-        return reference;
     }
 
     public <T extends ProxyObject<?, ?>> T find(String[] path) {
