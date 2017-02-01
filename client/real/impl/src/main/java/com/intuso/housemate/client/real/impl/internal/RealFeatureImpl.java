@@ -5,8 +5,10 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.bridge.v1_0.driver.FeatureDriverBridge;
-import com.intuso.housemate.client.api.internal.*;
-import com.intuso.housemate.client.api.internal.Runnable;
+import com.intuso.housemate.client.api.internal.Failable;
+import com.intuso.housemate.client.api.internal.Removeable;
+import com.intuso.housemate.client.api.internal.Renameable;
+import com.intuso.housemate.client.api.internal.UsesDriver;
 import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
 import com.intuso.housemate.client.api.internal.driver.PluginDependency;
 import com.intuso.housemate.client.api.internal.object.Feature;
@@ -40,9 +42,6 @@ public final class RealFeatureImpl
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
-    private final RealValueImpl<Boolean> runningValue;
-    private final RealCommandImpl startCommand;
-    private final RealCommandImpl stopCommand;
     private final RealValueImpl<String> errorValue;
     private final RealPropertyImpl<PluginDependency<FeatureDriver.Factory<?>>> driverProperty;
     private final RealValueImpl<Boolean> driverLoadedValue;
@@ -54,6 +53,7 @@ public final class RealFeatureImpl
 
     private ManagedCollection.Registration driverAvailableListenerRegsitration;
     private FeatureDriver driver;
+    private boolean running;
 
     @Inject
     public RealFeatureImpl(@Assisted final Logger logger,
@@ -102,45 +102,7 @@ public final class RealFeatureImpl
                 new RealCommandImpl.Performer() {
                     @Override
                     public void perform(Type.InstanceMap values) {
-                        if(isRunning())
-                            throw new HousemateException("Cannot remove while device is still running");
                         remove();
-                    }
-                },
-                Lists.<RealParameterImpl<?>>newArrayList());
-        this.runningValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID),
-                Runnable.RUNNING_ID,
-                Runnable.RUNNING_ID,
-                "Whether the device is running or not",
-                typeRepository.getType(new TypeSpec(Boolean.class)),
-                1,
-                1,
-                Lists.newArrayList(false));
-        this.startCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.START_ID),
-                Runnable.START_ID,
-                Runnable.START_ID,
-                "Start the device",
-                new RealCommandImpl.Performer() {
-                    @Override
-                    public void perform(Type.InstanceMap values) {
-                        if(!isRunning()) {
-                            _start();
-                            runningValue.setValue(true);
-                        }
-                    }
-                },
-                Lists.<RealParameterImpl<?>>newArrayList());
-        this.stopCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.STOP_ID),
-                Runnable.STOP_ID,
-                Runnable.STOP_ID,
-                "Stop the device",
-                new RealCommandImpl.Performer() {
-                    @Override
-                    public void perform(Type.InstanceMap values) {
-                        if(isRunning()) {
-                            _stop();
-                            runningValue.setValue(false);
-                        }
                     }
                 },
                 Lists.<RealParameterImpl<?>>newArrayList());
@@ -240,7 +202,7 @@ public final class RealFeatureImpl
             properties.add(property);
         errorValue.setValue(null);
         driverLoadedValue.setValue(true);
-        if(isRunning())
+        if(running)
             driver.init(logger, this);
     }
 
@@ -276,17 +238,12 @@ public final class RealFeatureImpl
         super.initChildren(name, connection);
         renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
         removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
-        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), connection);
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
-        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
         errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
         driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
         commands.init(ChildUtil.name(name, Feature.COMMANDS_ID), connection);
         values.init(ChildUtil.name(name, Feature.VALUES_ID), connection);
         properties.init(ChildUtil.name(name, Feature.PROPERTIES_ID), connection);
-        if(isRunning())
-            _start();
     }
 
     @Override
@@ -295,9 +252,6 @@ public final class RealFeatureImpl
         super.uninitChildren();
         renameCommand.uninit();
         removeCommand.uninit();
-        runningValue.uninit();
-        startCommand.uninit();
-        stopCommand.uninit();
         errorValue.uninit();
         driverProperty.uninit();
         driverLoadedValue.uninit();
@@ -321,26 +275,9 @@ public final class RealFeatureImpl
         return errorValue;
     }
 
-    @Override
-    public RealCommandImpl getStopCommand() {
-        return stopCommand;
-    }
-
-    @Override
-    public RealCommandImpl getStartCommand() {
-        return startCommand;
-    }
-
-    @Override
-    public RealValueImpl<Boolean> getRunningValue() {
-        return runningValue;
-    }
-
-    public boolean isRunning() {
-        return runningValue.getValue() != null ? runningValue.getValue() : false;
-    }
-
     protected final void remove() {
+        uninitDriver();
+        uninitDriverListener();
         removeCallback.removeFeature(this);
     }
 
@@ -380,6 +317,7 @@ public final class RealFeatureImpl
 
     protected final void _start() {
         try {
+            running = true;
             if(driver != null)
                 driver.init(logger, this);
         } catch (Throwable t) {
@@ -389,6 +327,7 @@ public final class RealFeatureImpl
     }
 
     protected final void _stop() {
+        running = false;
         if(driver != null)
             driver.uninit();
     }

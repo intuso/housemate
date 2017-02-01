@@ -20,18 +20,14 @@ public abstract class ProxyFeature<COMMAND extends ProxyCommand<?, ?, ?>,
         PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
         FEATURE extends ProxyFeature<COMMAND, COMMANDS, VALUE, VALUES, PROPERTY, PROPERTIES, FEATURE>>
         extends ProxyObject<Feature.Data, Feature.Listener<? super FEATURE>>
-        implements Feature<COMMAND, COMMAND, COMMAND, VALUE, VALUE, PROPERTY, VALUE, COMMANDS, VALUES, PROPERTIES, FEATURE>,
+        implements Feature<COMMAND, COMMAND, VALUE, PROPERTY, VALUE, COMMANDS, VALUES, PROPERTIES, FEATURE>,
         ProxyFailable<VALUE>,
         ProxyRemoveable<COMMAND>,
         ProxyRenameable<COMMAND>,
-        ProxyRunnable<COMMAND, VALUE>,
         ProxyUsesDriver<PROPERTY, VALUE> {
 
     private final COMMAND renameCommand;
     private final COMMAND removeCommand;
-    private final VALUE runningValue;
-    private final COMMAND startCommand;
-    private final COMMAND stopCommand;
     private final VALUE errorValue;
     private final PROPERTY driverProperty;
     private final VALUE driverLoadedValue;
@@ -53,9 +49,6 @@ public abstract class ProxyFeature<COMMAND extends ProxyCommand<?, ?, ?>,
         super(logger, Feature.Data.class, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
-        runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID));
-        startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID));
-        stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
         driverProperty = propertyFactory.create(ChildUtil.logger(logger, DRIVER_ID));
         driverLoadedValue = valueFactory.create(ChildUtil.logger(logger, DRIVER_LOADED_ID));
@@ -69,9 +62,6 @@ public abstract class ProxyFeature<COMMAND extends ProxyCommand<?, ?, ?>,
         super.initChildren(name, connection);
         renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
         removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
-        runningValue.init(ChildUtil.name(name, RUNNING_ID), connection);
-        startCommand.init(ChildUtil.name(name, START_ID), connection);
-        stopCommand.init(ChildUtil.name(name, STOP_ID), connection);
         errorValue.init(ChildUtil.name(name, ERROR_ID), connection);
         driverProperty.init(ChildUtil.name(name, DRIVER_ID), connection);
         driverLoadedValue.init(ChildUtil.name(name, DRIVER_LOADED_ID), connection);
@@ -85,9 +75,6 @@ public abstract class ProxyFeature<COMMAND extends ProxyCommand<?, ?, ?>,
         super.uninitChildren();
         renameCommand.uninit();
         removeCommand.uninit();
-        runningValue.uninit();
-        startCommand.uninit();
-        stopCommand.uninit();
         errorValue.uninit();
         driverProperty.uninit();
         driverLoadedValue.uninit();
@@ -104,28 +91,6 @@ public abstract class ProxyFeature<COMMAND extends ProxyCommand<?, ?, ?>,
     @Override
     public COMMAND getRemoveCommand() {
         return removeCommand;
-    }
-
-    @Override
-    public final boolean isRunning() {
-        return runningValue.getValue() != null
-                && runningValue.getValue().getFirstValue() != null
-                && Boolean.parseBoolean(runningValue.getValue().getFirstValue());
-    }
-
-    @Override
-    public VALUE getRunningValue() {
-        return runningValue;
-    }
-
-    @Override
-    public COMMAND getStartCommand() {
-        return startCommand;
-    }
-
-    @Override
-    public COMMAND getStopCommand() {
-        return stopCommand;
     }
 
     @Override
@@ -176,12 +141,6 @@ public abstract class ProxyFeature<COMMAND extends ProxyCommand<?, ?, ?>,
             return renameCommand;
         else if(REMOVE_ID.equals(id))
             return removeCommand;
-        else if(RUNNING_ID.equals(id))
-            return runningValue;
-        else if(START_ID.equals(id))
-            return startCommand;
-        else if(STOP_ID.equals(id))
-            return stopCommand;
         else if(ERROR_ID.equals(id))
             return errorValue;
         else if(DRIVER_ID.equals(id))

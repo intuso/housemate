@@ -17,8 +17,6 @@ public interface RealFeature<COMMAND extends RealCommand<?, ?, ?>,
         FEATURE extends RealFeature<COMMAND, COMMANDS, BOOLEAN_VALUE, STRING_VALUE, VALUES, DRIVER_PROPERTY, PROPERTIES, FEATURE>>
         extends Feature<COMMAND,
         COMMAND,
-        COMMAND,
-        BOOLEAN_VALUE,
         STRING_VALUE,
         DRIVER_PROPERTY,
         BOOLEAN_VALUE,
