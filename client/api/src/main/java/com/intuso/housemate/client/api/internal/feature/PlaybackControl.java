@@ -6,7 +6,6 @@ import com.intuso.utilities.collection.ManagedCollection;
 /**
  * API for controlling playback
  */
-@Feature
 @Id(value = "playback", name = "Playback", description = "Playback")
 public interface PlaybackControl {
 
@@ -50,7 +49,6 @@ public interface PlaybackControl {
     /**
      * API for controlling playback with state
      */
-    @Feature
     @Id(value = "playback-stateful", name = "Playback", description = "Playback")
     interface Stateful extends PlaybackControl {
 

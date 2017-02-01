@@ -6,7 +6,6 @@ import com.intuso.utilities.collection.ManagedCollection;
 /**
  * API for controlling volume
  */
-@Feature
 @Id(value = "volume", name = "Volume", description = "Volume")
 public interface VolumeControl {
 
@@ -36,7 +35,6 @@ public interface VolumeControl {
     /**
      * API for controlling volume with state
      */
-    @Feature
     @Id(value = "volume-stateful", name = "Volume", description = "Volume")
     interface Stateful extends VolumeControl {
 

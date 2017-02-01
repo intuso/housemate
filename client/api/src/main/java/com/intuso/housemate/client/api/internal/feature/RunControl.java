@@ -6,7 +6,6 @@ import com.intuso.utilities.collection.ManagedCollection;
 /**
  * API for running something
  */
-@Feature
 @Id(value = "run", name = "Run", description = "Run")
 public interface RunControl {
 
@@ -29,7 +28,6 @@ public interface RunControl {
     /**
      * API for running something with state
      */
-    @Feature
     @Id(value = "run-stateful", name = "Run", description = "Run")
     interface Stateful extends RunControl {
 

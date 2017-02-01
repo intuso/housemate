@@ -6,7 +6,6 @@ import com.intuso.utilities.collection.ManagedCollection;
 /**
  * Created by tomc on 20/12/16.
  */
-@Feature
 @Id(value = "feature", name = "Feature", description = "Feature")
 interface TestFeature {
 

@@ -6,7 +6,6 @@ import com.intuso.utilities.collection.ManagedCollection;
 /**
  * API for controlling power
  */
-@Feature
 @Id(value = "power", name = "Power", description = "Power")
 public interface PowerControl {
 
@@ -29,7 +28,6 @@ public interface PowerControl {
     /**
      * API for controlling power with state
      */
-    @Feature
     @Id(value = "power-stateful", name = "Power", description = "Power")
     interface Stateful extends PowerControl {
 

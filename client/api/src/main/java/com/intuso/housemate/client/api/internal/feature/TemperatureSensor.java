@@ -1,7 +1,6 @@
 package com.intuso.housemate.client.api.internal.feature;
 
 import com.intuso.housemate.client.api.internal.annotation.AddListener;
-import com.intuso.housemate.client.api.internal.annotation.Feature;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.annotation.Value;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -9,7 +8,6 @@ import com.intuso.utilities.collection.ManagedCollection;
 /**
  * API for temperature monitoring
  */
-@Feature
 @Id(value = "temperature", name = "Temperature", description = "Temperature")
 public interface TemperatureSensor {
 
