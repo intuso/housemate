@@ -1,6 +1,9 @@
 package com.intuso.housemate.client.api.internal.feature;
 
-import com.intuso.housemate.client.api.internal.annotation.*;
+import com.intuso.housemate.client.api.internal.annotation.AddListener;
+import com.intuso.housemate.client.api.internal.annotation.Command;
+import com.intuso.housemate.client.api.internal.annotation.Id;
+import com.intuso.housemate.client.api.internal.annotation.Value;
 import com.intuso.utilities.collection.ManagedCollection;
 
 /**
@@ -26,36 +29,19 @@ public interface PowerControl {
     void turnOff();
 
     /**
-     * API for controlling power with state
+     * Add a listener
      */
-    @Id(value = "power-stateful", name = "Power", description = "Power")
-    interface Stateful extends PowerControl {
-
-        String ID = Stateful.class.getAnnotation(Id.class).value();
-
-        /**
-         * Get whether the device is current on
-         * @return true if the device is currently on
-         */
-        @Value
-        @Id(value = "on", name = "On", description = "True if the device is currently on")
-        boolean isOn();
-
-        /**
-         * Add a listener
-         */
-        @AddListener
-        ManagedCollection.Registration addListener(Listener listener);
-    }
+    @AddListener
+    ManagedCollection.Registration addListener(Listener listener);
 
     interface Listener {
 
         /**
          * Callback for when the device has been turned on or off
-         * @param on true if the device is now on
+         * @param on true if the device is now on, null if unknown
          */
         @Value
         @Id(value = "on", name = "On", description = "True if the device is now on")
-        void on(boolean on);
+        void on(Boolean on);
     }
 }

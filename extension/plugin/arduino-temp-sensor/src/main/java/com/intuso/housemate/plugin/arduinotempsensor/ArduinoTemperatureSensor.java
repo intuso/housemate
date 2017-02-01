@@ -29,7 +29,7 @@ public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSenso
     private BufferedReader in;
     private LineReader lineReader;
 
-    private double temperature = 0.0;
+    private Double temperature = null;
 
     @Inject
     protected ArduinoTemperatureSensor(SerialPortWrapper serialPort,
@@ -73,12 +73,8 @@ public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSenso
     }
 
     @Override
-    public double getTemperature() {
-        return temperature;
-    }
-
-    @Override
     public ManagedCollection.Registration addListener(Listener listener) {
+        listener.temperature(temperature);
         return listeners.add(listener);
     }
 

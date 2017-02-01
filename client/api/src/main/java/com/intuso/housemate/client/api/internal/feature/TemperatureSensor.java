@@ -14,14 +14,6 @@ public interface TemperatureSensor {
     String ID = TemperatureSensor.class.getAnnotation(Id.class).value();
 
     /**
-     * Get the temperature of the device
-     * @return the temperature
-     */
-    @Value
-    @Id(value = "temperature", name = "Temperature", description = "The current temperature")
-    double getTemperature();
-
-    /**
      * Add a listener
      */
     @AddListener
@@ -34,7 +26,7 @@ public interface TemperatureSensor {
          * @param temperature the new temperature
          */
         @Value
-        @Id(value = "temperature", name = "Temperature", description = "The current temperature")
-        void temperature(double temperature);
+        @Id(value = "temperature", name = "Temperature", description = "The current temperature, or null if unknown")
+        void temperature(Double temperature);
     }
 }

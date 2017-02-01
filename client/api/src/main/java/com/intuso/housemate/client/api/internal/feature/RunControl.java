@@ -26,27 +26,10 @@ public interface RunControl {
     void stop();
 
     /**
-     * API for running something with state
+     * Add a listener
      */
-    @Id(value = "run-stateful", name = "Run", description = "Run")
-    interface Stateful extends RunControl {
-
-        String ID = Stateful.class.getAnnotation(Id.class).value();
-
-        /**
-         * Get whether the device is running
-         * @return true if the device is currently running
-         */
-        @Value
-        @Id(value = "running", name = "Running", description = "True if the device is currently running")
-        boolean isRunning();
-
-        /**
-         * Add a listener
-         */
-        @AddListener
-        ManagedCollection.Registration addListener(Listener listener);
-    }
+    @AddListener
+    ManagedCollection.Registration addListener(Listener listener);
 
     interface Listener {
 
@@ -55,7 +38,7 @@ public interface RunControl {
          * @param running true if the device is now running
          */
         @Value
-        @Id(value = "running", name = "Running", description = "True if the device is currently running")
-        void running(boolean running);
+        @Id(value = "running", name = "Running", description = "True if the device is currently running, null if unknown")
+        void running(Boolean running);
     }
 }

@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
  *
  */
 @Id(value = "run-program", name = "Run Program", description = "Run a program")
-public class RunProgramFeatureDriver implements FeatureDriver, RunControl.Stateful {
+public class RunProgramFeatureDriver implements FeatureDriver, RunControl {
 
     @Property
     @Id(value = "command", name = "Command", description = "The command for the program")
@@ -28,7 +28,7 @@ public class RunProgramFeatureDriver implements FeatureDriver, RunControl.Statef
     private final ManagedCollection<Listener> listeners;
 
     private Monitor monitor = null;
-    private boolean isRunning = false;
+    private Boolean isRunning = null;
 
     @Inject
     public RunProgramFeatureDriver(ManagedCollectionFactory managedCollectionFactory) {
@@ -51,12 +51,8 @@ public class RunProgramFeatureDriver implements FeatureDriver, RunControl.Statef
     }
 
     @Override
-    public boolean isRunning() {
-        return isRunning;
-    }
-
-    @Override
     public ManagedCollection.Registration addListener(Listener listener) {
+        listener.running(null);
         return listeners.add(listener);
     }
 
@@ -157,10 +153,10 @@ public class RunProgramFeatureDriver implements FeatureDriver, RunControl.Statef
 
         @Override
         public void run() {
-            boolean is_running = true;
+            boolean is_running;
             while(!isInterrupted()) {
                 is_running = getFirstPID() != null;
-                if(is_running != isRunning) {
+                if(isRunning == null || is_running != isRunning) {
                     isRunning = is_running;
                     for(Listener listener : listeners)
                         listener.running(isRunning);

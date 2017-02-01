@@ -18,7 +18,7 @@ import org.slf4j.Logger;
  * Created by tomc on 12/12/16.
  */
 @Id(value = "homeeasyuk-appliance", name = "HomeEasy UK Appliance", description = "Power something on and off as a HomeEasy UK appliance")
-public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, HomeEasyUKAPI.Appliance.Listener, ObjectReference.Listener<SimpleProxyHardware> {
+public class HomeEasyUKFeature implements FeatureDriver, PowerControl, HomeEasyUKAPI.Appliance.Listener, ObjectReference.Listener<SimpleProxyHardware> {
 
     private final ManagedCollection<Listener> listeners;
     private final ProxyWrapper proxyWrapper;
@@ -70,11 +70,6 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl.Stateful, 
         uninit();
         this.unitCode = unitCode;
         init(false);
-    }
-
-    @Override
-    public boolean isOn() {
-        return applianceProxy.isOn();
     }
 
     @Override

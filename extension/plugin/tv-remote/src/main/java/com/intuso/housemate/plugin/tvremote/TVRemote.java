@@ -6,6 +6,8 @@ import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.feature.PlaybackControl;
 import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
 import com.intuso.housemate.client.v1_0.api.feature.VolumeControl;
+import com.intuso.utilities.collection.ManagedCollection;
+import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -13,7 +15,15 @@ import java.io.IOException;
 @Id(value = "tv-remote", name = "TV Remote", description = "TV Remote")
 public class TVRemote implements FeatureDriver, PowerControl, PlaybackControl, VolumeControl {
 
-    // todo use remote IR sender
+    private final ManagedCollection<PowerControl.Listener> powerListeners;
+    private final ManagedCollection<PlaybackControl.Listener> playbackListeners;
+    private final ManagedCollection<VolumeControl.Listener> volumeListeners;
+
+    public TVRemote(ManagedCollectionFactory managedCollectionFactory) {
+        this.powerListeners = managedCollectionFactory.create();
+        this.playbackListeners = managedCollectionFactory.create();
+        this.volumeListeners = managedCollectionFactory.create();
+    }
 
     @Property
     @Id(value = "remote-name", name = "Remote Name", description = "The name of the remote you want to use")
@@ -24,6 +34,25 @@ public class TVRemote implements FeatureDriver, PowerControl, PlaybackControl, V
 
     @Override
     public void uninit() {}
+
+    @Override
+    public ManagedCollection.Registration addListener(PowerControl.Listener listener) {
+        listener.on(null);
+        return powerListeners.add(listener);
+    }
+
+    @Override
+    public ManagedCollection.Registration addListener(PlaybackControl.Listener listener) {
+        listener.speed(null);
+        return playbackListeners.add(listener);
+    }
+
+    @Override
+    public ManagedCollection.Registration addListener(VolumeControl.Listener listener) {
+        listener.muted(null);
+        listener.volume(null);
+        return volumeListeners.add(listener);
+    }
 
     @Override
     public void turnOn() {
@@ -63,6 +92,16 @@ public class TVRemote implements FeatureDriver, PowerControl, PlaybackControl, V
     @Override
     public void mute() {
         irSend("KEY_MUTE");
+    }
+
+    @Override
+    public void unmute() {
+        irSend("KEY_MUTE");
+    }
+
+    @Override
+    public void volume(int volume) {
+        throw new UnsupportedOperationException("Infra-red remote cannot support setting the volume. Use volume up/down instead");
     }
 
     @Override

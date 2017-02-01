@@ -21,7 +21,7 @@ public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
 
     private Lighting2Appliance lighting2Appliance;
     private ManagedCollection.Registration listenerRegistration;
-    private boolean isOn = false;
+    private Boolean on = null;
 
     public HomeEasyUKApplianceImpl(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx, int houseId, byte unitCode) {
         this.callbacks = managedCollectionFactory.create();
@@ -34,19 +34,19 @@ public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
 
             @Override
             public void turnedOn(com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance a) {
-                setIsOn(true);
+                setOn(true);
             }
 
             @Override
             public void turnedOff(com.rfxcom.rfxtrx.util.lighting2.Lighting2Appliance a) {
-                setIsOn(false);
+                setOn(false);
             }
         });
 	}
 
     @Override
     public boolean isOn() {
-        return isOn;
+        return on;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
             throw new FeatureDriver.FeatureException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting2Appliance.turnOn();
-            setIsOn(true);
+            setOn(true);
 		} catch (IOException e) {
 			throw new FeatureDriver.FeatureException("Could not turn appliance on", e);
 		}
@@ -67,7 +67,7 @@ public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
             throw new FeatureDriver.FeatureException("Not connected to RFXCom device. Ensure properties are set correctly");
 		try {
 			lighting2Appliance.turnOff();
-            setIsOn(false);
+            setOn(false);
 		} catch (IOException e) {
 			throw new FeatureDriver.FeatureException("Could not turn appliance off", e);
 		}
@@ -75,12 +75,13 @@ public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
 
     @Override
     public ManagedCollection.Registration addCallback(Listener listener) {
+        listener.on(on);
         return callbacks.add(listener);
     }
 
-	private void setIsOn(boolean isOn) {
-        this.isOn = isOn;
+	private void setOn(boolean on) {
+        this.on = on;
         for(Listener listener : callbacks)
-            listener.on(isOn);
+            listener.on(on);
     }
 }

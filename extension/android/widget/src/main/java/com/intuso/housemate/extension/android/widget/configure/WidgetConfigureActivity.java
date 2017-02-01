@@ -34,7 +34,7 @@ public class WidgetConfigureActivity
         extends HousemateActivity
         implements AdapterView.OnItemClickListener {
 
-    private final String featureId = PowerControl.Stateful.ID;
+    private final String featureId = PowerControl.ID;
 
     private AndroidProxyServer server;
     private List<ManagedCollection.Registration> listenerRegistrations = Lists.newArrayList();

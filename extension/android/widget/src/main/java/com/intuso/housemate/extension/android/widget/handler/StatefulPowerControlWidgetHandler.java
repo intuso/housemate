@@ -18,24 +18,24 @@ import com.intuso.utilities.collection.ManagedCollection;
  * To change this template use File | Settings | File Templates.
  */
 public class StatefulPowerControlWidgetHandler
-        extends WidgetHandler<PowerControl.Stateful>
+        extends WidgetHandler<PowerControl>
         implements Command.PerformListener<AndroidProxyCommand> {
 
     private ManagedCollection.Registration listenerRegistration;
 
     public StatefulPowerControlWidgetHandler(WidgetService widgetService, ProxyWrapper proxyWrapper, String deviceId) {
-        super(widgetService, proxyWrapper, deviceId, PowerControl.Stateful.class);
+        super(widgetService, proxyWrapper, deviceId, PowerControl.class);
     }
 
     @Override
     public String getFeatureId() {
-        return PowerControl.Stateful.ID;
+        return PowerControl.ID;
     }
 
     protected void init() {
         listenerRegistration = getFeature().addListener(new PowerControl.Listener() {
             @Override
-            public void on(boolean isOn) {
+            public void on(Boolean isOn) {
                 updateWidget();
             }
         });
@@ -85,10 +85,11 @@ public class StatefulPowerControlWidgetHandler
                         break;
                     case READY:
                         views.setTextViewText(R.id.device_label, getDevice().getName());
-                        views.setImageViewResource(R.id.button, getFeature().isOn() ? R.drawable.stateful_power_on : R.drawable.stateful_power_off);
+                        // todo register listener and keep track of on value, or use a proxy one that does the same but caches the on value and provides a getter
+                        boolean isOn = true;
+                        views.setImageViewResource(R.id.button, isOn ? R.drawable.stateful_power_on : R.drawable.stateful_power_off);
                         // listen for button presses
-                        views.setOnClickPendingIntent(R.id.button, getWidgetService().makePendingIntent(this,
-                                getFeature() != null && !getFeature().isOn() ? "on" : "off"));
+                        views.setOnClickPendingIntent(R.id.button, getWidgetService().makePendingIntent(this, isOn ? "off" : "on"));
                         break;
                 }
                 break;

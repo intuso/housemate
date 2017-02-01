@@ -41,7 +41,7 @@ public abstract class WidgetHandler<FEATURE> {
     private FEATURE feature;
 
     public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, ProxyWrapper proxyFeatureFactory, String deviceId, String featureId) {
-        if(featureId.equals(PowerControl.Stateful.ID))
+        if(featureId.equals(PowerControl.ID))
             return new StatefulPowerControlWidgetHandler(widgetService, proxyFeatureFactory, deviceId);
         return null;
     }

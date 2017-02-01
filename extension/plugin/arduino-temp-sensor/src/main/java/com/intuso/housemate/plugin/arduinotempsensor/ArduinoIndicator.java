@@ -14,7 +14,7 @@ import java.io.IOException;
 /**
  */
 @Id(value = "arduino-indicator", name = "Arduino Indicator", description = "Arduino Indicator")
-public class ArduinoIndicator implements FeatureDriver, PowerControl.Stateful {
+public class ArduinoIndicator implements FeatureDriver, PowerControl {
 
     // todo use remote hardware
 
@@ -30,7 +30,7 @@ public class ArduinoIndicator implements FeatureDriver, PowerControl.Stateful {
     @Id(value = "intensity", name = "Intensity", description = "Intensity of the indicator")
     public int intensity;
 
-    boolean on = true;
+    Boolean on = null;
 
     @Inject
     protected ArduinoIndicator(SerialPortWrapper serialPort,
@@ -74,12 +74,8 @@ public class ArduinoIndicator implements FeatureDriver, PowerControl.Stateful {
     }
 
     @Override
-    public boolean isOn() {
-        return on;
-    }
-
-    @Override
     public ManagedCollection.Registration addListener(Listener listener) {
+        listener.on(on);
         return listeners.add(listener);
     }
 }

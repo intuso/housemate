@@ -19,50 +19,55 @@ public interface VolumeControl {
     void mute();
 
     /**
+     * Mute the device
+     */
+    @Command
+    @Id(value = "unmute", name = "Unmute", description = "Unmute")
+    void unmute();
+
+    /**
      * Turn the volume up
      */
     @Command
-    @Id(value = "volume-up", name = "Volume Up", description = "Volume up")
+    @Id(value = "volume", name = "Set Volume", description = "Set the volume")
+    void volume(@Id(value = "volume", name = "Volume", description = "The volume to set to") int volume);
+
+    /**
+     * Turn the volume up
+     */
+    @Command
+    @Id(value = "up", name = "Volume Up", description = "Turn the volume up")
     void volumeUp();
 
     /**
      * Turn the volume down
      */
     @Command
-    @Id(value = "volume-down", name = "Volume Down", description = "Volume down")
+    @Id(value = "down", name = "Volume Down", description = "Turn the volume down")
     void volumeDown();
 
     /**
-     * API for controlling volume with state
+     * Add a listener
      */
-    @Id(value = "volume-stateful", name = "Volume", description = "Volume")
-    interface Stateful extends VolumeControl {
-
-        String ID = Stateful.class.getAnnotation(Id.class).value();
-
-        /**
-         * Get the volume
-         * @return the current volume
-         */
-        @Value()
-        @Id(value = "volume", name = "Current Volume", description = "The device's current volume")
-        int getVolume();
-
-        /**
-         * Add a listener
-         */
-        @AddListener
-        ManagedCollection.Registration addListener(Listener listener);
-    }
+    @AddListener
+    ManagedCollection.Registration addListener(Listener listener);
 
     interface Listener {
+
+        /**
+         * Callback for when the volume is muted
+         * @param muted whether the device is muted, or null if unknown
+         */
+        @Value
+        @Id(value = "muted", name = "Muted", description = "Whether the device is muted")
+        void muted(Boolean muted);
 
         /**
          * Callback for when the volume has changed
          * @param volume the new volume
          */
-        @Value()
+        @Value
         @Id(value = "volume", name = "Current Volume", description = "The device's current volume")
-        void currentVolume(int volume);
+        void volume(Integer volume);
     }
 }

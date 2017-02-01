@@ -16,7 +16,7 @@ import java.io.IOException;
  * Feature that allows On/Off functionality by performing a system command.
  */
 @Id(value = "power-by-command", name = "Power By Command", description = "Feature which runs a configured command to turn things on and off")
-public final class PowerByCommandFeature implements FeatureDriver, PowerControl.Stateful {
+public final class PowerByCommandFeature implements FeatureDriver, PowerControl {
 
     @Property
     @Id(value = "on-command", name = "On Command", description = "The command to turn the feature on")
@@ -28,7 +28,7 @@ public final class PowerByCommandFeature implements FeatureDriver, PowerControl.
 
     private final ManagedCollection<Listener> listeners;
 
-    private boolean on = false;
+    private Boolean on = null;
 
     @Inject
 	public PowerByCommandFeature(ManagedCollectionFactory managedCollectionFactory) {
@@ -46,12 +46,8 @@ public final class PowerByCommandFeature implements FeatureDriver, PowerControl.
     }
 
     @Override
-    public boolean isOn() {
-        return on;
-    }
-
-    @Override
     public ManagedCollection.Registration addListener(Listener listener) {
+        listener.on(on);
         return listeners.add(listener);
     }
 

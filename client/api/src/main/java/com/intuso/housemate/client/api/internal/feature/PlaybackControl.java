@@ -47,36 +47,19 @@ public interface PlaybackControl {
     void rewind();
 
     /**
-     * API for controlling playback with state
+     * Add a listener
      */
-    @Id(value = "playback-stateful", name = "Playback", description = "Playback")
-    interface Stateful extends PlaybackControl {
-
-        String ID = Stateful.class.getAnnotation(Id.class).value();
-
-        /**
-         * Get whether the device is currently playing
-         * @return true if the device is currently playing
-         */
-        @Value
-        @Id(value = "playing", name = "Playing", description = "True if the device is currently playing")
-        boolean isPlaying();
-
-        /**
-         * Add a listener
-         */
-        @AddListener
-        ManagedCollection.Registration addListener(Listener listener);
-    }
+    @AddListener
+    ManagedCollection.Registration addListener(Listener listener);
 
     interface Listener {
 
         /**
-         * Callback for when playback starts or stops
-         * @param playing true if the device is now playing
+         * Callback for when playback speed changes
+         * @param speed number indicating playback speed, or null if unknown
          */
         @Value
-        @Id(value = "playing", name = "Playing", description = "True if the device is currently playing")
-        void playing(boolean playing);
+        @Id(value = "speed", name = "Playback Speed", description = "Speed of playback relative to normal speed, eg 8 means 8x, -4 means rewind 4x")
+        void speed(Integer speed);
     }
 }
