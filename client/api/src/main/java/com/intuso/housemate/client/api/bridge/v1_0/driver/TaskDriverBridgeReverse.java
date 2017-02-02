@@ -33,7 +33,7 @@ public class TaskDriverBridgeReverse implements TaskDriver {
         taskDriver.execute();
     }
 
-    public class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.TaskDriver.Callback {
+    public static class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.TaskDriver.Callback {
 
         private final Callback callback;
 

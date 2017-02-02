@@ -109,12 +109,10 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl, HomeEasyU
                 throw new FeatureException("Unit ID must be between 1 and 16 (inclusive)");
         } else {
             callback.setError(null);
-            hardwareProxy = proxyWrapper.build(logger, hardware.getObject(), HomeEasyUKAPI.class, "", 3000L);
+            hardwareProxy = proxyWrapper.build(hardware.getObject(), HomeEasyUKAPI.class, "", 3000L);
             hardwareProxy.initAppliance(houseId, unitCode);
-            applianceProxy = proxyWrapper.build(logger, hardware.getObject(), HomeEasyUKAPI.Appliance.class, Integer.toString(houseId) + "-" + Byte.toString(unitCode) + "-", 3000L);
-            for(Listener listener : listeners)
-                listener.on(applianceProxy.isOn());
-            applianceListener = applianceProxy.addCallback(this);
+            applianceProxy = hardwareProxy.getAppliance(houseId, unitCode);
+            applianceListener = applianceProxy.addListener(this);
         }
     }
 
@@ -149,9 +147,9 @@ public class HomeEasyUKFeature implements FeatureDriver, PowerControl, HomeEasyU
     }
 
     @Override
-    public void on(boolean on) {
+    public void on(Boolean on) {
         for(Listener listener : listeners)
-            listener.on(applianceProxy.isOn());
+            listener.on(on);
     }
 
     @Override

@@ -12,6 +12,7 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
+import com.intuso.housemate.client.v1_0.proxy.api.annotation.ClassCreator;
 import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapperV1_0;
 import com.intuso.housemate.extension.android.widget.R;
@@ -84,7 +85,7 @@ public class WidgetService extends HousemateService {
     }
 
     public WidgetService() {
-        this.proxyWrapper = new ProxyWrapperV1_0(getManagedCollectionFactory(), getTypeSerialiserRepository());
+        this.proxyWrapper = new ProxyWrapperV1_0(new ClassCreator.NewInstance(), getManagedCollectionFactory(), getTypeSerialiserRepository());
     }
 
     public synchronized PendingIntent makePendingIntent(WidgetHandler widgetHandler, String action) {

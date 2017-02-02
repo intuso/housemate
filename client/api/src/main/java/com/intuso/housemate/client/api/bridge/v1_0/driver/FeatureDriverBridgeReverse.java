@@ -28,7 +28,7 @@ public class FeatureDriverBridgeReverse implements FeatureDriver {
         featureDriver.uninit();
     }
 
-    public class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.FeatureDriver.Callback {
+    public static class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.FeatureDriver.Callback {
 
         private final Callback callback;
 

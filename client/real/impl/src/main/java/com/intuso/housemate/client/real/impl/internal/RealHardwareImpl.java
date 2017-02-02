@@ -1,5 +1,7 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
@@ -21,6 +23,7 @@ import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import java.util.Map;
@@ -41,6 +44,7 @@ public final class RealHardwareImpl
     private final static String DEVICES_DESCRIPTION = "The hardware's connected devices";
 
     private final AnnotationParser annotationParser;
+    private final RealConnectedDeviceImpl.Factory deviceFactory;
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
@@ -57,9 +61,7 @@ public final class RealHardwareImpl
 
     private final RemoveCallback<RealHardwareImpl> removeCallback;
 
-    private final Map<java.lang.Object, Iterable<RealCommandImpl>> objectCommands = Maps.newHashMap();
-    private final Map<java.lang.Object, Iterable<RealValueImpl<?>>> objectValues = Maps.newHashMap();
-    private final Map<java.lang.Object, Iterable<RealPropertyImpl<?>>> objectProperties = Maps.newHashMap();
+    private final Map<java.lang.Object, RealConnectedDeviceImpl> objectDevices = Maps.newHashMap();
 
     private ManagedCollection.Registration driverAvailableListenerRegsitration;
     private HardwareDriver driver;
@@ -69,7 +71,7 @@ public final class RealHardwareImpl
      * @param managedCollectionFactory
      */
     @Inject
-    public RealHardwareImpl(@Assisted Logger logger,
+    public RealHardwareImpl(@Assisted final Logger logger,
                             @Assisted("id") String id,
                             @Assisted("name") String name,
                             @Assisted("description") String description,
@@ -84,9 +86,11 @@ public final class RealHardwareImpl
                             RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                             RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
+                            final RealConnectedDeviceImpl.Factory deviceFactory,
                             RealListPersistedImpl.Factory<RealConnectedDeviceImpl> devicesFactory) {
         super(logger, new Hardware.Data(id, name, description), managedCollectionFactory);
         this.annotationParser = annotationParser;
+        this.deviceFactory = deviceFactory;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -204,8 +208,8 @@ public final class RealHardwareImpl
                 new RealListPersistedImpl.ExistingObjectFactory<RealConnectedDeviceImpl>() {
                     @Override
                     public RealConnectedDeviceImpl create(Logger parentLogger, Object.Data data) {
-                        // todo
-                        return null;
+                        return deviceFactory.create(ChildUtil.logger(logger, Hardware.DEVICES_ID, data.getId()),
+                                data.getId(), data.getName(), data.getDescription());
                     }
                 });
         driverProperty.addObjectListener(new Property.Listener<RealPropertyImpl<PluginDependency<HardwareDriver.Factory<?>>>>() {
@@ -261,7 +265,13 @@ public final class RealHardwareImpl
         errorValue.setValue(null);
         driverLoadedValue.setValue(true);
         if(isRunning())
-            driver.init(logger, this);
+            driver.init(logger, this, Iterables.transform(devices, new Function<RealConnectedDeviceImpl, String>() {
+                @Nullable
+                @Override
+                public String apply(@Nullable RealConnectedDeviceImpl realConnectedDevice) {
+                    return realConnectedDevice.getId();
+                }
+            }));
     }
 
     private void uninitDriver() {
@@ -402,15 +412,21 @@ public final class RealHardwareImpl
 
     protected final void _start() {
         try {
-            if(isDriverLoaded())
-                driver.init(logger, this);
+            if(driver != null)
+                driver.init(logger, this, Iterables.transform(devices, new Function<RealConnectedDeviceImpl, String>() {
+                    @Nullable
+                    @Override
+                    public String apply(@Nullable RealConnectedDeviceImpl realConnectedDevice) {
+                        return realConnectedDevice.getId();
+                    }
+                }));
         } catch (Throwable t) {
             getErrorValue().setValue("Could not start hardware: " + t.getMessage());
         }
     }
 
     protected final void _stop() {
-        if(isDriverLoaded())
+        if(driver != null)
             driver.uninit();
     }
 
@@ -420,31 +436,44 @@ public final class RealHardwareImpl
     }
 
     @Override
-    public void addObject(java.lang.Object object, String prefix) {
-        if(objectCommands.containsKey(object) || objectValues.containsKey(object) || objectProperties.containsKey(object))
+    public void addConnectedDevice(String id, String name, String description, java.lang.Object object) {
+
+        // check if we already know about the object
+        if(objectDevices.containsKey(object))
             throw new HousemateException("Object is already added");
-        objectCommands.put(object, annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), prefix, object));
-        for(RealCommandImpl command : objectCommands.get(object))
-            commands.add(command);
-        objectValues.put(object, annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), prefix, object));
-        for(RealValueImpl<?> value : objectValues.get(object))
-            values.add(value);
-        objectProperties.put(object, annotationParser.findProperties(ChildUtil.logger(logger, PROPERTIES_ID), prefix, object));
-        for(RealPropertyImpl<?> property : objectProperties.get(object))
-            properties.add(property);
+
+        // get the device by id
+        RealConnectedDeviceImpl device = devices.get(id);
+
+        // if it doesn't exist yet create it
+        if(device == null) {
+            device = deviceFactory.create(ChildUtil.logger(logger, Hardware.DEVICES_ID, id), id, name, description);
+            devices.add(device);
+
+        // else remove what it already has
+        } else {
+            for(RealCommandImpl command : Lists.newArrayList(device.getCommands()))
+                device.getCommands().remove(command.getId());
+            for(RealValueImpl<?> value : Lists.newArrayList(device.getValues()))
+                device.getValues().remove(value.getId());
+            for(RealPropertyImpl<?> property : Lists.newArrayList(device.getProperties()))
+                device.getProperties().remove(property.getId());
+        }
+
+        // add the commands, values and properties specified by the object
+        for(RealCommandImpl command : annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), "", object))
+            device.getCommands().add(command);
+        for(RealValueImpl<?> value : annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), "", object))
+            device.getValues().add(value);
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(ChildUtil.logger(logger, PROPERTIES_ID), "", object))
+            device.getProperties().add(property);
     }
 
     @Override
-    public void removeObject(java.lang.Object object) {
-        if(objectCommands.containsKey(object))
-            for(RealCommandImpl command : objectCommands.remove(object))
-                commands.add(command);
-        if(objectValues.containsKey(object))
-            for(RealValueImpl<?> value : objectValues.remove(object))
-                values.add(value);
-        if(objectProperties.containsKey(object))
-            for(RealPropertyImpl<?> property : objectProperties.remove(object))
-                properties.add(property);
+    public void removeConnectedDevice(java.lang.Object object) {
+        RealConnectedDeviceImpl device = objectDevices.remove(object);
+        if(device != null)
+            devices.remove(device.getId());
     }
 
     public interface Factory {

@@ -26,31 +26,7 @@ public class HardwareDriverFactoryBridgeReverse implements HardwareDriver.Factor
 
     @Override
     public HardwareDriver create(Logger logger, HardwareDriver.Callback callback) {
-        return hardwareDriverMapper.map(factory.create(logger, new CallbackBridge(callback)));
-    }
-
-    private class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.HardwareDriver.Callback {
-
-        private final HardwareDriver.Callback callback;
-
-        private CallbackBridge(HardwareDriver.Callback callback) {
-            this.callback = callback;
-        }
-
-        @Override
-        public void setError(String error) {
-            callback.setError(error);
-        }
-
-        @Override
-        public void addObject(Object object, String prefix) {
-            callback.addObject(object, prefix);
-        }
-
-        @Override
-        public void removeObject(Object object) {
-            callback.removeObject(object);
-        }
+        return hardwareDriverMapper.map(factory.create(logger, new HardwareDriverBridgeReverse.CallbackBridge(callback)));
     }
 
     public interface Factory {

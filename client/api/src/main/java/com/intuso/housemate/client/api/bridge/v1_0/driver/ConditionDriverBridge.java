@@ -35,7 +35,7 @@ public class ConditionDriverBridge implements com.intuso.housemate.client.api.in
         return conditionDriver.hasChildConditions();
     }
 
-    public class CallbackBridge implements ConditionDriver.Callback {
+    public static class CallbackBridge implements ConditionDriver.Callback {
 
         private final Callback callback;
 

@@ -26,31 +26,7 @@ public class HardwareDriverFactoryBridge implements com.intuso.housemate.client.
 
     @Override
     public com.intuso.housemate.client.api.internal.driver.HardwareDriver create(Logger logger, com.intuso.housemate.client.api.internal.driver.HardwareDriver.Callback callback) {
-        return hardwareDriverMapper.map(factory.create(logger, new CallbackBridge(callback)));
-    }
-
-    private class CallbackBridge implements HardwareDriver.Callback {
-
-        private final com.intuso.housemate.client.api.internal.driver.HardwareDriver.Callback callback;
-
-        private CallbackBridge(com.intuso.housemate.client.api.internal.driver.HardwareDriver.Callback callback) {
-            this.callback = callback;
-        }
-
-        @Override
-        public void setError(String error) {
-            callback.setError(error);
-        }
-
-        @Override
-        public void addObject(Object object, String prefix) {
-            callback.addObject(object, prefix);
-        }
-
-        @Override
-        public void removeObject(Object object) {
-            callback.removeObject(object);
-        }
+        return hardwareDriverMapper.map(factory.create(logger, new HardwareDriverBridge.CallbackBridge(callback)));
     }
 
     public interface Factory {

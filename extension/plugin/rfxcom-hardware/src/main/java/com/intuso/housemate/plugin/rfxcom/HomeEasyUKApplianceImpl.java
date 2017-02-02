@@ -45,11 +45,6 @@ public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
 	}
 
     @Override
-    public boolean isOn() {
-        return on;
-    }
-
-    @Override
     public void turnOn() {
         if(lighting2Appliance == null)
             throw new FeatureDriver.FeatureException("Not connected to RFXCom device. Ensure properties are set correctly");
@@ -74,7 +69,7 @@ public class HomeEasyUKApplianceImpl implements HomeEasyUKAPI.Appliance {
 	}
 
     @Override
-    public ManagedCollection.Registration addCallback(Listener listener) {
+    public ManagedCollection.Registration addListener(Listener listener) {
         listener.on(on);
         return callbacks.add(listener);
     }

@@ -28,31 +28,7 @@ public class ConditionDriverFactoryBridgeReverse implements ConditionDriver.Fact
 
     @Override
     public ConditionDriver create(Logger logger, ConditionDriver.Callback callback) {
-        return conditionDriverMapper.map(factory.create(logger, new CallbackBridge(callback)));
-    }
-
-    private class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.ConditionDriver.Callback {
-
-        private final ConditionDriver.Callback callback;
-
-        private CallbackBridge(ConditionDriver.Callback callback) {
-            this.callback = callback;
-        }
-
-        @Override
-        public void setError(String error) {
-            callback.setError(error);
-        }
-
-        @Override
-        public void conditionSatisfied(boolean satisfied) {
-            callback.conditionSatisfied(satisfied);
-        }
-
-        @Override
-        public Map<String, Boolean> getChildSatisfied() {
-            return callback.getChildSatisfied();
-        }
+        return conditionDriverMapper.map(factory.create(logger, new ConditionDriverBridgeReverse.CallbackBridge(callback)));
     }
 
     public interface Factory {

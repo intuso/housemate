@@ -2,6 +2,7 @@ package com.intuso.housemate.client.proxy.api.internal.annotation.ioc;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.intuso.housemate.client.proxy.api.internal.annotation.ClassCreator;
 import com.intuso.housemate.client.proxy.api.internal.annotation.ProxyWrapper;
 import com.intuso.housemate.client.proxy.api.internal.annotation.ProxyWrapperInternal;
 
@@ -14,5 +15,6 @@ public class ProxyWrapperModule extends AbstractModule {
     protected void configure() {
         bind(ProxyWrapper.class).to(ProxyWrapperInternal.class);
         bind(ProxyWrapperInternal.class).in(Scopes.SINGLETON);
+        bind(ClassCreator.class).to(ClassCreator.FromInjector.class);
     }
 }

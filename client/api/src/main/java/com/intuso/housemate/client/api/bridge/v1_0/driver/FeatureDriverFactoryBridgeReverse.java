@@ -26,21 +26,7 @@ public class FeatureDriverFactoryBridgeReverse implements FeatureDriver.Factory<
 
     @Override
     public FeatureDriver create(Logger logger, FeatureDriver.Callback callback) {
-        return featureDriverMapper.map(factory.create(logger, new CallbackBridge(callback)));
-    }
-
-    private class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.FeatureDriver.Callback {
-
-        private final FeatureDriver.Callback callback;
-
-        private CallbackBridge(FeatureDriver.Callback callback) {
-            this.callback = callback;
-        }
-
-        @Override
-        public void setError(String error) {
-            callback.setError(error);
-        }
+        return featureDriverMapper.map(factory.create(logger, new FeatureDriverBridgeReverse.CallbackBridge(callback)));
     }
 
     public interface Factory {

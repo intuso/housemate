@@ -7,13 +7,13 @@ import org.slf4j.Logger;
  */
 public interface HardwareDriver {
 
-    void init(Logger logger, HardwareDriver.Callback callback);
+    void init(Logger logger, HardwareDriver.Callback callback, Iterable<String> connectedDeviceIds);
     void uninit();
 
     interface Callback {
         void setError(String error);
-        void addObject(Object object, String prefix);
-        void removeObject(Object object);
+        void addConnectedDevice(String id, String name, String description, Object object);
+        void removeConnectedDevice(Object object);
     }
 
     interface Factory<DRIVER extends HardwareDriver> {

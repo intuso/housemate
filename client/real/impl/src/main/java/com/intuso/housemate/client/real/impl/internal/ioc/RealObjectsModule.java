@@ -24,6 +24,10 @@ public class RealObjectsModule extends AbstractModule {
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealConditionImpl.Factory>() {}));
 
+        // connected devices
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealConnectedDeviceImpl.Factory>() {}));
+
         // devices
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealDeviceImpl.Factory>() {}));
@@ -31,10 +35,6 @@ public class RealObjectsModule extends AbstractModule {
         // features
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealFeatureImpl.Factory>() {}));
-
-        // tasks
-        install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealTaskImpl.Factory>() {}));
 
         // lists
         // generated
@@ -44,6 +44,8 @@ public class RealObjectsModule extends AbstractModule {
                 .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealCommandImpl>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealConditionImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealConnectedDeviceImpl>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealDeviceImpl>>() {}));
         install(new FactoryModuleBuilder()
@@ -73,6 +75,8 @@ public class RealObjectsModule extends AbstractModule {
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<RealCommandImpl>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<RealConditionImpl>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealConnectedDeviceImpl>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<RealDeviceImpl>>() {}));
         install(new FactoryModuleBuilder()
@@ -121,6 +125,10 @@ public class RealObjectsModule extends AbstractModule {
         // subtype
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealSubTypeImpl.Factory>() {}));
+
+        // tasks
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealTaskImpl.Factory>() {}));
 
         // value
         install(new FactoryModuleBuilder()

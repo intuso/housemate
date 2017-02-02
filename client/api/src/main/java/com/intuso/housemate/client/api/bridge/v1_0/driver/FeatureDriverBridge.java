@@ -28,7 +28,7 @@ public class FeatureDriverBridge implements com.intuso.housemate.client.api.inte
         featureDriver.uninit();
     }
 
-    public class CallbackBridge implements FeatureDriver.Callback {
+    public static class CallbackBridge implements FeatureDriver.Callback {
 
         private final Callback callback;
 

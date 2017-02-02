@@ -26,21 +26,7 @@ public class TaskDriverFactoryBridgeReverse implements TaskDriver.Factory<TaskDr
 
     @Override
     public TaskDriver create(Logger logger, TaskDriver.Callback callback) {
-        return taskDriverMapper.map(factory.create(logger, new CallbackBridge(callback)));
-    }
-
-    private class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.TaskDriver.Callback {
-
-        private final TaskDriver.Callback callback;
-
-        private CallbackBridge(TaskDriver.Callback callback) {
-            this.callback = callback;
-        }
-
-        @Override
-        public void setError(String error) {
-            callback.setError(error);
-        }
+        return taskDriverMapper.map(factory.create(logger, new TaskDriverBridgeReverse.CallbackBridge(callback)));
     }
 
     public interface Factory {

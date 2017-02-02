@@ -19,8 +19,8 @@ public class HardwareDriverBridgeReverse implements HardwareDriver {
     }
 
     @Override
-    public void init(Logger logger, Callback callback) {
-        hardwareDriver.init(logger, new CallbackBridge(callback));
+    public void init(Logger logger, Callback callback,Iterable<String> connectedDeviceIds) {
+        hardwareDriver.init(logger, new CallbackBridge(callback), connectedDeviceIds);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class HardwareDriverBridgeReverse implements HardwareDriver {
         hardwareDriver.uninit();
     }
 
-    public class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.HardwareDriver.Callback {
+    public static class CallbackBridge implements com.intuso.housemate.client.api.internal.driver.HardwareDriver.Callback {
 
         private final Callback callback;
 
@@ -42,13 +42,13 @@ public class HardwareDriverBridgeReverse implements HardwareDriver {
         }
 
         @Override
-        public void addObject(Object object, String prefix) {
-            callback.addObject(object, prefix);
+        public void addConnectedDevice(String id, String name, String description, Object object) {
+            callback.addConnectedDevice(id, name, description, object);
         }
 
         @Override
-        public void removeObject(Object object) {
-            callback.removeObject(object);
+        public void removeConnectedDevice(Object object) {
+            callback.removeConnectedDevice(object);
         }
     }
 }

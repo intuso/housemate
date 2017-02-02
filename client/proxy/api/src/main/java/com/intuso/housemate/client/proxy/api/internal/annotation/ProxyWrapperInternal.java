@@ -12,7 +12,6 @@ import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.proxy.api.internal.object.*;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
-import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -27,17 +26,19 @@ import java.util.concurrent.TimeUnit;
  */
 public class ProxyWrapperInternal implements ProxyWrapper {
 
+    private final ClassCreator classCreator;
     private final ManagedCollectionFactory managedCollectionFactory;
     private final TypeSerialiser.Repository typeSerialiserRepository;
 
     @Inject
-    public ProxyWrapperInternal(ManagedCollectionFactory managedCollectionFactory, TypeSerialiser.Repository typeSerialiserRepository) {
+    public ProxyWrapperInternal(ClassCreator classCreator, ManagedCollectionFactory managedCollectionFactory, TypeSerialiser.Repository typeSerialiserRepository) {
+        this.classCreator = classCreator;
         this.typeSerialiserRepository = typeSerialiserRepository;
         this.managedCollectionFactory = managedCollectionFactory;
     }
 
     @Override
-    public <T> T build(Logger logger, ProxyObject<?, ?> object, Class<T> clazz, String prefix, long commandTimeout) {
+    public <T> T build(ProxyObject<?, ?> object, Class<T> clazz, String prefix, long commandTimeout) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[] {clazz}, new InvocationHandlerImpl(object, clazz, prefix, commandTimeout));
     }
 
@@ -84,18 +85,19 @@ public class ProxyWrapperInternal implements ProxyWrapper {
         MethodInvocationHandler createHandler(Method method) {
             Id id = method.getAnnotation(Id.class);
             if(method.getAnnotation(Command.class) != null)
-                return createCommandHandler(method);
+                return createCommandHandler(id, method);
             else if(method.getAnnotation(Property.class) != null)
-                return createPropertyHandler(method, method.getAnnotation(Property.class));
+                return createPropertyHandler(method, id, method.getAnnotation(Property.class));
             else if(method.getAnnotation(Value.class) != null)
                 return createValueHandler(method, id, method.getAnnotation(Value.class));
+            else if(method.getAnnotation(ConnectedDevice.class) != null)
+                return createConnectedDeviceHandler(method, method.getAnnotation(ConnectedDevice.class));
             else if(method.getAnnotation(com.intuso.housemate.client.api.internal.annotation.AddListener.class) != null)
                 return createAddListenerHandler(method);
-            return new Problem("Don't know how to handle invocation of " + clazz.getName() + " method " + method.toString() + ". Expecting one of the following annotations:\n" + Command.class.getName() + "\n" + Property.class.getName() + "\n" + AddListener.class.getName());
+            return new Problem("Don't know how to handle invocation of " + clazz.getName() + " method " + method.toString() + ". Expecting one of the following annotations:\n" + Command.class.getName() + "\n" + Property.class.getName() + "\n" + Value.class.getName() + "\n" + ConnectedDevice.class.getName() + "\n" + com.intuso.housemate.client.api.internal.annotation.AddListener.class.getName());
         }
 
-        MethodInvocationHandler createCommandHandler(Method method) {
-            Id id = method.getAnnotation(Id.class);
+        MethodInvocationHandler createCommandHandler(Id id, Method method) {
             if(id == null)
                 return new Problem(clazz.getName() + " command method " + method.toString() + " has no " + Id.class.getName() + " annotation");
             if(!(object instanceof ProxyCommand.Container))
@@ -111,7 +113,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                     else if (parameterAnnotations[p][a] instanceof Parameter)
                         parameter = (Parameter) parameterAnnotations[p][a];
                 }
-                if(parameterId != null)
+                if(parameterId == null)
                     return new Problem(clazz.getName() + " command method " + method.toString() + " has no " + Id.class.getName() + " annotation for parameter " + p);
                 if(parameter == null)
                     parameter = new ParameterDefaultImpl();
@@ -124,10 +126,9 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                     parameterSerialisers);
         }
 
-        MethodInvocationHandler createPropertyHandler(Method method, Property property) {
+        MethodInvocationHandler createPropertyHandler(Method method, Id id, Property property) {
             if(method.getParameterTypes().length != 1)
                 return new Problem(clazz.getName() + " property method should have a single argument");
-            Id id = method.getAnnotation(Id.class);
             if(id == null)
                 return new Problem(clazz.getName() + " property method " + method.toString() + " has no " + Id.class.getName() + " annotation");
             if(!(object instanceof ProxyProperty.Container))
@@ -151,6 +152,27 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                     ((ProxyValue.Container<? extends ProxyList<? extends ProxyValue<?, ?>, ?>>) object).getValues(),
                     prefix + id.value(),
                     new ValueDeserialiser(List.class.isAssignableFrom(method.getReturnType()), typeSerialiser, defaultValueFor(method.getReturnType())));
+        }
+
+        MethodInvocationHandler createConnectedDeviceHandler(Method method, ConnectedDevice connectedDevice) {
+            if(!(object instanceof ProxyConnectedDevice.Container))
+                return new Problem(clazz.getName() + " has a connected device method " + method.toString() + " but the object being wrapped is not a " + ProxyConnectedDevice.Container.class.getName());
+            Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+            String[] argIds = new String[parameterAnnotations.length];
+            parameters: for(int p = 0; p < parameterAnnotations.length; p++) {
+                for(int a = 0; a < parameterAnnotations[p].length; a++) {
+                    if (parameterAnnotations[p][a] instanceof Id) {
+                        argIds[p] = ((Id) (parameterAnnotations[p][a])).value();
+                        continue parameters;
+                    }
+                }
+                return new Problem(clazz.getName() + " connected device method " + method.toString() + " has no " + Id.class.getName() + " annotation for parameter " + p);
+            }
+            return new ConnectedDeviceGetter(
+                    ((ProxyConnectedDevice.Container<? extends ProxyList<? extends ProxyConnectedDevice<?, ?, ?, ?, ?>, ?>>) object).getConnectedDevices(),
+                    argIds,
+                    classCreator.create(connectedDevice.value()),
+                    method.getReturnType());
         }
 
         MethodInvocationHandler createAddListenerHandler(Method method) {
@@ -228,7 +250,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 for(Object listener : listeners) {
                     try {
                         method.invoke(listener, args);
-                    } catch (InvocationTargetException |IllegalAccessException e) {
+                    } catch (InvocationTargetException|IllegalAccessException e) {
                         new HousemateException("Failed to invoke listener " + listener + " for changed value " + value.getId(), e).printStackTrace();
                     }
                 }
@@ -265,11 +287,12 @@ public class ProxyWrapperInternal implements ProxyWrapper {
             public Object handle(Object[] args) {
                 final CountDownLatch latch = new CountDownLatch(1);
                 ProxyCommand<?, ?, ?> command = commands.get(commandId);
-                if(commandId == null)
+                if(command == null)
                     throw new HousemateException("Could not find command " + commandId);
                 Type.InstanceMap values = new Type.InstanceMap();
-                for(int i = 0; i < args.length; i++)
-                    values.getChildren().put(parameterSerialisers[i].getKey(), parameterSerialisers[i].serialise(args[i]));
+                if(args != null)
+                    for(int i = 0; i < args.length; i++)
+                        values.getChildren().put(parameterSerialisers[i].getKey(), parameterSerialisers[i].serialise(args[i]));
                 command.perform(values, new com.intuso.housemate.client.api.internal.object.Command.PerformListener<ProxyCommand<?, ?, ?>>() {
                     @Override
                     public void commandStarted(ProxyCommand<?, ?, ?> command) {
@@ -441,6 +464,36 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                     throw new HousemateException("Could not find value " + valueId);
                 Type.Instances values = value.getValue();
                 return valueDeserialiser.deserialise(values);
+            }
+        }
+
+        private class ConnectedDeviceGetter implements MethodInvocationHandler {
+
+            private final ProxyList<? extends ProxyConnectedDevice<?, ?, ?, ?, ?>, ?> connectedDevices;
+            private final String[] idArgs;
+            private final IdFormatter idFormatter;
+            private final Class<?> returnType;
+
+            private ConnectedDeviceGetter(ProxyList<? extends ProxyConnectedDevice<?, ?, ?, ?, ?>, ?> connectedDevices, String[] idArgs, IdFormatter idFormatter, Class<?> returnType) {
+                this.connectedDevices = connectedDevices;
+                this.idArgs = idArgs;
+                this.idFormatter = idFormatter;
+                this.returnType = returnType;
+            }
+
+            @Override
+            public Object handle(Object[] args) {
+                Map<String, Object> argMap = Maps.newHashMap();
+                for(int i = 0; i < idArgs.length; i++)
+                    argMap.put(idArgs[i], args[i]);
+                String id = idFormatter.format(argMap);
+                ProxyConnectedDevice<?, ?, ?, ?, ?> connectedDevice = connectedDevices.get(id);
+                if(connectedDevice == null)
+                    throw new HousemateException("Could not find connected device " + id);
+                if(ProxyConnectedDevice.class.isAssignableFrom(returnType))
+                    return connectedDevice;
+                else
+                    return build(connectedDevice, returnType, "", commandTimeout);
             }
         }
 

@@ -55,10 +55,17 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
     }
 
     @Override
-    public void init(Logger logger, HardwareDriver.Callback callback) {
+    public void init(Logger logger, HardwareDriver.Callback callback, Iterable<String> connectedDeviceIds) {
         // setup the connection to the USB device
         this.callback = callback;
         rfxtrx.openPortSafe();
+        for(String connectedDeviceId : connectedDeviceIds) {
+            // todo use a regex and extract the groups
+            if(connectedDeviceId.startsWith(ID_PREFIX))
+                initAppliance(
+                        Integer.parseInt(connectedDeviceId.substring(ID_PREFIX.length()).split("-")[0]),
+                        Byte.parseByte(connectedDeviceId.substring(ID_PREFIX.length()).split("-")[1]));
+        }
     }
 
     @Override
@@ -73,7 +80,11 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
         if(appliances.get(houseId) == null)
             appliances.put(houseId, Maps.<Byte, HomeEasyUKApplianceImpl>newHashMap());
         appliances.get(houseId).put(unitCode, appliance);
-        callback.addObject(appliance, Integer.toString(houseId) + "-" + Byte.toString(unitCode) + "-");
+        callback.addConnectedDevice(
+                ID_PREFIX + Integer.toString(houseId) + "-" + Byte.toString(unitCode),
+                "HomeEasy UK Appliance " + Byte.toString(unitCode),
+                "HomeEasy UK Appliance " + Byte.toString(unitCode) + ", House Id " + Integer.toString(houseId),
+                appliance);
     }
 
     @Override
@@ -82,7 +93,12 @@ public class RFXtrx433Hardware implements HardwareDriver, HomeEasyUKAPI {
             HomeEasyUKApplianceImpl appliance = appliances.get(houseId).get(unitCode);
             if(appliances.get(houseId).size() == 0)
                 appliances.remove(houseId);
-            callback.removeObject(appliance);
+            callback.removeConnectedDevice(appliance);
         }
+    }
+
+    @Override
+    public Appliance getAppliance(int houseId, byte unitCode) {
+        return appliances.containsKey(houseId) ? appliances.get(houseId).get(unitCode) : null;
     }
 }

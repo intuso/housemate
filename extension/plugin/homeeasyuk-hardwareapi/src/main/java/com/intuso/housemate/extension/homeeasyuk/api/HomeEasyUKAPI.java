@@ -1,43 +1,38 @@
 package com.intuso.housemate.extension.homeeasyuk.api;
 
-import com.intuso.housemate.client.v1_0.api.annotation.*;
-import com.intuso.utilities.collection.ManagedCollection;
+import com.intuso.housemate.client.v1_0.api.annotation.Command;
+import com.intuso.housemate.client.v1_0.api.annotation.ConnectedDevice;
+import com.intuso.housemate.client.v1_0.api.annotation.Id;
+import com.intuso.housemate.client.v1_0.api.annotation.IdFormatter;
+import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
+
+import java.util.Map;
 
 /**
  * Created by tomc on 08/12/16.
  */
 public interface HomeEasyUKAPI {
 
+    String ID_PREFIX = "homeeasyuk-appliance-";
+
     @Command
     @Id("init-homeeasy-appliance")
-    void initAppliance(@Parameter @Id("house-id") int houseId, @Parameter @Id("unit-code") byte unitCode);
+    void initAppliance(@Id("house-id") int houseId, @Id("unit-code") byte unitCode);
 
     @Command
     @Id("uninit-homeeasy-appliance")
-    void uninitAppliance(@Parameter @Id("house-id") int houseId, @Parameter @Id("unit-code") byte unitCode);
+    void uninitAppliance(@Id("house-id") int houseId, @Id("unit-code") byte unitCode);
 
-    interface Appliance {
+    @ConnectedDevice(IdFormatterImpl.class)
+    Appliance getAppliance(@Id("house-id") int houseId, @Id("unit-code") byte unitCode);
 
-        @Value
-        @Id("on")
-        boolean isOn();
+    interface Appliance extends PowerControl {}
 
-        @Command
-        @Id("on")
-        void turnOn();
+    class IdFormatterImpl implements IdFormatter {
 
-        @Command()
-        @Id("off")
-        void turnOff();
-
-        @AddListener
-        ManagedCollection.Registration addCallback(Listener listener);
-
-        interface Listener {
-
-            @Value
-            @Id("on")
-            void on(boolean on);
+        @Override
+        public String format(Map<String, Object> args) {
+            return ID_PREFIX + args.get("house-id") + "-" + args.get("unit-code");
         }
     }
 }
