@@ -7,4 +7,4 @@ import com.intuso.housemate.plugin.rfxcom.RFXtrx433Hardware;
 
 @Id(value = "com.intuso.housemate.plugin.rfxcom.hardware", name = "RFXCom hardware plugin", description = "Plugin for an RFXCom Transceiver")
 @HardwareDrivers(RFXtrx433Hardware.class)
-public class RFXComPlugin extends AnnotatedPlugin {}
+public class RFXtrx433Plugin extends AnnotatedPlugin {}
