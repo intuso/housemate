@@ -406,7 +406,7 @@ public final class RealHardwareImpl
     }
 
     @Override
-    public final RealListPersistedImpl<RealDeviceImpl> getConnectedDevices() {
+    public final RealListPersistedImpl<RealDeviceImpl> getDevices() {
         return devices;
     }
 

@@ -178,7 +178,7 @@ public abstract class ProxyHardware<
     }
 
     @Override
-    public final DEVICES getConnectedDevices() {
+    public final DEVICES getDevices() {
         return devices;
     }
 

@@ -22,6 +22,7 @@ public class StatefulPowerControlWidgetHandler
         implements Command.PerformListener<AndroidProxyCommand> {
 
     private ManagedCollection.Registration listenerRegistration;
+    private Boolean isOn = null;
 
     public StatefulPowerControlWidgetHandler(WidgetService widgetService, ProxyWrapper proxyWrapper, String deviceId) {
         super(widgetService, proxyWrapper, deviceId, Power.class);
@@ -36,6 +37,7 @@ public class StatefulPowerControlWidgetHandler
         listenerRegistration = getFeature().addListener(new Power.Listener() {
             @Override
             public void on(Boolean isOn) {
+                StatefulPowerControlWidgetHandler.this.isOn = true;
                 updateWidget();
             }
         });
@@ -71,22 +73,11 @@ public class StatefulPowerControlWidgetHandler
                 break;
             case LOADED:
                 switch (getStatus()) {
-                    case DEVICE_NOT_LOADED:
-                        views.setTextViewText(R.id.device_label, "Loading device");
-                        break;
-                    case DEVICE_LOAD_FAILED:
-                        views.setTextViewText(R.id.device_label, "Load device failed");
-                        break;
                     case NO_DEVICE:
                         views.setTextViewText(R.id.device_label, "Unknown device");
                         break;
-                    case NO_FEATURE:
-                        views.setTextViewText(R.id.device_label, "Not a powered device");
-                        break;
                     case READY:
                         views.setTextViewText(R.id.device_label, getDevice().getName());
-                        // todo register listener and keep track of on value, or use a proxy one that does the same but caches the on value and provides a getter
-                        boolean isOn = true;
                         views.setImageViewResource(R.id.button, isOn ? R.drawable.stateful_power_on : R.drawable.stateful_power_off);
                         // listen for button presses
                         views.setOnClickPendingIntent(R.id.button, getWidgetService().makePendingIntent(this, isOn ? "off" : "on"));
@@ -100,9 +91,9 @@ public class StatefulPowerControlWidgetHandler
 
     @Override
     public void handleAction(String action) {
-        if("on".equals(action))
+        if(isOn)
             getFeature().turnOn();
-        else if("off".equals(action))
+        else
             getFeature().turnOff();
     }
 

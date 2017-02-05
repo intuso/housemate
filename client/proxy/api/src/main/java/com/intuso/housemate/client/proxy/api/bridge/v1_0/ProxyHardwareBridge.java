@@ -196,7 +196,7 @@ public class ProxyHardwareBridge
     }
 
     @Override
-    public ProxyListBridge<ProxyDeviceBridge> getConnectedDevices() {
+    public ProxyListBridge<ProxyDeviceBridge> getDevices() {
         return devices;
     }
 }

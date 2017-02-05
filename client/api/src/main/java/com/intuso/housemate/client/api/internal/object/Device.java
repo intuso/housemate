@@ -40,7 +40,7 @@ public interface Device<RENAME_COMMAND extends Command<?, ?, ?, ?>,
          * Gets the features list
          * @return the features list
          */
-        DEVICES getConnectedDevices();
+        DEVICES getDevices();
     }
 
     /**

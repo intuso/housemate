@@ -22,10 +22,7 @@ public abstract class WidgetHandler<FEATURE> {
 
     public enum Status {
         SERVICE_NOT_READY,
-        DEVICE_NOT_LOADED,
-        DEVICE_LOAD_FAILED,
         NO_DEVICE,
-        NO_FEATURE,
         READY
     }
 
@@ -72,7 +69,7 @@ public abstract class WidgetHandler<FEATURE> {
             device = null;
             feature = null;
         } else {
-            status = Status.DEVICE_NOT_LOADED;
+            status = Status.NO_DEVICE;
             loadData();
         }
         updateWidget();
@@ -91,16 +88,11 @@ public abstract class WidgetHandler<FEATURE> {
     }
 
     private void loadData() {
-        device = widgetService.getServer().getDevices().get(deviceId);
+        device = widgetService.getServer().getSystems().get(deviceId);
         if (device != null) {
-            // todo
-//            AndroidProxyFeature proxyFeature = device.getFeatures().get(getFeatureId());
-//            if(proxyFeature != null) {
-//                feature = proxyWrapper.build(proxyFeature, featureClass, "", 3000L);
-//                init();
-//                status = Status.READY;
-//            } else
-                status = Status.NO_FEATURE;
+            feature = proxyWrapper.build(device, featureClass, "", 3000L);
+            init();
+            status = Status.READY;
         } else
             status = Status.NO_DEVICE;
         updateWidget();

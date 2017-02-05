@@ -194,7 +194,7 @@ public class WidgetService extends HousemateService {
             status = Status.NO_NETWORK;
         else if(server == null)
             status = Status.NOT_CONNECTED;
-        else if (getServer().getDevices() == null)
+        else if (getServer().getSystems() == null)
             status = Status.NOT_LOADED;
         else
             status = Status.LOADED;

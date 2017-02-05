@@ -196,7 +196,7 @@ public class RealHardwareBridge
     }
 
     @Override
-    public RealListBridge<RealDeviceBridge> getConnectedDevices() {
+    public RealListBridge<RealDeviceBridge> getDevices() {
         return devices;
     }
 }

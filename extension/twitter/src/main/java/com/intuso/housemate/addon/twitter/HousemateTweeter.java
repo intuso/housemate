@@ -81,7 +81,7 @@ public class HousemateTweeter {
 		// setup the housemate stuff
         // todo get all servers
         final SimpleProxyServer server = injector.getInstance(SimpleProxyServer.class);
-        server.getDevices().addObjectListener(deviceListListener, true);
+        server.getSystems().addObjectListener(deviceListListener, true);
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class HousemateTweeter {
     private class ServerListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<SimpleProxyServer, SimpleProxyList<SimpleProxyServer>> {
         @Override
         public void elementAdded(SimpleProxyList<SimpleProxyServer> list, SimpleProxyServer server) {
-            server.getDevices().addObjectListener(deviceListListener, true);
+            server.getSystems().addObjectListener(deviceListListener, true);
         }
 
         @Override

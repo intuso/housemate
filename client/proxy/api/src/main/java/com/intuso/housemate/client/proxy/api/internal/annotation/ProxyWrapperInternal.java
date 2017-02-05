@@ -169,7 +169,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 return new Problem(clazz.getName() + " device method " + method.toString() + " has no " + Id.class.getName() + " annotation for parameter " + p);
             }
             return new FromListGetter(
-                    ((ProxyDevice.Container<? extends ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?>, ?>>) object).getConnectedDevices(),
+                    ((ProxyDevice.Container<? extends ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?>, ?>>) object).getDevices(),
                     argIds,
                     classCreator.create(fromList.value()),
                     method.getReturnType());
