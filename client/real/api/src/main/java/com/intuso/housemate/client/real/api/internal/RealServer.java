@@ -6,15 +6,15 @@ import com.intuso.housemate.client.api.internal.object.Server;
 public interface RealServer<COMMAND extends RealCommand<?, ?, ?>,
         AUTOMATION extends RealAutomation<?, ?, ?, ?, ?, ?>,
         AUTOMATIONS extends RealList<? extends AUTOMATION, ?>,
-        DEVICE extends RealDevice<?, ?, ?, ?>,
-        DEVICES extends RealList<? extends DEVICE, ?>,
+        SYSTEM extends RealSystem<?, ?, ?, ?>,
+        SYSTEMS extends RealList<? extends SYSTEM, ?>,
         USER extends RealUser<?, ?, ?>,
         USERS extends RealList<? extends USER, ?>,
         NODE extends Node<?, ?, ?, ?>,
         NODES extends RealList<? extends NODE, ?>,
-        SERVER extends RealServer<COMMAND, AUTOMATION, AUTOMATIONS, DEVICE, DEVICES, USER, USERS, NODE, NODES, SERVER>>
-        extends Server<COMMAND, AUTOMATIONS, DEVICES, USERS, NODES, SERVER>,
+        SERVER extends RealServer<COMMAND, AUTOMATION, AUTOMATIONS, SYSTEM, SYSTEMS, USER, USERS, NODE, NODES, SERVER>>
+        extends Server<COMMAND, AUTOMATIONS, SYSTEMS, USERS, NODES, SERVER>,
         RealAutomation.Container<AUTOMATION, AUTOMATIONS>,
-        RealDevice.Container<DEVICE, DEVICES>,
+        RealSystem.Container<SYSTEM, SYSTEMS>,
         RealUser.Container<USER, USERS>,
         RealNode.Container<NODE, NODES>{}

@@ -16,7 +16,7 @@ import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.HousemateActivity;
 import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
-import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
+import com.intuso.housemate.platform.android.app.object.AndroidProxySystem;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyList;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -89,30 +89,30 @@ public class WidgetConfigureActivity
         });
     }
 
-    private class DeviceListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyDevice, AndroidProxyList<AndroidProxyDevice>> {
+    private class DeviceListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxySystem, AndroidProxyList<AndroidProxySystem>> {
 
         @Override
-        public void elementAdded(AndroidProxyList<AndroidProxyDevice> list, AndroidProxyDevice device) {
+        public void elementAdded(AndroidProxyList<AndroidProxySystem> list, AndroidProxySystem device) {
             // todo
 //            if(device.getFeatures().get(featureId) != null)
 //                listAdapter.add(new DeviceInfo(device));
         }
 
         @Override
-        public void elementRemoved(AndroidProxyList<AndroidProxyDevice> list, AndroidProxyDevice device) {
+        public void elementRemoved(AndroidProxyList<AndroidProxySystem> list, AndroidProxySystem device) {
             listAdapter.remove(new DeviceInfo(device));
         }
     }
 
     private class DeviceInfo {
 
-        private final AndroidProxyDevice device;
+        private final AndroidProxySystem device;
 
-        private DeviceInfo(AndroidProxyDevice device) {
+        private DeviceInfo(AndroidProxySystem device) {
             this.device = device;
         }
 
-        public AndroidProxyDevice getDevice() {
+        public AndroidProxySystem getDevice() {
             return device;
         }
     }

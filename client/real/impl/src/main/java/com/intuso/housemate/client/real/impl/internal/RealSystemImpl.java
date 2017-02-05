@@ -7,13 +7,13 @@ import com.google.inject.util.Types;
 import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
-import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.internal.object.System;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyConnectedDevice;
-import com.intuso.housemate.client.real.api.internal.RealDevice;
+import com.intuso.housemate.client.real.api.internal.RealSystem;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -24,10 +24,10 @@ import javax.jms.JMSException;
 /**
  * Base class for all device
  */
-public final class RealDeviceImpl
-        extends RealObject<Device.Data, Device.Listener<? super RealDeviceImpl>>
-        implements RealDevice<RealValueImpl<String>, RealCommandImpl,
-        RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>, RealDeviceImpl> {
+public final class RealSystemImpl
+        extends RealObject<System.Data, System.Listener<? super RealSystemImpl>>
+        implements RealSystem<RealValueImpl<String>, RealCommandImpl,
+                RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>, RealSystemImpl> {
 
     private final static String PLAYBACK_NAME = "Playback devices";
     private final static String PLAYBACK_DESCRIPTION = "The device's playback devices";
@@ -54,18 +54,18 @@ public final class RealDeviceImpl
     private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> volumeDevices;
     private final RealCommandImpl addVolumeDeviceCommand;
 
-    private final RemoveCallback<RealDeviceImpl> removeCallback;
+    private final RemoveCallback<RealSystemImpl> removeCallback;
 
     /**
      * @param logger {@inheritDoc}
      * @param managedCollectionFactory
      */
     @Inject
-    public RealDeviceImpl(@Assisted final Logger logger,
+    public RealSystemImpl(@Assisted final Logger logger,
                           @Assisted("id") String id,
                           @Assisted("name") String name,
                           @Assisted("description") String description,
-                          @Assisted RemoveCallback<RealDeviceImpl> removeCallback,
+                          @Assisted RemoveCallback<RealSystemImpl> removeCallback,
                           ManagedCollectionFactory managedCollectionFactory,
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
@@ -73,7 +73,7 @@ public final class RealDeviceImpl
                           final RealPropertyImpl.Factory deviceFactory,
                           RealListPersistedImpl.Factory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> devicesFactory,
                           final TypeRepository typeRepository) {
-        super(logger, new Device.Data(id, name, description), managedCollectionFactory);
+        super(logger, new System.Data(id, name, description), managedCollectionFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -84,7 +84,7 @@ public final class RealDeviceImpl
                     public void perform(Type.InstanceMap values) {
                         if(values != null && values.getChildren().containsKey(Renameable.NAME_ID)) {
                             String newName = values.getChildren().get(Renameable.NAME_ID).getFirstValue();
-                            if (newName != null && !RealDeviceImpl.this.getName().equals(newName))
+                            if (newName != null && !RealSystemImpl.this.getName().equals(newName))
                                 setName(newName);
                         }
                     }
@@ -209,9 +209,9 @@ public final class RealDeviceImpl
     }
 
     private void setName(String newName) {
-        RealDeviceImpl.this.getData().setName(newName);
-        for(Device.Listener<? super RealDeviceImpl> listener : listeners)
-            listener.renamed(RealDeviceImpl.this, RealDeviceImpl.this.getName(), newName);
+        RealSystemImpl.this.getData().setName(newName);
+        for(System.Listener<? super RealSystemImpl> listener : listeners)
+            listener.renamed(RealSystemImpl.this, RealSystemImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
     }
@@ -232,7 +232,7 @@ public final class RealDeviceImpl
     }
 
     protected final void remove() {
-        removeCallback.removeDevice(this);
+        removeCallback.removeSystem(this);
     }
 
     @Override
@@ -286,10 +286,10 @@ public final class RealDeviceImpl
     }
 
     public interface Factory {
-        RealDeviceImpl create(Logger logger,
+        RealSystemImpl create(Logger logger,
                               @Assisted("id") String id,
                               @Assisted("name") String name,
                               @Assisted("description") String description,
-                              RemoveCallback<RealDeviceImpl> removeCallback);
+                              RemoveCallback<RealSystemImpl> removeCallback);
     }
 }

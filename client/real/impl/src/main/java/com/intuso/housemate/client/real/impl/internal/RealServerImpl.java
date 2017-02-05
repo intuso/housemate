@@ -7,7 +7,7 @@ import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
-import com.intuso.housemate.client.real.impl.internal.utils.AddDeviceCommand;
+import com.intuso.housemate.client.real.impl.internal.utils.AddSystemCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddUserCommand;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -19,12 +19,12 @@ public class RealServerImpl
         extends RealObject<Server.Data, Server.Listener<? super RealServerImpl>>
         implements RealServer<RealCommandImpl,
         RealAutomationImpl, RealListPersistedImpl<RealAutomationImpl>,
-        RealDeviceImpl, RealListPersistedImpl<RealDeviceImpl>,
+        RealSystemImpl, RealListPersistedImpl<RealSystemImpl>,
         RealUserImpl, RealListPersistedImpl<RealUserImpl>,
         ServerBaseNode<?, ?, ?, ?>, RealNodeListImpl,
         RealServerImpl>,
         AddAutomationCommand.Callback,
-        AddDeviceCommand.Callback,
+        AddSystemCommand.Callback,
         AddUserCommand.Callback {
 
     private final Connection connection;
@@ -32,8 +32,8 @@ public class RealServerImpl
 
     private final RealListPersistedImpl<RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
-    private final RealListPersistedImpl<RealDeviceImpl> devices;
-    private final RealCommandImpl addDeviceCommand;
+    private final RealListPersistedImpl<RealSystemImpl> systems;
+    private final RealCommandImpl addSystemCommand;
     private final RealNodeListImpl nodes;
     private final RealListPersistedImpl<RealUserImpl> users;
     private final RealCommandImpl addUserCommand;
@@ -44,14 +44,14 @@ public class RealServerImpl
                           ManagedCollectionFactory managedCollectionFactory,
                           final RealAutomationImpl.Factory automationFactory,
                           RealListPersistedImpl.Factory<RealAutomationImpl> automationsFactory,
-                          final RealDeviceImpl.Factory deviceFactory,
-                          RealListPersistedImpl.Factory<RealDeviceImpl> devicesFactory,
+                          final RealSystemImpl.Factory systemFactory,
+                          RealListPersistedImpl.Factory<RealSystemImpl> systemsFactory,
                           RealNodeImpl.Factory nodeFactory,
                           RealNodeListImpl.Factory nodesFactory,
                           final RealUserImpl.Factory userFactory,
                           RealListPersistedImpl.Factory<RealUserImpl> usersFactory,
                           AddAutomationCommand.Factory addAutomationCommandFactory,
-                          AddDeviceCommand.Factory addDeviceCommandFactory,
+                          AddSystemCommand.Factory addSystemCommandFactory,
                           AddUserCommand.Factory addUserCommandFactory) {
         super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory);
         this.connection = connection;
@@ -73,21 +73,21 @@ public class RealServerImpl
                 "Add automation",
                 this,
                 this);
-        this.devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID),
-                DEVICES_ID,
-                "Devices",
-                "Devices",
-                new RealListPersistedImpl.ExistingObjectFactory<RealDeviceImpl>() {
+        this.systems = systemsFactory.create(ChildUtil.logger(logger, SYSTEMS_ID),
+                SYSTEMS_ID,
+                "Systems",
+                "Systems",
+                new RealListPersistedImpl.ExistingObjectFactory<RealSystemImpl>() {
                     @Override
-                    public RealDeviceImpl create(Logger parentLogger, Object.Data data) {
-                        return deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
+                    public RealSystemImpl create(Logger parentLogger, Object.Data data) {
+                        return systemFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
                     }
                 });
-        this.addDeviceCommand = addDeviceCommandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_ID),
-                ChildUtil.logger(logger, ADD_DEVICE_ID),
-                ADD_DEVICE_ID,
-                ADD_DEVICE_ID,
-                "Add device",
+        this.addSystemCommand = addSystemCommandFactory.create(ChildUtil.logger(logger, ADD_SYSTEM_ID),
+                ChildUtil.logger(logger, ADD_SYSTEM_ID),
+                ADD_SYSTEM_ID,
+                "Add system",
+                "Add system",
                 this,
                 this);
         this.users = usersFactory.create(ChildUtil.logger(logger, USERS_ID),
@@ -118,8 +118,8 @@ public class RealServerImpl
         super.initChildren(name, connection);
         automations.init(ChildUtil.name(name, AUTOMATIONS_ID), connection);
         addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID), connection);
-        devices.init(ChildUtil.name(name, DEVICES_ID), connection);
-        addDeviceCommand.init(ChildUtil.name(name, ADD_DEVICE_ID), connection);
+        systems.init(ChildUtil.name(name, SYSTEMS_ID), connection);
+        addSystemCommand.init(ChildUtil.name(name, ADD_SYSTEM_ID), connection);
         users.init(ChildUtil.name(name, USERS_ID), connection);
         addUserCommand.init(ChildUtil.name(name, ADD_USER_ID), connection);
         nodes.init(ChildUtil.name(name, NODES_ID), connection);
@@ -130,8 +130,8 @@ public class RealServerImpl
         super.uninitChildren();
         automations.uninit();
         addAutomationCommand.uninit();
-        devices.uninit();
-        addDeviceCommand.uninit();
+        systems.uninit();
+        addSystemCommand.uninit();
         users.uninit();
         addUserCommand.uninit();
         nodes.uninit();
@@ -157,24 +157,23 @@ public class RealServerImpl
         automations.remove(realAutomation.getId());
     }
 
-    @Override
-    public RealListPersistedImpl<RealDeviceImpl> getDevices() {
-        return devices;
+    public RealListPersistedImpl<RealSystemImpl> getSYSTEMS() {
+        return systems;
     }
 
     @Override
-    public RealCommandImpl getAddDeviceCommand() {
-        return addDeviceCommand;
+    public RealCommandImpl getAddSystemCommand() {
+        return addSystemCommand;
     }
 
     @Override
-    public void addDevice(RealDeviceImpl device) {
-        devices.add(device);
+    public void addSystem(RealSystemImpl system) {
+        systems.add(system);
     }
 
     @Override
-    public void removeDevice(RealDeviceImpl device) {
-        devices.remove(device.getId());
+    public void removeSystem(RealSystemImpl system) {
+        systems.remove(system.getId());
     }
 
     @Override

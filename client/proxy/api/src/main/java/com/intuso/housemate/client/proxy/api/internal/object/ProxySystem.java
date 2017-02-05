@@ -1,6 +1,6 @@
 package com.intuso.housemate.client.proxy.api.internal.object;
 
-import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.internal.object.System;
 import com.intuso.housemate.client.proxy.api.internal.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -13,13 +13,13 @@ import javax.jms.JMSException;
  * @param <VALUE> the type of the values
  * @param <DEVICE> the type of the device
  */
-public abstract class ProxyDevice<
+public abstract class ProxySystem<
         VALUE extends ProxyValue<?, VALUE>,
         COMMAND extends ProxyCommand<?, ?, COMMAND>,
         PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
-        DEVICE extends ProxyDevice<VALUE, COMMAND, PROPERTIES, DEVICE>>
-        extends ProxyObject<Device.Data, Device.Listener<? super DEVICE>>
-        implements Device<VALUE, COMMAND, PROPERTIES, DEVICE>,
+        DEVICE extends ProxySystem<VALUE, COMMAND, PROPERTIES, DEVICE>>
+        extends ProxyObject<System.Data, System.Listener<? super DEVICE>>
+        implements System<VALUE, COMMAND, PROPERTIES, DEVICE>,
         ProxyFailable<VALUE>,
         ProxyRemoveable<COMMAND>,
         ProxyRenameable<COMMAND> {
@@ -41,12 +41,12 @@ public abstract class ProxyDevice<
     /**
      * @param logger {@inheritDoc}
      */
-    public ProxyDevice(Logger logger,
+    public ProxySystem(Logger logger,
                        ManagedCollectionFactory managedCollectionFactory,
                        Factory<VALUE> valueFactory,
                        Factory<COMMAND> commandFactory,
                        Factory<PROPERTIES> propertiesFactory) {
-        super(logger, Device.Data.class, managedCollectionFactory);
+        super(logger, System.Data.class, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));

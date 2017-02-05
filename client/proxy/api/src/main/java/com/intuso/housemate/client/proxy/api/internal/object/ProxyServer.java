@@ -17,7 +17,7 @@ import java.util.Arrays;
 /**
  * @param <COMMAND> the type of the command
  * @param <AUTOMATIONS> the type of the automations list
- * @param <DEVICES> the type of the devices list
+ * @param <SYSTEMS> the type of the systems list
  * @param <USERS> the type of the users list
  * @param <NODES> the type of the nodes list
  * @param <SERVER> the type of the server
@@ -25,12 +25,12 @@ import java.util.Arrays;
 public abstract class ProxyServer<
         COMMAND extends ProxyCommand<?, ?, ?>,
         AUTOMATIONS extends ProxyList<? extends ProxyAutomation<?, ?, ?, ?, ?>, ?>,
-        DEVICES extends ProxyList<? extends ProxyDevice<?, ?, ?, ?>, ?>,
+        SYSTEMS extends ProxyList<? extends ProxySystem<?, ?, ?, ?>, ?>,
         USERS extends ProxyList<? extends ProxyUser<?, ?, ?>, ?>,
         NODES extends ProxyList<? extends ProxyNode<?, ?, ?, ?>, ?>,
-        SERVER extends ProxyServer<COMMAND, AUTOMATIONS, DEVICES, USERS, NODES, SERVER>>
+        SERVER extends ProxyServer<COMMAND, AUTOMATIONS, SYSTEMS, USERS, NODES, SERVER>>
         extends ProxyObject<Server.Data, Server.Listener<? super SERVER>>
-        implements Server<COMMAND, AUTOMATIONS, DEVICES, USERS, NODES, SERVER>,
+        implements Server<COMMAND, AUTOMATIONS, SYSTEMS, USERS, NODES, SERVER>,
         ProxyRenameable<COMMAND> {
 
     private final Connection connection;
@@ -38,8 +38,8 @@ public abstract class ProxyServer<
     private final COMMAND renameCommand;
     private final AUTOMATIONS automations;
     private final COMMAND addAutomationCommand;
-    private final DEVICES devices;
-    private final COMMAND addDeviceCommand;
+    private final SYSTEMS SYSTEMS;
+    private final COMMAND addSystemCommand;
     private final USERS users;
     private final COMMAND addUserCommand;
     private final NODES nodes;
@@ -50,7 +50,7 @@ public abstract class ProxyServer<
                        ManagedCollectionFactory managedCollectionFactory,
                        Factory<COMMAND> commandFactory,
                        Factory<AUTOMATIONS> automationsFactory,
-                       Factory<DEVICES> devicesFactory,
+                       Factory<SYSTEMS> systemsFactory,
                        Factory<USERS> usersFactory,
                        Factory<NODES> nodesFactory) {
         super(logger, Server.Data.class, managedCollectionFactory);
@@ -58,8 +58,8 @@ public abstract class ProxyServer<
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID));
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID));
-        devices = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID));
-        addDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_DEVICE_ID));
+        SYSTEMS = systemsFactory.create(ChildUtil.logger(logger, SYSTEMS_ID));
+        addSystemCommand = commandFactory.create(ChildUtil.logger(logger, ADD_SYSTEM_ID));
         users = usersFactory.create(ChildUtil.logger(logger, USERS_ID));
         addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID));
         nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID));
@@ -83,8 +83,8 @@ public abstract class ProxyServer<
         renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
         automations.init(ChildUtil.name(name, AUTOMATIONS_ID), connection);
         addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID), connection);
-        devices.init(ChildUtil.name(name, DEVICES_ID), connection);
-        addDeviceCommand.init(ChildUtil.name(name, ADD_DEVICE_ID), connection);
+        SYSTEMS.init(ChildUtil.name(name, SYSTEMS_ID), connection);
+        addSystemCommand.init(ChildUtil.name(name, ADD_SYSTEM_ID), connection);
         users.init(ChildUtil.name(name, USERS_ID), connection);
         addUserCommand.init(ChildUtil.name(name, ADD_USER_ID), connection);
         nodes.init(ChildUtil.name(name, NODES_ID), connection);
@@ -96,8 +96,8 @@ public abstract class ProxyServer<
         renameCommand.uninit();
         automations.uninit();
         addAutomationCommand.uninit();
-        devices.uninit();
-        addDeviceCommand.uninit();
+        SYSTEMS.uninit();
+        addSystemCommand.uninit();
         users.uninit();
         addUserCommand.uninit();
         nodes.uninit();
@@ -117,13 +117,12 @@ public abstract class ProxyServer<
         return addAutomationCommand;
     }
 
-    @Override
-    public DEVICES getDevices() {
-        return devices;
+    public SYSTEMS getSYSTEMS() {
+        return SYSTEMS;
     }
 
-    public COMMAND getAddDeviceCommand() {
-        return addDeviceCommand;
+    public COMMAND getAddSystemCommand() {
+        return addSystemCommand;
     }
 
     @Override
@@ -146,14 +145,14 @@ public abstract class ProxyServer<
             return renameCommand;
         else if(ADD_AUTOMATION_ID.equals(id))
             return addAutomationCommand;
-        else if(ADD_DEVICE_ID.equals(id))
-            return addDeviceCommand;
+        else if(ADD_SYSTEM_ID.equals(id))
+            return addSystemCommand;
         else if(ADD_USER_ID.equals(id))
             return addUserCommand;
         else if(AUTOMATIONS_ID.equals(id))
             return automations;
-        else if(DEVICES_ID.equals(id))
-            return devices;
+        else if(SYSTEMS_ID.equals(id))
+            return SYSTEMS;
         else if(NODES_ID.equals(id))
             return nodes;
         else if(USERS_ID.equals(id))

@@ -15,7 +15,7 @@ import javax.jms.Connection;
  */
 public class AndroidProxyServer extends ProxyServer<AndroidProxyCommand,
         AndroidProxyList<AndroidProxyAutomation>,
-        AndroidProxyList<AndroidProxyDevice>,
+        AndroidProxyList<AndroidProxySystem>,
         AndroidProxyList<AndroidProxyUser>,
         AndroidProxyList<AndroidProxyNode>,
         AndroidProxyServer> {
@@ -24,6 +24,6 @@ public class AndroidProxyServer extends ProxyServer<AndroidProxyCommand,
      * @param logger    {@inheritDoc}
      */
     public AndroidProxyServer(Connection connection, Logger logger, ManagedCollectionFactory managedCollectionFactory, AndroidObjectFactories factories) {
-        super(connection, logger, managedCollectionFactory, factories.command(), factories.automations(), factories.devices(), factories.users(), factories.nodes());
+        super(connection, logger, managedCollectionFactory, factories.command(), factories.automations(), factories.systems(), factories.users(), factories.nodes());
     }
 }

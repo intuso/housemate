@@ -36,7 +36,7 @@ public class ServerRootModule extends AbstractModule {
         bind(RealServerImpl.class).in(Scopes.SINGLETON);
 
         bind(RealAutomation.Container.class).to(RealServerImpl.class);
-        bind(RealDevice.Container.class).to(RealServerImpl.class);
+        bind(RealSystem.Container.class).to(RealServerImpl.class);
         bind(RealUser.Container.class).to(RealServerImpl.class);
         bind(RealNode.Container.class).to(RealServerImpl.class);
 

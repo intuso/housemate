@@ -2,18 +2,17 @@ package com.intuso.housemate.plugin.tvremote;
 
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
-import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
 import com.intuso.housemate.client.v1_0.api.api.Playback;
 import com.intuso.housemate.client.v1_0.api.api.Power;
 import com.intuso.housemate.client.v1_0.api.api.Volume;
+import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 
 @Id(value = "tv-remote", name = "TV Remote", description = "TV Remote")
-public class TVRemote implements FeatureDriver, Power, Playback, Volume {
+public class TVRemote implements Power, Playback, Volume {
 
     private final ManagedCollection<Power.Listener> powerListeners;
     private final ManagedCollection<Playback.Listener> playbackListeners;
@@ -28,12 +27,6 @@ public class TVRemote implements FeatureDriver, Power, Playback, Volume {
     @Property
     @Id(value = "remote-name", name = "Remote Name", description = "The name of the remote you want to use")
     public String remoteName;
-
-    @Override
-    public void init(Logger logger, FeatureDriver.Callback driverCallback) {}
-
-    @Override
-    public void uninit() {}
 
     @Override
     public ManagedCollection.Registration addListener(Power.Listener listener) {
@@ -118,7 +111,7 @@ public class TVRemote implements FeatureDriver, Power, Playback, Volume {
         try {
             Runtime.getRuntime().exec("irsend SEND_ONCE " + remoteName + " " + buttonName);
         } catch(IOException e) {
-            throw new FeatureException("Failed to perform TV remote command", e);
+            throw new HardwareDriver.HardwareException("Failed to perform TV remote command", e);
         }
     }
 }

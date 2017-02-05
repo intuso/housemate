@@ -30,7 +30,7 @@ public class RealObjectsModule extends AbstractModule {
 
         // devices
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealDeviceImpl.Factory>() {}));
+                .build(new TypeLiteral<RealSystemImpl.Factory>() {}));
 
         // lists
         // generated
@@ -43,7 +43,7 @@ public class RealObjectsModule extends AbstractModule {
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealConnectedDeviceImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealDeviceImpl>>() {}));
+                .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealSystemImpl>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListGeneratedImpl.Factory<RealHardwareImpl>>() {}));
         install(new FactoryModuleBuilder()
@@ -72,7 +72,7 @@ public class RealObjectsModule extends AbstractModule {
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<RealConnectedDeviceImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealDeviceImpl>>() {}));
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealSystemImpl>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<RealHardwareImpl>>() {}));
         install(new FactoryModuleBuilder()

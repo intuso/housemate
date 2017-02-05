@@ -18,14 +18,14 @@ import javax.jms.JMSException;
  */
 public class ProxyServerBridge
         extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Server.Data, Server.Data, Server.Listener<? super ProxyServerBridge>>
-        implements Server<ProxyCommandBridge, ProxyListBridge<ProxyAutomationBridge>, ProxyListBridge<ProxyDeviceBridge>, ProxyListBridge<ProxyUserBridge>, ProxyListBridge<ProxyNodeBridge>, ProxyServerBridge> {
+        implements Server<ProxyCommandBridge, ProxyListBridge<ProxyAutomationBridge>, ProxyListBridge<ProxySystemBridge>, ProxyListBridge<ProxyUserBridge>, ProxyListBridge<ProxyNodeBridge>, ProxyServerBridge> {
 
     private final Connection connection;
 
     private final ProxyCommandBridge addAutomationCommand;
     private final ProxyListBridge<ProxyAutomationBridge> automations;
-    private final ProxyCommandBridge addDeviceCommand;
-    private final ProxyListBridge<ProxyDeviceBridge> devices;
+    private final ProxyCommandBridge addSystemCommand;
+    private final ProxyListBridge<ProxySystemBridge> systems;
     private final ProxyListBridge<ProxyNodeBridge> nodes;
     private final ProxyCommandBridge addUserCommand;
     private final ProxyListBridge<ProxyUserBridge> users;
@@ -36,7 +36,7 @@ public class ProxyServerBridge
                                 ServerMapper serverMapper,
                                 Factory<ProxyCommandBridge> commandFactory,
                                 Factory<ProxyListBridge<ProxyAutomationBridge>> automationsFactory,
-                                Factory<ProxyListBridge<ProxyDeviceBridge>> devicesFactory,
+                                Factory<ProxyListBridge<ProxySystemBridge>> systemsFactory,
                                 Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
                                 Factory<ProxyListBridge<ProxyUserBridge>> usersFactory,
                                 ManagedCollectionFactory managedCollectionFactory) {
@@ -44,8 +44,8 @@ public class ProxyServerBridge
         this.connection = connection;
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_AUTOMATION_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, Server.AUTOMATIONS_ID));
-        addDeviceCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_DEVICE_ID));
-        devices = devicesFactory.create(ChildUtil.logger(logger, Server.DEVICES_ID));
+        addSystemCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_SYSTEM_ID));
+        systems = systemsFactory.create(ChildUtil.logger(logger, Server.SYSTEMS_ID));
         nodes = nodesFactory.create(ChildUtil.logger(logger, Server.NODES_ID));
         addUserCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_USER_ID));
         users = usersFactory.create(ChildUtil.logger(logger, Server.USERS_ID));
@@ -77,13 +77,13 @@ public class ProxyServerBridge
                 com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.AUTOMATIONS_ID),
                 ChildUtil.name(internalName, Server.AUTOMATIONS_ID),
                 connection);
-        addDeviceCommand.init(
-                com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.ADD_DEVICE_ID),
-                ChildUtil.name(internalName, Server.ADD_DEVICE_ID),
+        addSystemCommand.init(
+                com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.ADD_SYSTEM_ID),
+                ChildUtil.name(internalName, Server.ADD_SYSTEM_ID),
                 connection);
-        devices.init(
-                com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.DEVICES_ID),
-                ChildUtil.name(internalName, Server.DEVICES_ID),
+        systems.init(
+                com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.SYSTEMS_ID),
+                ChildUtil.name(internalName, Server.SYSTEMS_ID),
                 connection);
         nodes.init(
                 com.intuso.housemate.client.v1_0.proxy.api.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.NODES_ID),
@@ -104,8 +104,8 @@ public class ProxyServerBridge
         super.uninitChildren();
         addAutomationCommand.uninit();
         automations.uninit();
-        addDeviceCommand.uninit();
-        devices.uninit();
+        addSystemCommand.uninit();
+        systems.uninit();
         nodes.uninit();
         addUserCommand.uninit();
         users.uninit();
@@ -122,13 +122,12 @@ public class ProxyServerBridge
     }
 
     @Override
-    public ProxyCommandBridge getAddDeviceCommand() {
-        return addDeviceCommand;
+    public ProxyCommandBridge getAddSystemCommand() {
+        return addSystemCommand;
     }
 
-    @Override
-    public ProxyListBridge<ProxyDeviceBridge> getDevices() {
-        return devices;
+    public ProxyListBridge<ProxySystemBridge> getSYSTEMS() {
+        return systems;
     }
 
     @Override

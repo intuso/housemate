@@ -2,8 +2,8 @@ package com.intuso.housemate.client.proxy.api.bridge.v1_0;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.bridge.v1_0.object.DeviceMapper;
-import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.bridge.v1_0.object.SystemMapper;
+import com.intuso.housemate.client.api.internal.object.System;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -14,13 +14,13 @@ import javax.jms.JMSException;
 /**
  * Created by tomc on 28/11/16.
  */
-public class ProxyDeviceBridge
-        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Device.Data, Device.Data, Device.Listener<? super ProxyDeviceBridge>>
-        implements Device<
-        ProxyValueBridge,
-        ProxyCommandBridge,
-        ProxyListBridge<ProxyPropertyBridge>,
-        ProxyDeviceBridge> {
+public class ProxySystemBridge
+        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.System.Data, System.Data, System.Listener<? super ProxySystemBridge>>
+        implements System<
+                ProxyValueBridge,
+                ProxyCommandBridge,
+                ProxyListBridge<ProxyPropertyBridge>,
+        ProxySystemBridge> {
 
     private final ProxyCommandBridge renameCommand;
     private final ProxyCommandBridge removeCommand;
@@ -37,13 +37,13 @@ public class ProxyDeviceBridge
     private final ProxyCommandBridge addVolumeDeviceCommand;
 
     @Inject
-    protected ProxyDeviceBridge(@Assisted Logger logger,
-                                DeviceMapper deviceMapper,
+    protected ProxySystemBridge(@Assisted Logger logger,
+                                SystemMapper systemMapper,
                                 Factory<ProxyCommandBridge> commandFactory,
                                 Factory<ProxyValueBridge> valueFactory,
                                 Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
                                 ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, Device.Data.class, deviceMapper, managedCollectionFactory);
+        super(logger, System.Data.class, systemMapper, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
@@ -75,43 +75,43 @@ public class ProxyDeviceBridge
                 ChildUtil.name(internalName, ERROR_ID),
                 connection);
         playbackDevices.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.PLAYBACK),
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.PLAYBACK),
                 ChildUtil.name(internalName, PLAYBACK),
                 connection);
         addPlaybackDeviceCommand.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_PLAYBACK),
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.ADD_PLAYBACK),
                 ChildUtil.name(internalName, ADD_PLAYBACK),
                 connection);
         powerDevices.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.POWER),
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.POWER),
                 ChildUtil.name(internalName, POWER),
                 connection);
         addPowerDeviceCommand.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_POWER),
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.ADD_POWER),
                 ChildUtil.name(internalName, ADD_POWER),
                 connection);
         runDevices.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.RUN),
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.RUN),
                 ChildUtil.name(internalName, RUN),
                 connection);
         addRunDeviceCommand.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_RUN),
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.ADD_RUN),
                 ChildUtil.name(internalName, ADD_RUN),
                 connection);
         temperatureSensorDevices.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.TEMPERATURE_SENSOR),
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.TEMPERATURE_SENSOR),
                 ChildUtil.name(internalName, TEMPERATURE_SENSOR),
                 connection);
         addTemperatureSensorDeviceCommand.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_TEMPERATURE_SENSOR),
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.ADD_TEMPERATURE_SENSOR),
                 ChildUtil.name(internalName, ADD_TEMPERATURE_SENSOR),
                 connection);
         volumeDevices.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.VOLUME),
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.VOLUME),
                 ChildUtil.name(internalName, VOLUME),
                 connection);
         addVolumeDeviceCommand.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_VOLUME),
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.ADD_VOLUME),
                 ChildUtil.name(internalName, ADD_VOLUME),
                 connection);
     }

@@ -6,10 +6,10 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
-import com.intuso.housemate.client.real.api.internal.RealDevice;
+import com.intuso.housemate.client.real.api.internal.RealSystem;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
-import com.intuso.housemate.client.real.impl.internal.RealDeviceImpl;
+import com.intuso.housemate.client.real.impl.internal.RealSystemImpl;
 import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.v1_0.api.object.Command;
@@ -20,17 +20,17 @@ import java.util.UUID;
 /**
 * Created by tomc on 19/03/15.
 */
-public class AddDeviceCommand {
+public class AddSystemCommand {
 
     public final static String NAME_PARAMETER_ID = "name";
     public final static String NAME_PARAMETER_NAME = "Name";
-    public final static String NAME_PARAMETER_DESCRIPTION = "The name of the new device";
+    public final static String NAME_PARAMETER_DESCRIPTION = "The name of the new system";
     public final static String DESCRIPTION_PARAMETER_ID = "description";
     public final static String DESCRIPTION_PARAMETER_NAME = "Description";
-    public final static String DESCRIPTION_PARAMETER_DESCRIPTION = "A description of the new device";
+    public final static String DESCRIPTION_PARAMETER_DESCRIPTION = "A description of the new system";
 
     public interface Callback {
-        void addDevice(RealDeviceImpl device);
+        void addSystem(RealSystemImpl system);
     }
 
     public static class Factory {
@@ -56,7 +56,7 @@ public class AddDeviceCommand {
                                       String name,
                                       String description,
                                       Callback callback,
-                                      RealDevice.RemoveCallback<RealDeviceImpl> removeCallback) {
+                                      RealSystem.RemoveCallback<RealSystemImpl> removeCallback) {
             return commandFactory.create(logger, id, name, description, performerFactory.create(baseLogger, callback, removeCallback),
                     Lists.newArrayList(
                             parameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, NAME_PARAMETER_ID),
@@ -80,17 +80,17 @@ public class AddDeviceCommand {
 
         private final Logger logger;
         private final Callback callback;
-        private final RealDevice.RemoveCallback<RealDeviceImpl> removeCallback;
-        private final RealDeviceImpl.Factory deviceFactory;
+        private final RealSystem.RemoveCallback<RealSystemImpl> removeCallback;
+        private final RealSystemImpl.Factory systemFactory;
 
         @Inject
         public Performer(@Assisted Logger logger,
                          @Assisted Callback callback,
-                         @Assisted RealDevice.RemoveCallback<RealDeviceImpl> removeCallback,
-                         RealDeviceImpl.Factory deviceFactory) {
+                         @Assisted RealSystem.RemoveCallback<RealSystemImpl> removeCallback,
+                         RealSystemImpl.Factory systemFactory) {
             this.logger = logger;
             this.callback = callback;
-            this.deviceFactory = deviceFactory;
+            this.systemFactory = systemFactory;
             this.removeCallback = removeCallback;
         }
 
@@ -103,14 +103,14 @@ public class AddDeviceCommand {
             if(description == null || description.getFirstValue() == null)
                 throw new HousemateException("No description specified");
             String id = UUID.randomUUID().toString();
-            RealDeviceImpl device = deviceFactory.create(ChildUtil.logger(logger, id), id, name.getFirstValue(), description.getFirstValue(), removeCallback);
-            callback.addDevice(device);
+            RealSystemImpl system = systemFactory.create(ChildUtil.logger(logger, id), id, name.getFirstValue(), description.getFirstValue(), removeCallback);
+            callback.addSystem(system);
         }
 
         public interface Factory {
             Performer create(Logger logger,
                              Callback callback,
-                             RealDevice.RemoveCallback<RealDeviceImpl> removeCallback);
+                             RealSystem.RemoveCallback<RealSystemImpl> removeCallback);
         }
     }
 }
