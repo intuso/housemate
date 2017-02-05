@@ -48,22 +48,22 @@ public class RFXtrx433Hardware implements HardwareDriver {
     }
 
     @Property
-    @Id(value = "autocreate", name = "Auto Create", description = "Automatically create Housemate devices as connected devices are detected")
+    @Id(value = "autocreate", name = "Auto Create", description = "Automatically create devices as new messages are received")
     public void setAutoCreate(boolean autoCreate) {
         for(Handler handler : handlers)
             handler.autoCreate(autoCreate);
     }
 
     @Override
-    public void init(Logger logger, HardwareDriver.Callback callback, Iterable<String> connectedDeviceIds) {
+    public void init(Logger logger, HardwareDriver.Callback callback, Iterable<String> deviceIds) {
         // setup the connection to the USB device
         rfxtrx.openPortSafe();
         for(Handler handler : handlers)
             handler.init(callback);
-        id: for(String connectedDeviceId : connectedDeviceIds) {
+        id: for(String deviceId : deviceIds) {
             for(Handler handler : handlers) {
-                if (handler.matches(connectedDeviceId)) {
-                    handler.parseId(connectedDeviceId);
+                if (handler.matches(deviceId)) {
+                    handler.parseId(deviceId);
                     continue id;
                 }
             }

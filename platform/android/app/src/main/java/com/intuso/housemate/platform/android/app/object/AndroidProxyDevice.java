@@ -1,6 +1,6 @@
 package com.intuso.housemate.platform.android.app.object;
 
-import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyConnectedDevice;
+import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyDevice;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -11,16 +11,16 @@ import org.slf4j.Logger;
  * Time: 09:28
  * To change this template use File | Settings | File Templates.
  */
-public class AndroidProxyConnectedDevice extends ProxyConnectedDevice<AndroidProxyCommand,
+public class AndroidProxyDevice extends ProxyDevice<AndroidProxyCommand,
         AndroidProxyList<AndroidProxyCommand>,
         AndroidProxyList<AndroidProxyValue>,
         AndroidProxyList<AndroidProxyProperty>,
-        AndroidProxyConnectedDevice> {
+        AndroidProxyDevice> {
 
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxyConnectedDevice(Logger logger, ManagedCollectionFactory managedCollectionFactory, AndroidObjectFactories factories) {
+    protected AndroidProxyDevice(Logger logger, ManagedCollectionFactory managedCollectionFactory, AndroidObjectFactories factories) {
         super(logger, managedCollectionFactory, factories.command(), factories.commands(), factories.values(), factories.properties());
     }
 }

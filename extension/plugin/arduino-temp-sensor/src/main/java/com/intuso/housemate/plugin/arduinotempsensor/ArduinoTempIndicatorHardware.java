@@ -18,7 +18,7 @@ public class ArduinoTempIndicatorHardware implements HardwareDriver {
     }
 
     @Override
-    public void init(Logger logger, Callback callback, Iterable<String> connectedDeviceIds) {
+    public void init(Logger logger, Callback callback, Iterable<String> deviceIds) {
         // todo
     }
 

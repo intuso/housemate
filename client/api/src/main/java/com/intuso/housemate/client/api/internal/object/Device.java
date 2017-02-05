@@ -7,13 +7,13 @@ import com.intuso.housemate.client.api.internal.Renameable;
  * @param <VALUES> the type of the values list
  * @param <DEVICE> the type of the feature
  */
-public interface ConnectedDevice<RENAME_COMMAND extends Command<?, ?, ?, ?>,
+public interface Device<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
         VALUES extends List<? extends Value<?, ?, ?>, ?>,
         PROPERTIES extends List<? extends Property<?, ?, ?, ?>, ?>,
-        DEVICE extends ConnectedDevice<RENAME_COMMAND, COMMANDS, VALUES, PROPERTIES, DEVICE>>
+        DEVICE extends Device<RENAME_COMMAND, COMMANDS, VALUES, PROPERTIES, DEVICE>>
         extends
-        Object<ConnectedDevice.Listener<? super DEVICE>>,
+        Object<Device.Listener<? super DEVICE>>,
         Renameable<RENAME_COMMAND>,
         Command.Container<COMMANDS>,
         Value.Container<VALUES>,
@@ -27,14 +27,14 @@ public interface ConnectedDevice<RENAME_COMMAND extends Command<?, ?, ?, ?>,
      *
      * Listener interface for features
      */
-    interface Listener<DEVICE extends ConnectedDevice<?, ?, ?, ?, ?>> extends Object.Listener,
+    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?>> extends Object.Listener,
             Renameable.Listener<DEVICE> {}
 
     /**
      *
      * Interface to show that the implementing object has a list of features
      */
-    interface Container<DEVICES extends List<? extends ConnectedDevice<?, ?, ?, ?, ?>, ?>> {
+    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?, ?>, ?>> {
 
         /**
          * Gets the features list

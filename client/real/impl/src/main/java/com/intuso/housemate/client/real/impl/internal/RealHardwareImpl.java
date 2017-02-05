@@ -36,15 +36,15 @@ public final class RealHardwareImpl
         implements RealHardware<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
         RealPropertyImpl<PluginDependency<HardwareDriver.Factory<?>>>, RealListGeneratedImpl<RealCommandImpl>,
         RealListGeneratedImpl<RealValueImpl<?>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
-        RealListPersistedImpl<RealConnectedDeviceImpl>, RealHardwareImpl> {
+        RealListPersistedImpl<RealDeviceImpl>, RealHardwareImpl> {
 
     private final static String COMMANDS_DESCRIPTION = "The hardware's commands";
     private final static String VALUES_DESCRIPTION = "The hardware's values";
     private final static String PROPERTIES_DESCRIPTION = "The hardware's properties";
-    private final static String DEVICES_DESCRIPTION = "The hardware's connected devices";
+    private final static String DEVICES_DESCRIPTION = "The hardware's devices";
 
     private final AnnotationParser annotationParser;
-    private final RealConnectedDeviceImpl.Factory deviceFactory;
+    private final RealDeviceImpl.Factory deviceFactory;
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
@@ -57,11 +57,11 @@ public final class RealHardwareImpl
     private final RealListGeneratedImpl<RealCommandImpl> commands;
     private final RealListGeneratedImpl<RealValueImpl<?>> values;
     private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
-    private final RealListPersistedImpl<RealConnectedDeviceImpl> devices;
+    private final RealListPersistedImpl<RealDeviceImpl> devices;
 
     private final RemoveCallback<RealHardwareImpl> removeCallback;
 
-    private final Map<java.lang.Object, RealConnectedDeviceImpl> objectDevices = Maps.newHashMap();
+    private final Map<java.lang.Object, RealDeviceImpl> objectDevices = Maps.newHashMap();
 
     private ManagedCollection.Registration driverAvailableListenerRegsitration;
     private HardwareDriver driver;
@@ -86,8 +86,8 @@ public final class RealHardwareImpl
                             RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                             RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
-                            final RealConnectedDeviceImpl.Factory deviceFactory,
-                            RealListPersistedImpl.Factory<RealConnectedDeviceImpl> devicesFactory) {
+                            final RealDeviceImpl.Factory deviceFactory,
+                            RealListPersistedImpl.Factory<RealDeviceImpl> devicesFactory) {
         super(logger, new Hardware.Data(id, name, description), managedCollectionFactory);
         this.annotationParser = annotationParser;
         this.deviceFactory = deviceFactory;
@@ -205,9 +205,9 @@ public final class RealHardwareImpl
                 Hardware.DEVICES_ID,
                 Hardware.DEVICES_ID,
                 DEVICES_DESCRIPTION,
-                new RealListPersistedImpl.ExistingObjectFactory<RealConnectedDeviceImpl>() {
+                new RealListPersistedImpl.ExistingObjectFactory<RealDeviceImpl>() {
                     @Override
-                    public RealConnectedDeviceImpl create(Logger parentLogger, Object.Data data) {
+                    public RealDeviceImpl create(Logger parentLogger, Object.Data data) {
                         return deviceFactory.create(ChildUtil.logger(logger, Hardware.DEVICES_ID, data.getId()),
                                 data.getId(), data.getName(), data.getDescription());
                     }
@@ -265,10 +265,10 @@ public final class RealHardwareImpl
         errorValue.setValue(null);
         driverLoadedValue.setValue(true);
         if(isRunning())
-            driver.init(logger, this, Iterables.transform(devices, new Function<RealConnectedDeviceImpl, String>() {
+            driver.init(logger, this, Iterables.transform(devices, new Function<RealDeviceImpl, String>() {
                 @Nullable
                 @Override
-                public String apply(@Nullable RealConnectedDeviceImpl realConnectedDevice) {
+                public String apply(@Nullable RealDeviceImpl realConnectedDevice) {
                     return realConnectedDevice.getId();
                 }
             }));
@@ -406,17 +406,17 @@ public final class RealHardwareImpl
     }
 
     @Override
-    public final RealListPersistedImpl<RealConnectedDeviceImpl> getConnectedDevices() {
+    public final RealListPersistedImpl<RealDeviceImpl> getConnectedDevices() {
         return devices;
     }
 
     protected final void _start() {
         try {
             if(driver != null)
-                driver.init(logger, this, Iterables.transform(devices, new Function<RealConnectedDeviceImpl, String>() {
+                driver.init(logger, this, Iterables.transform(devices, new Function<RealDeviceImpl, String>() {
                     @Nullable
                     @Override
-                    public String apply(@Nullable RealConnectedDeviceImpl realConnectedDevice) {
+                    public String apply(@Nullable RealDeviceImpl realConnectedDevice) {
                         return realConnectedDevice.getId();
                     }
                 }));
@@ -443,7 +443,7 @@ public final class RealHardwareImpl
             throw new HousemateException("Object is already added");
 
         // get the device by id
-        RealConnectedDeviceImpl device = devices.get(id);
+        RealDeviceImpl device = devices.get(id);
 
         // if it doesn't exist yet create it
         if(device == null) {
@@ -471,7 +471,7 @@ public final class RealHardwareImpl
 
     @Override
     public void removeConnectedDevice(java.lang.Object object) {
-        RealConnectedDeviceImpl device = objectDevices.remove(object);
+        RealDeviceImpl device = objectDevices.remove(object);
         if(device != null)
             devices.remove(device.getId());
     }

@@ -12,7 +12,7 @@ import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
-import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyConnectedDevice;
+import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyDevice;
 import com.intuso.housemate.client.real.api.internal.RealSystem;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -27,7 +27,7 @@ import javax.jms.JMSException;
 public final class RealSystemImpl
         extends RealObject<System.Data, System.Listener<? super RealSystemImpl>>
         implements RealSystem<RealValueImpl<String>, RealCommandImpl,
-                RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>, RealSystemImpl> {
+                RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>>, RealSystemImpl> {
 
     private final static String PLAYBACK_NAME = "Playback devices";
     private final static String PLAYBACK_DESCRIPTION = "The device's playback devices";
@@ -43,15 +43,15 @@ public final class RealSystemImpl
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> playbackDevices;
+    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> playbackDevices;
     private final RealCommandImpl addPlaybackDeviceCommand;
-    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> powerDevices;
+    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> powerDevices;
     private final RealCommandImpl addPowerDeviceCommand;
-    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> runDevices;
+    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> runDevices;
     private final RealCommandImpl addRunDeviceCommand;
-    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> temperatureSensorDevices;
+    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> temperatureSensorDevices;
     private final RealCommandImpl addTemperatureSensorDeviceCommand;
-    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> volumeDevices;
+    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> volumeDevices;
     private final RealCommandImpl addVolumeDeviceCommand;
 
     private final RemoveCallback<RealSystemImpl> removeCallback;
@@ -71,7 +71,7 @@ public final class RealSystemImpl
                           RealParameterImpl.Factory parameterFactory,
                           RealValueImpl.Factory valueFactory,
                           final RealPropertyImpl.Factory deviceFactory,
-                          RealListPersistedImpl.Factory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> devicesFactory,
+                          RealListPersistedImpl.Factory<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> devicesFactory,
                           final TypeRepository typeRepository) {
         super(logger, new System.Data(id, name, description), managedCollectionFactory);
         this.removeCallback = removeCallback;
@@ -119,10 +119,10 @@ public final class RealSystemImpl
                 PLAYBACK,
                 PLAYBACK_NAME,
                 PLAYBACK_DESCRIPTION,
-                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>() {
+                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>>() {
                     @Override
-                    public RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>> create(Logger parentLogger, Object.Data data) {
-                        return (RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyConnectedDevice.class))), 1, 1, Lists.newArrayList());
+                    public RealPropertyImpl<ObjectReference<SimpleProxyDevice>> create(Logger parentLogger, Object.Data data) {
+                        return (RealPropertyImpl<ObjectReference<SimpleProxyDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyDevice.class))), 1, 1, Lists.newArrayList());
                     }
                 });
         this.addPlaybackDeviceCommand = /* todo */ null;
@@ -130,10 +130,10 @@ public final class RealSystemImpl
                 POWER,
                 POWER_NAME,
                 POWER_DESCRIPTION,
-                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>() {
+                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>>() {
                     @Override
-                    public RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>> create(Logger parentLogger, Object.Data data) {
-                        return (RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyConnectedDevice.class))), 1, 1, Lists.newArrayList());
+                    public RealPropertyImpl<ObjectReference<SimpleProxyDevice>> create(Logger parentLogger, Object.Data data) {
+                        return (RealPropertyImpl<ObjectReference<SimpleProxyDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyDevice.class))), 1, 1, Lists.newArrayList());
                     }
                 });
         this.addPowerDeviceCommand = /* todo */ null;
@@ -141,10 +141,10 @@ public final class RealSystemImpl
                 RUN,
                 RUN_NAME,
                 RUN_DESCRIPTION,
-                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>() {
+                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>>() {
                     @Override
-                    public RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>> create(Logger parentLogger, Object.Data data) {
-                        return (RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyConnectedDevice.class))), 1, 1, Lists.newArrayList());
+                    public RealPropertyImpl<ObjectReference<SimpleProxyDevice>> create(Logger parentLogger, Object.Data data) {
+                        return (RealPropertyImpl<ObjectReference<SimpleProxyDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyDevice.class))), 1, 1, Lists.newArrayList());
                     }
                 });
         this.addRunDeviceCommand = /* todo */ null;
@@ -152,10 +152,10 @@ public final class RealSystemImpl
                 TEMPERATURE_SENSOR,
                 TEMPERATURE_SENSOR_NAME,
                 TEMPERATURE_SENSOR_DESCRIPTION,
-                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>() {
+                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>>() {
                     @Override
-                    public RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>> create(Logger parentLogger, Object.Data data) {
-                        return (RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyConnectedDevice.class))), 1, 1, Lists.newArrayList());
+                    public RealPropertyImpl<ObjectReference<SimpleProxyDevice>> create(Logger parentLogger, Object.Data data) {
+                        return (RealPropertyImpl<ObjectReference<SimpleProxyDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyDevice.class))), 1, 1, Lists.newArrayList());
                     }
                 });
         this.addTemperatureSensorDeviceCommand = /* todo */ null;
@@ -163,10 +163,10 @@ public final class RealSystemImpl
                 VOLUME,
                 VOLUME_NAME,
                 VOLUME_DESCRIPTION,
-                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>() {
+                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>>() {
                     @Override
-                    public RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>> create(Logger parentLogger, Object.Data data) {
-                        return (RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyConnectedDevice.class))), 1, 1, Lists.newArrayList());
+                    public RealPropertyImpl<ObjectReference<SimpleProxyDevice>> create(Logger parentLogger, Object.Data data) {
+                        return (RealPropertyImpl<ObjectReference<SimpleProxyDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyDevice.class))), 1, 1, Lists.newArrayList());
                     }
                 });
         this.addVolumeDeviceCommand = /* todo */ null;
@@ -236,7 +236,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> getPlaybackDevices() {
+    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> getPlaybackDevices() {
         return playbackDevices;
     }
 
@@ -246,7 +246,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> getPowerDevices() {
+    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> getPowerDevices() {
         return powerDevices;
     }
 
@@ -256,7 +256,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> getRunDevices() {
+    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> getRunDevices() {
         return runDevices;
     }
 
@@ -266,7 +266,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> getTemperatureSensorDevices() {
+    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> getTemperatureSensorDevices() {
         return temperatureSensorDevices;
     }
 
@@ -276,7 +276,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> getVolumeDevices() {
+    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> getVolumeDevices() {
         return volumeDevices;
     }
 

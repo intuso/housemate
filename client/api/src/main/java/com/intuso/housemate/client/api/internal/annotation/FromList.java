@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface ConnectedDevice {
+public @interface FromList {
     Class<? extends IdFormatter> value();
 }

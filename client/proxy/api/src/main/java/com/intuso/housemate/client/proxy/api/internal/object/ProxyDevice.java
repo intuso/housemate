@@ -1,6 +1,6 @@
 package com.intuso.housemate.client.proxy.api.internal.object;
 
-import com.intuso.housemate.client.api.internal.object.ConnectedDevice;
+import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.api.internal.ProxyRenameable;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -13,13 +13,13 @@ import javax.jms.JMSException;
  * Base interface for all proxy features
  * @param <FEATURE> the feature type
  */
-public abstract class ProxyConnectedDevice<COMMAND extends ProxyCommand<?, ?, ?>,
+public abstract class ProxyDevice<COMMAND extends ProxyCommand<?, ?, ?>,
         COMMANDS extends ProxyList<? extends ProxyCommand<?, ?, ?>, ?>,
         VALUES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
         PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
-        FEATURE extends ProxyConnectedDevice<COMMAND, COMMANDS, VALUES, PROPERTIES, FEATURE>>
-        extends ProxyObject<ConnectedDevice.Data, ConnectedDevice.Listener<? super FEATURE>>
-        implements ConnectedDevice<COMMAND, COMMANDS, VALUES, PROPERTIES, FEATURE>,
+        FEATURE extends ProxyDevice<COMMAND, COMMANDS, VALUES, PROPERTIES, FEATURE>>
+        extends ProxyObject<Device.Data, Device.Listener<? super FEATURE>>
+        implements Device<COMMAND, COMMANDS, VALUES, PROPERTIES, FEATURE>,
         ProxyRenameable<COMMAND> {
 
     private final COMMAND renameCommand;
@@ -30,13 +30,13 @@ public abstract class ProxyConnectedDevice<COMMAND extends ProxyCommand<?, ?, ?>
     /**
      * @param logger {@inheritDoc}
      */
-    public ProxyConnectedDevice(Logger logger,
-                                ManagedCollectionFactory managedCollectionFactory,
-                                Factory<COMMAND> commandFactory,
-                                Factory<COMMANDS> commandsFactory,
-                                Factory<VALUES> valuesFactory,
-                                Factory<PROPERTIES> propertiesFactory) {
-        super(logger, ConnectedDevice.Data.class, managedCollectionFactory);
+    public ProxyDevice(Logger logger,
+                       ManagedCollectionFactory managedCollectionFactory,
+                       Factory<COMMAND> commandFactory,
+                       Factory<COMMANDS> commandsFactory,
+                       Factory<VALUES> valuesFactory,
+                       Factory<PROPERTIES> propertiesFactory) {
+        super(logger, Device.Data.class, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID));
         values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID));

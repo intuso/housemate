@@ -19,8 +19,8 @@ public class HardwareDriverBridgeReverse implements HardwareDriver {
     }
 
     @Override
-    public void init(Logger logger, Callback callback,Iterable<String> connectedDeviceIds) {
-        hardwareDriver.init(logger, new CallbackBridge(callback), connectedDeviceIds);
+    public void init(Logger logger, Callback callback,Iterable<String> deviceIds) {
+        hardwareDriver.init(logger, new CallbackBridge(callback), deviceIds);
     }
 
     @Override
