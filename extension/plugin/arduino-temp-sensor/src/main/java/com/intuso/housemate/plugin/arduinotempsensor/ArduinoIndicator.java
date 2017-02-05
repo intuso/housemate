@@ -1,10 +1,8 @@
 package com.intuso.housemate.plugin.arduinotempsensor;
 
-import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
-import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
-import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
+import com.intuso.housemate.client.v1_0.api.api.Power;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -14,11 +12,9 @@ import java.io.IOException;
 /**
  */
 @Id(value = "arduino-indicator", name = "Arduino Indicator", description = "Arduino Indicator")
-public class ArduinoIndicator implements FeatureDriver, PowerControl {
+public class ArduinoIndicator implements Power {
 
-    // todo use remote hardware
-
-    private Logger logger;
+    private final Logger logger;
     private final ManagedCollection<Listener> listeners;
     private final SerialPortWrapper serialPort;
 
@@ -32,21 +28,10 @@ public class ArduinoIndicator implements FeatureDriver, PowerControl {
 
     Boolean on = null;
 
-    @Inject
-    protected ArduinoIndicator(SerialPortWrapper serialPort,
-                               ManagedCollectionFactory managedCollectionFactory) {
-        this.listeners = managedCollectionFactory.create();
-        this.serialPort = serialPort;
-    }
-
-    @Override
-    public void init(Logger logger, FeatureDriver.Callback driverCallback) {
+    protected ArduinoIndicator(Logger logger, ManagedCollectionFactory managedCollectionFactory, SerialPortWrapper serialPort) {
         this.logger = logger;
-    }
-
-    @Override
-    public void uninit() {
-        this.logger = null;
+        this.serialPort = serialPort;
+        this.listeners = managedCollectionFactory.create();
     }
 
     @Override

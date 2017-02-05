@@ -2,7 +2,7 @@ package com.intuso.housemate.extension.android.widget.handler;
 
 import android.widget.RemoteViews;
 import android.widget.Toast;
-import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
+import com.intuso.housemate.client.v1_0.api.api.Power;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.extension.android.widget.R;
@@ -18,22 +18,22 @@ import com.intuso.utilities.collection.ManagedCollection;
  * To change this template use File | Settings | File Templates.
  */
 public class StatefulPowerControlWidgetHandler
-        extends WidgetHandler<PowerControl>
+        extends WidgetHandler<Power>
         implements Command.PerformListener<AndroidProxyCommand> {
 
     private ManagedCollection.Registration listenerRegistration;
 
     public StatefulPowerControlWidgetHandler(WidgetService widgetService, ProxyWrapper proxyWrapper, String deviceId) {
-        super(widgetService, proxyWrapper, deviceId, PowerControl.class);
+        super(widgetService, proxyWrapper, deviceId, Power.class);
     }
 
     @Override
     public String getFeatureId() {
-        return PowerControl.ID;
+        return Power.ID;
     }
 
     protected void init() {
-        listenerRegistration = getFeature().addListener(new PowerControl.Listener() {
+        listenerRegistration = getFeature().addListener(new Power.Listener() {
             @Override
             public void on(Boolean isOn) {
                 updateWidget();

@@ -21,7 +21,7 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
 
     private final String idFormat, nameFormat, descriptionFormat;
 
-    private final Map<Byte, Map<Byte, PowerControlImpl>> devices = Maps.newHashMap();
+    private final Map<Byte, Map<Byte, PowerImpl>> devices = Maps.newHashMap();
 
     protected Lighting1Handler(ManagedCollectionFactory managedCollectionFactory,
                                RFXtrx rfXtrx,
@@ -45,7 +45,7 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
 
     @Override
     public void turnedOn(byte houseCode, byte unitCode) {
-        PowerControlImpl device = getOrCreate(houseCode, unitCode);
+        PowerImpl device = getOrCreate(houseCode, unitCode);
         if(device != null)
             device.setOn(true);
     }
@@ -53,13 +53,13 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
     @Override
     public void turnedOnAll(byte houseCode) {
         if(devices.containsKey(houseCode))
-            for(PowerControlImpl device : devices.get(houseCode).values())
+            for(PowerImpl device : devices.get(houseCode).values())
                 device.setOn(true);
     }
 
     @Override
     public void turnedOff(byte houseCode, byte unitCode) {
-        PowerControlImpl device = getOrCreate(houseCode, unitCode);
+        PowerImpl device = getOrCreate(houseCode, unitCode);
         if(device != null)
             device.setOn(false);
     }
@@ -67,7 +67,7 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
     @Override
     public void turnedOffAll(byte houseCode) {
         if(devices.containsKey(houseCode))
-            for(PowerControlImpl device : devices.get(houseCode).values())
+            for(PowerImpl device : devices.get(houseCode).values())
                 device.setOn(false);
     }
 
@@ -91,7 +91,7 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
         addDevice(Byte.parseByte(details.split("-")[0]), Byte.parseByte(details.split("-")[1]));
     }
 
-    private PowerControlImpl getOrCreate(byte houseCode, byte unitCode) {
+    private PowerImpl getOrCreate(byte houseCode, byte unitCode) {
         if(devices.containsKey(houseCode) && devices.get(houseCode).containsKey(unitCode))
             return devices.get(houseCode).get(unitCode);
         else if(autoCreate)
@@ -99,10 +99,10 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
         return null;
     }
 
-    public PowerControlImpl addDevice(byte houseCode, byte unitCode) {
-        PowerControlImpl device = new PowerControlImpl(managedCollectionFactory, houseCode, unitCode);
+    public PowerImpl addDevice(byte houseCode, byte unitCode) {
+        PowerImpl device = new PowerImpl(managedCollectionFactory, houseCode, unitCode);
         if(!devices.containsKey(houseCode))
-            devices.put(houseCode, Maps.<Byte, PowerControlImpl>newHashMap());
+            devices.put(houseCode, Maps.<Byte, PowerImpl>newHashMap());
         devices.get(houseCode).put(unitCode, device);
         hardwareCallback.addConnectedDevice(
                 idFormat.replaceAll("\\$\\{houseCode\\}", Byte.toString(houseCode)).replaceAll("\\$\\{unitCode\\}", Byte.toString(unitCode)),
@@ -114,19 +114,19 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
 
     public void removeDevice(byte houseCode, byte unitCode) {
         if(devices.containsKey(houseCode) && devices.get(houseCode).containsKey(unitCode)) {
-            PowerControlImpl device = devices.get(houseCode).remove(unitCode);
+            PowerImpl device = devices.get(houseCode).remove(unitCode);
             if(devices.get(houseCode).size() == 0)
                 devices.remove(houseCode);
             hardwareCallback.removeConnectedDevice(device);
         }
     }
 
-    public class PowerControlImpl extends PowerControlBase {
+    public class PowerImpl extends PowerBase {
 
         private final byte houseCode;
         private final byte unitCode;
 
-        public PowerControlImpl(ManagedCollectionFactory managedCollectionFactory, byte houseCode, byte unitCode) {
+        public PowerImpl(ManagedCollectionFactory managedCollectionFactory, byte houseCode, byte unitCode) {
             super(managedCollectionFactory);
             this.houseCode = houseCode;
             this.unitCode = unitCode;

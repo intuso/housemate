@@ -3,15 +3,18 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.internal.*;
-import com.intuso.housemate.client.api.internal.Runnable;
+import com.google.inject.util.Types;
+import com.intuso.housemate.client.api.internal.Failable;
+import com.intuso.housemate.client.api.internal.Removeable;
+import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyConnectedDevice;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
-import com.intuso.housemate.client.real.impl.internal.utils.AddFeatureCommand;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -23,20 +26,33 @@ import javax.jms.JMSException;
  */
 public final class RealDeviceImpl
         extends RealObject<Device.Data, Device.Listener<? super RealDeviceImpl>>
-        implements RealDevice<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealFeatureImpl, RealListPersistedImpl<RealFeatureImpl>, RealDeviceImpl>,
-        AddFeatureCommand.Callback {
+        implements RealDevice<RealValueImpl<String>, RealCommandImpl,
+        RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>, RealDeviceImpl> {
 
-    private final static String FEATURES_DESCRIPTION = "The device's features";
+    private final static String PLAYBACK_NAME = "Playback devices";
+    private final static String PLAYBACK_DESCRIPTION = "The device's playback devices";
+    private final static String POWER_NAME = "Power devices";
+    private final static String POWER_DESCRIPTION = "The device's power devices";
+    private final static String RUN_NAME = "Run devices";
+    private final static String RUN_DESCRIPTION = "The device's run devices";
+    private final static String TEMPERATURE_SENSOR_NAME = "Temperature sensor devices";
+    private final static String TEMPERATURE_SENSOR_DESCRIPTION = "The device's temperature sensor devices";
+    private final static String VOLUME_NAME = "Volume devices";
+    private final static String VOLUME_DESCRIPTION = "The device's volume devices";
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
-    private final RealValueImpl<Boolean> runningValue;
-    private final RealCommandImpl startCommand;
-    private final RealCommandImpl stopCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealListPersistedImpl<RealFeatureImpl> features;
-    private final RealCommandImpl addFeatureCommand;
+    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> playbackDevices;
+    private final RealCommandImpl addPlaybackDeviceCommand;
+    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> powerDevices;
+    private final RealCommandImpl addPowerDeviceCommand;
+    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> runDevices;
+    private final RealCommandImpl addRunDeviceCommand;
+    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> temperatureSensorDevices;
+    private final RealCommandImpl addTemperatureSensorDeviceCommand;
+    private final RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> volumeDevices;
+    private final RealCommandImpl addVolumeDeviceCommand;
 
     private final RemoveCallback<RealDeviceImpl> removeCallback;
 
@@ -54,10 +70,9 @@ public final class RealDeviceImpl
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
                           RealValueImpl.Factory valueFactory,
-                          final RealFeatureImpl.Factory featureFactory,
-                          RealListPersistedImpl.Factory<RealFeatureImpl> featuresFactory,
-                          AddFeatureCommand.Factory addFeatureCommandFactory,
-                          TypeRepository typeRepository) {
+                          final RealPropertyImpl.Factory deviceFactory,
+                          RealListPersistedImpl.Factory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> devicesFactory,
+                          final TypeRepository typeRepository) {
         super(logger, new Device.Data(id, name, description), managedCollectionFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -88,45 +103,7 @@ public final class RealDeviceImpl
                 new RealCommandImpl.Performer() {
                     @Override
                     public void perform(Type.InstanceMap values) {
-                        if(isRunning())
-                            throw new HousemateException("Cannot remove while device is still running");
                         remove();
-                    }
-                },
-                Lists.<RealParameterImpl<?>>newArrayList());
-        this.runningValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID),
-                Runnable.RUNNING_ID,
-                Runnable.RUNNING_ID,
-                "Whether the device is running or not",
-                typeRepository.getType(new TypeSpec(Boolean.class)),
-                1,
-                1,
-                Lists.newArrayList(false));
-        this.startCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.START_ID),
-                Runnable.START_ID,
-                Runnable.START_ID,
-                "Start the device",
-                new RealCommandImpl.Performer() {
-                    @Override
-                    public void perform(Type.InstanceMap values) {
-                        if(!isRunning()) {
-                            _start();
-                            runningValue.setValue(true);
-                        }
-                    }
-                },
-                Lists.<RealParameterImpl<?>>newArrayList());
-        this.stopCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.STOP_ID),
-                Runnable.STOP_ID,
-                Runnable.STOP_ID,
-                "Stop the device",
-                new RealCommandImpl.Performer() {
-                    @Override
-                    public void perform(Type.InstanceMap values) {
-                        if(isRunning()) {
-                            _stop();
-                            runningValue.setValue(false);
-                        }
                     }
                 },
                 Lists.<RealParameterImpl<?>>newArrayList());
@@ -138,52 +115,97 @@ public final class RealDeviceImpl
                 1,
                 1,
                 Lists.<String>newArrayList());
-        this.features = featuresFactory.create(ChildUtil.logger(logger, Device.FEATURES_ID),
-                Device.FEATURES_ID,
-                Device.FEATURES_ID,
-                FEATURES_DESCRIPTION,
-                new RealListPersistedImpl.ExistingObjectFactory<RealFeatureImpl>() {
+        this.playbackDevices = devicesFactory.create(ChildUtil.logger(logger, PLAYBACK),
+                PLAYBACK,
+                PLAYBACK_NAME,
+                PLAYBACK_DESCRIPTION,
+                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>() {
                     @Override
-                    public RealFeatureImpl create(Logger parentLogger, Object.Data data) {
-                        return featureFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealDeviceImpl.this);
+                    public RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>> create(Logger parentLogger, Object.Data data) {
+                        return (RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyConnectedDevice.class))), 1, 1, Lists.newArrayList());
                     }
                 });
-        this.addFeatureCommand = addFeatureCommandFactory.create(ChildUtil.logger(logger, ADD_FEATURE_ID),
-                ChildUtil.logger(logger, ADD_FEATURE_ID),
-                ADD_FEATURE_ID,
-                ADD_FEATURE_ID,
-                "Add user",
-                this,
-                this);
+        this.addPlaybackDeviceCommand = /* todo */ null;
+        this.powerDevices = devicesFactory.create(ChildUtil.logger(logger, POWER),
+                POWER,
+                POWER_NAME,
+                POWER_DESCRIPTION,
+                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>() {
+                    @Override
+                    public RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>> create(Logger parentLogger, Object.Data data) {
+                        return (RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyConnectedDevice.class))), 1, 1, Lists.newArrayList());
+                    }
+                });
+        this.addPowerDeviceCommand = /* todo */ null;
+        this.runDevices = devicesFactory.create(ChildUtil.logger(logger, RUN),
+                RUN,
+                RUN_NAME,
+                RUN_DESCRIPTION,
+                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>() {
+                    @Override
+                    public RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>> create(Logger parentLogger, Object.Data data) {
+                        return (RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyConnectedDevice.class))), 1, 1, Lists.newArrayList());
+                    }
+                });
+        this.addRunDeviceCommand = /* todo */ null;
+        this.temperatureSensorDevices = devicesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR),
+                TEMPERATURE_SENSOR,
+                TEMPERATURE_SENSOR_NAME,
+                TEMPERATURE_SENSOR_DESCRIPTION,
+                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>() {
+                    @Override
+                    public RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>> create(Logger parentLogger, Object.Data data) {
+                        return (RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyConnectedDevice.class))), 1, 1, Lists.newArrayList());
+                    }
+                });
+        this.addTemperatureSensorDeviceCommand = /* todo */ null;
+        this.volumeDevices = devicesFactory.create(ChildUtil.logger(logger, VOLUME),
+                VOLUME,
+                VOLUME_NAME,
+                VOLUME_DESCRIPTION,
+                new RealListPersistedImpl.ExistingObjectFactory<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>>() {
+                    @Override
+                    public RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>> create(Logger parentLogger, Object.Data data) {
+                        return (RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>) deviceFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyConnectedDevice.class))), 1, 1, Lists.newArrayList());
+                    }
+                });
+        this.addVolumeDeviceCommand = /* todo */ null;
     }
 
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
-        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), connection);
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
-        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        features.init(ChildUtil.name(name, Device.FEATURES_ID), connection);
-        addFeatureCommand.init(ChildUtil.name(name, ADD_FEATURE_ID), connection);
-        if(isRunning())
-            _start();
+        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
+        errorValue.init(ChildUtil.name(name, ERROR_ID), connection);
+        playbackDevices.init(ChildUtil.name(name, PLAYBACK), connection);
+        addPlaybackDeviceCommand.init(ChildUtil.name(name, ADD_PLAYBACK), connection);
+        powerDevices.init(ChildUtil.name(name, POWER_DESCRIPTION), connection);
+        addPowerDeviceCommand.init(ChildUtil.name(name, ADD_POWER), connection);
+        runDevices.init(ChildUtil.name(name, RUN_DESCRIPTION), connection);
+        addRunDeviceCommand.init(ChildUtil.name(name, ADD_RUN), connection);
+        temperatureSensorDevices.init(ChildUtil.name(name, TEMPERATURE_SENSOR), connection);
+        addTemperatureSensorDeviceCommand.init(ChildUtil.name(name, ADD_TEMPERATURE_SENSOR), connection);
+        volumeDevices.init(ChildUtil.name(name, VOLUME), connection);
+        addVolumeDeviceCommand.init(ChildUtil.name(name, ADD_VOLUME), connection);
     }
 
     @Override
     protected void uninitChildren() {
-        _stop();
         super.uninitChildren();
         renameCommand.uninit();
         removeCommand.uninit();
-        runningValue.uninit();
-        startCommand.uninit();
-        stopCommand.uninit();
         errorValue.uninit();
-        features.uninit();
-        addFeatureCommand.uninit();
+        playbackDevices.uninit();
+        addPlaybackDeviceCommand.uninit();
+        powerDevices.uninit();
+        addPowerDeviceCommand.uninit();
+        runDevices.uninit();
+        addRunDeviceCommand.uninit();
+        temperatureSensorDevices.uninit();
+        addTemperatureSensorDeviceCommand.uninit();
+        volumeDevices.uninit();
+        addVolumeDeviceCommand.uninit();
     }
 
     private void setName(String newName) {
@@ -209,57 +231,58 @@ public final class RealDeviceImpl
         return errorValue;
     }
 
-    @Override
-    public RealCommandImpl getStopCommand() {
-        return stopCommand;
-    }
-
-    @Override
-    public RealCommandImpl getStartCommand() {
-        return startCommand;
-    }
-
-    @Override
-    public RealValueImpl<Boolean> getRunningValue() {
-        return runningValue;
-    }
-
-    public boolean isRunning() {
-        return runningValue.getValue() != null ? runningValue.getValue() : false;
-    }
-
     protected final void remove() {
         removeCallback.removeDevice(this);
     }
 
     @Override
-    public RealListPersistedImpl<RealFeatureImpl> getFeatures() {
-        return features;
+    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> getPlaybackDevices() {
+        return playbackDevices;
     }
 
     @Override
-    public RealCommandImpl getAddFeatureCommand() {
-        return addFeatureCommand;
+    public RealCommandImpl getAddPlaybackDeviceCommand() {
+        return addPlaybackDeviceCommand;
     }
 
     @Override
-    public void addFeature(RealFeatureImpl feature) {
-        features.add(feature);
+    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> getPowerDevices() {
+        return powerDevices;
     }
 
     @Override
-    public void removeFeature(RealFeatureImpl feature) {
-        features.remove(feature.getId());
+    public RealCommandImpl getAddPowerDeviceCommand() {
+        return addPowerDeviceCommand;
     }
 
-    protected final void _start() {
-        for(RealFeatureImpl feature : features)
-            feature._start();
+    @Override
+    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> getRunDevices() {
+        return runDevices;
     }
 
-    protected final void _stop() {
-        for(RealFeatureImpl feature : features)
-            feature._stop();
+    @Override
+    public RealCommandImpl getAddRunDeviceCommand() {
+        return addRunDeviceCommand;
+    }
+
+    @Override
+    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> getTemperatureSensorDevices() {
+        return temperatureSensorDevices;
+    }
+
+    @Override
+    public RealCommandImpl getAddTemperatureSensorDeviceCommand() {
+        return addTemperatureSensorDeviceCommand;
+    }
+
+    @Override
+    public RealListPersistedImpl<RealPropertyImpl<ObjectReference<SimpleProxyConnectedDevice>>> getVolumeDevices() {
+        return volumeDevices;
+    }
+
+    @Override
+    public RealCommandImpl getAddVolumeDeviceCommand() {
+        return addVolumeDeviceCommand;
     }
 
     public interface Factory {

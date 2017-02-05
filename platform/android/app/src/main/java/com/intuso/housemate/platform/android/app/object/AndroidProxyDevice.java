@@ -12,15 +12,15 @@ import org.slf4j.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class AndroidProxyDevice extends ProxyDevice<
-        AndroidProxyCommand,
         AndroidProxyValue,
-        AndroidProxyList<AndroidProxyFeature>,
+        AndroidProxyCommand,
+        AndroidProxyList<AndroidProxyProperty>,
         AndroidProxyDevice> {
 
     /**
      * @param logger  {@inheritDoc}
      */
     protected AndroidProxyDevice(Logger logger, ManagedCollectionFactory managedCollectionFactory, AndroidObjectFactories factories) {
-        super(logger, managedCollectionFactory, factories.command(), factories.value(), factories.features());
+        super(logger, managedCollectionFactory, factories.value(), factories.command(), factories.properties());
     }
 }

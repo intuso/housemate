@@ -3,9 +3,9 @@ package com.intuso.housemate.plugin.tvremote;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
 import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
-import com.intuso.housemate.client.v1_0.api.feature.PlaybackControl;
-import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
-import com.intuso.housemate.client.v1_0.api.feature.VolumeControl;
+import com.intuso.housemate.client.v1_0.api.api.Playback;
+import com.intuso.housemate.client.v1_0.api.api.Power;
+import com.intuso.housemate.client.v1_0.api.api.Volume;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -13,11 +13,11 @@ import org.slf4j.Logger;
 import java.io.IOException;
 
 @Id(value = "tv-remote", name = "TV Remote", description = "TV Remote")
-public class TVRemote implements FeatureDriver, PowerControl, PlaybackControl, VolumeControl {
+public class TVRemote implements FeatureDriver, Power, Playback, Volume {
 
-    private final ManagedCollection<PowerControl.Listener> powerListeners;
-    private final ManagedCollection<PlaybackControl.Listener> playbackListeners;
-    private final ManagedCollection<VolumeControl.Listener> volumeListeners;
+    private final ManagedCollection<Power.Listener> powerListeners;
+    private final ManagedCollection<Playback.Listener> playbackListeners;
+    private final ManagedCollection<Volume.Listener> volumeListeners;
 
     public TVRemote(ManagedCollectionFactory managedCollectionFactory) {
         this.powerListeners = managedCollectionFactory.create();
@@ -36,19 +36,19 @@ public class TVRemote implements FeatureDriver, PowerControl, PlaybackControl, V
     public void uninit() {}
 
     @Override
-    public ManagedCollection.Registration addListener(PowerControl.Listener listener) {
+    public ManagedCollection.Registration addListener(Power.Listener listener) {
         listener.on(null);
         return powerListeners.add(listener);
     }
 
     @Override
-    public ManagedCollection.Registration addListener(PlaybackControl.Listener listener) {
+    public ManagedCollection.Registration addListener(Playback.Listener listener) {
         listener.speed(null);
         return playbackListeners.add(listener);
     }
 
     @Override
-    public ManagedCollection.Registration addListener(VolumeControl.Listener listener) {
+    public ManagedCollection.Registration addListener(Volume.Listener listener) {
         listener.muted(null);
         listener.volume(null);
         return volumeListeners.add(listener);

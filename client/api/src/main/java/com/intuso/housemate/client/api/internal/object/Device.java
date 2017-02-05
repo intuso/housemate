@@ -12,38 +12,51 @@ import com.intuso.housemate.client.api.internal.Runnable;
  * @param <DEVICE> the type of the device
  */
 public interface Device<
-        COMMAND extends Command<?, ?, ?, ?>,
-        RUNNING_VALUE extends Value<?, ?, ?>,
         ERROR_VALUE extends Value<?, ?, ?>,
-        FEATURES extends List<? extends Feature<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
-        DEVICE extends Device<COMMAND, RUNNING_VALUE, ERROR_VALUE, FEATURES, DEVICE>>
+        COMMAND extends Command<?, ?, ?, ?>,
+        DEVICES extends List<? extends Property<?, ?, ?, ?>, ?>,
+        DEVICE extends Device<ERROR_VALUE, COMMAND, DEVICES, DEVICE>>
         extends
         Object<Device.Listener<? super DEVICE>>,
         Renameable<COMMAND>,
-        Runnable<COMMAND, RUNNING_VALUE>,
         Failable<ERROR_VALUE>,
-        Removeable<COMMAND>,
-        Feature.Container<FEATURES> {
+        Removeable<COMMAND> {
 
-    String FEATURES_ID = "feature";
-    String ADD_FEATURE_ID = "add-feature";
+    String PLAYBACK = "playback";
+    String ADD_PLAYBACK = "add-playback";
+    String POWER = "power";
+    String ADD_POWER = "add-power";
+    String RUN = "run";
+    String ADD_RUN = "add-run";
+    String TEMPERATURE_SENSOR = "temperature-sensor";
+    String ADD_TEMPERATURE_SENSOR = "add-temperature-sensor";
+    String VOLUME = "volume";
+    String ADD_VOLUME = "add-volume";
 
-    COMMAND getAddFeatureCommand();
+    DEVICES getPlaybackDevices();
+    COMMAND getAddPlaybackDeviceCommand();
+    DEVICES getPowerDevices();
+    COMMAND getAddPowerDeviceCommand();
+    DEVICES getRunDevices();
+    COMMAND getAddTemperatureSensorDeviceCommand();
+    DEVICES getTemperatureSensorDevices();
+    COMMAND getAddRunDeviceCommand();
+    DEVICES getVolumeDevices();
+    COMMAND getAddVolumeDeviceCommand();
 
     /**
      *
      * Listener interface for devices
      */
-    interface Listener<DEVICE extends Device<?, ?, ?, ?, ?>> extends Object.Listener,
+    interface Listener<DEVICE extends Device<?, ?, ?, ?>> extends Object.Listener,
             Failable.Listener<DEVICE>,
-            Renameable.Listener<DEVICE>,
-            Runnable.Listener<DEVICE> {}
+            Renameable.Listener<DEVICE> {}
 
     /**
      *
      * Interface to show that the implementing object has a list of devices
      */
-    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?, ?>, ?>> {
+    interface Container<DEVICES extends List<? extends Device<?, ?, ?, ?>, ?>> {
 
         /**
          * Gets the devices list

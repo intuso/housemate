@@ -2,7 +2,6 @@ package com.intuso.housemate.client.api.internal.plugin;
 
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.client.api.internal.driver.FeatureDriver;
 import com.intuso.housemate.client.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.api.internal.driver.TaskDriver;
 
@@ -17,7 +16,6 @@ public interface Plugin {
     Iterable<IntegerRangeType> getIntegerRangeTypes();
     Iterable<RegexType> getRegexTypes();
     Iterable<Class<? extends ConditionDriver>> getConditionDrivers();
-    Iterable<Class<? extends FeatureDriver>> getFeatureDrivers();
     Iterable<Class<? extends HardwareDriver>> getHardwareDrivers();
     Iterable<Class<? extends TaskDriver>> getTaskDrivers();
 }

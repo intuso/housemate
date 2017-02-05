@@ -1,4 +1,4 @@
-package com.intuso.housemate.client.api.internal.feature;
+package com.intuso.housemate.client.api.internal.api;
 
 import com.intuso.housemate.client.api.internal.annotation.AddListener;
 import com.intuso.housemate.client.api.internal.annotation.Id;

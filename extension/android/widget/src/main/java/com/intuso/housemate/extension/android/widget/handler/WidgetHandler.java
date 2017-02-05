@@ -1,10 +1,9 @@
 package com.intuso.housemate.extension.android.widget.handler;
 
-import com.intuso.housemate.client.v1_0.api.feature.PowerControl;
+import com.intuso.housemate.client.v1_0.api.api.Power;
 import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyDevice;
-import com.intuso.housemate.platform.android.app.object.AndroidProxyFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,7 @@ public abstract class WidgetHandler<FEATURE> {
     private FEATURE feature;
 
     public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, ProxyWrapper proxyFeatureFactory, String deviceId, String featureId) {
-        if(featureId.equals(PowerControl.ID))
+        if(featureId.equals(Power.ID))
             return new StatefulPowerControlWidgetHandler(widgetService, proxyFeatureFactory, deviceId);
         return null;
     }
@@ -94,13 +93,13 @@ public abstract class WidgetHandler<FEATURE> {
     private void loadData() {
         device = widgetService.getServer().getDevices().get(deviceId);
         if (device != null) {
-            AndroidProxyFeature proxyFeature = device.getFeatures().get(getFeatureId());
-            if(proxyFeature != null) {
-                feature = proxyWrapper.build(proxyFeature, featureClass, "", 3000L);
-                init();
-                status = Status.READY;
-                updateWidget();
-            } else
+            // todo
+//            AndroidProxyFeature proxyFeature = device.getFeatures().get(getFeatureId());
+//            if(proxyFeature != null) {
+//                feature = proxyWrapper.build(proxyFeature, featureClass, "", 3000L);
+//                init();
+//                status = Status.READY;
+//            } else
                 status = Status.NO_FEATURE;
         } else
             status = Status.NO_DEVICE;

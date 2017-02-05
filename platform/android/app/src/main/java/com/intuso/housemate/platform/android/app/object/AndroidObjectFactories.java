@@ -21,8 +21,6 @@ public class AndroidObjectFactories {
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyConnectedDevice>> connectedDevices = new ConnectedDevices();
     private final ProxyObject.Factory<AndroidProxyDevice> device = new Device();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyDevice>> devices = new Devices();
-    private final ProxyObject.Factory<AndroidProxyFeature> feature = new Feature();
-    private final ProxyObject.Factory<AndroidProxyList<AndroidProxyFeature>> features = new Features();
     private final ProxyObject.Factory<AndroidProxyHardware> hardware = new Hardware();
     private final ProxyObject.Factory<AndroidProxyList<AndroidProxyHardware>> hardwares = new Hardwares();
     private final ProxyObject.Factory<AndroidProxyNode> node = new Node();
@@ -86,14 +84,6 @@ public class AndroidObjectFactories {
 
     public ProxyObject.Factory<AndroidProxyList<AndroidProxyDevice>> devices() {
         return devices;
-    }
-
-    public ProxyObject.Factory<AndroidProxyFeature> feature() {
-        return feature;
-    }
-
-    public ProxyObject.Factory<AndroidProxyList<AndroidProxyFeature>> features() {
-        return features;
     }
 
     public ProxyObject.Factory<AndroidProxyHardware> hardware() {
@@ -253,22 +243,6 @@ public class AndroidObjectFactories {
         @Override
         public AndroidProxyList<AndroidProxyDevice> create(Logger logger) {
             return new AndroidProxyList<>(logger, managedCollectionFactory, device);
-        }
-    }
-
-    public class Feature implements ProxyObject.Factory<AndroidProxyFeature> {
-
-        @Override
-        public AndroidProxyFeature create(Logger logger) {
-            return new AndroidProxyFeature(logger, managedCollectionFactory, AndroidObjectFactories.this);
-        }
-    }
-
-    public class Features implements ProxyObject.Factory<AndroidProxyList<AndroidProxyFeature>> {
-
-        @Override
-        public AndroidProxyList<AndroidProxyFeature> create(Logger logger) {
-            return new AndroidProxyList<>(logger, managedCollectionFactory, feature);
         }
     }
 

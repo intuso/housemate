@@ -2,8 +2,8 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
-import com.intuso.housemate.client.v1_0.api.driver.FeatureDriver;
-import com.intuso.housemate.client.v1_0.api.feature.TemperatureSensor;
+import com.intuso.housemate.client.v1_0.api.api.TemperatureSensor;
+import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import jssc.SerialPort;
@@ -17,44 +17,38 @@ import java.io.*;
  */
 
 @Id(value = "arduino-temp-sensor", name = "Arduino Temperature Sensor", description = "Arduino Temperature Sensor")
-public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSensor {
+public class ArduinoTemperatureSensor implements TemperatureSensor {
 
-    private Logger logger;
+    private final Logger logger;
     private final ManagedCollection<Listener> listeners;
     private final SerialPortWrapper serialPort;
     private final SerialPortEventListener eventListener = new EventListener();
 
-    private PipedInputStream input;
-    private PipedOutputStream output;
-    private BufferedReader in;
-    private LineReader lineReader;
+    private final PipedInputStream input;
+    private final PipedOutputStream output;
+    private final BufferedReader in;
+    private final LineReader lineReader;
 
     private Double temperature = null;
 
     @Inject
-    protected ArduinoTemperatureSensor(SerialPortWrapper serialPort,
-                                       ManagedCollectionFactory managedCollectionFactory) {
-        this.serialPort = serialPort;
-        this.listeners = managedCollectionFactory.create();
-    }
-
-    @Override
-    public void init(Logger logger, FeatureDriver.Callback callback) {
+    protected ArduinoTemperatureSensor(Logger logger, ManagedCollectionFactory managedCollectionFactory, SerialPortWrapper serialPort) {
         this.logger = logger;
+        this.listeners = managedCollectionFactory.create();
+        this.serialPort = serialPort;
         try {
             serialPort.addEventListener(eventListener, SerialPort.MASK_RXCHAR);
             input = new PipedInputStream();
             output = new PipedOutputStream(input);
             in = new BufferedReader(new InputStreamReader(input));
         } catch(IOException e) {
-            throw new FeatureException("Failed to set up Arduino connection for reading data", e);
+            throw new HardwareDriver.HardwareException("Failed to set up Arduino connection for reading data", e);
         }
         lineReader = new LineReader();
         lineReader.start();
     }
 
-    @Override
-    public void uninit() {
+    public void stop() {
         try {
             serialPort.removeEventListener();
         } catch(IOException e) {
@@ -67,9 +61,7 @@ public class ArduinoTemperatureSensor implements FeatureDriver, TemperatureSenso
             } catch(InterruptedException e) {
                 logger.error("Interrupted waiting for reader to finish", e);
             }
-            lineReader = null;
         }
-        this.logger = null;
     }
 
     @Override

@@ -39,7 +39,6 @@ public final class TypeRepository implements TypeSerialiser.Repository {
                           HardwareV1_0Type hardwareV1_0Type,
                           // factory types
                           ConditionDriverType conditionDriverType,
-                          FeatureDriverType featureDriverType,
                           HardwareDriverType hardwareDriverType,
                           TaskDriverType taskDriverType) {
         typeAvailable(new TypeSpec(Boolean.class), booleanType);
@@ -55,7 +54,6 @@ public final class TypeRepository implements TypeSerialiser.Repository {
         typeAvailable(new TypeSpec(Types.newParameterizedType(ObjectReference.class, SimpleProxyHardware.class)), hardwareType);
         typeAvailable(new TypeSpec(Types.newParameterizedType(com.intuso.housemate.client.v1_0.api.type.ObjectReference.class, com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyHardware.class)), hardwareV1_0Type);
         typeAvailable(new TypeSpec(Types.newParameterizedType(PluginDependency.class, ConditionDriver.class)), conditionDriverType);
-        typeAvailable(new TypeSpec(Types.newParameterizedType(PluginDependency.class, FeatureDriver.class)), featureDriverType);
         typeAvailable(new TypeSpec(Types.newParameterizedType(PluginDependency.class, HardwareDriver.class)), hardwareDriverType);
         typeAvailable(new TypeSpec(Types.newParameterizedType(PluginDependency.class, TaskDriver.class)), taskDriverType);
     }

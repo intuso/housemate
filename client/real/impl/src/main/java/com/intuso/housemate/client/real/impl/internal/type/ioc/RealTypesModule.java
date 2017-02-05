@@ -24,7 +24,6 @@ public class RealTypesModule extends AbstractModule {
 
         // bind singletons
         bind(ConditionDriverType.class).in(Scopes.SINGLETON);
-        bind(FeatureDriverType.class).in(Scopes.SINGLETON);
         bind(HardwareDriverType.class).in(Scopes.SINGLETON);
         bind(TaskDriverType.class).in(Scopes.SINGLETON);
         bind(TypeRepository.class).in(Scopes.SINGLETON);

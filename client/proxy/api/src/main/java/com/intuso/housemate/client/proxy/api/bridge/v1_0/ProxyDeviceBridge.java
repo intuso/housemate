@@ -3,10 +3,6 @@ package com.intuso.housemate.client.proxy.api.bridge.v1_0;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.DeviceMapper;
-import com.intuso.housemate.client.api.internal.Failable;
-import com.intuso.housemate.client.api.internal.Removeable;
-import com.intuso.housemate.client.api.internal.Renameable;
-import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.proxy.api.internal.ChildUtil;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -21,39 +17,46 @@ import javax.jms.JMSException;
 public class ProxyDeviceBridge
         extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Device.Data, Device.Data, Device.Listener<? super ProxyDeviceBridge>>
         implements Device<
+        ProxyValueBridge,
         ProxyCommandBridge,
-        ProxyValueBridge,
-        ProxyValueBridge,
-        ProxyListBridge<ProxyFeatureBridge>,
+        ProxyListBridge<ProxyPropertyBridge>,
         ProxyDeviceBridge> {
 
     private final ProxyCommandBridge renameCommand;
     private final ProxyCommandBridge removeCommand;
-    private final ProxyValueBridge runningValue;
-    private final ProxyCommandBridge startCommand;
-    private final ProxyCommandBridge stopCommand;
     private final ProxyValueBridge errorValue;
-    private final ProxyListBridge<ProxyFeatureBridge> features;
-    private final ProxyCommandBridge addFeatureCommand;
+    private final ProxyListBridge<ProxyPropertyBridge> playbackDevices;
+    private final ProxyCommandBridge addPlaybackDeviceCommand;
+    private final ProxyListBridge<ProxyPropertyBridge> powerDevices;
+    private final ProxyCommandBridge addPowerDeviceCommand;
+    private final ProxyListBridge<ProxyPropertyBridge> runDevices;
+    private final ProxyCommandBridge addRunDeviceCommand;
+    private final ProxyListBridge<ProxyPropertyBridge> temperatureSensorDevices;
+    private final ProxyCommandBridge addTemperatureSensorDeviceCommand;
+    private final ProxyListBridge<ProxyPropertyBridge> volumeDevices;
+    private final ProxyCommandBridge addVolumeDeviceCommand;
 
     @Inject
     protected ProxyDeviceBridge(@Assisted Logger logger,
                                 DeviceMapper deviceMapper,
                                 Factory<ProxyCommandBridge> commandFactory,
                                 Factory<ProxyValueBridge> valueFactory,
-                                Factory<ProxyPropertyBridge> propertyFactory,
                                 Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
-                                Factory<ProxyListBridge<ProxyFeatureBridge>> featuresFactory,
                                 ManagedCollectionFactory managedCollectionFactory) {
         super(logger, Device.Data.class, deviceMapper, managedCollectionFactory);
-        renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
-        removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
-        runningValue = valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID));
-        startCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.START_ID));
-        stopCommand = commandFactory.create(ChildUtil.logger(logger, Runnable.STOP_ID));
-        errorValue = valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID));
-        features = featuresFactory.create(ChildUtil.logger(logger, Device.FEATURES_ID));
-        addFeatureCommand = commandFactory.create(ChildUtil.logger(logger, Device.ADD_FEATURE_ID));
+        renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
+        removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
+        errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
+        playbackDevices = propertiesFactory.create(ChildUtil.logger(logger, PLAYBACK));
+        addPlaybackDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_PLAYBACK));
+        powerDevices = propertiesFactory.create(ChildUtil.logger(logger, POWER));
+        addPowerDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_POWER));
+        runDevices = propertiesFactory.create(ChildUtil.logger(logger, RUN));
+        addRunDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_RUN));
+        temperatureSensorDevices = propertiesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR));
+        addTemperatureSensorDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_TEMPERATURE_SENSOR));
+        volumeDevices = propertiesFactory.create(ChildUtil.logger(logger, VOLUME));
+        addVolumeDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_VOLUME));
     }
 
     @Override
@@ -61,35 +64,55 @@ public class ProxyDeviceBridge
         super.initChildren(versionName, internalName, connection);
         renameCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Renameable.RENAME_ID),
-                ChildUtil.name(internalName, Renameable.RENAME_ID),
+                ChildUtil.name(internalName, RENAME_ID),
                 connection);
         removeCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Removeable.REMOVE_ID),
-                ChildUtil.name(internalName, Removeable.REMOVE_ID),
-                connection);
-        runningValue.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.RUNNING_ID),
-                ChildUtil.name(internalName, Runnable.RUNNING_ID),
-                connection);
-        startCommand.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.START_ID),
-                ChildUtil.name(internalName, Runnable.START_ID),
-                connection);
-        stopCommand.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.STOP_ID),
-                ChildUtil.name(internalName, Runnable.STOP_ID),
+                ChildUtil.name(internalName, REMOVE_ID),
                 connection);
         errorValue.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Failable.ERROR_ID),
-                ChildUtil.name(internalName, Failable.ERROR_ID),
+                ChildUtil.name(internalName, ERROR_ID),
                 connection);
-        features.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.FEATURES_ID),
-                ChildUtil.name(internalName, Device.FEATURES_ID),
+        playbackDevices.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.PLAYBACK),
+                ChildUtil.name(internalName, PLAYBACK),
                 connection);
-        addFeatureCommand.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_FEATURE_ID),
-                ChildUtil.name(internalName, Device.ADD_FEATURE_ID),
+        addPlaybackDeviceCommand.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_PLAYBACK),
+                ChildUtil.name(internalName, ADD_PLAYBACK),
+                connection);
+        powerDevices.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.POWER),
+                ChildUtil.name(internalName, POWER),
+                connection);
+        addPowerDeviceCommand.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_POWER),
+                ChildUtil.name(internalName, ADD_POWER),
+                connection);
+        runDevices.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.RUN),
+                ChildUtil.name(internalName, RUN),
+                connection);
+        addRunDeviceCommand.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_RUN),
+                ChildUtil.name(internalName, ADD_RUN),
+                connection);
+        temperatureSensorDevices.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.TEMPERATURE_SENSOR),
+                ChildUtil.name(internalName, TEMPERATURE_SENSOR),
+                connection);
+        addTemperatureSensorDeviceCommand.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_TEMPERATURE_SENSOR),
+                ChildUtil.name(internalName, ADD_TEMPERATURE_SENSOR),
+                connection);
+        volumeDevices.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.VOLUME),
+                ChildUtil.name(internalName, VOLUME),
+                connection);
+        addVolumeDeviceCommand.init(
+                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.ADD_VOLUME),
+                ChildUtil.name(internalName, ADD_VOLUME),
                 connection);
     }
 
@@ -98,12 +121,17 @@ public class ProxyDeviceBridge
         super.uninitChildren();
         renameCommand.uninit();
         removeCommand.uninit();
-        runningValue.uninit();
-        startCommand.uninit();
-        stopCommand.uninit();
         errorValue.uninit();
-        features.uninit();
-        addFeatureCommand.uninit();
+        playbackDevices.uninit();
+        addPlaybackDeviceCommand.uninit();
+        powerDevices.uninit();
+        addPowerDeviceCommand.uninit();
+        runDevices.uninit();
+        addRunDeviceCommand.uninit();
+        temperatureSensorDevices.uninit();
+        addTemperatureSensorDeviceCommand.uninit();
+        volumeDevices.uninit();
+        addVolumeDeviceCommand.uninit();
     }
 
     @Override
@@ -117,32 +145,57 @@ public class ProxyDeviceBridge
     }
 
     @Override
-    public ProxyValueBridge getRunningValue() {
-        return runningValue;
-    }
-
-    @Override
-    public ProxyCommandBridge getStartCommand() {
-        return startCommand;
-    }
-
-    @Override
-    public ProxyCommandBridge getStopCommand() {
-        return stopCommand;
-    }
-
-    @Override
     public ProxyValueBridge getErrorValue() {
         return errorValue;
     }
 
     @Override
-    public ProxyListBridge<ProxyFeatureBridge> getFeatures() {
-        return features;
+    public ProxyListBridge<ProxyPropertyBridge> getPlaybackDevices() {
+        return playbackDevices;
     }
 
     @Override
-    public ProxyCommandBridge getAddFeatureCommand() {
-        return addFeatureCommand;
+    public ProxyCommandBridge getAddPlaybackDeviceCommand() {
+        return addPlaybackDeviceCommand;
+    }
+
+    @Override
+    public ProxyListBridge<ProxyPropertyBridge> getPowerDevices() {
+        return powerDevices;
+    }
+
+    @Override
+    public ProxyCommandBridge getAddPowerDeviceCommand() {
+        return addPowerDeviceCommand;
+    }
+
+    @Override
+    public ProxyListBridge<ProxyPropertyBridge> getRunDevices() {
+        return runDevices;
+    }
+
+    @Override
+    public ProxyCommandBridge getAddRunDeviceCommand() {
+        return addRunDeviceCommand;
+    }
+
+    @Override
+    public ProxyListBridge<ProxyPropertyBridge> getTemperatureSensorDevices() {
+        return temperatureSensorDevices;
+    }
+
+    @Override
+    public ProxyCommandBridge getAddTemperatureSensorDeviceCommand() {
+        return addTemperatureSensorDeviceCommand;
+    }
+
+    @Override
+    public ProxyListBridge<ProxyPropertyBridge> getVolumeDevices() {
+        return volumeDevices;
+    }
+
+    @Override
+    public ProxyCommandBridge getAddVolumeDeviceCommand() {
+        return addVolumeDeviceCommand;
     }
 }

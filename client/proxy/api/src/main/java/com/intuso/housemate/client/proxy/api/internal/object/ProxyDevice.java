@@ -14,43 +14,52 @@ import javax.jms.JMSException;
  * @param <DEVICE> the type of the device
  */
 public abstract class ProxyDevice<
-        COMMAND extends ProxyCommand<?, ?, COMMAND>,
         VALUE extends ProxyValue<?, VALUE>,
-        FEATURES extends ProxyList<? extends ProxyFeature<?, ?, ?, ?, ?, ?, ?>, ?>,
-        DEVICE extends ProxyDevice<COMMAND, VALUE, FEATURES, DEVICE>>
+        COMMAND extends ProxyCommand<?, ?, COMMAND>,
+        PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
+        DEVICE extends ProxyDevice<VALUE, COMMAND, PROPERTIES, DEVICE>>
         extends ProxyObject<Device.Data, Device.Listener<? super DEVICE>>
-        implements Device<COMMAND, VALUE, VALUE, FEATURES, DEVICE>,
+        implements Device<VALUE, COMMAND, PROPERTIES, DEVICE>,
         ProxyFailable<VALUE>,
         ProxyRemoveable<COMMAND>,
-        ProxyRenameable<COMMAND>,
-        ProxyRunnable<COMMAND, VALUE> {
+        ProxyRenameable<COMMAND> {
 
     private final COMMAND renameCommand;
     private final COMMAND removeCommand;
-    private final VALUE runningValue;
-    private final COMMAND startCommand;
-    private final COMMAND stopCommand;
     private final VALUE errorValue;
-    private final FEATURES features;
-    private final COMMAND addFeatureCommand;
+    private final PROPERTIES playbackDevices;
+    private final COMMAND addPlaybackDeviceCommand;
+    private final PROPERTIES powerDevices;
+    private final COMMAND addPowerDeviceCommand;
+    private final PROPERTIES runDevices;
+    private final COMMAND addRunDeviceCommand;
+    private final PROPERTIES temperatureSensorDevices;
+    private final COMMAND addTemperatureSensorDeviceCommand;
+    private final PROPERTIES volumeDevices;
+    private final COMMAND addVolumeDeviceCommand;
 
     /**
      * @param logger {@inheritDoc}
      */
     public ProxyDevice(Logger logger,
                        ManagedCollectionFactory managedCollectionFactory,
-                       ProxyObject.Factory<COMMAND> commandFactory,
-                       ProxyObject.Factory<VALUE> valueFactory,
-                       ProxyObject.Factory<FEATURES> featuresFactory) {
+                       Factory<VALUE> valueFactory,
+                       Factory<COMMAND> commandFactory,
+                       Factory<PROPERTIES> propertiesFactory) {
         super(logger, Device.Data.class, managedCollectionFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
-        runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID));
-        startCommand = commandFactory.create(ChildUtil.logger(logger, START_ID));
-        stopCommand = commandFactory.create(ChildUtil.logger(logger, STOP_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
-        features = featuresFactory.create(ChildUtil.logger(logger, FEATURES_ID));
-        addFeatureCommand = commandFactory.create(ChildUtil.logger(logger, ADD_FEATURE_ID));
+        playbackDevices = propertiesFactory.create(ChildUtil.logger(logger, PLAYBACK));
+        addPlaybackDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_PLAYBACK));
+        powerDevices = propertiesFactory.create(ChildUtil.logger(logger, POWER));
+        addPowerDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_POWER));
+        runDevices = propertiesFactory.create(ChildUtil.logger(logger, RUN));
+        addRunDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_RUN));
+        temperatureSensorDevices = propertiesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR));
+        addTemperatureSensorDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_TEMPERATURE_SENSOR));
+        volumeDevices = propertiesFactory.create(ChildUtil.logger(logger, VOLUME));
+        addVolumeDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_VOLUME));
     }
 
     @Override
@@ -58,12 +67,17 @@ public abstract class ProxyDevice<
         super.initChildren(name, connection);
         renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
         removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
-        runningValue.init(ChildUtil.name(name, RUNNING_ID), connection);
-        startCommand.init(ChildUtil.name(name, START_ID), connection);
-        stopCommand.init(ChildUtil.name(name, STOP_ID), connection);
         errorValue.init(ChildUtil.name(name, ERROR_ID), connection);
-        features.init(ChildUtil.name(name, FEATURES_ID), connection);
-        addFeatureCommand.init(ChildUtil.name(name, ADD_FEATURE_ID), connection);
+        playbackDevices.init(ChildUtil.name(name, PLAYBACK), connection);
+        addPlaybackDeviceCommand.init(ChildUtil.name(name, ADD_PLAYBACK), connection);
+        powerDevices.init(ChildUtil.name(name, POWER), connection);
+        addPowerDeviceCommand.init(ChildUtil.name(name, ADD_POWER), connection);
+        runDevices.init(ChildUtil.name(name, RUN), connection);
+        addRunDeviceCommand.init(ChildUtil.name(name, ADD_RUN), connection);
+        temperatureSensorDevices.init(ChildUtil.name(name, TEMPERATURE_SENSOR), connection);
+        addTemperatureSensorDeviceCommand.init(ChildUtil.name(name, ADD_TEMPERATURE_SENSOR), connection);
+        volumeDevices.init(ChildUtil.name(name, VOLUME), connection);
+        addVolumeDeviceCommand.init(ChildUtil.name(name, ADD_VOLUME), connection);
     }
 
     @Override
@@ -71,12 +85,17 @@ public abstract class ProxyDevice<
         super.uninitChildren();
         renameCommand.uninit();
         removeCommand.uninit();
-        runningValue.uninit();
-        startCommand.uninit();
-        stopCommand.uninit();
         errorValue.uninit();
-        features.uninit();
-        addFeatureCommand.uninit();
+        playbackDevices.uninit();
+        addPlaybackDeviceCommand.uninit();
+        powerDevices.uninit();
+        addPowerDeviceCommand.uninit();
+        runDevices.uninit();
+        addRunDeviceCommand.uninit();
+        temperatureSensorDevices.uninit();
+        addTemperatureSensorDeviceCommand.uninit();
+        volumeDevices.uninit();
+        addVolumeDeviceCommand.uninit();
     }
 
     @Override
@@ -90,28 +109,6 @@ public abstract class ProxyDevice<
     }
 
     @Override
-    public final boolean isRunning() {
-        return runningValue.getValue() != null
-                && runningValue.getValue().getFirstValue() != null
-                && Boolean.parseBoolean(runningValue.getValue().getFirstValue());
-    }
-
-    @Override
-    public VALUE getRunningValue() {
-        return runningValue;
-    }
-
-    @Override
-    public COMMAND getStartCommand() {
-        return startCommand;
-    }
-
-    @Override
-    public COMMAND getStopCommand() {
-        return stopCommand;
-    }
-
-    @Override
     public final String getError() {
         return errorValue.getValue() != null ? errorValue.getValue().getFirstValue() : null;
     }
@@ -122,13 +119,53 @@ public abstract class ProxyDevice<
     }
 
     @Override
-    public final FEATURES getFeatures() {
-        return features;
+    public PROPERTIES getPlaybackDevices() {
+        return playbackDevices;
     }
 
     @Override
-    public COMMAND getAddFeatureCommand() {
-        return addFeatureCommand;
+    public COMMAND getAddPlaybackDeviceCommand() {
+        return addPlaybackDeviceCommand;
+    }
+
+    @Override
+    public PROPERTIES getPowerDevices() {
+        return powerDevices;
+    }
+
+    @Override
+    public COMMAND getAddPowerDeviceCommand() {
+        return addPowerDeviceCommand;
+    }
+
+    @Override
+    public PROPERTIES getRunDevices() {
+        return runDevices;
+    }
+
+    @Override
+    public COMMAND getAddRunDeviceCommand() {
+        return addRunDeviceCommand;
+    }
+
+    @Override
+    public PROPERTIES getTemperatureSensorDevices() {
+        return temperatureSensorDevices;
+    }
+
+    @Override
+    public COMMAND getAddTemperatureSensorDeviceCommand() {
+        return addTemperatureSensorDeviceCommand;
+    }
+
+    @Override
+    public PROPERTIES getVolumeDevices() {
+        return volumeDevices;
+    }
+
+    @Override
+    public COMMAND getAddVolumeDeviceCommand() {
+        return addVolumeDeviceCommand;
     }
 
     @Override
@@ -137,18 +174,28 @@ public abstract class ProxyDevice<
             return renameCommand;
         else if(REMOVE_ID.equals(id))
             return removeCommand;
-        else if(RUNNING_ID.equals(id))
-            return runningValue;
-        else if(START_ID.equals(id))
-            return startCommand;
-        else if(STOP_ID.equals(id))
-            return stopCommand;
         else if(ERROR_ID.equals(id))
             return errorValue;
-        else if(FEATURES_ID.equals(id))
-            return features;
-        else if(ADD_FEATURE_ID.equals(id))
-            return addFeatureCommand;
+        else if(PLAYBACK.equals(id))
+            return playbackDevices;
+        else if(ADD_PLAYBACK.equals(id))
+            return addPlaybackDeviceCommand;
+        else if(POWER.equals(id))
+            return powerDevices;
+        else if(ADD_POWER.equals(id))
+            return addPowerDeviceCommand;
+        else if(RUN.equals(id))
+            return runDevices;
+        else if(ADD_RUN.equals(id))
+            return addRunDeviceCommand;
+        else if(TEMPERATURE_SENSOR.equals(id))
+            return temperatureSensorDevices;
+        else if(ADD_TEMPERATURE_SENSOR.equals(id))
+            return addTemperatureSensorDeviceCommand;
+        else if(VOLUME.equals(id))
+            return volumeDevices;
+        else if(ADD_VOLUME.equals(id))
+            return addVolumeDeviceCommand;
         return null;
     }
 }

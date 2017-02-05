@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.ConnectedDevice;
-import com.intuso.housemate.client.api.internal.object.Feature;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
@@ -66,19 +65,19 @@ public final class RealConnectedDeviceImpl
                         typeRepository.getType(new TypeSpec(String.class)),
                         1,
                         1)));
-        this.commands = commandsFactory.create(ChildUtil.logger(logger, Feature.COMMANDS_ID),
-                Feature.COMMANDS_ID,
+        this.commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID),
+                COMMANDS_ID,
                 "Commands",
                 "The commands of this feature",
                 Lists.<RealCommandImpl>newArrayList());
-        this.values = valuesFactory.create(ChildUtil.logger(logger, Feature.VALUES_ID),
-                Feature.VALUES_ID,
+        this.values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID),
+                VALUES_ID,
                 "Values",
                 "The values of this feature",
                 Lists.<RealValueImpl<?>>newArrayList());
-        this.properties = propertiesFactory.create(ChildUtil.logger(logger, Feature.PROPERTIES_ID),
-                Feature.PROPERTIES_ID,
-                Feature.PROPERTIES_ID,
+        this.properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID),
+                PROPERTIES_ID,
+                PROPERTIES_ID,
                 PROPERTIES_DESCRIPTION,
                 Lists.<RealPropertyImpl<?>>newArrayList());
     }
@@ -95,9 +94,9 @@ public final class RealConnectedDeviceImpl
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);
         renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        commands.init(ChildUtil.name(name, Feature.COMMANDS_ID), connection);
-        values.init(ChildUtil.name(name, Feature.VALUES_ID), connection);
-        properties.init(ChildUtil.name(name, Feature.PROPERTIES_ID), connection);
+        commands.init(ChildUtil.name(name, COMMANDS_ID), connection);
+        values.init(ChildUtil.name(name, VALUES_ID), connection);
+        properties.init(ChildUtil.name(name, PROPERTIES_ID), connection);
     }
 
     @Override

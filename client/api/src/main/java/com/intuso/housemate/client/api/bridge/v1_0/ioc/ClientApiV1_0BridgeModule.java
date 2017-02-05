@@ -16,8 +16,6 @@ public class ClientApiV1_0BridgeModule extends AbstractModule {
         // driver mappers
         install(new FactoryModuleBuilder().build(ConditionDriverFactoryBridge.Factory.class));
         install(new FactoryModuleBuilder().build(ConditionDriverFactoryBridgeReverse.Factory.class));
-        install(new FactoryModuleBuilder().build(FeatureDriverFactoryBridge.Factory.class));
-        install(new FactoryModuleBuilder().build(FeatureDriverFactoryBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(HardwareDriverFactoryBridge.Factory.class));
         install(new FactoryModuleBuilder().build(HardwareDriverFactoryBridgeReverse.Factory.class));
         install(new FactoryModuleBuilder().build(TaskDriverFactoryBridge.Factory.class));
@@ -28,7 +26,6 @@ public class ClientApiV1_0BridgeModule extends AbstractModule {
         bind(CommandMapper.class).in(Scopes.SINGLETON);
         bind(ConditionMapper.class).in(Scopes.SINGLETON);
         bind(DeviceMapper.class).in(Scopes.SINGLETON);
-        bind(FeatureMapper.class).in(Scopes.SINGLETON);
         bind(HardwareMapper.class).in(Scopes.SINGLETON);
         bind(ListMapper.class).in(Scopes.SINGLETON);
         bind(NodeMapper.class).in(Scopes.SINGLETON);
