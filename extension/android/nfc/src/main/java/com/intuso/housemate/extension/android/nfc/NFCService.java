@@ -6,7 +6,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 import com.intuso.housemate.client.v1_0.api.object.Command;
-import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.platform.android.app.HousemateService;
 import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
@@ -35,25 +34,16 @@ public class NFCService extends HousemateService {
 
     private class CommandPerformer implements Command.PerformListener<AndroidProxyCommand> {
 
-        private final String objectPath;
-        private final AndroidProxyServer server;
         private final int startId;
 
         private CommandPerformer(String objectPath, AndroidProxyServer server, int startId) {
-            this.objectPath = objectPath;
-            this.server = server;
             this.startId = startId;
-            final Object<?> object = null;// todo server.findObject(objectPath.substring(1).split("/"));
-            if (object == null) {
+            final AndroidProxyCommand command = server.find(objectPath.substring(1).split("/"), false);
+            if (command == null) {
                 message("Scanned tag's path does not exist", false);
                 finished();
-            } else if (!(object instanceof AndroidProxyCommand)) {
-                message("Scanned tag's path is not a command", false);
-                finished();
-            } else {
-                AndroidProxyCommand command = (AndroidProxyCommand) object;
+            } else
                 command.perform(this);
-            }
         }
 
         @Override
