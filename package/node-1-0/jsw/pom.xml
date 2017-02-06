@@ -9,8 +9,8 @@
 
 	<artifactId>housemate-package-node-1-0-jsw</artifactId>
     <packaging>jar</packaging>
-    <name>Housemate Package Server JSW</name>
-	<description>Housemate Server Java Service Wrapper</description>
+    <name>Housemate Package Node 1.0 JSW</name>
+	<description>Housemate Node 1.0 Java Service Wrapper</description>
 
     <dependencies>
 
