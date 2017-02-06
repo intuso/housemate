@@ -1,7 +1,7 @@
 package com.intuso.housemate.pkg.node.v1_0.jar.ioc;
 
 import com.google.inject.AbstractModule;
-import com.intuso.housemate.platform.pc.ioc.PCModule;
+import com.intuso.housemate.platform.pc.ioc.PCClientModule;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
@@ -20,8 +20,7 @@ public class NodePackageJarModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(PropertyRepository.class).toInstance(properties);
-        install(new PCModule()); // log and properties provider
+        install(new PCClientModule(defaultProperties, properties)); // log and properties provider
         install(new NodeModule(defaultProperties)); // main server module
     }
 }
