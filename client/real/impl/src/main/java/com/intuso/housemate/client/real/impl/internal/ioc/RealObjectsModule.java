@@ -3,6 +3,8 @@ package com.intuso.housemate.client.real.impl.internal.ioc;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.intuso.housemate.client.api.internal.type.ObjectReference;
+import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyDevice;
 import com.intuso.housemate.client.real.impl.internal.*;
 
 /**
@@ -75,6 +77,8 @@ public class RealObjectsModule extends AbstractModule {
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<RealParameterImpl<?>>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<RealPropertyImpl<?>>>() {}));
+        install(new FactoryModuleBuilder()
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<RealPropertyImpl<ObjectReference<SimpleProxyDevice>>>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<RealSubTypeImpl<?>>>() {}));
         install(new FactoryModuleBuilder()
