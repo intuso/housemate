@@ -34,7 +34,7 @@
         <resources>
             <resource>
                 <directory>src/main/conf</directory>
-                <targetPath>${project.build.directory}/jsw/housemate/node/conf</targetPath>
+                <targetPath>${project.build.directory}/jsw/housemate/conf</targetPath>
             </resource>
         </resources>
 
@@ -53,8 +53,8 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <mkdir dir="${basedir}/target/jsw/housemate/node/logs" />
-                                <mkdir dir="${basedir}/target/jsw/housemate/node/tmp" />
+                                <mkdir dir="${basedir}/target/jsw/housemate/logs" />
+                                <mkdir dir="${basedir}/target/jsw/housemate/tmp" />
                             </tasks>
                         </configuration>
                     </execution>
@@ -66,7 +66,7 @@
                 <version>1.9.0</version>
                 <configuration>
                     <configurationDirectory>conf</configurationDirectory>
-                    <assembleDirectory>${project.build.directory}/jsw/housemate/node</assembleDirectory>
+                    <assembleDirectory>${project.build.directory}/jsw/housemate</assembleDirectory>
                     <target>${project.build.directory}</target>
                     <repositoryLayout>flat</repositoryLayout>
                     <includeConfigurationDirectoryInClasspath>false</includeConfigurationDirectoryInClasspath>
@@ -80,7 +80,7 @@
                     </defaultJvmSettings>
                     <daemons>
                         <daemon>
-                            <id>housemate-node</id>
+                            <id>housemate</id>
                             <mainClass>com.intuso.housemate.pkg.node.v1_0.jar.Main</mainClass>
                             <commandLineArguments>
                                 <commandLineArgument>-conf.dir</commandLineArgument>
