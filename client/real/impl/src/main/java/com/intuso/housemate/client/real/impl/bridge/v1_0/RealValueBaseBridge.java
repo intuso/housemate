@@ -50,6 +50,11 @@ public abstract class RealValueBaseBridge<
             @Override
             public void onMessage(com.intuso.housemate.client.v1_0.api.object.Type.Instances instances, boolean wasPersisted) {
                 value = typeInstancesMapper.map(instances);
+                try {
+                    valueSender.send(value, wasPersisted);
+                } catch (JMSException e) {
+                    logger.error("Failed to send new values onto internal topic");
+                }
                 // todo call object listeners
             }
         });

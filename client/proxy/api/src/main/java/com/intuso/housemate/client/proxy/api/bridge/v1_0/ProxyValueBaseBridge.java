@@ -53,7 +53,7 @@ public abstract class ProxyValueBaseBridge<
                 try {
                     valueSender.send(typeInstancesMapper.map(instances), wasPersisted);
                 } catch (JMSException e) {
-                    logger.error("Failed to send new value");
+                    logger.error("Failed to send new values onto proxy versioned topic");
                 }
                 // todo call object listeners
             }
