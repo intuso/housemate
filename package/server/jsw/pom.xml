@@ -28,6 +28,8 @@
             <type>war</type>
             <version>${activemq.version}</version>
         </dependency>
+
+        <!-- Plugins -->
     </dependencies>
 
 	<build>
@@ -42,7 +44,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.0.0</version>
+
+                <!-- ActiveMQ web console files -->
                 <executions>
                     <execution>
                         <id>activemq-webconsole</id>
@@ -90,6 +94,29 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/jsw/housemate/conf/activemq/webconsole/WEB-INF/lib</outputDirectory>
                             <includeArtifactIds>jstl</includeArtifactIds>
+                        </configuration>
+                    </execution>
+
+                    <!-- Copy plugins in -->
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jsw/housemate/plugins</outputDirectory>
+                            <artifactItems>
+
+                                <!-- RFXtrx434 -->
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>housemate-extension-plugin-rfxcom-hardware</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>jar-with-dependencies</classifier>
+                                    <overWrite>true</overWrite>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
