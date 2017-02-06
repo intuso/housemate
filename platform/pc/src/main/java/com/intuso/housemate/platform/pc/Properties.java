@@ -29,12 +29,6 @@ public class Properties {
 
     public static PropertyRepository create(ManagedCollectionFactory managedCollectionFactory, PropertyRepository parent, String[] args) {
 
-        // set the defaults
-        parent.set(HOUSEMATE_CONFIG_DIR, System.getProperty("user.home") + File.separator + ".housemate");
-        parent.set(HOUSEMATE_PROPS_FILE, "housemate.props");
-        parent.set(APPLICATION_CONFIG_DIR, "./");
-        parent.set(APPLICATION_PROPS_FILE, "housemate.props");
-
         // read the command lines args now so we can use them to setup the file properties
         CommandLinePropertyRepository clProperties = new CommandLinePropertyRepository(managedCollectionFactory, parent, args);
 
