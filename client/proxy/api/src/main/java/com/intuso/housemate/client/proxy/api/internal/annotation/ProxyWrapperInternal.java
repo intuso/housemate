@@ -91,7 +91,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
             else if(method.getAnnotation(Value.class) != null)
                 return createValueHandler(method, id, method.getAnnotation(Value.class));
             else if(method.getAnnotation(FromList.class) != null)
-                return createConnectedDeviceHandler(method, method.getAnnotation(FromList.class));
+                return createFromListHandler(method, method.getAnnotation(FromList.class));
             else if(method.getAnnotation(com.intuso.housemate.client.api.internal.annotation.AddListener.class) != null)
                 return createAddListenerHandler(method);
             return new Problem("Don't know how to handle invocation of " + clazz.getName() + " method " + method.toString() + ". Expecting one of the following annotations:\n" + Command.class.getName() + "\n" + Property.class.getName() + "\n" + Value.class.getName() + "\n" + FromList.class.getName() + "\n" + com.intuso.housemate.client.api.internal.annotation.AddListener.class.getName());
@@ -154,7 +154,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                     new ValueDeserialiser(List.class.isAssignableFrom(method.getReturnType()), typeSerialiser, defaultValueFor(method.getReturnType())));
         }
 
-        MethodInvocationHandler createConnectedDeviceHandler(Method method, FromList fromList) {
+        MethodInvocationHandler createFromListHandler(Method method, FromList fromList) {
             if(!(object instanceof ProxyDevice.Container))
                 return new Problem(clazz.getName() + " has a device method " + method.toString() + " but the object being wrapped is not a " + ProxyDevice.Container.class.getName());
             Annotation[][] parameterAnnotations = method.getParameterAnnotations();

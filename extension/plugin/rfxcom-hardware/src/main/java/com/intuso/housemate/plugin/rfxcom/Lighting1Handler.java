@@ -104,7 +104,7 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
         if(!devices.containsKey(houseCode))
             devices.put(houseCode, Maps.<Byte, PowerImpl>newHashMap());
         devices.get(houseCode).put(unitCode, device);
-        hardwareCallback.addConnectedDevice(
+        hardwareCallback.addDevice(
                 idFormat.replaceAll("\\$\\{houseCode\\}", Byte.toString(houseCode)).replaceAll("\\$\\{unitCode\\}", Byte.toString(unitCode)),
                 nameFormat.replaceAll("\\$\\{houseCode\\}", Byte.toString(houseCode)).replaceAll("\\$\\{unitCode\\}", Byte.toString(unitCode)),
                 descriptionFormat.replaceAll("\\$\\{houseCode\\}", Byte.toString(houseCode)).replaceAll("\\$\\{unitCode\\}", Byte.toString(unitCode)),
@@ -117,7 +117,7 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
             PowerImpl device = devices.get(houseCode).remove(unitCode);
             if(devices.get(houseCode).size() == 0)
                 devices.remove(houseCode);
-            hardwareCallback.removeConnectedDevice(device);
+            hardwareCallback.removeDevice(device);
         }
     }
 

@@ -64,7 +64,7 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
     public TemperatureSensorImpl addSensor(int sensorId) {
         TemperatureSensorImpl sensor = new TemperatureSensorImpl(managedCollectionFactory);
         sensors.put(sensorId, sensor);
-        hardwareCallback.addConnectedDevice(
+        hardwareCallback.addDevice(
                 idFormat.replaceAll("\\$\\{sensorId\\}", Integer.toString(sensorId)),
                 nameFormat.replaceAll("\\$\\{sensorId\\}", Integer.toString(sensorId)),
                 descriptionFormat.replaceAll("\\$\\{sensorId\\}", Integer.toString(sensorId)),
@@ -74,7 +74,7 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
 
     public void removeSensor(int sensorId) {
         if(sensors.containsKey(sensorId))
-            hardwareCallback.removeConnectedDevice(sensors.remove(sensorId));
+            hardwareCallback.removeDevice(sensors.remove(sensorId));
     }
 
     public static class TEMP1 extends TemperatureSensorsHandler {

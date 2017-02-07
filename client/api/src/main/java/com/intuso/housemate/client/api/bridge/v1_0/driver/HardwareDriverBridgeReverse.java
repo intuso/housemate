@@ -42,13 +42,13 @@ public class HardwareDriverBridgeReverse implements HardwareDriver {
         }
 
         @Override
-        public void addConnectedDevice(String id, String name, String description, Object object) {
-            callback.addConnectedDevice(id, name, description, object);
+        public void addDevice(String id, String name, String description, Object object) {
+            callback.addDevice(id, name, description, object);
         }
 
         @Override
-        public void removeConnectedDevice(Object object) {
-            callback.removeConnectedDevice(object);
+        public void removeDevice(Object object) {
+            callback.removeDevice(object);
         }
     }
 }

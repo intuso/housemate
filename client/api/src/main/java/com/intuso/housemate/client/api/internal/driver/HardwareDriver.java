@@ -12,8 +12,8 @@ public interface HardwareDriver {
 
     interface Callback {
         void setError(String error);
-        void addConnectedDevice(String id, String name, String description, Object object);
-        void removeConnectedDevice(Object object);
+        void addDevice(String id, String name, String description, Object object);
+        void removeDevice(Object object);
     }
 
     interface Factory<DRIVER extends HardwareDriver> {

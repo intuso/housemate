@@ -268,8 +268,8 @@ public final class RealHardwareImpl
             driver.init(logger, this, Iterables.transform(devices, new Function<RealDeviceImpl, String>() {
                 @Nullable
                 @Override
-                public String apply(@Nullable RealDeviceImpl realConnectedDevice) {
-                    return realConnectedDevice.getId();
+                public String apply(@Nullable RealDeviceImpl realDevice) {
+                    return realDevice.getId();
                 }
             }));
     }
@@ -416,8 +416,8 @@ public final class RealHardwareImpl
                 driver.init(logger, this, Iterables.transform(devices, new Function<RealDeviceImpl, String>() {
                     @Nullable
                     @Override
-                    public String apply(@Nullable RealDeviceImpl realConnectedDevice) {
-                        return realConnectedDevice.getId();
+                    public String apply(@Nullable RealDeviceImpl realDevice) {
+                        return realDevice.getId();
                     }
                 }));
         } catch (Throwable t) {
@@ -436,7 +436,7 @@ public final class RealHardwareImpl
     }
 
     @Override
-    public void addConnectedDevice(String id, String name, String description, java.lang.Object object) {
+    public void addDevice(String id, String name, String description, java.lang.Object object) {
 
         // check if we already know about the object
         if(objectDevices.containsKey(object))
@@ -470,7 +470,7 @@ public final class RealHardwareImpl
     }
 
     @Override
-    public void removeConnectedDevice(java.lang.Object object) {
+    public void removeDevice(java.lang.Object object) {
         RealDeviceImpl device = objectDevices.remove(object);
         if(device != null)
             devices.remove(device.getId());
