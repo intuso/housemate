@@ -117,7 +117,7 @@ public abstract class ProxyServer<
         return addAutomationCommand;
     }
 
-    public SYSTEMS getSYSTEMS() {
+    public SYSTEMS getSystems() {
         return SYSTEMS;
     }
 

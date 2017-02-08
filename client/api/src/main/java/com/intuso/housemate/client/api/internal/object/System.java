@@ -60,7 +60,7 @@ public interface System<
          * Gets the devices list
          * @return the devices list
          */
-        SYSTEMS getSYSTEMS();
+        SYSTEMS getSystems();
     }
 
     /**

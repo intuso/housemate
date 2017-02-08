@@ -27,12 +27,4 @@ public interface RealTask<COMMAND extends RealCommand<?, ?, ?>,
      * Executes this task
      */
     void executeTask();
-
-    interface Container<TASK extends RealTask<?, ?, ?, ?, ?, ?>, TASKS extends RealList<? extends TASK, ?>> extends Task.Container<TASKS>, RemoveCallback<TASK> {
-        void addTask(TASK task);
-    }
-
-    interface RemoveCallback<TASK extends RealTask<?, ?, ?, ?, ?, ?>> {
-        void removeTask(TASK task);
-    }
 }

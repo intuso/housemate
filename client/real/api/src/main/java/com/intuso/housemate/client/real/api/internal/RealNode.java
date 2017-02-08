@@ -1,5 +1,6 @@
 package com.intuso.housemate.client.real.api.internal;
 
+import com.intuso.housemate.client.api.internal.object.Hardware;
 import com.intuso.housemate.client.api.internal.object.Node;
 
 public interface RealNode<COMMAND extends RealCommand<?, ?, ?>,
@@ -8,7 +9,7 @@ public interface RealNode<COMMAND extends RealCommand<?, ?, ?>,
         HARDWARES extends RealList<? extends HARDWARE, ?>,
         NODE extends RealNode<COMMAND, TYPES, HARDWARE, HARDWARES, NODE>>
         extends Node<COMMAND, TYPES, HARDWARES, NODE>,
-        RealHardware.Container<HARDWARE, HARDWARES> {
+        Hardware.Container<HARDWARES> {
 
     COMMAND getAddHardwareCommand();
 

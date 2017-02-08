@@ -46,7 +46,7 @@ public abstract class RealValueBaseImpl<O,
         super.initChildren(name, connection);
         valueSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, ValueBase.VALUE_ID));
         // get the persisted value
-        Type.Instances instances = JMSUtil.getPersisted(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, ValueBase.VALUE_ID), Type.Instances.class);
+        Type.Instances instances = JMSUtil.getFirstPersisted(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, ValueBase.VALUE_ID), Type.Instances.class);
         if(instances != null)
             setValues(RealTypeImpl.deserialiseAll(type, instances));
     }

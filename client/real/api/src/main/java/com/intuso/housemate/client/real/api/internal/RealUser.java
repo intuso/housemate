@@ -8,13 +8,4 @@ public interface RealUser<COMMAND extends RealCommand<?, ?, ?>,
         extends User<COMMAND,
         COMMAND,
         EMAIL_PROPERTY,
-        USER> {
-
-    interface Container<USER extends RealUser<?, ?, ?>, USERS extends RealList<? extends USER, ?>> extends User.Container<USERS>, RemoveCallback<USER> {
-        void addUser(USER user);
-    }
-
-    interface RemoveCallback<USER extends RealUser<?, ?, ?>> {
-        void removeUser(USER user);
-    }
-}
+        USER> {}

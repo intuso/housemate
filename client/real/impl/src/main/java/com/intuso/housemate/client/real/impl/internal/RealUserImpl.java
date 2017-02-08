@@ -27,7 +27,7 @@ public final class RealUserImpl
     private final RealCommandImpl removeCommand;
     private final RealPropertyImpl<String> emailProperty;
 
-    private final RemoveCallback<RealUserImpl> removeCallback;
+    private final RealListPersistedImpl.RemoveCallback<RealUserImpl> removeCallback;
 
     /**
      * @param logger {@inheritDoc}
@@ -38,7 +38,7 @@ public final class RealUserImpl
                         @Assisted("id") String id,
                         @Assisted("name") String name,
                         @Assisted("description") String description,
-                        @Assisted RemoveCallback<RealUserImpl> removeCallback,
+                        @Assisted RealListPersistedImpl.RemoveCallback<RealUserImpl> removeCallback,
                         ManagedCollectionFactory managedCollectionFactory,
                         RealCommandImpl.Factory commandFactory,
                         RealParameterImpl.Factory parameterFactory,
@@ -129,7 +129,7 @@ public final class RealUserImpl
     }
 
     protected final void remove() {
-        removeCallback.removeUser(this);
+        removeCallback.remove(this);
     }
 
     public interface Factory {
@@ -137,6 +137,21 @@ public final class RealUserImpl
                             @Assisted("id") String id,
                             @Assisted("name") String name,
                             @Assisted("description") String description,
-                            RemoveCallback<RealUserImpl> removeCallback);
+                            RealListPersistedImpl.RemoveCallback<RealUserImpl> removeCallback);
+    }
+
+    public static class LoadPersisted implements RealListPersistedImpl.ElementFactory<User.Data, RealUserImpl> {
+
+        private final RealUserImpl.Factory factory;
+
+        @Inject
+        public LoadPersisted(Factory factory) {
+            this.factory = factory;
+        }
+
+        @Override
+        public RealUserImpl create(Logger logger, User.Data data, RealListPersistedImpl.RemoveCallback<RealUserImpl> removeCallback) {
+            return factory.create(logger, data.getId(), data.getName(), data.getDescription(), removeCallback);
+        }
     }
 }

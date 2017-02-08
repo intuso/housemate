@@ -18,16 +18,18 @@ import java.util.Map;
 
 /**
  */
-public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
-        extends RealObject<List.Data, List.Listener<? super ELEMENT, ? super RealListPersistedImpl<ELEMENT>>>
-        implements RealList<ELEMENT, RealListPersistedImpl<ELEMENT>> {
+public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT extends RealObject<CHILD_DATA, ?>>
+        extends RealObject<List.Data, List.Listener<? super ELEMENT, ? super RealListPersistedImpl<CHILD_DATA, ELEMENT>>>
+        implements RealList<ELEMENT, RealListPersistedImpl<CHILD_DATA, ELEMENT>> {
 
     private final Map<String, ELEMENT> elements;
-    private final ExistingObjectFactory<ELEMENT> existingObjectHandler;
+    private final Class<CHILD_DATA> childDataClass;
+    private final ElementFactory<CHILD_DATA, ELEMENT> existingObjectHandler;
+    private final RemoveCallback<ELEMENT> removeCallback;
 
     private String name;
     private Connection connection;
-    private JMSUtil.Receiver<Object.Data> existingObjectReceiver;
+    private JMSUtil.Receiver<CHILD_DATA> existingObjectReceiver;
 
     /**
      * @param logger {@inheritDoc}
@@ -38,15 +40,27 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
                                  @Assisted("id") String id,
                                  @Assisted("name") String name,
                                  @Assisted("description") String description,
-                                 @Assisted ExistingObjectFactory<ELEMENT> existingObjectHandler,
-                                 ManagedCollectionFactory managedCollectionFactory) {
+                                 ManagedCollectionFactory managedCollectionFactory,
+                                 Class<CHILD_DATA> childDataClass,
+                                 ElementFactory<CHILD_DATA, ELEMENT> elementFactory) {
         super(logger, new List.Data(id, name, description), managedCollectionFactory);
         this.elements = Maps.newHashMap();
-        this.existingObjectHandler = existingObjectHandler;
+        this.childDataClass = childDataClass;
+        this.existingObjectHandler = elementFactory;
+        this.removeCallback = new RemoveCallback<ELEMENT>() {
+            @Override
+            public void remove(ELEMENT element) {
+                RealListPersistedImpl.this.remove(element.getId());
+            }
+        };
+    }
+
+    public RemoveCallback<ELEMENT> getRemoveCallback() {
+        return removeCallback;
     }
 
     @Override
-    public ManagedCollection.Registration addObjectListener(List.Listener<? super ELEMENT, ? super RealListPersistedImpl<ELEMENT>> listener, boolean callForExistingElements) {
+    public ManagedCollection.Registration addObjectListener(List.Listener<? super ELEMENT, ? super RealListPersistedImpl<CHILD_DATA, ELEMENT>> listener, boolean callForExistingElements) {
         ManagedCollection.Registration listenerRegistration = super.addObjectListener(listener);
         if(callForExistingElements)
             for(ELEMENT element : this)
@@ -59,12 +73,27 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
         super.initChildren(name, connection);
         this.name = name;
         this.connection = connection;
-        existingObjectReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, "*"), Object.Data.class,
-                new JMSUtil.Receiver.Listener<Object.Data>() {
+        // init any existing elements
+        for(ELEMENT element : elements.values())
+            element.init(ChildUtil.name(name, element.getId()), connection);
+        // get any persisted ones immediately
+        Iterator<CHILD_DATA> datas = JMSUtil.getPersisted(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, "*"), childDataClass);
+        while(datas.hasNext()) {
+            CHILD_DATA data = datas.next();
+            if (!elements.containsKey(data.getId())) {
+                ELEMENT element = existingObjectHandler.create(ChildUtil.logger(logger, data.getId()), data, removeCallback);
+                if (element != null)
+                    add(element);
+            }
+        }
+        // receive future messages
+        // NB this will receive all the ones we received above, but in a different thread and probably not before we want to init them.
+        existingObjectReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, "*"), childDataClass,
+                new JMSUtil.Receiver.Listener<CHILD_DATA>() {
                     @Override
-                    public void onMessage(Object.Data data, boolean wasPersisted) {
+                    public void onMessage(CHILD_DATA data, boolean wasPersisted) {
                         if(!elements.containsKey(data.getId())) {
-                            ELEMENT element = existingObjectHandler.create(logger, data);
+                            ELEMENT element = existingObjectHandler.create(ChildUtil.logger(logger, data.getId()), data, removeCallback);
                             if(element != null)
                                 add(element);
                         }
@@ -97,7 +126,7 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
                 throw new HousemateException("Couldn't add element, failed to initialise it");
             }
         }
-        for(List.Listener<? super ELEMENT, ? super RealListPersistedImpl<ELEMENT>> listener : listeners)
+        for(List.Listener<? super ELEMENT, ? super RealListPersistedImpl<CHILD_DATA, ELEMENT>> listener : listeners)
             listener.elementAdded(this, element);
     }
 
@@ -107,7 +136,7 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
         if(element != null) {
             // todo delete the element's queues/topics
             element.uninit();
-            for (List.Listener<? super ELEMENT, ? super RealListPersistedImpl<ELEMENT>> listener : listeners)
+            for (List.Listener<? super ELEMENT, ? super RealListPersistedImpl<CHILD_DATA, ELEMENT>> listener : listeners)
                 listener.elementRemoved(this, element);
         }
         return element;
@@ -136,18 +165,18 @@ public final class RealListPersistedImpl<ELEMENT extends RealObject<?, ?>>
         return elements.values().iterator();
     }
 
-    public interface Factory<ELEMENT extends RealObject<?, ?>> {
-        RealListPersistedImpl<ELEMENT> create(Logger logger,
-                                              @Assisted("id") String id,
-                                              @Assisted("name") String name,
-                                              @Assisted("description") String description,
-                                              ExistingObjectFactory<ELEMENT> existingObjectFactory);
+    public interface Factory<CHILD_DATA extends Object.Data, ELEMENT extends RealObject<CHILD_DATA, ?>> {
+        RealListPersistedImpl<CHILD_DATA, ELEMENT> create(Logger logger,
+                                                          @Assisted("id") String id,
+                                                          @Assisted("name") String name,
+                                                          @Assisted("description") String description);
     }
 
-    /**
-     * Created by tomc on 23/06/16.
-     */
-    public interface ExistingObjectFactory<ELEMENT extends RealObject<?, ?>> {
-        ELEMENT create(Logger parentLogger, Object.Data data);
+    public interface ElementFactory<DATA extends Object.Data, OBJECT extends RealObject<DATA, ?>> {
+        OBJECT create(Logger logger, DATA data, RemoveCallback<OBJECT> removeCallback);
+    }
+
+    public interface RemoveCallback<ELEMENT> {
+        void remove(ELEMENT element);
     }
 }

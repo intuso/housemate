@@ -13,7 +13,6 @@ import com.intuso.housemate.client.api.internal.UsesDriver;
 import com.intuso.housemate.client.api.internal.driver.ConditionDriver;
 import com.intuso.housemate.client.api.internal.driver.PluginDependency;
 import com.intuso.housemate.client.api.internal.object.Condition;
-import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
@@ -36,7 +35,7 @@ public final class RealConditionImpl
         extends RealObject<Condition.Data, Condition.Listener<? super RealConditionImpl>>
         implements RealCondition<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
         RealPropertyImpl<PluginDependency<ConditionDriver.Factory<?>>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
-        RealConditionImpl, RealListPersistedImpl<RealConditionImpl>, RealConditionImpl>, AddConditionCommand.Callback {
+        RealConditionImpl, RealListPersistedImpl<Condition.Data, RealConditionImpl>, RealConditionImpl>, AddConditionCommand.Callback {
 
     private final static String PROPERTIES_DESCRIPTION = "The condition's properties";
 
@@ -49,13 +48,13 @@ public final class RealConditionImpl
     private final RealValueImpl<Boolean> driverLoadedValue;
     private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
     private final RealValueImpl<Boolean> satisfiedValue;
-    private final RealListPersistedImpl<RealConditionImpl> childConditions;
+    private final RealListPersistedImpl<Condition.Data, RealConditionImpl> childConditions;
     private final RealCommandImpl addConditionCommand;
 
     private final Map<String, Boolean> childSatisfied = Maps.newHashMap();
     private final Map<String, ManagedCollection.Registration> childListenerRegistrations = Maps.newHashMap();
 
-    private final RemoveCallback<RealConditionImpl> removeCallback;
+    private final RealListPersistedImpl.RemoveCallback<RealConditionImpl> removeCallback;
 
     private ManagedCollection.Registration driverAvailableListenerRegsitration;
     private ConditionDriver driver;
@@ -69,7 +68,7 @@ public final class RealConditionImpl
                              @Assisted("id") String id,
                              @Assisted("name") String name,
                              @Assisted("description") String description,
-                             @Assisted final RemoveCallback<RealConditionImpl> removeCallback,
+                             @Assisted final RealListPersistedImpl.RemoveCallback<RealConditionImpl> removeCallback,
                              ManagedCollectionFactory managedCollectionFactory,
                              AnnotationParser annotationParser,
                              RealCommandImpl.Factory commandFactory,
@@ -77,8 +76,7 @@ public final class RealConditionImpl
                              RealPropertyImpl.Factory propertyFactory,
                              RealValueImpl.Factory valueFactory,
                              RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
-                             final RealConditionImpl.Factory conditionFactory,
-                             final RealListPersistedImpl.Factory<RealConditionImpl> conditionsFactory,
+                             final RealListPersistedImpl.Factory<Condition.Data, RealConditionImpl> conditionsFactory,
                              AddConditionCommand.Factory addConditionCommandFactory,
                              TypeRepository typeRepository) {
         super(logger, new Condition.Data(id, name, description), managedCollectionFactory);
@@ -153,22 +151,16 @@ public final class RealConditionImpl
                 1,
                 1,
                 Lists.newArrayList(false));
-        final RemoveCallback<RealConditionImpl> childRemoveCallback = new RemoveCallback() {
+        final RealListPersistedImpl.RemoveCallback<RealConditionImpl> childRemoveCallback = new RealListPersistedImpl.RemoveCallback<RealConditionImpl>() {
             @Override
-            public void removeCondition(RealCondition condition) {
+            public void remove(RealConditionImpl condition) {
                 childConditions.remove(condition.getId());
             }
         };
         this.childConditions = conditionsFactory.create(ChildUtil.logger(logger, Condition.CONDITIONS_ID),
                 Condition.CONDITIONS_ID,
                 Condition.CONDITIONS_ID,
-                "Child conditions",
-                new RealListPersistedImpl.ExistingObjectFactory<RealConditionImpl>() {
-                    @Override
-                    public RealConditionImpl create(Logger parentLogger, Object.Data data) {
-                        return conditionFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), childRemoveCallback);
-                    }
-                });
+                "Child conditions");
         this.addConditionCommand = addConditionCommandFactory.create(ChildUtil.logger(logger, Condition.CONDITIONS_ID),
                 ChildUtil.logger(logger, Condition.ADD_CONDITION_ID),
                 Condition.ADD_CONDITION_ID,
@@ -331,7 +323,7 @@ public final class RealConditionImpl
     }
 
     @Override
-    public RealListPersistedImpl<RealConditionImpl> getConditions() {
+    public RealListPersistedImpl<Condition.Data, RealConditionImpl> getConditions() {
         return childConditions;
     }
 
@@ -346,7 +338,7 @@ public final class RealConditionImpl
     }
 
     protected final void remove() {
-        removeCallback.removeCondition(this);
+        removeCallback.remove(this);
     }
 
     protected final void _start() {
@@ -434,6 +426,21 @@ public final class RealConditionImpl
                                  @Assisted("id") String id,
                                  @Assisted("name") String name,
                                  @Assisted("description") String description,
-                                 RemoveCallback<RealConditionImpl> removeCallback);
+                                 RealListPersistedImpl.RemoveCallback<RealConditionImpl> removeCallback);
+    }
+
+    public static class LoadPersisted implements RealListPersistedImpl.ElementFactory<Condition.Data, RealConditionImpl> {
+
+        private final RealConditionImpl.Factory factory;
+
+        @Inject
+        public LoadPersisted(Factory factory) {
+            this.factory = factory;
+        }
+
+        @Override
+        public RealConditionImpl create(Logger logger, Condition.Data data, RealListPersistedImpl.RemoveCallback<RealConditionImpl> removeCallback) {
+            return factory.create(logger, data.getId(), data.getName(), data.getDescription(), removeCallback);
+        }
     }
 }

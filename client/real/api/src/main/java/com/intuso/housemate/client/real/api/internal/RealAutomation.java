@@ -17,12 +17,4 @@ public interface RealAutomation<COMMAND extends RealCommand<?, ?, ?>,
         AUTOMATION> {
 
     boolean isRunning();
-
-    interface Container<AUTOMATION extends RealAutomation<?, ?, ?, ?, ?, ?>, AUTOMATIONS extends RealList<? extends AUTOMATION, ?>> extends Automation.Container<AUTOMATIONS>, RemoveCallback<AUTOMATION> {
-        void addAutomation(AUTOMATION automation);
-    }
-
-    interface RemoveCallback<AUTOMATION extends RealAutomation<?, ?, ?, ?, ?, ?>> {
-        void removeAutomation(AUTOMATION automation);
-    }
 }

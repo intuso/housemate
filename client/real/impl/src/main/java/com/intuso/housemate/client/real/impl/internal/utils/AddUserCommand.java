@@ -6,11 +6,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
-import com.intuso.housemate.client.real.api.internal.RealUser;
-import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
-import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
-import com.intuso.housemate.client.real.impl.internal.RealUserImpl;
+import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import org.slf4j.Logger;
@@ -56,7 +52,7 @@ public class AddUserCommand {
                                       String name,
                                       String description,
                                       Callback callback,
-                                      RealUser.RemoveCallback<RealUserImpl> removeCallback) {
+                                      RealListPersistedImpl.RemoveCallback<RealUserImpl> removeCallback) {
             return commandFactory.create(logger, id, name, description, performerFactory.create(baseLogger, callback, removeCallback),
                     Lists.newArrayList(
                             parameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, NAME_PARAMETER_ID),
@@ -80,13 +76,13 @@ public class AddUserCommand {
 
         private final Logger logger;
         private final Callback callback;
-        private final RealUser.RemoveCallback<RealUserImpl> removeCallback;
+        private final RealListPersistedImpl.RemoveCallback<RealUserImpl> removeCallback;
         private final RealUserImpl.Factory userFactory;
 
         @Inject
         public Performer(@Assisted Logger logger,
                          @Assisted Callback callback,
-                         @Assisted RealUser.RemoveCallback<RealUserImpl> removeCallback,
+                         @Assisted RealListPersistedImpl.RemoveCallback<RealUserImpl> removeCallback,
                          RealUserImpl.Factory userFactory) {
             this.logger = logger;
             this.callback = callback;
@@ -110,7 +106,7 @@ public class AddUserCommand {
         public interface Factory {
             Performer create(Logger logger,
                              Callback callback,
-                             RealUser.RemoveCallback<RealUserImpl> removeCallback);
+                             RealListPersistedImpl.RemoveCallback<RealUserImpl> removeCallback);
         }
     }
 }

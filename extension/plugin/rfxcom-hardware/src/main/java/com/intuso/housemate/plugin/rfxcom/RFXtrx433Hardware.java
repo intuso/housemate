@@ -55,17 +55,19 @@ public class RFXtrx433Hardware implements HardwareDriver {
     }
 
     @Override
-    public void init(Logger logger, HardwareDriver.Callback callback, Iterable<String> deviceIds) {
+    public void init(Logger logger, HardwareDriver.Callback callback) {
         // setup the connection to the USB device
         rfxtrx.openPortSafe();
-        for(Handler handler : handlers)
+        for (Handler handler : handlers)
             handler.init(callback);
-        id: for(String deviceId : deviceIds) {
-            for(Handler handler : handlers) {
-                if (handler.matches(deviceId)) {
-                    handler.parseId(deviceId);
-                    continue id;
-                }
+    }
+
+    @Override
+    public void foundDeviceId(String deviceId) {
+        for(Handler handler : handlers) {
+            if (handler.matches(deviceId)) {
+                handler.parseId(deviceId);
+                return;
             }
         }
     }

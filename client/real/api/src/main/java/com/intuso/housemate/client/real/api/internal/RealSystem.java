@@ -12,13 +12,4 @@ public interface RealSystem<
         COMMAND extends RealCommand<?, ?, ?>,
         PROPERTIES extends RealList<? extends RealProperty<ObjectReference<SimpleProxyDevice>, ?, ?, ?>, ?>,
         SYSTEM extends RealSystem<STRING_VALUE, COMMAND, PROPERTIES, SYSTEM>>
-        extends System<STRING_VALUE, COMMAND, PROPERTIES, SYSTEM> {
-
-    interface Container<SYSTEM extends RealSystem<?, ?, ?, ?>, SYSTEMS extends RealList<? extends SYSTEM, ?>> extends System.Container<SYSTEMS>, RemoveCallback<SYSTEM> {
-        void addSystem(SYSTEM system);
-    }
-
-    interface RemoveCallback<SYSTEM extends RealSystem<?, ?, ?, ?>> {
-        void removeSystem(SYSTEM system);
-    }
-}
+        extends System<STRING_VALUE, COMMAND, PROPERTIES, SYSTEM> {}

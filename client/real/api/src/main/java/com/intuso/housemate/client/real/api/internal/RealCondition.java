@@ -48,12 +48,4 @@ public interface RealCondition<COMMAND extends RealCommand<?, ?, ?>,
     void start();
 
     void stop();
-
-    interface Container<CONDITION extends RealCondition<?, ?, ?, ?, ?, ?, ?, ?>, CONDITIONS extends RealList<? extends CONDITION, ?>> extends Condition.Container<CONDITIONS>, RemoveCallback {
-        void addCondition(CONDITION condition);
-    }
-
-    interface RemoveCallback<CONDITION extends RealCondition<?, ?, ?, ?, ?, ?, ?, ?>> {
-        void removeCondition(CONDITION condition);
-    }
 }

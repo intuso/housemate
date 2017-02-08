@@ -3,8 +3,10 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Automation;
 import com.intuso.housemate.client.api.internal.object.Server;
+import com.intuso.housemate.client.api.internal.object.System;
+import com.intuso.housemate.client.api.internal.object.User;
 import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddSystemCommand;
@@ -18,9 +20,9 @@ import javax.jms.JMSException;
 public class RealServerImpl
         extends RealObject<Server.Data, Server.Listener<? super RealServerImpl>>
         implements RealServer<RealCommandImpl,
-        RealAutomationImpl, RealListPersistedImpl<RealAutomationImpl>,
-        RealSystemImpl, RealListPersistedImpl<RealSystemImpl>,
-        RealUserImpl, RealListPersistedImpl<RealUserImpl>,
+        RealAutomationImpl, RealListPersistedImpl<Automation.Data, RealAutomationImpl>,
+        RealSystemImpl, RealListPersistedImpl<System.Data, RealSystemImpl>,
+        RealUserImpl, RealListPersistedImpl<User.Data, RealUserImpl>,
         ServerBaseNode<?, ?, ?, ?>, RealNodeListImpl,
         RealServerImpl>,
         AddAutomationCommand.Callback,
@@ -30,12 +32,12 @@ public class RealServerImpl
     private final Connection connection;
     private final RealNodeImpl.Factory nodeFactory;
 
-    private final RealListPersistedImpl<RealAutomationImpl> automations;
+    private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
-    private final RealListPersistedImpl<RealSystemImpl> systems;
+    private final RealListPersistedImpl<System.Data, RealSystemImpl> systems;
     private final RealCommandImpl addSystemCommand;
     private final RealNodeListImpl nodes;
-    private final RealListPersistedImpl<RealUserImpl> users;
+    private final RealListPersistedImpl<User.Data, RealUserImpl> users;
     private final RealCommandImpl addUserCommand;
 
     @Inject
@@ -43,13 +45,13 @@ public class RealServerImpl
                           @com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
                           ManagedCollectionFactory managedCollectionFactory,
                           final RealAutomationImpl.Factory automationFactory,
-                          RealListPersistedImpl.Factory<RealAutomationImpl> automationsFactory,
+                          RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
                           final RealSystemImpl.Factory systemFactory,
-                          RealListPersistedImpl.Factory<RealSystemImpl> systemsFactory,
+                          RealListPersistedImpl.Factory<System.Data, RealSystemImpl> systemsFactory,
                           RealNodeImpl.Factory nodeFactory,
                           RealNodeListImpl.Factory nodesFactory,
                           final RealUserImpl.Factory userFactory,
-                          RealListPersistedImpl.Factory<RealUserImpl> usersFactory,
+                          RealListPersistedImpl.Factory<User.Data, RealUserImpl> usersFactory,
                           AddAutomationCommand.Factory addAutomationCommandFactory,
                           AddSystemCommand.Factory addSystemCommandFactory,
                           AddUserCommand.Factory addUserCommandFactory) {
@@ -59,54 +61,36 @@ public class RealServerImpl
         this.automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),
                 AUTOMATIONS_ID,
                 "Automations",
-                "Automations",
-                new RealListPersistedImpl.ExistingObjectFactory<RealAutomationImpl>() {
-                    @Override
-                    public RealAutomationImpl create(Logger parentLogger, Object.Data data) {
-                        return automationFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
-                    }
-                });
+                "Automations");
         this.addAutomationCommand = addAutomationCommandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID),
                 ChildUtil.logger(logger, ADD_AUTOMATION_ID),
                 ADD_AUTOMATION_ID,
                 ADD_AUTOMATION_ID,
                 "Add automation",
                 this,
-                this);
+                automations.getRemoveCallback());
         this.systems = systemsFactory.create(ChildUtil.logger(logger, SYSTEMS_ID),
                 SYSTEMS_ID,
                 "Systems",
-                "Systems",
-                new RealListPersistedImpl.ExistingObjectFactory<RealSystemImpl>() {
-                    @Override
-                    public RealSystemImpl create(Logger parentLogger, Object.Data data) {
-                        return systemFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
-                    }
-                });
+                "Systems");
         this.addSystemCommand = addSystemCommandFactory.create(ChildUtil.logger(logger, ADD_SYSTEM_ID),
                 ChildUtil.logger(logger, ADD_SYSTEM_ID),
                 ADD_SYSTEM_ID,
                 "Add system",
                 "Add system",
                 this,
-                this);
+                systems.getRemoveCallback());
         this.users = usersFactory.create(ChildUtil.logger(logger, USERS_ID),
                 USERS_ID,
                 "Users",
-                "Users",
-                new RealListPersistedImpl.ExistingObjectFactory<RealUserImpl>() {
-                    @Override
-                    public RealUserImpl create(Logger parentLogger, Object.Data data) {
-                        return userFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), RealServerImpl.this);
-                    }
-                });
+                "Users");
         this.addUserCommand = addUserCommandFactory.create(ChildUtil.logger(logger, ADD_USER_ID),
                 ChildUtil.logger(logger, ADD_USER_ID),
                 ADD_USER_ID,
                 ADD_USER_ID,
                 "Add user",
                 this,
-                this);
+                users.getRemoveCallback());
         this.nodes = nodesFactory.create(ChildUtil.logger(logger, NODES_ID),
                 NODES_ID,
                 "Nodes",
@@ -138,7 +122,7 @@ public class RealServerImpl
     }
 
     @Override
-    public RealListPersistedImpl<RealAutomationImpl> getAutomations() {
+    public RealListPersistedImpl<Automation.Data, RealAutomationImpl> getAutomations() {
         return automations;
     }
 
@@ -152,12 +136,7 @@ public class RealServerImpl
         automations.add(automation);
     }
 
-    @Override
-    public final void removeAutomation(RealAutomationImpl realAutomation) {
-        automations.remove(realAutomation.getId());
-    }
-
-    public RealListPersistedImpl<RealSystemImpl> getSYSTEMS() {
+    public RealListPersistedImpl<System.Data, RealSystemImpl> getSystems() {
         return systems;
     }
 
@@ -172,12 +151,7 @@ public class RealServerImpl
     }
 
     @Override
-    public void removeSystem(RealSystemImpl system) {
-        systems.remove(system.getId());
-    }
-
-    @Override
-    public RealListPersistedImpl<RealUserImpl> getUsers() {
+    public RealListPersistedImpl<User.Data, RealUserImpl> getUsers() {
         return users;
     }
 
@@ -192,23 +166,8 @@ public class RealServerImpl
     }
 
     @Override
-    public void removeUser(RealUserImpl user) {
-        users.remove(user.getId());
-    }
-
-    @Override
     public RealNodeListImpl getNodes() {
         return nodes;
-    }
-
-    @Override
-    public void addNode(ServerBaseNode node) {
-        nodes.add(node);
-    }
-
-    @Override
-    public void removeNode(ServerBaseNode node) {
-        nodes.remove(node.getId());
     }
 
     public void start() {

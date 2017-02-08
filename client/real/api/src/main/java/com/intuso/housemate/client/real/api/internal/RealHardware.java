@@ -35,12 +35,4 @@ public interface RealHardware<COMMAND extends RealCommand<?, ?, ?>,
     boolean isDriverLoaded();
 
     boolean isRunning();
-
-    interface Container<HARDWARE extends RealHardware<?, ?, ?, ?, ?, ?, ?, ?, ?>, HARDWARES extends RealList<? extends HARDWARE, ?>> extends Hardware.Container<HARDWARES>, RemoveCallback<HARDWARE> {
-        void addHardware(HARDWARE hardware);
-    }
-
-    interface RemoveCallback<HARDWARE extends RealHardware<?, ?, ?, ?, ?, ?, ?, ?, ?>> {
-        void removeHardware(HARDWARE hardware);
-    }
 }

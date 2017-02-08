@@ -1,7 +1,10 @@
 package com.intuso.housemate.client.real.api.internal;
 
+import com.intuso.housemate.client.api.internal.object.Automation;
 import com.intuso.housemate.client.api.internal.object.Node;
 import com.intuso.housemate.client.api.internal.object.Server;
+import com.intuso.housemate.client.api.internal.object.System;
+import com.intuso.housemate.client.api.internal.object.User;
 
 public interface RealServer<COMMAND extends RealCommand<?, ?, ?>,
         AUTOMATION extends RealAutomation<?, ?, ?, ?, ?, ?>,
@@ -14,7 +17,7 @@ public interface RealServer<COMMAND extends RealCommand<?, ?, ?>,
         NODES extends RealList<? extends NODE, ?>,
         SERVER extends RealServer<COMMAND, AUTOMATION, AUTOMATIONS, SYSTEM, SYSTEMS, USER, USERS, NODE, NODES, SERVER>>
         extends Server<COMMAND, AUTOMATIONS, SYSTEMS, USERS, NODES, SERVER>,
-        RealAutomation.Container<AUTOMATION, AUTOMATIONS>,
-        RealSystem.Container<SYSTEM, SYSTEMS>,
-        RealUser.Container<USER, USERS>,
-        RealNode.Container<NODE, NODES>{}
+        Automation.Container<AUTOMATIONS>,
+        System.Container<SYSTEMS>,
+        User.Container<USERS>,
+        Node.Container<NODES>{}

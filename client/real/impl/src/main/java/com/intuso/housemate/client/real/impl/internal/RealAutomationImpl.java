@@ -7,11 +7,10 @@ import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Automation;
 import com.intuso.housemate.client.api.internal.object.Condition;
-import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.api.internal.object.Task;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealAutomation;
-import com.intuso.housemate.client.real.api.internal.RealCondition;
 import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.housemate.client.real.impl.internal.utils.AddConditionCommand;
@@ -29,7 +28,7 @@ import javax.jms.JMSException;
 public final class RealAutomationImpl
         extends RealObject<Automation.Data, Automation.Listener<? super RealAutomationImpl>>
         implements RealAutomation<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
-        RealListPersistedImpl<RealConditionImpl>, RealListPersistedImpl<RealTaskImpl>, RealAutomationImpl>,
+        RealListPersistedImpl<Condition.Data, RealConditionImpl>, RealListPersistedImpl<Task.Data, RealTaskImpl>, RealAutomationImpl>,
         Condition.Listener<RealConditionImpl> {
 
     private final RealCommandImpl renameCommand;
@@ -38,14 +37,14 @@ public final class RealAutomationImpl
     private final RealCommandImpl startCommand;
     private final RealCommandImpl stopCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealListPersistedImpl<RealConditionImpl> conditions;
+    private final RealListPersistedImpl<Condition.Data, RealConditionImpl> conditions;
     private final RealCommandImpl addConditionCommand;
-    private final RealListPersistedImpl<RealTaskImpl> satisfiedTasks;
+    private final RealListPersistedImpl<Task.Data, RealTaskImpl> satisfiedTasks;
     private final RealCommandImpl addSatisfiedTaskCommand;
-    private final RealListPersistedImpl<RealTaskImpl> unsatisfiedTasks;
+    private final RealListPersistedImpl<Task.Data, RealTaskImpl> unsatisfiedTasks;
     private final RealCommandImpl addUnsatisfiedTaskCommand;
 
-    private final RemoveCallback<RealAutomationImpl> removeCallback;
+    private final RealListPersistedImpl.RemoveCallback<RealAutomationImpl> removeCallback;
 
     private final AddConditionCommand.Callback addConditionCallback = new AddConditionCommand.Callback() {
 
@@ -55,10 +54,10 @@ public final class RealAutomationImpl
         }
     };
 
-    private final RealCondition.RemoveCallback conditionRemoveCallback = new RealCondition.RemoveCallback<RealConditionImpl>() {
+    private final RealListPersistedImpl.RemoveCallback conditionRemoveCallback = new RealListPersistedImpl.RemoveCallback<RealConditionImpl>() {
 
         @Override
-        public void removeCondition(RealConditionImpl condition) {
+        public void remove(RealConditionImpl condition) {
             conditions.remove(condition.getId());
         }
     };
@@ -71,10 +70,10 @@ public final class RealAutomationImpl
         }
     };
 
-    private final RealTask.RemoveCallback satisfiedTaskRemoveCallback = new RealTask.RemoveCallback<RealTaskImpl>() {
+    private final RealListPersistedImpl.RemoveCallback satisfiedTaskRemoveCallback = new RealListPersistedImpl.RemoveCallback<RealTaskImpl>() {
 
         @Override
-        public void removeTask(RealTaskImpl task) {
+        public void remove(RealTaskImpl task) {
             satisfiedTasks.remove(task.getId());
         }
     };
@@ -87,10 +86,10 @@ public final class RealAutomationImpl
         }
     };
 
-    private final RealTask.RemoveCallback unsatisfiedTaskRemoveCallback = new RealTask.RemoveCallback<RealTaskImpl>() {
+    private final RealListPersistedImpl.RemoveCallback unsatisfiedTaskRemoveCallback = new RealListPersistedImpl.RemoveCallback<RealTaskImpl>() {
 
         @Override
-        public void removeTask(RealTaskImpl task) {
+        public void remove(RealTaskImpl task) {
             unsatisfiedTasks.remove(task.getId());
         }
     };
@@ -106,15 +105,13 @@ public final class RealAutomationImpl
                               @Assisted("id") String id,
                               @Assisted("name") String name,
                               @Assisted("description") String description,
-                              @Assisted RemoveCallback<RealAutomationImpl> removeCallback,
+                              @Assisted RealListPersistedImpl.RemoveCallback<RealAutomationImpl> removeCallback,
                               ManagedCollectionFactory managedCollectionFactory,
                               RealCommandImpl.Factory commandFactory,
                               RealParameterImpl.Factory parameterFactory,
                               RealValueImpl.Factory valueFactory,
-                              final RealConditionImpl.Factory conditionFactory,
-                              RealListPersistedImpl.Factory<RealConditionImpl> conditionsFactory,
-                              final RealTaskImpl.Factory taskFactory,
-                              RealListPersistedImpl.Factory<RealTaskImpl> tasksFactory,
+                              RealListPersistedImpl.Factory<Condition.Data, RealConditionImpl> conditionsFactory,
+                              RealListPersistedImpl.Factory<Task.Data, RealTaskImpl> tasksFactory,
                               AddConditionCommand.Factory addConditionCommandFactory,
                               AddTaskCommand.Factory addTaskCommandFactory,
                               TypeRepository typeRepository) {
@@ -201,13 +198,7 @@ public final class RealAutomationImpl
         this.conditions = conditionsFactory.create(ChildUtil.logger(logger, Automation.CONDITIONS_ID),
                 Automation.CONDITIONS_ID,
                 Automation.CONDITIONS_ID,
-                Automation.CONDITIONS_ID,
-                new RealListPersistedImpl.ExistingObjectFactory<RealConditionImpl>() {
-                    @Override
-                    public RealConditionImpl create(Logger parentLogger, Object.Data data) {
-                        return conditionFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), conditionRemoveCallback);
-                    }
-                });
+                Automation.CONDITIONS_ID);
         this.addConditionCommand = addConditionCommandFactory.create(ChildUtil.logger(logger, CONDITIONS_ID),
                 ChildUtil.logger(logger, Automation.ADD_CONDITION_ID),
                 Automation.ADD_CONDITION_ID,
@@ -218,13 +209,7 @@ public final class RealAutomationImpl
         this.satisfiedTasks = tasksFactory.create(ChildUtil.logger(logger, Automation.SATISFIED_TASKS_ID),
                 Automation.SATISFIED_TASKS_ID,
                 Automation.SATISFIED_TASKS_ID,
-                Automation.SATISFIED_TASKS_ID,
-                new RealListPersistedImpl.ExistingObjectFactory<RealTaskImpl>() {
-                    @Override
-                    public RealTaskImpl create(Logger parentLogger, Object.Data data) {
-                        return taskFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), satisfiedTaskRemoveCallback);
-                    }
-                });
+                Automation.SATISFIED_TASKS_ID);
         this.addSatisfiedTaskCommand = addTaskCommandFactory.create(ChildUtil.logger(logger, SATISFIED_TASKS_ID),
                 ChildUtil.logger(logger, Automation.ADD_SATISFIED_TASK_ID),
                 Automation.ADD_SATISFIED_TASK_ID,
@@ -235,13 +220,7 @@ public final class RealAutomationImpl
         this.unsatisfiedTasks = tasksFactory.create(ChildUtil.logger(logger, Automation.UNSATISFIED_TASKS_ID),
                 Automation.UNSATISFIED_TASKS_ID,
                 Automation.UNSATISFIED_TASKS_ID,
-                Automation.UNSATISFIED_TASKS_ID,
-                new RealListPersistedImpl.ExistingObjectFactory<RealTaskImpl>() {
-                    @Override
-                    public RealTaskImpl create(Logger parentLogger, Object.Data data) {
-                        return taskFactory.create(ChildUtil.logger(parentLogger, data.getId()), data.getId(), data.getName(), data.getDescription(), unsatisfiedTaskRemoveCallback);
-                    }
-                });
+                Automation.UNSATISFIED_TASKS_ID);
         this.addUnsatisfiedTaskCommand = addTaskCommandFactory.create(ChildUtil.logger(logger, UNSATISFIED_TASKS_ID),
                 ChildUtil.logger(logger, Automation.ADD_UNSATISFIED_TASK_ID),
                 Automation.ADD_UNSATISFIED_TASK_ID,
@@ -332,7 +311,7 @@ public final class RealAutomationImpl
     }
 
     @Override
-    public RealListPersistedImpl<RealConditionImpl> getConditions() {
+    public RealListPersistedImpl<Condition.Data, RealConditionImpl> getConditions() {
         return conditions;
     }
 
@@ -342,7 +321,7 @@ public final class RealAutomationImpl
     }
 
     @Override
-    public RealListPersistedImpl<RealTaskImpl> getSatisfiedTasks() {
+    public RealListPersistedImpl<Task.Data, RealTaskImpl> getSatisfiedTasks() {
         return satisfiedTasks;
     }
 
@@ -352,7 +331,7 @@ public final class RealAutomationImpl
     }
 
     @Override
-    public RealListPersistedImpl<RealTaskImpl> getUnsatisfiedTasks() {
+    public RealListPersistedImpl<Task.Data, RealTaskImpl> getUnsatisfiedTasks() {
         return unsatisfiedTasks;
     }
 
@@ -389,7 +368,7 @@ public final class RealAutomationImpl
     }
 
     protected final void remove() {
-        removeCallback.removeAutomation(this);
+        removeCallback.remove(this);
     }
 
     private void _start() {
@@ -423,6 +402,21 @@ public final class RealAutomationImpl
                                   @Assisted("id") String id,
                                   @Assisted("name") String name,
                                   @Assisted("description") String description,
-                                  RemoveCallback<RealAutomationImpl> removeCallback);
+                                  RealListPersistedImpl.RemoveCallback<RealAutomationImpl> removeCallback);
+    }
+
+    public static class LoadPersisted implements RealListPersistedImpl.ElementFactory<Automation.Data, RealAutomationImpl> {
+
+        private final RealAutomationImpl.Factory factory;
+
+        @Inject
+        public LoadPersisted(Factory factory) {
+            this.factory = factory;
+        }
+
+        @Override
+        public RealAutomationImpl create(Logger logger, Automation.Data data, RealListPersistedImpl.RemoveCallback<RealAutomationImpl> removeCallback) {
+            return factory.create(logger, data.getId(), data.getName(), data.getDescription(), removeCallback);
+        }
     }
 }

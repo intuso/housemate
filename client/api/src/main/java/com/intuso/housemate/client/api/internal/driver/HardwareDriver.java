@@ -7,8 +7,9 @@ import org.slf4j.Logger;
  */
 public interface HardwareDriver {
 
-    void init(Logger logger, HardwareDriver.Callback callback, Iterable<String> deviceIds);
+    void init(Logger logger, HardwareDriver.Callback callback);
     void uninit();
+    void foundDeviceId(String deviceId);
 
     interface Callback {
         void setError(String error);

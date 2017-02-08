@@ -4,15 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
+import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
-import com.intuso.housemate.client.real.api.internal.RealAutomation;
-import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.housemate.client.real.impl.internal.RealAutomationImpl;
-import com.intuso.housemate.client.real.impl.internal.RealCommandImpl;
-import com.intuso.housemate.client.real.impl.internal.RealParameterImpl;
+import com.intuso.housemate.client.real.impl.internal.*;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
-import com.intuso.housemate.client.v1_0.api.object.Command;
 import org.slf4j.Logger;
 
 import java.util.UUID;
@@ -57,7 +53,7 @@ public class AddAutomationCommand {
                                       String name,
                                       String description,
                                       Callback callback,
-                                      RealAutomation.RemoveCallback<RealAutomationImpl> removeCallback) {
+                                      RealListPersistedImpl.RemoveCallback<RealAutomationImpl> removeCallback) {
             return commandFactory.create(logger, id, name, description, performerFactory.create(baseLogger, callback, removeCallback),
                     Lists.newArrayList(
                             parameterFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID, NAME_PARAMETER_ID),
@@ -81,13 +77,13 @@ public class AddAutomationCommand {
 
         private final Logger logger;
         private final Callback callback;
-        private final RealAutomation.RemoveCallback<RealAutomationImpl> removeCallback;
+        private final RealListPersistedImpl.RemoveCallback<RealAutomationImpl> removeCallback;
         private final RealAutomationImpl.Factory automationFactory;
 
         @Inject
         public Performer(@Assisted Logger logger,
                          @Assisted Callback callback,
-                         @Assisted RealAutomation.RemoveCallback<RealAutomationImpl> removeCallback,
+                         @Assisted RealListPersistedImpl.RemoveCallback<RealAutomationImpl> removeCallback,
                          RealAutomationImpl.Factory automationFactory) {
             this.logger = logger;
             this.callback = callback;
@@ -111,7 +107,7 @@ public class AddAutomationCommand {
         public interface Factory {
             Performer create(Logger logger,
                              Callback callback,
-                             RealAutomation.RemoveCallback<RealAutomationImpl> removeCallback);
+                             RealListPersistedImpl.RemoveCallback<RealAutomationImpl> removeCallback);
         }
     }
 }

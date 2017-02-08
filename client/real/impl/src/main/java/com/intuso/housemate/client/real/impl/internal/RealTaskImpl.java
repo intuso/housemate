@@ -46,7 +46,7 @@ public final class RealTaskImpl
     private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
     private final RealValueImpl<Boolean> executingValue;
 
-    private final RemoveCallback<RealTaskImpl> removeCallback;
+    private final RealListPersistedImpl.RemoveCallback<RealTaskImpl> removeCallback;
 
     private ManagedCollection.Registration driverAvailableListenerRegsitration;
     private TaskDriver driver;
@@ -60,7 +60,7 @@ public final class RealTaskImpl
                         @Assisted("id") String id,
                         @Assisted("name") String name,
                         @Assisted("description") String description,
-                        @Assisted RemoveCallback<RealTaskImpl> removeCallback,
+                        @Assisted RealListPersistedImpl.RemoveCallback<RealTaskImpl> removeCallback,
                         ManagedCollectionFactory managedCollectionFactory,
                         AnnotationParser annotationParser,
                         RealCommandImpl.Factory commandFactory,
@@ -292,7 +292,7 @@ public final class RealTaskImpl
     }
 
     protected final void remove() {
-        removeCallback.removeTask(this);
+        removeCallback.remove(this);
     }
 
     protected final void _start() {
@@ -350,6 +350,21 @@ public final class RealTaskImpl
                             @Assisted("id") String id,
                             @Assisted("name") String name,
                             @Assisted("description") String description,
-                            RemoveCallback<RealTaskImpl> removeCallback);
+                            RealListPersistedImpl.RemoveCallback<RealTaskImpl> removeCallback);
+    }
+
+    public static class LoadPersisted implements RealListPersistedImpl.ElementFactory<Task.Data, RealTaskImpl> {
+
+        private final RealTaskImpl.Factory factory;
+
+        @Inject
+        public LoadPersisted(Factory factory) {
+            this.factory = factory;
+        }
+
+        @Override
+        public RealTaskImpl create(Logger logger, Task.Data data, RealListPersistedImpl.RemoveCallback<RealTaskImpl> removeCallback) {
+            return factory.create(logger, data.getId(), data.getName(), data.getDescription(), removeCallback);
+        }
     }
 }

@@ -126,7 +126,7 @@ public class ProxyServerBridge
         return addSystemCommand;
     }
 
-    public ProxyListBridge<ProxySystemBridge> getSYSTEMS() {
+    public ProxyListBridge<ProxySystemBridge> getSystems() {
         return systems;
     }
 

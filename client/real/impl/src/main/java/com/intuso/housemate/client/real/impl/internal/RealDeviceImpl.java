@@ -9,6 +9,7 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
+import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ public final class RealDeviceImpl
 
     private final static String PROPERTIES_DESCRIPTION = "The device's properties";
 
+    private final AnnotationParser annotationParser;
+
     private final RealCommandImpl renameCommand;
     private final RealListGeneratedImpl<RealCommandImpl> commands;
     private final RealListGeneratedImpl<RealValueImpl<?>> values;
@@ -37,6 +40,7 @@ public final class RealDeviceImpl
                           @Assisted("name") String name,
                           @Assisted("description") String description,
                           ManagedCollectionFactory managedCollectionFactory,
+                          AnnotationParser annotationParser,
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
                           RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
@@ -44,6 +48,7 @@ public final class RealDeviceImpl
                           RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                           TypeRepository typeRepository) {
         super(logger, new Device.Data(id, name, description), managedCollectionFactory);
+        this.annotationParser = annotationParser;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
                 Renameable.RENAME_ID,
@@ -128,10 +133,45 @@ public final class RealDeviceImpl
         return properties;
     }
 
+    void clear() {
+        for(RealCommandImpl command : Lists.newArrayList(commands))
+            commands.remove(command.getId());
+        for(RealValueImpl<?> value : Lists.newArrayList(values))
+            values.remove(value.getId());
+        for(RealPropertyImpl<?> property : Lists.newArrayList(properties))
+            properties.remove(property.getId());
+    }
+
+    void wrap(Object object) {
+        clear();
+        // add the commands, values and properties specified by the object
+        for(RealCommandImpl command : annotationParser.findCommands(ChildUtil.logger(logger, COMMANDS_ID), "", object))
+            commands.add(command);
+        for(RealValueImpl<?> value : annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), "", object))
+            values.add(value);
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(ChildUtil.logger(logger, PROPERTIES_ID), "", object))
+            properties.add(property);
+    }
+
     public interface Factory {
         RealDeviceImpl create(Logger logger,
                               @Assisted("id") String id,
                               @Assisted("name") String name,
                               @Assisted("description") String description);
+    }
+
+    public static class LoadPersisted implements RealListPersistedImpl.ElementFactory<Device.Data, RealDeviceImpl> {
+
+        private final RealDeviceImpl.Factory factory;
+
+        @Inject
+        public LoadPersisted(Factory factory) {
+            this.factory = factory;
+        }
+
+        @Override
+        public RealDeviceImpl create(Logger logger, Device.Data data, RealListPersistedImpl.RemoveCallback<RealDeviceImpl> removeCallback) {
+            return factory.create(logger, data.getId(), data.getName(), data.getDescription());
+        }
     }
 }
