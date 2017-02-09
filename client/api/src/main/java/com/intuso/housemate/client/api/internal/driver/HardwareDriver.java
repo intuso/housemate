@@ -2,6 +2,8 @@ package com.intuso.housemate.client.api.internal.driver;
 
 import org.slf4j.Logger;
 
+import java.util.Map;
+
 /**
  * Created by tomc on 30/09/15.
  */
@@ -19,6 +21,21 @@ public interface HardwareDriver {
 
     interface Factory<DRIVER extends HardwareDriver> {
         DRIVER create(Logger logger, Callback callback);
+    }
+
+    interface Detector {
+
+        void detect(Callback callback);
+
+        interface Callback {
+            void create(String id, String name, String description, Map<String, Object> properties);
+        }
+    }
+
+    class DummyDetector implements Detector {
+
+        @Override
+        public void detect(Callback callback) {}
     }
 
     /**

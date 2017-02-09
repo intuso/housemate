@@ -14,8 +14,8 @@ import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ioc.Type;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.driver.ConditionDriver;
-import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
 import com.intuso.housemate.client.v1_0.api.driver.TaskDriver;
+import com.intuso.housemate.client.v1_0.api.plugin.HardwareDriver;
 import com.intuso.housemate.client.v1_0.api.plugin.Plugin;
 import com.intuso.housemate.client.v1_0.api.plugin.PluginListener;
 import com.intuso.housemate.client.v1_0.api.plugin.RegexType;
@@ -120,18 +120,18 @@ public class TypesV1_0PluginsListener implements PluginListener {
     }
 
     private void addHardwareDriverFactories(Plugin plugin) {
-        for(Class<? extends HardwareDriver> hardwareDriverClass : plugin.getHardwareDrivers()) {
-            Id id = getClassAnnotation(hardwareDriverClass, Id.class);
+        for(HardwareDriver hardwareDriver : plugin.getHardwareDrivers()) {
+            Id id = getClassAnnotation(hardwareDriver.value(), Id.class);
             if(id == null)
-                logger.error("No " + Id.class + " annotation found on " + hardwareDriverClass.getName());
+                logger.error("No " + Id.class + " annotation found on " + hardwareDriver.value().getName());
             else
-                hardwareDriverType.addFactory(id.value(), id.name(), id.description(), hardwareDriverFactoryBridgeFactory.create(asFactory(HardwareDriver.class, HardwareDriver.Factory.class, hardwareDriverClass)));
+                hardwareDriverType.addFactory(id.value(), id.name(), id.description(), hardwareDriverFactoryBridgeFactory.create(asFactory(com.intuso.housemate.client.v1_0.api.driver.HardwareDriver.class, com.intuso.housemate.client.v1_0.api.driver.HardwareDriver.Factory.class, hardwareDriver.value())));
         }
     }
 
     private void removeHardwareDriverFactories(Plugin plugin) {
-        for(Class<? extends HardwareDriver> hardwareDriverClass : plugin.getHardwareDrivers()) {
-            Id id = getClassAnnotation(hardwareDriverClass, Id.class);
+        for(HardwareDriver hardwareDriver : plugin.getHardwareDrivers()) {
+            Id id = getClassAnnotation(hardwareDriver.value(), Id.class);
             if(id != null) {
                 logger.debug("Removing hardware factory for type " + id.value());
                 hardwareDriverType.removeFactory(id.value());

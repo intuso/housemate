@@ -48,6 +48,24 @@ public class PluginHost extends AbstractIdleService implements PluginFileFinder.
             this.v1_0Listeners.add(listener);
     }
 
+    public ManagedCollection.Registration addInternalListener(PluginListener pluginListener, boolean callForExisting) {
+        ManagedCollection.Registration result = internalListeners.add(pluginListener);
+        if(callForExisting)
+            for (Plugins plugins : loadedPlugins.values())
+                for (Plugin plugin : plugins.internalPlugins)
+                    pluginListener.pluginAdded(plugin);
+        return result;
+    }
+
+    public ManagedCollection.Registration addV1_0Listener(com.intuso.housemate.client.v1_0.api.plugin.PluginListener pluginListener, boolean callForExisting) {
+        ManagedCollection.Registration result = v1_0Listeners.add(pluginListener);
+        if(callForExisting)
+            for (Plugins plugins : loadedPlugins.values())
+                for (com.intuso.housemate.client.v1_0.api.plugin.Plugin plugin : plugins.v1_0Plugins)
+                    pluginListener.pluginAdded(plugin);
+        return result;
+    }
+
     @Override
     public synchronized void startUp() {
         pluginFinderListenerRegistration = pluginFileFinder.addListener(this, true);
@@ -66,9 +84,11 @@ public class PluginHost extends AbstractIdleService implements PluginFileFinder.
     @Override
     public String fileFound(File pluginFile) {
         logger.debug("Loading plugins from " + pluginFile.getAbsolutePath());
+        String id = UUID.randomUUID().toString();
         try {
             ClassLoader cl = new URLClassLoader(new URL[] {pluginFile.toURI().toURL()}, getClass().getClassLoader());
             Plugins plugins = new Plugins(pluginFile.getAbsolutePath(), cl);
+            loadedPlugins.put(id, plugins);
             for(Plugin plugin : plugins.internalPlugins)
                 for(PluginListener pluginListener : internalListeners)
                     pluginListener.pluginAdded(plugin);
@@ -78,7 +98,7 @@ public class PluginHost extends AbstractIdleService implements PluginFileFinder.
         } catch(IOException e) {
             logger.error("Failed to load  plugin from " + pluginFile.getAbsolutePath() + ". Could not get URL for file");
         }
-        return UUID.randomUUID().toString();
+        return id;
     }
 
     @Override

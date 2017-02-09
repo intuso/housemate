@@ -50,6 +50,10 @@ public class RealNodeImpl
                 hardwares.getRemoveCallback());
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
     @Override
     protected void initChildren(String name, Connection connection) throws JMSException {
         super.initChildren(name, connection);

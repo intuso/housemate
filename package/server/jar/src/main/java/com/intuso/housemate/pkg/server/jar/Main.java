@@ -3,8 +3,11 @@ package com.intuso.housemate.pkg.server.jar;
 import com.google.common.util.concurrent.ServiceManager;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.intuso.housemate.client.real.impl.internal.HardwareDetectorInternalPluginListener;
+import com.intuso.housemate.client.real.impl.internal.HardwareDetectorV1_0PluginListener;
 import com.intuso.housemate.pkg.server.jar.ioc.ServerPackageJarModule;
 import com.intuso.housemate.platform.pc.Properties;
+import com.intuso.housemate.plugin.host.internal.PluginHost;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -54,6 +57,11 @@ public class Main {
         });
         serviceManager.startAsync();
         serviceManager.awaitHealthy();
+
+        // detect any hardware now that everything is started
+        injector.getInstance(PluginHost.class).addInternalListener(injector.getInstance(HardwareDetectorInternalPluginListener.class), true);
+        injector.getInstance(PluginHost.class).addV1_0Listener(injector.getInstance(HardwareDetectorV1_0PluginListener.class), true);
+
         logger.debug("Started server");
     }
 

@@ -33,7 +33,7 @@ public class RealTypesModule extends AbstractModule {
         bind(TypeSerialiser.Repository.class).to(TypeRepository.class);
         bind(com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser.Repository.class).to(TypeSerialisersV1_0Repository.class);
 
-        // bind plugin listeners
+        // bind types plugin listener NB this needs to be bound before the hardware detector so the driver is already available
         bind(TypesInternalPluginsListener.class).in(Scopes.SINGLETON);
         Multibinder.newSetBinder(binder(), PluginListener.class).addBinding().to(TypesInternalPluginsListener.class);
         bind(TypesV1_0PluginsListener.class).in(Scopes.SINGLETON);

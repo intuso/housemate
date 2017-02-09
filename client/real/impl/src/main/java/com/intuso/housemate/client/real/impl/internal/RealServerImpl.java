@@ -30,7 +30,6 @@ public class RealServerImpl
         AddUserCommand.Callback {
 
     private final Connection connection;
-    private final RealNodeImpl.Factory nodeFactory;
 
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
@@ -44,20 +43,16 @@ public class RealServerImpl
     public RealServerImpl(Connection connection,
                           @com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
                           ManagedCollectionFactory managedCollectionFactory,
-                          final RealAutomationImpl.Factory automationFactory,
                           RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
-                          final RealSystemImpl.Factory systemFactory,
                           RealListPersistedImpl.Factory<System.Data, RealSystemImpl> systemsFactory,
-                          RealNodeImpl.Factory nodeFactory,
                           RealNodeListImpl.Factory nodesFactory,
-                          final RealUserImpl.Factory userFactory,
                           RealListPersistedImpl.Factory<User.Data, RealUserImpl> usersFactory,
                           AddAutomationCommand.Factory addAutomationCommandFactory,
                           AddSystemCommand.Factory addSystemCommandFactory,
-                          AddUserCommand.Factory addUserCommandFactory) {
+                          AddUserCommand.Factory addUserCommandFactory,
+                          RealNodeImpl node) {
         super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory);
         this.connection = connection;
-        this.nodeFactory = nodeFactory;
         this.automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),
                 AUTOMATIONS_ID,
                 "Automations",
@@ -95,6 +90,7 @@ public class RealServerImpl
                 NODES_ID,
                 "Nodes",
                 "Nodes");
+        nodes.add(node);
     }
 
     @Override
@@ -177,7 +173,6 @@ public class RealServerImpl
         } catch(JMSException e) {
             throw new HousemateException("Failed to initalise objects");
         }
-        nodes.add(nodeFactory.create(ChildUtil.logger(logger, NODES_ID, "local"), "local", "Local", "Local Node"));
     }
 
     public void stop() {

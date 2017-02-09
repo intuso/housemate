@@ -3,7 +3,6 @@ package com.intuso.housemate.client.api.internal.plugin;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.client.api.internal.annotation.Id;
 import com.intuso.housemate.client.api.internal.driver.ConditionDriver;
-import com.intuso.housemate.client.api.internal.driver.HardwareDriver;
 import com.intuso.housemate.client.api.internal.driver.TaskDriver;
 
 /**
@@ -65,7 +64,7 @@ public abstract class AnnotatedPlugin implements Plugin {
     }
 
     @Override
-    public Iterable<Class<? extends HardwareDriver>> getHardwareDrivers() {
+    public Iterable<HardwareDriver> getHardwareDrivers() {
         HardwareDrivers taskDrivers = getClass().getAnnotation(HardwareDrivers.class);
         if(taskDrivers == null)
             return Lists.newArrayList();
