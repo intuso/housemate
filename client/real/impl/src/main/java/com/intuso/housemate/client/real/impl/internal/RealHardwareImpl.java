@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.util.Types;
+import com.intuso.housemate.client.api.bridge.v1_0.driver.HardwareDriverBridge;
 import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.driver.HardwareDriver;
@@ -246,11 +247,16 @@ public final class RealHardwareImpl
         if(driver != null)
             uninit();
         driver = driverFactory.create(logger, this);
-        for(RealCommandImpl command : annotationParser.findCommands(logger, "", driver))
+        java.lang.Object annotatedObject;
+        if(driver instanceof HardwareDriverBridge)
+            annotatedObject = ((HardwareDriverBridge) driver).getHardwareDriver();
+        else
+            annotatedObject = driver;
+        for(RealCommandImpl command : annotationParser.findCommands(logger, "", annotatedObject))
             commands.add(command);
-        for(RealValueImpl<?> value : annotationParser.findValues(logger, "", driver))
+        for(RealValueImpl<?> value : annotationParser.findValues(logger, "", annotatedObject))
             values.add(value);
-        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", driver))
+        for(RealPropertyImpl<?> property : annotationParser.findProperties(logger, "", annotatedObject))
             properties.add(property);
         errorValue.setValue(null);
         driverLoadedValue.setValue(true);

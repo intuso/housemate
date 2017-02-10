@@ -9,8 +9,8 @@ import org.eclipse.jetty.webapp.WebAppContext;
  */
 public class BrokerWebConsoleModule extends AbstractModule {
 
-    public BrokerWebConsoleModule(WriteableMapPropertyRepository defaultProperties) {
-        defaultProperties.set("web.activemq-web-console.path", "./activemq/webconsole");
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
+        BrokerWebAppContextProvider.configureDefaults(defaultProperties);
     }
 
     @Override

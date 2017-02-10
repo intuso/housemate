@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,8 @@ public class RFXtrx433Hardware implements HardwareDriver {
     private static List<RFXtrx433Hardware> CREATED_INSTANCES = Lists.newCopyOnWriteArrayList();
     private static RFXtrx433Hardware RUNNING_INSTANCE = null;
 
-    private final RFXtrx rfxtrx;
+    private final static RFXtrx RFXTRX = new RFXtrx();
+
     private final Set<Handler> handlers;
     private final Lighting2Handler.AC lighting2ACHandler;
 
@@ -35,8 +37,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
 
     @Inject
     public RFXtrx433Hardware(Injector injector) {
-        Injector ourInjector = injector.createChildInjector(new RFXtrx433Module());
-        this.rfxtrx = ourInjector.getInstance(RFXtrx.class);
+        Injector ourInjector = injector.createChildInjector(new RFXtrx433Module(RFXTRX));
         this.handlers = ourInjector.getInstance(new Key<Set<Handler>>() {});
         this.lighting2ACHandler = ourInjector.getInstance(Lighting2Handler.AC.class);
         CREATED_INSTANCES.add(this);
@@ -52,8 +53,8 @@ public class RFXtrx433Hardware implements HardwareDriver {
     @Id(value = "serial-pattern", name = "Serial port pattern", description = "Regex matching acceptable serial port names")
     public void setPattern(String pattern) {
         this.pattern = pattern;
-        if(rfxtrx != null)
-            rfxtrx.setPatterns(Lists.newArrayList(Pattern.compile(pattern)));
+        if(RFXTRX != null)
+            RFXTRX.setPatterns(Lists.newArrayList(Pattern.compile(pattern)));
     }
 
     public String getPattern() {
@@ -75,7 +76,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
             RUNNING_INSTANCE = this;
         }
         // setup the connection to the USB device
-        rfxtrx.openPortSafe();
+        RFXTRX.openPortSafe();
         for (Handler handler : handlers)
             handler.init(callback);
     }
@@ -94,7 +95,7 @@ public class RFXtrx433Hardware implements HardwareDriver {
     public void uninit() {
         for(Handler handler : handlers)
             handler.uninit();
-        rfxtrx.closePort();
+        RFXTRX.closePort();
         synchronized (RFXtrx433Hardware.class) {
             // this should always be true, but let's check just in case
             if(RUNNING_INSTANCE != null && RUNNING_INSTANCE.equals(this))
@@ -116,13 +117,6 @@ public class RFXtrx433Hardware implements HardwareDriver {
 
     public static class Detector implements HardwareDriver.Detector {
 
-        private final RFXtrx rfxtrx;
-
-        @Inject
-        public Detector(RFXtrx rfxtrx) {
-            this.rfxtrx = rfxtrx;
-        }
-
         @Override
         public void detect(Callback callback) {
 
@@ -132,11 +126,13 @@ public class RFXtrx433Hardware implements HardwareDriver {
 
             // if not, try and open the port. Should succeed if one is attached
             try {
-                rfxtrx.openPort();
-                rfxtrx.closePort();
+                RFXTRX.openPort();
+                RFXTRX.closePort();
 
                 // if we get here, there are no current drivers created but there is an RFXtrx433 attached.
-                callback.create("rfxtrx433", "RFXtr433", "RFXCom 433MHz Transceiver", Maps.<String, java.lang.Object>newHashMap());
+                Map<String, Object> properties = Maps.newHashMap();
+                properties.put("autocreate", true);
+                callback.create("rfxtrx433", "RFXtr433", "RFXCom 433MHz Transceiver", properties);
             } catch (IOException e) {
                 // do nothing, just testing if we can open one
             }

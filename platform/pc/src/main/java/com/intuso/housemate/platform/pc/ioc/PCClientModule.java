@@ -21,14 +21,15 @@ import java.util.Set;
  */
 public class PCClientModule extends AbstractModule {
 
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
+        PCModule.configureDefaults(defaultProperties);
+        ConnectionProvider.configureDefaults(defaultProperties);
+    }
+
     private final PropertyRepository properties;
 
-    public PCClientModule(WriteableMapPropertyRepository defaultProperties, PropertyRepository properties) {
+    public PCClientModule(PropertyRepository properties) {
         this.properties = properties;
-
-        // set the defaults
-        defaultProperties.set(ConnectionProvider.HOST, "localhost");
-        defaultProperties.set(ConnectionProvider.PORT, "46873");
     }
 
     @Override

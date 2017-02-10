@@ -1,9 +1,12 @@
 package com.intuso.housemate.server.ioc;
 
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.server.activemq.StoredMessageSubscriptionRecoveryPolicy;
+import com.intuso.utilities.properties.api.PropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.jmx.ManagementContext;
@@ -22,7 +25,24 @@ import java.io.IOException;
  */
 public class BrokerServiceProvider implements Provider<BrokerService> {
 
-    Logger logger = LoggerFactory.getLogger(BrokerServiceProvider.class);
+    public final static String BROKER_HOST = "broker.host";
+    public final static String BROKER_PORT = "broker.port";
+    public final static String BROKER_STORAGE_DIR = "broker.storage.dir";
+
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
+        defaultProperties.set(BROKER_HOST, "0.0.0.0");
+        defaultProperties.set(BROKER_PORT, "4600");
+        defaultProperties.set(BROKER_STORAGE_DIR, "./broker/storage");
+    }
+
+    private final static Logger logger = LoggerFactory.getLogger(BrokerServiceProvider.class);
+
+    private final PropertyRepository properties;
+
+    @Inject
+    public BrokerServiceProvider(PropertyRepository properties) {
+        this.properties = properties;
+    }
 
     @Override
     public BrokerService get() {
@@ -39,8 +59,16 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
         managementContext.setCreateConnector(false);
         brokerService.setManagementContext(managementContext);
 
+        File storageDir = new File(properties.get(BROKER_STORAGE_DIR));
+        if(!storageDir.exists())
+            storageDir.mkdirs();
+        else if(!storageDir.isDirectory())
+            throw new HousemateException("Broker storage directory is not a directory: " + storageDir.getAbsolutePath());
+
         try {
-            brokerService.setPersistenceAdapter(new KahaDBStore());
+            KahaDBStore kahaDbStore = new KahaDBStore();
+            kahaDbStore.setDirectory(new File(storageDir, "KahaDB"));
+            brokerService.setPersistenceAdapter(kahaDbStore);
         } catch (IOException e) {
             logger.error("Failed to setup broker message persistence", e);
         }
@@ -48,7 +76,7 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
         // setup the destination policies
         PolicyMap policyMap = new PolicyMap();
         PolicyEntry defaultEntry = new PolicyEntry();
-        File messageRootDir = new File("messages");
+        File messageRootDir = new File(storageDir, "messages");
         messageRootDir.mkdirs();
         defaultEntry.setSubscriptionRecoveryPolicy(new StoredMessageSubscriptionRecoveryPolicy(ChildUtil.logger(logger, "message-persistence"), brokerService, messageRootDir));
         policyMap.setDefaultEntry(defaultEntry);
@@ -56,7 +84,7 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
 
         // setup the connectors this broker will provide
         try {
-            brokerService.addConnector("tcp://0.0.0.0:46873");
+            brokerService.addConnector("tcp://" + properties.get(BROKER_HOST) + ":" + properties.get(BROKER_PORT));
         } catch(Exception e) {
             logger.error("Failed to add a connector to the broker. No remote clients will be able to connect", e);
         }

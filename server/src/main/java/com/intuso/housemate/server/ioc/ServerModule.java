@@ -23,8 +23,9 @@ public class ServerModule extends AbstractModule {
 
     public final static String SERVER_NAME = "server.name";
 
-    public ServerModule(WriteableMapPropertyRepository defaultProperties) {
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
         defaultProperties.set(SERVER_NAME, "My Server");
+        BrokerServiceProvider.configureDefaults(defaultProperties);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.intuso.housemate.plugin.host.internal.PluginFileFinder;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,11 @@ import java.util.WeakHashMap;
  */
 public class PCPluginFileFinder implements PluginFileFinder {
 
-    public final static String PLUGINS_DIR_NAME= "plugins";
+    public final static String PLUGINS_DIR = "plugins.dir";
+
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
+        defaultProperties.set(PLUGINS_DIR, "./plugins");
+    }
 
     private final static Logger logger = LoggerFactory.getLogger(PCPluginFileFinder.class);
 
@@ -29,7 +34,7 @@ public class PCPluginFileFinder implements PluginFileFinder {
     @Inject
     public PCPluginFileFinder(ManagedCollectionFactory managedCollectionFactory, PropertyRepository properties) {
         this.listeners = managedCollectionFactory.create();
-        File pluginDirectory = new File(properties.get(Properties.HOUSEMATE_CONFIG_DIR) + File.separator + PLUGINS_DIR_NAME);
+        File pluginDirectory = new File(properties.get(PLUGINS_DIR));
         if(!pluginDirectory.exists())
             pluginDirectory.mkdir();
         if(pluginDirectory.isFile())

@@ -13,7 +13,7 @@
 	<description>Housemate Server runnable jar</description>
 
     <properties>
-        <jetty.version>9.3.11.v20160721</jetty.version>
+        <jetty.version>9.4.0.v20161208</jetty.version>
     </properties>
 
     <dependencies>
@@ -55,34 +55,9 @@
 
         <!-- Jetty server/web container stuff -->
         <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-io</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
-            <version>${jetty.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-plus</artifactId>
-            <version>${jetty.version}</version>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>utilities-webserver</artifactId>
+            <version>${intuso.utilities.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -94,13 +69,23 @@
             <artifactId>apache-jsp</artifactId>
             <version>${jetty.version}</version>
         </dependency>
-
-        <!-- ActiveMQ Broker Web Console. NB not actually depended on, but good for debugging -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-plus</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-web-console</artifactId>
             <type>war</type>
             <version>${activemq.version}</version>
+        </dependency>
+
+        <!-- ActiveMQ Broker Web Console. NB not actually depended on, but good for debugging -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
         </dependency>
         <!-- Required to make taglib stuff work  -->
         <dependency>

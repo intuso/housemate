@@ -11,16 +11,14 @@ import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
  */
 public class NodeModule extends AbstractModule {
 
-    private final WriteableMapPropertyRepository defaultProperties;
-
-    public NodeModule(WriteableMapPropertyRepository defaultProperties) {
-        this.defaultProperties = defaultProperties;
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
+        NodeRootModule.configureDefaults(defaultProperties);
     }
 
     @Override
     protected void configure() {
         // install real object stuff
-        install(new NodeRootModule(defaultProperties));
+        install(new NodeRootModule());
 
         // install proxy object stuff
         install(new SimpleProxyServerModule());

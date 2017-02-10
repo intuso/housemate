@@ -206,6 +206,8 @@ public abstract class ProxyHardware<
             return properties;
         else if(VALUES_ID.equals(id))
             return values;
+        else if(DEVICES_ID.equals(id))
+            return devices;
         return null;
     }
 }

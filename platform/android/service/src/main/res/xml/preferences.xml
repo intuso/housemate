@@ -11,7 +11,7 @@
                 android:key="client.socket.port"
                 android:title="@string/pref_title_server_port"
                 android:inputType="number"
-                android:defaultValue="46873" />
+                android:defaultValue="4600" />
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/pref_title_activity">

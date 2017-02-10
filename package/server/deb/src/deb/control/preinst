@@ -1,4 +1,4 @@
 #!/bin/sh
 
 echo "Creating Intuso Housemate user hm"
-adduser --system --no-create-home hm
+adduser --system --no-create-home --ingroup dialout hm

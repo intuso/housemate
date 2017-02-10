@@ -83,7 +83,9 @@ public final class RealNodeListImpl
                     }
                 }
         );
-        // don't need to init the elements, there can't be any until we've subscribed
+        // init any elements that were added before we init'd
+        for(ServerBaseNode<?, ?, ?, ?> element : elements.values())
+            element.init(ChildUtil.name(name, element.getId()), connection);
     }
 
     @Override

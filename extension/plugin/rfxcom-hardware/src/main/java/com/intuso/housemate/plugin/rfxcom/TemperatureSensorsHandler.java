@@ -22,7 +22,7 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
     private final Map<Integer, TemperatureSensorImpl> sensors = Maps.newHashMap();
 
     protected TemperatureSensorsHandler(ManagedCollectionFactory managedCollectionFactory,
-                                        RFXtrx rfXtrx,
+                                        RFXtrx rfxtrx,
                                         com.rfxcom.rfxtrx.message.TemperatureSensors.SubType subType,
                                         String idPrefix,
                                         String idFormat,
@@ -30,7 +30,7 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
                                         String descriptionFormat) {
         super(idPrefix + "-");
         this.managedCollectionFactory = managedCollectionFactory;
-        this.temperatureSensors = new TemperatureSensors(rfXtrx, subType);
+        this.temperatureSensors = new TemperatureSensors(rfxtrx, subType);
         this.idFormat = idPrefix + "-" + idFormat;
         this.nameFormat = nameFormat;
         this.descriptionFormat = descriptionFormat;
@@ -79,8 +79,8 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
 
     public static class TEMP1 extends TemperatureSensorsHandler {
         @Inject
-        public TEMP1(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.TemperatureSensors.SubType.TEMP1,
+        public TEMP1(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.TemperatureSensors.SubType.TEMP1,
                     "temperaturesensor-1",
                     "${sensorId}",
                     "Temperature Sensor 1-${sensorId}",
@@ -91,8 +91,8 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
     public static class TEMP2 extends TemperatureSensorsHandler {
 
         @Inject
-        public TEMP2(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.TemperatureSensors.SubType.TEMP2,
+        public TEMP2(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.TemperatureSensors.SubType.TEMP2,
                     "temperaturesensor-2",
                     "${sensorId}",
                     "Temperature Sensor 2-${sensorId}",
@@ -103,8 +103,8 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
     public static class TEMP3 extends TemperatureSensorsHandler {
 
         @Inject
-        public TEMP3(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.TemperatureSensors.SubType.TEMP3,
+        public TEMP3(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.TemperatureSensors.SubType.TEMP3,
                     "temperaturesensor-3",
                     "${sensorId}",
                     "Temperature Sensor 3-${sensorId}",
@@ -115,8 +115,8 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
     public static class TEMP4 extends TemperatureSensorsHandler {
 
         @Inject
-        public TEMP4(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.TemperatureSensors.SubType.TEMP4,
+        public TEMP4(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.TemperatureSensors.SubType.TEMP4,
                     "temperaturesensor-4",
                     "${sensorId}",
                     "Temperature Sensor 4-${sensorId}",
@@ -127,8 +127,8 @@ public class TemperatureSensorsHandler extends Handler implements TemperatureSen
     public static class TEMP5 extends TemperatureSensorsHandler {
 
         @Inject
-        public TEMP5(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.TemperatureSensors.SubType.TEMP5,
+        public TEMP5(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.TemperatureSensors.SubType.TEMP5,
                     "temperaturesensor-5",
                     "${sensorId}",
                     "Temperature Sensor 5-${sensorId}",

@@ -2,11 +2,11 @@ package com.intuso.housemate.pkg.server.jar.ioc;
 
 import com.google.inject.AbstractModule;
 import com.intuso.housemate.pkg.server.jar.ioc.activemq.BrokerWebConsoleModule;
-import com.intuso.housemate.pkg.server.jar.ioc.jetty.JettyModule;
 import com.intuso.housemate.platform.pc.ioc.PCModule;
 import com.intuso.housemate.server.ioc.ServerModule;
 import com.intuso.utilities.properties.api.PropertyRepository;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
+import com.intuso.utilities.webserver.ioc.WebServerModule;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,11 +17,16 @@ import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
  */
 public class ServerPackageJarModule extends AbstractModule {
 
-    private final WriteableMapPropertyRepository defaultProperties;
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
+        PCModule.configureDefaults(defaultProperties);
+        ConfigsProvider.configureDefaults(defaultProperties);
+        ServerModule.configureDefaults(defaultProperties);
+        BrokerWebConsoleModule.configureDefaults(defaultProperties);
+    }
+
     private final PropertyRepository properties;
 
-    public ServerPackageJarModule(WriteableMapPropertyRepository defaultProperties, PropertyRepository properties) {
-        this.defaultProperties = defaultProperties;
+    public ServerPackageJarModule(PropertyRepository properties) {
         this.properties = properties;
     }
 
@@ -30,8 +35,8 @@ public class ServerPackageJarModule extends AbstractModule {
         bind(PropertyRepository.class).toInstance(properties);
         install(new PCModule()); // log and properties provider
         install(new SerialisersModule());
-        install(new ServerModule(defaultProperties)); // main server module
-        install(new JettyModule(defaultProperties)); // web server
-        install(new BrokerWebConsoleModule(defaultProperties)); // active mq broker web console setup
+        install(new ServerModule()); // main server module
+        install(new WebServerModule(ConfigsProvider.class)); // web server
+        install(new BrokerWebConsoleModule()); // active mq broker web console setup
     }
 }

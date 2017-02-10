@@ -7,13 +7,23 @@ import com.intuso.housemate.plugin.rfxcom.Handler;
 import com.intuso.housemate.plugin.rfxcom.Lighting1Handler;
 import com.intuso.housemate.plugin.rfxcom.Lighting2Handler;
 import com.intuso.housemate.plugin.rfxcom.TemperatureSensorsHandler;
+import com.rfxcom.rfxtrx.RFXtrx;
 
 /**
  * Created by tomc on 02/02/17.
  */
 public class RFXtrx433Module extends AbstractModule {
+
+    private final RFXtrx rfxtrx;
+
+    public RFXtrx433Module(RFXtrx rfxtrx) {
+        this.rfxtrx = rfxtrx;
+    }
+
     @Override
     protected void configure() {
+
+        bind(RFXtrx.class).toInstance(rfxtrx);
 
         // bind lighting1 handlers as singletons
         bind(Lighting1Handler.ARC.class).in(Scopes.SINGLETON);

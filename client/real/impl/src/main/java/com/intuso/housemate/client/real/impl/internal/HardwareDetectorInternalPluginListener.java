@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.client.api.internal.annotation.Id;
+import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Node;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.plugin.HardwareDriver;
@@ -21,6 +22,17 @@ public class HardwareDetectorInternalPluginListener implements PluginListener {
     private final HardwareDriverType hardwareDriverType;
     private final RealNodeImpl node;
     private final RealHardwareImpl.Factory hardwareFactory;
+
+    private Command.PerformListener<? super RealCommandImpl> dummyListener = new Command.PerformListener<RealCommandImpl>() {
+        @Override
+        public void commandStarted(RealCommandImpl command) {}
+
+        @Override
+        public void commandFinished(RealCommandImpl command) {}
+
+        @Override
+        public void commandFailed(RealCommandImpl command, String error) {}
+    };
 
     @Inject
     public HardwareDetectorInternalPluginListener(Injector injector, HardwareDriverType hardwareDriverType, RealNodeImpl node, RealHardwareImpl.Factory hardwareFactory) {
@@ -58,13 +70,14 @@ public class HardwareDetectorInternalPluginListener implements PluginListener {
         public void create(String id, String name, String description, Map<String, Object> properties) {
             RealHardwareImpl hardware = hardwareFactory.create(ChildUtil.logger(node.getLogger(), Node.HARDWARES_ID, id), id, name, description, node.getHardwares().getRemoveCallback());
             node.getHardwares().add(hardware);
-            hardware.getDriverProperty().set(hardwareDriverType.deserialise(new Type.Instance(driverId)), null);
+            hardware.getDriverProperty().set(hardwareDriverType.deserialise(new Type.Instance(driverId)), dummyListener);
             for (Map.Entry<String, Object> propertyEntry : properties.entrySet()) {
                 // for properties to already exist, this requires the driver to already be initialised which it will be, as long as the types listener is called before this one!
                 RealPropertyImpl property = hardware.getProperties().get(propertyEntry.getKey());
                 if (property != null)
-                    property.set(propertyEntry.getValue(), null);
+                    property.set(propertyEntry.getValue(), dummyListener);
             }
+            hardware.getStartCommand().perform(new Type.InstanceMap(), dummyListener);
         }
     }
 }

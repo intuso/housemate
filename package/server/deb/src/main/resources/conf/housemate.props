@@ -1,1 +1,11 @@
-conf.dir=/etc/intuso/housemate/server
+server.name=My Server
+
+broker.host=0.0.0.0
+broker.port=4600
+broker.storage.dir=/var/lib/intuso/housemate/broker
+broker.web-console-webapp=/etc/intuso/housemate/server/activemq/webconsole
+
+webserver.host=0.0.0.0
+webserver.port=4601
+
+plugins.dir=/usr/share/intuso/housemate/server/plugins

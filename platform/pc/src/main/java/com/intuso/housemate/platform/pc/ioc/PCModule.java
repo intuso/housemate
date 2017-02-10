@@ -6,6 +6,7 @@ import com.intuso.housemate.platform.pc.CopyOnWriteManagedCollectionFactory;
 import com.intuso.housemate.platform.pc.PCPluginFileFinder;
 import com.intuso.housemate.plugin.host.internal.PluginFileFinder;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,6 +16,10 @@ import com.intuso.utilities.collection.ManagedCollectionFactory;
  * To change this template use File | Settings | File Templates.
  */
 public class PCModule extends AbstractModule {
+
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
+        PCPluginFileFinder.configureDefaults(defaultProperties);
+    }
 
     @Override
     protected void configure() {

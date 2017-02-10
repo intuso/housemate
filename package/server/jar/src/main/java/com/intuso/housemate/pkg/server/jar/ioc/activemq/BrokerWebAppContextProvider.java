@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.tomcat.InstanceManager;
 import org.apache.tomcat.SimpleInstanceManager;
@@ -21,6 +22,12 @@ import java.util.List;
  */
 public class BrokerWebAppContextProvider implements Provider<WebAppContext> {
 
+    public final static String PATH = "broker.web-console.webapp";
+
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
+        defaultProperties.set(PATH, "./activemq/webconsole");
+    }
+
     private final ContextHandlerCollection contextHandlerCollection;
     private final File warFile;
     private final BrokerService brokerService; // bind this so it gets created before the web app
@@ -29,7 +36,7 @@ public class BrokerWebAppContextProvider implements Provider<WebAppContext> {
     public BrokerWebAppContextProvider(ContextHandlerCollection contextHandlerCollection, PropertyRepository properties, BrokerService brokerService) {
         BrokerServiceProvider.brokerService = brokerService;
         this.contextHandlerCollection = contextHandlerCollection;
-        this.warFile = new File(properties.get("web.activemq-web-console.path"));
+        this.warFile = new File(properties.get(PATH));
         this.brokerService = brokerService;
     }
 

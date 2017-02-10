@@ -10,17 +10,19 @@ import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
  */
 public class NodePackageJarModule extends AbstractModule {
 
-    private final WriteableMapPropertyRepository defaultProperties;
+    public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
+        PCClientModule.configureDefaults(defaultProperties);
+    }
+
     private final PropertyRepository properties;
 
-    public NodePackageJarModule(WriteableMapPropertyRepository defaultProperties, PropertyRepository properties) {
-        this.defaultProperties = defaultProperties;
+    public NodePackageJarModule(PropertyRepository properties) {
         this.properties = properties;
     }
 
     @Override
     protected void configure() {
-        install(new PCClientModule(defaultProperties, properties)); // log and properties provider
-        install(new NodeModule(defaultProperties)); // main server module
+        install(new PCClientModule(properties)); // log and properties provider
+        install(new NodeModule()); // main server module
     }
 }

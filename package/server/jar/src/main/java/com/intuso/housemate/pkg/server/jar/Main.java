@@ -42,7 +42,9 @@ public class Main {
         WriteableMapPropertyRepository defaultProperties = WriteableMapPropertyRepository.newEmptyRepository(managedCollectionFactory);
         PropertyRepository properties = Properties.create(managedCollectionFactory, defaultProperties, args);
 
-        Injector injector = Guice.createInjector(new ServerPackageJarModule(defaultProperties, properties));
+        ServerPackageJarModule.configureDefaults(defaultProperties);
+
+        Injector injector = Guice.createInjector(new ServerPackageJarModule(properties));
 
         logger.debug("Starting server");
         final ServiceManager serviceManager = injector.getInstance(ServiceManager.class);

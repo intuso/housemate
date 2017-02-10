@@ -24,7 +24,7 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
     private final Map<Integer, Map<Byte, PowerImpl>> devices = Maps.newHashMap();
 
     protected Lighting2Handler(ManagedCollectionFactory managedCollectionFactory,
-                               RFXtrx rfXtrx,
+                               RFXtrx rfxtrx,
                                com.rfxcom.rfxtrx.message.Lighting2.SubType subType,
                                String idPrefix,
                                String idFormat,
@@ -32,7 +32,7 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
                                String descriptionFormat) {
         super(idPrefix + "-");
         this.managedCollectionFactory = managedCollectionFactory;
-        this.lighting2 = new Lighting2(rfXtrx, subType);
+        this.lighting2 = new Lighting2(rfxtrx, subType);
         this.idFormat = idPrefix + "-" + idFormat;
         this.nameFormat = nameFormat;
         this.descriptionFormat = descriptionFormat;
@@ -149,8 +149,8 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
     public static class AC extends Lighting2Handler {
 
         @Inject
-        protected AC(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.Lighting2.SubType.AC,
+        protected AC(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.Lighting2.SubType.AC,
                     "ac",
                     "${houseId}-${unitCode}",
                     "AC Appliance ${unitCode}",
@@ -161,8 +161,8 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
     public static class HomeEasyEU extends Lighting2Handler {
 
         @Inject
-        protected HomeEasyEU(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.Lighting2.SubType.HomeEasyEU,
+        protected HomeEasyEU(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.Lighting2.SubType.HomeEasyEU,
                     "homeeasyeu",
                     "${houseId}-${unitCode}",
                     "HomeEasy EU Appliance ${unitCode}",
@@ -173,8 +173,8 @@ public class Lighting2Handler extends Handler implements Lighting2.Callback {
     public static class ANSLUT extends Lighting2Handler {
 
         @Inject
-        protected ANSLUT(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.Lighting2.SubType.ANSLUT,
+        protected ANSLUT(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.Lighting2.SubType.ANSLUT,
                     "anslut",
                     "${houseId}-${unitCode}",
                     "ANSLUT Appliance ${unitCode}",

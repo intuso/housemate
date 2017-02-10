@@ -24,7 +24,7 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
     private final Map<Byte, Map<Byte, PowerImpl>> devices = Maps.newHashMap();
 
     protected Lighting1Handler(ManagedCollectionFactory managedCollectionFactory,
-                               RFXtrx rfXtrx,
+                               RFXtrx rfxtrx,
                                com.rfxcom.rfxtrx.message.Lighting1.SubType subType,
                                String idPrefix,
                                String idFormat,
@@ -32,7 +32,7 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
                                String descriptionFormat) {
         super(idPrefix + "-");
         this.managedCollectionFactory = managedCollectionFactory;
-        this.lighting1 = new Lighting1(rfXtrx, subType);
+        this.lighting1 = new Lighting1(rfxtrx, subType);
         this.idFormat = idPrefix + "-" + idFormat;
         this.nameFormat = nameFormat;
         this.descriptionFormat = descriptionFormat;
@@ -154,8 +154,8 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
     public static class X10 extends Lighting1Handler {
 
         @Inject
-        protected X10(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
+        protected X10(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
                     "x10",
                     "${houseCode}-${unitCode}",
                     "X10 Appliance ${unitCode}",
@@ -166,8 +166,8 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
     public static class ARC extends Lighting1Handler {
 
         @Inject
-        protected ARC(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
+        protected ARC(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
                     "arc",
                     "${houseCode}-${unitCode}",
                     "ARC Appliance ${unitCode}",
@@ -178,8 +178,8 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
     public static class ELROAB400D extends Lighting1Handler {
 
         @Inject
-        protected ELROAB400D(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
+        protected ELROAB400D(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
                     "elroab400d",
                     "${houseCode}-${unitCode}",
                     "ELROAB400D Appliance ${unitCode}",
@@ -190,8 +190,8 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
     public static class Waveman extends Lighting1Handler {
 
         @Inject
-        protected Waveman(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
+        protected Waveman(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
                     "waveman",
                     "${houseCode}-${unitCode}",
                     "Waveman Appliance ${unitCode}",
@@ -202,8 +202,8 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
     public static class ChaconEMW200 extends Lighting1Handler {
 
         @Inject
-        protected ChaconEMW200(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
+        protected ChaconEMW200(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
                     "chaconemw200",
                     "${houseCode}-${unitCode}",
                     "ChaconEMW200 Appliance ${unitCode}",
@@ -214,8 +214,8 @@ public class Lighting1Handler extends Handler implements Lighting1.Callback {
     public static class IMPULS extends Lighting1Handler {
 
         @Inject
-        protected IMPULS(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfXtrx) {
-            super(managedCollectionFactory, rfXtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
+        protected IMPULS(ManagedCollectionFactory managedCollectionFactory, RFXtrx rfxtrx) {
+            super(managedCollectionFactory, rfxtrx, com.rfxcom.rfxtrx.message.Lighting1.SubType.X10,
                     "impuls",
                     "${houseCode}-${unitCode}",
                     "IMPULS Appliance ${unitCode}",
