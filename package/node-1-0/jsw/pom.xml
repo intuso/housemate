@@ -20,14 +20,6 @@
 			<artifactId>housemate-package-node-1-0-jar</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-        <!-- ActiveMQ WebConsole -->
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-web-console</artifactId>
-            <type>war</type>
-            <version>${activemq.version}</version>
-        </dependency>
     </dependencies>
 
 	<build>
