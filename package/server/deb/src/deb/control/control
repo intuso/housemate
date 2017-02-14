@@ -3,7 +3,7 @@ Version: [[version]]
 Section: misc
 Priority: optional
 Architecture: all
-Depends: openjdk-8-jre
+Depends: java8-sdk | java8-jdk | default-jdk(=1.8) | default-jre(=1.8) | openjdk-8-jdk | openjdk-8-jre
 Maintainer: Intuso <support@intuso.com>
 Description: Intuso Housemate Server
 Homepage: http://www.intuso.com
