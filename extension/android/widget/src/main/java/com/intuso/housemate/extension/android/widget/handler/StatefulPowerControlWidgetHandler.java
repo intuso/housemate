@@ -91,7 +91,7 @@ public class StatefulPowerControlWidgetHandler
 
     @Override
     public void handleAction(String action) {
-        if(isOn)
+        if(isOn == null || isOn)
             getFeature().turnOn();
         else
             getFeature().turnOff();

@@ -18,4 +18,20 @@
         <module>widget</module>
     </modules>
 
+    <build>
+        <plugins>
+            <!-- Build everything at java 7 level. Override from parent as Android only supports 7 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

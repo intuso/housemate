@@ -7,13 +7,5 @@
     <TextView android:id="@+id/server_connection_status"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:text=""/>
-    <TextView android:id="@+id/application_status"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:text=""/>
-    <TextView android:id="@+id/application_instance_status"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:text=""/>
+              android:text="Disconnected" android:autoText="false" android:singleLine="true"/>
 </LinearLayout>

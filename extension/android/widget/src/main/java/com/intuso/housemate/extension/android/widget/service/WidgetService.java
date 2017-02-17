@@ -112,6 +112,7 @@ public class WidgetService extends HousemateService {
                 .build());
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
         server = new AndroidProxyServer(getConnection(), getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory()));
+        server.start();
         updateStatus();
         for (String key : Sets.newHashSet(getProperties().keySet())) {
             if (key.startsWith(PROPERTY_PREFIX)) {

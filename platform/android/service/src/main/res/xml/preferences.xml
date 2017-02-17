@@ -4,31 +4,13 @@
     <PreferenceCategory
             android:title="@string/pref_title_server">
         <EditTextPreference
-                android:key="client.socket.host"
+                android:key="server.host"
                 android:title="@string/pref_title_server_host"
-                android:defaultValue="" />
+                android:defaultValue="domain.com" />
         <EditTextPreference
-                android:key="client.socket.port"
+                android:key="server.port"
                 android:title="@string/pref_title_server_port"
                 android:inputType="number"
                 android:defaultValue="4600" />
-    </PreferenceCategory>
-    <PreferenceCategory
-            android:title="@string/pref_title_activity">
-        <EditTextPreference
-                android:key="client.socket.activity-check-delay"
-                android:title="@string/pref_title_activity_check_delay"
-                android:inputType="number"
-                android:defaultValue="0" />
-        <EditTextPreference
-                android:key="client.socket.post-activity-delay"
-                android:title="@string/pref_title_post_activity_delay"
-                android:inputType="number"
-                android:defaultValue="0" />
-        <EditTextPreference
-                android:key="client.socket.max-disconnect-time"
-                android:title="@string/pref_title_max_disconnect_time"
-                android:inputType="number"
-                android:defaultValue="0" />
     </PreferenceCategory>
 </PreferenceScreen>

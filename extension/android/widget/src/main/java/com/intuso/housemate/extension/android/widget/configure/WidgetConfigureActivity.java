@@ -52,6 +52,7 @@ public class WidgetConfigureActivity
         ((ListView)findViewById(R.id.device_list)).setAdapter(listAdapter);
         ((ListView)findViewById(R.id.device_list)).setOnItemClickListener(this);
         server = new AndroidProxyServer(getConnection(), getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory()));
+        server.start();
         setStatus("Pick device to control");
         listenerRegistrations.add(server.getNodes().addObjectListener(new NodeListListener(), true));
         listAdapter.notifyDataSetChanged();
@@ -60,6 +61,8 @@ public class WidgetConfigureActivity
 
     @Override
     protected void onStop() {
+        if(server != null)
+            server.stop();
         for(ManagedCollection.Registration listenerRegistration : listenerRegistrations)
             listenerRegistration.remove();
         super.onStop();

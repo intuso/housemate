@@ -15,7 +15,7 @@
 
     <dependencies>
 
-        <!-- 1,0 API -->
+        <!-- 1.0 API -->
         <dependency>
             <groupId>com.intuso.housemate</groupId>
             <artifactId>housemate-client-1-0-api</artifactId>
@@ -33,12 +33,10 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>${guice.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-assistedinject</artifactId>
-            <version>${guice.version}</version>
         </dependency>
     </dependencies>
 

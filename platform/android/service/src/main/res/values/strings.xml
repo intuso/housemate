@@ -21,11 +21,6 @@
     <string name="pref_title_server_host">Host</string>
     <string name="pref_title_server_port">Port</string>
 
-    <string name="pref_title_activity">Message activity monitoring</string>
-    <string name="pref_title_activity_check_delay">Activity check delay</string>
-    <string name="pref_title_post_activity_delay">Post activity delay</string>
-    <string name="pref_title_max_disconnect_time">Max disconnect time</string>
-
     <!-- Service -->
     <string name="service_name_connection">Housemate Connection Service</string>
     <string name="service_name_router">Housemate App Service</string>

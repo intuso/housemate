@@ -14,11 +14,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.intuso.housemate.platform.android.service.R;
 import com.intuso.housemate.platform.android.service.service.ConnectionService;
-import com.intuso.utilities.collection.ManagedCollection;
 
 public class HousemateActivity extends Activity implements ServiceConnection {
 
-    private ManagedCollection.Registration routerRegistration;
     private boolean bound = false;
 
     @Override
@@ -79,8 +77,6 @@ public class HousemateActivity extends Activity implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName name) {
         bound = false;
-        routerRegistration.remove();
-        routerRegistration = null;
     }
 }
 
