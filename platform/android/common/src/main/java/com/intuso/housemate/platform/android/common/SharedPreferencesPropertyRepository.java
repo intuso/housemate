@@ -3,7 +3,6 @@ package com.intuso.housemate.platform.android.common;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import com.google.inject.Inject;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
 
@@ -15,7 +14,6 @@ public class SharedPreferencesPropertyRepository
 
     private final SharedPreferences sharedPreferences;
 
-    @Inject
     public SharedPreferencesPropertyRepository(ManagedCollectionFactory managedCollectionFactory, Context context) {
         this(managedCollectionFactory, null, context);
     }

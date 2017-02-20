@@ -10,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.google.common.collect.Lists;
 import com.intuso.housemate.client.v1_0.api.api.Power;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
@@ -18,6 +17,7 @@ import com.intuso.housemate.platform.android.app.HousemateActivity;
 import com.intuso.housemate.platform.android.app.object.*;
 import com.intuso.utilities.collection.ManagedCollection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +34,7 @@ public class WidgetConfigureActivity
     private final String featureId = Power.ID;
 
     private AndroidProxyServer server;
-    private List<ManagedCollection.Registration> listenerRegistrations = Lists.newArrayList();
+    private List<ManagedCollection.Registration> listenerRegistrations = new ArrayList<>();
     private DeviceListAdapter listAdapter;
 
     @Override
@@ -51,7 +51,7 @@ public class WidgetConfigureActivity
         listAdapter = new DeviceListAdapter();
         ((ListView)findViewById(R.id.device_list)).setAdapter(listAdapter);
         ((ListView)findViewById(R.id.device_list)).setOnItemClickListener(this);
-        server = new AndroidProxyServer(getConnection(), getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory()));
+        server = new AndroidProxyServer(/*getConnection(),*/ getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory()));
         server.start();
         setStatus("Pick device to control");
         listenerRegistrations.add(server.getNodes().addObjectListener(new NodeListListener(), true));
@@ -144,7 +144,7 @@ public class WidgetConfigureActivity
     private class DeviceListAdapter extends ArrayAdapter<DeviceInfo> {
 
         public DeviceListAdapter() {
-            super(WidgetConfigureActivity.this.getApplicationContext(), R.layout.device_list_element, Lists.<DeviceInfo>newArrayList());
+            super(WidgetConfigureActivity.this.getApplicationContext(), R.layout.device_list_element, new ArrayList<DeviceInfo>());
         }
 
         @Override

@@ -8,12 +8,9 @@ import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRep
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -29,7 +26,7 @@ public abstract class HousemateService extends Service {
     private ManagedCollectionFactory managedCollectionFactory;
     private TypeSerialiser.Repository typeSerialiserRepository;
     private PropertyRepository properties;
-    private Connection connection;
+//    private Connection connection;
 
     @Override
     public void onCreate() {
@@ -49,12 +46,12 @@ public abstract class HousemateService extends Service {
             }
         };
         properties = new SharedPreferencesPropertyRepository(managedCollectionFactory, getApplicationContext());
-        try {
+        /*try {
             // todo ask for whether a local broker is available (run by an hm android service)
             connection = new ActiveMQConnectionFactory("tcp://" + properties.get("server.host") + ":" + properties.get("server.port")).createConnection();
         } catch (JMSException e) {
             logger.error("Failed to create connection to server", e);
-        }
+        }*/
     }
 
     @Override
@@ -62,14 +59,14 @@ public abstract class HousemateService extends Service {
         super.onDestroy();
         logger = null;
         properties = null;
-        if (connection != null) {
+        /*if (connection != null) {
             try {
                 connection.close();
             } catch (JMSException e) {
                 logger.error("Failed to close conncetion to server", e);
             }
             connection = null;
-        }
+        }*/
     }
 
     public Logger getLogger() {
@@ -88,7 +85,7 @@ public abstract class HousemateService extends Service {
         return properties;
     }
 
-    public Connection getConnection() {
+    /*public Connection getConnection() {
         return connection;
-    }
+    }*/
 }

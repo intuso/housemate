@@ -26,7 +26,7 @@ public class NFCService extends HousemateService {
         int result = super.onStartCommand(intent, flags, startId);
         if(NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
             new CommandPerformer(intent.getData().getPath(),
-                    new AndroidProxyServer(getConnection(), getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory())),
+                    new AndroidProxyServer(/*getConnection(),*/ getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory())),
                     startId);
         }
         return result;

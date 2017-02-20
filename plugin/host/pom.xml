@@ -22,7 +22,6 @@
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-multibindings</artifactId>
-			<version>${guice.version}</version>
 		</dependency>
 	</dependencies>
 </project>

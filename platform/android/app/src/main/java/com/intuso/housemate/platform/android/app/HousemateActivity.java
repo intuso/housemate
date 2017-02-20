@@ -2,18 +2,15 @@ package com.intuso.housemate.platform.android.app;
 
 import android.app.Activity;
 import com.intuso.housemate.client.v1_0.api.HousemateException;
-import com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.v1_0.api.type.TypeSpec;
+import com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -29,7 +26,7 @@ public abstract class HousemateActivity extends Activity {
     private ManagedCollectionFactory managedCollectionFactory;
     private TypeSerialiser.Repository typeSerialiserRepository;
     private PropertyRepository properties;
-    private Connection connection;
+//    private Connection connection;
 
     @Override
     protected void onStart() {
@@ -49,11 +46,11 @@ public abstract class HousemateActivity extends Activity {
             }
         };
         properties = new SharedPreferencesPropertyRepository(managedCollectionFactory, getApplicationContext());
-        try {
+        /*try {
             connection = new ActiveMQConnectionFactory("tcp://" + properties.get("server.host") + ":" + properties.get("server.port")).createConnection();
         } catch (JMSException e) {
             logger.error("Failed to create connection to server", e);
-        }
+        }*/
     }
 
     @Override
@@ -61,14 +58,14 @@ public abstract class HousemateActivity extends Activity {
         super.onStop();
         logger = null;
         properties = null;
-        if (connection != null) {
+        /*if (connection != null) {
             try {
                 connection.close();
             } catch (JMSException e) {
                 logger.error("Failed to close conncetion to server", e);
             }
             connection = null;
-        }
+        }*/
     }
 
     public Logger getLogger() {
@@ -87,7 +84,7 @@ public abstract class HousemateActivity extends Activity {
         return properties;
     }
 
-    public Connection getConnection() {
+    /*public Connection getConnection() {
         return connection;
-    }
+    }*/
 }

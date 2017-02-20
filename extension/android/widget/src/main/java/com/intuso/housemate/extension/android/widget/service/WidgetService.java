@@ -10,8 +10,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.RemoteViews;
 import android.widget.Toast;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Sets;
 import com.intuso.housemate.client.v1_0.proxy.api.annotation.ClassCreator;
 import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
 import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapperV1_0;
@@ -20,6 +18,11 @@ import com.intuso.housemate.extension.android.widget.handler.WidgetHandler;
 import com.intuso.housemate.platform.android.app.HousemateService;
 import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
 import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -59,7 +62,8 @@ public class WidgetService extends HousemateService {
 
     private final Binder binder = new Binder();
 
-    private final HashBiMap<Integer, WidgetHandler<?>> widgetHandlers = HashBiMap.create();
+    private final Map<Integer, WidgetHandler<?>> widgetHandlers = new HashMap<>();
+    private final Map<WidgetHandler<?>, Integer> widgetHandlersInverse = new HashMap<>();
     private final ProxyWrapper proxyWrapper;
 
     private AndroidProxyServer server;
@@ -89,7 +93,7 @@ public class WidgetService extends HousemateService {
     }
 
     public synchronized PendingIntent makePendingIntent(WidgetHandler widgetHandler, String action) {
-        int widgetId = widgetHandlers.inverse().get(widgetHandler);
+        int widgetId = widgetHandlersInverse.get(widgetHandler);
         Intent intent = new Intent(getApplicationContext(), WidgetService.class);
         intent.setAction(PERFORM_COMMAND_ACTION);
         intent.putExtra(WIDGET_ID, widgetId);
@@ -111,10 +115,14 @@ public class WidgetService extends HousemateService {
                 .setPriority(Notification.PRIORITY_MIN)
                 .build());
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        server = new AndroidProxyServer(getConnection(), getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory()));
+        server = new AndroidProxyServer(/*getConnection(),*/ getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory()));
         server.start();
         updateStatus();
-        for (String key : Sets.newHashSet(getProperties().keySet())) {
+
+        // store keys to remove in a separate set so we don't get ConcurrentModificationException iterating the key set
+        Set<String> toRemove = new HashSet<>();
+
+        for (String key : getProperties().keySet()) {
             if (key.startsWith(PROPERTY_PREFIX)) {
                 String encodedWidget = getProperties().get(key);
                 getLogger().debug("Loading widget from " + encodedWidget);
@@ -124,10 +132,12 @@ public class WidgetService extends HousemateService {
                     addWidgetHandler(Integer.parseInt(key.substring(PROPERTY_PREFIX.length())), widgetHandler, false);
                 } else {
                     getLogger().debug("Decoding widget config failed, removing property");
-                    getProperties().remove(key);
+                    toRemove.add(key);
                 }
             }
         }
+        for(String key : toRemove)
+            getProperties().remove(key);
     }
 
     @Override
@@ -177,7 +187,9 @@ public class WidgetService extends HousemateService {
             } else if (DELETE_WIDGETS_ACTION.equals(intent.getAction())) {
                 for (int widgetId : intent.getIntArrayExtra(WIDGET_ID)) {
                     getProperties().remove(PROPERTY_PREFIX + widgetId);
-                    widgetHandlers.remove(widgetId);
+                    WidgetHandler<?> handler = widgetHandlers.remove(widgetId);
+                    if(handler != null)
+                        widgetHandlersInverse.remove(handler);
                 }
             } else if(ADD_WIDGET_ACTION.equals(intent.getAction())) {
                 int widgetId = intent.getIntExtra(WIDGET_ID, 0);
@@ -212,11 +224,12 @@ public class WidgetService extends HousemateService {
         if(isNew)
             getProperties().set(PROPERTY_PREFIX + widgetId, encodePropertyValue(widgetHandler));
         widgetHandlers.put(widgetId, widgetHandler);
+        widgetHandlersInverse.put(widgetHandler, widgetId);
         widgetHandler.setServiceStatus(status);
     }
 
     public void updateAppWidget(WidgetHandler<?> widgetHandler, RemoteViews views) {
-        appWidgetManager.updateAppWidget(widgetHandlers.inverse().get(widgetHandler), views);
+        appWidgetManager.updateAppWidget(widgetHandlersInverse.get(widgetHandler), views);
     }
 
     private String encodePropertyValue(WidgetHandler<?> widgetHandler) {
