@@ -10,14 +10,14 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.RemoteViews;
 import android.widget.Toast;
-import com.intuso.housemate.client.v1_0.proxy.api.annotation.ClassCreator;
-import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
-import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapperV1_0;
+import com.intuso.housemate.client.v1_0.proxy.annotation.ClassCreator;
+import com.intuso.housemate.client.v1_0.proxy.annotation.ProxyWrapper;
+import com.intuso.housemate.client.v1_0.proxy.annotation.ProxyWrapperV1_0;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.handler.WidgetHandler;
 import com.intuso.housemate.platform.android.app.HousemateService;
-import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
-import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
+import com.intuso.housemate.platform.android.app.proxy.object.AndroidProxyObject;
+import com.intuso.housemate.platform.android.app.proxy.object.AndroidProxyServer;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,7 +66,7 @@ public class WidgetService extends HousemateService {
     private final Map<WidgetHandler<?>, Integer> widgetHandlersInverse = new HashMap<>();
     private final ProxyWrapper proxyWrapper;
 
-    private AndroidProxyServer server;
+    private AndroidProxyServer.Simple server;
     private AppWidgetManager appWidgetManager;
     private Status status = Status.NOT_CONNECTED;
 
@@ -101,7 +101,7 @@ public class WidgetService extends HousemateService {
         return PendingIntent.getService(getApplicationContext(), widgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    public AndroidProxyServer getServer() {
+    public AndroidProxyServer.Simple getServer() {
         return server;
     }
 
@@ -115,7 +115,7 @@ public class WidgetService extends HousemateService {
                 .setPriority(Notification.PRIORITY_MIN)
                 .build());
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        server = new AndroidProxyServer(/*getConnection(),*/ getLogger(), getManagedCollectionFactory(), new AndroidObjectFactories(getManagedCollectionFactory()));
+        server = new AndroidProxyServer.Simple(/*getConnection(),*/ getLogger(), getManagedCollectionFactory(), new AndroidProxyObject.SimpleFactories(getManagedCollectionFactory()));
         server.start();
         updateStatus();
 

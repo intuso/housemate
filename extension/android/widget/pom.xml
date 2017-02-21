@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>com.intuso.housemate</groupId>
-            <artifactId>housemate-client-1-0-proxy-simple</artifactId>
+            <artifactId>housemate-client-1-0-proxy</artifactId>
             <version>${intuso.housemate.client.version}</version>
             <!-- Needs AOP version of guice -->
             <exclusions>

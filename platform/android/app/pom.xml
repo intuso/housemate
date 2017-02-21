@@ -22,7 +22,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-client-1-0-proxy-api</artifactId>
+            <artifactId>housemate-client-1-0-proxy</artifactId>
             <version>${intuso.housemate.client.version}</version>
             <exclusions>
                 <!-- Exclude JVM libraries -->

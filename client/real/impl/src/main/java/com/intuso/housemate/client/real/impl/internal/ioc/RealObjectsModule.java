@@ -6,7 +6,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.object.System;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
-import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyDevice;
+import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.real.impl.internal.*;
 
 /**
@@ -72,7 +72,7 @@ public class RealObjectsModule extends AbstractModule {
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<Hardware.Data, RealHardwareImpl>>() {}));
         install(new FactoryModuleBuilder()
-                .build(new TypeLiteral<RealListPersistedImpl.Factory<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>>>() {}));
+                .build(new TypeLiteral<RealListPersistedImpl.Factory<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>>>() {}));
         install(new FactoryModuleBuilder()
                 .build(new TypeLiteral<RealListPersistedImpl.Factory<System.Data, RealSystemImpl>>() {}));
         install(new FactoryModuleBuilder()
@@ -93,7 +93,7 @@ public class RealObjectsModule extends AbstractModule {
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Condition.Data, RealConditionImpl>>() {}).to(RealConditionImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Device.Data, RealDeviceImpl>>() {}).to(RealDeviceImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Hardware.Data, RealHardwareImpl>>() {}).to(RealHardwareImpl.LoadPersisted.class);
-        bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>>>() {}).to(RealPropertyImpl.LoadPersistedDeviceObjectReference.class);
+        bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>>>() {}).to(RealPropertyImpl.LoadPersistedDeviceObjectReference.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<System.Data, RealSystemImpl>>() {}).to(RealSystemImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<Task.Data, RealTaskImpl>>() {}).to(RealTaskImpl.LoadPersisted.class);
         bind(new TypeLiteral<RealListPersistedImpl.ElementFactory<User.Data, RealUserImpl>>() {}).to(RealUserImpl.LoadPersisted.class);

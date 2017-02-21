@@ -5,15 +5,15 @@ import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.object.Hardware;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.ioc.Type;
-import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyHardware;
-import com.intuso.housemate.client.v1_0.proxy.simple.SimpleProxyServer;
+import com.intuso.housemate.client.v1_0.proxy.object.ProxyHardware;
+import com.intuso.housemate.client.v1_0.proxy.object.ProxyServer;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 /**
  * Created by tomc on 25/01/17.
  */
-public class HardwareV1_0Type extends RealObjectV1_0Type<SimpleProxyHardware> {
+public class HardwareV1_0Type extends RealObjectV1_0Type<ProxyHardware.Simple> {
 
     public final static String TYPE_ID = "hardware";
     public final static String TYPE_NAME = "Hardware";
@@ -25,7 +25,7 @@ public class HardwareV1_0Type extends RealObjectV1_0Type<SimpleProxyHardware> {
      * @param server           the root to get the object from
      */
     @Inject
-    public HardwareV1_0Type(@Type Logger logger, ManagedCollectionFactory managedCollectionFactory, SimpleProxyServer server) {
+    public HardwareV1_0Type(@Type Logger logger, ManagedCollectionFactory managedCollectionFactory, ProxyServer.Simple server) {
         super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Sets.newHashSet(Hardware.Data.OBJECT_CLASS), managedCollectionFactory, server);
     }
 }

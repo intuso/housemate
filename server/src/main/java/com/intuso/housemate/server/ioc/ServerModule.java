@@ -6,9 +6,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.intuso.housemate.client.api.bridge.ioc.ClientApiBridgeModule;
-import com.intuso.housemate.client.proxy.api.bridge.ioc.ProxyBridgeModule;
-import com.intuso.housemate.client.proxy.api.internal.annotation.ioc.ProxyWrapperModule;
-import com.intuso.housemate.client.proxy.internal.simple.ioc.SimpleProxyServerModule;
+import com.intuso.housemate.client.proxy.bridge.ioc.ProxyBridgeModule;
+import com.intuso.housemate.client.proxy.internal.annotation.ioc.ProxyWrapperModule;
+import com.intuso.housemate.client.proxy.internal.object.ioc.SimpleProxyServerModule;
 import com.intuso.housemate.client.real.impl.internal.ioc.ServerRootModule;
 import com.intuso.housemate.plugin.host.internal.ioc.PluginHostModule;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
@@ -36,11 +36,11 @@ public class ServerModule extends AbstractModule {
 
         // install proxy object stuff
         install(new SimpleProxyServerModule());
-        install(new com.intuso.housemate.client.v1_0.proxy.simple.ioc.SimpleProxyServerModule());
+        install(new com.intuso.housemate.client.v1_0.proxy.object.ioc.SimpleProxyServerModule());
 
         // install proxy wrapper modules
         install(new ProxyWrapperModule());
-        install(new com.intuso.housemate.client.v1_0.proxy.api.annotation.ioc.ProxyWrapperModule());
+        install(new com.intuso.housemate.client.v1_0.proxy.annotation.ioc.ProxyWrapperModule());
 
         // install api bridge modules
         install(new ClientApiBridgeModule());

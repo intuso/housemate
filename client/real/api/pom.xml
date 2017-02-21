@@ -25,7 +25,7 @@
         <!-- Internal API dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-client-proxy-simple</artifactId>
+            <artifactId>housemate-client-proxy</artifactId>
             <version>${project.version}</version>
         </dependency>
 

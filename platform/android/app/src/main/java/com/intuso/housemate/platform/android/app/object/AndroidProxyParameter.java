@@ -1,6 +1,6 @@
 package com.intuso.housemate.platform.android.app.object;
 
-import com.intuso.housemate.client.v1_0.proxy.api.object.ProxyParameter;
+import com.intuso.housemate.client.v1_0.proxy.object.ProxyParameter;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 

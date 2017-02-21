@@ -1,9 +1,9 @@
 package com.intuso.housemate.extension.android.widget.handler;
 
 import com.intuso.housemate.client.v1_0.api.api.Power;
-import com.intuso.housemate.client.v1_0.proxy.api.annotation.ProxyWrapper;
+import com.intuso.housemate.client.v1_0.proxy.annotation.ProxyWrapper;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
-import com.intuso.housemate.platform.android.app.object.AndroidProxySystem;
+import com.intuso.housemate.platform.android.app.proxy.object.AndroidProxySystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public abstract class WidgetHandler<FEATURE> {
 
     private WidgetService.Status serviceStatus;
     private Status status;
-    private AndroidProxySystem device;
+    private AndroidProxySystem.Simple device;
     private FEATURE feature;
 
     public static WidgetHandler<?> createFeatureWidget(WidgetService widgetService, ProxyWrapper proxyFeatureFactory, String deviceId, String featureId) {
@@ -79,7 +79,7 @@ public abstract class WidgetHandler<FEATURE> {
         return status;
     }
 
-    protected AndroidProxySystem getDevice() {
+    protected AndroidProxySystem.Simple getDevice() {
         return device;
     }
 

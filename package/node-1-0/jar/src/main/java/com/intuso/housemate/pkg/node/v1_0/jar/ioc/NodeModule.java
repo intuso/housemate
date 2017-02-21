@@ -1,8 +1,8 @@
 package com.intuso.housemate.pkg.node.v1_0.jar.ioc;
 
 import com.google.inject.AbstractModule;
-import com.intuso.housemate.client.v1_0.proxy.api.annotation.ioc.ProxyWrapperModule;
-import com.intuso.housemate.client.v1_0.proxy.simple.ioc.SimpleProxyServerModule;
+import com.intuso.housemate.client.v1_0.proxy.annotation.ioc.ProxyWrapperModule;
+import com.intuso.housemate.client.v1_0.proxy.object.ioc.SimpleProxyServerModule;
 import com.intuso.housemate.client.v1_0.real.impl.ioc.NodeRootModule;
 import com.intuso.housemate.plugin.host.internal.ioc.PluginHostModule;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;

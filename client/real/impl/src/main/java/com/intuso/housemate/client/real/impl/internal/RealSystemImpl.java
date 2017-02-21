@@ -11,7 +11,7 @@ import com.intuso.housemate.client.api.internal.object.System;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
-import com.intuso.housemate.client.proxy.internal.simple.SimpleProxyDevice;
+import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.real.api.internal.RealSystem;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -26,7 +26,7 @@ import javax.jms.JMSException;
 public final class RealSystemImpl
         extends RealObject<System.Data, System.Listener<? super RealSystemImpl>>
         implements RealSystem<RealValueImpl<String>, RealCommandImpl,
-                RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>>, RealSystemImpl> {
+                RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>>, RealSystemImpl> {
 
     private final static String PLAYBACK_NAME = "Playback devices";
     private final static String PLAYBACK_DESCRIPTION = "The device's playback devices";
@@ -42,15 +42,15 @@ public final class RealSystemImpl
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> playbackDevices;
+    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> playbackDevices;
     private final RealCommandImpl addPlaybackDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> powerDevices;
+    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> powerDevices;
     private final RealCommandImpl addPowerDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> runDevices;
+    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> runDevices;
     private final RealCommandImpl addRunDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> temperatureSensorDevices;
+    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> temperatureSensorDevices;
     private final RealCommandImpl addTemperatureSensorDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> volumeDevices;
+    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> volumeDevices;
     private final RealCommandImpl addVolumeDeviceCommand;
 
     private final RealListPersistedImpl.RemoveCallback<RealSystemImpl> removeCallback;
@@ -69,7 +69,7 @@ public final class RealSystemImpl
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
                           RealValueImpl.Factory valueFactory,
-                          RealListPersistedImpl.Factory<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> devicesFactory,
+                          RealListPersistedImpl.Factory<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> devicesFactory,
                           final TypeRepository typeRepository) {
         super(logger, new System.Data(id, name, description), managedCollectionFactory);
         this.removeCallback = removeCallback;
@@ -204,7 +204,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> getPlaybackDevices() {
+    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> getPlaybackDevices() {
         return playbackDevices;
     }
 
@@ -214,7 +214,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> getPowerDevices() {
+    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> getPowerDevices() {
         return powerDevices;
     }
 
@@ -224,7 +224,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> getRunDevices() {
+    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> getRunDevices() {
         return runDevices;
     }
 
@@ -234,7 +234,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> getTemperatureSensorDevices() {
+    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> getTemperatureSensorDevices() {
         return temperatureSensorDevices;
     }
 
@@ -244,7 +244,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<SimpleProxyDevice>>> getVolumeDevices() {
+    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> getVolumeDevices() {
         return volumeDevices;
     }
 

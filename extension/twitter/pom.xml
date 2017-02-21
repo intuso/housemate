@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
             <groupId>${project.groupId}</groupId>
-			<artifactId>housemate-client-1-0-proxy-simple</artifactId>
+			<artifactId>housemate-client-1-0-proxy</artifactId>
 			<version>${intuso.housemate.client.version}</version>
 		</dependency>
 
