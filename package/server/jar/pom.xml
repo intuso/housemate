@@ -31,7 +31,7 @@
         <!-- Serialisers -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-client-1-0-serialiser-json</artifactId>
+            <artifactId>housemate-client-1-0-serialisation-json</artifactId>
             <version>${intuso.housemate.client.version}</version>
         </dependency>
 
