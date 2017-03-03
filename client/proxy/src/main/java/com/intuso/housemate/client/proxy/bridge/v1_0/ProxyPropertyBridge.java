@@ -8,11 +8,9 @@ import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -27,19 +25,21 @@ public class ProxyPropertyBridge
     public ProxyPropertyBridge(@Assisted Logger logger,
                                PropertyMapper propertyMapper,
                                TypeInstancesMapper typeInstancesMapper,
-                               ProxyObjectBridge.Factory<ProxyCommandBridge> commandFactory,
-                               ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, Property.Data.class, propertyMapper, typeInstancesMapper, managedCollectionFactory);
+                               ManagedCollectionFactory managedCollectionFactory,
+                               com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                               Sender.Factory v1_0SenderFactory,
+                               ProxyObjectBridge.Factory<ProxyCommandBridge> commandFactory) {
+        super(logger, Property.Data.class, propertyMapper, typeInstancesMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         setCommand.init(
                 com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Property.SET_COMMAND_ID),
-                ChildUtil.name(internalName, Property.SET_COMMAND_ID),
-                connection);
+                ChildUtil.name(internalName, Property.SET_COMMAND_ID)
+        );
     }
 
     @Override

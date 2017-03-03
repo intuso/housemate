@@ -16,8 +16,7 @@ import com.intuso.housemate.client.v1_0.proxy.annotation.ProxyWrapperV1_0;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.handler.WidgetHandler;
 import com.intuso.housemate.platform.android.app.HousemateService;
-import com.intuso.housemate.platform.android.app.proxy.object.AndroidProxyObject;
-import com.intuso.housemate.platform.android.app.proxy.object.AndroidProxyServer;
+import com.intuso.housemate.platform.android.app.object.AndroidProxyServer;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,7 +65,7 @@ public class WidgetService extends HousemateService {
     private final Map<WidgetHandler<?>, Integer> widgetHandlersInverse = new HashMap<>();
     private final ProxyWrapper proxyWrapper;
 
-    private AndroidProxyServer.Simple server;
+    private AndroidProxyServer server;
     private AppWidgetManager appWidgetManager;
     private Status status = Status.NOT_CONNECTED;
 
@@ -101,7 +100,7 @@ public class WidgetService extends HousemateService {
         return PendingIntent.getService(getApplicationContext(), widgetId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    public AndroidProxyServer.Simple getServer() {
+    public AndroidProxyServer getServer() {
         return server;
     }
 
@@ -115,7 +114,7 @@ public class WidgetService extends HousemateService {
                 .setPriority(Notification.PRIORITY_MIN)
                 .build());
         appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        server = new AndroidProxyServer.Simple(/*getConnection(),*/ getLogger(), getManagedCollectionFactory(), new AndroidProxyObject.SimpleFactories(getManagedCollectionFactory()));
+        server = getObjectFactories().server().create(getLogger());
         server.start();
         updateStatus();
 

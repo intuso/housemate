@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal.type;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.object.Hardware;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyHardware;
 import com.intuso.housemate.client.proxy.internal.object.ProxyServer;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
@@ -25,7 +26,10 @@ public class HardwareType extends RealObjectType<ProxyHardware.Simple> {
      * @param server           the root to get the object from
      */
     @Inject
-    public HardwareType(@Type Logger logger, ManagedCollectionFactory managedCollectionFactory, ProxyServer.Simple server) {
-        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Sets.newHashSet(Hardware.Data.OBJECT_CLASS), managedCollectionFactory, server);
+    public HardwareType(@Type Logger logger,
+                        ManagedCollectionFactory managedCollectionFactory,
+                        Sender.Factory senderFactory,
+                        ProxyServer.Simple server) {
+        super(ChildUtil.logger(logger, TYPE_ID), TYPE_ID, TYPE_NAME, TYPE_DESCRIPTION, Sets.newHashSet(Hardware.Data.OBJECT_CLASS), managedCollectionFactory, senderFactory, server);
     }
 }

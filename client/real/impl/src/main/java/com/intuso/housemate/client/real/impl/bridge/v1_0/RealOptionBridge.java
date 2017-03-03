@@ -5,11 +5,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.OptionMapper;
 import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -23,19 +21,21 @@ public class RealOptionBridge
     @Inject
     protected RealOptionBridge(@Assisted Logger logger,
                                OptionMapper optionMapper,
-                               RealObjectBridge.Factory<RealListBridge<RealSubTypeBridge>> subTypesFactory,
-                               ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Option.Data.class, optionMapper, managedCollectionFactory);
+                               ManagedCollectionFactory managedCollectionFactory,
+                               Receiver.Factory v1_0ReceiverFactory,
+                               com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory,
+                               RealObjectBridge.Factory<RealListBridge<RealSubTypeBridge>> subTypesFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Option.Data.class, optionMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         subTypes.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Option.SUB_TYPES_ID),
                 ChildUtil.name(internalName,
-                        Option.SUB_TYPES_ID), connection);
+                        Option.SUB_TYPES_ID));
     }
 
     @Override

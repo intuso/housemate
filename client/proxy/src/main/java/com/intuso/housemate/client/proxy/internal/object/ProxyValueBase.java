@@ -3,12 +3,10 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * @param <DATA> the type of the data
@@ -23,7 +21,7 @@ public abstract class ProxyValueBase<
         extends ProxyObject<DATA, LISTENER>
         implements ValueBase<Type.Instances, TYPE, LISTENER, VALUE> {
 
-    private JMSUtil.Receiver<Type.Instances> valueReceiver;
+    private Receiver<Type.Instances> valueReceiver;
 
     private Type.Instances value;
 
@@ -32,16 +30,17 @@ public abstract class ProxyValueBase<
      */
     public ProxyValueBase(Logger logger,
                           Class<DATA> dataClass,
-                          ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, dataClass, managedCollectionFactory);
+                          ManagedCollectionFactory managedCollectionFactory,
+                          Receiver.Factory receiverFactory) {
+        super(logger, dataClass, managedCollectionFactory, receiverFactory);
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        value = JMSUtil.getFirstPersisted(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, VALUE_ID), Type.Instances.class);
-        valueReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, VALUE_ID), Type.Instances.class,
-                new JMSUtil.Receiver.Listener<Type.Instances>() {
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        valueReceiver = receiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(name, VALUE_ID), Type.Instances.class);
+        value = valueReceiver.getPersistedMessage();
+        valueReceiver.listen(new Receiver.Listener<Type.Instances>() {
                     @Override
                     public void onMessage(Type.Instances instances, boolean wasPersisted) {
                         value = instances;

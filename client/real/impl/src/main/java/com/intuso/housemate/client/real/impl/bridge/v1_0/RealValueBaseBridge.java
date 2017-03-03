@@ -7,12 +7,9 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.housemate.client.real.impl.internal.JMSUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -29,31 +26,33 @@ public abstract class RealValueBaseBridge<
 
     private Type.Instances value;
 
-    private JMSUtil.Sender valueSender;
-    private com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<com.intuso.housemate.client.v1_0.api.object.Type.Instances> valueReceiver;
+    private com.intuso.housemate.client.messaging.api.internal.Sender valueSender;
+    private Receiver<com.intuso.housemate.client.v1_0.api.object.Type.Instances> valueReceiver;
 
     protected RealValueBaseBridge(Logger logger,
                                   Class<VERSION_DATA> versionDataClass,
                                   ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper,
                                   TypeInstancesMapper typeInstancesMapper,
-                                  ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, versionDataClass, dataMapper, managedCollectionFactory);
+                                  ManagedCollectionFactory managedCollectionFactory,
+                                  Receiver.Factory v1_0ReceiverFactory,
+                                  com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory) {
+        super(logger, versionDataClass, dataMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
         this.typeInstancesMapper = typeInstancesMapper;
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
-        valueSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID));
-        valueReceiver = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Value.VALUE_ID), com.intuso.housemate.client.v1_0.api.object.Type.Instances.class,
-                new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Type.Instances>() {
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
+        valueSender = internalSenderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID));
+        valueReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Value.VALUE_ID), com.intuso.housemate.client.v1_0.api.object.Type.Instances.class);
+        valueReceiver.listen(new Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Type.Instances>() {
             @Override
             public void onMessage(com.intuso.housemate.client.v1_0.api.object.Type.Instances instances, boolean wasPersisted) {
                 value = typeInstancesMapper.map(instances);
                 try {
                     valueSender.send(value, wasPersisted);
-                } catch (JMSException e) {
-                    logger.error("Failed to send new values onto internal topic");
+                } catch (Throwable t) {
+                    logger.error("Failed to send new values onto internal topic", t);
                 }
                 // todo call object listeners
             }

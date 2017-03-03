@@ -7,12 +7,9 @@ import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.proxy.internal.object.JMSUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -29,31 +26,33 @@ public abstract class ProxyValueBaseBridge<
 
     private Type.Instances value;
 
-    private com.intuso.housemate.client.proxy.internal.object.JMSUtil.Sender valueSender;
-    private JMSUtil.Receiver<Type.Instances> valueReceiver;
+    private Sender valueSender;
+    private com.intuso.housemate.client.messaging.api.internal.Receiver<Type.Instances> valueReceiver;
 
     protected ProxyValueBaseBridge(Logger logger,
                                    Class<INTERNAL_DATA> versionDataClass,
                                    ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper,
                                    TypeInstancesMapper typeInstancesMapper,
-                                   ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, versionDataClass, dataMapper, managedCollectionFactory);
+                                   ManagedCollectionFactory managedCollectionFactory,
+                                   com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                                   Sender.Factory v1_0SenderFactory) {
+        super(logger, versionDataClass, dataMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         this.typeInstancesMapper = typeInstancesMapper;
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
-        valueSender = new com.intuso.housemate.client.proxy.internal.object.JMSUtil.Sender(logger, connection, com.intuso.housemate.client.proxy.internal.object.JMSUtil.Type.Topic, com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Value.VALUE_ID));
-        valueReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID), Type.Instances.class,
-                new JMSUtil.Receiver.Listener<Type.Instances>() {
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
+        valueSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Topic, com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Value.VALUE_ID));
+        valueReceiver = internalReceiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID), Type.Instances.class);
+        valueReceiver.listen(new com.intuso.housemate.client.messaging.api.internal.Receiver.Listener<Type.Instances>() {
             @Override
             public void onMessage(Type.Instances instances, boolean wasPersisted) {
                 value = instances;
                 try {
                     valueSender.send(typeInstancesMapper.map(instances), wasPersisted);
-                } catch (JMSException e) {
-                    logger.error("Failed to send new values onto proxy versioned topic");
+                } catch (Throwable t) {
+                    logger.error("Failed to send new values onto proxy versioned topic", t);
                 }
                 // todo call object listeners
             }

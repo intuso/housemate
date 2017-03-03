@@ -3,6 +3,8 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Value;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealValue;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -27,8 +29,10 @@ public final class RealValueImpl<O>
                          @Assisted("min") int minValues,
                          @Assisted("max") int maxValues,
                          @Assisted Iterable values,
-                         ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, new Value.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory, type, values);
+                         ManagedCollectionFactory managedCollectionFactory,
+                         Receiver.Factory receiverFactory,
+                         Sender.Factory senderFactory) {
+        super(logger, new Value.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory, receiverFactory, senderFactory, type, values);
     }
 
     public interface Factory {

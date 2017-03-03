@@ -5,19 +5,18 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.housemate.client.real.impl.bridge.v1_0.RealNodeBridge;
 import com.intuso.housemate.client.v1_0.api.object.Node;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.api.object.Server;
-import com.intuso.housemate.client.v1_0.real.impl.JMSUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Type;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -27,13 +26,13 @@ public final class RealNodeListImpl
         extends RealObject<List.Data, List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl>>
         implements RealList<ServerBaseNode<?, ?, ?, ?>, RealNodeListImpl> {
 
+    private final com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0ReceiverFactory;
     private final RealNodeBridge.Factory nodeV1_0Factory;
 
-    private final Map<String, ServerBaseNode<?, ?, ?, ?>> elements;
+    private final Map<String, ServerBaseNode<?, ?, ?, ?>> elements = Maps.newHashMap();
 
     private String name;
-    private Connection connection;
-    private com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<Node.Data> nodeV1_0Receiver;
+    private com.intuso.housemate.client.v1_0.messaging.api.Receiver<Node.Data> nodeV1_0Receiver;
 
     /**
      * @param logger {@inheritDoc}
@@ -46,10 +45,12 @@ public final class RealNodeListImpl
                             @Assisted("name") String name,
                             @Assisted("description") String description,
                             ManagedCollectionFactory managedCollectionFactory,
+                            com.intuso.housemate.client.v1_0.messaging.api.Receiver.Factory v1_0ReceiverFactory,
+                            Sender.Factory senderFactory,
                             RealNodeBridge.Factory nodeV1_0Factory) {
-        super(logger, new List.Data(id, name, description), managedCollectionFactory);
+        super(logger, new List.Data(id, name, description), managedCollectionFactory, senderFactory);
+        this.v1_0ReceiverFactory = v1_0ReceiverFactory;
         this.nodeV1_0Factory = nodeV1_0Factory;
-        this.elements = Maps.newHashMap();
     }
 
     @Override
@@ -62,13 +63,12 @@ public final class RealNodeListImpl
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
         this.name = name;
-        this.connection = connection;
         final String nodesPathV1_0 = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID);
-        nodeV1_0Receiver = new JMSUtil.Receiver<>(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID), connection, JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*"), Node.Data.class,
-                new JMSUtil.Receiver.Listener<Node.Data>() {
+        nodeV1_0Receiver = v1_0ReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID), Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*"), Node.Data.class);
+        nodeV1_0Receiver.listen(new com.intuso.housemate.client.v1_0.messaging.api.Receiver.Listener<Node.Data>() {
                     @Override
                     public void onMessage(Node.Data nodeData, boolean wasPersisted) {
                         if(!elements.containsKey(nodeData.getId())) {
@@ -85,7 +85,7 @@ public final class RealNodeListImpl
         );
         // init any elements that were added before we init'd
         for(ServerBaseNode<?, ?, ?, ?> element : elements.values())
-            element.init(ChildUtil.name(name, element.getId()), connection);
+            element.init(ChildUtil.name(name, element.getId()));
     }
 
     @Override
@@ -96,7 +96,6 @@ public final class RealNodeListImpl
             nodeV1_0Receiver = null;
         }
         this.name = null;
-        this.connection = null;
         for(ServerBaseNode<?, ?, ?, ?> element : elements.values())
             element.uninit();
     }
@@ -106,13 +105,7 @@ public final class RealNodeListImpl
         if(elements.containsKey(element.getId()))
             throw new HousemateException("Element with id " + element.getId() + " already exists");
         elements.put(element.getId(), element);
-        if(connection != null) {
-            try {
-                element.init(ChildUtil.name(name, element.getId()), connection);
-            } catch(JMSException e) {
-                throw new HousemateException("Couldn't add element, failed to initialise it");
-            }
-        }
+        element.init(ChildUtil.name(name, element.getId()));
         for(List.Listener<? super ServerBaseNode<?, ?, ?, ?>, ? super RealNodeListImpl> listener : listeners)
             listener.elementAdded(this, element);
     }

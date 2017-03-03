@@ -3,12 +3,10 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Option;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * @param <SUB_TYPES> the type of the sub types
@@ -27,15 +25,16 @@ public abstract class ProxyOption<
      */
     public ProxyOption(Logger logger,
                        ManagedCollectionFactory managedCollectionFactory,
+                       Receiver.Factory receiverFactory,
                        ProxyObject.Factory<SUB_TYPES> subTypesFactory) {
-        super(logger, Option.Data.class, managedCollectionFactory);
+        super(logger, Option.Data.class, managedCollectionFactory, receiverFactory);
         subTypes = subTypesFactory.create(ChildUtil.logger(logger, SUB_TYPES_ID));
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        subTypes.init(ChildUtil.name(name, SUB_TYPES_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        subTypes.init(ChildUtil.name(name, SUB_TYPES_ID));
     }
 
     @Override
@@ -68,8 +67,9 @@ public abstract class ProxyOption<
         @Inject
         public Simple(@Assisted Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
+                      Receiver.Factory receiverFactory,
                       Factory<ProxyList.Simple<ProxySubType.Simple>> subTypesFactory) {
-            super(logger, managedCollectionFactory, subTypesFactory);
+            super(logger, managedCollectionFactory, receiverFactory, subTypesFactory);
         }
     }
 }

@@ -3,12 +3,13 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.System;
-import com.intuso.housemate.client.proxy.internal.*;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
+import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.proxy.internal.ProxyFailable;
+import com.intuso.housemate.client.proxy.internal.ProxyRemoveable;
+import com.intuso.housemate.client.proxy.internal.ProxyRenameable;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * @param <COMMAND> the type of the commands
@@ -45,10 +46,11 @@ public abstract class ProxySystem<
      */
     public ProxySystem(Logger logger,
                        ManagedCollectionFactory managedCollectionFactory,
+                       Receiver.Factory receiverFactory,
                        Factory<VALUE> valueFactory,
                        Factory<COMMAND> commandFactory,
                        Factory<PROPERTIES> propertiesFactory) {
-        super(logger, System.Data.class, managedCollectionFactory);
+        super(logger, System.Data.class, managedCollectionFactory, receiverFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
@@ -65,21 +67,21 @@ public abstract class ProxySystem<
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
-        errorValue.init(ChildUtil.name(name, ERROR_ID), connection);
-        playbackDevices.init(ChildUtil.name(name, PLAYBACK), connection);
-        addPlaybackDeviceCommand.init(ChildUtil.name(name, ADD_PLAYBACK), connection);
-        powerDevices.init(ChildUtil.name(name, POWER), connection);
-        addPowerDeviceCommand.init(ChildUtil.name(name, ADD_POWER), connection);
-        runDevices.init(ChildUtil.name(name, RUN), connection);
-        addRunDeviceCommand.init(ChildUtil.name(name, ADD_RUN), connection);
-        temperatureSensorDevices.init(ChildUtil.name(name, TEMPERATURE_SENSOR), connection);
-        addTemperatureSensorDeviceCommand.init(ChildUtil.name(name, ADD_TEMPERATURE_SENSOR), connection);
-        volumeDevices.init(ChildUtil.name(name, VOLUME), connection);
-        addVolumeDeviceCommand.init(ChildUtil.name(name, ADD_VOLUME), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID));
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID));
+        errorValue.init(ChildUtil.name(name, ERROR_ID));
+        playbackDevices.init(ChildUtil.name(name, PLAYBACK));
+        addPlaybackDeviceCommand.init(ChildUtil.name(name, ADD_PLAYBACK));
+        powerDevices.init(ChildUtil.name(name, POWER));
+        addPowerDeviceCommand.init(ChildUtil.name(name, ADD_POWER));
+        runDevices.init(ChildUtil.name(name, RUN));
+        addRunDeviceCommand.init(ChildUtil.name(name, ADD_RUN));
+        temperatureSensorDevices.init(ChildUtil.name(name, TEMPERATURE_SENSOR));
+        addTemperatureSensorDeviceCommand.init(ChildUtil.name(name, ADD_TEMPERATURE_SENSOR));
+        volumeDevices.init(ChildUtil.name(name, VOLUME));
+        addVolumeDeviceCommand.init(ChildUtil.name(name, ADD_VOLUME));
     }
 
     @Override
@@ -217,10 +219,11 @@ public abstract class ProxySystem<
         @Inject
         public Simple(@Assisted Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
+                      Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyValue.Simple> valueFactory,
                       Factory<ProxyList.Simple<ProxyProperty.Simple>> propertiesFactory) {
-            super(logger, managedCollectionFactory, valueFactory, commandFactory, propertiesFactory);
+            super(logger, managedCollectionFactory, receiverFactory, valueFactory, commandFactory, propertiesFactory);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.intuso.housemate.plugin.rfxcom;
 
-import com.intuso.housemate.client.v1_0.api.api.TemperatureSensor;
+import com.intuso.housemate.client.v1_0.api.ability.TemperatureSensor;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 

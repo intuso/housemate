@@ -15,6 +15,7 @@ import com.intuso.housemate.client.api.internal.object.Hardware;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealHardware;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
@@ -22,8 +23,6 @@ import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.Map;
 
 /**
@@ -75,6 +74,7 @@ public final class RealHardwareImpl
                             @Assisted("description") String description,
                             @Assisted RealListPersistedImpl.RemoveCallback<RealHardwareImpl> removeCallback,
                             ManagedCollectionFactory managedCollectionFactory,
+                            Sender.Factory senderFactory,
                             AnnotationParser annotationParser,
                             RealCommandImpl.Factory commandFactory,
                             RealParameterImpl.Factory parameterFactory,
@@ -86,7 +86,7 @@ public final class RealHardwareImpl
                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                             final RealDeviceImpl.Factory deviceFactory,
                             RealListPersistedImpl.Factory<Device.Data, RealDeviceImpl> devicesFactory) {
-        super(logger, new Hardware.Data(id, name, description), managedCollectionFactory);
+        super(logger, new Hardware.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.annotationParser = annotationParser;
         this.deviceFactory = deviceFactory;
         this.removeCallback = removeCallback;
@@ -284,21 +284,21 @@ public final class RealHardwareImpl
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
-        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), connection);
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
-        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        commands.init(ChildUtil.name(name, Hardware.COMMANDS_ID), connection);
-        values.init(ChildUtil.name(name, Hardware.VALUES_ID), connection);
-        properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID), connection);
-        devices.init(ChildUtil.name(name, Hardware.DEVICES_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID));
+        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID));
+        startCommand.init(ChildUtil.name(name, Runnable.START_ID));
+        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID));
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID));
+        commands.init(ChildUtil.name(name, Hardware.COMMANDS_ID));
+        values.init(ChildUtil.name(name, Hardware.VALUES_ID));
+        properties.init(ChildUtil.name(name, Hardware.PROPERTIES_ID));
+        devices.init(ChildUtil.name(name, Hardware.DEVICES_ID));
         // do driver last as it's better to have the devices loaded already
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID));
+        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID));
         if(isRunning())
             startDriver();
     }

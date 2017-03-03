@@ -6,6 +6,7 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.TypeInstancesMapper;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ValueMapper;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.Value;
+import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -20,7 +21,9 @@ public class RealValueBridge
     protected RealValueBridge(@Assisted Logger logger,
                               ValueMapper valueMapper,
                               TypeInstancesMapper typeInstancesMapper,
-                              ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Value.Data.class, valueMapper, typeInstancesMapper, managedCollectionFactory);
+                              ManagedCollectionFactory managedCollectionFactory,
+                              Receiver.Factory v1_0ReceiverFactory,
+                              com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Value.Data.class, valueMapper, typeInstancesMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
     }
 }

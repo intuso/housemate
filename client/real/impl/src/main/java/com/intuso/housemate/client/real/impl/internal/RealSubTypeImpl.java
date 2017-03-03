@@ -3,6 +3,7 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.SubType;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealSubType;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -29,8 +30,9 @@ public final class RealSubTypeImpl<O>
                            @Assisted RealTypeImpl type,
                            @Assisted("min") int minValues,
                            @Assisted("max") int maxValues,
-                           ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, new SubType.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory);
+                           ManagedCollectionFactory managedCollectionFactory,
+                           Sender.Factory senderFactory) {
+        super(logger, new SubType.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory, senderFactory);
         this.type = type;
     }
 

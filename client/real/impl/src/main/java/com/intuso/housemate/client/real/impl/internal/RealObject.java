@@ -1,12 +1,11 @@
 package com.intuso.housemate.client.real.impl.internal;
 
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
+import com.intuso.housemate.client.messaging.api.internal.Type;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 public abstract class RealObject<DATA extends Object.Data,
         LISTENER extends com.intuso.housemate.client.api.internal.object.Object.Listener>
@@ -17,24 +16,29 @@ public abstract class RealObject<DATA extends Object.Data,
     protected final Logger logger;
     protected final DATA data;
     protected final ManagedCollection<LISTENER> listeners;
+    protected final Sender.Factory senderFactory;
 
-    private JMSUtil.Sender sender;
+    private Sender sender;
 
-    protected RealObject(Logger logger, DATA data, ManagedCollectionFactory managedCollectionFactory) {
+    protected RealObject(Logger logger,
+                         DATA data,
+                         ManagedCollectionFactory managedCollectionFactory,
+                         Sender.Factory senderFactory) {
+        this.senderFactory = senderFactory;
         logger.debug("Creating");
         this.logger = logger;
         this.data = data;
         this.listeners = managedCollectionFactory.create();
     }
 
-    public final void init(String name, Connection connection) throws JMSException {
+    public final void init(String name) {
         logger.debug("Init {}", name);
-        sender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, name);
+        sender = senderFactory.create(logger, Type.Topic, name);
         sendData();
-        initChildren(name, connection);
+        initChildren(name);
     }
 
-    protected void initChildren(String name, Connection connection) throws JMSException {}
+    protected void initChildren(String name) {}
 
     public final void uninit() {
         logger.debug("Uninit");
@@ -80,8 +84,8 @@ public abstract class RealObject<DATA extends Object.Data,
         if(sender != null) {
             try {
                 sender.send(data, true);
-            } catch (JMSException e) {
-                logger.error("Failed to send data object", e);
+            } catch (Throwable t) {
+                logger.error("Failed to send data object", t);
             }
         }
     }

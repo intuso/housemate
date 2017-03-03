@@ -15,15 +15,13 @@ import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Task;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Base class for all task
@@ -62,6 +60,7 @@ public final class RealTaskImpl
                         @Assisted("description") String description,
                         @Assisted RealListPersistedImpl.RemoveCallback<RealTaskImpl> removeCallback,
                         ManagedCollectionFactory managedCollectionFactory,
+                        Sender.Factory senderFactory,
                         AnnotationParser annotationParser,
                         RealCommandImpl.Factory commandFactory,
                         RealParameterImpl.Factory parameterFactory,
@@ -69,7 +68,7 @@ public final class RealTaskImpl
                         RealValueImpl.Factory valueFactory,
                         RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                         TypeRepository typeRepository) {
-        super(logger, new Task.Data(id, name, description), managedCollectionFactory);
+        super(logger, new Task.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.annotationParser = annotationParser;
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
@@ -209,15 +208,15 @@ public final class RealTaskImpl
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID), connection);
-        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID), connection);
-        properties.init(ChildUtil.name(name, Task.PROPERTIES_ID), connection);
-        executingValue.init(ChildUtil.name(name, Task.EXECUTING_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID));
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID));
+        driverProperty.init(ChildUtil.name(name, UsesDriver.DRIVER_ID));
+        driverLoadedValue.init(ChildUtil.name(name, UsesDriver.DRIVER_LOADED_ID));
+        properties.init(ChildUtil.name(name, Task.PROPERTIES_ID));
+        executingValue.init(ChildUtil.name(name, Task.EXECUTING_ID));
     }
 
     @Override

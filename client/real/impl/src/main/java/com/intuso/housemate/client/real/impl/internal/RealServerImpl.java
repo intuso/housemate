@@ -2,20 +2,17 @@ package com.intuso.housemate.client.real.impl.internal;
 
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
-import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Automation;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.api.internal.object.System;
 import com.intuso.housemate.client.api.internal.object.User;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddSystemCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddUserCommand;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 public class RealServerImpl
         extends RealObject<Server.Data, Server.Listener<? super RealServerImpl>>
@@ -29,8 +26,6 @@ public class RealServerImpl
         AddSystemCommand.Callback,
         AddUserCommand.Callback {
 
-    private final Connection connection;
-
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
     private final RealListPersistedImpl<System.Data, RealSystemImpl> systems;
@@ -40,9 +35,9 @@ public class RealServerImpl
     private final RealCommandImpl addUserCommand;
 
     @Inject
-    public RealServerImpl(Connection connection,
-                          @com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
+    public RealServerImpl(@com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
                           ManagedCollectionFactory managedCollectionFactory,
+                          Sender.Factory senderFactory,
                           RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
                           RealListPersistedImpl.Factory<System.Data, RealSystemImpl> systemsFactory,
                           RealNodeListImpl.Factory nodesFactory,
@@ -51,8 +46,7 @@ public class RealServerImpl
                           AddSystemCommand.Factory addSystemCommandFactory,
                           AddUserCommand.Factory addUserCommandFactory,
                           RealNodeImpl node) {
-        super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory);
-        this.connection = connection;
+        super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory, senderFactory);
         this.automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),
                 AUTOMATIONS_ID,
                 "Automations",
@@ -94,15 +88,15 @@ public class RealServerImpl
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        automations.init(ChildUtil.name(name, AUTOMATIONS_ID), connection);
-        addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID), connection);
-        systems.init(ChildUtil.name(name, SYSTEMS_ID), connection);
-        addSystemCommand.init(ChildUtil.name(name, ADD_SYSTEM_ID), connection);
-        users.init(ChildUtil.name(name, USERS_ID), connection);
-        addUserCommand.init(ChildUtil.name(name, ADD_USER_ID), connection);
-        nodes.init(ChildUtil.name(name, NODES_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        automations.init(ChildUtil.name(name, AUTOMATIONS_ID));
+        addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID));
+        systems.init(ChildUtil.name(name, SYSTEMS_ID));
+        addSystemCommand.init(ChildUtil.name(name, ADD_SYSTEM_ID));
+        users.init(ChildUtil.name(name, USERS_ID));
+        addUserCommand.init(ChildUtil.name(name, ADD_USER_ID));
+        nodes.init(ChildUtil.name(name, NODES_ID));
     }
 
     @Override
@@ -167,12 +161,8 @@ public class RealServerImpl
     }
 
     public void start() {
-        try {
-            // don't put "real" in the name - this way real and proxy link up together
-            init("server", connection);
-        } catch(JMSException e) {
-            throw new HousemateException("Failed to initalise objects");
-        }
+        // don't put "real" in the name - this way real and proxy link up together
+        init("server");
     }
 
     public void stop() {

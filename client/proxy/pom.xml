@@ -22,16 +22,16 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- Internal api dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>housemate-client-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- Active MQ -->
         <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>housemate-client-messaging-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

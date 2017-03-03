@@ -8,12 +8,11 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.proxy.internal.object.JMSUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.Map;
 
 /**
@@ -28,57 +27,50 @@ public class ProxyCommandBridge
     private final ProxyValueBridge enabledValue;
     private final ProxyListBridge<ProxyParameterBridge> parameters;
 
-    private JMSUtil.Sender performSender;
-    private com.intuso.housemate.client.v1_0.proxy.object.JMSUtil.Receiver<com.intuso.housemate.client.v1_0.api.object.Command.PerformData> performReceiver;
-    private com.intuso.housemate.client.v1_0.proxy.object.JMSUtil.Sender performStatusSender;
-    private JMSUtil.Receiver<PerformStatusData> performStatusReceiver;
+    private com.intuso.housemate.client.messaging.api.internal.Sender performSender;
+    private Receiver<com.intuso.housemate.client.v1_0.api.object.Command.PerformData> performReceiver;
+    private Sender performStatusSender;
+    private com.intuso.housemate.client.messaging.api.internal.Receiver<PerformStatusData> performStatusReceiver;
 
     private int nextId;
     private final Map<String, PerformListener<? super ProxyCommandBridge>> listenerMap = Maps.newHashMap();
+    private final com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory;
+    private final Receiver.Factory v1_0ReceiverFactory;
 
     @Inject
     protected ProxyCommandBridge(@Assisted Logger logger,
                                  CommandMapper commandMapper,
                                  ManagedCollectionFactory managedCollectionFactory,
-                                 ProxyObjectBridge.Factory<ProxyValueBridge> valueFactory,
-                                 ProxyObjectBridge.Factory<ProxyListBridge<ProxyParameterBridge>> parametersFactory) {
-        super(logger, Command.Data.class, commandMapper, managedCollectionFactory);
+                                 com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                                 com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory,
+                                 Receiver.Factory v1_0ReceiverFactory,
+                                 Sender.Factory v1_0SenderFactory,
+                                 Factory<ProxyValueBridge> valueFactory,
+                                 Factory<ProxyListBridge<ProxyParameterBridge>> parametersFactory) {
+        super(logger, Command.Data.class, commandMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         this.commandMapper = commandMapper;
+        this.internalSenderFactory = internalSenderFactory;
+        this.v1_0ReceiverFactory = v1_0ReceiverFactory;
         enabledValue = valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID));
         parameters = parametersFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         enabledValue.init(
                 com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Command.ENABLED_ID),
-                ChildUtil.name(internalName, Command.ENABLED_ID),
-                connection);
+                ChildUtil.name(internalName, Command.ENABLED_ID)
+        );
         parameters.init(
                 com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Command.PARAMETERS_ID),
-                ChildUtil.name(internalName, Command.PARAMETERS_ID),
-                connection);
-        performSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Queue, ChildUtil.name(internalName, Command.PERFORM_ID));
-        performReceiver = new com.intuso.housemate.client.v1_0.proxy.object.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.v1_0.proxy.object.JMSUtil.Type.Queue, com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, Command.PERFORM_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformData.class,
-                new com.intuso.housemate.client.v1_0.proxy.object.JMSUtil.Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Command.PerformData>() {
-                    @Override
-                    public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformData performData, boolean wasPersisted) {
-                        try {
-                            performSender.send(commandMapper.map(performData), wasPersisted);
-                        } catch (JMSException e) {
-                            logger.error("Failed to send perform message to command. Telling client it failed", e);
-                            try {
-                                performStatusSender.send(new PerformStatusData(performData.getOpId(), true, "Failed to send perform message to command"), false);
-                            } catch (JMSException e1) {
-                                logger.error("Failed to broadcast perform status message");
-                            }
-                        }
-                    }
-                });
-        performStatusSender = new com.intuso.housemate.client.v1_0.proxy.object.JMSUtil.Sender(logger, connection, com.intuso.housemate.client.v1_0.proxy.object.JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID));
-        performStatusReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID), PerformStatusData.class,
-                new JMSUtil.Receiver.Listener<PerformStatusData>() {
+                ChildUtil.name(internalName, Command.PARAMETERS_ID)
+        );
+        performSender = internalSenderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Queue, ChildUtil.name(internalName, Command.PERFORM_ID));
+        performReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Queue, com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, Command.PERFORM_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformData.class);
+        performStatusSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Topic, com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID));
+        performStatusReceiver = internalReceiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID), PerformStatusData.class);
+        performStatusReceiver.listen(new com.intuso.housemate.client.messaging.api.internal.Receiver.Listener<PerformStatusData>() {
             @Override
             public void onMessage(PerformStatusData performStatusData, boolean wasPersisted) {
                 if (listenerMap.containsKey(performStatusData.getOpId())) {
@@ -92,10 +84,25 @@ public class ProxyCommandBridge
                 }
                 try {
                     performStatusSender.send(commandMapper.map(performStatusData), wasPersisted);
-                } catch (JMSException e) {
-                    logger.error("Failed to broadcast perform status message");
+                } catch (Throwable t) {
+                    logger.error("Failed to broadcast perform status message", t);
                 }
                 // todo call object listeners
+            }
+        });
+        performReceiver.listen(new Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Command.PerformData>() {
+            @Override
+            public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformData performData, boolean wasPersisted) {
+                try {
+                    performSender.send(commandMapper.map(performData), wasPersisted);
+                } catch (Throwable t) {
+                    logger.error("Failed to send perform message to command. Telling client it failed", t);
+                    try {
+                        performStatusSender.send(new PerformStatusData(performData.getOpId(), true, "Failed to send perform message to command"), false);
+                    } catch (Throwable t1) {
+                        logger.error("Failed to broadcast perform status message", t);
+                    }
+                }
             }
         });
     }
@@ -157,12 +164,12 @@ public class ProxyCommandBridge
         }
         try {
             performSender.send(values, true);
-        } catch(JMSException e) {
+        } catch(Throwable t) {
             if(listener != null) {
                 listenerMap.remove(id);
-                listener.commandFailed(this, "Failed to send perform message: " + e.getMessage());
+                listener.commandFailed(this, "Failed to send perform message: " + t.getMessage());
             }
-            throw new HousemateException("Failed to send perform message", e);
+            throw new HousemateException("Failed to send perform message", t);
         }
     }
 }

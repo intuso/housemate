@@ -8,12 +8,11 @@ import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
-import com.intuso.housemate.client.real.impl.internal.JMSUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.Map;
 
 /**
@@ -24,14 +23,16 @@ public class RealCommandBridge
         implements Command<Type.InstanceMap, RealValueBridge, RealListBridge<RealParameterBridge>, RealCommandBridge> {
 
     private final CommandMapper commandMapper;
+    private final com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory;
+    private final Sender.Factory v1_0SenderFactory;
 
     private final RealValueBridge enabledValue;
     private final RealListBridge<RealParameterBridge> parameters;
 
-    private com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Sender performSender;
-    private JMSUtil.Receiver<Command.PerformData> performReceiver;
-    private JMSUtil.Sender performStatusSender;
-    private com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData> performStatusReceiver;
+    private Sender performSender;
+    private com.intuso.housemate.client.messaging.api.internal.Receiver<PerformData> performReceiver;
+    private com.intuso.housemate.client.messaging.api.internal.Sender performStatusSender;
+    private Receiver<com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData> performStatusReceiver;
 
     private int nextId;
     private final Map<String, Command.PerformListener<? super RealCommandBridge>> listenerMap = Maps.newHashMap();
@@ -40,45 +41,36 @@ public class RealCommandBridge
     protected RealCommandBridge(@Assisted Logger logger,
                                 CommandMapper commandMapper,
                                 ManagedCollectionFactory managedCollectionFactory,
+                                Receiver.Factory v1_0ReceiverFactory,
+                                Sender.Factory v1_0SenderFactory,
+                                com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                                com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory,
                                 RealObjectBridge.Factory<RealValueBridge> valueFactory,
                                 RealObjectBridge.Factory<RealListBridge<RealParameterBridge>> parametersFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Command.Data.class, commandMapper, managedCollectionFactory);
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Command.Data.class, commandMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
         this.commandMapper = commandMapper;
+        this.internalReceiverFactory = internalReceiverFactory;
+        this.v1_0SenderFactory = v1_0SenderFactory;
         enabledValue = valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID));
         parameters = parametersFactory.create(ChildUtil.logger(logger, Command.PARAMETERS_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         enabledValue.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Command.ENABLED_ID),
-                ChildUtil.name(internalName, Command.ENABLED_ID),
-                connection);
+                ChildUtil.name(internalName, Command.ENABLED_ID)
+        );
         parameters.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Command.PARAMETERS_ID),
-                ChildUtil.name(internalName, Command.PARAMETERS_ID),
-                connection);
-        performSender = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Sender(logger, connection, com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Type.Queue, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_ID));
-        performReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Queue, ChildUtil.name(internalName, Command.PERFORM_ID), PerformData.class,
-                new JMSUtil.Receiver.Listener<PerformData>() {
-                    @Override
-                    public void onMessage(PerformData performData, boolean wasPersisted) {
-                        try {
-                            performSender.send(commandMapper.map(performData), wasPersisted);
-                        } catch (JMSException e) {
-                            logger.error("Failed to send perform message to command. Telling client it failed", e);
-                            try {
-                                performStatusSender.send(new PerformStatusData(performData.getOpId(), true, "Failed to send perform message to command"), false);
-                            } catch (JMSException e1) {
-                                logger.error("Failed to broadcast perform status message");
-                            }
-                        }
-                    }
-                });
-        performStatusSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID));
-        performStatusReceiver = new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData.class,
-                new com.intuso.housemate.client.v1_0.real.impl.JMSUtil.Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData>() {
+                ChildUtil.name(internalName, Command.PARAMETERS_ID)
+        );
+        performSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Queue, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_ID));
+        performReceiver = internalReceiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Queue, ChildUtil.name(internalName, Command.PERFORM_ID), PerformData.class);
+        performStatusSender = internalSenderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID));
+        performStatusReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData.class);
+        performStatusReceiver.listen(new Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData>() {
             @Override
             public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData performStatusData, boolean wasPersisted) {
                 if (listenerMap.containsKey(performStatusData.getOpId())) {
@@ -92,10 +84,25 @@ public class RealCommandBridge
                 }
                 try {
                     performStatusSender.send(commandMapper.map(performStatusData), wasPersisted);
-                } catch (JMSException e) {
-                    logger.error("Failed to broadcast perform status message");
+                } catch (Throwable t) {
+                    logger.error("Failed to broadcast perform status message", t);
                 }
                 // todo call object listeners
+            }
+        });
+        performReceiver.listen(new com.intuso.housemate.client.messaging.api.internal.Receiver.Listener<PerformData>() {
+            @Override
+            public void onMessage(PerformData performData, boolean wasPersisted) {
+                try {
+                    performSender.send(commandMapper.map(performData), wasPersisted);
+                } catch (Throwable t) {
+                    logger.error("Failed to send perform message to command. Telling client it failed", t);
+                    try {
+                        performStatusSender.send(new PerformStatusData(performData.getOpId(), true, "Failed to send perform message to command"), false);
+                    } catch (Throwable t1) {
+                        logger.error("Failed to broadcast perform status message", t1);
+                    }
+                }
             }
         });
     }
@@ -157,12 +164,12 @@ public class RealCommandBridge
         }
         try {
             performSender.send(values, true);
-        } catch(JMSException e) {
+        } catch(Throwable t) {
             if(listener != null) {
                 listenerMap.remove(id);
-                listener.commandFailed(this, "Failed to send perform message: " + e.getMessage());
+                listener.commandFailed(this, "Failed to send perform message: " + t.getMessage());
             }
-            throw new HousemateException("Failed to send perform message", e);
+            throw new HousemateException("Failed to send perform message", t);
         }
     }
 }

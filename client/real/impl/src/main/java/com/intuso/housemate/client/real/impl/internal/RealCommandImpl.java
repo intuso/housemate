@@ -6,13 +6,12 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  */
@@ -22,12 +21,13 @@ public final class RealCommandImpl
 
     private final static String ENABLED_DESCRIPTION = "Whether the command is enabled or not";
 
+    private final Receiver.Factory receiverFactory;
     private final Performer performer;
     private final RealValueImpl<Boolean> enabledValue;
     private final RealListGeneratedImpl<RealParameterImpl<?>> parameters;
 
-    private JMSUtil.Sender performStatusSender;
-    private JMSUtil.Receiver<PerformData> performReceiver;
+    private Sender performStatusSender;
+    private Receiver<PerformData> performReceiver;
 
     /**
      * @param logger {@inheritDoc}
@@ -42,10 +42,13 @@ public final class RealCommandImpl
                               @Assisted Performer performer,
                               @Assisted Iterable<? extends RealParameterImpl<?>> parameters,
                               ManagedCollectionFactory managedCollectionFactory,
+                              Receiver.Factory receiverFactory,
+                              Sender.Factory senderFactory,
                               RealValueImpl.Factory valueFactory,
                               RealListGeneratedImpl.Factory<RealParameterImpl<?>> parametersFactory,
                               TypeRepository typeRepository) {
-        super(logger, new Command.Data(id, name, description), managedCollectionFactory);
+        super(logger, new Command.Data(id, name, description), managedCollectionFactory, senderFactory);
+        this.receiverFactory = receiverFactory;
         this.performer = performer;
         this.enabledValue = (RealValueImpl<Boolean>) valueFactory.create(ChildUtil.logger(logger, Command.ENABLED_ID),
                 Command.ENABLED_ID,
@@ -63,13 +66,13 @@ public final class RealCommandImpl
     }
 
     @Override
-    protected final void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID), connection);
-        parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID), connection);
-        performStatusSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, Command.PERFORM_STATUS_ID));
-        performReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Queue, ChildUtil.name(name, Command.PERFORM_ID), PerformData.class,
-                new JMSUtil.Receiver.Listener<PerformData>() {
+    protected final void initChildren(String name) {
+        super.initChildren(name);
+        enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID));
+        parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID));
+        performStatusSender = senderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(name, Command.PERFORM_STATUS_ID));
+        performReceiver = receiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Queue, ChildUtil.name(name, Command.PERFORM_ID), PerformData.class);
+        performReceiver.listen(new Receiver.Listener<PerformData>() {
                     @Override
                     public void onMessage(final PerformData performData, boolean wasPersisted) {
                         perform(performData.getInstanceMap(), new PerformListener<RealCommandImpl>() {
@@ -133,8 +136,8 @@ public final class RealCommandImpl
     private void performStatus(String opId, boolean finished, String error) {
         try {
             performStatusSender.send(new Command.PerformStatusData(opId, finished, error), false);
-        } catch(JMSException e) {
-            logger.error("Failed to send perform status update ({}, {}, {})", opId, finished, error, e);
+        } catch(Throwable t) {
+            logger.error("Failed to send perform status update ({}, {}, {})", opId, finished, error, t);
         }
     }
 

@@ -5,11 +5,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.NodeMapper;
 import com.intuso.housemate.client.api.internal.object.Node;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -25,31 +23,33 @@ public class ProxyNodeBridge
     @Inject
     protected ProxyNodeBridge(@Assisted Logger logger,
                               NodeMapper nodeMapper,
-                              ProxyObjectBridge.Factory<ProxyListBridge<ProxyTypeBridge>> typesFactory,
-                              ProxyObjectBridge.Factory<ProxyListBridge<ProxyHardwareBridge>> hardwaresFactory,
-                              ProxyObjectBridge.Factory<ProxyCommandBridge> commandFactory,
-                              ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, Node.Data.class, nodeMapper, managedCollectionFactory);
+                              ManagedCollectionFactory managedCollectionFactory,
+                              com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                              Sender.Factory v1_0SenderFactory,
+                              Factory<ProxyListBridge<ProxyTypeBridge>> typesFactory,
+                              Factory<ProxyListBridge<ProxyHardwareBridge>> hardwaresFactory,
+                              Factory<ProxyCommandBridge> commandFactory) {
+        super(logger, Node.Data.class, nodeMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         types = typesFactory.create(ChildUtil.logger(logger, Node.TYPES_ID));
         hardwares = hardwaresFactory.create(ChildUtil.logger(logger, Node.HARDWARES_ID));
         addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, Node.ADD_HARDWARE_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         types.init(
                 com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Node.TYPES_ID),
-                ChildUtil.name(internalName, Node.TYPES_ID),
-                connection);
+                ChildUtil.name(internalName, Node.TYPES_ID)
+        );
         hardwares.init(
                 com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Node.HARDWARES_ID),
-                ChildUtil.name(internalName, Node.HARDWARES_ID),
-                connection);
+                ChildUtil.name(internalName, Node.HARDWARES_ID)
+        );
         addHardwareCommand.init(
                 com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Node.ADD_HARDWARE_ID),
-                ChildUtil.name(internalName, Node.ADD_HARDWARE_ID),
-                connection);
+                ChildUtil.name(internalName, Node.ADD_HARDWARE_ID)
+        );
     }
 
     @Override

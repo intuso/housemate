@@ -7,12 +7,11 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.TypeInstancesMapper;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -27,19 +26,21 @@ public class RealPropertyBridge
     public RealPropertyBridge(@Assisted Logger logger,
                               PropertyMapper propertyMapper,
                               TypeInstancesMapper typeInstancesMapper,
-                              RealObjectBridge.Factory<RealCommandBridge> commandFactory,
-                              ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Property.Data.class, propertyMapper, typeInstancesMapper, managedCollectionFactory);
+                              ManagedCollectionFactory managedCollectionFactory,
+                              Receiver.Factory v1_0ReceiverFactory,
+                              Sender.Factory internalSenderFactory,
+                              RealObjectBridge.Factory<RealCommandBridge> commandFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Property.Data.class, propertyMapper, typeInstancesMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         setCommand.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Property.SET_COMMAND_ID),
-                ChildUtil.name(internalName, Property.SET_COMMAND_ID),
-                connection);
+                ChildUtil.name(internalName, Property.SET_COMMAND_ID)
+        );
     }
 
     @Override

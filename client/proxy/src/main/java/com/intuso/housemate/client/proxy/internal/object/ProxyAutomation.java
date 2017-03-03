@@ -3,12 +3,10 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Automation;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * @param <COMMAND> the type of the add command
@@ -48,11 +46,12 @@ public abstract class ProxyAutomation<
      */
     public ProxyAutomation(Logger logger,
                            ManagedCollectionFactory managedCollectionFactory,
+                           Receiver.Factory receiverFactory,
                            ProxyObject.Factory<COMMAND> commandFactory,
                            ProxyObject.Factory<VALUE> valueFactory,
                            ProxyObject.Factory<CONDITIONS> conditionsFactory,
                            ProxyObject.Factory<TASKS> tasksFactory) {
-        super(logger, Automation.Data.class, managedCollectionFactory);
+        super(logger, Automation.Data.class, managedCollectionFactory, receiverFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID));
@@ -68,20 +67,20 @@ public abstract class ProxyAutomation<
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
-        runningValue.init(ChildUtil.name(name, RUNNING_ID), connection);
-        startCommand.init(ChildUtil.name(name, START_ID), connection);
-        stopCommand.init(ChildUtil.name(name, STOP_ID), connection);
-        errorValue.init(ChildUtil.name(name, ERROR_ID), connection);
-        conditions.init(ChildUtil.name(name, CONDITIONS_ID), connection);
-        addConditionCommand.init(ChildUtil.name(name, ADD_CONDITION_ID), connection);
-        satisfiedTasks.init(ChildUtil.name(name, SATISFIED_TASKS_ID), connection);
-        addSatisfiedTaskCommand.init(ChildUtil.name(name, ADD_SATISFIED_TASK_ID), connection);
-        unsatisfiedTasks.init(ChildUtil.name(name, UNSATISFIED_TASKS_ID), connection);
-        addUnsatisfiedTaskCommand.init(ChildUtil.name(name, ADD_UNSATISFIED_TASK_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID));
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID));
+        runningValue.init(ChildUtil.name(name, RUNNING_ID));
+        startCommand.init(ChildUtil.name(name, START_ID));
+        stopCommand.init(ChildUtil.name(name, STOP_ID));
+        errorValue.init(ChildUtil.name(name, ERROR_ID));
+        conditions.init(ChildUtil.name(name, CONDITIONS_ID));
+        addConditionCommand.init(ChildUtil.name(name, ADD_CONDITION_ID));
+        satisfiedTasks.init(ChildUtil.name(name, SATISFIED_TASKS_ID));
+        addSatisfiedTaskCommand.init(ChildUtil.name(name, ADD_SATISFIED_TASK_ID));
+        unsatisfiedTasks.init(ChildUtil.name(name, UNSATISFIED_TASKS_ID));
+        addUnsatisfiedTaskCommand.init(ChildUtil.name(name, ADD_UNSATISFIED_TASK_ID));
     }
 
     @Override
@@ -219,11 +218,12 @@ public abstract class ProxyAutomation<
         @Inject
         public Simple(@Assisted Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
+                      Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyValue.Simple> valueFactory,
                       Factory<ProxyList.Simple<ProxyCondition.Simple>> conditionsFactory,
                       Factory<ProxyList.Simple<ProxyTask.Simple>> tasksFactory) {
-            super(logger, managedCollectionFactory, commandFactory, valueFactory, conditionsFactory, tasksFactory);
+            super(logger, managedCollectionFactory, receiverFactory, commandFactory, valueFactory, conditionsFactory, tasksFactory);
         }
     }
 }

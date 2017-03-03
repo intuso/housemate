@@ -5,11 +5,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.OptionMapper;
 import com.intuso.housemate.client.api.internal.object.Option;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -23,19 +21,21 @@ public class ProxyOptionBridge
     @Inject
     protected ProxyOptionBridge(@Assisted Logger logger,
                                 OptionMapper optionMapper,
-                                ProxyObjectBridge.Factory<ProxyListBridge<ProxySubTypeBridge>> subTypesFactory,
-                                ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, Option.Data.class, optionMapper, managedCollectionFactory);
+                                ManagedCollectionFactory managedCollectionFactory,
+                                com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                                Sender.Factory v1_0SenderFactory,
+                                Factory<ProxyListBridge<ProxySubTypeBridge>> subTypesFactory) {
+        super(logger, Option.Data.class, optionMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         subTypes.init(
                 com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Option.SUB_TYPES_ID),
                 ChildUtil.name(internalName,
-                        Option.SUB_TYPES_ID), connection);
+                        Option.SUB_TYPES_ID));
     }
 
     @Override

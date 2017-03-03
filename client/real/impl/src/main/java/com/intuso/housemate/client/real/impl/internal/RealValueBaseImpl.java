@@ -3,12 +3,12 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.common.collect.Lists;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.ValueBase;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealValueBase;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.List;
 
 /**
@@ -23,9 +23,11 @@ public abstract class RealValueBaseImpl<O,
         extends RealObject<DATA, LISTENER>
         implements RealValueBase<O, RealTypeImpl<O>, LISTENER, VALUE> {
 
+    private final Receiver.Factory receiverFactory;
+
     private final RealTypeImpl<O> type;
 
-    private JMSUtil.Sender valueSender;
+    private Sender valueSender;
 
     private Iterable<O> values;
 
@@ -35,20 +37,27 @@ public abstract class RealValueBaseImpl<O,
      * @param data {@inheritDoc}
      * @param type the type of the value's value
      */
-    public RealValueBaseImpl(Logger logger, DATA data, ManagedCollectionFactory managedCollectionFactory, RealTypeImpl<O> type, Iterable<O> values) {
-        super(logger, data, managedCollectionFactory);
+    public RealValueBaseImpl(Logger logger,
+                             DATA data,
+                             ManagedCollectionFactory managedCollectionFactory,
+                             Receiver.Factory receiverFactory,
+                             Sender.Factory senderFactory,
+                             RealTypeImpl<O> type,
+                             Iterable<O> values) {
+        super(logger, data, managedCollectionFactory, senderFactory);
+        this.receiverFactory = receiverFactory;
         this.type = type;
         this.values = values;
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        valueSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, ValueBase.VALUE_ID));
+    protected void initChildren(String name) {
+        super.initChildren(name);
         // get the persisted value
-        Type.Instances instances = JMSUtil.getFirstPersisted(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, ValueBase.VALUE_ID), Type.Instances.class);
+        Type.Instances instances = receiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(name, ValueBase.VALUE_ID), Type.Instances.class).getPersistedMessage();
         if(instances != null)
             setValues(RealTypeImpl.deserialiseAll(type, instances));
+        valueSender = senderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(name, ValueBase.VALUE_ID));
     }
 
     @Override
@@ -94,8 +103,8 @@ public abstract class RealValueBaseImpl<O,
         if(valueSender != null) {
             try {
                 valueSender.send(RealTypeImpl.serialiseAll(type, values), true);
-            } catch (JMSException e) {
-                logger.error("Failed to send value update", e);
+            } catch (Throwable t) {
+                logger.error("Failed to send value update", t);
             }
         }
         for(LISTENER listener : listeners)

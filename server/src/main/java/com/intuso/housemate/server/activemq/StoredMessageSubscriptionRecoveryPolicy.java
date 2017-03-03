@@ -1,6 +1,6 @@
 package com.intuso.housemate.server.activemq;
 
-import com.intuso.housemate.client.api.internal.MessageConstants;
+import com.intuso.housemate.client.messaging.api.internal.MessageConstants;
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.ConnectionContext;

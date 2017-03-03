@@ -7,11 +7,9 @@ import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Task;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -31,12 +29,14 @@ public class ProxyTaskBridge
     @Inject
     protected ProxyTaskBridge(@Assisted Logger logger,
                               TaskMapper taskMapper,
+                              ManagedCollectionFactory managedCollectionFactory,
+                              com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                              Sender.Factory v1_0SenderFactory,
                               Factory<ProxyCommandBridge> commandFactory,
                               Factory<ProxyValueBridge> valueFactory,
                               Factory<ProxyPropertyBridge> propertyFactory,
-                              Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
-                              ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, Task.Data.class, taskMapper, managedCollectionFactory);
+                              Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory) {
+        super(logger, Task.Data.class, taskMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, Failable.ERROR_ID));
@@ -47,36 +47,36 @@ public class ProxyTaskBridge
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         renameCommand.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Renameable.RENAME_ID),
-                ChildUtil.name(internalName, Renameable.RENAME_ID),
-                connection);
+                ChildUtil.name(internalName, Renameable.RENAME_ID)
+        );
         removeCommand.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Removeable.REMOVE_ID),
-                ChildUtil.name(internalName, Removeable.REMOVE_ID),
-                connection);
+                ChildUtil.name(internalName, Removeable.REMOVE_ID)
+        );
         errorValue.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Failable.ERROR_ID),
-                ChildUtil.name(internalName, Failable.ERROR_ID),
-                connection);
+                ChildUtil.name(internalName, Failable.ERROR_ID)
+        );
         driverProperty.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.UsesDriver.DRIVER_ID),
-                ChildUtil.name(internalName, UsesDriver.DRIVER_ID),
-                connection);
+                ChildUtil.name(internalName, UsesDriver.DRIVER_ID)
+        );
         driverLoadedValue.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.UsesDriver.DRIVER_LOADED_ID),
-                ChildUtil.name(internalName, UsesDriver.DRIVER_LOADED_ID),
-                connection);
+                ChildUtil.name(internalName, UsesDriver.DRIVER_LOADED_ID)
+        );
         executingValue.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Task.EXECUTING_ID),
-                ChildUtil.name(internalName, Runnable.RUNNING_ID),
-                connection);
+                ChildUtil.name(internalName, Runnable.RUNNING_ID)
+        );
         properties.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Task.PROPERTIES_ID),
-                ChildUtil.name(internalName, Task.PROPERTIES_ID),
-                connection);
+                ChildUtil.name(internalName, Task.PROPERTIES_ID)
+        );
     }
 
     @Override

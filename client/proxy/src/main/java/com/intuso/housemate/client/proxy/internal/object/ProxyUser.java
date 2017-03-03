@@ -3,13 +3,11 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.User;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyRemoveable;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * @param <COMMAND> the type of the command
@@ -32,20 +30,21 @@ public abstract class ProxyUser<
      */
     public ProxyUser(Logger logger,
                      ManagedCollectionFactory managedCollectionFactory,
+                     Receiver.Factory receiverFactory,
                      ProxyObject.Factory<COMMAND> commandFactory,
                      ProxyObject.Factory<PROPERTY> propertyFactory) {
-        super(logger, User.Data.class, managedCollectionFactory);
+        super(logger, User.Data.class, managedCollectionFactory, receiverFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         emailProperty = propertyFactory.create(ChildUtil.logger(logger, EMAIL_ID));
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
-        emailProperty.init(ChildUtil.name(name, EMAIL_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID));
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID));
+        emailProperty.init(ChildUtil.name(name, EMAIL_ID));
     }
 
     @Override
@@ -97,9 +96,10 @@ public abstract class ProxyUser<
         @Inject
         public Simple(@Assisted Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
+                      Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyProperty.Simple> propertyFactory) {
-            super(logger, managedCollectionFactory, commandFactory, propertyFactory);
+            super(logger, managedCollectionFactory, receiverFactory, commandFactory, propertyFactory);
         }
     }
 }

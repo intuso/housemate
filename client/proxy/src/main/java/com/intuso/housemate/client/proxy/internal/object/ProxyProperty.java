@@ -5,12 +5,10 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * @param <TYPE> the type of the type
@@ -30,15 +28,16 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
      */
     public ProxyProperty(Logger logger,
                          ManagedCollectionFactory managedCollectionFactory,
+                         Receiver.Factory receiverFactory,
                          ProxyObject.Factory<COMMAND> commandFactory) {
-        super(logger, Property.Data.class, managedCollectionFactory);
+        super(logger, Property.Data.class, managedCollectionFactory, receiverFactory);
         setCommand = commandFactory.create(ChildUtil.logger(logger, SET_COMMAND_ID));
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        setCommand.init(ChildUtil.name(name, SET_COMMAND_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        setCommand.init(ChildUtil.name(name, SET_COMMAND_ID));
     }
 
     @Override
@@ -81,8 +80,9 @@ public abstract class ProxyProperty<TYPE extends ProxyType<?>,
         @Inject
         public Simple(@Assisted Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
+                      Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory) {
-            super(logger, managedCollectionFactory, commandFactory);
+            super(logger, managedCollectionFactory, receiverFactory, commandFactory);
         }
     }
 }

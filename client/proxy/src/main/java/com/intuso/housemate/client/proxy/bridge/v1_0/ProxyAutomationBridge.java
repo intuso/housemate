@@ -9,11 +9,10 @@ import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Automation;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -38,12 +37,14 @@ public class ProxyAutomationBridge
     @Inject
     protected ProxyAutomationBridge(@Assisted Logger logger,
                                     AutomationMapper automationMapper,
+                                    ManagedCollectionFactory managedCollectionFactory,
+                                    com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                                    Sender.Factory v1_0SenderFactory,
                                     Factory<ProxyCommandBridge> commandFactory,
                                     Factory<ProxyValueBridge> valueFactory,
                                     Factory<ProxyListBridge<ProxyConditionBridge>> conditionsFactory,
-                                    Factory<ProxyListBridge<ProxyTaskBridge>> tasksFactory,
-                                    ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, Automation.Data.class, automationMapper, managedCollectionFactory);
+                                    Factory<ProxyListBridge<ProxyTaskBridge>> tasksFactory) {
+        super(logger, Automation.Data.class, automationMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         runningValue = valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID));
@@ -59,56 +60,56 @@ public class ProxyAutomationBridge
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         renameCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Renameable.RENAME_ID),
-                ChildUtil.name(internalName, Renameable.RENAME_ID),
-                connection);
+                ChildUtil.name(internalName, Renameable.RENAME_ID)
+        );
         removeCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Removeable.REMOVE_ID),
-                ChildUtil.name(internalName, Removeable.REMOVE_ID),
-                connection);
+                ChildUtil.name(internalName, Removeable.REMOVE_ID)
+        );
         runningValue.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.RUNNING_ID),
-                ChildUtil.name(internalName, Runnable.RUNNING_ID),
-                connection);
+                ChildUtil.name(internalName, Runnable.RUNNING_ID)
+        );
         startCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.START_ID),
-                ChildUtil.name(internalName, Runnable.START_ID),
-                connection);
+                ChildUtil.name(internalName, Runnable.START_ID)
+        );
         stopCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.STOP_ID),
-                ChildUtil.name(internalName, Runnable.STOP_ID),
-                connection);
+                ChildUtil.name(internalName, Runnable.STOP_ID)
+        );
         errorValue.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Failable.ERROR_ID),
-                ChildUtil.name(internalName, Failable.ERROR_ID),
-                connection);
+                ChildUtil.name(internalName, Failable.ERROR_ID)
+        );
         addConditionCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Automation.ADD_CONDITION_ID),
-                ChildUtil.name(internalName, Automation.ADD_CONDITION_ID),
-                connection);
+                ChildUtil.name(internalName, Automation.ADD_CONDITION_ID)
+        );
         conditions.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Automation.CONDITIONS_ID),
-                ChildUtil.name(internalName, Automation.CONDITIONS_ID),
-                connection);
+                ChildUtil.name(internalName, Automation.CONDITIONS_ID)
+        );
         addSatisfiedTaskCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Automation.ADD_SATISFIED_TASK_ID),
-                ChildUtil.name(internalName, Automation.ADD_SATISFIED_TASK_ID),
-                connection);
+                ChildUtil.name(internalName, Automation.ADD_SATISFIED_TASK_ID)
+        );
         satisfiedTasks.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Automation.SATISFIED_TASKS_ID),
-                ChildUtil.name(internalName, Automation.SATISFIED_TASKS_ID),
-                connection);
+                ChildUtil.name(internalName, Automation.SATISFIED_TASKS_ID)
+        );
         addUnsatisfiedTaskCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Automation.ADD_UNSATISFIED_TASK_ID),
-                ChildUtil.name(internalName, Automation.ADD_UNSATISFIED_TASK_ID),
-                connection);
+                ChildUtil.name(internalName, Automation.ADD_UNSATISFIED_TASK_ID)
+        );
         unsatisfiedTasks.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Automation.UNSATISFIED_TASKS_ID),
-                ChildUtil.name(internalName, Automation.UNSATISFIED_TASKS_ID),
-                connection);
+                ChildUtil.name(internalName, Automation.UNSATISFIED_TASKS_ID)
+        );
     }
 
     @Override

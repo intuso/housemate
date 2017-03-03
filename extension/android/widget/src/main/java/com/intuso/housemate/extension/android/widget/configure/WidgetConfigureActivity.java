@@ -10,11 +10,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.intuso.housemate.client.v1_0.api.api.Power;
+import com.intuso.housemate.client.v1_0.api.ability.Power;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
 import com.intuso.housemate.platform.android.app.HousemateActivity;
-import com.intuso.housemate.platform.android.app.proxy.object.*;
+import com.intuso.housemate.platform.android.app.object.*;
 import com.intuso.utilities.collection.ManagedCollection;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class WidgetConfigureActivity
 
     private final String featureId = Power.ID;
 
-    private AndroidProxyServer.Simple server;
+    private AndroidProxyServer server;
     private List<ManagedCollection.Registration> listenerRegistrations = new ArrayList<>();
     private DeviceListAdapter listAdapter;
 
@@ -51,7 +51,7 @@ public class WidgetConfigureActivity
         listAdapter = new DeviceListAdapter();
         ((ListView)findViewById(R.id.device_list)).setAdapter(listAdapter);
         ((ListView)findViewById(R.id.device_list)).setOnItemClickListener(this);
-        server = new AndroidProxyServer.Simple(/*getConnection(),*/ getLogger(), getManagedCollectionFactory(), new AndroidProxyObject.SimpleFactories(getManagedCollectionFactory()));
+        server = getObjectFactories().server().create(getLogger());
         server.start();
         setStatus("Pick device to control");
         listenerRegistrations.add(server.getNodes().addObjectListener(new NodeListListener(), true));
@@ -89,54 +89,54 @@ public class WidgetConfigureActivity
         });
     }
 
-    private class NodeListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyNode.Simple, AndroidProxyList.Simple<AndroidProxyNode.Simple>> {
+    private class NodeListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyNode, AndroidProxyList<AndroidProxyNode>> {
 
         @Override
-        public void elementAdded(AndroidProxyList.Simple<AndroidProxyNode.Simple> list, AndroidProxyNode.Simple node) {
+        public void elementAdded(AndroidProxyList<AndroidProxyNode> list, AndroidProxyNode node) {
             node.getHardwares().addObjectListener(new HardwareListListener());
         }
 
         @Override
-        public void elementRemoved(AndroidProxyList.Simple<AndroidProxyNode.Simple> list, AndroidProxyNode.Simple node) {
+        public void elementRemoved(AndroidProxyList<AndroidProxyNode> list, AndroidProxyNode node) {
             // todo remove the devices for all hardwares for the node. Or ignore because it's not going to be displayed for long
         }
     }
 
-    private class HardwareListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyHardware.Simple, AndroidProxyList.Simple<AndroidProxyHardware.Simple>> {
+    private class HardwareListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyHardware, AndroidProxyList<AndroidProxyHardware>> {
 
         @Override
-        public void elementAdded(AndroidProxyList.Simple<AndroidProxyHardware.Simple> list, AndroidProxyHardware.Simple hardware) {
+        public void elementAdded(AndroidProxyList<AndroidProxyHardware> list, AndroidProxyHardware hardware) {
             hardware.getDevices().addObjectListener(new DeviceListListener());
         }
 
         @Override
-        public void elementRemoved(AndroidProxyList.Simple<AndroidProxyHardware.Simple> list, AndroidProxyHardware.Simple hardware) {
+        public void elementRemoved(AndroidProxyList<AndroidProxyHardware> list, AndroidProxyHardware hardware) {
             // todo remove the devices for the hardware. Or ignore because it's not going to be displayed for long
         }
     }
 
-    private class DeviceListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyDevice.Simple, AndroidProxyList.Simple<AndroidProxyDevice.Simple>> {
+    private class DeviceListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyDevice, AndroidProxyList<AndroidProxyDevice>> {
 
         @Override
-        public void elementAdded(AndroidProxyList.Simple<AndroidProxyDevice.Simple> list, AndroidProxyDevice.Simple device) {
+        public void elementAdded(AndroidProxyList<AndroidProxyDevice> list, AndroidProxyDevice device) {
             listAdapter.add(new DeviceInfo(device));
         }
 
         @Override
-        public void elementRemoved(AndroidProxyList.Simple<AndroidProxyDevice.Simple> list, AndroidProxyDevice.Simple device) {
+        public void elementRemoved(AndroidProxyList<AndroidProxyDevice> list, AndroidProxyDevice device) {
             listAdapter.remove(new DeviceInfo(device));
         }
     }
 
     private class DeviceInfo {
 
-        private final AndroidProxyDevice.Simple device;
+        private final AndroidProxyDevice device;
 
-        private DeviceInfo(AndroidProxyDevice.Simple device) {
+        private DeviceInfo(AndroidProxyDevice device) {
             this.device = device;
         }
 
-        public AndroidProxyDevice.Simple getDevice() {
+        public AndroidProxyDevice getDevice() {
             return device;
         }
     }

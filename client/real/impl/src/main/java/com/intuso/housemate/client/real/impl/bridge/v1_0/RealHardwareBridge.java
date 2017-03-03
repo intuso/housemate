@@ -7,11 +7,9 @@ import com.intuso.housemate.client.api.internal.*;
 import com.intuso.housemate.client.api.internal.Runnable;
 import com.intuso.housemate.client.api.internal.object.Hardware;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -47,15 +45,17 @@ public class RealHardwareBridge
     @Inject
     protected RealHardwareBridge(@Assisted Logger logger,
                                  HardwareMapper hardwareMapper,
-                                 RealObjectBridge.Factory<RealCommandBridge> commandFactory,
-                                 RealObjectBridge.Factory<RealValueBridge> valueFactory,
-                                 RealObjectBridge.Factory<RealPropertyBridge> propertyFactory,
-                                 RealObjectBridge.Factory<RealListBridge<RealCommandBridge>> commandsFactory,
-                                 RealObjectBridge.Factory<RealListBridge<RealValueBridge>> valuesFactory,
-                                 RealObjectBridge.Factory<RealListBridge<RealPropertyBridge>> propertiesFactory,
-                                 RealObjectBridge.Factory<RealListBridge<RealDeviceBridge>> devicesFactory,
-                                 ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, com.intuso.housemate.client.v1_0.api.object.Hardware.Data.class, hardwareMapper, managedCollectionFactory);
+                                 ManagedCollectionFactory managedCollectionFactory,
+                                 Receiver.Factory v1_0ReceiverFactory,
+                                 com.intuso.housemate.client.messaging.api.internal.Sender.Factory internalSenderFactory,
+                                 Factory<RealCommandBridge> commandFactory,
+                                 Factory<RealValueBridge> valueFactory,
+                                 Factory<RealPropertyBridge> propertyFactory,
+                                 Factory<RealListBridge<RealCommandBridge>> commandsFactory,
+                                 Factory<RealListBridge<RealValueBridge>> valuesFactory,
+                                 Factory<RealListBridge<RealPropertyBridge>> propertiesFactory,
+                                 Factory<RealListBridge<RealDeviceBridge>> devicesFactory) {
+        super(logger, com.intuso.housemate.client.v1_0.api.object.Hardware.Data.class, hardwareMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         runningValue = valueFactory.create(ChildUtil.logger(logger, Runnable.RUNNING_ID));
@@ -71,56 +71,56 @@ public class RealHardwareBridge
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         renameCommand.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Renameable.RENAME_ID),
-                ChildUtil.name(internalName, Renameable.RENAME_ID),
-                connection);
+                ChildUtil.name(internalName, Renameable.RENAME_ID)
+        );
         removeCommand.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Removeable.REMOVE_ID),
-                ChildUtil.name(internalName, Removeable.REMOVE_ID),
-                connection);
+                ChildUtil.name(internalName, Removeable.REMOVE_ID)
+        );
         runningValue.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.RUNNING_ID),
-                ChildUtil.name(internalName, com.intuso.housemate.client.api.internal.Runnable.RUNNING_ID),
-                connection);
+                ChildUtil.name(internalName, com.intuso.housemate.client.api.internal.Runnable.RUNNING_ID)
+        );
         startCommand.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.START_ID),
-                ChildUtil.name(internalName, Runnable.START_ID),
-                connection);
+                ChildUtil.name(internalName, Runnable.START_ID)
+        );
         stopCommand.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Runnable.STOP_ID),
-                ChildUtil.name(internalName, Runnable.STOP_ID),
-                connection);
+                ChildUtil.name(internalName, Runnable.STOP_ID)
+        );
         errorValue.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Failable.ERROR_ID),
-                ChildUtil.name(internalName, Failable.ERROR_ID),
-                connection);
+                ChildUtil.name(internalName, Failable.ERROR_ID)
+        );
         driverProperty.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.UsesDriver.DRIVER_ID),
-                ChildUtil.name(internalName, UsesDriver.DRIVER_ID),
-                connection);
+                ChildUtil.name(internalName, UsesDriver.DRIVER_ID)
+        );
         driverLoadedValue.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.UsesDriver.DRIVER_LOADED_ID),
-                ChildUtil.name(internalName, UsesDriver.DRIVER_LOADED_ID),
-                connection);
+                ChildUtil.name(internalName, UsesDriver.DRIVER_LOADED_ID)
+        );
         commands.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Hardware.COMMANDS_ID),
-                ChildUtil.name(internalName, Hardware.COMMANDS_ID),
-                connection);
+                ChildUtil.name(internalName, Hardware.COMMANDS_ID)
+        );
         values.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Hardware.VALUES_ID),
-                ChildUtil.name(internalName, Hardware.VALUES_ID),
-                connection);
+                ChildUtil.name(internalName, Hardware.VALUES_ID)
+        );
         properties.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Hardware.PROPERTIES_ID),
-                ChildUtil.name(internalName, Hardware.PROPERTIES_ID),
-                connection);
+                ChildUtil.name(internalName, Hardware.PROPERTIES_ID)
+        );
         devices.init(
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Hardware.DEVICES_ID),
-                ChildUtil.name(internalName, Hardware.DEVICES_ID),
-                connection);
+                ChildUtil.name(internalName, Hardware.DEVICES_ID)
+        );
     }
 
     @Override

@@ -7,15 +7,13 @@ import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealCommand;
 import com.intuso.housemate.client.real.api.internal.RealDevice;
 import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 public final class RealDeviceImpl
         extends RealObject<Device.Data, Device.Listener<? super RealDeviceImpl>>
@@ -40,6 +38,7 @@ public final class RealDeviceImpl
                           @Assisted("name") String name,
                           @Assisted("description") String description,
                           ManagedCollectionFactory managedCollectionFactory,
+                          Sender.Factory senderFactory,
                           AnnotationParser annotationParser,
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
@@ -47,7 +46,7 @@ public final class RealDeviceImpl
                           RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                           RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                           TypeRepository typeRepository) {
-        super(logger, new Device.Data(id, name, description), managedCollectionFactory);
+        super(logger, new Device.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.annotationParser = annotationParser;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -96,12 +95,12 @@ public final class RealDeviceImpl
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        commands.init(ChildUtil.name(name, COMMANDS_ID), connection);
-        values.init(ChildUtil.name(name, VALUES_ID), connection);
-        properties.init(ChildUtil.name(name, PROPERTIES_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
+        commands.init(ChildUtil.name(name, COMMANDS_ID));
+        values.init(ChildUtil.name(name, VALUES_ID));
+        properties.init(ChildUtil.name(name, PROPERTIES_ID));
     }
 
     @Override

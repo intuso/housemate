@@ -3,12 +3,10 @@ package com.intuso.housemate.client.real.impl.internal;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Option;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealOption;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 public final class RealOptionImpl
         extends RealObject<Option.Data, Option.Listener<? super RealOptionImpl>>
@@ -28,8 +26,9 @@ public final class RealOptionImpl
                           @Assisted("description") String description,
                           @Assisted Iterable<RealSubTypeImpl<?>> subTypes,
                           ManagedCollectionFactory managedCollectionFactory,
+                          Sender.Factory senderFactory,
                           RealListGeneratedImpl.Factory<RealSubTypeImpl<?>> subTypesFactory) {
-        super(logger, new Option.Data(id, name, description), managedCollectionFactory);
+        super(logger, new Option.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.subTypes = subTypesFactory.create(ChildUtil.logger(logger, Option.SUB_TYPES_ID),
                 Option.SUB_TYPES_ID,
                 "Sub Types",
@@ -38,9 +37,9 @@ public final class RealOptionImpl
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        subTypes.init(ChildUtil.name(name, Option.SUB_TYPES_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        subTypes.init(ChildUtil.name(name, Option.SUB_TYPES_ID));
     }
 
     @Override

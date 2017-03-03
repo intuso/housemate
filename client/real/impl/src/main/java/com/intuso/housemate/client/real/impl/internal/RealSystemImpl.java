@@ -11,14 +11,12 @@ import com.intuso.housemate.client.api.internal.object.System;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.real.api.internal.RealSystem;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Base class for all device
@@ -66,12 +64,13 @@ public final class RealSystemImpl
                           @Assisted("description") String description,
                           @Assisted RealListPersistedImpl.RemoveCallback<RealSystemImpl> removeCallback,
                           ManagedCollectionFactory managedCollectionFactory,
+                          Sender.Factory senderFactory,
                           RealCommandImpl.Factory commandFactory,
                           RealParameterImpl.Factory parameterFactory,
                           RealValueImpl.Factory valueFactory,
                           RealListPersistedImpl.Factory<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> devicesFactory,
                           final TypeRepository typeRepository) {
-        super(logger, new System.Data(id, name, description), managedCollectionFactory);
+        super(logger, new System.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -141,21 +140,21 @@ public final class RealSystemImpl
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
-        errorValue.init(ChildUtil.name(name, ERROR_ID), connection);
-        playbackDevices.init(ChildUtil.name(name, PLAYBACK), connection);
-        addPlaybackDeviceCommand.init(ChildUtil.name(name, ADD_PLAYBACK), connection);
-        powerDevices.init(ChildUtil.name(name, POWER_DESCRIPTION), connection);
-        addPowerDeviceCommand.init(ChildUtil.name(name, ADD_POWER), connection);
-        runDevices.init(ChildUtil.name(name, RUN_DESCRIPTION), connection);
-        addRunDeviceCommand.init(ChildUtil.name(name, ADD_RUN), connection);
-        temperatureSensorDevices.init(ChildUtil.name(name, TEMPERATURE_SENSOR), connection);
-        addTemperatureSensorDeviceCommand.init(ChildUtil.name(name, ADD_TEMPERATURE_SENSOR), connection);
-        volumeDevices.init(ChildUtil.name(name, VOLUME), connection);
-        addVolumeDeviceCommand.init(ChildUtil.name(name, ADD_VOLUME), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID));
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID));
+        errorValue.init(ChildUtil.name(name, ERROR_ID));
+        playbackDevices.init(ChildUtil.name(name, PLAYBACK));
+        addPlaybackDeviceCommand.init(ChildUtil.name(name, ADD_PLAYBACK));
+        powerDevices.init(ChildUtil.name(name, POWER_DESCRIPTION));
+        addPowerDeviceCommand.init(ChildUtil.name(name, ADD_POWER));
+        runDevices.init(ChildUtil.name(name, RUN_DESCRIPTION));
+        addRunDeviceCommand.init(ChildUtil.name(name, ADD_RUN));
+        temperatureSensorDevices.init(ChildUtil.name(name, TEMPERATURE_SENSOR));
+        addTemperatureSensorDeviceCommand.init(ChildUtil.name(name, ADD_TEMPERATURE_SENSOR));
+        volumeDevices.init(ChildUtil.name(name, VOLUME));
+        addVolumeDeviceCommand.init(ChildUtil.name(name, ADD_VOLUME));
     }
 
     @Override

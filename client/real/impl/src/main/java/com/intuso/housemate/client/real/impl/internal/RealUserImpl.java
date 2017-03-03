@@ -8,13 +8,11 @@ import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.object.User;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealUser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Base class for all user
@@ -40,12 +38,12 @@ public final class RealUserImpl
                         @Assisted("description") String description,
                         @Assisted RealListPersistedImpl.RemoveCallback<RealUserImpl> removeCallback,
                         ManagedCollectionFactory managedCollectionFactory,
+                        Sender.Factory senderFactory,
                         RealCommandImpl.Factory commandFactory,
                         RealParameterImpl.Factory parameterFactory,
                         RealPropertyImpl.Factory propertyFactory,
-                        RealValueImpl.Factory valueFactory,
                         TypeRepository typeRepository) {
-        super(logger, new User.Data(id, name, description), managedCollectionFactory);
+        super(logger, new User.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -90,11 +88,11 @@ public final class RealUserImpl
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
-        emailProperty.init(ChildUtil.name(name, User.EMAIL_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID));
+        emailProperty.init(ChildUtil.name(name, User.EMAIL_ID));
     }
 
     @Override

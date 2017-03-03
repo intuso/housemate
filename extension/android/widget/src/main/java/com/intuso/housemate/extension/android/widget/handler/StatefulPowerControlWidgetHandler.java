@@ -2,12 +2,12 @@ package com.intuso.housemate.extension.android.widget.handler;
 
 import android.widget.RemoteViews;
 import android.widget.Toast;
-import com.intuso.housemate.client.v1_0.api.api.Power;
+import com.intuso.housemate.client.v1_0.api.ability.Power;
 import com.intuso.housemate.client.v1_0.api.object.Command;
 import com.intuso.housemate.client.v1_0.proxy.annotation.ProxyWrapper;
 import com.intuso.housemate.extension.android.widget.R;
 import com.intuso.housemate.extension.android.widget.service.WidgetService;
-import com.intuso.housemate.platform.android.app.proxy.object.AndroidProxyCommand;
+import com.intuso.housemate.platform.android.app.object.AndroidProxyCommand;
 import com.intuso.utilities.collection.ManagedCollection;
 
 /**
@@ -19,7 +19,7 @@ import com.intuso.utilities.collection.ManagedCollection;
  */
 public class StatefulPowerControlWidgetHandler
         extends WidgetHandler<Power>
-        implements Command.PerformListener<AndroidProxyCommand.Simple> {
+        implements Command.PerformListener<AndroidProxyCommand> {
 
     private ManagedCollection.Registration listenerRegistration;
     private Boolean isOn = null;
@@ -98,17 +98,17 @@ public class StatefulPowerControlWidgetHandler
     }
 
     @Override
-    public void commandStarted(AndroidProxyCommand.Simple command) {
+    public void commandStarted(AndroidProxyCommand command) {
         // do nothing
     }
 
     @Override
-    public void commandFinished(AndroidProxyCommand.Simple command) {
+    public void commandFinished(AndroidProxyCommand command) {
         // do nothing
     }
 
     @Override
-    public void commandFailed(AndroidProxyCommand.Simple command, String error) {
+    public void commandFailed(AndroidProxyCommand command, String error) {
         Toast.makeText(getWidgetService().getApplicationContext(), "Command failed: " + error, Toast.LENGTH_SHORT).show();
     }
 }

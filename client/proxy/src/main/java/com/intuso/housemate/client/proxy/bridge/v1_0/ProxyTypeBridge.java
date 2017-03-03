@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.TypeMapper;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -17,7 +18,9 @@ public class ProxyTypeBridge
     @Inject
     protected ProxyTypeBridge(@Assisted Logger logger,
                               TypeMapper typeMapper,
-                              ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, Type.Data.class, typeMapper, managedCollectionFactory);
+                              ManagedCollectionFactory managedCollectionFactory,
+                              com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                              Sender.Factory v1_0SenderFactory) {
+        super(logger, Type.Data.class, typeMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
     }
 }

@@ -5,13 +5,12 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.List;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -24,7 +23,6 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
     private final Map<String, ELEMENT> elements;
 
     private String name;
-    private Connection connection;
 
     /**
      * @param logger {@inheritDoc}
@@ -37,8 +35,9 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
                                  @Assisted("name") String name,
                                  @Assisted("description") String description,
                                  @Assisted Iterable<? extends ELEMENT> elements,
-                                 ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, new List.Data(id, name, description), managedCollectionFactory);
+                                 ManagedCollectionFactory managedCollectionFactory,
+                                 Sender.Factory senderFactory) {
+        super(logger, new List.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.elements = Maps.newHashMap();
         for(ELEMENT element : elements)
             this.elements.put(element.getId(), element);
@@ -54,19 +53,17 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
         this.name = name;
-        this.connection = connection;
         for(ELEMENT element : elements.values())
-            element.init(ChildUtil.name(name, element.getId()), connection);
+            element.init(ChildUtil.name(name, element.getId()));
     }
 
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
         this.name = null;
-        this.connection = null;
         for(ELEMENT element : elements.values())
             element.uninit();
     }
@@ -76,13 +73,7 @@ public final class RealListGeneratedImpl<ELEMENT extends RealObject<?, ?>>
         if(elements.containsKey(element.getId()))
             throw new HousemateException("Element with id " + element.getId() + " already exists");
         elements.put(element.getId(), element);
-        if(connection != null) {
-            try {
-                element.init(ChildUtil.name(name, element.getId()), connection);
-            } catch(JMSException e) {
-                throw new HousemateException("Couldn't add element, failed to initialise it");
-            }
-        }
+        element.init(ChildUtil.name(name, element.getId()));
         for(List.Listener<? super ELEMENT, ? super RealListGeneratedImpl<ELEMENT>> listener : listeners)
             listener.elementAdded(this, element);
     }

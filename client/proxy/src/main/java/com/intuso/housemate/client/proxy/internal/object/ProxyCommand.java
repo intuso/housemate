@@ -6,12 +6,12 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.object.Command;
 import com.intuso.housemate.client.api.internal.object.Type;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.Map;
 
 /**
@@ -26,11 +26,13 @@ public abstract class ProxyCommand<
         extends ProxyObject<Command.Data, Command.Listener<? super COMMAND>>
         implements Command<Type.InstanceMap, VALUE, PARAMETERS, COMMAND> {
 
+    private final Sender.Factory senderFactory;
+
     private final VALUE enabledValue;
     private final PARAMETERS parameters;
 
-    private JMSUtil.Sender performSender;
-    private JMSUtil.Receiver<PerformStatusData> performStatusReceiver;
+    private Sender performSender;
+    private Receiver<PerformStatusData> performStatusReceiver;
 
     private int nextId;
     private final Map<String, Command.PerformListener<? super COMMAND>> listenerMap = Maps.newHashMap();
@@ -40,21 +42,24 @@ public abstract class ProxyCommand<
      */
     protected ProxyCommand(Logger logger,
                            ManagedCollectionFactory managedCollectionFactory,
+                           Receiver.Factory receiverFactory,
+                           Sender.Factory senderFactory,
                            ProxyObject.Factory<VALUE> valueFactory,
                            ProxyObject.Factory<PARAMETERS> parametersFactory) {
-        super(logger, Command.Data.class, managedCollectionFactory);
+        super(logger, Command.Data.class, managedCollectionFactory, receiverFactory);
+        this.senderFactory = senderFactory;
         enabledValue = valueFactory.create(ChildUtil.logger(logger, ENABLED_ID));
         parameters = parametersFactory.create(ChildUtil.logger(logger, PARAMETERS_ID));
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        enabledValue.init(ChildUtil.name(name, ENABLED_ID), connection);
-        parameters.init(ChildUtil.name(name, PARAMETERS_ID), connection);
-        performSender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Queue, ChildUtil.name(name, PERFORM_ID));
-        performStatusReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(name, PERFORM_STATUS_ID), PerformStatusData.class,
-                new JMSUtil.Receiver.Listener<PerformStatusData>() {
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        enabledValue.init(ChildUtil.name(name, ENABLED_ID));
+        parameters.init(ChildUtil.name(name, PARAMETERS_ID));
+        performSender = senderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Queue, ChildUtil.name(name, PERFORM_ID));
+        performStatusReceiver = receiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(name, PERFORM_STATUS_ID), PerformStatusData.class);
+        performStatusReceiver.listen(new Receiver.Listener<PerformStatusData>() {
                     @Override
                     public void onMessage(PerformStatusData performStatusData, boolean wasPersisted) {
                         if (listenerMap.containsKey(performStatusData.getOpId())) {
@@ -124,12 +129,12 @@ public abstract class ProxyCommand<
         }
         try {
             performSender.send(new PerformData(id, values), true);
-        } catch(JMSException e) {
+        } catch(Throwable t) {
             if(listener != null) {
                 listenerMap.remove(id);
-                listener.commandFailed(getThis(), "Failed to send perform message: " + e.getMessage());
+                listener.commandFailed(getThis(), "Failed to send perform message: " + t.getMessage());
             }
-            throw new HousemateException("Failed to send perform message", e);
+            throw new HousemateException("Failed to send perform message", t);
         }
     }
 
@@ -157,9 +162,11 @@ public abstract class ProxyCommand<
         @Inject
         public Simple(@Assisted Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
+                      Receiver.Factory receiverFactory,
+                      Sender.Factory senderFactory,
                       Factory<ProxyValue.Simple> valueFactory,
                       Factory<ProxyList.Simple<ProxyParameter.Simple>> parametersFactory) {
-            super(logger, managedCollectionFactory, valueFactory, parametersFactory);
+            super(logger, managedCollectionFactory, receiverFactory, senderFactory, valueFactory, parametersFactory);
         }
     }
 }

@@ -7,11 +7,9 @@ import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.User;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -28,31 +26,31 @@ public class ProxyUserBridge
     protected ProxyUserBridge(@Assisted Logger logger,
                               UserMapper userMapper,
                               Factory<ProxyCommandBridge> commandFactory,
-                              Factory<ProxyValueBridge> valueFactory,
                               Factory<ProxyPropertyBridge> propertyFactory,
-                              Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
-                              ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, User.Data.class, userMapper, managedCollectionFactory);
+                              ManagedCollectionFactory managedCollectionFactory,
+                              com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                              Sender.Factory v1_0SenderFactory) {
+        super(logger, User.Data.class, userMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
         emailProperty = propertyFactory.create(ChildUtil.logger(logger, User.EMAIL_ID));
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         renameCommand.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Renameable.RENAME_ID),
-                ChildUtil.name(internalName, Renameable.RENAME_ID),
-                connection);
+                ChildUtil.name(internalName, Renameable.RENAME_ID)
+        );
         removeCommand.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Removeable.REMOVE_ID),
-                ChildUtil.name(internalName, Removeable.REMOVE_ID),
-                connection);
+                ChildUtil.name(internalName, Removeable.REMOVE_ID)
+        );
         emailProperty.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.User.EMAIL_ID),
-                ChildUtil.name(internalName, User.EMAIL_ID),
-                connection);
+                ChildUtil.name(internalName, User.EMAIL_ID)
+        );
     }
 
     @Override

@@ -2,9 +2,9 @@ package com.intuso.housemate.plugin.tvremote;
 
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
-import com.intuso.housemate.client.v1_0.api.api.Playback;
-import com.intuso.housemate.client.v1_0.api.api.Power;
-import com.intuso.housemate.client.v1_0.api.api.Volume;
+import com.intuso.housemate.client.v1_0.api.ability.Playback;
+import com.intuso.housemate.client.v1_0.api.ability.Power;
+import com.intuso.housemate.client.v1_0.api.ability.Volume;
 import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;

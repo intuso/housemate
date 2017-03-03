@@ -10,6 +10,7 @@ import com.intuso.housemate.client.api.internal.object.Condition;
 import com.intuso.housemate.client.api.internal.object.Task;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealAutomation;
 import com.intuso.housemate.client.real.api.internal.RealTask;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
@@ -18,9 +19,6 @@ import com.intuso.housemate.client.real.impl.internal.utils.AddTaskCommand;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Base class for all automation
@@ -107,6 +105,7 @@ public final class RealAutomationImpl
                               @Assisted("description") String description,
                               @Assisted RealListPersistedImpl.RemoveCallback<RealAutomationImpl> removeCallback,
                               ManagedCollectionFactory managedCollectionFactory,
+                              Sender.Factory senderFactory,
                               RealCommandImpl.Factory commandFactory,
                               RealParameterImpl.Factory parameterFactory,
                               RealValueImpl.Factory valueFactory,
@@ -115,7 +114,7 @@ public final class RealAutomationImpl
                               AddConditionCommand.Factory addConditionCommandFactory,
                               AddTaskCommand.Factory addTaskCommandFactory,
                               TypeRepository typeRepository) {
-        super(logger, new Automation.Data(id, name, description), managedCollectionFactory);
+        super(logger, new Automation.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -231,20 +230,20 @@ public final class RealAutomationImpl
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID), connection);
-        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID), connection);
-        startCommand.init(ChildUtil.name(name, Runnable.START_ID), connection);
-        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID), connection);
-        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID), connection);
-        conditions.init(ChildUtil.name(name, Automation.CONDITIONS_ID), connection);
-        addConditionCommand.init(ChildUtil.name(name, Automation.ADD_CONDITION_ID), connection);
-        satisfiedTasks.init(ChildUtil.name(name, Automation.SATISFIED_TASKS_ID), connection);
-        addSatisfiedTaskCommand.init(ChildUtil.name(name, Automation.ADD_SATISFIED_TASK_ID), connection);
-        unsatisfiedTasks.init(ChildUtil.name(name, Automation.UNSATISFIED_TASKS_ID), connection);
-        addUnsatisfiedTaskCommand.init(ChildUtil.name(name, Automation.ADD_UNSATISFIED_TASK_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
+        removeCommand.init(ChildUtil.name(name, Removeable.REMOVE_ID));
+        runningValue.init(ChildUtil.name(name, Runnable.RUNNING_ID));
+        startCommand.init(ChildUtil.name(name, Runnable.START_ID));
+        stopCommand.init(ChildUtil.name(name, Runnable.STOP_ID));
+        errorValue.init(ChildUtil.name(name, Failable.ERROR_ID));
+        conditions.init(ChildUtil.name(name, Automation.CONDITIONS_ID));
+        addConditionCommand.init(ChildUtil.name(name, Automation.ADD_CONDITION_ID));
+        satisfiedTasks.init(ChildUtil.name(name, Automation.SATISFIED_TASKS_ID));
+        addSatisfiedTaskCommand.init(ChildUtil.name(name, Automation.ADD_SATISFIED_TASK_ID));
+        unsatisfiedTasks.init(ChildUtil.name(name, Automation.UNSATISFIED_TASKS_ID));
+        addUnsatisfiedTaskCommand.init(ChildUtil.name(name, Automation.ADD_UNSATISFIED_TASK_ID));
         if(isRunning())
             _start();
     }

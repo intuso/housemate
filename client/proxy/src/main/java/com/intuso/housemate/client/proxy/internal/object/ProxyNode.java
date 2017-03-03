@@ -3,12 +3,10 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Node;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * @param <COMMAND> the type of the command
@@ -30,21 +28,22 @@ public abstract class ProxyNode<
 
     public ProxyNode(Logger logger,
                      ManagedCollectionFactory managedCollectionFactory,
+                     Receiver.Factory receiverFactory,
                      Factory<COMMAND> commandFactory,
                      Factory<TYPES> typesFactory,
                      Factory<HARDWARES> hardwaresFactory) {
-        super(logger, Node.Data.class, managedCollectionFactory);
+        super(logger, Node.Data.class, managedCollectionFactory, receiverFactory);
         types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID));
         hardwares = hardwaresFactory.create(ChildUtil.logger(logger, HARDWARES_ID));
         addHardwareCommand = commandFactory.create(ChildUtil.logger(logger, ADD_HARDWARE_ID));
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        types.init(ChildUtil.name(name, TYPES_ID), connection);
-        hardwares.init(ChildUtil.name(name, HARDWARES_ID), connection);
-        addHardwareCommand.init(ChildUtil.name(name, ADD_HARDWARE_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        types.init(ChildUtil.name(name, TYPES_ID));
+        hardwares.init(ChildUtil.name(name, HARDWARES_ID));
+        addHardwareCommand.init(ChildUtil.name(name, ADD_HARDWARE_ID));
     }
 
     @Override
@@ -97,10 +96,11 @@ public abstract class ProxyNode<
         @Inject
         public Simple(@Assisted Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
+                      Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyList.Simple<ProxyType.Simple>> typesFactory,
                       Factory<ProxyList.Simple<ProxyHardware.Simple>> hardwaresFactory) {
-            super(logger, managedCollectionFactory, commandFactory, typesFactory, hardwaresFactory);
+            super(logger, managedCollectionFactory, receiverFactory, commandFactory, typesFactory, hardwaresFactory);
         }
     }
 }

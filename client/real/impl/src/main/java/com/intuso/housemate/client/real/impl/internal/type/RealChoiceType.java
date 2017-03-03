@@ -2,15 +2,13 @@ package com.intuso.housemate.client.real.impl.internal.type;
 
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Option;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.impl.internal.ChildUtil;
 import com.intuso.housemate.client.real.impl.internal.RealListGeneratedImpl;
 import com.intuso.housemate.client.real.impl.internal.RealOptionImpl;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Type for selecting options from a list
@@ -37,8 +35,9 @@ public abstract class RealChoiceType<O>
                              @Assisted("description") String description,
                              @Assisted Iterable<RealOptionImpl> options,
                              ManagedCollectionFactory managedCollectionFactory,
+                             Sender.Factory senderFactory,
                              RealListGeneratedImpl.Factory<RealOptionImpl> optionsFactory) {
-        super(logger, new ChoiceData(id, name, description), managedCollectionFactory);
+        super(logger, new ChoiceData(id, name, description), managedCollectionFactory, senderFactory);
         this.options = optionsFactory.create(logger,
                 OPTIONS,
                 OPTIONS,
@@ -48,9 +47,9 @@ public abstract class RealChoiceType<O>
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        options.init(ChildUtil.name(name, OPTIONS), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        options.init(ChildUtil.name(name, OPTIONS));
     }
 
     @Override

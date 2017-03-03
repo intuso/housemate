@@ -1,5 +1,6 @@
 package com.intuso.housemate.platform.android.app.object;
 
+import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.housemate.client.v1_0.proxy.object.ProxySubType;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ public class AndroidProxySubType extends ProxySubType<AndroidProxyType, AndroidP
     /**
      * @param logger  {@inheritDoc}
      */
-    protected AndroidProxySubType(Logger logger, ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, managedCollectionFactory);
+    protected AndroidProxySubType(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory) {
+        super(logger, managedCollectionFactory, receiverFactory);
     }
 }

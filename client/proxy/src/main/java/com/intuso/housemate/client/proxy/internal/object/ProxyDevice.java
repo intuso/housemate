@@ -3,13 +3,11 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyRenameable;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Base interface for all proxy features
@@ -34,11 +32,12 @@ public abstract class ProxyDevice<COMMAND extends ProxyCommand<?, ?, ?>,
      */
     public ProxyDevice(Logger logger,
                        ManagedCollectionFactory managedCollectionFactory,
+                       Receiver.Factory receiverFactory,
                        Factory<COMMAND> commandFactory,
                        Factory<COMMANDS> commandsFactory,
                        Factory<VALUES> valuesFactory,
                        Factory<PROPERTIES> propertiesFactory) {
-        super(logger, Device.Data.class, managedCollectionFactory);
+        super(logger, Device.Data.class, managedCollectionFactory, receiverFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         commands = commandsFactory.create(ChildUtil.logger(logger, COMMANDS_ID));
         values = valuesFactory.create(ChildUtil.logger(logger, VALUES_ID));
@@ -46,12 +45,12 @@ public abstract class ProxyDevice<COMMAND extends ProxyCommand<?, ?, ?>,
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
-        commands.init(ChildUtil.name(name, COMMANDS_ID), connection);
-        values.init(ChildUtil.name(name, VALUES_ID), connection);
-        properties.init(ChildUtil.name(name, PROPERTIES_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID));
+        commands.init(ChildUtil.name(name, COMMANDS_ID));
+        values.init(ChildUtil.name(name, VALUES_ID));
+        properties.init(ChildUtil.name(name, PROPERTIES_ID));
     }
 
     @Override
@@ -112,11 +111,12 @@ public abstract class ProxyDevice<COMMAND extends ProxyCommand<?, ?, ?>,
         @Inject
         public Simple(@Assisted Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
+                      Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyList.Simple<ProxyCommand.Simple>> commandsFactory,
                       Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory,
                       Factory<ProxyList.Simple<ProxyProperty.Simple>> propertiesFactory) {
-            super(logger, managedCollectionFactory, commandFactory, commandsFactory, valuesFactory, propertiesFactory);
+            super(logger, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory, propertiesFactory);
         }
     }
 }

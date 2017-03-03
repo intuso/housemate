@@ -2,13 +2,11 @@ package com.intuso.housemate.client.proxy.bridge.v1_0;
 
 import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.housemate.client.v1_0.proxy.object.JMSUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
+import com.intuso.housemate.client.v1_0.messaging.api.Type;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 public abstract class ProxyObjectBridge<
         VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.Object.Data,
@@ -21,35 +19,45 @@ public abstract class ProxyObjectBridge<
     protected final Class<INTERNAL_DATA> internalDataClass;
     protected final ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper;
     protected final ManagedCollection<LISTENER> listeners;
-    private JMSUtil.Sender sender;
-    private com.intuso.housemate.client.proxy.internal.object.JMSUtil.Receiver<INTERNAL_DATA> receiver;
+    protected final com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory;
+    protected final Sender.Factory v1_0SenderFactory;
 
-    protected ProxyObjectBridge(Logger logger, Class<INTERNAL_DATA> internalDataClass, ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper, ManagedCollectionFactory managedCollectionFactory) {
+    private Sender sender;
+    private com.intuso.housemate.client.messaging.api.internal.Receiver<INTERNAL_DATA> receiver;
+
+    protected ProxyObjectBridge(Logger logger,
+                                Class<INTERNAL_DATA> internalDataClass,
+                                ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper,
+                                ManagedCollectionFactory managedCollectionFactory,
+                                com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                                Sender.Factory v1_0SenderFactory) {
         logger.debug("Creating");
         this.logger = logger;
         this.internalDataClass = internalDataClass;
         this.dataMapper = dataMapper;
+        this.internalReceiverFactory = internalReceiverFactory;
+        this.v1_0SenderFactory = v1_0SenderFactory;
         this.listeners = managedCollectionFactory.create();
     }
 
-    public final void init(String versionName, String internalName, Connection connection) throws JMSException {
+    public final void init(String versionName, String internalName) {
         logger.debug("Init {} -> {}", internalName, versionName);
-        sender = new JMSUtil.Sender(logger, connection, JMSUtil.Type.Topic, versionName);
-        receiver = new com.intuso.housemate.client.proxy.internal.object.JMSUtil.Receiver<>(logger, connection, com.intuso.housemate.client.proxy.internal.object.JMSUtil.Type.Topic, internalName, internalDataClass,
-                new com.intuso.housemate.client.proxy.internal.object.JMSUtil.Receiver.Listener<INTERNAL_DATA>() {
+        sender = v1_0SenderFactory.create(logger, Type.Topic, versionName);
+        receiver = internalReceiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, internalName, internalDataClass);
+        receiver.listen(new com.intuso.housemate.client.messaging.api.internal.Receiver.Listener<INTERNAL_DATA>() {
                     @Override
                     public void onMessage(INTERNAL_DATA data, boolean wasPersisted) {
                         try {
                             sender.send(dataMapper.map(data), wasPersisted);
-                        } catch (JMSException e) {
-                            logger.error("Failed to send data object", e);
+                        } catch (Throwable t) {
+                            logger.error("Failed to send data object", t);
                         }
                     }
                 });
-        initChildren(versionName, internalName, connection);
+        initChildren(versionName, internalName);
     }
 
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {}
+    protected void initChildren(String versionName, String internalName) {}
 
     public final void uninit() {
         logger.debug("Uninit");

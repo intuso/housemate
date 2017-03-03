@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.annotation.Property;
-import com.intuso.housemate.client.v1_0.api.api.Power;
+import com.intuso.housemate.client.v1_0.api.ability.Power;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;

@@ -15,8 +15,10 @@
 
     <modules>
         <module>api</module>
+        <module>messaging</module>
         <module>proxy</module>
         <module>real</module>
+        <module>serialisation</module>
     </modules>
 
 </project>

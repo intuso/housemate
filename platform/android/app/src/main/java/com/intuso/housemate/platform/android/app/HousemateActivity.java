@@ -4,6 +4,7 @@ import android.app.Activity;
 import com.intuso.housemate.client.v1_0.api.HousemateException;
 import com.intuso.housemate.client.v1_0.api.type.TypeSpec;
 import com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser;
+import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -26,7 +27,7 @@ public abstract class HousemateActivity extends Activity {
     private ManagedCollectionFactory managedCollectionFactory;
     private TypeSerialiser.Repository typeSerialiserRepository;
     private PropertyRepository properties;
-//    private Connection connection;
+    private AndroidObjectFactories objectFactories;
 
     @Override
     protected void onStart() {
@@ -46,6 +47,7 @@ public abstract class HousemateActivity extends Activity {
             }
         };
         properties = new SharedPreferencesPropertyRepository(managedCollectionFactory, getApplicationContext());
+        objectFactories = new AndroidObjectFactories(managedCollectionFactory, null, null); // todo provide an actual receiver and sender factory
         /*try {
             connection = new ActiveMQConnectionFactory("tcp://" + properties.get("server.host") + ":" + properties.get("server.port")).createConnection();
         } catch (JMSException e) {
@@ -84,7 +86,7 @@ public abstract class HousemateActivity extends Activity {
         return properties;
     }
 
-    /*public Connection getConnection() {
-        return connection;
-    }*/
+    public AndroidObjectFactories getObjectFactories() {
+        return objectFactories;
+    }
 }

@@ -5,11 +5,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.SystemMapper;
 import com.intuso.housemate.client.api.internal.object.System;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /**
  * Created by tomc on 28/11/16.
@@ -39,11 +37,13 @@ public class ProxySystemBridge
     @Inject
     protected ProxySystemBridge(@Assisted Logger logger,
                                 SystemMapper systemMapper,
+                                ManagedCollectionFactory managedCollectionFactory,
+                                com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                                Sender.Factory v1_0SenderFactory,
                                 Factory<ProxyCommandBridge> commandFactory,
                                 Factory<ProxyValueBridge> valueFactory,
-                                Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
-                                ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, System.Data.class, systemMapper, managedCollectionFactory);
+                                Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory) {
+        super(logger, System.Data.class, systemMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
@@ -60,60 +60,60 @@ public class ProxySystemBridge
     }
 
     @Override
-    protected void initChildren(String versionName, String internalName, Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(String versionName, String internalName) {
+        super.initChildren(versionName, internalName);
         renameCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Renameable.RENAME_ID),
-                ChildUtil.name(internalName, RENAME_ID),
-                connection);
+                ChildUtil.name(internalName, RENAME_ID)
+        );
         removeCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Removeable.REMOVE_ID),
-                ChildUtil.name(internalName, REMOVE_ID),
-                connection);
+                ChildUtil.name(internalName, REMOVE_ID)
+        );
         errorValue.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.Failable.ERROR_ID),
-                ChildUtil.name(internalName, ERROR_ID),
-                connection);
+                ChildUtil.name(internalName, ERROR_ID)
+        );
         playbackDevices.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.PLAYBACK),
-                ChildUtil.name(internalName, PLAYBACK),
-                connection);
+                ChildUtil.name(internalName, PLAYBACK)
+        );
         addPlaybackDeviceCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.ADD_PLAYBACK),
-                ChildUtil.name(internalName, ADD_PLAYBACK),
-                connection);
+                ChildUtil.name(internalName, ADD_PLAYBACK)
+        );
         powerDevices.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.POWER),
-                ChildUtil.name(internalName, POWER),
-                connection);
+                ChildUtil.name(internalName, POWER)
+        );
         addPowerDeviceCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.ADD_POWER),
-                ChildUtil.name(internalName, ADD_POWER),
-                connection);
+                ChildUtil.name(internalName, ADD_POWER)
+        );
         runDevices.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.RUN),
-                ChildUtil.name(internalName, RUN),
-                connection);
+                ChildUtil.name(internalName, RUN)
+        );
         addRunDeviceCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.ADD_RUN),
-                ChildUtil.name(internalName, ADD_RUN),
-                connection);
+                ChildUtil.name(internalName, ADD_RUN)
+        );
         temperatureSensorDevices.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.TEMPERATURE_SENSOR),
-                ChildUtil.name(internalName, TEMPERATURE_SENSOR),
-                connection);
+                ChildUtil.name(internalName, TEMPERATURE_SENSOR)
+        );
         addTemperatureSensorDeviceCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.ADD_TEMPERATURE_SENSOR),
-                ChildUtil.name(internalName, ADD_TEMPERATURE_SENSOR),
-                connection);
+                ChildUtil.name(internalName, ADD_TEMPERATURE_SENSOR)
+        );
         volumeDevices.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.VOLUME),
-                ChildUtil.name(internalName, VOLUME),
-                connection);
+                ChildUtil.name(internalName, VOLUME)
+        );
         addVolumeDeviceCommand.init(
                 ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.System.ADD_VOLUME),
-                ChildUtil.name(internalName, ADD_VOLUME),
-                connection);
+                ChildUtil.name(internalName, ADD_VOLUME)
+        );
     }
 
     @Override

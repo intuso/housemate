@@ -2,7 +2,7 @@ package com.intuso.housemate.plugin.arduinotempsensor;
 
 import com.google.inject.Inject;
 import com.intuso.housemate.client.v1_0.api.annotation.Id;
-import com.intuso.housemate.client.v1_0.api.api.TemperatureSensor;
+import com.intuso.housemate.client.v1_0.api.ability.TemperatureSensor;
 import com.intuso.housemate.client.v1_0.api.driver.HardwareDriver;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;

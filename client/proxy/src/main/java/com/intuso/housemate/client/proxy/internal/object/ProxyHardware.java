@@ -3,12 +3,10 @@ package com.intuso.housemate.client.proxy.internal.object;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.object.Hardware;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.*;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 /*
  * @param <PROPERTIES> the type of the properties list
@@ -49,6 +47,7 @@ public abstract class ProxyHardware<
      */
     public ProxyHardware(Logger logger,
                          ManagedCollectionFactory managedCollectionFactory,
+                         Receiver.Factory receiverFactory,
                          ProxyObject.Factory<COMMAND> commandFactory,
                          ProxyObject.Factory<COMMANDS> commandsFactory,
                          ProxyObject.Factory<VALUE> valueFactory,
@@ -56,7 +55,7 @@ public abstract class ProxyHardware<
                          ProxyObject.Factory<PROPERTY> propertyFactory,
                          ProxyObject.Factory<PROPERTIES> propertiesFactory,
                          ProxyObject.Factory<DEVICES> devicesFactory) {
-        super(logger, Hardware.Data.class, managedCollectionFactory);
+        super(logger, Hardware.Data.class, managedCollectionFactory, receiverFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         runningValue = valueFactory.create(ChildUtil.logger(logger, RUNNING_ID));
@@ -72,20 +71,20 @@ public abstract class ProxyHardware<
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID), connection);
-        removeCommand.init(ChildUtil.name(name, REMOVE_ID), connection);
-        runningValue.init(ChildUtil.name(name, RUNNING_ID), connection);
-        startCommand.init(ChildUtil.name(name, START_ID), connection);
-        stopCommand.init(ChildUtil.name(name, STOP_ID), connection);
-        errorValue.init(ChildUtil.name(name, ERROR_ID), connection);
-        driverProperty.init(ChildUtil.name(name, DRIVER_ID), connection);
-        driverLoadedValue.init(ChildUtil.name(name, DRIVER_LOADED_ID), connection);
-        commands.init(ChildUtil.name(name, COMMANDS_ID), connection);
-        values.init(ChildUtil.name(name, VALUES_ID), connection);
-        properties.init(ChildUtil.name(name, PROPERTIES_ID), connection);
-        devices.init(ChildUtil.name(name, DEVICES_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        renameCommand.init(ChildUtil.name(name, RENAME_ID));
+        removeCommand.init(ChildUtil.name(name, REMOVE_ID));
+        runningValue.init(ChildUtil.name(name, RUNNING_ID));
+        startCommand.init(ChildUtil.name(name, START_ID));
+        stopCommand.init(ChildUtil.name(name, STOP_ID));
+        errorValue.init(ChildUtil.name(name, ERROR_ID));
+        driverProperty.init(ChildUtil.name(name, DRIVER_ID));
+        driverLoadedValue.init(ChildUtil.name(name, DRIVER_LOADED_ID));
+        commands.init(ChildUtil.name(name, COMMANDS_ID));
+        values.init(ChildUtil.name(name, VALUES_ID));
+        properties.init(ChildUtil.name(name, PROPERTIES_ID));
+        devices.init(ChildUtil.name(name, DEVICES_ID));
     }
 
     @Override
@@ -233,6 +232,7 @@ public abstract class ProxyHardware<
         @Inject
         public Simple(@Assisted Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
+                      Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
                       Factory<ProxyList.Simple<ProxyCommand.Simple>> commandsFactory,
                       Factory<ProxyValue.Simple> valueFactory,
@@ -240,7 +240,7 @@ public abstract class ProxyHardware<
                       Factory<ProxyProperty.Simple> propertyFactory,
                       Factory<ProxyList.Simple<ProxyProperty.Simple>> propertiesFactory,
                       Factory<ProxyList.Simple<ProxyDevice.Simple>> devicesFactory) {
-            super(logger, managedCollectionFactory, commandFactory, commandsFactory, valueFactory, valuesFactory, propertyFactory, propertiesFactory, devicesFactory);
+            super(logger, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valueFactory, valuesFactory, propertyFactory, propertiesFactory, devicesFactory);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.intuso.housemate.platform.android.app.object;
 
+import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
 import com.intuso.housemate.client.v1_0.proxy.object.ProxyList;
 import com.intuso.housemate.client.v1_0.proxy.object.ProxyObject;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -18,7 +19,7 @@ public class AndroidProxyList<ELEMENT extends ProxyObject<?, ?>>
     /**
      * @param logger  {@inheritDoc}
      */
-    public AndroidProxyList(Logger logger, ManagedCollectionFactory managedCollectionFactory, ProxyObject.Factory<ELEMENT> factory) {
-        super(logger, managedCollectionFactory, factory);
+    public AndroidProxyList(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, ProxyObject.Factory<ELEMENT> factory) {
+        super(logger, managedCollectionFactory, receiverFactory, factory);
     }
 }

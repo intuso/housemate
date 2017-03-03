@@ -4,13 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.intuso.housemate.client.api.internal.object.Hardware;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.real.api.internal.RealNode;
 import com.intuso.housemate.client.real.impl.internal.utils.AddHardwareCommand;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
-
-import javax.jms.Connection;
-import javax.jms.JMSException;
 
 public class RealNodeImpl
         extends RealObject<com.intuso.housemate.client.api.internal.object.Node.Data, com.intuso.housemate.client.api.internal.object.Node.Listener<? super RealNodeImpl>>
@@ -28,10 +26,11 @@ public class RealNodeImpl
                         @Assisted("name") String name,
                         @Assisted("description") String description,
                         ManagedCollectionFactory managedCollectionFactory,
+                        Sender.Factory senderFactory,
                         RealListGeneratedImpl.Factory<RealTypeImpl<?>> typesFactory,
                         RealListPersistedImpl.Factory<Hardware.Data, RealHardwareImpl> hardwaresFactory,
                         AddHardwareCommand.Factory addHardwareCommandFactory) {
-        super(logger, new com.intuso.housemate.client.api.internal.object.Node.Data(id, name, description), managedCollectionFactory);
+        super(logger, new com.intuso.housemate.client.api.internal.object.Node.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.types = typesFactory.create(ChildUtil.logger(logger, TYPES_ID),
                 TYPES_ID,
                 "Types",
@@ -55,11 +54,11 @@ public class RealNodeImpl
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        types.init(ChildUtil.name(name, TYPES_ID), connection);
-        hardwares.init(ChildUtil.name(name, HARDWARES_ID), connection);
-        addHardwareCommand.init(ChildUtil.name(name, ADD_HARDWARE_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        types.init(ChildUtil.name(name, TYPES_ID));
+        hardwares.init(ChildUtil.name(name, HARDWARES_ID));
+        addHardwareCommand.init(ChildUtil.name(name, ADD_HARDWARE_ID));
     }
 
     @Override

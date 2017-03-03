@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyObject;
 import com.intuso.housemate.client.proxy.internal.object.ProxyServer;
 import com.intuso.housemate.client.real.impl.internal.RealTypeImpl;
@@ -34,13 +35,14 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?>>
      */
     @Inject
     public RealObjectType(@Assisted Logger logger,
-                              @Assisted("id") String id,
-                              @Assisted("name") String name,
-                              @Assisted("description") String description,
-                              @Assisted Set<String> allowedTypes,
-                              ManagedCollectionFactory managedCollectionFactory,
-                              ProxyServer<?, ?, ?, ?, ?, ?> server) {
-        super(logger, new ObjectData(id, name, description), managedCollectionFactory);
+                          @Assisted("id") String id,
+                          @Assisted("name") String name,
+                          @Assisted("description") String description,
+                          @Assisted Set<String> allowedTypes,
+                          ManagedCollectionFactory managedCollectionFactory,
+                          Sender.Factory senderFactory,
+                          ProxyServer<?, ?, ?, ?, ?, ?> server) {
+        super(logger, new ObjectData(id, name, description), managedCollectionFactory, senderFactory);
         serialiser = new Serialiser<>(managedCollectionFactory, server, allowedTypes);
     }
 

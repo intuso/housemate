@@ -9,14 +9,14 @@ import com.intuso.housemate.client.api.internal.object.Property;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
+import com.intuso.housemate.client.messaging.api.internal.Receiver;
+import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 import com.intuso.housemate.client.real.api.internal.RealProperty;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.List;
 
 /**
@@ -44,9 +44,11 @@ public class RealPropertyImpl<O>
                             @Assisted("max") int maxValues,
                             @Assisted Iterable values,
                             ManagedCollectionFactory managedCollectionFactory,
+                            Receiver.Factory receiverFactory,
+                            Sender.Factory senderFactory,
                             RealCommandImpl.Factory commandFactory,
                             RealParameterImpl.Factory parameterFactory) {
-        super(logger, new Property.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory, type, values);
+        super(logger, new Property.Data(id, name, description, type.getId(), minValues, maxValues), managedCollectionFactory, receiverFactory, senderFactory, type, values);
         setCommand = commandFactory.create(ChildUtil.logger(logger, Property.SET_COMMAND_ID),
                 Property.SET_COMMAND_ID,
                 Property.SET_COMMAND_ID,
@@ -69,9 +71,9 @@ public class RealPropertyImpl<O>
     }
 
     @Override
-    protected void initChildren(String name, Connection connection) throws JMSException {
-        super.initChildren(name, connection);
-        setCommand.init(ChildUtil.name(name, Property.SET_COMMAND_ID), connection);
+    protected void initChildren(String name) {
+        super.initChildren(name);
+        setCommand.init(ChildUtil.name(name, Property.SET_COMMAND_ID));
     }
 
     @Override

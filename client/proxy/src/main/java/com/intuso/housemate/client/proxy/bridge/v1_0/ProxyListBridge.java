@@ -6,14 +6,13 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ListMapper;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
+import com.intuso.housemate.client.messaging.api.internal.Type;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
-import com.intuso.housemate.client.proxy.internal.object.JMSUtil;
+import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -27,34 +26,32 @@ public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?>>
     private final Map<String, ELEMENT> elements = Maps.newHashMap();
     private final ProxyObjectBridge.Factory<ELEMENT> elementFactory;
 
-    private JMSUtil.Receiver<Object.Data> existingObjectReceiver;
+    private com.intuso.housemate.client.messaging.api.internal.Receiver<Object.Data> existingObjectReceiver;
 
     @Inject
     protected ProxyListBridge(@Assisted Logger logger,
                               ListMapper listMapper,
-                              ProxyObjectBridge.Factory<ELEMENT> elementFactory,
-                              ManagedCollectionFactory managedCollectionFactory) {
-        super(logger, List.Data.class, listMapper, managedCollectionFactory);
+                              ManagedCollectionFactory managedCollectionFactory,
+                              com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
+                              Sender.Factory v1_0SenderFactory,
+                              Factory<ELEMENT> elementFactory) {
+        super(logger, List.Data.class, listMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         this.elementFactory = elementFactory;
     }
 
     @Override
-    protected void initChildren(final String versionName, final String internalName, final Connection connection) throws JMSException {
-        super.initChildren(versionName, internalName, connection);
+    protected void initChildren(final String versionName, final String internalName) {
+        super.initChildren(versionName, internalName);
         // subscribe to all child topics and create children as new topics are discovered
-        existingObjectReceiver = new JMSUtil.Receiver<>(logger, connection, JMSUtil.Type.Topic, ChildUtil.name(internalName, "*"), Object.Data.class,
-                new JMSUtil.Receiver.Listener<Object.Data>() {
+        existingObjectReceiver = internalReceiverFactory.create(logger, Type.Topic, ChildUtil.name(internalName, "*"), Object.Data.class);
+        existingObjectReceiver.listen(new com.intuso.housemate.client.messaging.api.internal.Receiver.Listener<Object.Data>() {
                     @Override
                     public void onMessage(Object.Data data, boolean wasPersisted) {
                         if(!elements.containsKey(data.getId())) {
                             ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()));
                             if(element != null) {
                                 elements.put(data.getId(), element);
-                                try {
-                                    element.init(com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, data.getId()), ChildUtil.name(internalName, data.getId()), connection);
-                                } catch (JMSException e) {
-                                    logger.error("Failed to init child {}", data.getId(), e);
-                                }
+                                element.init(com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, data.getId()), ChildUtil.name(internalName, data.getId()));
                                 for(List.Listener<? super ELEMENT, ? super ProxyListBridge<ELEMENT>> listener : listeners)
                                     listener.elementAdded(ProxyListBridge.this, element);
                             }
