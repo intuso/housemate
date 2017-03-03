@@ -15,7 +15,7 @@ public abstract class JMSMessagingModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(Sender.class).to(JMSSender.class);
+        bind(Sender.Factory.class).to(JMSSender.FactoryImpl.class);
         bind(Receiver.Factory.class).to(JMSReceiver.FactoryImpl.class);
         install(new FactoryModuleBuilder().build(JMSSender.Factory.class));
         install(new FactoryModuleBuilder().build(JMSReceiver.Factory.class));

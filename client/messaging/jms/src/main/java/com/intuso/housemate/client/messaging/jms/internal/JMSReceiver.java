@@ -29,7 +29,7 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
     public JMSReceiver(@Assisted Logger logger,
                        @Assisted Type type,
                        @Assisted String name,
-                       @Assisted Class<T> tClass,
+                       @Assisted Class tClass,
                        MessageConverter messageConverter,
                        Connection connection) throws JMSException {
         this.logger = logger;
@@ -157,10 +157,10 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
     }
 
     public interface Factory {
-        Receiver<?> create(Logger logger, Type type, String name, Class tClass);
+        JMSReceiver<?> create(Logger logger, Type type, String name, Class tClass);
     }
 
-    public class FactoryImpl implements Receiver.Factory {
+    public static class FactoryImpl implements Receiver.Factory {
 
         private final Factory factory;
 

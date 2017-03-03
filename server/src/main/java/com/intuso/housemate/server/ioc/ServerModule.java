@@ -6,6 +6,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.intuso.housemate.client.api.bridge.ioc.ClientApiBridgeModule;
+import com.intuso.housemate.client.messaging.jms.internal.ioc.JMSMessagingModule;
 import com.intuso.housemate.client.proxy.bridge.ioc.ProxyBridgeModule;
 import com.intuso.housemate.client.proxy.internal.annotation.ioc.ProxyWrapperModule;
 import com.intuso.housemate.client.proxy.internal.object.ioc.SimpleProxyServerModule;
@@ -30,6 +31,10 @@ public class ServerModule extends AbstractModule {
 
     @Override
     protected void configure() {
+
+        // install messaging mechanisms
+        install(new JMSMessagingModule.Javabin());
+        install(new com.intuso.housemate.client.v1_0.messaging.jms.ioc.JMSMessagingModule.Javabin());
 
         // install real object stuff
         install(new ServerRootModule());

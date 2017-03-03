@@ -71,4 +71,23 @@ public class JMSSender implements Sender {
             throw new RuntimeException("Failed to send message", e);
         }
     }
+
+    public interface Factory {
+        JMSSender create(Logger logger, Type type, String name);
+    }
+
+    public static class FactoryImpl implements Sender.Factory {
+
+        private final Factory factory;
+
+        @Inject
+        public FactoryImpl(Factory factory) {
+            this.factory = factory;
+        }
+
+        @Override
+        public Sender create(Logger logger, Type type, String name) {
+            return factory.create(logger, type, name);
+        }
+    }
 }
