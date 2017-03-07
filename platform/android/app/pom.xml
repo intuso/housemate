@@ -20,16 +20,12 @@
             <artifactId>housemate-platform-android-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>housemate-client-1-0-proxy</artifactId>
             <version>${intuso.housemate.client.version}</version>
             <exclusions>
-                <!-- Exclude JVM libraries -->
-                <exclusion>
-                    <groupId>javax.jms</groupId>
-                    <artifactId>jms</artifactId>
-                </exclusion>
                 <!-- Exclude guice, we don't use it because of issues on android -->
                 <exclusion>
                     <groupId>com.google.inject</groupId>
@@ -45,12 +41,26 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- include JMV libraries for compiling -->
+
         <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms</artifactId>
-            <version>${jms.version}</version>
-            <scope>compile</scope>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-client-1-0-messaging-mqtt</artifactId>
+            <version>${intuso.housemate.client.version}</version>
+            <exclusions>
+                <!-- Exclude guice, we don't use it because of issues on android -->
+                <exclusion>
+                    <groupId>com.google.inject</groupId>
+                    <artifactId>guice</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.inject.extensions</groupId>
+                    <artifactId>guice-assistedinject</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.inject.extensions</groupId>
+                    <artifactId>guice-multibindings</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

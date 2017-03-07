@@ -39,7 +39,7 @@ public abstract class ProxyValueBase<
     protected void initChildren(String name) {
         super.initChildren(name);
         valueReceiver = receiverFactory.create(logger, ChildUtil.name(name, VALUE_ID), Type.Instances.class);
-        value = valueReceiver.getPersistedMessage();
+        value = valueReceiver.getMessage();
         valueReceiver.listen(new Receiver.Listener<Type.Instances>() {
                     @Override
                     public void onMessage(Type.Instances instances, boolean wasPersisted) {

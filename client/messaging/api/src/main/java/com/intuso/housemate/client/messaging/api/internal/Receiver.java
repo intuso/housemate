@@ -11,8 +11,8 @@ import java.util.Iterator;
 public interface Receiver<T extends Serializable> {
 
     void close();
-    T getPersistedMessage();
-    Iterator<T> getPersistedMessages();
+    T getMessage();
+    Iterator<T> getMessages();
     void listen(Listener<T> listener);
 
     interface Listener<T extends Serializable> {

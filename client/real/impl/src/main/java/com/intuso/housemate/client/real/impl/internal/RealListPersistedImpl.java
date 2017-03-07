@@ -83,7 +83,7 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
         existingObjectReceiver = receiverFactory.create(logger, ChildUtil.name(name, "*"), childDataClass);
 
         // get any persisted ones immediately
-        Iterator<CHILD_DATA> datas = existingObjectReceiver.getPersistedMessages();
+        Iterator<CHILD_DATA> datas = existingObjectReceiver.getMessages();
         while(datas.hasNext()) {
             CHILD_DATA data = datas.next();
             if (!elements.containsKey(data.getId())) {

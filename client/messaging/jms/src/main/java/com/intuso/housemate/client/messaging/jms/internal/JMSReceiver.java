@@ -39,7 +39,7 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
     }
 
     @Override
-    public T getPersistedMessage() {
+    public T getMessage() {
         try {
             Message persisted = consumer.receiveNoWait();
             return persisted == null ? null : messageConverter.fromMessage(persisted, tClass);
@@ -49,7 +49,7 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
     }
 
     @Override
-    public Iterator<T> getPersistedMessages() {
+    public Iterator<T> getMessages() {
         return new ConsumerIterator();
     }
 

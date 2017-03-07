@@ -4,11 +4,15 @@ import android.app.Activity;
 import com.intuso.housemate.client.v1_0.api.HousemateException;
 import com.intuso.housemate.client.v1_0.api.type.TypeSpec;
 import com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser;
+import com.intuso.housemate.client.v1_0.messaging.mqtt.MQTTReceiver;
+import com.intuso.housemate.client.v1_0.messaging.mqtt.MQTTSender;
 import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
 import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,12 +51,15 @@ public abstract class HousemateActivity extends Activity {
             }
         };
         properties = new SharedPreferencesPropertyRepository(managedCollectionFactory, getApplicationContext());
-        objectFactories = new AndroidObjectFactories(managedCollectionFactory, null, null); // todo provide an actual receiver and sender factory
-        /*try {
-            connection = new ActiveMQConnectionFactory("tcp://" + properties.get("server.host") + ":" + properties.get("server.port")).createConnection();
-        } catch (JMSException e) {
+        try {
+            MqttClient client = new MqttClient("tcp://" + properties.get("server.host") + ":" + properties.get("server.port"), "android-client");
+            client.connect();
+            objectFactories = new AndroidObjectFactories(managedCollectionFactory,
+                    new MQTTReceiver.FactoryImpl(new MQTTReceiverFactoryImpl(client)),
+                    new MQTTSender.FactoryImpl(new MQTTSenderFactoryImpl(client)));
+        } catch (MqttException e) {
             logger.error("Failed to create connection to server", e);
-        }*/
+        }
     }
 
     @Override
