@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
-import com.intuso.housemate.client.messaging.api.internal.Type;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -75,7 +74,7 @@ public abstract class ProxyObject<
 
     protected final void init(String name) {
         logger.debug("Init {}", name);
-        receiver = receiverFactory.create(logger, Type.Topic, name, dataClass);
+        receiver = receiverFactory.create(logger, name, dataClass);
         receiver.listen(new Receiver.Listener<DATA>() {
                     @Override
                     public void onMessage(DATA data, boolean wasPersisted) {

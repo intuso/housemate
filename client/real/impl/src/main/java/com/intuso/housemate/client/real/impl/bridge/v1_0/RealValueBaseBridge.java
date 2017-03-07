@@ -43,8 +43,8 @@ public abstract class RealValueBaseBridge<
     @Override
     protected void initChildren(String versionName, String internalName) {
         super.initChildren(versionName, internalName);
-        valueSender = internalSenderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID));
-        valueReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Value.VALUE_ID), com.intuso.housemate.client.v1_0.api.object.Type.Instances.class);
+        valueSender = internalSenderFactory.create(logger, ChildUtil.name(internalName, Value.VALUE_ID));
+        valueReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Value.VALUE_ID), com.intuso.housemate.client.v1_0.api.object.Type.Instances.class);
         valueReceiver.listen(new Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Type.Instances>() {
             @Override
             public void onMessage(com.intuso.housemate.client.v1_0.api.object.Type.Instances instances, boolean wasPersisted) {

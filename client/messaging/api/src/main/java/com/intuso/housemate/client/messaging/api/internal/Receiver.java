@@ -20,6 +20,6 @@ public interface Receiver<T extends Serializable> {
     }
 
     interface Factory {
-        <T extends Serializable> Receiver<T> create(Logger logger, Type type, String name, Class<T> tClass);
+        <T extends Serializable> Receiver<T> create(Logger logger, String name, Class<T> tClass);
     }
 }

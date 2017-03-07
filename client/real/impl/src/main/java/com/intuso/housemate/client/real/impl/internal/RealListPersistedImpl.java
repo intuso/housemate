@@ -8,7 +8,6 @@ import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
-import com.intuso.housemate.client.messaging.api.internal.Type;
 import com.intuso.housemate.client.real.api.internal.RealList;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -81,7 +80,7 @@ public final class RealListPersistedImpl<CHILD_DATA extends Object.Data, ELEMENT
         for(ELEMENT element : elements.values())
             element.init(ChildUtil.name(name, element.getId()));
 
-        existingObjectReceiver = receiverFactory.create(logger, Type.Topic, ChildUtil.name(name, "*"), childDataClass);
+        existingObjectReceiver = receiverFactory.create(logger, ChildUtil.name(name, "*"), childDataClass);
 
         // get any persisted ones immediately
         Iterator<CHILD_DATA> datas = existingObjectReceiver.getPersistedMessages();

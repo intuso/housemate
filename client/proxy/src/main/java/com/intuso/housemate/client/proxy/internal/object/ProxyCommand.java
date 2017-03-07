@@ -57,8 +57,8 @@ public abstract class ProxyCommand<
         super.initChildren(name);
         enabledValue.init(ChildUtil.name(name, ENABLED_ID));
         parameters.init(ChildUtil.name(name, PARAMETERS_ID));
-        performSender = senderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Queue, ChildUtil.name(name, PERFORM_ID));
-        performStatusReceiver = receiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(name, PERFORM_STATUS_ID), PerformStatusData.class);
+        performSender = senderFactory.create(logger, ChildUtil.name(name, PERFORM_ID));
+        performStatusReceiver = receiverFactory.create(logger, ChildUtil.name(name, PERFORM_STATUS_ID), PerformStatusData.class);
         performStatusReceiver.listen(new Receiver.Listener<PerformStatusData>() {
                     @Override
                     public void onMessage(PerformStatusData performStatusData, boolean wasPersisted) {

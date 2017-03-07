@@ -11,7 +11,6 @@ import com.intuso.housemate.client.real.impl.bridge.v1_0.RealNodeBridge;
 import com.intuso.housemate.client.v1_0.api.object.Node;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.api.object.Server;
-import com.intuso.housemate.client.v1_0.messaging.api.Type;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -67,7 +66,7 @@ public final class RealNodeListImpl
         super.initChildren(name);
         this.name = name;
         final String nodesPathV1_0 = com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(null, com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID);
-        nodeV1_0Receiver = v1_0ReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID), Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*"), Node.Data.class);
+        nodeV1_0Receiver = v1_0ReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*"), Node.Data.class);
         nodeV1_0Receiver.listen(new com.intuso.housemate.client.v1_0.messaging.api.Receiver.Listener<Node.Data>() {
                     @Override
                     public void onMessage(Node.Data nodeData, boolean wasPersisted) {

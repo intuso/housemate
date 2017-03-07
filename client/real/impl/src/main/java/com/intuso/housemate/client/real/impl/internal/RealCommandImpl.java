@@ -70,8 +70,8 @@ public final class RealCommandImpl
         super.initChildren(name);
         enabledValue.init(ChildUtil.name(name, Command.ENABLED_ID));
         parameters.init(ChildUtil.name(name, Command.PARAMETERS_ID));
-        performStatusSender = senderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(name, Command.PERFORM_STATUS_ID));
-        performReceiver = receiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Queue, ChildUtil.name(name, Command.PERFORM_ID), PerformData.class);
+        performStatusSender = senderFactory.create(logger, ChildUtil.name(name, Command.PERFORM_STATUS_ID));
+        performReceiver = receiverFactory.create(logger, ChildUtil.name(name, Command.PERFORM_ID), PerformData.class);
         performReceiver.listen(new Receiver.Listener<PerformData>() {
                     @Override
                     public void onMessage(final PerformData performData, boolean wasPersisted) {

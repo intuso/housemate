@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.messaging.api.internal.MessageConstants;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
-import com.intuso.housemate.client.messaging.api.internal.Type;
 import org.slf4j.Logger;
 
 import javax.jms.*;
@@ -22,23 +21,13 @@ public class JMSSender implements Sender {
 
     @Inject
     public JMSSender(@Assisted Logger logger,
-                     @Assisted Type type,
                      @Assisted String name,
                      MessageConverter messageConverter,
                      Connection connection) throws JMSException {
         this.logger = logger;
         this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         this.messageConverter = messageConverter;
-        switch (type) {
-            case Queue:
-                this.producer = session.createProducer(session.createQueue(name));
-                break;
-            case Topic:
-                this.producer = session.createProducer(session.createTopic(name));
-                break;
-            default:
-                throw new JMSException("Unknown type " + type);
-        }
+        this.producer = session.createProducer(session.createTopic(name));
     }
 
     @Override
@@ -73,7 +62,7 @@ public class JMSSender implements Sender {
     }
 
     public interface Factory {
-        JMSSender create(Logger logger, Type type, String name);
+        JMSSender create(Logger logger, String name);
     }
 
     public static class FactoryImpl implements Sender.Factory {
@@ -86,8 +75,8 @@ public class JMSSender implements Sender {
         }
 
         @Override
-        public Sender create(Logger logger, Type type, String name) {
-            return factory.create(logger, type, name);
+        public Sender create(Logger logger, String name) {
+            return factory.create(logger, name);
         }
     }
 }

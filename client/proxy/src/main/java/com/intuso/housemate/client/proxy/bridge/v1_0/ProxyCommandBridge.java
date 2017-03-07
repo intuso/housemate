@@ -66,10 +66,10 @@ public class ProxyCommandBridge
                 com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Command.PARAMETERS_ID),
                 ChildUtil.name(internalName, Command.PARAMETERS_ID)
         );
-        performSender = internalSenderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Queue, ChildUtil.name(internalName, Command.PERFORM_ID));
-        performReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Queue, com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, Command.PERFORM_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformData.class);
-        performStatusSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Topic, com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID));
-        performStatusReceiver = internalReceiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID), PerformStatusData.class);
+        performSender = internalSenderFactory.create(logger, ChildUtil.name(internalName, Command.PERFORM_ID));
+        performReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, Command.PERFORM_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformData.class);
+        performStatusSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID));
+        performStatusReceiver = internalReceiverFactory.create(logger, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID), PerformStatusData.class);
         performStatusReceiver.listen(new com.intuso.housemate.client.messaging.api.internal.Receiver.Listener<PerformStatusData>() {
             @Override
             public void onMessage(PerformStatusData performStatusData, boolean wasPersisted) {

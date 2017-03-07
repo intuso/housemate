@@ -43,8 +43,8 @@ public abstract class ProxyValueBaseBridge<
     @Override
     protected void initChildren(String versionName, String internalName) {
         super.initChildren(versionName, internalName);
-        valueSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Topic, com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Value.VALUE_ID));
-        valueReceiver = internalReceiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(internalName, Value.VALUE_ID), Type.Instances.class);
+        valueSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.proxy.internal.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Value.VALUE_ID));
+        valueReceiver = internalReceiverFactory.create(logger, ChildUtil.name(internalName, Value.VALUE_ID), Type.Instances.class);
         valueReceiver.listen(new com.intuso.housemate.client.messaging.api.internal.Receiver.Listener<Type.Instances>() {
             @Override
             public void onMessage(Type.Instances instances, boolean wasPersisted) {

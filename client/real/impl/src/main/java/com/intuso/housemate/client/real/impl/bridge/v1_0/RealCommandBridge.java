@@ -66,10 +66,10 @@ public class RealCommandBridge
                 com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Command.PARAMETERS_ID),
                 ChildUtil.name(internalName, Command.PARAMETERS_ID)
         );
-        performSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Queue, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_ID));
-        performReceiver = internalReceiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Queue, ChildUtil.name(internalName, Command.PERFORM_ID), PerformData.class);
-        performStatusSender = internalSenderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID));
-        performStatusReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.messaging.api.Type.Topic, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData.class);
+        performSender = v1_0SenderFactory.create(logger, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_ID));
+        performReceiver = internalReceiverFactory.create(logger, ChildUtil.name(internalName, Command.PERFORM_ID), PerformData.class);
+        performStatusSender = internalSenderFactory.create(logger, ChildUtil.name(internalName, Command.PERFORM_STATUS_ID));
+        performStatusReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData.class);
         performStatusReceiver.listen(new Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData>() {
             @Override
             public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData performStatusData, boolean wasPersisted) {

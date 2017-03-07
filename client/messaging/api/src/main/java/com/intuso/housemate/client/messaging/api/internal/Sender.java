@@ -13,6 +13,6 @@ public interface Sender {
     void send(Serializable object, boolean persistent);
 
     interface Factory {
-        Sender create(Logger logger, Type type, String name);
+        Sender create(Logger logger, String name);
     }
 }

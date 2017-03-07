@@ -54,10 +54,10 @@ public abstract class RealValueBaseImpl<O,
     protected void initChildren(String name) {
         super.initChildren(name);
         // get the persisted value
-        Type.Instances instances = receiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(name, ValueBase.VALUE_ID), Type.Instances.class).getPersistedMessage();
+        Type.Instances instances = receiverFactory.create(logger, ChildUtil.name(name, ValueBase.VALUE_ID), Type.Instances.class).getPersistedMessage();
         if(instances != null)
             setValues(RealTypeImpl.deserialiseAll(type, instances));
-        valueSender = senderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(name, ValueBase.VALUE_ID));
+        valueSender = senderFactory.create(logger, ChildUtil.name(name, ValueBase.VALUE_ID));
     }
 
     @Override

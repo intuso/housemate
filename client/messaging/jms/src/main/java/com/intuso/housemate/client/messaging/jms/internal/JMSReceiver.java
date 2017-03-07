@@ -5,7 +5,6 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.messaging.api.internal.MessageConstants;
 import com.intuso.housemate.client.messaging.api.internal.MessagingException;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
-import com.intuso.housemate.client.messaging.api.internal.Type;
 import org.slf4j.Logger;
 
 import javax.jms.*;
@@ -20,14 +19,13 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
 
     private final Logger logger;
     private final MessageConverter messageConverter;
-    private final Destination destination;
     private final Session session;
+    private final Destination destination;
     private final MessageConsumer consumer;
     private final Class<T> tClass;
 
     @Inject
     public JMSReceiver(@Assisted Logger logger,
-                       @Assisted Type type,
                        @Assisted String name,
                        @Assisted Class tClass,
                        MessageConverter messageConverter,
@@ -35,16 +33,7 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
         this.logger = logger;
         this.messageConverter = messageConverter;
         this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        switch (type) {
-            case Queue:
-                this.destination = session.createQueue(name);
-                break;
-            case Topic:
-                this.destination = session.createTopic(name + "?consumer.retroactive=true");
-                break;
-            default:
-                throw new MessagingException("Unknown type " + type);
-        }
+        this.destination = session.createTopic(name + "?consumer.retroactive=true");
         this.consumer = session.createConsumer(destination);
         this.tClass = tClass;
     }
@@ -157,7 +146,7 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
     }
 
     public interface Factory {
-        JMSReceiver<?> create(Logger logger, Type type, String name, Class tClass);
+        JMSReceiver<?> create(Logger logger, String name, Class tClass);
     }
 
     public static class FactoryImpl implements Receiver.Factory {
@@ -170,8 +159,8 @@ public class JMSReceiver<T extends Serializable> implements Receiver<T> {
         }
 
         @Override
-        public <T extends Serializable> Receiver<T> create(Logger logger, Type type, String name, Class<T> tClass) {
-            return (Receiver<T>) factory.create(logger, type, name, tClass);
+        public <T extends Serializable> Receiver<T> create(Logger logger, String name, Class<T> tClass) {
+            return (Receiver<T>) factory.create(logger, name, tClass);
         }
     }
 }

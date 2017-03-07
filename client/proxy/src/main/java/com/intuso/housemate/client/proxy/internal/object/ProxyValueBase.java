@@ -38,7 +38,7 @@ public abstract class ProxyValueBase<
     @Override
     protected void initChildren(String name) {
         super.initChildren(name);
-        valueReceiver = receiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, ChildUtil.name(name, VALUE_ID), Type.Instances.class);
+        valueReceiver = receiverFactory.create(logger, ChildUtil.name(name, VALUE_ID), Type.Instances.class);
         value = valueReceiver.getPersistedMessage();
         valueReceiver.listen(new Receiver.Listener<Type.Instances>() {
                     @Override

@@ -6,7 +6,6 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ListMapper;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Object;
-import com.intuso.housemate.client.messaging.api.internal.Type;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
 import com.intuso.utilities.collection.ManagedCollection;
@@ -43,7 +42,7 @@ public class ProxyListBridge<ELEMENT extends ProxyObjectBridge<?, ?, ?>>
     protected void initChildren(final String versionName, final String internalName) {
         super.initChildren(versionName, internalName);
         // subscribe to all child topics and create children as new topics are discovered
-        existingObjectReceiver = internalReceiverFactory.create(logger, Type.Topic, ChildUtil.name(internalName, "*"), Object.Data.class);
+        existingObjectReceiver = internalReceiverFactory.create(logger, ChildUtil.name(internalName, "*"), Object.Data.class);
         existingObjectReceiver.listen(new com.intuso.housemate.client.messaging.api.internal.Receiver.Listener<Object.Data>() {
                     @Override
                     public void onMessage(Object.Data data, boolean wasPersisted) {

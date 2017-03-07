@@ -7,7 +7,6 @@ import com.intuso.housemate.client.api.bridge.v1_0.object.ListMapper;
 import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
-import com.intuso.housemate.client.v1_0.messaging.api.Type;
 import com.intuso.housemate.client.v1_0.real.impl.ChildUtil;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
@@ -43,7 +42,7 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
     protected void initChildren(final String versionName, final String internalName) {
         super.initChildren(versionName, internalName);
         // subscribe to all child topics and create children as new topics are discovered
-        existingObjectReceiver = v1_0ReceiverFactory.create(logger, Type.Topic, ChildUtil.name(versionName, "*"), Object.Data.class);
+        existingObjectReceiver = v1_0ReceiverFactory.create(logger, ChildUtil.name(versionName, "*"), Object.Data.class);
         existingObjectReceiver.listen(new Receiver.Listener<Object.Data>() {
                     @Override
                     public void onMessage(Object.Data data, boolean wasPersisted) {

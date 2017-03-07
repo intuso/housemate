@@ -3,7 +3,6 @@ package com.intuso.housemate.client.real.impl.bridge.v1_0;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
-import com.intuso.housemate.client.v1_0.messaging.api.Type;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -42,8 +41,8 @@ public abstract class RealObjectBridge<
 
     public final void init(String versionName, String internalName) {
         logger.debug("Init {} -> {}", versionName, internalName);
-        sender = internalSenderFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, internalName);
-        receiver = v1_0ReceiverFactory.create(logger, Type.Topic, versionName, versionDataClass);
+        sender = internalSenderFactory.create(logger, internalName);
+        receiver = v1_0ReceiverFactory.create(logger, versionName, versionDataClass);
         receiver.listen(new Receiver.Listener<VERSION_DATA>() {
                     @Override
                     public void onMessage(VERSION_DATA data, boolean wasPersisted) {

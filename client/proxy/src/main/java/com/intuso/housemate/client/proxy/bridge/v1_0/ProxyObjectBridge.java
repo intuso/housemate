@@ -3,7 +3,6 @@ package com.intuso.housemate.client.proxy.bridge.v1_0;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.object.Object;
 import com.intuso.housemate.client.v1_0.messaging.api.Sender;
-import com.intuso.housemate.client.v1_0.messaging.api.Type;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -42,8 +41,8 @@ public abstract class ProxyObjectBridge<
 
     public final void init(String versionName, String internalName) {
         logger.debug("Init {} -> {}", internalName, versionName);
-        sender = v1_0SenderFactory.create(logger, Type.Topic, versionName);
-        receiver = internalReceiverFactory.create(logger, com.intuso.housemate.client.messaging.api.internal.Type.Topic, internalName, internalDataClass);
+        sender = v1_0SenderFactory.create(logger, versionName);
+        receiver = internalReceiverFactory.create(logger, internalName, internalDataClass);
         receiver.listen(new com.intuso.housemate.client.messaging.api.internal.Receiver.Listener<INTERNAL_DATA>() {
                     @Override
                     public void onMessage(INTERNAL_DATA data, boolean wasPersisted) {
