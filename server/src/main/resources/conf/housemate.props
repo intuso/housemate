@@ -1,6 +1,0 @@
-app.log.level=DEBUG
-device.log.level=DEBUG
-rules.log.level=DEBUG
-server.name=My Server
-server.host=localhost
-server.port=6284
