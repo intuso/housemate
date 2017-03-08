@@ -100,7 +100,7 @@
 
 	<build>
 		<plugins>
-            <!-- Package all dependencies into the one jar and make it executable -->
+            <!-- Package all dependencies into one jar and make it executable -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>

@@ -127,8 +127,8 @@
                             <goal>jdeb</goal>
                         </goals>
                         <configuration>
-                            <deb>${project.build.directory}/housemate-${project.version}.deb</deb>
-                            <changesOut>${project.build.directory}/housemate-${project.version}.changes</changesOut>
+                            <deb>${project.build.directory}/housemate-server-${project.version}.deb</deb>
+                            <changesOut>${project.build.directory}/housemate-server-${project.version}.changes</changesOut>
                             <dataSet>
 
                                 <!-- Main server jar with all deps in it -->
