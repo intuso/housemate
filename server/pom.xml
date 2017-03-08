@@ -61,6 +61,21 @@
         </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-mqtt</artifactId>
+            <version>${activemq.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.fusesource.hawtdispatch</groupId>
+                    <artifactId>hawtdispatch-transport</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.fusesource.hawtbuf</groupId>
+                    <artifactId>hawtbuf</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-kahadb-store</artifactId>
         </dependency>
     </dependencies>

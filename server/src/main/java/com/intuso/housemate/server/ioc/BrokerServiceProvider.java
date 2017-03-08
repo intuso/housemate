@@ -25,13 +25,17 @@ import java.io.IOException;
  */
 public class BrokerServiceProvider implements Provider<BrokerService> {
 
-    public final static String BROKER_HOST = "broker.host";
-    public final static String BROKER_PORT = "broker.port";
+    public final static String BROKER_TCP_HOST = "broker.tcp.host";
+    public final static String BROKER_TCP_PORT = "broker.tcp.port";
+    public final static String BROKER_MQTT_HOST = "broker.mqtt.host";
+    public final static String BROKER_MQTT_PORT = "broker.mqtt.port";
     public final static String BROKER_STORAGE_DIR = "broker.storage.dir";
 
     public static void configureDefaults(WriteableMapPropertyRepository defaultProperties) {
-        defaultProperties.set(BROKER_HOST, "0.0.0.0");
-        defaultProperties.set(BROKER_PORT, "4600");
+        defaultProperties.set(BROKER_TCP_HOST, "0.0.0.0");
+        defaultProperties.set(BROKER_TCP_PORT, "4600");
+        defaultProperties.set(BROKER_MQTT_HOST, "0.0.0.0");
+        defaultProperties.set(BROKER_MQTT_PORT, "1833");
         defaultProperties.set(BROKER_STORAGE_DIR, "./broker/storage");
     }
 
@@ -84,9 +88,14 @@ public class BrokerServiceProvider implements Provider<BrokerService> {
 
         // setup the connectors this broker will provide
         try {
-            brokerService.addConnector("tcp://" + properties.get(BROKER_HOST) + ":" + properties.get(BROKER_PORT));
+            brokerService.addConnector("tcp://" + properties.get(BROKER_TCP_HOST) + ":" + properties.get(BROKER_TCP_PORT));
         } catch(Exception e) {
-            logger.error("Failed to add a connector to the broker. No remote clients will be able to connect", e);
+            logger.error("Failed to add the tcp connector to the broker. Some remote clients will be able to connect", e);
+        }
+        try {
+            brokerService.addConnector("mqtt://" + properties.get(BROKER_MQTT_HOST) + ":" + properties.get(BROKER_MQTT_PORT));
+        } catch(Exception e) {
+            logger.error("Failed to add the mqtt connector to the broker. Some remote clients will be able to connect", e);
         }
 
         // start the broker

@@ -1,11 +1,14 @@
 server.name=My Server
 
-broker.host=0.0.0.0
-broker.port=4600
+#broker.tcp.host=0.0.0.0
+#broker.tcp.port=4600
+#broker.mqtt.host=0.0.0.0
+#broker.mqtt.port=1833
+
 broker.storage.dir=/var/lib/intuso/housemate/broker
 broker.web-console-webapp=/etc/intuso/housemate/server/activemq/webconsole
 
-webserver.host=0.0.0.0
-webserver.port=4601
+#webserver.host=0.0.0.0
+#webserver.port=4601
 
 plugins.dir=/usr/share/intuso/housemate/server/plugins
