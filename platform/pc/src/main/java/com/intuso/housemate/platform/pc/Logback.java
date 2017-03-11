@@ -4,7 +4,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
-import com.google.common.base.Preconditions;
+import com.intuso.housemate.client.v1_0.api.HousemateException;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -27,7 +27,8 @@ public class Logback {
 
     public static void configure(File configDir) {
         File logbackFile = new File(configDir, LOGBACK_FILE);
-        Preconditions.checkState(logbackFile.exists(), "Could not find logback configuration at %s", logbackFile.getAbsoluteFile());
+        if(!logbackFile.exists())
+            throw new HousemateException("Could not find logback configuration at " + logbackFile.getAbsoluteFile());
         final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         final JoranConfigurator joranConfigurator = new JoranConfigurator();
         joranConfigurator.setContext(context);
