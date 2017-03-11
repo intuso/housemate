@@ -19,6 +19,11 @@
         </encoder>
     </appender>
 
+    <logger name="org.apache.activemq" level="WARN" />
+    <logger name="org.apache.jasper" level="WARN" />
+    <logger name="org.apache.tomcat" level="WARN" />
+    <logger name="org.eclipse.jetty" level="WARN" />
+
     <root level="INFO">
         <appender-ref ref="MAIN-LOG"/>
     </root>

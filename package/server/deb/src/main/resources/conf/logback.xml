@@ -19,23 +19,12 @@
         </encoder>
     </appender>
 
-    <logger name="org.apache.activemq" level="WARN">
-        <appender-ref ref="STDOUT"/>
-    </logger>
+    <logger name="org.apache.activemq" level="WARN" />
+    <logger name="org.apache.jasper" level="WARN" />
+    <logger name="org.apache.tomcat" level="WARN" />
+    <logger name="org.eclipse.jetty" level="WARN" />
 
-    <logger name="org.apache.jasper" level="WARN">
-        <appender-ref ref="STDOUT"/>
-    </logger>
-
-    <logger name="org.apache.tomcat" level="WARN">
-        <appender-ref ref="STDOUT"/>
-    </logger>
-
-    <logger name="org.eclipse.jetty" level="WARN">
-        <appender-ref ref="STDOUT"/>
-    </logger>
-
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="MAIN-LOG"/>
     </root>
 
