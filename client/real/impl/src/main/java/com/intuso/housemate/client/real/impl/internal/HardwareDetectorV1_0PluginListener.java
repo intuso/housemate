@@ -10,6 +10,8 @@ import com.intuso.housemate.client.v1_0.api.annotation.Id;
 import com.intuso.housemate.client.v1_0.api.plugin.HardwareDriver;
 import com.intuso.housemate.client.v1_0.api.plugin.Plugin;
 import com.intuso.housemate.client.v1_0.api.plugin.PluginListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -17,6 +19,8 @@ import java.util.Map;
  * Created by tomc on 08/02/17.
  */
 public class HardwareDetectorV1_0PluginListener implements PluginListener {
+
+    private final static Logger logger = LoggerFactory.getLogger(HardwareDetectorV1_0PluginListener.class);
 
     private final Injector injector;
     private final HardwareDriverType hardwareDriverType;
@@ -48,7 +52,11 @@ public class HardwareDetectorV1_0PluginListener implements PluginListener {
             Id id = hardwareDriver.value().getAnnotation(Id.class);
             if(id != null) {
                 com.intuso.housemate.client.v1_0.api.driver.HardwareDriver.Detector detector = injector.getInstance(hardwareDriver.detector());
-                detector.detect(new CallbackImpl(id.value()));
+                try {
+                    detector.detect(new CallbackImpl(id.value()));
+                } catch (Throwable t) {
+                    logger.error("Failed to detect hardware", t);
+                }
             }
         }
     }
