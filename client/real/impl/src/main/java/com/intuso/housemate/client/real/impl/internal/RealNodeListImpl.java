@@ -69,7 +69,7 @@ public final class RealNodeListImpl
         nodeV1_0Receiver = v1_0ReceiverFactory.create(ChildUtil.logger(LoggerFactory.getLogger("bridge"), com.intuso.housemate.client.v1_0.real.impl.RealObject.REAL, Object.VERSION, Server.NODES_ID), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, "*"), Node.Data.class);
         nodeV1_0Receiver.listen(new com.intuso.housemate.client.v1_0.messaging.api.Receiver.Listener<Node.Data>() {
                     @Override
-                    public void onMessage(Node.Data nodeData, boolean wasPersisted) {
+                    public void onMessage(Node.Data nodeData, boolean persistent) {
                         if(!elements.containsKey(nodeData.getId())) {
                             try {
                                 ServerBaseNode<?, ?, ?, ?> node = nodeV1_0Factory.create(nodeData.getId(), ChildUtil.logger(logger, nodeData.getId()), com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(nodesPathV1_0, nodeData.getId()));

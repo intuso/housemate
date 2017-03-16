@@ -45,9 +45,9 @@ public abstract class RealObjectBridge<
         receiver = v1_0ReceiverFactory.create(logger, versionName, versionDataClass);
         receiver.listen(new Receiver.Listener<VERSION_DATA>() {
                     @Override
-                    public void onMessage(VERSION_DATA data, boolean wasPersisted) {
+                    public void onMessage(VERSION_DATA data, boolean persistent) {
                         try {
-                            sender.send(dataMapper.map(data), wasPersisted);
+                            sender.send(dataMapper.map(data), persistent);
                         } catch (Throwable t) {
                             logger.error("Failed to send data object", t);
                         }

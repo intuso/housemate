@@ -72,7 +72,7 @@ public class RealCommandBridge
         performStatusReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Command.PERFORM_STATUS_ID), com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData.class);
         performStatusReceiver.listen(new Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData>() {
             @Override
-            public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData performStatusData, boolean wasPersisted) {
+            public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformStatusData performStatusData, boolean persistent) {
                 if (listenerMap.containsKey(performStatusData.getOpId())) {
                     if (performStatusData.isFinished()) {
                         if (performStatusData.getError() == null)
@@ -83,7 +83,7 @@ public class RealCommandBridge
                         listenerMap.get(performStatusData.getOpId()).commandStarted(RealCommandBridge.this);
                 }
                 try {
-                    performStatusSender.send(commandMapper.map(performStatusData), wasPersisted);
+                    performStatusSender.send(commandMapper.map(performStatusData), persistent);
                 } catch (Throwable t) {
                     logger.error("Failed to broadcast perform status message", t);
                 }

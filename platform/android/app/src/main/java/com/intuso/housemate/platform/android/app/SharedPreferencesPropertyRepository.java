@@ -1,4 +1,4 @@
-package com.intuso.housemate.platform.android.common;
+package com.intuso.housemate.platform.android.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;

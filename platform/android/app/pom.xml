@@ -17,12 +17,6 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>housemate-platform-android-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>housemate-client-1-0-proxy</artifactId>
             <version>${intuso.housemate.client.version}</version>
             <exclusions>
@@ -43,8 +37,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.intuso.housemate</groupId>
-            <artifactId>housemate-client-1-0-messaging-mqtt</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>housemate-client-1-0-serialisation-json</artifactId>
             <version>${intuso.housemate.client.version}</version>
             <exclusions>
                 <!-- Exclude guice, we don't use it because of issues on android -->
@@ -61,6 +55,18 @@
                     <artifactId>guice-multibindings</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>utilities-properties-api</artifactId>
+            <version>${intuso.utilities.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-android</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <dependency>

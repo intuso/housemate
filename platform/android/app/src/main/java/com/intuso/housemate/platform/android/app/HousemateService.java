@@ -2,17 +2,12 @@ package com.intuso.housemate.platform.android.app;
 
 import android.app.Service;
 import com.intuso.housemate.client.v1_0.api.HousemateException;
-import com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.client.v1_0.api.type.TypeSpec;
-import com.intuso.housemate.client.v1_0.messaging.mqtt.MQTTReceiver;
-import com.intuso.housemate.client.v1_0.messaging.mqtt.MQTTSender;
+import com.intuso.housemate.client.v1_0.api.type.serialiser.TypeSerialiser;
 import com.intuso.housemate.platform.android.app.object.AndroidObjectFactories;
-import com.intuso.housemate.platform.android.common.SharedPreferencesPropertyRepository;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import com.intuso.utilities.properties.api.PropertyRepository;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +26,7 @@ public abstract class HousemateService extends Service {
     private ManagedCollectionFactory managedCollectionFactory;
     private TypeSerialiser.Repository typeSerialiserRepository;
     private PropertyRepository properties;
+    private AppServiceClient appServiceClient;
     private AndroidObjectFactories objectFactories;
 
     @Override
@@ -51,14 +47,9 @@ public abstract class HousemateService extends Service {
             }
         };
         properties = new SharedPreferencesPropertyRepository(managedCollectionFactory, getApplicationContext());
-        try {
-            MqttClient client = new MqttClient("tcp://" + properties.get("server.host") + ":" + properties.get("server.port"), "android-client");
-            objectFactories = new AndroidObjectFactories(managedCollectionFactory,
-                    new MQTTReceiver.FactoryImpl(new MQTTReceiverFactoryImpl(client)),
-                    new MQTTSender.FactoryImpl(new MQTTSenderFactoryImpl(client)));
-        } catch (MqttException e) {
-            logger.error("Failed to create connection to server", e);
-        }
+        appServiceClient = new AppServiceClient(logger, getApplicationContext());
+        objectFactories = new AndroidObjectFactories(managedCollectionFactory, appServiceClient, appServiceClient);
+        appServiceClient.connect();
     }
 
     @Override
@@ -66,14 +57,7 @@ public abstract class HousemateService extends Service {
         super.onDestroy();
         logger = null;
         properties = null;
-        /*if (connection != null) {
-            try {
-                connection.close();
-            } catch (JMSException e) {
-                logger.error("Failed to close conncetion to server", e);
-            }
-            connection = null;
-        }*/
+        appServiceClient.disconnect();
     }
 
     public Logger getLogger() {

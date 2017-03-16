@@ -92,9 +92,9 @@ public class ProxyCommandBridge
         });
         performReceiver.listen(new Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Command.PerformData>() {
             @Override
-            public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformData performData, boolean wasPersisted) {
+            public void onMessage(com.intuso.housemate.client.v1_0.api.object.Command.PerformData performData, boolean persistent) {
                 try {
-                    performSender.send(commandMapper.map(performData), wasPersisted);
+                    performSender.send(commandMapper.map(performData), persistent);
                 } catch (Throwable t) {
                     logger.error("Failed to send perform message to command. Telling client it failed", t);
                     try {

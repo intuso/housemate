@@ -45,7 +45,7 @@ public class RealListBridge<ELEMENT extends RealObjectBridge<?, ?, ?>>
         existingObjectReceiver = v1_0ReceiverFactory.create(logger, ChildUtil.name(versionName, "*"), Object.Data.class);
         existingObjectReceiver.listen(new Receiver.Listener<Object.Data>() {
                     @Override
-                    public void onMessage(Object.Data data, boolean wasPersisted) {
+                    public void onMessage(Object.Data data, boolean persistent) {
                         if(!elements.containsKey(data.getId())) {
                             ELEMENT element = elementFactory.create(ChildUtil.logger(logger, data.getId()));
                             if(element != null) {

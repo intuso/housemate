@@ -47,10 +47,10 @@ public abstract class RealValueBaseBridge<
         valueReceiver = v1_0ReceiverFactory.create(logger, com.intuso.housemate.client.v1_0.real.impl.ChildUtil.name(versionName, Value.VALUE_ID), com.intuso.housemate.client.v1_0.api.object.Type.Instances.class);
         valueReceiver.listen(new Receiver.Listener<com.intuso.housemate.client.v1_0.api.object.Type.Instances>() {
             @Override
-            public void onMessage(com.intuso.housemate.client.v1_0.api.object.Type.Instances instances, boolean wasPersisted) {
+            public void onMessage(com.intuso.housemate.client.v1_0.api.object.Type.Instances instances, boolean persistent) {
                 value = typeInstancesMapper.map(instances);
                 try {
-                    valueSender.send(value, wasPersisted);
+                    valueSender.send(value, persistent);
                 } catch (Throwable t) {
                     logger.error("Failed to send new values onto internal topic", t);
                 }

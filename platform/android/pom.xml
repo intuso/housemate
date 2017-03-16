@@ -20,7 +20,6 @@
     </properties>
 
     <modules>
-        <module>common</module>
         <module>app</module>
         <module>service</module>
     </modules>
