@@ -127,6 +127,7 @@ public abstract class ProxyCommand<
             id = "" + nextId++;
             listenerMap.put(id, listener);
         }
+        logger.info("Performing");
         try {
             performSender.send(new PerformData(id, values), true);
         } catch(Throwable t) {

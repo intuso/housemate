@@ -75,6 +75,7 @@ public final class RealCommandImpl
         performReceiver.listen(new Receiver.Listener<PerformData>() {
                     @Override
                     public void onMessage(final PerformData performData, boolean wasPersisted) {
+                        logger.info("Performing");
                         perform(performData.getInstanceMap(), new PerformListener<RealCommandImpl>() {
 
                             @Override
