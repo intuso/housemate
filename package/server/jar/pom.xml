@@ -51,9 +51,9 @@
 
         <!-- Jetty server/web container stuff -->
         <dependency>
-            <groupId>com.intuso.utilities</groupId>
-            <artifactId>utilities-webserver</artifactId>
-            <version>${intuso.utilities.version}</version>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-webserver</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>

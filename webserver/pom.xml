@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.intuso.housemate</groupId>
+        <artifactId>housemate</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>housemate-webserver</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <name>Housemate Webserver</name>
+    <description>Housemate webserver for REST API and web interface</description>
+
+    <dependencies>
+
+        <!-- Webserver -->
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>utilities-webserver</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Database impl -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+
+        <!-- REST APIs -->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-client-1-0-rest</artifactId>
+            <version>${intuso.housemate.client.version}</version>
+        </dependency>
+
+        <!-- For connecting to clients -->
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-client-1-0-proxy</artifactId>
+            <version>${intuso.housemate.client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.housemate</groupId>
+            <artifactId>housemate-client-1-0-messaging-jms</artifactId>
+            <version>${intuso.housemate.client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+        </dependency>
+
+        <!-- Properties -->
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>utilities-properties-reader-commandline</artifactId>
+            <version>${intuso.utilities.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.intuso.utilities</groupId>
+            <artifactId>utilities-properties-reader-file</artifactId>
+            <version>${intuso.utilities.version}</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.apache.oltu.oauth2</groupId>
+            <artifactId>org.apache.oltu.oauth2.client</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+    </dependencies>
+
+</project>
