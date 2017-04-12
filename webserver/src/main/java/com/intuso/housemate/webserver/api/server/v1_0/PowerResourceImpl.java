@@ -2,7 +2,7 @@ package com.intuso.housemate.webserver.api.server.v1_0;
 
 import com.google.common.collect.Lists;
 import com.intuso.housemate.client.v1_0.api.object.Command;
-import com.intuso.housemate.client.v1_0.api.object.Device;
+import com.intuso.housemate.client.v1_0.api.object.Object;
 import com.intuso.housemate.client.v1_0.api.type.serialiser.BooleanSerialiser;
 import com.intuso.housemate.client.v1_0.proxy.object.*;
 import com.intuso.housemate.client.v1_0.rest.PowerResource;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Context;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,15 +45,27 @@ public class PowerResourceImpl implements PowerResource {
     @Context private HttpServletRequest request;
 
     @Override
-    public Page<Device.Data> list(int offset, int limit) {
-        logger.debug("Listing devices {} to {}", offset, limit);
-        List<Device.Data> devices = Lists.newArrayList();
-        for(ProxyNode.Simple node : SessionUtils.getServer(request.getSession(false)).getNodes())
-            for(ProxyHardware.Simple hardware : node.getHardwares())
-                for(ProxyDevice.Simple device : hardware.getDevices())
-                  devices.add(new Device.Data(device.getId(), device.getName(), device.getDescription()));
+    public Page<Object.Data> list(int offset, int limit) {
 
-        Stream<Device.Data> stream  = devices.stream();
+        logger.debug("Listing power {} to {}", offset, limit);
+
+        ProxyServer.Simple server = SessionUtils.getServer(request.getSession(false));
+        if(server == null)
+            throw new BadRequestException("No server for user");
+
+        List<Object.Data> devices = Lists.newArrayList();
+        server.getNodes().forEach(
+                node -> node.getHardwares().forEach(
+                        hardware -> hardware.getDevices().forEach(
+                                device -> devices.add(device.getData())
+                        )
+                )
+        );
+        server.getSystems().forEach(
+                system -> devices.add(system.getData())
+        );
+
+        Stream<Object.Data> stream  = devices.stream();
         if(offset > 0)
             stream = stream.skip(offset);
         if(limit >= 0)

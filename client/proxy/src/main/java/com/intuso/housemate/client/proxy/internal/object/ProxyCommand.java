@@ -13,6 +13,8 @@ import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @param <VALUE> the type of the value for the enabled status of the command
@@ -116,6 +118,23 @@ public abstract class ProxyCommand<
         perform(new Type.InstanceMap(), listener);
     }
 
+    /**
+     * Performs the command without any type values and blocks until the command is complete or failed
+     * @param timeout
+     */
+    public final void performSync(long timeout) throws InterruptedException {
+        performSync(new Type.InstanceMap(), timeout);
+    }
+
+    /**
+     * Performs the command and blocks until the command is complete or failed
+     */
+    public final void performSync(Type.InstanceMap values, long timeout) throws InterruptedException {
+        SyncListener syncListener = new SyncListener();
+        perform(values, syncListener);
+        syncListener.block(timeout);
+    }
+
     private COMMAND getThis() {
         return (COMMAND) this;
     }
@@ -168,6 +187,66 @@ public abstract class ProxyCommand<
                       Factory<ProxyValue.Simple> valueFactory,
                       Factory<ProxyList.Simple<ProxyParameter.Simple>> parametersFactory) {
             super(logger, managedCollectionFactory, receiverFactory, senderFactory, valueFactory, parametersFactory);
+        }
+    }
+
+    public static abstract class DelegatingPerformListener<COMMAND extends Command<?, ?, ?, ?>> implements PerformListener<COMMAND> {
+
+        private final PerformListener<? super COMMAND> delegate;
+
+        protected DelegatingPerformListener(PerformListener<? super COMMAND> delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void commandStarted(COMMAND command) {
+            if(delegate != null)
+                delegate.commandStarted(command);
+        }
+
+        @Override
+        public void commandFinished(COMMAND command) {
+            if(delegate != null)
+                delegate.commandFinished(command);
+        }
+
+        @Override
+        public void commandFailed(COMMAND command, String error) {
+            if(delegate != null)
+                delegate.commandFailed(command, error);
+        }
+    }
+
+    public static class SyncListener extends DelegatingPerformListener<ProxyCommand<?, ?, ?>> {
+
+        private final CountDownLatch countDownLatch = new CountDownLatch(1);
+        private String error = null;
+
+        protected SyncListener() {
+            super(null);
+        }
+
+        protected SyncListener(PerformListener<? super ProxyCommand<?, ?, ?>> delegate) {
+            super(delegate);
+        }
+
+        @Override
+        public void commandFinished(ProxyCommand<?, ?, ?> command) {
+            countDownLatch.countDown();
+            super.commandFinished(command);
+        }
+
+        @Override
+        public void commandFailed(ProxyCommand<?, ?, ?> command, String error) {
+            this.error = error;
+            countDownLatch.countDown();
+            super.commandFailed(command, error);
+        }
+
+        private void block(long timeout) throws InterruptedException {
+            countDownLatch.await(timeout, TimeUnit.MILLISECONDS);
+            if(error != null)
+                throw new HousemateException(error);
         }
     }
 }
