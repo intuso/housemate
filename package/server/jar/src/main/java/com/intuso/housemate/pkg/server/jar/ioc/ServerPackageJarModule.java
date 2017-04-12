@@ -44,7 +44,7 @@ public class ServerPackageJarModule extends AbstractModule {
         // main server module
         install(new ServerModule());
         // web server
-        install(new HousemateWebServerModule(4601, ServerFilter.class));
+        install(new HousemateWebServerModule(4601, "HM_SERVER_SESSION", ServerFilter.class));
         // mongo database
         install(new MongoDatabaseModule());
         // active mq broker web console setup

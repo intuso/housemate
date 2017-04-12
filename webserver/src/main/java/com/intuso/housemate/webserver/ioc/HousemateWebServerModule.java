@@ -7,6 +7,7 @@ import com.intuso.housemate.webserver.database.Database;
 import com.intuso.housemate.webserver.ui.ioc.UIModule;
 import com.intuso.utilities.properties.api.WriteableMapPropertyRepository;
 import com.intuso.utilities.webserver.config.HttpPortConfig;
+import com.intuso.utilities.webserver.ioc.SessionCookie;
 import com.intuso.utilities.webserver.ioc.WebServerModule;
 import com.intuso.utilities.webserver.oauth.OAuthStore;
 
@@ -22,10 +23,12 @@ public class HousemateWebServerModule extends ServletModule {
     }
 
     private final int port;
+    private final String cookieName;
     private final Class<? extends Filter> serverFilter;
 
-    public HousemateWebServerModule(int port, Class<? extends Filter> serverFilter) {
+    public HousemateWebServerModule(int port, String cookieName, Class<? extends Filter> serverFilter) {
         this.port = port;
+        this.cookieName = cookieName;
         this.serverFilter = serverFilter;
     }
 
@@ -48,6 +51,8 @@ public class HousemateWebServerModule extends ServletModule {
                 .unsecuredResource("GET", "/js/register.bundle.js")
                 .unsecuredResource("POST", "/api/server/1.0/register")
                 .build());
+
+        bind(String.class).annotatedWith(SessionCookie.class).toInstance(cookieName);
 
         // pass every request through the server filter to set the server in the session
         bind(serverFilter).in(Scopes.SINGLETON);
