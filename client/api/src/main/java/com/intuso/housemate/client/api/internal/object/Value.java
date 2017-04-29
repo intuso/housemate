@@ -31,7 +31,7 @@ public interface Value<DATA_TYPE,
      *
      * Interface to show that the implementing object has a list of values
      */
-    interface Container<VALUES extends List<? extends Value<?, ?, ?>, ?>> {
+    interface Container<VALUES extends Iterable<? extends Value<?, ?, ?>>> {
 
         /**
          * Gets the value list

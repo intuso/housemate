@@ -2,12 +2,11 @@ package com.intuso.housemate.client.proxy.internal.object;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.internal.object.System;
+import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
 import com.intuso.housemate.client.proxy.internal.ProxyFailable;
 import com.intuso.housemate.client.proxy.internal.ProxyRemoveable;
-import com.intuso.housemate.client.proxy.internal.ProxyRenameable;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
@@ -16,60 +15,60 @@ import org.slf4j.Logger;
  * @param <VALUE> the type of the values
  * @param <DEVICE> the type of the device
  */
-public abstract class ProxySystem<
-        VALUE extends ProxyValue<?, VALUE>,
+public abstract class ProxyDeviceCombi<
         COMMAND extends ProxyCommand<?, ?, COMMAND>,
-        PROPERTIES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
-        DEVICE extends ProxySystem<VALUE, COMMAND, PROPERTIES, DEVICE>>
-        extends ProxyObject<System.Data, System.Listener<? super DEVICE>>
-        implements System<VALUE, COMMAND, PROPERTIES, DEVICE>,
+        COMMANDS extends ProxyList<? extends ProxyCommand<?, ?, ?>, ?>,
+        VALUE extends ProxyValue<?, VALUE>,
+        VALUES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
+        DEVICES extends ProxyList<? extends ProxyProperty<?, ?, ?>, ?>,
+        DEVICE extends ProxyDeviceCombi<COMMAND, COMMANDS, VALUE, VALUES, DEVICES, DEVICE>>
+        extends ProxyDevice<Device.Combi.Data, Device.Combi.Listener<? super DEVICE>, COMMAND, COMMANDS, VALUES, DEVICE>
+        implements Device.Combi<COMMAND, COMMAND, COMMAND, VALUE, COMMANDS, VALUES, DEVICES, DEVICE>,
         ProxyFailable<VALUE>,
-        ProxyRemoveable<COMMAND>,
-        ProxyRenameable<COMMAND> {
+        ProxyRemoveable<COMMAND> {
 
-    private final COMMAND renameCommand;
     private final COMMAND removeCommand;
     private final VALUE errorValue;
-    private final PROPERTIES playbackDevices;
+    private final DEVICES playbackDevices;
     private final COMMAND addPlaybackDeviceCommand;
-    private final PROPERTIES powerDevices;
+    private final DEVICES powerDevices;
     private final COMMAND addPowerDeviceCommand;
-    private final PROPERTIES runDevices;
+    private final DEVICES runDevices;
     private final COMMAND addRunDeviceCommand;
-    private final PROPERTIES temperatureSensorDevices;
+    private final DEVICES temperatureSensorDevices;
     private final COMMAND addTemperatureSensorDeviceCommand;
-    private final PROPERTIES volumeDevices;
+    private final DEVICES volumeDevices;
     private final COMMAND addVolumeDeviceCommand;
 
     /**
      * @param logger {@inheritDoc}
      */
-    public ProxySystem(Logger logger,
-                       ManagedCollectionFactory managedCollectionFactory,
-                       Receiver.Factory receiverFactory,
-                       Factory<VALUE> valueFactory,
-                       Factory<COMMAND> commandFactory,
-                       Factory<PROPERTIES> propertiesFactory) {
-        super(logger, System.Data.class, managedCollectionFactory, receiverFactory);
-        renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
+    public ProxyDeviceCombi(Logger logger,
+                            ManagedCollectionFactory managedCollectionFactory,
+                            Receiver.Factory receiverFactory,
+                            Factory<COMMAND> commandFactory,
+                            Factory<COMMANDS> commandsFactory,
+                            Factory<VALUE> valueFactory,
+                            Factory<VALUES> valuesFactory,
+                            Factory<DEVICES> devicesFactory) {
+        super(logger, Device.Combi.Data.class, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valuesFactory);
         removeCommand = commandFactory.create(ChildUtil.logger(logger, REMOVE_ID));
         errorValue = valueFactory.create(ChildUtil.logger(logger, ERROR_ID));
-        playbackDevices = propertiesFactory.create(ChildUtil.logger(logger, PLAYBACK));
+        playbackDevices = devicesFactory.create(ChildUtil.logger(logger, PLAYBACK));
         addPlaybackDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_PLAYBACK));
-        powerDevices = propertiesFactory.create(ChildUtil.logger(logger, POWER));
+        powerDevices = devicesFactory.create(ChildUtil.logger(logger, POWER));
         addPowerDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_POWER));
-        runDevices = propertiesFactory.create(ChildUtil.logger(logger, RUN));
+        runDevices = devicesFactory.create(ChildUtil.logger(logger, RUN));
         addRunDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_RUN));
-        temperatureSensorDevices = propertiesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR));
+        temperatureSensorDevices = devicesFactory.create(ChildUtil.logger(logger, TEMPERATURE_SENSOR));
         addTemperatureSensorDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_TEMPERATURE_SENSOR));
-        volumeDevices = propertiesFactory.create(ChildUtil.logger(logger, VOLUME));
+        volumeDevices = devicesFactory.create(ChildUtil.logger(logger, VOLUME));
         addVolumeDeviceCommand = commandFactory.create(ChildUtil.logger(logger, ADD_VOLUME));
     }
 
     @Override
     protected void initChildren(String name) {
         super.initChildren(name);
-        renameCommand.init(ChildUtil.name(name, RENAME_ID));
         removeCommand.init(ChildUtil.name(name, REMOVE_ID));
         errorValue.init(ChildUtil.name(name, ERROR_ID));
         playbackDevices.init(ChildUtil.name(name, PLAYBACK));
@@ -87,7 +86,6 @@ public abstract class ProxySystem<
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
-        renameCommand.uninit();
         removeCommand.uninit();
         errorValue.uninit();
         playbackDevices.uninit();
@@ -100,11 +98,6 @@ public abstract class ProxySystem<
         addTemperatureSensorDeviceCommand.uninit();
         volumeDevices.uninit();
         addVolumeDeviceCommand.uninit();
-    }
-
-    @Override
-    public COMMAND getRenameCommand() {
-        return renameCommand;
     }
 
     @Override
@@ -123,7 +116,7 @@ public abstract class ProxySystem<
     }
 
     @Override
-    public PROPERTIES getPlaybackDevices() {
+    public DEVICES getPlaybackDevices() {
         return playbackDevices;
     }
 
@@ -133,7 +126,7 @@ public abstract class ProxySystem<
     }
 
     @Override
-    public PROPERTIES getPowerDevices() {
+    public DEVICES getPowerDevices() {
         return powerDevices;
     }
 
@@ -143,7 +136,7 @@ public abstract class ProxySystem<
     }
 
     @Override
-    public PROPERTIES getRunDevices() {
+    public DEVICES getRunDevices() {
         return runDevices;
     }
 
@@ -153,7 +146,7 @@ public abstract class ProxySystem<
     }
 
     @Override
-    public PROPERTIES getTemperatureSensorDevices() {
+    public DEVICES getTemperatureSensorDevices() {
         return temperatureSensorDevices;
     }
 
@@ -163,7 +156,7 @@ public abstract class ProxySystem<
     }
 
     @Override
-    public PROPERTIES getVolumeDevices() {
+    public DEVICES getVolumeDevices() {
         return volumeDevices;
     }
 
@@ -174,9 +167,7 @@ public abstract class ProxySystem<
 
     @Override
     public ProxyObject<?, ?> getChild(String id) {
-        if(RENAME_ID.equals(id))
-            return renameCommand;
-        else if(REMOVE_ID.equals(id))
+        if(REMOVE_ID.equals(id))
             return removeCommand;
         else if(ERROR_ID.equals(id))
             return errorValue;
@@ -200,19 +191,21 @@ public abstract class ProxySystem<
             return volumeDevices;
         else if(ADD_VOLUME.equals(id))
             return addVolumeDeviceCommand;
-        return null;
+        return super.getChild(id);
     }
 
     /**
-    * Created with IntelliJ IDEA.
-    * User: tomc
-    * Date: 14/01/14
-    * Time: 13:16
-    * To change this template use File | Settings | File Templates.
-    */
-    public static final class Simple extends ProxySystem<
-            ProxyValue.Simple,
+     * Created with IntelliJ IDEA.
+     * User: tomc
+     * Date: 14/01/14
+     * Time: 13:16
+     * To change this template use File | Settings | File Templates.
+     */
+    public static final class Simple extends ProxyDeviceCombi<
             ProxyCommand.Simple,
+            ProxyList.Simple<ProxyCommand.Simple>,
+            ProxyValue.Simple,
+            ProxyList.Simple<ProxyValue.Simple>,
             ProxyList.Simple<ProxyProperty.Simple>,
             Simple> {
 
@@ -221,9 +214,11 @@ public abstract class ProxySystem<
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
+                      Factory<ProxyList.Simple<ProxyCommand.Simple>> commandsFactory,
                       Factory<ProxyValue.Simple> valueFactory,
-                      Factory<ProxyList.Simple<ProxyProperty.Simple>> propertiesFactory) {
-            super(logger, managedCollectionFactory, receiverFactory, valueFactory, commandFactory, propertiesFactory);
+                      Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory,
+                      Factory<ProxyList.Simple<ProxyProperty.Simple>> devicesFactory) {
+            super(logger, managedCollectionFactory, receiverFactory, commandFactory, commandsFactory, valueFactory, valuesFactory, devicesFactory);
         }
     }
 }

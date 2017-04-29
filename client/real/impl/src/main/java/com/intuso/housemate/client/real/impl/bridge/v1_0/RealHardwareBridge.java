@@ -26,7 +26,7 @@ public class RealHardwareBridge
         RealListBridge<RealCommandBridge>,
         RealListBridge<RealValueBridge>,
         RealListBridge<RealPropertyBridge>,
-        RealListBridge<RealDeviceBridge>,
+        RealListBridge<RealDeviceConnectedBridge>,
         RealHardwareBridge> {
 
     private final RealCommandBridge renameCommand;
@@ -40,7 +40,7 @@ public class RealHardwareBridge
     private final RealListBridge<RealCommandBridge> commands;
     private final RealListBridge<RealValueBridge> values;
     private final RealListBridge<RealPropertyBridge> properties;
-    private final RealListBridge<RealDeviceBridge> devices;
+    private final RealListBridge<RealDeviceConnectedBridge> devices;
 
     @Inject
     protected RealHardwareBridge(@Assisted Logger logger,
@@ -54,7 +54,7 @@ public class RealHardwareBridge
                                  Factory<RealListBridge<RealCommandBridge>> commandsFactory,
                                  Factory<RealListBridge<RealValueBridge>> valuesFactory,
                                  Factory<RealListBridge<RealPropertyBridge>> propertiesFactory,
-                                 Factory<RealListBridge<RealDeviceBridge>> devicesFactory) {
+                                 Factory<RealListBridge<RealDeviceConnectedBridge>> devicesFactory) {
         super(logger, com.intuso.housemate.client.v1_0.api.object.Hardware.Data.class, hardwareMapper, managedCollectionFactory, v1_0ReceiverFactory, internalSenderFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
@@ -196,7 +196,7 @@ public class RealHardwareBridge
     }
 
     @Override
-    public RealListBridge<RealDeviceBridge> getDevices() {
+    public RealListBridge<RealDeviceConnectedBridge> getDeviceConnecteds() {
         return devices;
     }
 }

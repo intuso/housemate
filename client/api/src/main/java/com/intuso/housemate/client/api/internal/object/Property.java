@@ -34,7 +34,7 @@ public interface Property<
      *
      * Interface to show that the implementing object has a list of properties
      */
-    interface Container<PROPERTIES extends List<? extends Property<?, ?, ?, ?>, ?>> {
+    interface Container<PROPERTIES extends Iterable<? extends Property<?, ?, ?, ?>>> {
 
         /**
          * Gets the properties list

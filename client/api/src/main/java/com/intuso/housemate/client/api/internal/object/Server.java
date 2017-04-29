@@ -2,25 +2,28 @@ package com.intuso.housemate.client.api.internal.object;
 
 public interface Server<
         COMMAND extends Command<?, ?, ?, ?>,
+        DEVICES extends List<? extends Value<?, ?, ?>, ?>,
         AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
-        SYSTEMS extends List<? extends System<?, ?, ?, ?>, ?>,
+        COMBI_DEVICES extends List<? extends Device.Combi<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         USERS extends List<? extends User<?, ?, ?, ?>, ?>,
         NODES extends List<? extends Node<?, ?, ?, ?>, ?>,
-        SERVER extends Server<COMMAND, AUTOMATIONS, SYSTEMS, USERS, NODES, SERVER>>
+        SERVER extends Server<COMMAND, DEVICES, AUTOMATIONS, COMBI_DEVICES, USERS, NODES, SERVER>>
         extends Object<Server.Listener<? super SERVER>>,
-        System.Container<SYSTEMS>,
+        Device.Combi.Container<COMBI_DEVICES>,
         Automation.Container<AUTOMATIONS>,
         User.Container<USERS>,
         Node.Container<NODES> {
 
+    String DEVICES_ID = "device";
     String AUTOMATIONS_ID = "automation";
-    String SYSTEMS_ID = "system";
+    String DEVICE_COMBIS_ID = "system";
     String USERS_ID = "user";
     String NODES_ID = "node";
     String ADD_AUTOMATION_ID = "add-automation";
     String ADD_SYSTEM_ID = "add-system";
     String ADD_USER_ID = "add-user";
 
+    DEVICES getDeviceReferences();
     COMMAND getAddAutomationCommand();
     COMMAND getAddSystemCommand();
     COMMAND getAddUserCommand();
@@ -35,7 +38,7 @@ public interface Server<
      *
      * Interface to show that the implementing object has a list of server
      */
-    interface Container<SERVERS extends List<? extends Server<?, ?, ?, ?, ?, ?>, ?>> {
+    interface Container<SERVERS extends Iterable<? extends Server<?, ?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the commands list

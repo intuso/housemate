@@ -19,7 +19,7 @@ public class AndroidProxyHardware extends ProxyHardware<
         AndroidProxyList<AndroidProxyValue>,
         AndroidProxyProperty,
         AndroidProxyList<AndroidProxyProperty>,
-        AndroidProxyList<AndroidProxyDevice>,
+        AndroidProxyList<AndroidProxyDeviceConnected>,
         AndroidProxyHardware> {
 
     /**
@@ -27,6 +27,6 @@ public class AndroidProxyHardware extends ProxyHardware<
      */
     protected AndroidProxyHardware(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
         super(logger, managedCollectionFactory, receiverFactory, factories.command(), factories.commands(), factories.value(),
-                factories.values(), factories.property(), factories.properties(), factories.devices());
+                factories.values(), factories.property(), factories.properties(), factories.deviceConnecteds());
     }
 }

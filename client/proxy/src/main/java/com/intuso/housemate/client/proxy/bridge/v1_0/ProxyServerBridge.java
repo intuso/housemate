@@ -15,12 +15,13 @@ import org.slf4j.Logger;
  */
 public class ProxyServerBridge
         extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Server.Data, Server.Data, Server.Listener<? super ProxyServerBridge>>
-        implements Server<ProxyCommandBridge, ProxyListBridge<ProxyAutomationBridge>, ProxyListBridge<ProxySystemBridge>, ProxyListBridge<ProxyUserBridge>, ProxyListBridge<ProxyNodeBridge>, ProxyServerBridge> {
+        implements Server<ProxyCommandBridge, ProxyListBridge<ProxyValueBridge>, ProxyListBridge<ProxyAutomationBridge>, ProxyListBridge<ProxyDeviceCombiBridge>, ProxyListBridge<ProxyUserBridge>, ProxyListBridge<ProxyNodeBridge>, ProxyServerBridge> {
 
+    private final ProxyListBridge<ProxyValueBridge> deviceReferences;
     private final ProxyCommandBridge addAutomationCommand;
     private final ProxyListBridge<ProxyAutomationBridge> automations;
     private final ProxyCommandBridge addSystemCommand;
-    private final ProxyListBridge<ProxySystemBridge> systems;
+    private final ProxyListBridge<ProxyDeviceCombiBridge> combiDevices;
     private final ProxyListBridge<ProxyNodeBridge> nodes;
     private final ProxyCommandBridge addUserCommand;
     private final ProxyListBridge<ProxyUserBridge> users;
@@ -32,15 +33,17 @@ public class ProxyServerBridge
                                 com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
                                 Sender.Factory v1_0SenderFactory,
                                 Factory<ProxyCommandBridge> commandFactory,
+                                Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory,
                                 Factory<ProxyListBridge<ProxyAutomationBridge>> automationsFactory,
-                                Factory<ProxyListBridge<ProxySystemBridge>> systemsFactory,
+                                Factory<ProxyListBridge<ProxyDeviceCombiBridge>> systemsFactory,
                                 Factory<ProxyListBridge<ProxyNodeBridge>> nodesFactory,
                                 Factory<ProxyListBridge<ProxyUserBridge>> usersFactory) {
         super(logger, Server.Data.class, serverMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
+        deviceReferences = valuesFactory.create(ChildUtil.logger(logger, Server.DEVICES_ID));
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_AUTOMATION_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, Server.AUTOMATIONS_ID));
         addSystemCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_SYSTEM_ID));
-        systems = systemsFactory.create(ChildUtil.logger(logger, Server.SYSTEMS_ID));
+        combiDevices = systemsFactory.create(ChildUtil.logger(logger, Server.DEVICE_COMBIS_ID));
         nodes = nodesFactory.create(ChildUtil.logger(logger, Server.NODES_ID));
         addUserCommand = commandFactory.create(ChildUtil.logger(logger, Server.ADD_USER_ID));
         users = usersFactory.create(ChildUtil.logger(logger, Server.USERS_ID));
@@ -60,6 +63,10 @@ public class ProxyServerBridge
     @Override
     protected void initChildren(String versionName, String internalName) {
         super.initChildren(versionName, internalName);
+        deviceReferences.init(
+                com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.DEVICES_ID),
+                ChildUtil.name(internalName, Server.DEVICES_ID)
+        );
         addAutomationCommand.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.ADD_AUTOMATION_ID),
                 ChildUtil.name(internalName, Server.ADD_AUTOMATION_ID)
@@ -72,9 +79,9 @@ public class ProxyServerBridge
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.ADD_SYSTEM_ID),
                 ChildUtil.name(internalName, Server.ADD_SYSTEM_ID)
         );
-        systems.init(
-                com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.SYSTEMS_ID),
-                ChildUtil.name(internalName, Server.SYSTEMS_ID)
+        combiDevices.init(
+                com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.DEVICE_COMBIS_ID),
+                ChildUtil.name(internalName, Server.DEVICE_COMBIS_ID)
         );
         nodes.init(
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Server.NODES_ID),
@@ -93,13 +100,19 @@ public class ProxyServerBridge
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
+        deviceReferences.uninit();
         addAutomationCommand.uninit();
         automations.uninit();
         addSystemCommand.uninit();
-        systems.uninit();
+        combiDevices.uninit();
         nodes.uninit();
         addUserCommand.uninit();
         users.uninit();
+    }
+
+    @Override
+    public ProxyListBridge<ProxyValueBridge> getDeviceReferences() {
+        return deviceReferences;
     }
 
     @Override
@@ -117,8 +130,9 @@ public class ProxyServerBridge
         return addSystemCommand;
     }
 
-    public ProxyListBridge<ProxySystemBridge> getSystems() {
-        return systems;
+    @Override
+    public ProxyListBridge<ProxyDeviceCombiBridge> getDeviceCombis() {
+        return combiDevices;
     }
 
     @Override

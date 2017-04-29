@@ -90,7 +90,7 @@ public interface Automation<RENAME_COMMAND extends Command<?, ?, ?, ?>,
     /**
      * Interface to show that the implementing object has a list of automations
      */
-    interface Container<AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
+    interface Container<AUTOMATIONS extends Iterable<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the automation list

@@ -92,7 +92,7 @@ public interface Command<
      *
      * Interface to show that the implementing object has a list of commands
      */
-    interface Container<COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>> {
+    interface Container<COMMANDS extends Iterable<? extends Command<?, ?, ?, ?>>> {
 
         /**
          * Gets the commands list

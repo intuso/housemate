@@ -56,13 +56,13 @@ public class PowerResourceImpl implements PowerResource {
         List<Object.Data> devices = Lists.newArrayList();
         server.getNodes().forEach(
                 node -> node.getHardwares().forEach(
-                        hardware -> hardware.getDevices().forEach(
+                        hardware -> hardware.getDeviceConnecteds().forEach(
                                 device -> devices.add(device.getData())
                         )
                 )
         );
-        server.getSystems().forEach(
-                system -> devices.add(system.getData())
+        server.getDevices().forEach(
+                device -> devices.add(device.getData())
         );
 
         Stream<Object.Data> stream  = devices.stream();
@@ -78,7 +78,7 @@ public class PowerResourceImpl implements PowerResource {
         logger.debug("Is on {}", id);
         for(ProxyNode.Simple node : SessionUtils.getServer(request.getSession(false)).getNodes())
             for(ProxyHardware.Simple hardware : node.getHardwares())
-                for(ProxyDevice.Simple device : hardware.getDevices())
+                for(ProxyDeviceConnected.Simple device : hardware.getDeviceConnecteds())
                     if(device.getId().equals(id))
                         return BooleanSerialiser.INSTANCE.deserialise(device.getValues().get("on").getValue().getElements().get(0));
         return false;
@@ -89,7 +89,7 @@ public class PowerResourceImpl implements PowerResource {
         logger.debug("Turning on {}", id);
         for(ProxyNode.Simple node : SessionUtils.getServer(request.getSession(false)).getNodes()) {
             for(ProxyHardware.Simple hardware : node.getHardwares()) {
-                for(ProxyDevice.Simple device : hardware.getDevices()) {
+                for(ProxyDeviceConnected.Simple device : hardware.getDeviceConnecteds()) {
                     if (device.getId().equals(id)) {
                         device.getCommands().get("on").perform(loggerListener);
                         return;
@@ -104,7 +104,7 @@ public class PowerResourceImpl implements PowerResource {
         logger.debug("Turning off {}", id);
         for(ProxyNode.Simple node : SessionUtils.getServer(request.getSession(false)).getNodes()) {
             for(ProxyHardware.Simple hardware : node.getHardwares()) {
-                for(ProxyDevice.Simple device : hardware.getDevices()) {
+                for(ProxyDeviceConnected.Simple device : hardware.getDeviceConnecteds()) {
                     if (device.getId().equals(id)) {
                         device.getCommands().get("off").perform(loggerListener);
                         return;

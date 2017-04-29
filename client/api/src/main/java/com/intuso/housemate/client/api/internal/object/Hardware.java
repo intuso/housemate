@@ -19,7 +19,7 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         COMMANDS extends List<? extends Command<?, ?, ?, ?>, ?>,
         VALUES extends List<? extends Value<?, ?, ?>, ?>,
         PROPERTIES extends List<? extends Property<?, ?, ?, ?>, ?>,
-        DEVICES extends List<? extends Device<?, ?, ?, ?, ?>, ?>,
+        DEVICES extends List<? extends Device.Connected<?, ?, ?, ?>, ?>,
         HARDWARE extends Hardware<RENAME_COMMAND, REMOVE_COMMAND, START_STOP_COMMAND, RUNNING_VALUE, ERROR_VALUE, DRIVER_PROPERTY, DRIVER_LOADED_VALUE, COMMANDS, VALUES, PROPERTIES, DEVICES, HARDWARE>>
         extends
         Object<Hardware.Listener<? super HARDWARE>>,
@@ -31,7 +31,7 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
         Command.Container<COMMANDS>,
         Value.Container<VALUES>,
         Property.Container<PROPERTIES>,
-        Device.Container<DEVICES> {
+        Device.Connected.Container<DEVICES> {
 
     String COMMANDS_ID = "command";
     String VALUES_ID = "value";
@@ -52,7 +52,7 @@ public interface Hardware<RENAME_COMMAND extends Command<?, ?, ?, ?>,
      *
      * Interface to show that the implementing object has a list of devices
      */
-    interface Container<HARDWARES extends List<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
+    interface Container<HARDWARES extends Iterable<? extends Hardware<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the hardware list

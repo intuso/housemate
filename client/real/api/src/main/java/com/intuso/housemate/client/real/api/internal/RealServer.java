@@ -1,23 +1,15 @@
 package com.intuso.housemate.client.real.api.internal;
 
-import com.intuso.housemate.client.api.internal.object.Automation;
-import com.intuso.housemate.client.api.internal.object.Node;
-import com.intuso.housemate.client.api.internal.object.Server;
-import com.intuso.housemate.client.api.internal.object.System;
-import com.intuso.housemate.client.api.internal.object.User;
+import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.type.ObjectReference;
+import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
 
 public interface RealServer<COMMAND extends RealCommand<?, ?, ?>,
-        AUTOMATION extends RealAutomation<?, ?, ?, ?, ?, ?>,
-        AUTOMATIONS extends RealList<? extends AUTOMATION, ?>,
-        SYSTEM extends RealSystem<?, ?, ?, ?>,
-        SYSTEMS extends RealList<? extends SYSTEM, ?>,
-        USER extends RealUser<?, ?, ?>,
-        USERS extends RealList<? extends USER, ?>,
-        NODE extends Node<?, ?, ?, ?>,
-        NODES extends RealList<? extends NODE, ?>,
-        SERVER extends RealServer<COMMAND, AUTOMATION, AUTOMATIONS, SYSTEM, SYSTEMS, USER, USERS, NODE, NODES, SERVER>>
-        extends Server<COMMAND, AUTOMATIONS, SYSTEMS, USERS, NODES, SERVER>,
-        Automation.Container<AUTOMATIONS>,
-        System.Container<SYSTEMS>,
-        User.Container<USERS>,
-        Node.Container<NODES>{}
+        DEVICES extends RealList<? extends RealValue<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>, ?, ?>, ?>,
+        AUTOMATIONS extends RealList<? extends RealAutomation<?, ?, ?, ?, ?, ?>, ?>,
+        DEVICE_COMBIS extends RealList<? extends RealDeviceCombi<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
+        USERS extends RealList<? extends RealUser<?, ?, ?>, ?>,
+        NODES extends RealList<? extends Node<?, ?, ?, ?>, ?>,
+        SERVER extends RealServer<COMMAND, DEVICES, AUTOMATIONS, DEVICE_COMBIS, USERS, NODES, SERVER>>
+        extends Server<COMMAND, DEVICES, AUTOMATIONS, DEVICE_COMBIS, USERS, NODES, SERVER>,
+        Device.Container<Iterable<RealDevice<?, ?, ?, ?, ?>>>{}

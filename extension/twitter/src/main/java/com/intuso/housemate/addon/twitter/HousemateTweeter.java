@@ -4,10 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.intuso.housemate.client.v1_0.api.HousemateException;
-import com.intuso.housemate.client.v1_0.api.object.Command;
-import com.intuso.housemate.client.v1_0.api.object.System;
-import com.intuso.housemate.client.v1_0.api.object.Property;
-import com.intuso.housemate.client.v1_0.api.object.Value;
+import com.intuso.housemate.client.v1_0.api.object.*;
 import com.intuso.housemate.client.v1_0.proxy.object.*;
 import com.intuso.utilities.collection.ManagedCollection;
 import com.intuso.utilities.properties.api.PropertyRepository;
@@ -52,10 +49,10 @@ public class HousemateTweeter {
 
     private final Logger logger;
 
-    private final Map<ProxySystem.Simple, java.util.List<ManagedCollection.Registration>> listeners;
+    private final Map<ProxyDeviceCombi.Simple, java.util.List<ManagedCollection.Registration>> listeners;
     private ServerListListener serverListListener = new ServerListListener();
-    private DeviceListListener deviceListListener = new DeviceListListener();
-    private DeviceListener deviceListener = new DeviceListener();
+    private DeviceCombiListListener deviceCombiListListener = new DeviceCombiListListener();
+    private DeviceCombiListener deviceCombiListener = new DeviceCombiListener();
 
 	/**
 	 * Default constructor
@@ -81,7 +78,7 @@ public class HousemateTweeter {
 		// setup the housemate stuff
         // todo get all servers
         final ProxyServer.Simple server = injector.getInstance(ProxyServer.Simple.class);
-        server.getSystems().addObjectListener(deviceListListener, true);
+        server.getDeviceCombis().addObjectListener(deviceCombiListListener, true);
 	}
 
 	/**
@@ -165,7 +162,7 @@ public class HousemateTweeter {
     private class ServerListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<ProxyServer.Simple, ProxyList.Simple<ProxyServer.Simple>> {
         @Override
         public void elementAdded(ProxyList.Simple<ProxyServer.Simple> list, ProxyServer.Simple server) {
-            server.getSystems().addObjectListener(deviceListListener, true);
+            server.getDeviceCombis().addObjectListener(deviceCombiListListener, true);
         }
 
         @Override
@@ -174,17 +171,17 @@ public class HousemateTweeter {
         }
     };
 
-    private class DeviceListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<ProxySystem.Simple, ProxyList.Simple<ProxySystem.Simple>> {
+    private class DeviceCombiListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<ProxyDeviceCombi.Simple, ProxyList.Simple<ProxyDeviceCombi.Simple>> {
         @Override
-        public void elementAdded(ProxyList.Simple<ProxySystem.Simple> list, ProxySystem.Simple device) {
+        public void elementAdded(ProxyList.Simple<ProxyDeviceCombi.Simple> list, ProxyDeviceCombi.Simple device) {
             java.util.List<ManagedCollection.Registration> registrations = new ArrayList<>();
             listeners.put(device, registrations);
-            registrations.add(device.addObjectListener(deviceListener));
+            registrations.add(device.addObjectListener(deviceCombiListener));
             tweet("\"" + device.getName() + "\" device added");
         }
 
         @Override
-        public void elementRemoved(ProxyList.Simple<ProxySystem.Simple> list, ProxySystem.Simple device) {
+        public void elementRemoved(ProxyList.Simple<ProxyDeviceCombi.Simple> list, ProxyDeviceCombi.Simple device) {
             if(listeners.get(device) != null)
                 for(ManagedCollection.Registration registration : listeners.remove(device))
                     registration.remove();
@@ -192,15 +189,15 @@ public class HousemateTweeter {
         }
     };
 
-    private class DeviceListener implements System.Listener<ProxySystem.Simple> {
+    private class DeviceCombiListener implements Device.Combi.Listener<ProxyDeviceCombi.Simple> {
 
         @Override
-        public void renamed(ProxySystem.Simple device, String oldName, String newName) {
+        public void renamed(ProxyDeviceCombi.Simple device, String oldName, String newName) {
             tweet("\"" + oldName + "\" was renamed to \"" + newName + "\"");
         }
 
         @Override
-        public void error(ProxySystem.Simple device, String description) {
+        public void error(ProxyDeviceCombi.Simple device, String description) {
             tweet("\"" + device.getName() + "\" device " + (description == null ? "not " : "") + "in error" + (description == null ? "" : ": " + description));
         }
     };
@@ -211,7 +208,7 @@ public class HousemateTweeter {
         private final java.util.List<ManagedCollection.Registration> deviceListenerRegistrations;
         private final CommandListener listener;
 
-        private CommandListListener(ProxySystem.Simple device, java.util.List<ManagedCollection.Registration> deviceListenerRegistrations) {
+        private CommandListListener(ProxyDeviceCombi.Simple device, java.util.List<ManagedCollection.Registration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new CommandListener(device);
         }
@@ -232,9 +229,9 @@ public class HousemateTweeter {
 
     private class CommandListener implements Command.Listener<ProxyCommand.Simple> {
 
-        private final ProxySystem.Simple device;
+        private final ProxyDeviceCombi.Simple device;
 
-        private CommandListener(ProxySystem.Simple device) {
+        private CommandListener(ProxyDeviceCombi.Simple device) {
             this.device = device;
         }
 
@@ -265,7 +262,7 @@ public class HousemateTweeter {
         private final java.util.List<ManagedCollection.Registration> deviceListenerRegistrations;
         private final ValueListener listener;
 
-        private ValueListListener(ProxySystem.Simple device, java.util.List<ManagedCollection.Registration> deviceListenerRegistrations) {
+        private ValueListListener(ProxyDeviceCombi.Simple device, java.util.List<ManagedCollection.Registration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new ValueListener(device);
         }
@@ -286,9 +283,9 @@ public class HousemateTweeter {
 
     private class ValueListener implements Value.Listener<ProxyValue.Simple> {
 
-        private final ProxySystem.Simple device;
+        private final ProxyDeviceCombi.Simple device;
 
-        private ValueListener(ProxySystem.Simple device) {
+        private ValueListener(ProxyDeviceCombi.Simple device) {
             this.device = device;
         }
 
@@ -309,7 +306,7 @@ public class HousemateTweeter {
         private final java.util.List<ManagedCollection.Registration> deviceListenerRegistrations;
         private final PropertyListener listener;
 
-        private PropertyListListener(ProxySystem.Simple device, java.util.List<ManagedCollection.Registration> deviceListenerRegistrations) {
+        private PropertyListListener(ProxyDeviceCombi.Simple device, java.util.List<ManagedCollection.Registration> deviceListenerRegistrations) {
             this.deviceListenerRegistrations = deviceListenerRegistrations;
             listener = new PropertyListener(device);
         }
@@ -330,9 +327,9 @@ public class HousemateTweeter {
 
     private class PropertyListener implements Property.Listener<ProxyProperty.Simple> {
 
-        private final ProxySystem.Simple device;
+        private final ProxyDeviceCombi.Simple device;
 
-        private PropertyListener(ProxySystem.Simple device) {
+        private PropertyListener(ProxyDeviceCombi.Simple device) {
             this.device = device;
         }
 

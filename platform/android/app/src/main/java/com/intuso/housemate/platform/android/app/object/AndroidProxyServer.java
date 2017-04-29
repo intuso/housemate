@@ -15,8 +15,9 @@ import org.slf4j.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class AndroidProxyServer extends ProxyServer<AndroidProxyCommand,
+        AndroidProxyList<AndroidProxyValue>,
         AndroidProxyList<AndroidProxyAutomation>,
-        AndroidProxyList<AndroidProxySystem>,
+        AndroidProxyList<AndroidProxyDeviceCombi>,
         AndroidProxyList<AndroidProxyUser>,
         AndroidProxyList<AndroidProxyNode>,
         AndroidProxyServer> {
@@ -25,6 +26,6 @@ public class AndroidProxyServer extends ProxyServer<AndroidProxyCommand,
      * @param logger    {@inheritDoc}
      */
     public AndroidProxyServer(Logger logger, ManagedCollectionFactory managedCollectionFactory, Receiver.Factory receiverFactory, AndroidObjectFactories factories) {
-        super(logger, managedCollectionFactory, receiverFactory, factories.command(), factories.automations(), factories.systems(), factories.users(), factories.nodes());
+        super(logger, managedCollectionFactory, receiverFactory, factories.command(), factories.values(), factories.automations(), factories.deviceCombis(), factories.users(), factories.nodes());
     }
 }

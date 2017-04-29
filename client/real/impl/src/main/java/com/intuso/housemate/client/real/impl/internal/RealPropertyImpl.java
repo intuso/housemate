@@ -107,7 +107,7 @@ public class RealPropertyImpl<O>
                                    Iterable values);
     }
 
-    public static class LoadPersistedDeviceObjectReference implements RealListPersistedImpl.ElementFactory<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> {
+    public static class LoadPersistedDeviceObjectReference implements RealListPersistedImpl.ElementFactory<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> {
 
         private final RealPropertyImpl.Factory factory;
         private final TypeRepository typeRepository;
@@ -119,9 +119,16 @@ public class RealPropertyImpl<O>
         }
 
         @Override
-        public RealPropertyImpl<ObjectReference<ProxyDevice.Simple>> create(Logger logger, Property.Data data, RealListPersistedImpl.RemoveCallback<RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> removeCallback) {
-            return (RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>)
-                    factory.create(logger, data.getId(), data.getName(), data.getDescription(), typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, ProxyDevice.Simple.class))), 1, 1, Lists.newArrayList());
+        public RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>> create(Logger logger, Property.Data data, RealListPersistedImpl.RemoveCallback<RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> removeCallback) {
+            return (RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>)
+                    factory.create(logger,
+                            data.getId(),
+                            data.getName(),
+                            data.getDescription(),
+                            typeRepository.getType(new TypeSpec(Types.newParameterizedType(ObjectReference.class, ProxyDevice.class))),
+                            1,
+                            1,
+                            Lists.newArrayList());
         }
     }
 }

@@ -41,7 +41,7 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?>>
                           @Assisted Set<String> allowedTypes,
                           ManagedCollectionFactory managedCollectionFactory,
                           Sender.Factory senderFactory,
-                          ProxyServer<?, ?, ?, ?, ?, ?> server) {
+                          ProxyServer<?, ?, ?, ?, ?, ?, ?> server) {
         super(logger, new ObjectData(id, name, description), managedCollectionFactory, senderFactory);
         serialiser = new Serialiser<>(managedCollectionFactory, server, allowedTypes);
     }
@@ -63,7 +63,7 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?>>
     public static class Serialiser<O extends ProxyObject<?, ?>> implements TypeSerialiser<ObjectReference<O>> {
 
         private final ManagedCollectionFactory managedCollectionFactory;
-        private final ProxyServer<?, ?, ?, ?, ?, ?> server;
+        private final ProxyServer<?, ?, ?, ?, ?, ?, ?> server;
         private final Set<String> allowedClasses;
 
         /**
@@ -72,7 +72,7 @@ public abstract class RealObjectType<O extends ProxyObject<?, ?>>
          * @param allowedClasses
          */
         @Inject
-        public Serialiser(ManagedCollectionFactory managedCollectionFactory, ProxyServer<?, ?, ?, ?, ?, ?> server, Set<String> allowedClasses) {
+        public Serialiser(ManagedCollectionFactory managedCollectionFactory, ProxyServer<?, ?, ?, ?, ?, ?, ?> server, Set<String> allowedClasses) {
             this.managedCollectionFactory = managedCollectionFactory;
             this.server = server;
             this.allowedClasses = allowedClasses;

@@ -25,7 +25,7 @@ public class ClientApiV1_0BridgeModule extends AbstractModule {
         bind(AutomationMapper.class).in(Scopes.SINGLETON);
         bind(CommandMapper.class).in(Scopes.SINGLETON);
         bind(ConditionMapper.class).in(Scopes.SINGLETON);
-        bind(SystemMapper.class).in(Scopes.SINGLETON);
+        bind(DeviceCombiMapper.class).in(Scopes.SINGLETON);
         bind(HardwareMapper.class).in(Scopes.SINGLETON);
         bind(ListMapper.class).in(Scopes.SINGLETON);
         bind(NodeMapper.class).in(Scopes.SINGLETON);

@@ -2,7 +2,7 @@ package com.intuso.housemate.client.proxy.bridge.v1_0;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.intuso.housemate.client.api.bridge.v1_0.object.DeviceMapper;
+import com.intuso.housemate.client.api.bridge.v1_0.object.ObjectMapper;
 import com.intuso.housemate.client.api.internal.Renameable;
 import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
@@ -13,34 +13,35 @@ import org.slf4j.Logger;
 /**
  * Created by tomc on 28/11/16.
  */
-public class ProxyDeviceBridge
-        extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Device.Data, Device.Data, Device.Listener<? super ProxyDeviceBridge>>
-        implements Device<ProxyCommandBridge,
-                ProxyListBridge<ProxyCommandBridge>,
-                ProxyListBridge<ProxyValueBridge>,
-                ProxyListBridge<ProxyPropertyBridge>,
-        ProxyDeviceBridge> {
+public abstract class ProxyDeviceBridge<VERSION_DATA extends com.intuso.housemate.client.v1_0.api.object.Device.Data,
+        INTERNAL_DATA extends Device.Data,
+        LISTENER extends Device.Listener<? super DEVICE>,
+        DEVICE extends ProxyDeviceBridge<VERSION_DATA, INTERNAL_DATA, LISTENER, DEVICE>>
+        extends ProxyObjectBridge<VERSION_DATA, INTERNAL_DATA, LISTENER>
+        implements Device<LISTENER,
+        ProxyCommandBridge,
+        ProxyListBridge<ProxyCommandBridge>,
+        ProxyListBridge<ProxyValueBridge>,
+        DEVICE> {
 
     private final ProxyCommandBridge renameCommand;
     private final ProxyListBridge<ProxyCommandBridge> commands;
     private final ProxyListBridge<ProxyValueBridge> values;
-    private final ProxyListBridge<ProxyPropertyBridge> properties;
 
     @Inject
     protected ProxyDeviceBridge(@Assisted Logger logger,
-                                DeviceMapper featureMapper,
+                                Class<INTERNAL_DATA> internalDataClass,
+                                ObjectMapper<VERSION_DATA, INTERNAL_DATA> dataMapper,
                                 ManagedCollectionFactory managedCollectionFactory,
                                 com.intuso.housemate.client.messaging.api.internal.Receiver.Factory internalReceiverFactory,
                                 Sender.Factory v1_0SenderFactory,
                                 Factory<ProxyCommandBridge> commandFactory,
                                 Factory<ProxyListBridge<ProxyCommandBridge>> commandsFactory,
-                                Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory,
-                                Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory) {
-        super(logger, Device.Data.class, featureMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
+                                Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory) {
+        super(logger, internalDataClass, dataMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         commands = commandsFactory.create(ChildUtil.logger(logger, Device.COMMANDS_ID));
         values = valuesFactory.create(ChildUtil.logger(logger, Device.VALUES_ID));
-        properties = propertiesFactory.create(ChildUtil.logger(logger, Device.PROPERTIES_ID));
     }
 
     @Override
@@ -58,10 +59,6 @@ public class ProxyDeviceBridge
                 com.intuso.housemate.client.v1_0.proxy.ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.VALUES_ID),
                 ChildUtil.name(internalName, Device.VALUES_ID)
         );
-        properties.init(
-                ChildUtil.name(versionName, com.intuso.housemate.client.v1_0.api.object.Device.PROPERTIES_ID),
-                ChildUtil.name(internalName, Device.PROPERTIES_ID)
-        );
     }
 
     @Override
@@ -70,7 +67,6 @@ public class ProxyDeviceBridge
         renameCommand.uninit();
         commands.uninit();
         values.uninit();
-        properties.uninit();
     }
 
     @Override
@@ -86,10 +82,5 @@ public class ProxyDeviceBridge
     @Override
     public ProxyListBridge<ProxyValueBridge> getValues() {
         return values;
-    }
-
-    @Override
-    public ProxyListBridge<ProxyPropertyBridge> getProperties() {
-        return properties;
     }
 }

@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
 import com.intuso.housemate.client.api.internal.annotation.*;
 import com.intuso.housemate.client.api.internal.annotation.Parameter;
+import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.api.internal.type.serialiser.TypeSerialiser;
@@ -155,8 +156,8 @@ public class ProxyWrapperInternal implements ProxyWrapper {
         }
 
         MethodInvocationHandler createFromListHandler(Method method, FromList fromList) {
-            if(!(object instanceof ProxyDevice.Container))
-                return new Problem(clazz.getName() + " has a device method " + method.toString() + " but the object being wrapped is not a " + ProxyDevice.Container.class.getName());
+            if(!(object instanceof Device.Connected.Container))
+                return new Problem(clazz.getName() + " has a device method " + method.toString() + " but the object being wrapped is not a " + Device.Connected.Container.class.getName());
             Annotation[][] parameterAnnotations = method.getParameterAnnotations();
             String[] argIds = new String[parameterAnnotations.length];
             parameters: for(int p = 0; p < parameterAnnotations.length; p++) {
@@ -169,7 +170,7 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 return new Problem(clazz.getName() + " device method " + method.toString() + " has no " + Id.class.getName() + " annotation for parameter " + p);
             }
             return new FromListGetter(
-                    ((ProxyDevice.Container<? extends ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?>, ?>>) object).getDevices(),
+                    ((Device.Connected.Container<? extends ProxyList<? extends ProxyDeviceConnected<?, ?, ?, ?>, ?>>) object).getDeviceConnecteds(),
                     argIds,
                     classCreator.create(fromList.value()),
                     method.getReturnType());
@@ -469,12 +470,12 @@ public class ProxyWrapperInternal implements ProxyWrapper {
 
         private class FromListGetter implements MethodInvocationHandler {
 
-            private final ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?>, ?> devices;
+            private final ProxyList<? extends ProxyDeviceConnected<?, ?, ?, ?>, ?> devices;
             private final String[] idArgs;
             private final IdFormatter idFormatter;
             private final Class<?> returnType;
 
-            private FromListGetter(ProxyList<? extends ProxyDevice<?, ?, ?, ?, ?>, ?> devices, String[] idArgs, IdFormatter idFormatter, Class<?> returnType) {
+            private FromListGetter(ProxyList<? extends ProxyDeviceConnected<?, ?, ?, ?>, ?> devices, String[] idArgs, IdFormatter idFormatter, Class<?> returnType) {
                 this.devices = devices;
                 this.idArgs = idArgs;
                 this.idFormatter = idFormatter;
@@ -489,10 +490,10 @@ public class ProxyWrapperInternal implements ProxyWrapper {
                 for(int i = 0; i < idArgs.length; i++)
                     argMap.put(idArgs[i], args[i]);
                 String id = idFormatter.format(argMap);
-                ProxyDevice<?, ?, ?, ?, ?> device = devices.get(id);
+                ProxyDeviceConnected<?, ?, ?, ?> device = devices.get(id);
                 if(device == null)
                     throw new HousemateException("Could not find device " + id);
-                if(ProxyDevice.class.isAssignableFrom(returnType))
+                if(ProxyDeviceConnected.class.isAssignableFrom(returnType))
                     return device;
                 else
                     return build(device, returnType, "", commandTimeout);

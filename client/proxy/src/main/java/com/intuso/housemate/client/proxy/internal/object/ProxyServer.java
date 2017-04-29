@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
+import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
@@ -11,31 +12,31 @@ import com.intuso.housemate.client.proxy.internal.ProxyRenameable;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
-
 /**
  * @param <COMMAND> the type of the command
  * @param <AUTOMATIONS> the type of the automations list
- * @param <SYSTEMS> the type of the systems list
  * @param <USERS> the type of the users list
  * @param <NODES> the type of the nodes list
  * @param <SERVER> the type of the server
  */
 public abstract class ProxyServer<
         COMMAND extends ProxyCommand<?, ?, ?>,
+        DEVICES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
         AUTOMATIONS extends ProxyList<? extends ProxyAutomation<?, ?, ?, ?, ?>, ?>,
-        SYSTEMS extends ProxyList<? extends ProxySystem<?, ?, ?, ?>, ?>,
+        COMBI_DEVICES extends ProxyList<? extends ProxyDeviceCombi<?, ?, ?, ?, ?, ?>, ?>,
         USERS extends ProxyList<? extends ProxyUser<?, ?, ?>, ?>,
         NODES extends ProxyList<? extends ProxyNode<?, ?, ?, ?>, ?>,
-        SERVER extends ProxyServer<COMMAND, AUTOMATIONS, SYSTEMS, USERS, NODES, SERVER>>
+        SERVER extends ProxyServer<COMMAND, DEVICES, AUTOMATIONS, COMBI_DEVICES, USERS, NODES, SERVER>>
         extends ProxyObject<Server.Data, Server.Listener<? super SERVER>>
-        implements Server<COMMAND, AUTOMATIONS, SYSTEMS, USERS, NODES, SERVER>,
+        implements Server<COMMAND, DEVICES, AUTOMATIONS, COMBI_DEVICES, USERS, NODES, SERVER>,
+        Device.Container<Iterable<ProxyDevice<?, ?, ?, ?, ?, ?>>>,
         ProxyRenameable<COMMAND> {
 
     private final COMMAND renameCommand;
+    private final DEVICES deviceReferences;
     private final AUTOMATIONS automations;
     private final COMMAND addAutomationCommand;
-    private final SYSTEMS SYSTEMS;
+    private final COMBI_DEVICES systems;
     private final COMMAND addSystemCommand;
     private final USERS users;
     private final COMMAND addUserCommand;
@@ -45,15 +46,17 @@ public abstract class ProxyServer<
                        ManagedCollectionFactory managedCollectionFactory,
                        Receiver.Factory receiverFactory,
                        Factory<COMMAND> commandFactory,
+                       Factory<DEVICES> valuesFactory,
                        Factory<AUTOMATIONS> automationsFactory,
-                       Factory<SYSTEMS> systemsFactory,
+                       Factory<COMBI_DEVICES> systemsFactory,
                        Factory<USERS> usersFactory,
                        Factory<NODES> nodesFactory) {
         super(logger, Server.Data.class, managedCollectionFactory, receiverFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
+        deviceReferences = valuesFactory.create(ChildUtil.logger(logger, DEVICES_ID));
         automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID));
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID));
-        SYSTEMS = systemsFactory.create(ChildUtil.logger(logger, SYSTEMS_ID));
+        systems = systemsFactory.create(ChildUtil.logger(logger, DEVICE_COMBIS_ID));
         addSystemCommand = commandFactory.create(ChildUtil.logger(logger, ADD_SYSTEM_ID));
         users = usersFactory.create(ChildUtil.logger(logger, USERS_ID));
         addUserCommand = commandFactory.create(ChildUtil.logger(logger, ADD_USER_ID));
@@ -61,7 +64,7 @@ public abstract class ProxyServer<
     }
 
     public void start() {
-        init("server");
+        init(ChildUtil.name(null, PROXY, VERSION));
     }
 
     public void stop() {
@@ -72,9 +75,10 @@ public abstract class ProxyServer<
     protected void initChildren(String name) {
         super.initChildren(name);
         renameCommand.init(ChildUtil.name(name, RENAME_ID));
+        deviceReferences.init(ChildUtil.name(name, DEVICES_ID));
         automations.init(ChildUtil.name(name, AUTOMATIONS_ID));
         addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID));
-        SYSTEMS.init(ChildUtil.name(name, SYSTEMS_ID));
+        systems.init(ChildUtil.name(name, DEVICE_COMBIS_ID));
         addSystemCommand.init(ChildUtil.name(name, ADD_SYSTEM_ID));
         users.init(ChildUtil.name(name, USERS_ID));
         addUserCommand.init(ChildUtil.name(name, ADD_USER_ID));
@@ -85,9 +89,10 @@ public abstract class ProxyServer<
     protected void uninitChildren() {
         super.uninitChildren();
         renameCommand.uninit();
+        deviceReferences.uninit();
         automations.uninit();
         addAutomationCommand.uninit();
-        SYSTEMS.uninit();
+        systems.uninit();
         addSystemCommand.uninit();
         users.uninit();
         addUserCommand.uninit();
@@ -100,18 +105,32 @@ public abstract class ProxyServer<
     }
 
     @Override
+    public DEVICES getDeviceReferences() {
+        return deviceReferences;
+    }
+
+    @Override
+    public Iterable<ProxyDevice<?, ?, ?, ?, ?, ?>> getDevices() {
+        // todo transform references
+        return null;
+    }
+
+    @Override
     public AUTOMATIONS getAutomations() {
         return automations;
     }
 
+    @Override
     public COMMAND getAddAutomationCommand() {
         return addAutomationCommand;
     }
 
-    public SYSTEMS getSystems() {
-        return SYSTEMS;
+    @Override
+    public COMBI_DEVICES getDeviceCombis() {
+        return systems;
     }
 
+    @Override
     public COMMAND getAddSystemCommand() {
         return addSystemCommand;
     }
@@ -121,6 +140,7 @@ public abstract class ProxyServer<
         return users;
     }
 
+    @Override
     public COMMAND getAddUserCommand() {
         return addUserCommand;
     }
@@ -140,10 +160,12 @@ public abstract class ProxyServer<
             return addSystemCommand;
         else if(ADD_USER_ID.equals(id))
             return addUserCommand;
+        else if(DEVICES_ID.equals(id))
+            return deviceReferences;
         else if(AUTOMATIONS_ID.equals(id))
             return automations;
-        else if(SYSTEMS_ID.equals(id))
-            return SYSTEMS;
+        else if(DEVICE_COMBIS_ID.equals(id))
+            return systems;
         else if(NODES_ID.equals(id))
             return nodes;
         else if(USERS_ID.equals(id))
@@ -163,8 +185,11 @@ public abstract class ProxyServer<
                 if(fail) {
                     if (i == 0)
                         throw new HousemateException("Could not find " + path[i] + " for server");
-                    else
-                        throw new HousemateException("Could not find " + path[i] + " at " + Joiner.on("/").join(Arrays.copyOfRange(path, 0, i)));
+                    else {
+                        String[] subPath = new String[i];
+                        System.arraycopy(path, 0, subPath, 0, i);
+                        throw new HousemateException("Could not find " + path[i] + " at " + Joiner.on("/").join(subPath));
+                    }
                 } else
                     return null;
             }
@@ -193,30 +218,32 @@ public abstract class ProxyServer<
     }
 
     /**
-    * Created with IntelliJ IDEA.
-    * User: tomc
-    * Date: 14/01/14
-    * Time: 13:17
-    * To change this template use File | Settings | File Templates.
-    */
+     * Created with IntelliJ IDEA.
+     * User: tomc
+     * Date: 14/01/14
+     * Time: 13:17
+     * To change this template use File | Settings | File Templates.
+     */
     public static final class Simple extends ProxyServer<
             ProxyCommand.Simple,
+            ProxyList.Simple<ProxyValue.Simple>,
             ProxyList.Simple<ProxyAutomation.Simple>,
-            ProxyList.Simple<ProxySystem.Simple>,
+            ProxyList.Simple<ProxyDeviceCombi.Simple>,
             ProxyList.Simple<ProxyUser.Simple>,
             ProxyList.Simple<ProxyNode.Simple>,
             Simple> {
 
         @Inject
-        public Simple(@com.intuso.housemate.client.proxy.internal.object.ioc.Server Logger logger,
+        public Simple(@com.intuso.housemate.client.v1_0.proxy.object.ioc.Server Logger logger,
                       ManagedCollectionFactory managedCollectionFactory,
                       Receiver.Factory receiverFactory,
                       Factory<ProxyCommand.Simple> commandFactory,
+                      Factory<ProxyList.Simple<ProxyValue.Simple>> valuesFactory,
                       Factory<ProxyList.Simple<ProxyAutomation.Simple>> automationsFactory,
-                      Factory<ProxyList.Simple<ProxySystem.Simple>> systemsFactory,
+                      Factory<ProxyList.Simple<ProxyDeviceCombi.Simple>> systemsFactory,
                       Factory<ProxyList.Simple<ProxyUser.Simple>> usersFactory,
                       Factory<ProxyList.Simple<ProxyNode.Simple>> nodesFactory) {
-            super(logger, managedCollectionFactory, receiverFactory, commandFactory, automationsFactory, systemsFactory, usersFactory, nodesFactory);
+            super(logger, managedCollectionFactory, receiverFactory, commandFactory, valuesFactory, automationsFactory, systemsFactory, usersFactory, nodesFactory);
         }
     }
 }

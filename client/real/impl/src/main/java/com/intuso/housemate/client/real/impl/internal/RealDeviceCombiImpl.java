@@ -6,14 +6,15 @@ import com.google.inject.assistedinject.Assisted;
 import com.intuso.housemate.client.api.internal.Failable;
 import com.intuso.housemate.client.api.internal.Removeable;
 import com.intuso.housemate.client.api.internal.Renameable;
+import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.Property;
-import com.intuso.housemate.client.api.internal.object.System;
 import com.intuso.housemate.client.api.internal.object.Type;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.api.internal.type.TypeSpec;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
-import com.intuso.housemate.client.real.api.internal.RealSystem;
+import com.intuso.housemate.client.real.api.internal.RealDeviceCombi;
+import com.intuso.housemate.client.real.impl.internal.annotation.AnnotationParser;
 import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -21,10 +22,12 @@ import org.slf4j.Logger;
 /**
  * Base class for all device
  */
-public final class RealSystemImpl
-        extends RealObject<System.Data, System.Listener<? super RealSystemImpl>>
-        implements RealSystem<RealValueImpl<String>, RealCommandImpl,
-                RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>>, RealSystemImpl> {
+public final class RealDeviceCombiImpl
+        extends RealDeviceImpl<Device.Combi.Data, Device.Combi.Listener<? super RealDeviceCombiImpl>, RealDeviceCombiImpl>
+        implements RealDeviceCombi<RealCommandImpl, RealCommandImpl, RealCommandImpl, RealValueImpl<String>,
+        RealListGeneratedImpl<RealCommandImpl>,
+        RealListGeneratedImpl<RealValueImpl<?>>,
+        RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>>, RealDeviceCombiImpl> {
 
     private final static String PLAYBACK_NAME = "Playback devices";
     private final static String PLAYBACK_DESCRIPTION = "The device's playback devices";
@@ -40,37 +43,41 @@ public final class RealSystemImpl
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
     private final RealValueImpl<String> errorValue;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> playbackDevices;
+    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> playbackDevices;
     private final RealCommandImpl addPlaybackDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> powerDevices;
+    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> powerDevices;
     private final RealCommandImpl addPowerDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> runDevices;
+    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> runDevices;
     private final RealCommandImpl addRunDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> temperatureSensorDevices;
+    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> temperatureSensorDevices;
     private final RealCommandImpl addTemperatureSensorDeviceCommand;
-    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> volumeDevices;
+    private final RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> volumeDevices;
     private final RealCommandImpl addVolumeDeviceCommand;
 
-    private final RealListPersistedImpl.RemoveCallback<RealSystemImpl> removeCallback;
+    private final RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback;
 
     /**
      * @param logger {@inheritDoc}
      * @param managedCollectionFactory
      */
     @Inject
-    public RealSystemImpl(@Assisted final Logger logger,
-                          @Assisted("id") String id,
-                          @Assisted("name") String name,
-                          @Assisted("description") String description,
-                          @Assisted RealListPersistedImpl.RemoveCallback<RealSystemImpl> removeCallback,
-                          ManagedCollectionFactory managedCollectionFactory,
-                          Sender.Factory senderFactory,
-                          RealCommandImpl.Factory commandFactory,
-                          RealParameterImpl.Factory parameterFactory,
-                          RealValueImpl.Factory valueFactory,
-                          RealListPersistedImpl.Factory<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> devicesFactory,
-                          final TypeRepository typeRepository) {
-        super(logger, new System.Data(id, name, description), managedCollectionFactory, senderFactory);
+    public RealDeviceCombiImpl(@Assisted final Logger logger,
+                               @Assisted("id") String id,
+                               @Assisted("name") String name,
+                               @Assisted("description") String description,
+                               @Assisted RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback,
+                               ManagedCollectionFactory managedCollectionFactory,
+                               Sender.Factory senderFactory,
+                               AnnotationParser annotationParser,
+                               RealCommandImpl.Factory commandFactory,
+                               RealParameterImpl.Factory parameterFactory,
+                               RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
+                               RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
+                               RealValueImpl.Factory valueFactory,
+                               RealListPersistedImpl.Factory<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> devicesFactory,
+                               final TypeRepository typeRepository) {
+        super(logger, new Device.Combi.Data(id, name, description), managedCollectionFactory, senderFactory,
+                annotationParser, commandFactory, parameterFactory, commandsFactory, valuesFactory, typeRepository);
         this.removeCallback = removeCallback;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -81,7 +88,7 @@ public final class RealSystemImpl
                     public void perform(Type.InstanceMap values) {
                         if(values != null && values.getChildren().containsKey(Renameable.NAME_ID)) {
                             String newName = values.getChildren().get(Renameable.NAME_ID).getFirstValue();
-                            if (newName != null && !RealSystemImpl.this.getName().equals(newName))
+                            if (newName != null && !RealDeviceCombiImpl.this.getName().equals(newName))
                                 setName(newName);
                         }
                     }
@@ -176,9 +183,9 @@ public final class RealSystemImpl
     }
 
     private void setName(String newName) {
-        RealSystemImpl.this.getData().setName(newName);
-        for(System.Listener<? super RealSystemImpl> listener : listeners)
-            listener.renamed(RealSystemImpl.this, RealSystemImpl.this.getName(), newName);
+        RealDeviceCombiImpl.this.getData().setName(newName);
+        for(Device.Combi.Listener<? super RealDeviceCombiImpl> listener : listeners)
+            listener.renamed(RealDeviceCombiImpl.this, RealDeviceCombiImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
     }
@@ -203,7 +210,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> getPlaybackDevices() {
+    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getPlaybackDevices() {
         return playbackDevices;
     }
 
@@ -213,7 +220,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> getPowerDevices() {
+    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getPowerDevices() {
         return powerDevices;
     }
 
@@ -223,7 +230,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> getRunDevices() {
+    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getRunDevices() {
         return runDevices;
     }
 
@@ -233,7 +240,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> getTemperatureSensorDevices() {
+    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getTemperatureSensorDevices() {
         return temperatureSensorDevices;
     }
 
@@ -243,7 +250,7 @@ public final class RealSystemImpl
     }
 
     @Override
-    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice.Simple>>> getVolumeDevices() {
+    public RealListPersistedImpl<Property.Data, RealPropertyImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getVolumeDevices() {
         return volumeDevices;
     }
 
@@ -253,16 +260,16 @@ public final class RealSystemImpl
     }
 
     public interface Factory {
-        RealSystemImpl create(Logger logger,
-                              @Assisted("id") String id,
-                              @Assisted("name") String name,
-                              @Assisted("description") String description,
-                              RealListPersistedImpl.RemoveCallback<RealSystemImpl> removeCallback);
+        RealDeviceCombiImpl create(Logger logger,
+                                   @Assisted("id") String id,
+                                   @Assisted("name") String name,
+                                   @Assisted("description") String description,
+                                   RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback);
     }
 
-    public static class LoadPersisted implements RealListPersistedImpl.ElementFactory<System.Data, RealSystemImpl> {
+    public static class LoadPersisted implements RealListPersistedImpl.ElementFactory<Device.Combi.Data, RealDeviceCombiImpl> {
 
-        private final RealSystemImpl.Factory factory;
+        private final RealDeviceCombiImpl.Factory factory;
 
         @Inject
         public LoadPersisted(Factory factory) {
@@ -270,7 +277,7 @@ public final class RealSystemImpl
         }
 
         @Override
-        public RealSystemImpl create(Logger logger, System.Data data, RealListPersistedImpl.RemoveCallback<RealSystemImpl> removeCallback) {
+        public RealDeviceCombiImpl create(Logger logger, Device.Combi.Data data, RealListPersistedImpl.RemoveCallback<RealDeviceCombiImpl> removeCallback) {
             return factory.create(logger, data.getId(), data.getName(), data.getDescription(), removeCallback);
         }
     }

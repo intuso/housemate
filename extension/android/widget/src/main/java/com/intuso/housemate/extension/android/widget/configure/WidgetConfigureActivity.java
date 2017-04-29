@@ -106,7 +106,7 @@ public class WidgetConfigureActivity
 
         @Override
         public void elementAdded(AndroidProxyList<AndroidProxyHardware> list, AndroidProxyHardware hardware) {
-            hardware.getDevices().addObjectListener(new DeviceListListener());
+            hardware.getDeviceConnecteds().addObjectListener(new DeviceListListener());
         }
 
         @Override
@@ -115,28 +115,28 @@ public class WidgetConfigureActivity
         }
     }
 
-    private class DeviceListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyDevice, AndroidProxyList<AndroidProxyDevice>> {
+    private class DeviceListListener implements com.intuso.housemate.client.v1_0.api.object.List.Listener<AndroidProxyDeviceConnected, AndroidProxyList<AndroidProxyDeviceConnected>> {
 
         @Override
-        public void elementAdded(AndroidProxyList<AndroidProxyDevice> list, AndroidProxyDevice device) {
+        public void elementAdded(AndroidProxyList<AndroidProxyDeviceConnected> list, AndroidProxyDeviceConnected device) {
             listAdapter.add(new DeviceInfo(device));
         }
 
         @Override
-        public void elementRemoved(AndroidProxyList<AndroidProxyDevice> list, AndroidProxyDevice device) {
+        public void elementRemoved(AndroidProxyList<AndroidProxyDeviceConnected> list, AndroidProxyDeviceConnected device) {
             listAdapter.remove(new DeviceInfo(device));
         }
     }
 
     private class DeviceInfo {
 
-        private final AndroidProxyDevice device;
+        private final AndroidProxyDeviceConnected device;
 
-        private DeviceInfo(AndroidProxyDevice device) {
+        private DeviceInfo(AndroidProxyDeviceConnected device) {
             this.device = device;
         }
 
-        public AndroidProxyDevice getDevice() {
+        public AndroidProxyDeviceConnected getDevice() {
             return device;
         }
     }

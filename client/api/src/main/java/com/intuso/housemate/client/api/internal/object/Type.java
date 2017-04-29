@@ -18,7 +18,7 @@ public interface Type<TYPE extends Type<?>> extends Object<Type.Listener<? super
      *
      * Interface to show that the implementing object has a list of types
      */
-    interface Container<TYPES extends List<? extends Type<?>, ?>> {
+    interface Container<TYPES extends Iterable<? extends Type<?>>> {
 
         /**
          * Gets the type list

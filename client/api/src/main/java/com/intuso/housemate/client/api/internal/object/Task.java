@@ -56,7 +56,7 @@ public interface Task<REMOVE_COMMAND extends Command<?, ?, ?, ?>,
      *
      * Interface to show that the implementing object has a list of tasks
      */
-    interface Container<TASKS extends List<? extends Task<?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
+    interface Container<TASKS extends Iterable<? extends Task<?, ?, ?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the task list

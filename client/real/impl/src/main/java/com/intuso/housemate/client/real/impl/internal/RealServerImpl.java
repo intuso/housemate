@@ -1,12 +1,13 @@
 package com.intuso.housemate.client.real.impl.internal;
 
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
-import com.intuso.housemate.client.api.internal.object.Automation;
-import com.intuso.housemate.client.api.internal.object.Server;
-import com.intuso.housemate.client.api.internal.object.System;
-import com.intuso.housemate.client.api.internal.object.User;
+import com.intuso.housemate.client.api.internal.object.*;
+import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
+import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
+import com.intuso.housemate.client.real.api.internal.RealDevice;
 import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddSystemCommand;
@@ -17,18 +18,20 @@ import org.slf4j.Logger;
 public class RealServerImpl
         extends RealObject<Server.Data, Server.Listener<? super RealServerImpl>>
         implements RealServer<RealCommandImpl,
-        RealAutomationImpl, RealListPersistedImpl<Automation.Data, RealAutomationImpl>,
-        RealSystemImpl, RealListPersistedImpl<System.Data, RealSystemImpl>,
-        RealUserImpl, RealListPersistedImpl<User.Data, RealUserImpl>,
-        ServerBaseNode<?, ?, ?, ?>, RealNodeListImpl,
+        RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>>,
+        RealListPersistedImpl<Automation.Data, RealAutomationImpl>,
+        RealListPersistedImpl<Device.Combi.Data, RealDeviceCombiImpl>,
+        RealListPersistedImpl<User.Data, RealUserImpl>,
+        RealNodeListImpl,
         RealServerImpl>,
         AddAutomationCommand.Callback,
         AddSystemCommand.Callback,
         AddUserCommand.Callback {
 
+    private final RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> deviceReferences;
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
-    private final RealListPersistedImpl<System.Data, RealSystemImpl> systems;
+    private final RealListPersistedImpl<Device.Combi.Data, RealDeviceCombiImpl> deviceCombis;
     private final RealCommandImpl addSystemCommand;
     private final RealNodeListImpl nodes;
     private final RealListPersistedImpl<User.Data, RealUserImpl> users;
@@ -38,8 +41,9 @@ public class RealServerImpl
     public RealServerImpl(@com.intuso.housemate.client.real.impl.internal.ioc.Server Logger logger,
                           ManagedCollectionFactory managedCollectionFactory,
                           Sender.Factory senderFactory,
+                          RealListGeneratedImpl.Factory<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> devicesFactory,
                           RealListPersistedImpl.Factory<Automation.Data, RealAutomationImpl> automationsFactory,
-                          RealListPersistedImpl.Factory<System.Data, RealSystemImpl> systemsFactory,
+                          RealListPersistedImpl.Factory<Device.Combi.Data, RealDeviceCombiImpl> deviceCombisFactory,
                           RealNodeListImpl.Factory nodesFactory,
                           RealListPersistedImpl.Factory<User.Data, RealUserImpl> usersFactory,
                           AddAutomationCommand.Factory addAutomationCommandFactory,
@@ -47,6 +51,11 @@ public class RealServerImpl
                           AddUserCommand.Factory addUserCommandFactory,
                           RealNodeImpl node) {
         super(logger, new Server.Data( "server", "server", "server"), managedCollectionFactory, senderFactory);
+        this.deviceReferences = devicesFactory.create(ChildUtil.logger(logger, DEVICES_ID),
+                DEVICES_ID,
+                "Devices",
+                "Devices",
+                Lists.newArrayList());
         this.automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID),
                 AUTOMATIONS_ID,
                 "Automations",
@@ -58,17 +67,17 @@ public class RealServerImpl
                 "Add automation",
                 this,
                 automations.getRemoveCallback());
-        this.systems = systemsFactory.create(ChildUtil.logger(logger, SYSTEMS_ID),
-                SYSTEMS_ID,
-                "Systems",
-                "Systems");
+        this.deviceCombis = deviceCombisFactory.create(ChildUtil.logger(logger, DEVICE_COMBIS_ID),
+                DEVICE_COMBIS_ID,
+                "Device Combis",
+                "Device Combis");
         this.addSystemCommand = addSystemCommandFactory.create(ChildUtil.logger(logger, ADD_SYSTEM_ID),
                 ChildUtil.logger(logger, ADD_SYSTEM_ID),
                 ADD_SYSTEM_ID,
                 "Add system",
                 "Add system",
                 this,
-                systems.getRemoveCallback());
+                deviceCombis.getRemoveCallback());
         this.users = usersFactory.create(ChildUtil.logger(logger, USERS_ID),
                 USERS_ID,
                 "Users",
@@ -90,9 +99,10 @@ public class RealServerImpl
     @Override
     protected void initChildren(String name) {
         super.initChildren(name);
+        deviceReferences.init(ChildUtil.name(name, DEVICES_ID));
         automations.init(ChildUtil.name(name, AUTOMATIONS_ID));
         addAutomationCommand.init(ChildUtil.name(name, ADD_AUTOMATION_ID));
-        systems.init(ChildUtil.name(name, SYSTEMS_ID));
+        deviceCombis.init(ChildUtil.name(name, DEVICE_COMBIS_ID));
         addSystemCommand.init(ChildUtil.name(name, ADD_SYSTEM_ID));
         users.init(ChildUtil.name(name, USERS_ID));
         addUserCommand.init(ChildUtil.name(name, ADD_USER_ID));
@@ -102,13 +112,25 @@ public class RealServerImpl
     @Override
     protected void uninitChildren() {
         super.uninitChildren();
+        deviceReferences.uninit();
         automations.uninit();
         addAutomationCommand.uninit();
-        systems.uninit();
+        deviceCombis.uninit();
         addSystemCommand.uninit();
         users.uninit();
         addUserCommand.uninit();
         nodes.uninit();
+    }
+
+    @Override
+    public RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getDeviceReferences() {
+        return deviceReferences;
+    }
+
+    @Override
+    public Iterable<RealDevice<?, ?, ?, ?, ?>> getDevices() {
+        // todo transform references
+        return null;
     }
 
     @Override
@@ -126,8 +148,8 @@ public class RealServerImpl
         automations.add(automation);
     }
 
-    public RealListPersistedImpl<System.Data, RealSystemImpl> getSystems() {
-        return systems;
+    public RealListPersistedImpl<Device.Combi.Data, RealDeviceCombiImpl> getDeviceCombis() {
+        return deviceCombis;
     }
 
     @Override
@@ -136,8 +158,8 @@ public class RealServerImpl
     }
 
     @Override
-    public void addSystem(RealSystemImpl system) {
-        systems.add(system);
+    public void addSystem(RealDeviceCombiImpl system) {
+        deviceCombis.add(system);
     }
 
     @Override

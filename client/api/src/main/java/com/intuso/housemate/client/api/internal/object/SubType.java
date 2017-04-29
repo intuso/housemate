@@ -23,7 +23,7 @@ public interface SubType<TYPE extends Type<?>,
      *
      * Interface to show that the implementing object has a list of sub types
      */
-    interface Container<SUB_TYPES extends List<? extends SubType<?, ?>, ?>> {
+    interface Container<SUB_TYPES extends Iterable<? extends SubType<?, ?>>> {
 
         /**
          * Gets the sub type list

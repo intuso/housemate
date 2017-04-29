@@ -25,7 +25,7 @@ public interface Node<
      *
      * Interface to show that the implementing object has a list of nodes
      */
-    interface Container<NODES extends List<? extends Node<?, ?, ?, ?>, ?>> {
+    interface Container<NODES extends Iterable<? extends Node<?, ?, ?, ?>>> {
 
         /**
          * Gets the commands list

@@ -33,7 +33,7 @@ public final class RealHardwareImpl
         implements RealHardware<RealCommandImpl, RealValueImpl<Boolean>, RealValueImpl<String>,
         RealPropertyImpl<PluginDependency<HardwareDriver.Factory<?>>>, RealListGeneratedImpl<RealCommandImpl>,
         RealListGeneratedImpl<RealValueImpl<?>>, RealListGeneratedImpl<RealPropertyImpl<?>>,
-        RealListPersistedImpl<Device.Data, RealDeviceImpl>, RealHardwareImpl> {
+        RealListPersistedImpl<Device.Connected.Data, RealDeviceConnectedImpl>, RealHardwareImpl> {
 
     private final static String COMMANDS_DESCRIPTION = "The hardware's commands";
     private final static String VALUES_DESCRIPTION = "The hardware's values";
@@ -41,7 +41,7 @@ public final class RealHardwareImpl
     private final static String DEVICES_DESCRIPTION = "The hardware's devices";
 
     private final AnnotationParser annotationParser;
-    private final RealDeviceImpl.Factory deviceFactory;
+    private final RealDeviceConnectedImpl.Factory deviceFactory;
 
     private final RealCommandImpl renameCommand;
     private final RealCommandImpl removeCommand;
@@ -54,7 +54,7 @@ public final class RealHardwareImpl
     private final RealListGeneratedImpl<RealCommandImpl> commands;
     private final RealListGeneratedImpl<RealValueImpl<?>> values;
     private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
-    private final RealListPersistedImpl<Device.Data, RealDeviceImpl> devices;
+    private final RealListPersistedImpl<Device.Connected.Data, RealDeviceConnectedImpl> devices;
 
     private final RealListPersistedImpl.RemoveCallback<RealHardwareImpl> removeCallback;
 
@@ -84,8 +84,8 @@ public final class RealHardwareImpl
                             RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                             RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
                             RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
-                            final RealDeviceImpl.Factory deviceFactory,
-                            RealListPersistedImpl.Factory<Device.Data, RealDeviceImpl> devicesFactory) {
+                            final RealDeviceConnectedImpl.Factory deviceFactory,
+                            RealListPersistedImpl.Factory<Device.Connected.Data, RealDeviceConnectedImpl> devicesFactory) {
         super(logger, new Hardware.Data(id, name, description), managedCollectionFactory, senderFactory);
         this.annotationParser = annotationParser;
         this.deviceFactory = deviceFactory;
@@ -401,7 +401,7 @@ public final class RealHardwareImpl
     }
 
     @Override
-    public final RealListPersistedImpl<Device.Data, RealDeviceImpl> getDevices() {
+    public final RealListPersistedImpl<Device.Connected.Data, RealDeviceConnectedImpl> getDeviceConnecteds() {
         return devices;
     }
 
@@ -435,7 +435,7 @@ public final class RealHardwareImpl
             throw new HousemateException("Object is already added");
 
         // get the device by id
-        RealDeviceImpl device = devices.get(id);
+        RealDeviceConnectedImpl device = devices.get(id);
 
         // if it doesn't exist yet create it
         if(device == null) {

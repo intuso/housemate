@@ -7,10 +7,9 @@ import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
 import com.intuso.housemate.client.api.internal.object.Automation;
+import com.intuso.housemate.client.api.internal.object.Device;
 import com.intuso.housemate.client.api.internal.object.Node;
-import com.intuso.housemate.client.api.internal.object.System;
 import com.intuso.housemate.client.api.internal.object.User;
-import com.intuso.housemate.client.api.internal.plugin.PluginListener;
 import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.bridge.ioc.RealBridgeModule;
 import com.intuso.housemate.client.real.impl.internal.*;
@@ -43,7 +42,8 @@ public class ServerRootModule extends AbstractModule {
         bind(RealServerImpl.class).in(Scopes.SINGLETON);
 
         bind(Automation.Container.class).to(RealServerImpl.class);
-        bind(System.Container.class).to(RealServerImpl.class);
+        bind(Device.Container.class).to(RealServerImpl.class);
+        bind(Device.Combi.Container.class).to(RealServerImpl.class);
         bind(User.Container.class).to(RealServerImpl.class);
         bind(Node.Container.class).to(RealServerImpl.class);
 

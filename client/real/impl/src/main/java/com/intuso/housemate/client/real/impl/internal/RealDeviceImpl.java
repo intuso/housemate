@@ -15,13 +15,11 @@ import com.intuso.housemate.client.real.impl.internal.type.TypeRepository;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
 
-public final class RealDeviceImpl
-        extends RealObject<Device.Data, Device.Listener<? super RealDeviceImpl>>
-        implements RealDevice<RealCommandImpl,
-                        RealListGeneratedImpl<RealCommandImpl>,
-                        RealListGeneratedImpl<RealValueImpl<?>>,
-                        RealListGeneratedImpl<RealPropertyImpl<?>>,
-        RealDeviceImpl> {
+public abstract class RealDeviceImpl<DATA extends Device.Data,
+        LISTENER extends Device.Listener<? super DEVICE>,
+        DEVICE extends RealDeviceImpl<DATA, LISTENER, DEVICE>>
+        extends RealObject<DATA, LISTENER>
+        implements RealDevice<LISTENER, RealCommandImpl, RealListGeneratedImpl<RealCommandImpl>, RealListGeneratedImpl<RealValueImpl<?>>, DEVICE> {
 
     private final static String PROPERTIES_DESCRIPTION = "The device's properties";
 
@@ -30,13 +28,10 @@ public final class RealDeviceImpl
     private final RealCommandImpl renameCommand;
     private final RealListGeneratedImpl<RealCommandImpl> commands;
     private final RealListGeneratedImpl<RealValueImpl<?>> values;
-    private final RealListGeneratedImpl<RealPropertyImpl<?>> properties;
 
     @Inject
     public RealDeviceImpl(@Assisted final Logger logger,
-                          @Assisted("id") String id,
-                          @Assisted("name") String name,
-                          @Assisted("description") String description,
+                          DATA data,
                           ManagedCollectionFactory managedCollectionFactory,
                           Sender.Factory senderFactory,
                           AnnotationParser annotationParser,
@@ -44,9 +39,8 @@ public final class RealDeviceImpl
                           RealParameterImpl.Factory parameterFactory,
                           RealListGeneratedImpl.Factory<RealCommandImpl> commandsFactory,
                           RealListGeneratedImpl.Factory<RealValueImpl<?>> valuesFactory,
-                          RealListGeneratedImpl.Factory<RealPropertyImpl<?>> propertiesFactory,
                           TypeRepository typeRepository) {
-        super(logger, new Device.Data(id, name, description), managedCollectionFactory, senderFactory);
+        super(logger, data, managedCollectionFactory, senderFactory);
         this.annotationParser = annotationParser;
         this.renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID),
                 Renameable.RENAME_ID,
@@ -79,17 +73,12 @@ public final class RealDeviceImpl
                 "Values",
                 "The values of this feature",
                 Lists.<RealValueImpl<?>>newArrayList());
-        this.properties = propertiesFactory.create(ChildUtil.logger(logger, PROPERTIES_ID),
-                PROPERTIES_ID,
-                PROPERTIES_ID,
-                PROPERTIES_DESCRIPTION,
-                Lists.<RealPropertyImpl<?>>newArrayList());
     }
 
     private void setName(String newName) {
         getData().setName(newName);
-        for(Device.Listener<? super RealDeviceImpl> listener : listeners)
-            listener.renamed(RealDeviceImpl.this, RealDeviceImpl.this.getName(), newName);
+        for(Device.Listener<? super DEVICE> listener : listeners)
+            listener.renamed(getThis(), RealDeviceImpl.this.getName(), newName);
         data.setName(newName);
         sendData();
     }
@@ -100,7 +89,6 @@ public final class RealDeviceImpl
         renameCommand.init(ChildUtil.name(name, Renameable.RENAME_ID));
         commands.init(ChildUtil.name(name, COMMANDS_ID));
         values.init(ChildUtil.name(name, VALUES_ID));
-        properties.init(ChildUtil.name(name, PROPERTIES_ID));
     }
 
     @Override
@@ -109,7 +97,6 @@ public final class RealDeviceImpl
         renameCommand.uninit();
         commands.uninit();
         values.uninit();
-        properties.uninit();
     }
 
     @Override
@@ -127,18 +114,11 @@ public final class RealDeviceImpl
         return values;
     }
 
-    @Override
-    public final RealListGeneratedImpl<RealPropertyImpl<?>> getProperties() {
-        return properties;
-    }
-
     void clear() {
         for(RealCommandImpl command : Lists.newArrayList(commands))
             commands.remove(command.getId());
         for(RealValueImpl<?> value : Lists.newArrayList(values))
             values.remove(value.getId());
-        for(RealPropertyImpl<?> property : Lists.newArrayList(properties))
-            properties.remove(property.getId());
     }
 
     void wrap(Object object) {
@@ -148,29 +128,9 @@ public final class RealDeviceImpl
             commands.add(command);
         for(RealValueImpl<?> value : annotationParser.findValues(ChildUtil.logger(logger, VALUES_ID), "", object))
             values.add(value);
-        for(RealPropertyImpl<?> property : annotationParser.findProperties(ChildUtil.logger(logger, PROPERTIES_ID), "", object))
-            properties.add(property);
     }
 
-    public interface Factory {
-        RealDeviceImpl create(Logger logger,
-                              @Assisted("id") String id,
-                              @Assisted("name") String name,
-                              @Assisted("description") String description);
-    }
-
-    public static class LoadPersisted implements RealListPersistedImpl.ElementFactory<Device.Data, RealDeviceImpl> {
-
-        private final RealDeviceImpl.Factory factory;
-
-        @Inject
-        public LoadPersisted(Factory factory) {
-            this.factory = factory;
-        }
-
-        @Override
-        public RealDeviceImpl create(Logger logger, Device.Data data, RealListPersistedImpl.RemoveCallback<RealDeviceImpl> removeCallback) {
-            return factory.create(logger, data.getId(), data.getName(), data.getDescription());
-        }
+    public DEVICE getThis() {
+        return (DEVICE) this;
     }
 }

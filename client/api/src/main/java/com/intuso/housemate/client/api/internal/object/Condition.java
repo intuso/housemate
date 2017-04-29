@@ -70,7 +70,7 @@ public interface Condition<REMOVE_COMMAND extends Command<?, ?, ?, ?>,
      *
      * Interface to show that the implementing object has a list of conditions
      */
-    interface Container<CONDITIONS extends List<? extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>> {
+    interface Container<CONDITIONS extends Iterable<? extends Condition<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>>> {
 
         /**
          * Gets the conditions list

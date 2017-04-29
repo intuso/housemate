@@ -26,7 +26,7 @@ public interface User<RENAME_COMMAND extends Command<?, ?, ?, ?>,
      *
      * Interface to show that the implementing object has a list of users
      */
-    interface Container<USERS extends List<? extends User<?, ?, ?, ?>, ?>> {
+    interface Container<USERS extends Iterable<? extends User<?, ?, ?, ?>>> {
 
         /**
          * Gets the user list

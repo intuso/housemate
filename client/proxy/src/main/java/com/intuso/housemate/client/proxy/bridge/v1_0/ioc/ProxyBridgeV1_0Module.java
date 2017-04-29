@@ -27,14 +27,14 @@ public class ProxyBridgeV1_0Module extends AbstractModule {
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyAutomationBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyCommandBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyConditionBridge>>() {}));
-        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyDeviceBridge>>() {}));
-        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxySystemBridge>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyDeviceConnectedBridge>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyDeviceCombiBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyHardwareBridge>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyAutomationBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyCommandBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyConditionBridge>>>() {}));
-        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyDeviceBridge>>>() {}));
-        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxySystemBridge>>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyDeviceConnectedBridge>>>() {}));
+        install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyDeviceCombiBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyHardwareBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyNodeBridge>>>() {}));
         install(new FactoryModuleBuilder().build(new TypeLiteral<ProxyObjectBridge.Factory<ProxyListBridge<ProxyOptionBridge>>>() {}));

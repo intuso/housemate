@@ -26,7 +26,7 @@ public class ProxyHardwareBridge
         ProxyListBridge<ProxyCommandBridge>,
         ProxyListBridge<ProxyValueBridge>,
         ProxyListBridge<ProxyPropertyBridge>,
-        ProxyListBridge<ProxyDeviceBridge>,
+        ProxyListBridge<ProxyDeviceConnectedBridge>,
         ProxyHardwareBridge> {
 
     private final ProxyCommandBridge renameCommand;
@@ -40,7 +40,7 @@ public class ProxyHardwareBridge
     private final ProxyListBridge<ProxyCommandBridge> commands;
     private final ProxyListBridge<ProxyValueBridge> values;
     private final ProxyListBridge<ProxyPropertyBridge> properties;
-    private final ProxyListBridge<ProxyDeviceBridge> devices;
+    private final ProxyListBridge<ProxyDeviceConnectedBridge> devices;
 
     @Inject
     protected ProxyHardwareBridge(@Assisted Logger logger,
@@ -54,7 +54,7 @@ public class ProxyHardwareBridge
                                   Factory<ProxyListBridge<ProxyValueBridge>> valuesFactory,
                                   Factory<ProxyPropertyBridge> propertyFactory,
                                   Factory<ProxyListBridge<ProxyPropertyBridge>> propertiesFactory,
-                                  Factory<ProxyListBridge<ProxyDeviceBridge>> devicesFactory) {
+                                  Factory<ProxyListBridge<ProxyDeviceConnectedBridge>> devicesFactory) {
         super(logger, Hardware.Data.class, hardwareMapper, managedCollectionFactory, internalReceiverFactory, v1_0SenderFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, Renameable.RENAME_ID));
         removeCommand = commandFactory.create(ChildUtil.logger(logger, Removeable.REMOVE_ID));
@@ -195,8 +195,7 @@ public class ProxyHardwareBridge
         return properties;
     }
 
-    @Override
-    public ProxyListBridge<ProxyDeviceBridge> getDevices() {
+    public ProxyListBridge<ProxyDeviceConnectedBridge> getDeviceConnecteds() {
         return devices;
     }
 }

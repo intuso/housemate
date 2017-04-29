@@ -19,7 +19,7 @@ public interface Option<SUB_TYPES extends List<? extends SubType<?, ?>, ?>,
      *
      * Interface to show that the implementing object has a list of options
      */
-    interface Container<OPTIONS extends List<? extends Option<?, ?>, ?>> {
+    interface Container<OPTIONS extends Iterable<? extends Option<?, ?>>> {
 
         /**
          * Gets the option list
