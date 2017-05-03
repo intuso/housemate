@@ -3,6 +3,8 @@ package com.intuso.housemate.client.proxy.bridge.v1_0;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.bridge.v1_0.object.ServerMapper;
+import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.internal.object.List;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.proxy.bridge.v1_0.ioc.ProxyV1_0;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
@@ -15,7 +17,7 @@ import org.slf4j.Logger;
  */
 public class ProxyServerBridge
         extends ProxyObjectBridge<com.intuso.housemate.client.v1_0.api.object.Server.Data, Server.Data, Server.Listener<? super ProxyServerBridge>>
-        implements Server<ProxyCommandBridge, ProxyListBridge<ProxyValueBridge>, ProxyListBridge<ProxyAutomationBridge>, ProxyListBridge<ProxyDeviceCombiBridge>, ProxyListBridge<ProxyUserBridge>, ProxyListBridge<ProxyNodeBridge>, ProxyServerBridge> {
+        implements Server<ProxyCommandBridge, List<Device<?, ?, ?, ?, ?>, ?>, ProxyListBridge<ProxyAutomationBridge>, ProxyListBridge<ProxyDeviceCombiBridge>, ProxyListBridge<ProxyUserBridge>, ProxyListBridge<ProxyNodeBridge>, ProxyServerBridge> {
 
     private final ProxyListBridge<ProxyValueBridge> deviceReferences;
     private final ProxyCommandBridge addAutomationCommand;
@@ -111,6 +113,10 @@ public class ProxyServerBridge
     }
 
     @Override
+    public List<Device<?, ?, ?, ?, ?>, ?> getDevices() {
+        throw new UnsupportedOperationException("This bridge is just for converting messages between api versions. Devices should be accessed from a real or proxy server");
+    }
+
     public ProxyListBridge<ProxyValueBridge> getDeviceReferences() {
         return deviceReferences;
     }

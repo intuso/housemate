@@ -4,7 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.AbstractIdleService;
 import com.google.inject.Inject;
 import com.intuso.housemate.client.api.internal.HousemateException;
-import com.intuso.housemate.client.api.internal.object.Device;
+import com.intuso.housemate.client.api.internal.object.ConvertingList;
 import com.intuso.housemate.client.api.internal.object.Server;
 import com.intuso.housemate.client.messaging.api.internal.Receiver;
 import com.intuso.housemate.client.proxy.internal.ChildUtil;
@@ -21,19 +21,21 @@ import org.slf4j.Logger;
  */
 public abstract class ProxyServer<
         COMMAND extends ProxyCommand<?, ?, ?>,
-        DEVICES extends ProxyList<? extends ProxyValue<?, ?>, ?>,
+        DEVICE_REFERENCE extends ProxyValue<?, ?>,
+        DEVICE extends ProxyDevice<?, ?, ?, ?, ?, ?>,
+        DEVICES_REFERENCES extends ProxyList<DEVICE_REFERENCE, ?>,
         AUTOMATIONS extends ProxyList<? extends ProxyAutomation<?, ?, ?, ?, ?>, ?>,
         COMBI_DEVICES extends ProxyList<? extends ProxyDeviceCombi<?, ?, ?, ?, ?, ?>, ?>,
         USERS extends ProxyList<? extends ProxyUser<?, ?, ?>, ?>,
         NODES extends ProxyList<? extends ProxyNode<?, ?, ?, ?>, ?>,
-        SERVER extends ProxyServer<COMMAND, DEVICES, AUTOMATIONS, COMBI_DEVICES, USERS, NODES, SERVER>>
+        SERVER extends ProxyServer<COMMAND, DEVICE_REFERENCE, DEVICE, DEVICES_REFERENCES, AUTOMATIONS, COMBI_DEVICES, USERS, NODES, SERVER>>
         extends ProxyObject<Server.Data, Server.Listener<? super SERVER>>
-        implements Server<COMMAND, DEVICES, AUTOMATIONS, COMBI_DEVICES, USERS, NODES, SERVER>,
-        Device.Container<Iterable<ProxyDevice<?, ?, ?, ?, ?, ?>>>,
+        implements Server<COMMAND, ConvertingList<DEVICE_REFERENCE, DEVICE>, AUTOMATIONS, COMBI_DEVICES, USERS, NODES, SERVER>,
         ProxyRenameable<COMMAND> {
 
     private final COMMAND renameCommand;
-    private final DEVICES deviceReferences;
+    private final ConvertingList<DEVICE_REFERENCE, DEVICE> devices;
+    private final DEVICES_REFERENCES deviceReferences;
     private final AUTOMATIONS automations;
     private final COMMAND addAutomationCommand;
     private final COMBI_DEVICES systems;
@@ -46,7 +48,7 @@ public abstract class ProxyServer<
                        ManagedCollectionFactory managedCollectionFactory,
                        Receiver.Factory receiverFactory,
                        Factory<COMMAND> commandFactory,
-                       Factory<DEVICES> valuesFactory,
+                       Factory<DEVICES_REFERENCES> valuesFactory,
                        Factory<AUTOMATIONS> automationsFactory,
                        Factory<COMBI_DEVICES> systemsFactory,
                        Factory<USERS> usersFactory,
@@ -54,6 +56,7 @@ public abstract class ProxyServer<
         super(logger, Server.Data.class, managedCollectionFactory, receiverFactory);
         renameCommand = commandFactory.create(ChildUtil.logger(logger, RENAME_ID));
         deviceReferences = valuesFactory.create(ChildUtil.logger(logger, DEVICES_ID));
+        devices = new ConvertingList<>(deviceReferences, new ReferenceLoaderConverter<DEVICE>());
         automations = automationsFactory.create(ChildUtil.logger(logger, AUTOMATIONS_ID));
         addAutomationCommand = commandFactory.create(ChildUtil.logger(logger, ADD_AUTOMATION_ID));
         systems = systemsFactory.create(ChildUtil.logger(logger, DEVICE_COMBIS_ID));
@@ -104,15 +107,13 @@ public abstract class ProxyServer<
         return renameCommand;
     }
 
-    @Override
-    public DEVICES getDeviceReferences() {
+    public DEVICES_REFERENCES getDeviceReferences() {
         return deviceReferences;
     }
 
     @Override
-    public Iterable<ProxyDevice<?, ?, ?, ?, ?, ?>> getDevices() {
-        // todo transform references
-        return null;
+    public ConvertingList<DEVICE_REFERENCE, DEVICE> getDevices() {
+        return devices;
     }
 
     @Override
@@ -226,6 +227,8 @@ public abstract class ProxyServer<
      */
     public static final class Simple extends ProxyServer<
             ProxyCommand.Simple,
+            ProxyValue.Simple,
+            ProxyDevice<?, ?, ?, ?, ?, ?>,
             ProxyList.Simple<ProxyValue.Simple>,
             ProxyList.Simple<ProxyAutomation.Simple>,
             ProxyList.Simple<ProxyDeviceCombi.Simple>,
@@ -244,6 +247,16 @@ public abstract class ProxyServer<
                       Factory<ProxyList.Simple<ProxyUser.Simple>> usersFactory,
                       Factory<ProxyList.Simple<ProxyNode.Simple>> nodesFactory) {
             super(logger, managedCollectionFactory, receiverFactory, commandFactory, valuesFactory, automationsFactory, systemsFactory, usersFactory, nodesFactory);
+        }
+    }
+
+    public class ReferenceLoaderConverter<OBJECT extends ProxyObject<?, ?>> implements ConvertingList.Converter<ProxyValue<?, ?>, OBJECT> {
+
+        @Override
+        public OBJECT apply(ProxyValue<?, ?> element) {
+            if(element == null || element.getValue() == null || element.getValue().getFirstValue() == null)
+                return null;
+            return find(element.getValue().getFirstValue().split("/"));
         }
     }
 }

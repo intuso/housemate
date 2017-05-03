@@ -2,13 +2,14 @@ package com.intuso.housemate.client.api.internal.object;
 
 public interface Server<
         COMMAND extends Command<?, ?, ?, ?>,
-        DEVICES extends List<? extends Value<?, ?, ?>, ?>,
+        DEVICES extends List<? extends Device<?, ?, ?, ?, ?>, ?>,
         AUTOMATIONS extends List<? extends Automation<?, ?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         COMBI_DEVICES extends List<? extends Device.Combi<?, ?, ?, ?, ?, ?, ?, ?>, ?>,
         USERS extends List<? extends User<?, ?, ?, ?>, ?>,
         NODES extends List<? extends Node<?, ?, ?, ?>, ?>,
         SERVER extends Server<COMMAND, DEVICES, AUTOMATIONS, COMBI_DEVICES, USERS, NODES, SERVER>>
         extends Object<Server.Listener<? super SERVER>>,
+        Device.Container<DEVICES>,
         Device.Combi.Container<COMBI_DEVICES>,
         Automation.Container<AUTOMATIONS>,
         User.Container<USERS>,
@@ -23,7 +24,6 @@ public interface Server<
     String ADD_SYSTEM_ID = "add-system";
     String ADD_USER_ID = "add-user";
 
-    DEVICES getDeviceReferences();
     COMMAND getAddAutomationCommand();
     COMMAND getAddSystemCommand();
     COMMAND getAddUserCommand();

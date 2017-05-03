@@ -1,6 +1,7 @@
 package com.intuso.housemate.platform.android.app.object;
 
 import com.intuso.housemate.client.v1_0.messaging.api.Receiver;
+import com.intuso.housemate.client.v1_0.proxy.object.ProxyDevice;
 import com.intuso.housemate.client.v1_0.proxy.object.ProxyServer;
 import com.intuso.utilities.collection.ManagedCollectionFactory;
 import org.slf4j.Logger;
@@ -15,6 +16,8 @@ import org.slf4j.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class AndroidProxyServer extends ProxyServer<AndroidProxyCommand,
+        AndroidProxyValue,
+        ProxyDevice<?, ?, ?, ?, ?, ?>,
         AndroidProxyList<AndroidProxyValue>,
         AndroidProxyList<AndroidProxyAutomation>,
         AndroidProxyList<AndroidProxyDeviceCombi>,

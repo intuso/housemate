@@ -7,7 +7,6 @@ import com.intuso.housemate.client.api.internal.object.*;
 import com.intuso.housemate.client.api.internal.type.ObjectReference;
 import com.intuso.housemate.client.messaging.api.internal.Sender;
 import com.intuso.housemate.client.proxy.internal.object.ProxyDevice;
-import com.intuso.housemate.client.real.api.internal.RealDevice;
 import com.intuso.housemate.client.real.api.internal.RealServer;
 import com.intuso.housemate.client.real.impl.internal.utils.AddAutomationCommand;
 import com.intuso.housemate.client.real.impl.internal.utils.AddSystemCommand;
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 public class RealServerImpl
         extends RealObject<Server.Data, Server.Listener<? super RealServerImpl>>
         implements RealServer<RealCommandImpl,
-        RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>>,
         RealListPersistedImpl<Automation.Data, RealAutomationImpl>,
         RealListPersistedImpl<Device.Combi.Data, RealDeviceCombiImpl>,
         RealListPersistedImpl<User.Data, RealUserImpl>,
@@ -28,6 +26,7 @@ public class RealServerImpl
         AddSystemCommand.Callback,
         AddUserCommand.Callback {
 
+    private final CombinationList<Device<?, ?, ?, ?, ?>> devices;
     private final RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> deviceReferences;
     private final RealListPersistedImpl<Automation.Data, RealAutomationImpl> automations;
     private final RealCommandImpl addAutomationCommand;
@@ -93,6 +92,9 @@ public class RealServerImpl
                 NODES_ID,
                 "Nodes",
                 "Nodes");
+        this.devices = new CombinationList<>("device", "Devices", "Devices", managedCollectionFactory);
+        this.devices.addList(deviceCombis);
+        // todo, listener to nodes, hardwares, devices, and all them all to this
         nodes.add(node);
     }
 
@@ -122,15 +124,13 @@ public class RealServerImpl
         nodes.uninit();
     }
 
-    @Override
     public RealListGeneratedImpl<RealValueImpl<ObjectReference<ProxyDevice<?, ?, ?, ?, ?, ?>>>> getDeviceReferences() {
         return deviceReferences;
     }
 
     @Override
-    public Iterable<RealDevice<?, ?, ?, ?, ?>> getDevices() {
-        // todo transform references
-        return null;
+    public CombinationList<Device<?, ?, ?, ?, ?>> getDevices() {
+        return devices;
     }
 
     @Override
